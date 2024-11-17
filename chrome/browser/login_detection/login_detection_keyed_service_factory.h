@@ -40,4 +40,4 @@ class LoginDetectionKeyedServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace login_detection
 
-#endif  //  CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_KEYED_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_KEYED_SERVICE_FACTORY_H_
