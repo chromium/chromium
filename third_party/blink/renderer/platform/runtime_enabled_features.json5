@@ -885,6 +885,12 @@
       base_feature: "none",
     },
     {
+      // Corrects the handling of <form> elements nested within <template> tags
+      // in HTML parsing. See https://crbug.com/352896478 for details.
+      name: "CorrectTemplateFormParsing",
+      status: "experimental"
+    },
+    {
       name: "CorsRFC1918",
     },
     {
