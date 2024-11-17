@@ -7,26 +7,9 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "build/build_config.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/undo/bookmark_undo_service_factory.h"
-#include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_node_data.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
-#include "components/undo/bookmark_undo_service.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 
 namespace chrome {
-
-using ::bookmarks::BookmarkModel;
-using ::bookmarks::BookmarkNode;
-using ::bookmarks::BookmarkNodeData;
-using ::ui::mojom::DragOperation;
 
 BookmarkDragParams::BookmarkDragParams(
     std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
@@ -41,62 +24,5 @@ BookmarkDragParams::BookmarkDragParams(
       source(source),
       start_point(start_point) {}
 BookmarkDragParams::~BookmarkDragParams() = default;
-
-DragOperation DropBookmarks(Profile* profile,
-                            const BookmarkNodeData& data,
-                            const BookmarkNode* parent_node,
-                            size_t index,
-                            bool copy,
-                            BookmarkReorderDropTarget target) {
-  DCHECK(profile);
-  BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
-#if !BUILDFLAG(IS_ANDROID)
-  bookmarks::ScopedGroupBookmarkActions group_drops(model);
-#endif
-  if (data.IsFromProfilePath(profile->GetPath())) {
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
-        dragged_nodes = data.GetNodes(model, profile->GetPath());
-    DCHECK(!model->client()->IsNodeManaged(parent_node));
-    DCHECK(copy ||
-           bookmarks::CanAllBeEditedByUser(model->client(), dragged_nodes));
-    if (!dragged_nodes.empty()) {
-      // Drag from same profile. Copy or move nodes.
-      bool is_reorder = !copy && dragged_nodes[0]->parent() == parent_node;
-      for (size_t i = 0; i < dragged_nodes.size(); ++i) {
-        if (copy) {
-          model->Copy(dragged_nodes[i], parent_node, index);
-          // Increment `index` so that the next copied node ends up after the
-          // one that was just inserted.
-          ++index;
-        } else {
-          model->Move(dragged_nodes[i], parent_node, index);
-          index = parent_node->GetIndexOf(dragged_nodes[i]).value() + 1;
-        }
-      }
-      RecordBookmarkDropped(data, parent_node, is_reorder);
-      if (is_reorder) {
-        base::UmaHistogramEnumeration("Bookmarks.ReorderDropTarget", target);
-        const BookmarkNode* parent = dragged_nodes[0]->parent();
-        if (parent == model->bookmark_bar_node()) {
-          base::UmaHistogramEnumeration(
-              "Bookmarks.ReorderDropTarget.InBookmarkBarNode", target);
-        } else if (parent == model->other_node()) {
-          base::UmaHistogramEnumeration(
-              "Bookmarks.ReorderDropTarget.InOtherBookmarkNode", target);
-        } else if (parent == model->mobile_node()) {
-          base::UmaHistogramEnumeration(
-              "Bookmarks.ReorderDropTarget.InMobileBookmarkNode", target);
-        }
-      }
-      return copy ? DragOperation::kCopy : DragOperation::kMove;
-    }
-    return DragOperation::kNone;
-  }
-  RecordBookmarksAdded(profile);
-  RecordBookmarkDropped(data, parent_node, false);
-  // Dropping a folder from different profile. Always accept.
-  bookmarks::CloneBookmarkNode(model, data.elements, parent_node, index, true);
-  return DragOperation::kCopy;
-}
 
 }  // namespace chrome

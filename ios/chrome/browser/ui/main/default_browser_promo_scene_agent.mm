@@ -6,30 +6,32 @@
 
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
-@interface DefaultBrowserPromoSceneAgent ()
-
-// Indicates whether the user has already seen the post restore default browser
-// promo in the current app session.
-@property(nonatomic, assign) BOOL postRestorePromoSeenInCurrentSession;
+@interface DefaultBrowserPromoSceneAgent () <ProfileStateObserver>
 
 // YES if the main profile for this scene is signed in.
 @property(nonatomic, readonly, getter=isSignedIn) BOOL signedIn;
 
+// The feature engagement tracker for self, if it exists.
+@property(nonatomic, readonly)
+    feature_engagement::Tracker* featureEngagementTracker;
+
 @end
 
-@implementation DefaultBrowserPromoSceneAgent
+@implementation DefaultBrowserPromoSceneAgent {
+  // Indicates whether the user has already seen the post restore default
+  // browser promo in the current app session.
+  BOOL _postRestorePromoSeenInCurrentSession;
+}
 
 #pragma mark - Private
 
@@ -102,19 +104,6 @@
   }
 }
 
-- (BOOL)isSignedIn {
-  ChromeBrowserState* browserState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
-
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  DCHECK(authenticationService);
-  DCHECK(authenticationService->initialized());
-  return authenticationService->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
-}
-
 // Signed in users are eligible for generic default browser promo. Notify FET if
 // user is currently signed in.
 - (void)notifyFETSigninStatus {
@@ -122,17 +111,10 @@
     return;
   }
 
-  Browser* browser =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
-  if (!browser || !browser->GetBrowserState()) {
-    return;
+  if (feature_engagement::Tracker* tracker = self.featureEngagementTracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   }
-
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          browser->GetBrowserState());
-  tracker->NotifyEvent(
-      feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
 }
 
 - (void)maybeSetTriggerCriteriaExperimentStartTimestamp {
@@ -145,41 +127,93 @@
 - (void)maybeNotifyFETTriggerCriteriaExperimentConditionMet {
   if (IsDefaultBrowserTriggerCriteraExperimentEnabled() &&
       HasTriggerCriteriaExperimentStarted21days()) {
-    Browser* browser =
-        self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
-    if (!browser || !browser->GetBrowserState()) {
-      return;
+    if (feature_engagement::Tracker* tracker = self.featureEngagementTracker) {
+      tracker->NotifyEvent(
+          feature_engagement::events::
+              kDefaultBrowserPromoTriggerCriteriaConditionsMet);
     }
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            browser->GetBrowserState());
-    tracker->NotifyEvent(feature_engagement::events::
-                             kDefaultBrowserPromoTriggerCriteriaConditionsMet);
   }
+}
+
+#pragma mark - ObservingSceneAgent
+
+- (void)setSceneState:(SceneState*)sceneState {
+  [super setSceneState:sceneState];
+
+  [self.sceneState.profileState addObserver:self];
+}
+
+#pragma mark - ProfileStateObserver
+
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  // Monitor the profile initialization stages to consider showing a promo at a
+  // point in the initialization of the app that allows it.
+  [self updatePromoRegistrationIfUIReady];
 }
 
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  DCHECK(self.promosManager);
+  [self updatePromoRegistrationIfUIReady];
+}
 
-  if (self.sceneState.appState.initStage < InitStageFinal) {
+- (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  [self.sceneState.profileState removeObserver:self];
+  [self.sceneState removeObserver:self];
+}
+
+#pragma mark - Private properties
+
+- (BOOL)isSignedIn {
+  ProfileIOS* profile = self.sceneState.profileState.profile;
+  if (!profile) {
+    return NO;
+  }
+
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  DCHECK(authenticationService);
+  DCHECK(authenticationService->initialized());
+  return authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+}
+
+- (feature_engagement::Tracker*)featureEngagementTracker {
+  ProfileIOS* profile = self.sceneState.profileState.profile;
+  if (!profile) {
+    return nullptr;
+  }
+
+  return feature_engagement::TrackerFactory::GetForProfile(profile);
+}
+
+// Registers/deregisters default browser promos if UI is ready.
+- (void)updatePromoRegistrationIfUIReady {
+  // Check that the profile initialization is over (the stage
+  // ProfileInitStage::kFinal is reached).
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     return;
   }
 
-  if (level == SceneActivationLevelForegroundActive) {
-    [self updatePostRestorePromoRegistration];
-    [self updatePostDefaultAbandonmentPromoRegistration];
-    [self updateAllTabsPromoRegistration];
-    [self updateMadeForIOSPromoRegistration];
-    [self updateStaySafePromoRegistration];
-    [self updateGenericPromoRegistration];
-
-    [self notifyFETSigninStatus];
-    [self maybeSetTriggerCriteriaExperimentStartTimestamp];
-    [self maybeNotifyFETTriggerCriteriaExperimentConditionMet];
+  //  Check that the scene is in the foreground.
+  if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive) {
+    return;
   }
+
+  DCHECK(self.promosManager);
+  [self updatePostRestorePromoRegistration];
+  [self updatePostDefaultAbandonmentPromoRegistration];
+  [self updateAllTabsPromoRegistration];
+  [self updateMadeForIOSPromoRegistration];
+  [self updateStaySafePromoRegistration];
+  [self updateGenericPromoRegistration];
+
+  [self notifyFETSigninStatus];
+  [self maybeSetTriggerCriteriaExperimentStartTimestamp];
+  [self maybeNotifyFETTriggerCriteriaExperimentConditionMet];
 }
 
 @end

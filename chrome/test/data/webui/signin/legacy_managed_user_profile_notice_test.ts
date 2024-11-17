@@ -292,7 +292,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertFalse(
           isChildVisible(app, '#proceed-button'),
           'Processing State: #proceed-button');
-      assertFalse(
+      assertTrue(
           isChildVisible(app, '#cancel-button'),
           'Processing State: #cancel-button');
 
@@ -316,7 +316,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertFalse(
           isChildVisible(app, '#cancel-button'), 'Error State: #cancel-button');
       assertEquals(
-          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          app.i18n('closeLabel'), proceedButton.textContent!.trim(),
           'Error State: Proceed label');
 
       webUIListenerCallback('on-state-changed', State.TIMEOUT);
@@ -336,11 +336,11 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertTrue(
           isChildVisible(app, '#proceed-button'),
           'Timeout State: #proceed-button');
-      assertFalse(
+      assertTrue(
           isChildVisible(app, '#cancel-button'),
           'Timeout State: #cancel-button');
       assertEquals(
-          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          app.i18n('retryLabel'), proceedButton.textContent!.trim(),
           'Timeout State: Proceed label');
 
       webUIListenerCallback('on-state-changed', State.SUCCESS);
@@ -364,7 +364,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           isChildVisible(app, '#cancel-button'),
           'Success State: #cancel-button');
       assertEquals(
-          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          app.i18n('continueLabel'), proceedButton.textContent!.trim(),
           'Success State: Proceed label');
     });
 
@@ -479,7 +479,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
 
       // Initial values.
       checkValuePropositionTextValues(
-          app.i18n('signinIntoChrome'), app.i18n('valuePropSubtitle'),
+          app.i18n('valuePropositionTitle'), app.i18n('valuePropSubtitle'),
           'email@email.com', 'account_name', 'continue_as');
       checkImageUrl(targetElement, AVATAR_URL_1);
 
@@ -498,7 +498,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       });
       await microtasksFinished();
       checkValuePropositionTextValues(
-          app.i18n('signinIntoChrome'), app.i18n('valuePropSubtitle'),
+          app.i18n('valuePropositionTitle'), app.i18n('valuePropSubtitle'),
           'new_email@email.com', 'new_account_name', 'new_continue_as');
 
       checkImageUrl(targetElement, AVATAR_URL_2);

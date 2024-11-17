@@ -103,6 +103,7 @@
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_ruleset_publisher.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -797,7 +798,7 @@ BrowserProcessImpl::GetMetricsServicesManager() {
 metrics::MetricsService* BrowserProcessImpl::metrics_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* metrics_services_manager = GetMetricsServicesManager();
-  if (metrics_services_manager_) {
+  if (metrics_services_manager) {
     return metrics_services_manager->GetMetricsService();
   }
   return nullptr;
@@ -855,7 +856,7 @@ BrowserProcessImpl::active_primary_accounts_metrics_recorder() {
 variations::VariationsService* BrowserProcessImpl::variations_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* metrics_services_manager = GetMetricsServicesManager();
-  if (metrics_services_manager_) {
+  if (metrics_services_manager) {
     return metrics_services_manager->GetVariationsService();
   }
   return nullptr;
@@ -949,8 +950,7 @@ printing::PrintJobManager* BrowserProcessImpl::print_job_manager() {
 #if BUILDFLAG(ENABLE_PRINTING)
   return print_job_manager_.get();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
@@ -1141,18 +1141,14 @@ DownloadRequestLimiter* BrowserProcessImpl::download_request_limiter() {
   return download_request_limiter_.get();
 }
 
-BackgroundModeManager* BrowserProcessImpl::background_mode_manager() {
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+BackgroundModeManager* BrowserProcessImpl::background_mode_manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!background_mode_manager_)
     CreateBackgroundModeManager();
   return background_mode_manager_.get();
-#else
-  return nullptr;
-#endif
 }
 
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 void BrowserProcessImpl::set_background_mode_manager_for_test(
     std::unique_ptr<BackgroundModeManager> manager) {
   background_mode_manager_ = std::move(manager);
@@ -1385,23 +1381,16 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
       /*precedence=*/10u,
       std::make_unique<os_crypt_async::DPAPIKeyProvider>(local_state())));
 
-  // TODO(crbug.com/40241934): For Windows, continue to add providers behind
-  // features, as support for them is added.
-  if (base::FeatureList::IsEnabled(
-          features::kRegisterAppBoundEncryptionProvider)) {
-    // Support level is logged separately to metrics from
-    // app_bound_encryption_metrics_win.cc.
-    providers.emplace_back(std::make_pair(
-        // Note: 15 is chosen to be higher than the 10 precedence above for
-        // DPAPI. This ensures that when the the provider is enabled for
-        // encryption, the App-Bound encryption key is used and not the DPAPI
-        // one.
-        /*precedence=*/15u,
-        std::make_unique<os_crypt_async::AppBoundEncryptionProviderWin>(
-            local_state(),
-            base::FeatureList::IsEnabled(
-                features::kUseAppBoundEncryptionProviderForEncryption))));
-  }
+  providers.emplace_back(std::make_pair(
+      // Note: 15 is chosen to be higher than the 10 precedence above for
+      // DPAPI. This ensures that when the the provider is enabled for
+      // encryption, the App-Bound encryption key is used and not the DPAPI
+      // one.
+      /*precedence=*/15u,
+      std::make_unique<os_crypt_async::AppBoundEncryptionProviderWin>(
+          local_state(),
+          base::FeatureList::IsEnabled(
+              features::kUseAppBoundEncryptionProviderForEncryption))));
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
@@ -1533,14 +1522,13 @@ void BrowserProcessImpl::CreateFingerprintingProtectionRulesetService() {
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
 
-  // TODO(https://crbug.com/347304498): Use FP publisher once
-  // UnverifiedRulesetDealer is used.
   fingerprinting_protection_ruleset_service_ =
       subresource_filter::RulesetService::Create(
           fingerprinting_protection_filter::
               kFingerprintingProtectionRulesetConfig,
           local_state(), user_data_dir,
-          subresource_filter::SafeBrowsingRulesetPublisher::Factory());
+          fingerprinting_protection_filter::
+              FingerprintingProtectionRulesetPublisher::Factory());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

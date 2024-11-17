@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
@@ -107,6 +108,11 @@ bool IsSwipeTrackingFromScrollEventsEnabled();
 
 // Returns the active window which accepts keyboard inputs.
 NSWindow* GetActiveWindow();
+
+// Returns the screen bounds of a window. Top left screen corner is (0, 0).
+// TODO(crbug.com/365733574): used for debugging the misplaced bubble issue on
+// mac fullscreen.
+gfx::Rect GetWindowScreenBounds(gfx::NativeWindow window);
 #endif
 
 // Returns true if the given browser window is in locked fullscreen mode

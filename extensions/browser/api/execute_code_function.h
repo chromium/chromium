@@ -55,6 +55,7 @@ class ExecuteCodeFunction : public ExtensionFunction {
   virtual bool CanExecuteScriptOnPage(std::string* error) = 0;
   virtual ScriptExecutor* GetScriptExecutor(std::string* error) = 0;
   virtual bool IsWebView() const = 0;
+  virtual int GetRootFrameId() const = 0;
   virtual const GURL& GetWebViewSrc() const = 0;
   virtual bool LoadFile(const std::string& file, std::string* error);
 

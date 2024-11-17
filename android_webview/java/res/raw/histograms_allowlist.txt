@@ -1,4 +1,4 @@
-Android.WebView.HistoricalApplicationExitInfo.Counts.FOREGROUND
+Android.WebView.HistoricalApplicationExitInfo.Counts2.FOREGROUND
 Android.WebView.SafeMode.ActionName
 Android.WebView.SafeMode.ReceivedFix
 Android.WebView.SafeMode.SafeModeEnabled

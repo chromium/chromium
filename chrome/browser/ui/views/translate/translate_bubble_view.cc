@@ -54,6 +54,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -138,9 +139,22 @@ void OpenLanguageSettings(TranslateBubbleModel* model_,
 
 TranslateBubbleView::~TranslateBubbleView() {
   // A child view could refer to a model which is owned by this class when
-  // the child view is destructed. For example, |source_language_combobx_model_|
-  // is referred by Combobox's destructor. Before destroying the models,
-  // removing the child views is needed.
+  // the child view is destructed. For example, `source_language_combobox_` has
+  // a pointer to `model_`. Before destroying the models, removing the child
+  // views is needed.
+  translate_view_ = nullptr;
+  error_view_ = nullptr;
+  advanced_view_source_ = nullptr;
+  advanced_view_target_ = nullptr;
+  source_language_combobox_ = nullptr;
+  target_language_combobox_ = nullptr;
+  always_translate_checkbox_ = nullptr;
+  advanced_always_translate_checkbox_ = nullptr;
+  tabbed_pane_ = nullptr;
+  advanced_reset_button_source_ = nullptr;
+  advanced_reset_button_target_ = nullptr;
+  advanced_done_button_source_ = nullptr;
+  advanced_done_button_target_ = nullptr;
   RemoveAllChildViews();
   if (features::IsToolbarPinningEnabled() && translate_action_item_) {
     translate_action_item_->SetIsShowingBubble(false);
@@ -367,7 +381,7 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   gfx::Rect screen_bounds = source->GetAnchorBoundsInScreen();
   options_menu_runner_->RunMenuAt(source->GetWidget(), nullptr, screen_bounds,
                                   views::MenuAnchorPosition::kTopRight,
-                                  ui::MENU_SOURCE_MOUSE);
+                                  ui::mojom::MenuSourceType::kMouse);
 }
 
 bool TranslateBubbleView::IsCommandIdChecked(int command_id) const {
@@ -496,9 +510,7 @@ TranslateBubbleView::TranslateBubbleView(
 views::View* TranslateBubbleView::GetCurrentView() const {
   switch (GetViewState()) {
     case TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE:
-      return translate_view_;
     case TranslateBubbleModel::VIEW_STATE_TRANSLATING:
-      return translate_view_;
     case TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE:
       return translate_view_;
     case TranslateBubbleModel::VIEW_STATE_ERROR:
@@ -731,7 +743,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewErrorNoTitle(
   error_message_label->SetProperty(views::kElementIdentifierKey, kErrorMessage);
   error_message_label->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   title_row->AddChildView(std::move(error_message_label));
@@ -922,7 +935,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
   // when the bubble expands.
   padding_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2));
 

@@ -9,7 +9,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
-import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
@@ -58,7 +57,7 @@ public interface BookmarkDelegate {
     /**
      * Closes the Bookmark UI (if on phone) and opens the given list of bookmarks in new tabs.
      *
-     * @param bookmarks Bookmarks to open.
+     * @param bookmark Bookmarks to open.
      * @param incognito Whether the bookmarks should be opened in an incognito tab.
      */
     void openBookmarksInNewTabs(List<BookmarkId> bookmark, boolean incognito);
@@ -83,11 +82,6 @@ public interface BookmarkDelegate {
      */
     @BookmarkUiMode
     int getCurrentUiMode();
-
-    /**
-     * @return LargeIconBridge instance. By sharing the instance, we can also share the cache.
-     */
-    LargeIconBridge getLargeIconBridge();
 
     /**
      * @return The drag state delegate that is associated with this list of bookmarks.

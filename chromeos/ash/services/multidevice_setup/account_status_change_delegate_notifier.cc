@@ -20,10 +20,9 @@ AccountStatusChangeDelegateNotifier::~AccountStatusChangeDelegateNotifier() =
 void AccountStatusChangeDelegateNotifier::SetAccountStatusChangeDelegateRemote(
     mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate_remote) {
   if (delegate_remote_.is_bound()) {
-    PA_LOG(ERROR) << "AccountStatusChangeDelegateNotifier::"
-                  << "SetAccountStatusChangeDelegateRemote(): Tried to set "
-                  << "delegate, but one already existed.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "AccountStatusChangeDelegateNotifier::"
+                 << "SetAccountStatusChangeDelegateRemote(): Tried to set "
+                 << "delegate, but one already existed.";
   }
 
   delegate_remote_.Bind(std::move(delegate_remote));

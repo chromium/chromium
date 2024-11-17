@@ -298,7 +298,7 @@ TEST_P(ThreadPoolTaskTrackerTest, WillPostAndRunLongTaskBeforeShutdown) {
   // is signaled.
   TestWaitableEvent task_running;
   TestWaitableEvent task_barrier;
-  Task blocked_task(FROM_HERE, BindLambdaForTesting([&]() {
+  Task blocked_task(FROM_HERE, BindLambdaForTesting([&] {
                       task_running.Signal();
                       task_barrier.Wait();
                     }),
@@ -346,7 +346,7 @@ TEST_F(ThreadPoolTaskTrackerTest, PostAfterShutdownFromContinueOnShutdown) {
   // Create a task that verifies the properties of this test.
   TestWaitableEvent task_running;
   TestWaitableEvent task_barrier;
-  Task poster(FROM_HERE, BindLambdaForTesting([&]() {
+  Task poster(FROM_HERE, BindLambdaForTesting([&] {
                 task_running.Signal();
                 task_barrier.Wait();
 
@@ -552,7 +552,7 @@ TEST_P(ThreadPoolTaskTrackerTest, SingletonAllowed) {
 // Verify that AssertIOAllowed() succeeds only for a MayBlock() task.
 TEST_P(ThreadPoolTaskTrackerTest, IOAllowed) {
   // Allowed with MayBlock().
-  Task task_with_may_block(FROM_HERE, BindOnce([]() {
+  Task task_with_may_block(FROM_HERE, BindOnce([] {
                              // Shouldn't fail.
                              ScopedBlockingCall scope_blocking_call(
                                  FROM_HERE, BlockingType::WILL_BLOCK);
@@ -565,7 +565,7 @@ TEST_P(ThreadPoolTaskTrackerTest, IOAllowed) {
   RunAndPopNextTask(std::move(sequence_with_may_block));
 
   // Disallowed in the absence of MayBlock().
-  Task task_without_may_block(FROM_HERE, BindOnce([]() {
+  Task task_without_may_block(FROM_HERE, BindOnce([] {
                                 EXPECT_DCHECK_DEATH({
                                   ScopedBlockingCall scope_blocking_call(
                                       FROM_HERE, BlockingType::WILL_BLOCK);
@@ -1243,7 +1243,7 @@ class WaitAllowedTestThread : public SimpleThread {
     // running a task without the WithBaseSyncPrimitives() trait.
     internal::AssertBaseSyncPrimitivesAllowed();
     Task task_without_sync_primitives(
-        FROM_HERE, BindOnce([]() {
+        FROM_HERE, BindOnce([] {
           EXPECT_DCHECK_DEATH({ internal::AssertBaseSyncPrimitivesAllowed(); });
         }),
         TimeTicks::Now(), TimeDelta());
@@ -1259,7 +1259,7 @@ class WaitAllowedTestThread : public SimpleThread {
     // WithBaseSyncPrimitives() trait.
     internal::AssertBaseSyncPrimitivesAllowed();
     Task task_with_sync_primitives(
-        FROM_HERE, BindOnce([]() {
+        FROM_HERE, BindOnce([] {
           // Shouldn't fail.
           internal::AssertBaseSyncPrimitivesAllowed();
         }),

@@ -23,12 +23,12 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/common/tutorial.h"
-#include "components/user_education/common/tutorial_description.h"
-#include "components/user_education/common/tutorial_registry.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/tutorial/tutorial.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/webui/tracked_element_webui.h"
@@ -79,7 +79,7 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
+               browser()->window()->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
 
@@ -210,7 +210,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
-               browser()->window()->GetFeaturePromoController())
+               browser()->window()->GetFeaturePromoControllerForTesting())
         ->tutorial_service_for_testing();
   }
 

@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
-import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
@@ -352,9 +351,7 @@ class ClientManager {
         }
     }
 
-    private final ChromeOriginVerifierFactory mOriginVerifierFactory;
     private final InstalledAppProviderWrapper mInstalledAppProviderWrapper;
-    private final ChromeBrowserInitializer mChromeBrowserInitializer;
 
     private final Map<CustomTabsSessionToken, SessionParams> mSessionParams = new HashMap<>();
 
@@ -362,19 +359,11 @@ class ClientManager {
     private boolean mWarmupHasBeenCalled;
 
     public ClientManager() {
-        this(
-                new ChromeOriginVerifierFactoryImpl(),
-                new ProdInstalledAppProviderWrapper(),
-                ChromeBrowserInitializer.getInstance());
+        this(new ProdInstalledAppProviderWrapper());
     }
 
-    public ClientManager(
-            ChromeOriginVerifierFactory originVerifierFactory,
-            InstalledAppProviderWrapper installedAppProviderWrapper,
-            ChromeBrowserInitializer chromeBrowserInitializer) {
-        mOriginVerifierFactory = originVerifierFactory;
+    public ClientManager(InstalledAppProviderWrapper installedAppProviderWrapper) {
         mInstalledAppProviderWrapper = installedAppProviderWrapper;
-        mChromeBrowserInitializer = chromeBrowserInitializer;
         RequestThrottler.loadInBackground();
     }
 
@@ -559,7 +548,7 @@ class ClientManager {
 
     public synchronized boolean validateRelationship(
             CustomTabsSessionToken session, int relation, Origin origin, Bundle extras) {
-        return validateRelationshipInternal(session, relation, origin, null, false);
+        return validateRelationshipInternal(session, relation, origin, null, false, null);
     }
 
     /** Validates the link between the client and the origin. */
@@ -568,7 +557,26 @@ class ClientManager {
             Origin origin,
             Origin targetOrigin,
             @Relation int relation) {
-        validateRelationshipInternal(session, relation, origin, targetOrigin, true);
+        validateRelationshipInternal(session, relation, origin, targetOrigin, true, null);
+    }
+
+    /**
+     * Call validateRelationship to verify and store whether given origin is valid as a source
+     * origin of prefetch.
+     *
+     * @param session client session.
+     * @param sourceOrigin origin to be verified.
+     * @param callback callback to be called after verification is finished.
+     */
+    public synchronized void validateSourceOriginOfPrefetch(
+            CustomTabsSessionToken session, Origin sourceOrigin, Runnable callback) {
+        validateRelationshipInternal(
+                session,
+                CustomTabsService.RELATION_USE_AS_ORIGIN,
+                sourceOrigin,
+                null,
+                false,
+                callback);
     }
 
     /** Can't be called on UI Thread. */
@@ -577,7 +585,8 @@ class ClientManager {
             int relation,
             Origin origin,
             @Nullable Origin targetOrigin,
-            boolean initializePostMessageChannel) {
+            boolean initializePostMessageChannel,
+            Runnable internalCallback) {
         SessionParams params = mSessionParams.get(session);
         if (params == null || TextUtils.isEmpty(params.getPackageName())) return false;
 
@@ -602,23 +611,25 @@ class ClientManager {
                         params.postMessageHandler.onOriginVerified(
                                 packageName, verifiedOrigin, verified, online);
                     }
+
+                    if (internalCallback != null) {
+                        internalCallback.run();
+                    }
                 };
 
         params.originVerifier =
-                mOriginVerifierFactory.create(
-                        params.getPackageName(),
-                        relation,
-                        /* webContents= */ null,
-                        /* externalAuthUtils= */ null);
+                ChromeOriginVerifierFactory.create(
+                        params.getPackageName(), relation, /* webContents= */ null);
 
-        mChromeBrowserInitializer.runNowOrAfterFullBrowserStarted(
-                () -> {
-                    PostTask.runOrPostTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                params.originVerifier.start(listener, origin);
-                            });
-                });
+        ChromeBrowserInitializer.getInstance()
+                .runNowOrAfterFullBrowserStarted(
+                        () -> {
+                            PostTask.runOrPostTask(
+                                    TaskTraits.UI_DEFAULT,
+                                    () -> {
+                                        params.originVerifier.start(listener, origin);
+                                    });
+                        });
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS
                 && mInstalledAppProviderWrapper.isAppInstalledAndAssociatedWithOrigin(
                         params.getPackageName(), origin)) {
@@ -1025,7 +1036,7 @@ class ClientManager {
         void run(SessionParams params);
     }
 
-    private synchronized <T> void callOnSession(
+    private synchronized void callOnSession(
             CustomTabsSessionToken session, SessionParamsRunnable runnable) {
         SessionParams params = mSessionParams.get(session);
         if (params == null) return;

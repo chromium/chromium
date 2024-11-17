@@ -255,6 +255,25 @@ interface GpuChannel {
   CopyToGpuMemoryBufferAsync(
       Mailbox mailbox, array<SyncToken> sync_token_dependencies,
       uint64 release_count) => (bool success);
+
+  [Sync, EnableIf=is_win]
+  // Copies GMB pixel data from the native handle to the |shared_memory|.
+  // Returns |true| if the copy has succeeded.
+  // Note that this method has some similar functionality but is different than
+  // above CopyToGpuMemoryBufferAsync in the sense that above method is only
+  // used for shared memory GMBs whereas this method is used for native GMBs.
+  // This has to be a blocking operation since it will be called during
+  // GpuMemoryBuffer::Map() operation which should provide updated data to
+  // clients before using it.
+  CopyNativeGmbToSharedMemorySync(gfx.mojom.GpuMemoryBufferHandle
+      buffer_handle, mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
+                     => (bool success);
+
+  // This is non-blocking version of above method.
+  [EnableIf=is_win]
+  CopyNativeGmbToSharedMemoryAsync(gfx.mojom.GpuMemoryBufferHandle
+      buffer_handle, mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
+                     => (bool success);
 };
 
 // Interface used to issue commands to a specific CommandBuffer instance in the

@@ -37,6 +37,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
+#include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -536,8 +537,9 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
   const BookmarkNodeData* drag_data = router->GetBookmarkNodeData();
   CHECK_NE(nullptr, drag_data) << "Somehow we're dropping null bookmark data";
   const bool copy = false;
-  chrome::DropBookmarks(GetProfile(), *drag_data, drop_parent, drop_index, copy,
-                        chrome::BookmarkReorderDropTarget::kBookmarkManagerAPI);
+  BookmarkUIOperationsHelperNonMergedSurfaces(model, drop_parent)
+      .DropBookmarks(GetProfile(), *drag_data, drop_index, copy,
+                     chrome::BookmarkReorderDropTarget::kBookmarkManagerAPI);
 
   router->ClearBookmarkNodeData();
   return NoArguments();

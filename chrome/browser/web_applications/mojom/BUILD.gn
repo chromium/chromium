@@ -6,3 +6,9 @@ mojom("mojom_web_apps_enum") {
   public_deps = []
   webui_module_path = "/"
 }
+
+mojom("web_app_shortcut_copier_mojom") {
+  sources = [ "web_app_shortcut_copier.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+}

@@ -12,8 +12,8 @@
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
-#include "ash/login/ui/local_authentication_request_view.h"
-#include "ash/login/ui/local_authentication_request_widget.h"
+#include "ash/login/ui/local_authentication_request_controller_impl.h"
+#include "ash/login/ui/local_authentication_test_api.h"
 #include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_auth_user_view.h"
@@ -25,6 +25,7 @@
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/pin_request_view.h"
 #include "ash/login/ui/pin_request_widget.h"
+#include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_client.h"
 #include "ash/shelf/login_shelf_view.h"
@@ -437,6 +438,28 @@ void LoginScreenTestApi::SubmitPassword(const AccountId& account_id,
   ASSERT_EQ(account_id,
             auth_test.user_view()->current_user().basic_user_info.account_id);
   password_test.SubmitPassword(password);
+}
+
+// static
+void LoginScreenTestApi::SubmitPin(const AccountId& account_id,
+                                   const std::string& pin) {
+  ASSERT_TRUE(FocusUser(account_id));
+  LoginBigUserView* big_user_view = GetBigUserView(account_id);
+  ASSERT_TRUE(big_user_view);
+  ASSERT_TRUE(big_user_view->IsAuthEnabled());
+  LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
+  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
+  ASSERT_EQ(account_id,
+            auth_test.user_view()->current_user().basic_user_info.account_id);
+  ASSERT_TRUE(auth_test.HasAuthMethod(LoginAuthUserView::AUTH_PIN));
+
+  for (char c : pin) {
+    EXPECT_GE(c, '0');
+    EXPECT_LE(c, '9');
+    pin_pad_api.ClickOnDigit(c - '0');
+  }
+  auto event_generator = MakeAshEventGenerator();
+  event_generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
 }
 
 // static
@@ -940,26 +963,46 @@ void LoginScreenTestApi::CancelPinRequestWidget() {
 
 // static
 bool LoginScreenTestApi::IsLocalAuthenticationDialogVisible() {
-  return LocalAuthenticationRequestWidget::TestApi::IsVisible();
+  auto* controller = LocalAuthenticationRequestController::Get();
+  if (controller == nullptr) {
+    return false;
+  }
+  return controller->IsDialogVisible();
 }
 
 // static
 void LoginScreenTestApi::CancelLocalAuthenticationDialog() {
-  bool dialog_exists =
-      LocalAuthenticationRequestWidget::TestApi::CancelDialog();
-  if (!dialog_exists) {
+  auto* controller = LocalAuthenticationRequestController::Get();
+  if (controller == nullptr || !controller->IsDialogVisible()) {
     FAIL() << "Local Authentication dialog is not shown";
   }
+  auto test_api = GetLocalAuthenticationTestApi(controller);
+  test_api->Close();
 }
 
 // static
 void LoginScreenTestApi::SubmitPasswordLocalAuthenticationDialog(
     const std::string& password) {
-  bool dialog_exists =
-      LocalAuthenticationRequestWidget::TestApi::SubmitPassword(password);
-  if (!dialog_exists) {
+  auto* controller = LocalAuthenticationRequestController::Get();
+  if (controller == nullptr || !controller->IsDialogVisible()) {
     FAIL() << "Local Authentication dialog is not shown";
   }
+  auto test_api = GetLocalAuthenticationTestApi(controller);
+  test_api->SubmitPassword(password);
+}
+
+// static
+void LoginScreenTestApi::SubmitPinLocalAuthenticationDialog(
+    const std::string& pin) {
+  auto* controller = LocalAuthenticationRequestController::Get();
+  if (controller == nullptr || !controller->IsDialogVisible()) {
+    FAIL() << "Local Authentication dialog is not shown";
+  }
+  if (!controller->IsPinSupported()) {
+    FAIL() << "This controller is not supporting pin";
+  }
+  auto test_api = GetLocalAuthenticationTestApi(controller);
+  test_api->SubmitPin(pin);
 }
 
 // static

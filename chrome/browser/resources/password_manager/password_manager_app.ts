@@ -311,12 +311,6 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     this.$.toast.show();
   }
 
-  private async onBiometricAuthBeforeFillingEnabled_(_event: CustomEvent) {
-    this.showUndo_ = false;
-    this.toastMessage_ = this.i18n('screenlockReauthPromoConfirmation');
-    this.$.toast.show();
-  }
-
   private onUndoButtonClick_() {
     PasswordManagerImpl.getInstance().undoRemoveSavedPasswordOrException();
     this.$.toast.hide();

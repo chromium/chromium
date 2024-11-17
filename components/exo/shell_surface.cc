@@ -142,7 +142,7 @@ ShellSurface::OcclusionObserver::OcclusionObserver(ShellSurface* shell_surface,
   window_observation_.Observe(window);
 }
 
-ShellSurface::OcclusionObserver::~OcclusionObserver() {}
+ShellSurface::OcclusionObserver::~OcclusionObserver() = default;
 
 void ShellSurface::OcclusionObserver::OnWindowDestroying(aura::Window* window) {
   window_observation_.Reset();
@@ -601,9 +601,7 @@ gfx::Point ShellSurface::GetSurfaceOrigin() const {
                         client_bounds.height() - visible_bounds.height()) -
              visible_bounds.OffsetFromOrigin();
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported component:" << resize_component_;
-      return gfx::Point();
+      NOTREACHED() << "Unsupported component:" << resize_component_;
   }
 }
 

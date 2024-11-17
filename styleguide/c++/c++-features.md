@@ -953,7 +953,7 @@ likely than an alternative.
 
 **Notes:**
 *** promo
-- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/bk9YC5qSDF8)
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/bk9YC5qSDF8)
 ***
 
 ### Range-for statements with initializer <sup>[allowed]</sup>
@@ -998,6 +998,29 @@ definitions of other inequalities. See also "Default comparisons".
 **Notes:**
 *** promo
 [Migration bug](https://crbug.com/1414530)
+***
+
+### using enum declarations <sup>[allowed]</sup>
+
+```c++
+enum class E { kA = 1 };
+void f() {
+  using enum E;
+  auto a = kA;
+}
+```
+
+**Description:** Introduces enumerator element names into the current scope.
+
+**Documentation:**
+[`using enum` declaration](https://en.cppreference.com/w/cpp/language/enum#using_enum_declaration)
+
+**Notes:**
+*** promo
+Usage is subject to the Google Style
+[guidelines on aliases](https://google.github.io/styleguide/cppguide.html#Aliases).
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/Y0lf-DSOR3A)
 ***
 
 ## C++20 Allowed Library Features {#library-allowlist-20}
@@ -1288,6 +1311,31 @@ possible overflow. For integral inputs, rounds towards the first argument.
 [Migration bug](https://crbug.com/1414539)
 ***
 
+### std::ranges::subrange <sup>[allowed]</sup>
+
+```c++
+void transform(const std::multimap<int, char>& map, int key) {
+  auto [first, last] = map.equal_range(key);
+  for (const auto& [_, value] : std::ranges::subrange(first, last)) {
+    ...
+```
+
+**Description:** Creates a view from an iterator and a sentinel. Useful for
+treating non-contiguous storage (e.g. a `std::map`) as a range.
+
+**Documentation:**
+[`std::ranges::subrange`](https://en.cppreference.com/w/cpp/ranges/subrange)
+
+**Notes:**
+*** promo
+Prefer `base::span` if working with explicitly contiguous data, such as in a
+`std::vector`. Use `std::ranges::subrange` when data is non-contiguous, or when
+it's an implementation detail that the data is contiguous (e.g.
+`base::flat_map`).
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/5VeU5GkPUYI)
+***
+
 ### std::remove_cvref[_t] <sup>[allowed]</sup>
 
 ```c++
@@ -1512,17 +1560,17 @@ encoded using the current C locale.
 Chromium functionality should not vary with the C locale.
 ***
 
-### Views, range factories, and range adaptors <sup>[banned]</sup>
+### Range factories and range adaptors <sup>[banned]</sup>
 
 ```c++
-constexpr int kArr[] = {6, 2, 8, 4, 4, 2};
-constexpr auto plus_one = std::views::transform([](int n){ return n + 1; });
-static_assert(std::ranges::equal(kArr | plus_one, {7, 3, 9, 5, 5, 3}));
-
 // Prints 1, 2, 3, 4, 5, 6.
 for (auto i : std::ranges::iota_view(1, 7)) {
   std::cout << i << '\n';
 }
+
+constexpr int kArr[] = {6, 2, 8, 4, 4, 2};
+constexpr auto plus_one = std::views::transform([](int n){ return n + 1; });
+static_assert(std::ranges::equal(kArr | plus_one, {7, 3, 9, 5, 5, 3}));
 ```
 
 **Description:** Lightweight objects that represent iterable sequences.
@@ -1536,6 +1584,25 @@ pipelines.
 *** promo
 Banned in Chrome due to questions about the design, impact on build time, and
 runtime performance.
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
+***
+
+### std::ranges::view_interface <sup>[banned]</sup>
+
+```c++
+class MyView : public std::ranges::view_interface<MyView> { ... };
+```
+
+**Description:** CRTP base class for implementing custom view objects.
+
+**Documentation:**
+[`std::ranges::view_interface`](https://en.cppreference.com/w/cpp/ranges/view_interface)
+
+**Notes:**
+*** promo
+Banned in Chrome since range factories and adapters are banned, and this would
+primarily allow authors to create similar functionality.
 
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
 ***

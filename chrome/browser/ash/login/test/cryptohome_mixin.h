@@ -35,6 +35,8 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
 
   void ApplyAuthConfig(const AccountId& user,
                        const test::UserAuthConfig& config);
+  void ApplyAuthConfigIfUserExists(const AccountId& user,
+                                   const test::UserAuthConfig& config);
 
   void MarkUserAsExisting(const AccountId& user);
   // Returns {authsession_id, broadcast_id} pair.

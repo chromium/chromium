@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Հանգուլ Անմատա</translation>
 <translation id="1155759005174418845">Կատալոնական</translation>
 <translation id="1168100932582989117">Google-ի DNS-սերվերներ</translation>
+<translation id="1170788066030116158">Լուսանկարման ամսաթիվը</translation>
 <translation id="1172970565351728681">Մնացել է մոտ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1173916544412572294">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Իսկորոշման վկայագիրը մերժվել է հեռակա կարգով</translation>
 <translation id="4394214039309501350">Արտաքին հղում</translation>
 <translation id="4394980935660306080">Այս շաբաթվա սկզբին</translation>
+<translation id="4397435965699247285">OneDrive-ը հասանելի չէ անցանց ռեժիմում</translation>
 <translation id="4398096759193130964">Վերականգնեք տարրերը կամ աղբարկղից քաշեք նոր պանակ</translation>
 <translation id="4401287888955153199">Դուրս բերել բոլորը</translation>
 <translation id="4410695710508688828">Չհաջողվեց կատարել արտահանումը։ <ph name="ERROR_MESSAGE" /></translation>

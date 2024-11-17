@@ -1,0 +1,4 @@
+# The model quality owners routinely update these files as part of oncall
+# duties:
+per-file BUILD.gn=file://components/optimization_guide/core/model_quality/OWNERS
+per-file model_quality_service.proto=file://components/optimization_guide/core/model_quality/OWNERS

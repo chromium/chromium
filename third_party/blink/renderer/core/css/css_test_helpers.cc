@@ -219,7 +219,8 @@ StyleRuleBase* ParseRule(Document& document, String text) {
       document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
   return CSSParser::ParseRule(context, sheet->Contents(), CSSNestingType::kNone,
-                              /*parent_rule_for_nesting=*/nullptr, text);
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*is_within_scope=*/false, text);
 }
 
 const CSSValue* ParseValue(Document& document, String syntax, String value) {

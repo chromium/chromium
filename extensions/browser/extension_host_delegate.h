@@ -14,7 +14,6 @@
 
 namespace content {
 enum class PictureInPictureResult;
-class JavaScriptDialogManager;
 class RenderFrameHost;
 class WebContents;
 }
@@ -40,10 +39,6 @@ class ExtensionHostDelegate {
 
   // Called after |host| creates the renderer main frame for an extension.
   virtual void OnMainFrameCreatedForBackgroundPage(ExtensionHost* host) = 0;
-
-  // Returns the embedder's JavaScriptDialogManager or NULL if the embedder
-  // does not support JavaScript dialogs.
-  virtual content::JavaScriptDialogManager* GetJavaScriptDialogManager() = 0;
 
   // Creates a new tab or popup window with |web_contents|. The embedder may
   // choose to do nothing if tabs and popups are not supported.

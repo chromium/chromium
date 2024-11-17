@@ -18,13 +18,24 @@ No modifications to upstream files. BUILD.gn contains all of the configurations
 needed to build the OpenXR loader in Chromium, along with its dependencies. The
 readme was expanded with information about transitive dependencies that are
 copied directly into the OpenXR SDK repository.
+
 Added dev/xr_android.h for prototyping xr_android extensions that are currently
 under active development and not in any openxr release at present. This file is
 expected to be superceded by any official definitions and may require additional
 work before a roll containing those definitions can be conducted.
-Forked android_utilites.cpp and manifest_file.cpp to allow for customizing to
+
+Copied src/.clang-format into src_overrides/.clang-format and disabled
+clang-format in src_overrides/src/external to mimic how khronos gitlab seems to
+behave. This allows forked files to more closely match the base-files and allow
+for easier "Compare with clipboard" comparisons.
+
+The following changes should be reflected in `src_overrides/patches`:
+* Forked android_utilites.cpp and manifest_file.cpp to allow for customizing to
 ignore loading in Android ContentProvider supplied paths while investigating and
 waiting for upstreaming.
+* Forked jnipp.cpp to essentially cherry-pick a fix needed to unblock a libcxx
+roll that should be fixed in 1.0.43 which at the time of modification was not
+yet available.
 
 -------------------- DEPENDENCY DIVIDER --------------------
 

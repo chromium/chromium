@@ -102,18 +102,14 @@ void GpuArcVideoDecoder::Initialize(
     return;
   }
 
-  decoder_ = media::VideoDecoderPipeline::Create(
+  decoder_ = media::VideoDecoderPipeline::CreateForARC(
       // TODO(b/238684141): Wire a meaningful GpuDriverBugWorkarounds or remove
       // its use.
       gpu::GpuDriverBugWorkarounds(), client_task_runner_,
       std::make_unique<media::VdaVideoFramePool>(video_frame_pool_->WeakThis(),
                                                  client_task_runner_),
-      /*frame_converter=*/nullptr,
       media::VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
-      std::make_unique<media::NullMediaLog>(),
-      /*oop_video_decoder=*/{},
-      // TODO(b/195769334): Set this to true once OOP-VD is enabled for ARC.
-      /*in_video_decoder_process=*/false);
+      std::make_unique<media::NullMediaLog>());
 
   if (!decoder_) {
     VLOGF(1) << "Failed to create video decoder";

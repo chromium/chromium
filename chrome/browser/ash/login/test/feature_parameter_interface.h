@@ -178,9 +178,7 @@ bool FeatureAsParameterInterface<N>::IsFeatureEnabledInThisTestCase(
     return feature_state.is_enabled;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "The requested feature isn't being parameterized.";
-  return false;
+  NOTREACHED() << "The requested feature isn't being parameterized.";
 }
 
 template <size_t N>

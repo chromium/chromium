@@ -522,10 +522,10 @@ content::WebContents* MediaEngagementContentsObserver::GetOpener() const {
     if (index == TabStripModel::kNoTab)
       continue;
 
-    // Whether or not the |opener| is null, this is the right tab strip.
-    const tabs::TabModel* tab =
+    // Whether or not the `opener` is null, this is the right tab strip.
+    const tabs::TabInterface* tab =
         browser->tab_strip_model()->GetOpenerOfTabAt(index);
-    return tab ? tab->contents() : nullptr;
+    return tab ? tab->GetContents() : nullptr;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("people") {
+  sources = [
+    "people_api_request_types.cc",
+    "people_api_request_types.h",
+    "people_api_requests.cc",
+    "people_api_requests.h",
+    "people_api_response_types.cc",
+    "people_api_response_types.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//google_apis",
+    "//google_apis/common",
+  ]
+
+  deps = [
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("people_unittest_sources") {
+  testonly = true
+
+  sources = [
+    "people_api_request_types_unittest.cc",
+    "people_api_requests_unittest.cc",
+    "people_api_response_types_unittest.cc",
+  ]
+
+  deps = [
+    ":people",
+    "//base/test:test_support",
+    "//google_apis:test_support",
+    "//google_apis/common:test_support",
+    "//net",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

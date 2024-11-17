@@ -636,8 +636,7 @@ std::optional<base::Value::Dict> ReadDictionaryFromJson(
   return std::move(*parsed_json).TakeDict();
 }
 
-std::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
-                                         const base::Value::Dict& root) {
+std::optional<base::Value::Dict> Decrypt(const base::Value::Dict& root) {
   const int kKeySizeInBits = 256;
   const int kMaxIterationCount = 500000;
   std::string onc_type;
@@ -691,8 +690,8 @@ std::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
 
   std::unique_ptr<crypto::SymmetricKey> key(
       crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-          crypto::SymmetricKey::AES, passphrase, salt, iterations,
-          kKeySizeInBits));
+          crypto::SymmetricKey::AES, std::string() /* no passphrase */, salt,
+          iterations, kKeySizeInBits));
 
   if (!base::Base64Decode(initial_vector, &initial_vector)) {
     NET_LOG(ERROR) << kUnableToDecode;
@@ -746,8 +745,7 @@ std::string GetSourceAsString(::onc::ONCSource source) {
     case ::onc::ONC_SOURCE_USER_IMPORT:
       return "user import";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
 }
 
 void ExpandStringsInOncObject(const OncValueSignature& signature,
@@ -924,7 +922,6 @@ std::string DecodePEM(const std::string& pem_encoded) {
 
 bool ParseAndValidateOncForImport(const std::string& onc_blob,
                                   ::onc::ONCSource onc_source,
-                                  const std::string& passphrase,
                                   base::Value::List* network_configs,
                                   base::Value::Dict* global_network_config,
                                   base::Value::List* certificates) {
@@ -954,7 +951,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   if (GetString(toplevel_onc.value(), ::onc::toplevel_config::kType,
                 &onc_type) &&
       onc_type == ::onc::toplevel_config::kEncryptedConfiguration) {
-    toplevel_onc = Decrypt(passphrase, toplevel_onc.value());
+    toplevel_onc = Decrypt(toplevel_onc.value());
     if (!toplevel_onc.has_value()) {
       NET_LOG(ERROR) << "Unable to decrypt ONC from "
                      << GetSourceAsString(onc_source);

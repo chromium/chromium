@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PrivacyGuideCookiesFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {CookieControlsMode, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
+import {SafeBrowsingSetting, ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncPrefs} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, resetRouterForTesting, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -601,9 +601,11 @@ suite('CookiesFragment', function() {
     expectedMetric: PrivacyGuideSettingsStates,
   }) {
     const cookieStartState = cookieStartsBlock3PIncognito ?
-        CookieControlsMode.INCOGNITO_ONLY :
-        CookieControlsMode.BLOCK_THIRD_PARTY;
-    fragment.set('prefs.profile.cookie_controls_mode.value', cookieStartState);
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY :
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY;
+    fragment.set(
+        'prefs.generated.third_party_cookie_blocking_setting.value',
+        cookieStartState);
 
     // The fragment is informed that it becomes visible by a receiving
     // a view-enter-start event.
@@ -674,16 +676,17 @@ suite('CookiesFragment', function() {
             '#cookiesRadioGroup')!;
 
     fragment.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.BLOCK_THIRD_PARTY);
+        'prefs.generated.third_party_cookie_blocking_setting.value',
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
     assertEquals(
         Number(radioButtonGroup.selected),
-        CookieControlsMode.BLOCK_THIRD_PARTY);
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
 
     fragment.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.INCOGNITO_ONLY);
+        'prefs.generated.third_party_cookie_blocking_setting.value',
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
     assertEquals(
-        Number(radioButtonGroup.selected), CookieControlsMode.INCOGNITO_ONLY);
+        Number(radioButtonGroup.selected),
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
   });
 });

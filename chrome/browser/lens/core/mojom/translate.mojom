@@ -1,0 +1,17 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lens.mojom;
+
+// A language struct representing a supported language.
+struct Language {
+    // Supported language code, generally consisting of its ISO 639-1
+    // identifier, for example, 'en', 'ja'. In certain cases, ISO-639 codes
+    // including language and region identifiers are returned (for example,
+    // 'zh-TW' and 'zh-CN').
+    string language_code;
+
+    // Full language name.
+    string name;
+};

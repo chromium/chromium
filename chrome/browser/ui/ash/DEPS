@@ -1,95 +1,24 @@
 include_rules = [
-  # //chrome/browser/ui/ash is conceptually part of "ash". See the "Lacros:
-  # ChromeOS source code directory migration" design doc at
-  # https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE
+  # //chrome/browser/ui/ash is conceptually part of "ash".
   "+ash",
 
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.
   "-chrome",
-
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ui/ash",
-
-  # These dependencies are currently in //chrome but are semantically part of
-  # ChromeOS.
-  "+chrome/browser/apps/app_preload_service",
-  "+chrome/browser/apps/app_service",
-  "+chrome/browser/apps/browser_instance",
-  "+chrome/browser/ash/app_list/arc",
-  "+chrome/browser/ash/apps",
-  "+chrome/browser/ash/arc/arc_util.h",
-  "+chrome/browser/ash/arc/fileapi",
-  "+chrome/browser/ash/arc/intent_helper",
-  "+chrome/browser/ash/crosapi",
-  "+chrome/browser/ash/fileapi",
-  "+chrome/browser/ash/file_manager",
-  "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/chromeos/arc",
-  "+chrome/browser/ui/chromeos/window_pin_util.h",
-  "+chrome/test/base/ash",
-
-  # Dependencies on //chrome. Try to avoid adding new dependencies. Exceptions
-  # are allowed for now. https://crbug.com/1506357.
-  "+chrome/browser/policy/profile_policy_connector.h",
-  "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/profiles/profile_manager.h",
-  "+chrome/browser/profiles/profile_observer.h",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_finder.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_tabstrip.h",
-  "+chrome/browser/ui/browser_tab_strip_tracker.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
-  "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
-  "+chrome/browser/ui/views/chrome_layout_provider.h",
-  "+chrome/browser/ui/views/chrome_typography.h",
-  "+chrome/browser/ui/views/frame/browser_view.h",
-  "+chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h",
-  "+chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h",
-  "+chrome/browser/web_applications/mojom/user_display_mode.mojom.h",
-  "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
-  "+chrome/browser/web_applications/web_app_helpers.h",
-  "+chrome/browser/web_applications/web_app_utils.h",
-  "+chrome/browser/webshare/prepare_directory_task.h",
-  "+chrome/common/webui_url_constants.h",
-  "+chrome/grit/browser_resources.h",
-  "+chrome/test/base/in_process_browser_test.h",
-  "+chrome/test/base/testing_profile.h",
-  "+chrome/test/base/ui_test_utils.h",
-
-  "+media",
-  "+components/app_constants",
-  "+components/desks_storage"
 ]
 
 specific_include_rules = {
+  # TODO(b:358250871): Remove once the files are moved.
+  "screen_orientation_delegate\.*": [
+    "+chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h",
+  ],
+
   ".*test.*": [
+    "+chrome/test/base",
+    "+chrome/browser/ui/views/tabs",
     "+components/user_education/views",
-    "+ui/message_center/message_center.h",
-  ],
-  "app_icon_color_cache.cc": [
-    "+services/preferences/public/cpp/dictionary_value_update.h",
-    "+services/preferences/public/cpp/scoped_pref_update.h",
-  ],
-  "assistant_timers_browsertest\.cc": [
+    "+components/viz/test",
+    "+media",
     "+ui/message_center",
   ],
-  "chrome_shell_delegate\.cc": [
-    "+cc/input/touch_action.h",
-    "+content/public/browser/chromeos/multi_capture_service.h",
-  ],
-  "chrome_shelf_controller_unittest\.cc": [
-    "+components/viz/test/test_gpu_service_holder.h",
-  ],
-  "shelf_context_menu_unittest\.cc": [
-    "+components/viz/test/test_gpu_service_holder.h",
-  ],
-  "snap_group_browsertest\.cc":[
-    "+chrome/browser/ui/views/tabs/tab_strip.h",
-    "+chrome/browser/ui/views/tabs/tab_strip_observer.h",
-  ]
 }

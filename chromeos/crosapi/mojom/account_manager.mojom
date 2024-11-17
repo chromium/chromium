@@ -18,7 +18,7 @@ import "mojo/public/mojom/base/time.mojom";
 // //components/account_manager_core/chromeos/tokens.proto.
 //
 // The enums values should match the aforementioned proto too.
-[Stable, Extensible]
+[Extensible]
 enum AccountType {
   [Default] kUnspecified = 0,
   kGaia = 1,
@@ -28,7 +28,6 @@ enum AccountType {
 // Uniquely identifies an account in Account Manager.
 //
 // Next id: 2
-[Stable]
 struct AccountKey {
   // `id` is obfuscated Gaia id for Gaia accounts.
   // `id` is the object GUID for Microsoft Active Directory accounts.
@@ -41,7 +40,6 @@ struct AccountKey {
 // Information about an account in Account Manager.
 //
 // Next id: 2
-[Stable]
 struct Account {
   // A unique identifier for this account.
   AccountKey key@0;
@@ -62,10 +60,9 @@ struct Account {
 // "unknown" value.
 //
 // Next id: 5
-[Stable]
 struct GoogleServiceAuthError {
   // Next value: 16
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     kNone = 0,
     kInvalidGaiaCredentials = 1,
@@ -86,7 +83,7 @@ struct GoogleServiceAuthError {
   };
 
   // Next value: 4
-  [Stable, Extensible]
+  [Extensible]
   enum InvalidGaiaCredentialsReason {
     [Default] kUnknown = 0,
     kCredentialsRejectedByServer = 1,
@@ -107,14 +104,13 @@ struct GoogleServiceAuthError {
 // See components/account_manager_core/account_addition_options.h
 //
 // Next id: 2
-[Stable]
 struct AccountAdditionOptions {
   bool is_available_in_arc@0;
   bool show_arc_availability_picker@1;
 };
 
 // Next id: 3
-[Stable, RenamedFrom="crosapi.mojom.AccountAdditionResult"]
+[RenamedFrom="crosapi.mojom.AccountAdditionResult"]
 struct AccountUpsertionResult {
   // The result of account addition or reauthentication request, sent from Ash
   // to Lacros.
@@ -122,7 +118,7 @@ struct AccountUpsertionResult {
   // `kSuccess = 0`. This was changed in MinVersion 11.
   //
   // Next value: 6
-  [Stable, Extensible]
+  [Extensible]
   enum Status {
     kSuccess = 0,
     kAlreadyInProgress = 1,
@@ -140,7 +136,6 @@ struct AccountUpsertionResult {
 };
 
 // Next id: 3
-[Stable]
 struct AccessTokenInfo {
   // OAuth2 access token.
   string access_token@0;
@@ -154,7 +149,6 @@ struct AccessTokenInfo {
   string id_token@2;
 };
 
-[Stable]
 union AccessTokenResult {
   AccessTokenInfo access_token_info;
   GoogleServiceAuthError error;
@@ -165,7 +159,7 @@ union AccessTokenResult {
 // send account update notifications.
 //
 // Next id: 4
-[Stable, Uuid="f75c4963-497b-411f-97ab-c53c7f6b46ed"]
+[Uuid="f75c4963-497b-411f-97ab-c53c7f6b46ed"]
 interface AccountManagerObserver {
   // Called when the token for `account` is updated/inserted.
   // Note: Observers which register with `AccountManager` before its
@@ -211,7 +205,7 @@ interface AccountManagerObserver {
 // Manager.
 //
 // Next id: 9
-[Stable, Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
+[Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
 interface AccountManager {
   // Returns `true` if Chrome OS Account Manager has been fully initialized, and
   // `false` otherwise.
@@ -288,7 +282,7 @@ interface AccountManager {
 // Interface for fetching OAuth2 access tokens.
 //
 // Next id: 1
-[Stable, Uuid="71476f25-fb77-414f-848e-3e5368a9ee35"]
+[Uuid="71476f25-fb77-414f-848e-3e5368a9ee35"]
 interface AccessTokenFetcher {
   // Starts the request for fetching an access token with the provided `scopes`.
   // If `scopes` is empty, `access_token` will have the same scope as the

@@ -133,11 +133,20 @@ void FakeVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   }
 
   if (buffer->end_of_stream()) {
-    state_ = STATE_END_OF_STREAM;
     if (buffer->next_config()) {
       eos_next_configs_.emplace_back(
           absl::get<VideoDecoderConfig>(*buffer->next_config()));
+
+      if (enable_eliding_eos_) {
+        DCHECK(held_decode_callbacks_.empty());
+        current_config_ = eos_next_configs_.back();
+        std::move(wrapped_decode_cb)
+            .Run(DecoderStatus::Codes::kElidedEndOfStreamForConfigChange);
+        return;
+      }
     }
+
+    state_ = STATE_END_OF_STREAM;
   } else {
     DCHECK(VerifyFakeVideoBufferForTest(*buffer, current_config_));
     decoded_frames_.push_back(MakeVideoFrame(*buffer));

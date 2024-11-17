@@ -357,9 +357,9 @@ TEST_F(StorageManagerTest, Purge) {
   EXPECT_FALSE(
       base::PathExists(GetFlushDir().Append(FILE_PATH_LITERAL("events3"))));
 
-  int64_t size = 0;
-  EXPECT_TRUE(base::GetFileSize(GetArenaPath(), &size));
-  EXPECT_EQ(size, 0l);
+  std::optional<int64_t> size = base::GetFileSize(GetArenaPath());
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(size.value(), 0l);
 }
 
 TEST_F(StorageManagerTest, FlushedQuotaExceeded) {

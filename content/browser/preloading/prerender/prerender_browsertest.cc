@@ -479,10 +479,11 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return web_contents_impl()->StartPrerendering(
         prerendering_url, PreloadingTriggerType::kEmbedder,
         "EmbedderSuffixForTest",
+        /*no_vary_search_expected=*/std::nullopt,
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        should_warm_up_compositor, PreloadingHoldbackStatus::kUnspecified,
-        preloading_attempt,
+        should_warm_up_compositor, /*should_prepare_paint_tree=*/true,
+        PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
         /*url_match_predicate=*/{},
         /*prerender_navigation_handle_callback=*/{});
   }
@@ -5194,6 +5195,48 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
       PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts);
 }
 
+// This is the same as Activation_PageWithPopUpWindow test but `window.opener`
+// will be nullified after it is open. The window loses the communication with
+// the opener but it is still treated as an auxiliary context in the browser
+// internal, so the activation should fail.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       Activation_PageWithPopUpWindow_OpenerIsNullified) {
+  // Navigate to an initial page.
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  EXPECT_TRUE(AddTestUtilJS(current_frame_host()));
+
+  // Start a prerender.
+  const GURL prerendering_url = GetUrl("/empty.html?prerender_next");
+  AddPrerender(prerendering_url);
+  ASSERT_TRUE(HasHostForUrl(prerendering_url));
+
+  // Open a pop-up window that initially has an opener but it is nullified
+  // right away.
+  const GURL window_url = GetUrl("/empty.html?prerender_window");
+  const std::string kOpenWindowAndNullifyScript = R"(
+      const win = window.open($1, '_blank');
+      win.opener = null;
+  )";
+  TestNavigationObserver nav_observer(window_url);
+  nav_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace(kOpenWindowAndNullifyScript, window_url)));
+  nav_observer.WaitForNavigationFinished();
+
+  // Attempt to activate the prerendered page for the top-level frame. This
+  // should fail and fallback to network request because the pop-up window
+  // exists.
+  ASSERT_EQ(GetRequestCount(prerendering_url), 1);
+  NavigatePrimaryPage(prerendering_url);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+  EXPECT_EQ(GetRequestCount(prerendering_url), 2);
+
+  // The prerender host should be canceled.
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts);
+}
+
 // Tests that all RenderFrameHostImpls in the prerendering page know the
 // prerendering state.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderIframe) {
@@ -5447,12 +5490,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
 
   // WebContentsImpl::ForEachFrameTree should include prerenders.
   bool visited_prerender_frame_tree = false;
-  web_contents_impl()->ForEachFrameTree(
-      base::BindLambdaForTesting([&](FrameTree& frame_tree) {
-        if (&frame_tree == prerendered_render_frame_host->frame_tree()) {
-          visited_prerender_frame_tree = true;
-        }
-      }));
+  web_contents_impl()->ForEachFrameTree([&](FrameTree& frame_tree) {
+    if (&frame_tree == prerendered_render_frame_host->frame_tree()) {
+      visited_prerender_frame_tree = true;
+    }
+  });
   EXPECT_TRUE(visited_prerender_frame_tree);
 }
 
@@ -6705,9 +6747,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Check the event sequence seen in the prerendered page.
   EvalJsResult results = EvalJs(prerender_render_frame_host, "eventsSeen");
   std::vector<std::string> eventsSeen;
-  base::Value resultsList = results.ExtractList();
-  for (auto& result : resultsList.GetList())
+  base::Value::List results_list = results.ExtractList();
+  for (auto& result : results_list) {
     eventsSeen.push_back(result.GetString());
+  }
   EXPECT_THAT(eventsSeen,
               testing::ElementsAreArray(
                   {"accessOriginPrivateFileSystem (prerendering: true)",
@@ -9206,6 +9249,109 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
+// Test that WebContentsObserver::DidStopLoading is not invoked when the page
+// gets loaded while prerendering but is invoked on prerender activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DidStopLoadingInvokedOnActivation) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/simple_page.html");
+
+  web_contents_impl()->set_minimum_delay_between_loading_updates_for_testing(
+      base::Milliseconds(0));
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Initialize a MockWebContentsObserver and ensure that DidStopLoading is
+  // not invoked while prerendering.
+  testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
+  EXPECT_CALL(observer, DidStopLoading()).Times(0);
+
+  // Start a prerender.
+  FrameTreeNodeId prerender_host_id = AddPrerender(prerendering_url);
+  ASSERT_TRUE(prerender_host_id);
+
+  // Verify and clear all expectations on the mock observer before setting new
+  // ones.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Activate the prerendered page. This should result in invoking
+  // DidStopLoading.
+  EXPECT_CALL(observer, DidStopLoading()).Times(1);
+  test::PrerenderHostObserver host_observer(*web_contents(), prerender_host_id);
+  NavigatePrimaryPage(prerendering_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+}
+
+// Test that WebContentsObserver::DidStopLoading is invoked when the page gets
+// loaded after activation.
+//
+// This is a regression test for https://crbug.com/40256454. Previously,
+// DidStopLoading was invoked regardless of the current loading state on
+// activation, which was obviously wrong. This test makes sure that
+// DidStopLoading is invoked after the page actually gets loaded.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DidStopLoadingInvokedAfterActivation) {
+  // Use ControllableHttpResponse to control the timing to serve for delaying
+  // page loading.
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/simple_page.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerendering_url =
+      embedded_test_server()->GetURL("/simple_page.html");
+
+  web_contents_impl()->set_minimum_delay_between_loading_updates_for_testing(
+      base::Milliseconds(0));
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Initialize a MockWebContentsObserver and ensure that DidStopLoading is
+  // not invoked while prerendering.
+  testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
+  EXPECT_CALL(observer, DidStopLoading()).Times(0);
+
+  // Start a prerender.
+  AddPrerenderAsync(prerendering_url);
+
+  // Send only a header. This prevents the prerendered page from being fully
+  // loaded.
+  const char kHttpResponseHeader[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      "\r\n";
+  response.WaitForRequest();
+  response.Send(kHttpResponseHeader);
+
+  // Activate the prerendered page. The response for the prerendered page is not
+  // finalized yet, so this should not invoke DidStopLoading.
+  EXPECT_CALL(observer, DidStopLoading()).Times(0);
+  test::PrerenderHostObserver host_observer(*web_contents(), prerendering_url);
+  prerender_helper()->NavigatePrimaryPageAsync(prerendering_url);
+  host_observer.WaitForActivation();
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+
+  // Verify and clear all expectations on the mock observer before setting new
+  // ones. The activated page is not loaded yet, so DidStopLoading should not be
+  // invoked yet.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Finalize the response for the activated page. This should result in
+  // invoking DidStopLoading.
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, DidStopLoading()).WillOnce(testing::Invoke([&]() {
+    run_loop.Quit();
+  }));
+  response.Send("0\r\n");
+  response.Send("\r\n");
+  response.Done();
+  run_loop.Run();
+}
+
 // Test the dispatch order of various load events on prerender activation.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OrderingOfDifferentLoadEvents) {
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -9829,13 +9975,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesScript) {
 
 class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
  public:
-  PrerenderEagernessBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {{blink::features::kSpeculationRulesPointerDownHeuristics},
-         {blink::features::kSpeculationRulesPointerHoverHeuristics}},
-        {});
-  }
-
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID)
     PrerenderBrowserTest::SetUp();
@@ -9965,8 +10104,6 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
 
     return gfx::ToFlooredPoint(gfx::PointF(x, y));
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 namespace {
@@ -11733,9 +11870,11 @@ PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
       web_contents.StartPrerendering(
           prerendering_url, PreloadingTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
+          /*no_vary_search_expected=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           /*should_warm_up_compositor=*/false,
+          /*should_prepare_paint_tree=*/true,
           PreloadingHoldbackStatus::kUnspecified,
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
           /*prerender_navigation_handle_callback=*/{});
@@ -13735,6 +13874,122 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SlowNetwork) {
       /*accurate=*/true,
       /*ready_time=*/std::nullopt,
       blink::mojom::SpeculationEagerness::kEager)});
+}
+
+class V8OptimizerContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit V8OptimizerContentBrowserClient(bool disable) : disable_(disable) {}
+  ~V8OptimizerContentBrowserClient() override = default;
+
+  bool AreV8OptimizationsDisabledForSite(BrowserContext* browser_context,
+                                         const GURL& site_url) override {
+    return disable_;
+  }
+
+ public:
+  const bool disable_ = false;
+};
+
+// Previously, prerendering a page that had the COOP crashed when the V8
+// optimizer was disabled by the site settings. To prevent it, in the current
+// implementation, prerendering is tentatively disabled when the V8 optimizer is
+// disabled. This is the regression test for the issue. See
+// https://crbug.com/40076091 for details.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCOOPWithoutV8Optimizer) {
+  // Disable the V8 optimizer.
+  V8OptimizerContentBrowserClient test_browser_client(/*disable=*/true);
+
+  // Attempt to prerender the page that has the COOP.
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url =
+      GetUrl("/set-header?Cross-Origin-Opener-Policy: same-origin");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
+
+  // Start prerendering. This should fail as the optimizer is disabled and not
+  // crash.
+  test::PrerenderHostRegistryObserver observer(*web_contents());
+  AddPrerenderAsync(prerendering_url);
+  observer.WaitForTrigger(prerendering_url);
+  EXPECT_FALSE(HasHostForUrl(prerendering_url));
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kV8OptimizerDisabled);
+
+  // Navigate the primary page to flush the Ukm.
+  NavigatePrimaryPage(prerendering_url);
+  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+      PrimaryPageSourceId(), PreloadingType::kPrerender,
+      PreloadingEligibility::kV8OptimizerDisabled,
+      PreloadingHoldbackStatus::kUnspecified,
+      PreloadingTriggeringOutcome::kUnspecified,
+      PreloadingFailureReason::kUnspecified,
+      /*accurate=*/true,
+      /*ready_time=*/std::nullopt,
+      blink::mojom::SpeculationEagerness::kEager)});
+}
+
+// See the comment on PrerenderCOOPWithoutV8Optimizer test for details. This
+// test ensures that prerendering is disabled regardless of whether the target
+// page has the COOP, when the V8 optimizer is disabled.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderNonCOOPWithoutV8Optimizer) {
+  // Disable the V8 optimizer.
+  V8OptimizerContentBrowserClient test_browser_client(/*disable=*/true);
+
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
+
+  // Start prerendering. This should fail as the optimizer is disabled and not
+  // crash.
+  test::PrerenderHostRegistryObserver observer(*web_contents());
+  AddPrerenderAsync(prerendering_url);
+  observer.WaitForTrigger(prerendering_url);
+  EXPECT_FALSE(HasHostForUrl(prerendering_url));
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kV8OptimizerDisabled);
+
+  // Navigate the primary page to flush the Ukm.
+  NavigatePrimaryPage(prerendering_url);
+  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+      PrimaryPageSourceId(), PreloadingType::kPrerender,
+      PreloadingEligibility::kV8OptimizerDisabled,
+      PreloadingHoldbackStatus::kUnspecified,
+      PreloadingTriggeringOutcome::kUnspecified,
+      PreloadingFailureReason::kUnspecified,
+      /*accurate=*/true,
+      /*ready_time=*/std::nullopt,
+      blink::mojom::SpeculationEagerness::kEager)});
+}
+
+// See the comment on PrerenderCOOPWithoutV8Optimizer test for details. This
+// test ensures that prerendering a page that has the COOP succeeds when the V8
+// optimizer is enabled.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCOOPWithV8Optimizer) {
+  // Enable the V8 optimizer.
+  V8OptimizerContentBrowserClient test_browser_client(/*disable=*/false);
+
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url =
+      GetUrl("/set-header?Cross-Origin-Opener-Policy: same-origin");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
+
+  // Start prerendering a page that has the COOP.
+  FrameTreeNodeId host_id = AddPrerender(prerendering_url);
+  ASSERT_TRUE(host_id);
+
+  // Activate the prerendered page.
+  NavigatePrimaryPage(prerendering_url);
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
 }
 
 // Many of these tests navigate away from a page and then test whether the back

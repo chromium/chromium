@@ -70,7 +70,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
           file_system_access_context,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
 
   ~IndexedDBContextImpl() override;
@@ -130,6 +129,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::BucketLocator& bucket_locator,
       base::OnceClosure callback) override;
   void GetUsageForTesting(GetUsageForTestingCallback) override;
+  void GetSchedulingPriorityForTesting(
+      GetSchedulingPriorityForTestingCallback callback) override;
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver)
       override;
@@ -238,9 +239,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       GetAllBucketsDetailsCallback callback,
       std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos);
 
-  // Applies the given `callback` to all bucket contexts.
-  void ForEachBucketContext(BucketContext::InstanceClosure callback);
-
   // Calculates in-memory/incognito usage for usage reporting.
   void GetInMemorySize(storage::BucketId bucket_id,
                        base::OnceCallback<void(int64_t)> on_got_size) const;
@@ -285,7 +283,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   bool in_memory() const { return base_data_path_.empty(); }
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
-  const scoped_refptr<base::TaskRunner> io_task_runner_;
 
   // Bound and accessed on the `idb_task_runner_`.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;
@@ -377,8 +374,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
     scoped_refptr<base::SequencedTaskRunner> overflow_task_runner;
   };
   std::map<net::SchemefulSite, TaskRunnerLimiter> task_runner_limiters_;
-
-  BucketContext::InstanceClosure for_each_bucket_context_;
 
   // When true, run backing stores (and bucket contexts) on `idb_task_runner_`
   // to simplify unit tests. This is set to true when the ctor param

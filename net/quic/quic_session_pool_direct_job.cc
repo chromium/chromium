@@ -18,6 +18,7 @@
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -33,6 +34,7 @@ QuicSessionPool::DirectJob::DirectJob(
     bool use_dns_aliases,
     bool require_dns_https_alpn,
     int cert_verify_flags,
+    MultiplexedSessionCreationInitiator session_creation_initiator,
     const NetLogWithSource& net_log)
     : QuicSessionPool::Job::Job(
           pool,
@@ -48,7 +50,8 @@ QuicSessionPool::DirectJob::DirectJob(
       require_dns_https_alpn_(require_dns_https_alpn),
       cert_verify_flags_(cert_verify_flags),
       retry_on_alternate_network_before_handshake_(
-          retry_on_alternate_network_before_handshake) {
+          retry_on_alternate_network_before_handshake),
+      session_creation_initiator_(session_creation_initiator) {
   // TODO(davidben): `require_dns_https_alpn_` only exists to be `DCHECK`ed
   // for consistency against `quic_version_`. Remove the parameter?
   DCHECK_EQ(quic_version_.IsKnown(), !require_dns_https_alpn_);
@@ -95,7 +98,7 @@ void QuicSessionPool::DirectJob::UpdatePriority(RequestPriority old_priority,
 void QuicSessionPool::DirectJob::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
   if (session_attempt_) {
-    session_attempt_->PolulateNetErrorDetails(details);
+    session_attempt_->PopulateNetErrorDetails(details);
   }
 }
 
@@ -117,8 +120,7 @@ int QuicSessionPool::DirectJob::DoLoop(int rv) {
         rv = DoAttemptSession();
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "io_state_: " << io_state_;
-        break;
+        NOTREACHED() << "io_state_: " << io_state_;
     }
   } while (io_state_ != STATE_NONE && rv != ERR_IO_PENDING);
   return rv;
@@ -207,7 +209,8 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
       std::move(quic_version_used), cert_verify_flags_,
       dns_resolution_start_time_, dns_resolution_end_time_,
       retry_on_alternate_network_before_handshake_, use_dns_aliases_,
-      std::move(dns_aliases), /*crypto_client_config_handle=*/nullptr);
+      std::move(dns_aliases), /*crypto_client_config_handle=*/nullptr,
+      session_creation_initiator_);
 
   return session_attempt_->Start(
       base::BindOnce(&DirectJob::OnSessionAttemptComplete, GetWeakPtr()));

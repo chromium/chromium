@@ -8,12 +8,10 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 
-/**
- * Helper class that provides a test or production instance for
- * {@link ParentAuthDelegate}.
- */
+/** Helper class that provides a test or production instance for {@link ParentAuthDelegate}. */
 public class ParentAuthDelegateProvider {
     private static ParentAuthDelegate sInstance;
     private static ParentAuthDelegate sTestingInstance;
@@ -40,7 +38,7 @@ public class ParentAuthDelegateProvider {
             return sTestingInstance;
         }
         if (sInstance == null) {
-            sInstance = new ParentAuthDelegateImpl();
+            sInstance = ServiceLoaderUtil.maybeCreate(ParentAuthDelegate.class);
         }
         return sInstance;
     }

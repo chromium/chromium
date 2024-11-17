@@ -83,7 +83,7 @@
 @implementation InfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  NOTREACHED_IN_MIGRATION() << "Subclasses must implement.";
+  NOTREACHED() << "Subclasses must implement.";
 }
 
 @end

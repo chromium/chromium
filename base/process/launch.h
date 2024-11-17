@@ -41,6 +41,10 @@
 #include "base/android/binder.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#endif
+
 namespace base {
 
 #if BUILDFLAG(IS_POSIX)
@@ -264,7 +268,7 @@ struct BASE_EXPORT LaunchOptions {
   // After calling LaunchProcess(), any rights that were transferred with MOVE
   // dispositions will be consumed, even on failure.
   //
-  // See base/mac/mach_port_rendezvous.h for details.
+  // See base/apple/mach_port_rendezvous.h for details.
   MachPortsForRendezvous mach_ports_for_rendezvous;
 
   // Apply a process scheduler policy to enable mitigations against CPU side-
@@ -280,7 +284,11 @@ struct BASE_EXPORT LaunchOptions {
   // code, the responsibility for the child process should be disclaimed so
   // that any TCC requests are not associated with the parent.
   bool disclaim_responsibility = false;
-#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+
+  // A `ProcessRequirement` that will be used to validate the launched process
+  // before it can retrieve `mach_ports_for_rendezvous`.
+  std::optional<mac::ProcessRequirement> process_requirement;
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_FUCHSIA)
   // If valid, launches the application in that job object.

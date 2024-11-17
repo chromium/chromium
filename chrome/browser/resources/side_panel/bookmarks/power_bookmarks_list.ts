@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
 import './commerce/shopping_list.js';
 import './icons.html.js';
 import './power_bookmarks_context_menu.js';
@@ -24,14 +24,14 @@ import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
 import type {SpEmptyStateElement} from '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {BrowserProxy as ShoppingServiceApiProxy} from '//resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl as ShoppingServiceApiProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
 import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -250,15 +250,15 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   static get observers() {
     return [
-      'updateDisplayLists_(activeFolderPath_.*, labels_.*, ' +
+      'updateDisplayLists_(activeFolderPath_.splices, labels_.*, ' +
           'activeSortIndex_, searchQuery_)',
     ];
   }
 
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingServiceApi_: ShoppingServiceApiProxy =
-      ShoppingServiceApiProxyImpl.getInstance();
+  private shoppingServiceApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
   private shoppingListenerIds_: number[] = [];
   private displayLists_: chrome.bookmarks.BookmarkTreeNode[][];
   private trackedProductInfos_: {[key: string]: BookmarkProductInfo} = {};
@@ -356,6 +356,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string) {
     this.set(`imageUrls_.${bookmark.id.toString()}`, url);
+    this.imageUrls_ = structuredClone(this.imageUrls_);
   }
 
   onBookmarksLoaded() {
@@ -669,13 +670,7 @@ export class PowerBookmarksListElement extends PolymerElement {
    * Update the lists of bookmarks and folders displayed to the user.
    */
   private updateDisplayLists_() {
-    let activeFolder;
-    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
-      activeFolder = this.bookmarksService_.findBookmarkWithId(
-          loadTimeData.getString('otherBookmarksId'));
-    } else {
-      activeFolder = this.getActiveFolder_();
-    }
+    const activeFolder = this.getActiveFolder_();
     const primaryList = this.bookmarksService_.filterBookmarks(
         activeFolder, this.activeSortIndex_, this.searchQuery_, this.labels_);
     this.displayLists_ = [primaryList];

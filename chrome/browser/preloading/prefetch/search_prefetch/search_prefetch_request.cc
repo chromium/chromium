@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/state_transitions.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,6 +18,7 @@
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -141,7 +141,9 @@ SearchPrefetchRequest::SearchPrefetchRequest(
           prefetch_preloading_attempt
               ? prefetch_preloading_attempt->GetWeakPtr()
               : nullptr),
-      report_error_callback_(std::move(report_error_callback)) {}
+      report_error_callback_(std::move(report_error_callback)) {
+  base::trace_event::EmitNamedTrigger("search-prefetch-start");
+}
 
 SearchPrefetchRequest::~SearchPrefetchRequest() {
   StopPrerender();
@@ -223,6 +225,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       net::IsolationInfo::RequestType::kOther, prefetch_origin, prefetch_origin,
       resource_request->site_for_cookies);
   resource_request->referrer_policy = net::ReferrerPolicy::NO_REFERRER;
+  resource_request->update_first_party_url_on_redirect = true;
 
   bool js_enabled = profile->GetPrefs() && profile->GetPrefs()->GetBoolean(
                                                prefs::kWebKitJavascriptEnabled);
@@ -352,7 +355,7 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
           ChromePreloadingEligibility::kPrefetchFailed));
       return;
     case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // maintain a weak ptr so that this can cancel prerendering when

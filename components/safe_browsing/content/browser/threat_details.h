@@ -345,7 +345,7 @@ class ThreatDetails {
 // Factory for creating ThreatDetails.  Useful for tests.
 class ThreatDetailsFactory {
  public:
-  virtual ~ThreatDetailsFactory() {}
+  virtual ~ThreatDetailsFactory() = default;
 
   virtual std::unique_ptr<ThreatDetails> CreateThreatDetails(
       BaseUIManager* ui_manager,

@@ -8,7 +8,7 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='name: '
 ++++++AXTextField AXTitle='name:'
-++AXGroup AXDescription='editable' AXValue='focusable: oklink name: <newline>'
+++AXTextArea AXDescription='editable' AXValue='focusable: oklink name: <newline>'
 ++++AXStaticText AXValue='focusable: '
 ++++AXButton AXTitle='ok'
 ++++AXLink AXDescription='link'

@@ -4,7 +4,7 @@
 
 #include "ash/webui/settings/public/constants/routes_util.h"
 
-#include <string>
+#include <string_view>
 
 #include "ash/webui/settings/public/constants/routes.h"
 
@@ -12,22 +12,22 @@ namespace chromeos::settings {
 
 namespace {
 
-std::string RemoveQuery(std::string path) {
-  std::string::size_type input_index = path.find('?');
-  if (input_index != std::string::npos) {
-    path.resize(input_index);
+std::string_view RemoveQuery(std::string_view path) {
+  std::string_view::size_type input_index = path.find('?');
+  if (input_index != std::string_view::npos) {
+    return path.substr(0, input_index);
   }
   return path;
 }
 
 }  // namespace
 
-bool IsOSSettingsSubPage(const std::string& sub_page) {
+bool IsOSSettingsSubPage(std::string_view sub_page) {
   // Sub-pages may have query parameters, e.g. networkDetail?guid=123456.
-  std::string sub_page_without_query = RemoveQuery(sub_page);
+  std::string_view sub_page_without_query = RemoveQuery(sub_page);
 
   for (const char* p : kPaths) {
-    std::string path_without_query = RemoveQuery(p);
+    std::string_view path_without_query = RemoveQuery(p);
     if (sub_page_without_query == path_without_query) {
       return true;
     }

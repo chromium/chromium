@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/scoped_native_library.h"
 #include "base/task/single_thread_task_runner.h"
@@ -137,7 +138,8 @@ class PpapiThread : public ChildThreadImpl,
   std::set<PP_Instance> globally_seen_instance_ids_;
 
   // The PluginDispatcher instances contained in the map are not owned by it.
-  std::map<uint32_t, ppapi::proxy::PluginDispatcher*> plugin_dispatchers_;
+  std::map<uint32_t, raw_ptr<ppapi::proxy::PluginDispatcher, CtnExperimental>>
+      plugin_dispatchers_;
   uint32_t next_plugin_dispatcher_id_;
 
   // The BlinkPlatformImpl implementation.

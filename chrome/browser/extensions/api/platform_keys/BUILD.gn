@@ -30,6 +30,7 @@ source_set("platform_keys") {
   ]
 
   deps = [
+    "//chrome/browser/ash/crosapi",
     "//chrome/browser/profiles:profile",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom:mojom_shared",
@@ -37,12 +38,4 @@ source_set("platform_keys") {
     "//components/web_modal",
     "//net",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
 }

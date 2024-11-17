@@ -7,6 +7,7 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -19,6 +20,7 @@
 
 namespace blink {
 
+class V8XREye;
 class XRCamera;
 class XRCPUDepthInformation;
 class XRDepthManager;
@@ -35,7 +37,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
          XRViewData* view_data,
          const gfx::Transform& ref_space_from_mojo);
 
-  const String& eye() const { return eye_string_; }
+  V8XREye eye() const;
   device::mojom::blink::XREye EyeValue() const { return eye_; }
   XRViewData* ViewData() const { return view_data_.Get(); }
   XRViewport* Viewport(double scale);
@@ -64,7 +66,6 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
  private:
   device::mojom::blink::XREye eye_;
-  String eye_string_;
   Member<XRFrame> frame_;
   Member<XRViewData> view_data_;
   // The transform from the view to the reference space requested by
@@ -78,15 +79,20 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
  public:
   explicit XRViewData(wtf_size_t index,
                       device::mojom::blink::XREye eye,
-                      gfx::Rect viewport)
-      : index_(index), eye_(eye), viewport_(viewport) {}
+                      gfx::Rect viewport,
+                      XRGraphicsBinding::Api graphics_api)
+      : index_(index),
+        eye_(eye),
+        graphics_api_(graphics_api),
+        viewport_(viewport) {}
   XRViewData(
       wtf_size_t index,
       device::mojom::blink::XRViewPtr view,
       double depth_near,
       double depth_far,
       const device::mojom::blink::XRSessionDeviceConfig& device_config,
-      const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set);
+      const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set,
+      XRGraphicsBinding::Api graphics_api);
 
   void UpdateView(device::mojom::blink::XRViewPtr view,
                   double depth_near,
@@ -142,11 +148,15 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   }
   double RequestedViewportScale() const { return requested_viewport_scale_; }
 
+  // Returns true if the viewport scale actually changed.
+  bool ApplyViewportScaleForFrame();
+
   void Trace(Visitor*) const;
 
  private:
   const wtf_size_t index_;
   const device::mojom::blink::XREye eye_;
+  const XRGraphicsBinding::Api graphics_api_;
   gfx::Transform mojo_from_view_;
   gfx::Transform projection_matrix_;
   gfx::Transform inv_projection_;

@@ -12,17 +12,18 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Manages multiple {@link TabModelSelector} instances, each owned by different {@link Activity}s.
  *
- * Each of the 0 ~ |max-1| {@link WindowAndroid} contains 1 {@link Activity},
- * which contains 1 {@link TabModelSelector}, which contains 2 {@link TabModel}s,
- * each of which contains n {@link Tab}s.
+ * <p>Each of the 0 ~ |max-1| {@link WindowAndroid} contains 1 {@link Activity}, which contains 1
+ * {@link TabModelSelector}, which contains 2 {@link TabModel}s, each of which contains n {@link
+ * Tab}s.
  *
- * Also manages tabs being reparented in AsyncTabParamsManager.
+ * <p>Also manages tabs being reparented in AsyncTabParamsManager.
  *
- * This is the highest level of the hierarchy of Tab containers.
+ * <p>This is the highest level of the hierarchy of Tab containers.
  */
 public interface TabWindowManager {
     // Maximum number of TabModelSelectors since Android N that supports split screen.
@@ -48,7 +49,7 @@ public interface TabWindowManager {
     /** Add an observer. */
     void addObserver(Observer observer);
 
-    /** Removes an observer.s */
+    /** Removes an observer. */
     void removeObserver(Observer observer);
 
     /**
@@ -61,6 +62,8 @@ public interface TabWindowManager {
      * TabModelSelector} returned might not actually be the one related to {@code index} and {@link
      * #getIndexForWindow(Activity)} should be called to grab the actual index if required.
      *
+     * @param activity The activity to bind the selector to.
+     * @param modalDialogManager The {@link ModalDialogManager} for the activity.
      * @param profileProviderSupplier The provider of the Profiles used in the selector.
      * @param tabCreatorManager An instance of {@link TabCreatorManager}.
      * @param nextTabPolicySupplier An instance of {@link NextTabPolicySupplier}.
@@ -72,6 +75,7 @@ public interface TabWindowManager {
      */
     Pair<Integer, TabModelSelector> requestSelector(
             Activity activity,
+            ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,

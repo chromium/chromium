@@ -931,58 +931,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptOutSurvivesSignout) {
   PasswordSyncInactiveChecker(GetSyncService(0)).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, OptInOutHistograms) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  {
-    base::HistogramTester histogram_tester;
-
-    SignIn("first@gmail.com");
-    password_manager::features_util::OptInToAccountStorage(
-        GetProfile(0)->GetPrefs(), GetSyncService(0));
-
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 1, 1);
-    histogram_tester.ExpectTotalCount(
-        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 0);
-  }
-  {
-    base::HistogramTester histogram_tester;
-
-    SignOut();
-    SignIn("second@gmail.com");
-    password_manager::features_util::OptInToAccountStorage(
-        GetProfile(0)->GetPrefs(), GetSyncService(0));
-
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 2, 1);
-    histogram_tester.ExpectTotalCount(
-        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 0);
-  }
-  {
-    base::HistogramTester histogram_tester;
-
-    password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
-        GetProfile(0)->GetPrefs(), GetSyncService(0));
-
-    histogram_tester.ExpectTotalCount(
-        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 0);
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 1, 1);
-  }
-  {
-    base::HistogramTester histogram_tester;
-
-    // Neither an opt-in nor opt-out, something else.
-    password_manager::features_util::KeepAccountStorageSettingsOnlyForUsers(
-        GetProfile(0)->GetPrefs(), {});
-
-    histogram_tester.ExpectTotalCount(
-        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 0);
-    histogram_tester.ExpectTotalCount(
-        "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 0);
-  }
-}
-
 IN_PROC_BROWSER_TEST_P(PasswordManagerSyncExplicitParamTest, Resignin) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Re-signin should be offered if the user is signed out now but in the past

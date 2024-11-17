@@ -101,13 +101,15 @@ TEST(VizMainImplTest, OopVizDependencyInjection) {
   EXPECT_CALL(*mock_ukm_recorder, AddEntry);
   external_deps.ukm_recorder = std::move(mock_ukm_recorder);
 
+  MockDelegate mock_delegate;
+#if BUILDFLAG(IS_ANDROID)
   // |VizMainImpl| is supposed to use the task runner injected through
   // |ExternalDependencies|. We can check which task runner |VizMainImpl| will
   // use by looking for the task runner reported to the delegate.
-  MockDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, PostCompositorThreadCreated(task_runner.get()));
   MockVizCompositorThreadRunner mock_runner(task_runner.get());
   external_deps.viz_compositor_thread_runner = &mock_runner;
+#endif
 
   bool mock_source_is_alive = false;
   external_deps.power_monitor_source =

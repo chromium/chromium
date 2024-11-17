@@ -55,10 +55,6 @@ class PrivacyGuideUtils {
         return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 
-    static boolean isSearchSuggestionsEnabled(Profile profile) {
-        return UserPrefs.get(profile).getBoolean(Pref.SEARCH_SUGGEST_ENABLED);
-    }
-
     static boolean isAdTopicsEnabled(Profile profile) {
         return UserPrefs.get(profile).getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
     }

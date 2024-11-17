@@ -857,27 +857,12 @@ virtual GLuint CreateAndTexStorage2DSharedImageCHROMIUM(
 virtual void BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
                                                   GLenum mode) = 0;
 virtual void EndSharedImageAccessDirectCHROMIUM(GLuint texture) = 0;
-virtual void ConvertYUVAMailboxesToTextureINTERNAL(
-    GLuint texture,
-    GLenum target,
-    GLuint internal_format,
-    GLenum type,
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLboolean flip_y,
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) = 0;
 virtual void CopySharedImageINTERNAL(GLint xoffset,
                                      GLint yoffset,
                                      GLint x,
                                      GLint y,
                                      GLsizei width,
                                      GLsizei height,
-                                     GLboolean unpack_flip_y,
                                      const GLbyte* mailboxes) = 0;
 virtual void CopySharedImageToTextureINTERNAL(GLuint texture,
                                               GLenum target,

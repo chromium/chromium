@@ -12,6 +12,24 @@ namespace whats_new {
 
 using BrowserCommand = browser_command::mojom::Command;
 
+// Features in the What's New system may provide additional
+// customization to the rendered page by assigning a string to a Feature
+// using this parameter.
+//
+// This should be used sparingly. Typically, this is only used when the
+// server-side team is performing an experiment.
+const char kCustomizationParam[] = "whats_new_customization";
+
+// Features for Editions in the What's New system may provide a survey
+// ID to override the default survey.
+//
+// This should be used sparingly. Typically, this is only used when the
+// server-side team is performing an experiment. Be aware that if
+// multiple survey parameters are defined in this manner, the first
+// survey found for an active edition will be used. This situation should
+// be avoided.
+const char kSurveyParam[] = "whats_new_survey_id";
+
 // What's New modules represent sections of content on the What's New
 // page. These are meant to contain the Feature they describe, the ownership
 // of the module, and the browser command that it triggers, if any.
@@ -95,6 +113,9 @@ class WhatsNewModule {
   // Get the name of the feature for this module.
   const char* GetFeatureName() const;
 
+  // Get the customization of the feature for this module, if any.
+  const std::string GetCustomization() const;
+
  private:
   raw_ptr<const base::Feature> feature_ = nullptr;
   std::string metric_name_;
@@ -129,6 +150,12 @@ class WhatsNewEdition {
   // Get the name of the feature for this module.
   const char* GetFeatureName() const;
 
+  // Get the customization of the feature for this edition, if any.
+  const std::string GetCustomization() const;
+
+  // Get the survey override of the feature for this edition, if any.
+  const std::optional<std::string> GetSurvey() const;
+
  private:
   raw_ref<const base::Feature> feature_;
   std::string owner_;
@@ -158,15 +185,21 @@ class WhatsNewRegistry {
   // Used to send enabled-by-default flags to server-side router.
   const std::vector<std::string_view> GetRolledFeatureNames() const;
 
+  // Used to send customization parameters to server-side router.
+  const std::vector<std::string> GetCustomizations() const;
+
+  // Used to override the default survey.
+  const std::optional<std::string> GetActiveEditionSurvey() const;
+
   // Set a "used version" for an edition.
-  void SetEditionUsed(const std::string_view edition);
+  void SetEditionUsed(std::string_view edition) const;
 
   // Cleanup data from storage for housekeeping.
-  void ClearUnregisteredModules();
-  void ClearUnregisteredEditions();
+  void ClearUnregisteredModules() const;
+  void ClearUnregisteredEditions() const;
 
   // Resets all stored data for manual testing.
-  void ResetData();
+  void ResetData() const;
 
   const WhatsNewStorageService* storage_service() const {
     return storage_service_.get();

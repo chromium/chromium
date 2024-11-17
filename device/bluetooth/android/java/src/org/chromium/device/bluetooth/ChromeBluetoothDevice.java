@@ -12,6 +12,13 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.device.bluetooth.wrapper.BluetoothDeviceWrapper;
+import org.chromium.device.bluetooth.wrapper.BluetoothGattCallbackWrapper;
+import org.chromium.device.bluetooth.wrapper.BluetoothGattCharacteristicWrapper;
+import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
+import org.chromium.device.bluetooth.wrapper.BluetoothGattServiceWrapper;
+import org.chromium.device.bluetooth.wrapper.BluetoothGattWrapper;
+import org.chromium.device.bluetooth.wrapper.ThreadUtilsWrapper;
 
 import java.util.HashMap;
 
@@ -26,29 +33,23 @@ final class ChromeBluetoothDevice {
     private static final String TAG = "Bluetooth";
 
     private long mNativeBluetoothDeviceAndroid;
-    final Wrappers.BluetoothDeviceWrapper mDevice;
-    Wrappers.BluetoothGattWrapper mBluetoothGatt;
+    final BluetoothDeviceWrapper mDevice;
+    BluetoothGattWrapper mBluetoothGatt;
     private final BluetoothGattCallbackImpl mBluetoothGattCallbackImpl;
     final HashMap<
-                    Wrappers.BluetoothGattCharacteristicWrapper,
+                    BluetoothGattCharacteristicWrapper,
                     ChromeBluetoothRemoteGattCharacteristic>
             mWrapperToChromeCharacteristicsMap;
-    final HashMap<Wrappers.BluetoothGattDescriptorWrapper, ChromeBluetoothRemoteGattDescriptor>
+    final HashMap<BluetoothGattDescriptorWrapper, ChromeBluetoothRemoteGattDescriptor>
             mWrapperToChromeDescriptorsMap;
 
     private ChromeBluetoothDevice(
-            long nativeBluetoothDeviceAndroid, Wrappers.BluetoothDeviceWrapper deviceWrapper) {
+            long nativeBluetoothDeviceAndroid, BluetoothDeviceWrapper deviceWrapper) {
         mNativeBluetoothDeviceAndroid = nativeBluetoothDeviceAndroid;
         mDevice = deviceWrapper;
         mBluetoothGattCallbackImpl = new BluetoothGattCallbackImpl();
-        mWrapperToChromeCharacteristicsMap =
-                new HashMap<
-                        Wrappers.BluetoothGattCharacteristicWrapper,
-                        ChromeBluetoothRemoteGattCharacteristic>();
-        mWrapperToChromeDescriptorsMap =
-                new HashMap<
-                        Wrappers.BluetoothGattDescriptorWrapper,
-                        ChromeBluetoothRemoteGattDescriptor>();
+        mWrapperToChromeCharacteristicsMap = new HashMap<>();
+        mWrapperToChromeDescriptorsMap = new HashMap<>();
         Log.v(TAG, "ChromeBluetoothDevice created.");
     }
 
@@ -68,7 +69,7 @@ final class ChromeBluetoothDevice {
     // Implements BluetoothDeviceAndroid::Create.
     @CalledByNative
     private static ChromeBluetoothDevice create(
-            long nativeBluetoothDeviceAndroid, Wrappers.BluetoothDeviceWrapper deviceWrapper) {
+            long nativeBluetoothDeviceAndroid, BluetoothDeviceWrapper deviceWrapper) {
         return new ChromeBluetoothDevice(nativeBluetoothDeviceAndroid, deviceWrapper);
     }
 
@@ -122,7 +123,7 @@ final class ChromeBluetoothDevice {
     }
 
     // Implements callbacks related to a GATT connection.
-    private class BluetoothGattCallbackImpl extends Wrappers.BluetoothGattCallbackWrapper {
+    private class BluetoothGattCallbackImpl implements BluetoothGattCallbackWrapper {
         @Override
         public void onConnectionStateChange(int status, int newState) {
             Log.i(
@@ -133,7 +134,7 @@ final class ChromeBluetoothDevice {
                             ? "Connected"
                             : "Disconnected");
 
-            Wrappers.ThreadUtilsWrapper.getInstance()
+            ThreadUtilsWrapper.getInstance()
                     .runOnUiThread(() -> onConnectionStateChangeUiThread(status, newState));
         }
 
@@ -168,7 +169,7 @@ final class ChromeBluetoothDevice {
                     mtu,
                     status,
                     status == android.bluetooth.BluetoothGatt.GATT_SUCCESS ? "OK" : "Error");
-            Wrappers.ThreadUtilsWrapper.getInstance()
+            ThreadUtilsWrapper.getInstance()
                     .runOnUiThread(
                             () -> {
                                 if (mNativeBluetoothDeviceAndroid == 0 || mBluetoothGatt == null) {
@@ -185,11 +186,11 @@ final class ChromeBluetoothDevice {
                     "onServicesDiscovered status:%d==%s",
                     status,
                     status == android.bluetooth.BluetoothGatt.GATT_SUCCESS ? "OK" : "Error");
-            Wrappers.ThreadUtilsWrapper.getInstance()
-                    .runOnUiThread(() -> onServicesDiscoveredUiThread(status));
+            ThreadUtilsWrapper.getInstance()
+                    .runOnUiThread(() -> onServicesDiscoveredUiThread());
         }
 
-        private void onServicesDiscoveredUiThread(int status) {
+        private void onServicesDiscoveredUiThread() {
             if (mNativeBluetoothDeviceAndroid != 0) {
                 // When the device disconnects it deletes mBluetoothGatt, so we need to check it's
                 // not null.
@@ -199,7 +200,7 @@ final class ChromeBluetoothDevice {
 
                 // TODO(crbug.com/40452041): Update or replace existing GATT objects if they change
                 // after initial discovery.
-                for (Wrappers.BluetoothGattServiceWrapper service : mBluetoothGatt.getServices()) {
+                for (BluetoothGattServiceWrapper service : mBluetoothGatt.getServices()) {
                     // Create an adapter unique service ID. getInstanceId only differs between
                     // service instances with the same UUID on this device.
                     String serviceInstanceId =
@@ -223,12 +224,12 @@ final class ChromeBluetoothDevice {
 
         @Override
         public void onCharacteristicChanged(
-                final Wrappers.BluetoothGattCharacteristicWrapper characteristic) {
+                final BluetoothGattCharacteristicWrapper characteristic) {
             Log.i(TAG, "device onCharacteristicChanged.");
             // Copy the characteristic's value for this event so that new notifications that
             // arrive before the posted task runs do not affect this event's value.
             byte[] value = characteristic.getValue();
-            Wrappers.ThreadUtilsWrapper.getInstance()
+            ThreadUtilsWrapper.getInstance()
                     .runOnUiThread(
                             () -> {
                                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic =
@@ -248,9 +249,9 @@ final class ChromeBluetoothDevice {
 
         @Override
         public void onCharacteristicRead(
-                final Wrappers.BluetoothGattCharacteristicWrapper characteristic,
+                final BluetoothGattCharacteristicWrapper characteristic,
                 final int status) {
-            Wrappers.ThreadUtilsWrapper.getInstance()
+            ThreadUtilsWrapper.getInstance()
                     .runOnUiThread(
                             () -> {
                                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic =
@@ -270,9 +271,9 @@ final class ChromeBluetoothDevice {
 
         @Override
         public void onCharacteristicWrite(
-                final Wrappers.BluetoothGattCharacteristicWrapper characteristic,
+                final BluetoothGattCharacteristicWrapper characteristic,
                 final int status) {
-            Wrappers.ThreadUtilsWrapper.getInstance()
+            ThreadUtilsWrapper.getInstance()
                     .runOnUiThread(
                             () -> {
                                 ChromeBluetoothRemoteGattCharacteristic chromeCharacteristic =
@@ -292,8 +293,8 @@ final class ChromeBluetoothDevice {
 
         @Override
         public void onDescriptorRead(
-                final Wrappers.BluetoothGattDescriptorWrapper descriptor, final int status) {
-            Wrappers.ThreadUtilsWrapper.getInstance()
+                final BluetoothGattDescriptorWrapper descriptor, final int status) {
+            ThreadUtilsWrapper.getInstance()
                     .runOnUiThread(
                             () -> {
                                 ChromeBluetoothRemoteGattDescriptor chromeDescriptor =
@@ -310,8 +311,8 @@ final class ChromeBluetoothDevice {
 
         @Override
         public void onDescriptorWrite(
-                final Wrappers.BluetoothGattDescriptorWrapper descriptor, final int status) {
-            Wrappers.ThreadUtilsWrapper.getInstance()
+                final BluetoothGattDescriptorWrapper descriptor, final int status) {
+            ThreadUtilsWrapper.getInstance()
                     .runOnUiThread(
                             () -> {
                                 ChromeBluetoothRemoteGattDescriptor chromeDescriptor =
@@ -341,7 +342,7 @@ final class ChromeBluetoothDevice {
                 long nativeBluetoothDeviceAndroid,
                 ChromeBluetoothDevice caller,
                 String instanceId,
-                Wrappers.BluetoothGattServiceWrapper serviceWrapper);
+                BluetoothGattServiceWrapper serviceWrapper);
 
         // Binds to BluetoothDeviceAndroid::GattServicesDiscovered.
         void onGattServicesDiscovered(

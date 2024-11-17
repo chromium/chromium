@@ -28,7 +28,9 @@ class ASH_EXPORT MahiContentSourceButton : public views::LabelButton {
 
   // Updates the content source info to the source currently used by the Mahi
   // Manager instance.
-  void RefreshContentSourceInfo();
+  // The button text is set to the selected text if `elucidation_in_use`,
+  // otherwise the title of the webpage or the PDF file name.
+  void RefreshContentSourceInfo(bool elucidation_in_use = false);
 
  private:
   // Opens the content source page when source is a webpage or activates the

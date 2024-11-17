@@ -48,6 +48,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/screen.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 
 namespace ash {
@@ -89,11 +90,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   // Add any features that have been enabled.
   source->AddBoolean(
       "HelpAppLauncherSearch",
-      base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&
-          base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
-  source->AddBoolean(
-      "HelpAppSearchServiceIntegration",
-      base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
+      base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch));
+  source->AddBoolean("HelpAppSearchServiceIntegration", true);
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
 
@@ -147,6 +145,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
     source->AddBoolean(
         "HelpAppOnboardingRevamp",
         base::FeatureList::IsEnabled(ash::features::kHelpAppOnboardingRevamp));
+    source->AddBoolean("HelpAppAppMall",
+                       chromeos::features::IsCrosMallSwaEnabled());
     // Only use the action URL if the install URI is enabled.
     // TODO(b/346687914): Clean up flag in Showoff code.
     source->AddBoolean("UseActionUrl", true);
@@ -188,6 +188,12 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "rgbKeyboard",
       rgb_keyboard_manager && rgb_keyboard_manager->IsRgbKeyboardSupported());
+  // Whether or not there is a function key on any keyboard.
+  ui::KeyboardCapability* keyboard_capability =
+      Shell::Get()->keyboard_capability();
+  source->AddBoolean("hasFunctionKey",
+                     keyboard_capability &&
+                         keyboard_capability->HasFunctionKeyOnAnyKeyboard());
 
   // Checks if there are active touch screens.
   source->AddBoolean(

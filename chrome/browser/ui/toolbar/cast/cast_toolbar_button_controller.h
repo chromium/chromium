@@ -20,9 +20,10 @@
 // Controller for the Cast toolbar icon that determines when to show and hide
 // icon. There should be one instance of this class per profile, and it should
 // only be used on the UI thread.
-class CastToolbarButtonController : public media_router::IssuesObserver,
-                                    public media_router::MediaRoutesObserver,
-                                    public CastContextualMenu::Observer {
+class CastToolbarButtonController
+    : public media_router::IssuesObserver,
+      public media_router::MediaRoutesObserver,
+      public CastContextualMenu::Observer{
  public:
   // TODO(takumif): CastToolbarIcon is the only Observer implementation.
   // Observer should be renamed to make it clear that it is responsible for
@@ -77,6 +78,9 @@ class CastToolbarButtonController : public media_router::IssuesObserver,
   void OnContextMenuShown() override;
   void OnContextMenuHidden() override;
 
+  // Updates the icon for all browsers with the same profile.
+  void UpdateIcon();
+
   // On Windows (with a right click) and Chrome OS (with touch), pressing the
   // toolbar icon makes the dialog disappear, but the context menu does not
   // appear until mouse/touch release. These methods ensure that the icon is
@@ -100,7 +104,7 @@ class CastToolbarButtonController : public media_router::IssuesObserver,
 
   // Adds or removes the Cast icon to/from the toolbar if necessary,
   // depending on whether or not we have issues, local routes or a dialog.
-  virtual void MaybeAddOrRemoveAction();
+  virtual void MaybeToggleIconVisibility();
 
   // The profile |this| is associated with. There should be one instance of this
   // class per profile.

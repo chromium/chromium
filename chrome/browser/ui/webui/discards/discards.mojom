@@ -17,6 +17,17 @@ enum LifecycleUnitVisibility {
   VISIBLE = 2,
 };
 
+// Whether a tab can be frozen or not, or whether that info is unavailable.
+//
+// TODO(crbug.com/40755583): When the "RunPerformanceManagerOnMainThreadSync"
+// feature is enabled by default, the UNKNOWN value will no longer be needed.
+// This enum can be replaced with a boolean.
+enum CanFreeze {
+  YES,
+  NO,
+  UNKNOWN,
+};
+
 // Discard related information about a single tab in a browser. Sent from
 // browser to the chrome://discards WebUI.
 struct TabDiscardsInfo {
@@ -35,6 +46,10 @@ struct TabDiscardsInfo {
   bool can_discard;
   // List of human-readable reasons why a tab can't be discarded.
   array<string> cannot_discard_reasons;
+  // Whether the tab can be frozen.
+  CanFreeze can_freeze;
+  // List of human-readable reasons why a tab can't be frozen.
+  array<string> cannot_freeze_reasons;
   // The number of times this tab has been discarded in the current browser
   // session.
   int32 discard_count;
@@ -77,6 +92,9 @@ interface DetailsProvider {
   // the tab will be unloaded with prejudice.
   // Invokes a callback when the discard is complete.
   DiscardById(int32 tab_id, mojom.LifecycleUnitDiscardReason reason) => ();
+
+  // Freezes a tab given its |tab_id|.
+  FreezeById(int32 tab_id);
 
   // Loads a tab given its |tab_id|.
   LoadById(int32 tab_id);

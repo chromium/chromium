@@ -44,8 +44,8 @@
         [weakSelf updateUIOnTraitChange:previousCollection];
       };
       NSArray<UITrait>* traits = @[
-        UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self,
-        UITraitPreferredContentSizeCategory.self
+        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+        UITraitPreferredContentSizeCategory.class
       ];
       [self registerForTraitChanges:traits withHandler:handler];
     }
@@ -54,13 +54,11 @@
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (void)dealloc {

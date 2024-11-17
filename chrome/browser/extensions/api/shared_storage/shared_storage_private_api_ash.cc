@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <utility>
+
 #include "chrome/browser/extensions/api/shared_storage/shared_storage_private_api.h"
 
 #include "base/values.h"

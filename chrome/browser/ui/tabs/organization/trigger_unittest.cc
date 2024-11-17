@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -23,7 +24,17 @@ class TriggerTest : public testing::Test {
   TriggerTest()
       : profile_(new TestingProfile),
         delegate_(new TestTabStripModelDelegate),
-        tab_strip_model_(new TabStripModel(delegate(), profile())) {}
+        tab_strip_model_(new TabStripModel(delegate(), profile())),
+        browser_window_interface_(new MockBrowserWindowInterface()) {
+    ON_CALL(*browser_window_interface_, GetTabStripModel)
+        .WillByDefault(::testing::Return(tab_strip_model_.get()));
+    delegate_->SetBrowserWindowInterface(browser_window_interface_.get());
+  }
+
+  ~TriggerTest() override {
+    // Break loop so we can deconstruct without dangling pointers.
+    delegate_->SetBrowserWindowInterface(nullptr);
+  }
 
   TestingProfile* profile() { return profile_.get(); }
   TestTabStripModelDelegate* delegate() { return delegate_.get(); }
@@ -56,6 +67,7 @@ class TriggerTest : public testing::Test {
 
   const std::unique_ptr<TestTabStripModelDelegate> delegate_;
   const std::unique_ptr<TabStripModel> tab_strip_model_;
+  const std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   tabs::PreventTabFeatureInitialization prevent_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

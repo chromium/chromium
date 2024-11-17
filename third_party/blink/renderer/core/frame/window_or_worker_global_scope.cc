@@ -70,8 +70,7 @@ String WindowOrWorkerGlobalScope::btoa(const String& string_to_encode,
     return String();
   }
 
-  return Base64Encode(
-      base::as_bytes(base::make_span(string_to_encode.Latin1())));
+  return Base64Encode(base::as_byte_span(string_to_encode.Latin1()));
 }
 
 String WindowOrWorkerGlobalScope::atob(const String& encoded_string,
@@ -94,7 +93,7 @@ String WindowOrWorkerGlobalScope::atob(const String& encoded_string,
     return String();
   }
 
-  return String(out.data(), out.size());
+  return String(out);
 }
 
 bool WindowOrWorkerGlobalScope::crossOriginIsolated() {

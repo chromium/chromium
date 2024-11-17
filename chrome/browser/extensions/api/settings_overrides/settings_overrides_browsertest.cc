@@ -82,21 +82,15 @@ std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(Profile* profile) {
   result->alternate_urls.push_back("http://www.noo.de/s?q={searchTerms}&id=10");
   result->input_encodings.push_back("UTF-8");
 
-  if (base::FeatureList::IsEnabled(kPrepopulatedSearchEngineOverrideRollout)) {
-    std::unique_ptr<TemplateURLData> prepopulated =
-        TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-            prefs, search_engine_choice_service, kTestExtensionPrepopulatedId);
-    EXPECT_TRUE(prepopulated);
-    // Values below do not exist in extension manifest and are taken from
-    // prepopulated engine with prepopulated_id set in extension manifest.
-    result->contextual_search_url = prepopulated->contextual_search_url;
-    result->new_tab_url = prepopulated->new_tab_url;
-  } else {
-    // GetPrepopulatedEngineFromFullList() should not be called. The old method
-    // is not expected to find anything.
-    EXPECT_FALSE(TemplateURLPrepopulateData::GetPrepopulatedEngine(
-        prefs, search_engine_choice_service, kTestExtensionPrepopulatedId));
-  }
+  std::unique_ptr<TemplateURLData> prepopulated =
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          prefs, search_engine_choice_service, kTestExtensionPrepopulatedId);
+  EXPECT_TRUE(prepopulated);
+  // Values below do not exist in extension manifest and are taken from
+  // prepopulated engine with prepopulated_id set in extension manifest.
+  result->contextual_search_url = prepopulated->contextual_search_url;
+  result->new_tab_url = prepopulated->new_tab_url;
+
   return result;
 }
 
@@ -219,21 +213,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverridenDSEPersists) {
   // Check that new tab url is correctly overriden by extension.
   std::string actual_new_tab_url = search::GetNewTabPageURL(profile).spec();
   EXPECT_FALSE(actual_new_tab_url.empty());
-  if (base::FeatureList::IsEnabled(kPrepopulatedSearchEngineOverrideRollout)) {
-    TemplateURL ext_turl(*extension_dse,
-                         TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION);
+  TemplateURL ext_turl(*extension_dse,
+                       TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION);
 
-    std::string new_tab_url_ext = ext_turl.new_tab_url_ref().ReplaceSearchTerms(
-        TemplateURLRef::SearchTermsArgs(std::u16string()),
-        UIThreadSearchTermsData());
+  std::string new_tab_url_ext = ext_turl.new_tab_url_ref().ReplaceSearchTerms(
+      TemplateURLRef::SearchTermsArgs(std::u16string()),
+      UIThreadSearchTermsData());
 
-    // A custom NTP URL from the prepopulated data is used.
-    EXPECT_NE(actual_new_tab_url, chrome::kChromeUINewTabPageThirdPartyURL);
-    EXPECT_EQ(actual_new_tab_url, new_tab_url_ext);
-  } else {
-    // The generic third party NTP URL is used.
-    EXPECT_EQ(actual_new_tab_url, chrome::kChromeUINewTabPageThirdPartyURL);
-  }
+  // A custom NTP URL from the prepopulated data is used.
+  EXPECT_NE(actual_new_tab_url, chrome::kChromeUINewTabPageThirdPartyURL);
+  EXPECT_EQ(actual_new_tab_url, new_tab_url_ext);
 
   // Check that after template url service is loaded, extension dse persists.
   TemplateURLService* url_service =

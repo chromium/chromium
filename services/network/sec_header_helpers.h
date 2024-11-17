@@ -41,10 +41,15 @@ void SetFetchMetadataHeaders(
     network::mojom::RequestDestination dest,
     const GURL* pending_redirect_url,
     const mojom::URLLoaderFactoryParams& factory_params,
-    const cors::OriginAccessList& origin_access_list);
+    const cors::OriginAccessList& origin_access_list,
+    mojom::CredentialsMode credentials_mode);
 
 // Removes any sec-ch- or sec-fetch- prefixed request headers on the |request|
 // if the |pending_redirect_url| is not trustworthy and the current url is.
+//
+// Also removes the sec-fetch-storage-access header even if the
+// |pending_redirect_url| *is* trustworthy, since the header might not be
+// attached on the request to |pending_redirect_url|.
 COMPONENT_EXPORT(NETWORK_SERVICE)
 void MaybeRemoveSecHeaders(net::URLRequest* request,
                            const GURL& pending_redirect_url);

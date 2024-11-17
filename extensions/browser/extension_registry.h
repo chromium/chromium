@@ -18,10 +18,8 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS) && \
-    !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#error "Extensions must be enabled"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS) ||
+              BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
 
 namespace content {
 class BrowserContext;

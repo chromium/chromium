@@ -16,6 +16,7 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
@@ -76,7 +77,8 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
                      /*use_prefetch_proxy=*/true,
                      blink::mojom::SpeculationEagerness::kEager),
         blink::mojom::Referrer(),
-        /*no_vary_search_expected=*/std::nullopt, prefetch_document_manager);
+        /*no_vary_search_expected=*/std::nullopt, prefetch_document_manager,
+        base::MakeRefCounted<PreloadPipelineInfo>());
   }
 
   std::unique_ptr<PrefetchContainer> CreateEmbedderPrefetchContainer(
@@ -286,7 +288,8 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
-      /*prefetch_document_manager=*/nullptr);
+      /*prefetch_document_manager=*/nullptr,
+      base::MakeRefCounted<PreloadPipelineInfo>());
 
   EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
             main_rfh()->GetGlobalId());
@@ -309,7 +312,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   PrefetchContainer prefetch_container(
       *web_contents(), GURL("https://test.com"),
       PrefetchType(PreloadingTriggerType::kEmbedder,
-                   /*use_prefetch_proxy=*/true),
+                   /*use_prefetch_proxy=*/false),
       blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
       /*no_vary_search_expected=*/std::nullopt, /*attempt=*/nullptr);
 
@@ -318,8 +321,8 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   EXPECT_EQ(prefetch_container.GetURL(), GURL("https://test.com"));
   EXPECT_EQ(prefetch_container.GetPrefetchType(),
             PrefetchType(PreloadingTriggerType::kEmbedder,
-                         /*use_prefetch_proxy=*/true));
-  EXPECT_TRUE(
+                         /*use_prefetch_proxy=*/false));
+  EXPECT_FALSE(
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   EXPECT_EQ(prefetch_container.key(),
@@ -892,7 +895,8 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
                      /*use_prefetch_proxy=*/true, test_case.eagerness),
         blink::mojom::Referrer(),
         /*no_vary_search_expected=*/std::nullopt,
-        /*prefetch_document_manager=*/nullptr);
+        /*prefetch_document_manager=*/nullptr,
+        base::MakeRefCounted<PreloadPipelineInfo>());
 
     prefetch_container.OnGetPrefetchToServe(test_case.block_until_head);
     if (test_case.block_until_head) {
@@ -966,7 +970,8 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
                      /*use_prefetch_proxy=*/true, test_case.eagerness),
         blink::mojom::Referrer(),
         /*no_vary_search_expected=*/std::nullopt,
-        /*prefetch_document_manager=*/nullptr);
+        /*prefetch_document_manager=*/nullptr,
+        base::MakeRefCounted<PreloadPipelineInfo>());
 
     prefetch_container.OnUnregisterCandidate(
         GURL("https://test.com/"), test_case.is_served,
@@ -981,6 +986,12 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
       "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
       "Eager",
       false, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served.Eager",
+      base::Milliseconds(0), 1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.NotServed.Eager",
+      0);
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.Eager", 0);
   histogram_tester.ExpectTotalCount(
@@ -995,6 +1006,13 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
       "Moderate",
       false, 0);
   histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served.Moderate",
+      base::Milliseconds(10), 1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.NotServed."
+      "Moderate",
+      0);
+  histogram_tester.ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.Moderate",
       base::Milliseconds(10), 1);
   histogram_tester.ExpectTotalCount(
@@ -1008,6 +1026,14 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
       "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
       "Conservative",
       false, 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served."
+      "Conservative",
+      0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.NotServed."
+      "Conservative",
+      base::Milliseconds(20), 1);
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.AfterClick.BlockUntilHeadDuration2.Served.Conservative",
       0);
@@ -1059,8 +1085,8 @@ TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired_Embedder) {
   auto prefetch_container_default = CreateEmbedderPrefetchContainer(
       GURL("https://test.com/prefetch"), std::nullopt);
   prefetch_container_default->MakeResourceRequest({});
-  EXPECT_TRUE(prefetch_container_default
-                  ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+  EXPECT_FALSE(prefetch_container_default
+                   ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   auto prefetch_container_same_origin = CreateEmbedderPrefetchContainer(
       GURL("https://test.com/prefetch"),

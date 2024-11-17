@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/url_request_param_mojom_traits.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
@@ -52,8 +53,7 @@ EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::ToMojom(
     case net::SourceStream::SourceType::TYPE_UNKNOWN:
       return network::mojom::SourceType::kUnknown;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<network::mojom::SourceType>(type);
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::
@@ -80,8 +80,7 @@ bool EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
@@ -104,6 +103,8 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
       mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>>();
   out->devtools_observer = data.TakeDevtoolsObserver<
       mojo::PendingRemote<network::mojom::DevToolsObserver>>();
+  out->device_bound_session_observer = data.TakeDeviceBoundSessionObserver<
+      mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>>();
   if (!data.ReadClientSecurityState(&out->client_security_state)) {
     return false;
   }
@@ -180,7 +181,8 @@ bool StructTraits<
       !data.ReadNavigationRedirectChain(&out->navigation_redirect_chain) ||
       !data.ReadAttributionReportingSrcToken(
           &out->attribution_reporting_src_token) ||
-      !data.ReadStorageAccessApiStatus(&out->storage_access_api_status)) {
+      !data.ReadStorageAccessApiStatus(&out->storage_access_api_status) ||
+      !data.ReadSocketTag(&out->socket_tag)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }
@@ -337,6 +339,18 @@ bool UnionTraits<network::mojom::DataElementDataView, network::DataElement>::
     }
   }
   return false;
+}
+
+// static
+bool StructTraits<network::mojom::SocketTagDataView, net::SocketTag>::Read(
+    network::mojom::SocketTagDataView data,
+    net::SocketTag* out) {
+#if BUILDFLAG(IS_ANDROID)
+  *out = net::SocketTag(data.uid(), data.tag());
+#else
+  *out = net::SocketTag();
+#endif  // BUILDFLAG(IS_ANDROID)
+  return true;
 }
 
 }  // namespace mojo

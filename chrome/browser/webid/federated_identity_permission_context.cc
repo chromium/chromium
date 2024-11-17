@@ -192,7 +192,8 @@ void FederatedIdentityPermissionContext::FlushScheduledSaveSettingsCalls() {
 void FederatedIdentityPermissionContext::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
-  bool logged_in = !accounts_in_cookie_jar_info.signed_in_accounts.empty();
+  bool logged_in =
+      !accounts_in_cookie_jar_info.GetValidSignedInAccounts().empty();
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   url::Origin origin = url::Origin::Create(gaia_url);
   SetIdpSigninStatus(origin, logged_in);

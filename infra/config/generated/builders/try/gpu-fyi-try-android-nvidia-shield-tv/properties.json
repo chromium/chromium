@@ -75,7 +75,8 @@
           "builder": "Android FYI Release (NVIDIA Shield TV)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-android-nvidia-shield-tv/targets"
     }
   },
   "$build/reclient": {

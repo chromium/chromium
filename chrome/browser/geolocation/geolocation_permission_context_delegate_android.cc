@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 GeolocationPermissionContextDelegateAndroid::
     GeolocationPermissionContextDelegateAndroid(Profile* profile)
@@ -79,13 +80,10 @@ bool GeolocationPermissionContextDelegateAndroid::IsRequestingOriginDSE(
       TemplateURLServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
   if (template_url_service) {
-    const TemplateURL* template_url =
-        template_url_service->GetDefaultSearchProvider();
-    if (template_url) {
-      dse_url = template_url->GenerateSearchURL(
-          template_url_service->search_terms_data());
-    }
+    url::Origin dse_origin =
+        template_url_service->GetDefaultSearchProviderOrigin();
+    return dse_origin.IsSameOriginWith(requesting_origin);
   }
 
-  return url::IsSameOriginWith(requesting_origin, dse_url);
+  return false;
 }

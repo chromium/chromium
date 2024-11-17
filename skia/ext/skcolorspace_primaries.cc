@@ -41,7 +41,7 @@ std::string SkColorSpacePrimariesToString(
     ss << "name:'rec2020', ";
   ss << "r:[" << primaries.fRX << ", " << primaries.fRY << "], ";
   ss << "g:[" << primaries.fGX << ", " << primaries.fGY << "], ";
-  ss << "b:[" << primaries.fBX << ", " << primaries.fRY << "], ";
+  ss << "b:[" << primaries.fBX << ", " << primaries.fBY << "], ";
   ss << "w:[" << primaries.fWX << ", " << primaries.fWY << "]";
   ss << "}";
   return ss.str();

@@ -38,7 +38,8 @@
           "builder": "Linux FYI GPU TSAN Release",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-linux-nvidia-tsn/targets"
     }
   },
   "$build/reclient": {

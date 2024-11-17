@@ -15,8 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/process/process.h"
-#include "base/profiler/call_stack_profile_params.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
@@ -28,13 +26,15 @@
 #include "build/build_config.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
+#include "components/sampling_profiler/call_stack_profile_params.h"
+#include "components/sampling_profiler/process_type.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "base/process/port_provider_mac.h"
 #endif
 
 using CallStackProfileBuilder = metrics::CallStackProfileBuilder;
-using CallStackProfileParams = base::CallStackProfileParams;
+using CallStackProfileParams = sampling_profiler::CallStackProfileParams;
 using StackSamplingProfiler = base::StackSamplingProfiler;
 
 namespace {
@@ -63,8 +63,8 @@ base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
 }
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
-    base::ProfilerProcessType process) {
-  if (process != base::ProfilerProcessType::kRenderer) {
+    sampling_profiler::ProfilerProcessType process) {
+  if (process != sampling_profiler::ProfilerProcessType::kRenderer) {
     return base::RepeatingClosure();
   }
   static const base::SampleMetadata process_backgrounded(
@@ -77,53 +77,6 @@ const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
 }
 
 }  // namespace
-
-// The scheduler works by splitting execution time into repeated periods such
-// that the time to take one collection represents
-// `fraction_of_execution_time_to_sample` of the period, and the time not spent
-// sampling represents 1 - `fraction_of_execution_time_to_sample` of the period.
-// The collection start time is chosen randomly within each period such that the
-// entire collection is contained within the period.
-//
-// The kFractionOfExecutionTimeToSample and SamplingParams settings at the top
-// of the file specify fraction = 0.02 and sampling period = 1 sample / .1s
-// sampling interval * 300 samples = 30s. The period length works out to
-// 30s/0.02 = 1500s = 25m. So every 25 minutes a random 30 second continuous
-// interval will be picked to sample.
-PeriodicSamplingScheduler::PeriodicSamplingScheduler(
-    base::TimeDelta sampling_duration,
-    double fraction_of_execution_time_to_sample,
-    base::TimeTicks start_time)
-    : period_duration_(sampling_duration /
-                       fraction_of_execution_time_to_sample),
-      sampling_duration_(sampling_duration),
-      period_start_time_(start_time) {
-  DCHECK(sampling_duration_ <= period_duration_);
-}
-
-PeriodicSamplingScheduler::~PeriodicSamplingScheduler() = default;
-
-base::TimeDelta PeriodicSamplingScheduler::GetTimeToNextCollection() {
-  const base::TimeTicks now = Now();
-  // Avoid scheduling in the past in the presence of discontinuous jumps in
-  // the current TimeTicks.
-  period_start_time_ = std::max(period_start_time_, now);
-
-  const base::TimeDelta sampling_offset =
-      (period_duration_ - sampling_duration_) * RandDouble();
-  const base::TimeTicks next_collection_time =
-      period_start_time_ + sampling_offset;
-  period_start_time_ += period_duration_;
-  return next_collection_time - now;
-}
-
-double PeriodicSamplingScheduler::RandDouble() const {
-  return base::RandDouble();
-}
-
-base::TimeTicks PeriodicSamplingScheduler::Now() const {
-  return base::TimeTicks::Now();
-}
 
 // Records the current unique id for the work item being executed in the target
 // thread's message loop.
@@ -153,8 +106,8 @@ IOSThreadProfiler::~IOSThreadProfiler() {
 std::unique_ptr<IOSThreadProfiler>
 IOSThreadProfiler::CreateAndStartOnMainThread() {
   DCHECK(!g_main_thread_instance);
-  auto instance =
-      base::WrapUnique(new IOSThreadProfiler(base::ProfilerThreadType::kMain));
+  auto instance = base::WrapUnique(
+      new IOSThreadProfiler(sampling_profiler::ProfilerThreadType::kMain));
   if (!g_main_thread_instance)
     g_main_thread_instance = instance.get();
   return instance;
@@ -168,7 +121,8 @@ void IOSThreadProfiler::SetMainThreadTaskRunner(
 }
 
 // static
-void IOSThreadProfiler::StartOnChildThread(base::ProfilerThreadType thread) {
+void IOSThreadProfiler::StartOnChildThread(
+    sampling_profiler::ProfilerThreadType thread) {
   // The profiler object is stored in a SequenceLocalStorageSlot on child
   // threads to give it the same lifetime as the threads.
   static base::SequenceLocalStorageSlot<std::unique_ptr<IOSThreadProfiler>>
@@ -222,9 +176,9 @@ IOSThreadProfiler::GetSamplingParams() {
 // The process in previous paragraph continues until the IOSThreadProfiler is
 // destroyed prior to thread exit.
 IOSThreadProfiler::IOSThreadProfiler(
-    base::ProfilerThreadType thread,
+    sampling_profiler::ProfilerThreadType thread,
     scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner)
-    : process_(base::ProfilerProcessType::kBrowser),
+    : process_(sampling_profiler::ProfilerProcessType::kBrowser),
       thread_(thread),
       owning_thread_task_runner_(owning_thread_task_runner),
       work_id_recorder_(std::make_unique<WorkIdRecorder>(
@@ -252,9 +206,11 @@ IOSThreadProfiler::IOSThreadProfiler(
       base::TimeTicks::Now() +
       sampling_params.samples_per_profile * sampling_params.sampling_interval;
 
-  periodic_sampling_scheduler_ = std::make_unique<PeriodicSamplingScheduler>(
-      sampling_params.samples_per_profile * sampling_params.sampling_interval,
-      kFractionOfExecutionTimeToSample, startup_profiling_completion_time);
+  periodic_sampling_scheduler_ =
+      std::make_unique<base::PeriodicSamplingScheduler>(
+          sampling_params.samples_per_profile *
+              sampling_params.sampling_interval,
+          kFractionOfExecutionTimeToSample, startup_profiling_completion_time);
 
   if (owning_thread_task_runner_)
     ScheduleNextPeriodicCollection();

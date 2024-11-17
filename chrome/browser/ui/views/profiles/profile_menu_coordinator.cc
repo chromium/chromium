@@ -7,20 +7,21 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/incognito_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 ProfileMenuCoordinator::~ProfileMenuCoordinator() {
   // Forcefully close the Widget if it hasn't been closed by the time the
@@ -45,27 +46,22 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
   auto& browser = GetBrowser();
   signin_ui_util::RecordProfileMenuViewShown(browser.profile());
   // Close any existing IPH bubble for the profile menu.
-  browser.window()->CloseFeaturePromo(
-      feature_engagement::kIPHProfileSwitchFeature);
+  browser.window()->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHProfileSwitchFeature,
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 
   std::unique_ptr<ProfileMenuViewBase> bubble;
   bool is_incognito = browser.profile()->IsIncognitoProfile();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, the guest session returns true for `IsIncognitoProfile()`, see
-  // https://crbug.com/1348572
-  is_incognito &= !browser.profile()->IsGuestSession();
-#endif
-
   if (is_incognito) {
     bubble =
         std::make_unique<IncognitoMenuView>(avatar_toolbar_button, &browser);
   } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Note: on Ash, only incognito windows have a profile menu.
     NOTREACHED() << "The profile menu is not implemented on Ash.";
 #else
     bubble = std::make_unique<ProfileMenuView>(avatar_toolbar_button, &browser);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   bubble->SetProperty(views::kElementIdentifierKey,
                       kToolbarAvatarBubbleElementId);

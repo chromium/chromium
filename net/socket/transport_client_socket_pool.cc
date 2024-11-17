@@ -356,9 +356,7 @@ int TransportClientSocketPool::RequestSockets(
     if (!base::Contains(group_map_, group_id)) {
       // Unexpected.  The group should only be getting deleted on synchronous
       // error.
-      NOTREACHED_IN_MIGRATION();
-      deleted_group = true;
-      break;
+      NOTREACHED();
     }
   }
 
@@ -678,8 +676,7 @@ LoadState TransportClientSocketPool::GetLoadState(
     // TODO(mmenke):  This is actually reached in the wild, for unknown reasons.
     // Would be great to understand why, and if it's a bug, fix it.  If not,
     // should have a test for that case.
-    NOTREACHED_IN_MIGRATION();
-    return LOAD_STATE_IDLE;
+    NOTREACHED();
   }
 
   const Group& group = *group_it->second;
@@ -1584,8 +1581,7 @@ void TransportClientSocketPool::Group::OnBackupJobTimerFired(
   // If there are no more jobs pending, there is no work to do.
   // If we've done our cleanups correctly, this should not happen.
   if (jobs_.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // If the old job has already established a connection, don't start a backup
@@ -1886,7 +1882,7 @@ void TransportClientSocketPool::Group::SetPriority(ClientSocketHandle* handle,
   }
 
   // This function must be called with a valid ClientSocketHandle.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool TransportClientSocketPool::Group::RequestWithHandleHasJobForTesting(
@@ -1903,8 +1899,7 @@ bool TransportClientSocketPool::Group::RequestWithHandleHasJobForTesting(
       return false;
     pointer = unbound_requests_.GetNextTowardsLastMin(pointer);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 TransportClientSocketPool::Group::BoundRequest::BoundRequest()

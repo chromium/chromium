@@ -66,7 +66,6 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
      *
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      * @param initiatingEdge Which edge of the screen the gesture is navigating from.
-     * @param closeIndicator
      */
     void showBubble(
             boolean forward,

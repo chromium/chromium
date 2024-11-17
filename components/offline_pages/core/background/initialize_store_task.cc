@@ -17,7 +17,7 @@ InitializeStoreTask::InitializeStoreTask(
       reset_attempts_left_(kRestartAttemptsMaximum),
       callback_(std::move(callback)) {}
 
-InitializeStoreTask::~InitializeStoreTask() {}
+InitializeStoreTask::~InitializeStoreTask() = default;
 
 void InitializeStoreTask::Run() {
   InitializeStore();

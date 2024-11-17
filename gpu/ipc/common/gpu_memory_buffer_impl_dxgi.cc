@@ -6,6 +6,8 @@
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
+#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
+
 #include <d3d11.h>
 #include <dxgi1_2.h>
 #include <wrl.h>
@@ -15,9 +17,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -25,7 +28,10 @@
 
 namespace gpu {
 
-GpuMemoryBufferImplDXGI::~GpuMemoryBufferImplDXGI() {}
+GpuMemoryBufferImplDXGI::~GpuMemoryBufferImplDXGI() {
+  base::AutoLock auto_lock(map_lock_);
+  CHECK(!async_mapping_in_progress_);
+}
 
 std::unique_ptr<GpuMemoryBufferImplDXGI>
 GpuMemoryBufferImplDXGI::CreateFromHandle(
@@ -98,33 +104,97 @@ base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
 }
 
 bool GpuMemoryBufferImplDXGI::Map() {
-  base::AutoLock auto_lock(map_lock_);
-  if (map_count_++)
-    return true;
+  base::WaitableEvent event;
+  bool mapping_result = false;
+  // Note: this can be called from multiple threads at the same time. Some of
+  // those threads may not have a TaskRunner set.
+  // One of such threads is a WebRTC encoder thread.
+  // That thread is not owned by chromium and therefore doesn't have any
+  // blocking scope machinery. But the workload there is supposed to happen
+  // synchronously, because this is how the WebRTC architecture is designed.
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
+  MapAsync(base::BindOnce(
+      [](base::WaitableEvent* event, bool* result_ptr, bool result) {
+        *result_ptr = result;
+        event->Signal();
+      },
+      &event, &mapping_result));
+  event.Wait();
+  return mapping_result;
+}
 
-  if (premapped_memory_.data()) {
-    return true;
+void GpuMemoryBufferImplDXGI::MapAsync(
+    base::OnceCallback<void(bool)> result_cb) {
+  std::optional<base::OnceCallback<void(void)>> early_result;
+  early_result = DoMapAsync(std::move(result_cb));
+  // Can't run the callback inside DoMapAsync because it grabs the lock.
+  if (early_result.has_value()) {
+    std::move(*early_result).Run();
+  }
+}
+
+std::optional<base::OnceCallback<void(void)>>
+GpuMemoryBufferImplDXGI::DoMapAsync(base::OnceCallback<void(bool)> result_cb) {
+  base::AutoLock auto_lock(map_lock_);
+  if (map_count_ > 0) {
+    ++map_count_;
+    return base::BindOnce(std::move(result_cb), true);
   }
 
-  DCHECK(!shared_memory_handle_);
+  if (premapped_memory_.data()) {
+    ++map_count_;
+    return base::BindOnce(std::move(result_cb), true);
+  }
+
   CHECK(gpu_memory_buffer_manager_);
   CHECK(shared_memory_pool_);
 
-  shared_memory_handle_ = shared_memory_pool_->MaybeAllocateBuffer(
-      gfx::BufferSizeForBufferFormat(size_, format_));
   if (!shared_memory_handle_) {
-    --map_count_;
-    return false;
+    shared_memory_handle_ = shared_memory_pool_->MaybeAllocateBuffer(
+        gfx::BufferSizeForBufferFormat(size_, format_));
+    if (!shared_memory_handle_) {
+      return base::BindOnce(std::move(result_cb), false);
+    }
   }
 
+  map_callbacks_.push_back(std::move(result_cb));
+  if (async_mapping_in_progress_) {
+    return std::nullopt;
+  }
+  async_mapping_in_progress_ = true;
   // Need to perform mapping in GPU process
-  if (!gpu_memory_buffer_manager_->CopyGpuMemoryBufferSync(
-          CloneHandle(), shared_memory_handle_->GetRegion().Duplicate())) {
-    shared_memory_handle_.reset();
-    --map_count_;
-    return false;
-  }
+  // Unretained is safe because of GMB isn't destroyed before the callback
+  // executes. This is CHECKed in the destructor.
+  gpu_memory_buffer_manager_->CopyGpuMemoryBufferAsync(
+      CloneHandle(), shared_memory_handle_->GetRegion().Duplicate(),
+      base::BindOnce(&GpuMemoryBufferImplDXGI::CheckAsyncMapResult,
+                     base::Unretained(this)));
 
+  return std::nullopt;
+}
+
+void GpuMemoryBufferImplDXGI::CheckAsyncMapResult(
+    bool result) {
+  std::vector<base::OnceCallback<void(bool)>> map_callbacks;
+  {
+    // Must not hold the lock during the callbacks calls.
+    base::AutoLock auto_lock(map_lock_);
+    CHECK_EQ(map_count_, 0u);
+    CHECK(async_mapping_in_progress_);
+
+    if (result) {
+      map_count_ += map_callbacks_.size();
+    }
+
+    async_mapping_in_progress_ = false;
+    swap(map_callbacks_, map_callbacks);
+  }
+  for (auto& cb : map_callbacks) {
+    std::move(cb).Run(result);
+  }
+}
+
+bool GpuMemoryBufferImplDXGI::AsyncMappingIsNonBlocking() const {
   return true;
 }
 
@@ -148,8 +218,9 @@ void* GpuMemoryBufferImplDXGI::memory(size_t plane) {
 }
 
 void GpuMemoryBufferImplDXGI::Unmap() {
-  base::AutoLock al(map_lock_);
+  base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
+  CHECK(!async_mapping_in_progress_);
   if (--map_count_)
     return;
 

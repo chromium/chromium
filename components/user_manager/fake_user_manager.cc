@@ -10,41 +10,15 @@
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 
-namespace {
-
-class FakeTaskRunner : public base::SingleThreadTaskRunner {
- public:
-  // base::SingleThreadTaskRunner:
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override {
-    std::move(task).Run();
-    return true;
-  }
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override {
-    return PostDelayedTask(from_here, std::move(task), delay);
-  }
-  bool RunsTasksInCurrentSequence() const override { return true; }
-
- protected:
-  ~FakeTaskRunner() override {}
-};
-
-}  // namespace
-
 namespace user_manager {
 
 FakeUserManager::FakeUserManager(PrefService* local_state)
-    : UserManagerBase(std::make_unique<FakeUserManagerDelegate>(),
-                      new FakeTaskRunner(),
+    : UserManagerImpl(std::make_unique<FakeUserManagerDelegate>(),
                       local_state,
                       ash::CrosSettings::IsInitialized()
                           ? ash::CrosSettings::Get()
@@ -107,11 +81,7 @@ const user_manager::User* FakeUserManager::AddPublicAccountUser(
   return user;
 }
 
-const UserList& FakeUserManager::GetUsers() const {
-  return users_;
-}
-
-UserList FakeUserManager::GetUsersAllowedForMultiProfile() const {
+UserList FakeUserManager::GetUsersAllowedForMultiUserSignIn() const {
   UserList result;
   for (UserList::const_iterator it = users_.begin(); it != users_.end(); ++it) {
     if ((*it)->GetType() == UserType::kRegular && !(*it)->is_logged_in()) {
@@ -220,6 +190,10 @@ void FakeUserManager::SwitchActiveUser(const AccountId& account_id) {
       break;
     }
   }
+
+  if (active_user_ != nullptr) {
+    NotifyActiveUserChanged(active_user_);
+  }
 }
 
 void FakeUserManager::SaveUserDisplayName(const AccountId& account_id,
@@ -248,25 +222,8 @@ bool FakeUserManager::IsKnownUser(const AccountId& account_id) const {
   return true;
 }
 
-const User* FakeUserManager::FindUser(const AccountId& account_id) const {
-  if (active_user_ != nullptr && active_user_->GetAccountId() == account_id)
-    return active_user_;
-
-  for (const User* user : users_) {
-    if (user->GetAccountId() == account_id) {
-      return user;
-    }
-  }
-
-  return nullptr;
-}
-
-User* FakeUserManager::FindUserAndModify(const AccountId& account_id) {
-  return const_cast<User*>(FindUser(account_id));
-}
-
 std::optional<std::string> FakeUserManager::GetOwnerEmail() {
-  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
+  return GetLocalState() ? UserManagerImpl::GetOwnerEmail() : std::nullopt;
 }
 
 bool FakeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
@@ -279,31 +236,6 @@ bool FakeUserManager::IsUserLoggedIn() const {
 
 bool FakeUserManager::IsLoggedInAsUserWithGaiaAccount() const {
   return true;
-}
-
-bool FakeUserManager::IsLoggedInAsManagedGuestSession() const {
-  const User* active_user = GetActiveUser();
-  return active_user && active_user->GetType() == UserType::kPublicAccount;
-}
-
-bool FakeUserManager::IsLoggedInAsGuest() const {
-  const User* active_user = GetActiveUser();
-  return active_user && active_user->GetType() == UserType::kGuest;
-}
-
-bool FakeUserManager::IsLoggedInAsKioskApp() const {
-  const User* active_user = GetActiveUser();
-  return active_user ? active_user->GetType() == UserType::kKioskApp : false;
-}
-
-bool FakeUserManager::IsLoggedInAsWebKioskApp() const {
-  const User* active_user = GetActiveUser();
-  return active_user ? active_user->GetType() == UserType::kWebKioskApp : false;
-}
-
-bool FakeUserManager::IsLoggedInAsAnyKioskApp() const {
-  const User* active_user = GetActiveUser();
-  return active_user && active_user->IsKioskType();
 }
 
 bool FakeUserManager::IsLoggedInAsStub() const {
@@ -323,7 +255,7 @@ bool FakeUserManager::IsUserCryptohomeDataEphemeral(
 
   if (!is_ephemeral_overriden) {
     // Otherwise fall back to default behavior.
-    return UserManagerBase::IsUserCryptohomeDataEphemeral(account_id);
+    return UserManagerImpl::IsUserCryptohomeDataEphemeral(account_id);
   }
 
   return accounts_with_ephemeral_cryptohome_data_.at(account_id);

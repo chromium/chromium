@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -29,6 +30,10 @@ inline base::HistogramBase::Sample ToSample(int64_t value) {
 inline int64_t ApplyBucket(int64_t value) {
   return ukm::GetExponentialBucketMinForCounts1000(value);
 }
+
+BASE_FEATURE(kAvoidUnnecessaryForcedLayoutMeasurements,
+             "AvoidUnnecessaryForcedLayoutMeasurements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -115,6 +120,51 @@ void LocalFrameUkmAggregator::IterativeTimer::Record(
   }
   metric_index_ = -1;
 }
+
+LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
+    LocalFrameUkmAggregator& aggregator,
+    DocumentUpdateReason update_reason,
+    bool avoid_unnecessary_forced_layout_measurements,
+    bool should_report_uma_this_frame,
+    bool is_pre_fcp,
+    bool record_ukm_for_current_frame)
+    : aggregator_(&aggregator),
+      update_reason_(update_reason),
+      start_time_(!avoid_unnecessary_forced_layout_measurements ||
+                          should_report_uma_this_frame || is_pre_fcp ||
+                          record_ukm_for_current_frame
+                      ? aggregator_->clock_->NowTicks()
+                      : base::TimeTicks()),
+      avoid_unnecessary_forced_layout_measurements_(
+          avoid_unnecessary_forced_layout_measurements),
+      should_report_uma_this_frame_(should_report_uma_this_frame),
+      is_pre_fcp_(is_pre_fcp),
+      record_ukm_for_current_frame_(record_ukm_for_current_frame) {
+  aggregator_->BeginForcedLayout();
+}
+
+LocalFrameUkmAggregator::ScopedForcedLayoutTimer::~ScopedForcedLayoutTimer() {
+  // aggregator_ will be null in a moved-from object.
+  if (!aggregator_) {
+    return;
+  }
+
+  aggregator_->EndForcedLayout(
+      update_reason_,
+      // start_time_ will be null if we don't need to measure this forced
+      // layout, because it won't be reported.
+      !start_time_.is_null() ? aggregator_->clock_->NowTicks() - start_time_
+                             : base::TimeDelta(),
+      avoid_unnecessary_forced_layout_measurements_,
+      should_report_uma_this_frame_, is_pre_fcp_);
+}
+
+LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
+    ScopedForcedLayoutTimer&&) = default;
+
+LocalFrameUkmAggregator::ScopedForcedLayoutTimer&
+LocalFrameUkmAggregator::ScopedForcedLayoutTimer::operator=(
+    ScopedForcedLayoutTimer&&) = default;
 
 void LocalFrameUkmAggregator::AbsoluteMetricRecord::reset() {
   interval_count = 0;
@@ -214,6 +264,30 @@ LocalFrameUkmAggregator::GetScopedTimer(size_t metric_index) {
   return ScopedUkmHierarchicalTimer(this, metric_index, clock_);
 }
 
+LocalFrameUkmAggregator::ScopedForcedLayoutTimer
+LocalFrameUkmAggregator::GetScopedForcedLayoutTimer(
+    DocumentUpdateReason update_reason) {
+  static const bool avoid_unnecessary_forced_layout_measurements =
+      base::FeatureList::IsEnabled(kAvoidUnnecessaryForcedLayoutMeasurements);
+
+  // Accumulate for UKM always, but only record the UMA for a subset of cases to
+  // avoid overflowing the counters.
+  bool should_report_uma_this_frame = !calls_to_next_forced_style_layout_uma_;
+  if (should_report_uma_this_frame) {
+    calls_to_next_forced_style_layout_uma_ =
+        base::RandInt(0, mean_calls_between_forced_style_layout_uma_ * 2);
+  } else {
+    DCHECK_GT(calls_to_next_forced_style_layout_uma_, 0u);
+    --calls_to_next_forced_style_layout_uma_;
+  }
+
+  bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
+
+  return ScopedForcedLayoutTimer(
+      *this, update_reason, avoid_unnecessary_forced_layout_measurements,
+      should_report_uma_this_frame, is_pre_fcp, record_ukm_for_current_frame_);
+}
+
 void LocalFrameUkmAggregator::BeginMainFrame() {
   DCHECK(!in_main_frame_update_);
   in_main_frame_update_ = true;
@@ -284,8 +358,7 @@ void LocalFrameUkmAggregator::RecordTimerSample(size_t metric_index,
 
 void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
                                                 int64_t count) {
-  // Always use RecordForcedLayoutSample for the kForcedStyleAndLayout
-  // metric id.
+  // Always use EndForcedLayout for the kForcedStyleAndLayout metric id.
   DCHECK_NE(metric_index, static_cast<size_t>(kForcedStyleAndLayout));
 
   bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
@@ -313,144 +386,6 @@ void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
       record.pre_fcp_uma_counter->Count(ToSample(count));
     else
       record.post_fcp_uma_counter->Count(ToSample(count));
-  }
-}
-
-void LocalFrameUkmAggregator::BeginForcedLayout() {
-  TRACE_EVENT_BEGIN0("blink", metrics_data()[kForcedStyleAndLayout].name);
-}
-
-void LocalFrameUkmAggregator::RecordForcedLayoutSample(
-    DocumentUpdateReason reason,
-    base::TimeTicks start,
-    base::TimeTicks end) {
-  TRACE_EVENT_END1("blink", metrics_data()[kForcedStyleAndLayout].name,
-                   "preFCP", fcp_state_ == kBeforeFCPSignal);
-  int64_t count = (end - start).InMicroseconds();
-  bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
-
-  // Accumulate for UKM always, but only record the UMA for a subset of cases to
-  // avoid overflowing the counters.
-  bool should_report_uma_this_frame = !calls_to_next_forced_style_layout_uma_;
-  if (should_report_uma_this_frame) {
-    calls_to_next_forced_style_layout_uma_ =
-        base::RandInt(0, mean_calls_between_forced_style_layout_uma_ * 2);
-  } else {
-    DCHECK_GT(calls_to_next_forced_style_layout_uma_, 0u);
-    --calls_to_next_forced_style_layout_uma_;
-  }
-
-  auto& record =
-      absolute_metric_records_[static_cast<size_t>(kForcedStyleAndLayout)];
-  record.interval_count += count;
-  if (in_main_frame_update_)
-    record.main_frame_count += count;
-  if (is_pre_fcp)
-    record.pre_fcp_aggregate += count;
-
-  if (should_report_uma_this_frame) {
-    if (is_pre_fcp)
-      record.pre_fcp_uma_counter->Count(ToSample(count));
-    else
-      record.post_fcp_uma_counter->Count(ToSample(count));
-  }
-
-  // Record a variety of DocumentUpdateReasons as distinct metrics
-  // Figure out which sub-metric, if any, we wish to report for UKM.
-  MetricId sub_metric = kCount;
-  switch (reason) {
-    case DocumentUpdateReason::kContextMenu:
-    case DocumentUpdateReason::kDragImage:
-    case DocumentUpdateReason::kEditing:
-    case DocumentUpdateReason::kFindInPage:
-    case DocumentUpdateReason::kFocus:
-    case DocumentUpdateReason::kFocusgroup:
-    case DocumentUpdateReason::kForm:
-    case DocumentUpdateReason::kInput:
-    case DocumentUpdateReason::kInspector:
-    case DocumentUpdateReason::kPrinting:
-    case DocumentUpdateReason::kScroll:
-    case DocumentUpdateReason::kSelection:
-    case DocumentUpdateReason::kSpatialNavigation:
-    case DocumentUpdateReason::kTapHighlight:
-      sub_metric = kUserDrivenDocumentUpdate;
-      break;
-
-    case DocumentUpdateReason::kAccessibility:
-    case DocumentUpdateReason::kBaseColor:
-    case DocumentUpdateReason::kComputedStyle:
-    case DocumentUpdateReason::kDisplayLock:
-    case DocumentUpdateReason::kViewTransition:
-    case DocumentUpdateReason::kIntersectionObservation:
-    case DocumentUpdateReason::kOverlay:
-    case DocumentUpdateReason::kPagePopup:
-    case DocumentUpdateReason::kPopover:
-    case DocumentUpdateReason::kSizeChange:
-    case DocumentUpdateReason::kSpellCheck:
-    case DocumentUpdateReason::kSMILAnimation:
-    case DocumentUpdateReason::kWebAnimation:
-      sub_metric = kServiceDocumentUpdate;
-      break;
-
-    case DocumentUpdateReason::kCanvas:
-    case DocumentUpdateReason::kPlugin:
-    case DocumentUpdateReason::kSVGImage:
-      sub_metric = kContentDocumentUpdate;
-      break;
-
-    case DocumentUpdateReason::kHitTest:
-      sub_metric = kHitTestDocumentUpdate;
-      break;
-
-    case DocumentUpdateReason::kJavaScript:
-      sub_metric = kJavascriptDocumentUpdate;
-      break;
-
-    // Do not report main frame because we have it already from
-    // in_main_frame_update_ above.
-    case DocumentUpdateReason::kBeginMainFrame:
-    // No metrics from testing.
-    case DocumentUpdateReason::kTest:
-    // Don't report if we don't know why.
-    case DocumentUpdateReason::kUnknown:
-    // TODO(https://crbug.com/336963892): Give prerender a dedicated metric.
-    case DocumentUpdateReason::kPrerender:
-      break;
-  }
-
-  if (sub_metric != kCount) {
-    auto& sub_record =
-        absolute_metric_records_[static_cast<size_t>(sub_metric)];
-    sub_record.interval_count += count;
-    if (in_main_frame_update_)
-      sub_record.main_frame_count += count;
-    if (is_pre_fcp)
-      sub_record.pre_fcp_aggregate += count;
-    if (should_report_uma_this_frame) {
-      if (is_pre_fcp)
-        sub_record.pre_fcp_uma_counter->Count(ToSample(count));
-      else
-        sub_record.post_fcp_uma_counter->Count(ToSample(count));
-    }
-  }
-}
-
-void LocalFrameUkmAggregator::RecordImplCompositorSample(
-    base::TimeTicks requested,
-    base::TimeTicks started,
-    base::TimeTicks completed) {
-  // Record the time spent waiting for the commit based on requested
-  // (which came from ProxyImpl::BeginMainFrame) and started as reported by
-  // the impl thread. If started is zero, no time was spent
-  // processing. This can only happen if the commit was aborted because there
-  // was no change and we did not wait for the impl thread at all. Attribute
-  // all time to the compositor commit so as to not imply that wait time was
-  // consumed.
-  if (started == base::TimeTicks()) {
-    RecordTimerSample(kImplCompositorCommit, requested, completed);
-  } else {
-    RecordTimerSample(kWaitForCommit, requested, started);
-    RecordTimerSample(kImplCompositorCommit, started, completed);
   }
 }
 
@@ -499,7 +434,8 @@ void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
   if (report_as_pre_fcp)
     primary_metric_.pre_fcp_aggregate += count;
 
-  UpdateEventTimeAndUpdateSampleIfNeeded(trackers);
+  bool record_ukm_for_next_frame = false;
+  UpdateEventTimeAndUpdateSampleIfNeeded(trackers, record_ukm_for_next_frame);
 
   // Report the FCP metrics, if necessary, after updating the sample so that
   // the sample has been recorded for the frame that produced FCP.
@@ -512,18 +448,21 @@ void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
 
   // Reset for the next frame.
   ResetAllMetrics();
+
+  record_ukm_for_current_frame_ = record_ukm_for_next_frame;
 }
 
 void LocalFrameUkmAggregator::UpdateEventTimeAndUpdateSampleIfNeeded(
-    cc::ActiveFrameSequenceTrackers trackers) {
+    cc::ActiveFrameSequenceTrackers trackers,
+    bool& record_ukm_for_next_frame) {
+  // Regardless of test requests always capture the first frame, since
+  // record_current_ukm_frame_ is initialized to true.
+  if (record_ukm_for_current_frame_) {
+    UpdateSample(trackers);
+  }
+
   // Update the frame count first, because it must include this frame
   frames_since_last_report_++;
-
-  // Regardless of test requests, always capture the first frame.
-  if (frames_since_last_report_ == 1) {
-    UpdateSample(trackers);
-    return;
-  }
 
   // Exit if in testing and we do not want to update this frame
   if (next_frame_sample_control_for_test_ == kMustNotChooseNextFrame)
@@ -531,10 +470,9 @@ void LocalFrameUkmAggregator::UpdateEventTimeAndUpdateSampleIfNeeded(
 
   // Update the sample with probability 1/frames_since_last_report_, or if
   // testing demand is.
-  if ((next_frame_sample_control_for_test_ == kMustChooseNextFrame) ||
-      base::RandDouble() < 1 / static_cast<double>(frames_since_last_report_)) {
-    UpdateSample(trackers);
-  }
+  record_ukm_for_next_frame =
+      (next_frame_sample_control_for_test_ == kMustChooseNextFrame) ||
+      base::RandDouble() < 1 / static_cast<double>(frames_since_last_report_);
 }
 
 void LocalFrameUkmAggregator::UpdateSample(
@@ -684,6 +622,147 @@ void LocalFrameUkmAggregator::ResetAllMetrics() {
   for (auto& record : absolute_metric_records_)
     record.reset();
   request_timestamp_for_current_frame_.reset();
+}
+
+void LocalFrameUkmAggregator::BeginForcedLayout() {
+  TRACE_EVENT_BEGIN0("blink", metrics_data()[kForcedStyleAndLayout].name);
+}
+
+void LocalFrameUkmAggregator::EndForcedLayout(
+    DocumentUpdateReason reason,
+    base::TimeDelta duration,
+    bool avoid_unnecessary_forced_layout_measurements,
+    bool should_report_uma_this_frame,
+    bool is_pre_fcp) {
+  TRACE_EVENT_END1("blink", metrics_data()[kForcedStyleAndLayout].name,
+                   "preFCP", fcp_state_ == kBeforeFCPSignal);
+
+  if (avoid_unnecessary_forced_layout_measurements &&
+      !(should_report_uma_this_frame || is_pre_fcp ||
+        record_ukm_for_current_frame_)) {
+    return;
+  }
+
+  int64_t count = duration.InMicroseconds();
+
+  auto& record =
+      absolute_metric_records_[static_cast<size_t>(kForcedStyleAndLayout)];
+  record.interval_count += count;
+  if (in_main_frame_update_) {
+    record.main_frame_count += count;
+  }
+  if (is_pre_fcp) {
+    record.pre_fcp_aggregate += count;
+  }
+
+  if (should_report_uma_this_frame) {
+    if (is_pre_fcp) {
+      record.pre_fcp_uma_counter->Count(ToSample(count));
+    } else {
+      record.post_fcp_uma_counter->Count(ToSample(count));
+    }
+  }
+
+  // Record a variety of DocumentUpdateReasons as distinct metrics
+  // Figure out which sub-metric, if any, we wish to report for UKM.
+  MetricId sub_metric = kCount;
+  switch (reason) {
+    case DocumentUpdateReason::kContextMenu:
+    case DocumentUpdateReason::kDragImage:
+    case DocumentUpdateReason::kEditing:
+    case DocumentUpdateReason::kFindInPage:
+    case DocumentUpdateReason::kFocus:
+    case DocumentUpdateReason::kFocusgroup:
+    case DocumentUpdateReason::kForm:
+    case DocumentUpdateReason::kInput:
+    case DocumentUpdateReason::kInspector:
+    case DocumentUpdateReason::kPrinting:
+    case DocumentUpdateReason::kScroll:
+    case DocumentUpdateReason::kSelection:
+    case DocumentUpdateReason::kSpatialNavigation:
+    case DocumentUpdateReason::kTapHighlight:
+      sub_metric = kUserDrivenDocumentUpdate;
+      break;
+
+    case DocumentUpdateReason::kAccessibility:
+    case DocumentUpdateReason::kBaseColor:
+    case DocumentUpdateReason::kComputedStyle:
+    case DocumentUpdateReason::kDisplayLock:
+    case DocumentUpdateReason::kViewTransition:
+    case DocumentUpdateReason::kIntersectionObservation:
+    case DocumentUpdateReason::kOverlay:
+    case DocumentUpdateReason::kPagePopup:
+    case DocumentUpdateReason::kPopover:
+    case DocumentUpdateReason::kSizeChange:
+    case DocumentUpdateReason::kSpellCheck:
+    case DocumentUpdateReason::kSMILAnimation:
+    case DocumentUpdateReason::kWebAnimation:
+      sub_metric = kServiceDocumentUpdate;
+      break;
+
+    case DocumentUpdateReason::kCanvas:
+    case DocumentUpdateReason::kPlugin:
+    case DocumentUpdateReason::kSVGImage:
+      sub_metric = kContentDocumentUpdate;
+      break;
+
+    case DocumentUpdateReason::kHitTest:
+      sub_metric = kHitTestDocumentUpdate;
+      break;
+
+    case DocumentUpdateReason::kJavaScript:
+      sub_metric = kJavascriptDocumentUpdate;
+      break;
+
+    // Do not report main frame because we have it already from
+    // in_main_frame_update_ above.
+    case DocumentUpdateReason::kBeginMainFrame:
+    // No metrics from testing.
+    case DocumentUpdateReason::kTest:
+    // Don't report if we don't know why.
+    case DocumentUpdateReason::kUnknown:
+    // TODO(https://crbug.com/336963892): Give prerender a dedicated metric.
+    case DocumentUpdateReason::kPrerender:
+      break;
+  }
+
+  if (sub_metric != kCount) {
+    auto& sub_record =
+        absolute_metric_records_[static_cast<size_t>(sub_metric)];
+    sub_record.interval_count += count;
+    if (in_main_frame_update_) {
+      sub_record.main_frame_count += count;
+    }
+    if (is_pre_fcp) {
+      sub_record.pre_fcp_aggregate += count;
+    }
+    if (should_report_uma_this_frame) {
+      if (is_pre_fcp) {
+        sub_record.pre_fcp_uma_counter->Count(ToSample(count));
+      } else {
+        sub_record.post_fcp_uma_counter->Count(ToSample(count));
+      }
+    }
+  }
+}
+
+void LocalFrameUkmAggregator::RecordImplCompositorSample(
+    base::TimeTicks requested,
+    base::TimeTicks started,
+    base::TimeTicks completed) {
+  // Record the time spent waiting for the commit based on requested
+  // (which came from ProxyImpl::BeginMainFrame) and started as reported by
+  // the impl thread. If started is zero, no time was spent
+  // processing. This can only happen if the commit was aborted because there
+  // was no change and we did not wait for the impl thread at all. Attribute
+  // all time to the compositor commit so as to not imply that wait time was
+  // consumed.
+  if (started == base::TimeTicks()) {
+    RecordTimerSample(kImplCompositorCommit, requested, completed);
+  } else {
+    RecordTimerSample(kWaitForCommit, requested, started);
+    RecordTimerSample(kImplCompositorCommit, started, completed);
+  }
 }
 
 void LocalFrameUkmAggregator::ChooseNextFrameForTest() {

@@ -255,7 +255,7 @@ class CalendarEvent {
   // Video conference URL, if one is attached to the event and using the
   // conferenceData.uri field. This could be 1P like Google Meet or any 3P
   // provider as long as they have integrated with the calendar API correctly.
-  GURL conference_data_uri() const { return conference_data_uri_; }
+  const GURL& conference_data_uri() const { return conference_data_uri_; }
   void set_conference_data_uri(const GURL& uri) { conference_data_uri_ = uri; }
 
   // The attachments of each event, if any.

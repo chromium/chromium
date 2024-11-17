@@ -42,6 +42,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -5525,8 +5526,7 @@ class RenderFrameHostManagerUnloadBrowserTest
     if (event_name == "visibilitychange")
       return blink::mojom::SuddenTerminationDisablerType::
           kVisibilityChangeHandler;
-    NOTREACHED_IN_MIGRATION();
-    return blink::mojom::SuddenTerminationDisablerType::kUnloadHandler;
+    NOTREACHED();
   }
 
   // Returns the list of event targets that the given `event_name` should be
@@ -5542,8 +5542,7 @@ class RenderFrameHostManagerUnloadBrowserTest
     if (event_name == "visibilitychange") {
       return {"window", "document"};
     }
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 
   // Adds an unload event handler (can be for the unload, pagehide, or
@@ -6018,8 +6017,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // Discard the spare RenderProcessHost to ensure a new RenderProcessHost
   // is created and has the right prioritization.
-  RenderProcessHostImpl::DiscardSpareRenderProcessHostForTesting();
-  EXPECT_FALSE(RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  spare_manager.CleanupSparesForTesting();
+  EXPECT_TRUE(spare_manager.GetSpares().empty());
 
   // Start a navigation to b.com to ensure a cross-process navigation is
   // in progress and ensure the process for the speculative host is different.
@@ -6080,7 +6080,7 @@ IN_PROC_BROWSER_TEST_P(
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // Start off navigating to a.com and capture the process used to commit.
-  SpareRenderProcessObserver render_process_observer;
+  SpareRenderProcessHostStartedObserver spare_started_observer;
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   // The AndroidWarmUpSpareRendererWithTimeout feature will create a spare
@@ -6088,16 +6088,16 @@ IN_PROC_BROWSER_TEST_P(
   // explicitly wait.
   if (base::FeatureList::IsEnabled(
           features::kAndroidWarmUpSpareRendererWithTimeout)) {
-    render_process_observer.WaitForSpareRenderProcessCreation();
+    spare_started_observer.WaitForSpareRenderProcessStarted();
   }
   RenderProcessHost* start_rph =
       web_contents->GetPrimaryMainFrame()->GetProcess();
 
   // At this time, there should be a spare RenderProcesHost. Capture it for
   // testing expectations later.
-  RenderProcessHost* spare_rph =
-      RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
-  EXPECT_TRUE(spare_rph);
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  RenderProcessHost* spare_rph = spare_manager.GetSpares()[0];
   EXPECT_EQ(spare_rph->GetPriority(), base::Process::Priority::kBestEffort);
 
   // Start a navigation to b.com to ensure a cross-process navigation is
@@ -6780,6 +6780,314 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(ExecJs(shell(), script));
 }
 
+// Tests that disable kDeferSpeculativeRFHCreation. This is to ensure that
+// GetFrameHostNavigation is called immediately on NavigationRequest creation
+// instead of getting queued in a task, which possibly causes it not to be run
+// if the network response is already received and the final RenderFrameHost
+// has been picked by another GetFrameHostNavigation call.
+class RenderFrameHostManagerDisableDeferSpeculativeRFHCreationTest
+    : public RenderFrameHostManagerTest {
+ public:
+  RenderFrameHostManagerDisableDeferSpeculativeRFHCreationTest() {
+    feature_list_.InitAndDisableFeature(features::kDeferSpeculativeRFHCreation);
+  }
+  ~RenderFrameHostManagerDisableDeferSpeculativeRFHCreationTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    RenderFrameHostManagerDisableDeferSpeculativeRFHCreationTest,
+    WastedSpeculativeRFHMetrics) {
+  StartEmbeddedServer();
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_d(embedded_test_server()->GetURL("d.com", "/title1.html"));
+  GURL url_e(embedded_test_server()->GetURL("e.com", "/title1.html"));
+  GURL url_c_redirect_to_d(embedded_test_server()->GetURL(
+      "c.com", "/server-redirect?" + url_d.spec()));
+  GURL url_d_redirect_to_e(embedded_test_server()->GetURL(
+      "d.com", "/server-redirect?" + url_e.spec()));
+  {
+    // 1) Navigate to A, which will reuse the current RFH.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(NavigateToURL(shell(), url_a));
+
+    // GetFrameHostForNavigation is called twice for the navigation above.
+    // The first call was when there's no associated RFH yet, and because the
+    // navigation reuses the current RFH (because it's the first navigation), on
+    // the second call we didn't waste any speculative RFHs.
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Navigation.All.WastedSpeculativeRFHCase"),
+        testing::ElementsAre(
+            base::Bucket(WastedSpeculativeRFHCase::kNotWasted_WasUnassociated,
+                         1),
+            base::Bucket(WastedSpeculativeRFHCase::
+                             kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH,
+                         1)));
+  }
+
+  {
+    // 2) Navigate cross-site to B, which will use a new speculative RFH.  Note
+    // that we navigate from the renderer to avoid doing a proactive
+    // BrowsingInstance swap which might cause renderer process/RenderFrameHost
+    // swaps despite Site Isolation being turned off, making the metrics a bit
+    // confusing to explain.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_b));
+
+    // GetFrameHostForNavigation is called twice for the navigation above.
+    // The first call was when there's no associated RFH yet, then it will
+    // create a speculative RFH. Then on the second call we keep using the same
+    // speculative RFH. Note that if all of Site Isolation, BFCache, and
+    // RenderDocument are turned off, we'll just reuse current RFH in both
+    // cases.
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Navigation.All.WastedSpeculativeRFHCase"),
+        testing::ElementsAre(
+            base::Bucket(WastedSpeculativeRFHCase::kNotWasted_WasUnassociated,
+                         1),
+            base::Bucket(
+                (AreAllSitesIsolatedForTesting() ||
+                 CanSameSiteMainFrameNavigationsChangeRenderFrameHosts())
+                    ? WastedSpeculativeRFHCase::
+                          kNotWasted_NowKeepSameSpeculativeRFH
+                    : WastedSpeculativeRFHCase::
+                          kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH,
+                1)));
+  }
+
+  {
+    // 3) Navigate (initially) cross-site to C, but then redirect to another
+    // cross-site URL D. Note that we navigate from the renderer to avoid doing
+    // a proactive BrowsingInstance swap which might cause renderer process
+    // swaps despite Site Isolation being turned off, making the metrics a bit
+    // confusing to explain.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_c_redirect_to_d, url_d));
+
+    // GetFrameHostForNavigation is called twice for the navigation above.
+    bool wasted_speculative_rfh = false;
+    if (AreAllSitesIsolatedForTesting() ||
+        CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
+      // First call created speculative RFH. Second call can reuse the
+      // speculative RFH only if site isolation is turned off.
+      wasted_speculative_rfh = AreAllSitesIsolatedForTesting();
+      EXPECT_THAT(
+          histogram_tester.GetAllSamples(
+              "Navigation.All.WastedSpeculativeRFHCase"),
+          testing::ElementsAre(
+              base::Bucket(WastedSpeculativeRFHCase::kNotWasted_WasUnassociated,
+                           1),
+              base::Bucket(AreAllSitesIsolatedForTesting()
+                               ? WastedSpeculativeRFHCase::
+                                     kWasted_NowUseNewSpeculativeRFH
+                               : WastedSpeculativeRFHCase::
+                                     kNotWasted_NowKeepSameSpeculativeRFH,
+                           1)));
+    } else {
+      // No wasted speculative RFH.
+      EXPECT_THAT(
+          histogram_tester.GetAllSamples(
+              "Navigation.All.WastedSpeculativeRFHCase"),
+          testing::ElementsAre(
+              base::Bucket(WastedSpeculativeRFHCase::kNotWasted_WasUnassociated,
+                           1),
+              base::Bucket(WastedSpeculativeRFHCase::
+                               kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH,
+                           1)));
+    }
+    if (wasted_speculative_rfh) {
+      // The wasted speculative RFH created a new process for C.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH."
+          "WastedRFHLikelyCreatedNewProcess",
+          true, 1);
+      // The replacement speculative RFH created a new process for D.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess",
+          true, 1);
+      // Process differs between the wasted speculative RFH and the newly picked
+      // RFH.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH.ProcessDiffers", true, 1);
+      // No cross-origin isolation difference.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH.CrossOriginIsolationDiffers",
+          false, 1);
+    }
+  }
+
+  {
+    // 4) Navigate (initially) cross-site to C, but then redirect to a
+    // same-site-to-current-RFH URL D.  Note that we navigate from the renderer
+    // to avoid doing a proactive BrowsingInstance swap which might cause
+    // renderer process swaps despite Site Isolation being turned off, making
+    // the metrics a bit confusing to explain.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_c_redirect_to_d, url_d));
+
+    // GetFrameHostForNavigation is called twice for the navigation above.
+    bool wasted_speculative_rfh = false;
+    // The first call will create a new process if site isolation is on, or
+    // BFCache-induced proactive BrowsingInstance swap happened.
+    // TODO(https://crbug.com/376777350): Reconsider if we really should do
+    // process swap on BrowsingInstance swap when site isolation is turned off.
+    bool first_call_created_new_process =
+        (AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled());
+    if (AreAllSitesIsolatedForTesting() ||
+        CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
+      // First call created speculative RFH because of SiteIsolation,
+      // RenderDocument, or proactive swap for BFCache. This speculative RFH
+      // will never get used, see cases below.
+      if (ShouldCreateNewHostForAllFrames() && first_call_created_new_process) {
+        // The navigation needs to commit in a speculative RFH, but the
+        // previously created speculative RFH is now incompatible because it
+        // was created for C in another process.
+        wasted_speculative_rfh = true;
+        EXPECT_THAT(
+            histogram_tester.GetAllSamples(
+                "Navigation.All.WastedSpeculativeRFHCase"),
+            testing::ElementsAre(
+                base::Bucket(
+                    WastedSpeculativeRFHCase::kNotWasted_WasUnassociated, 1),
+                base::Bucket(
+                    WastedSpeculativeRFHCase::kWasted_NowUseNewSpeculativeRFH,
+                    1)));
+      } else if (ShouldCreateNewHostForAllFrames()) {
+        // The navigation needs to commit in a speculative RFH, and it can reuse
+        // the previously created speculative RFH.
+        EXPECT_THAT(
+            histogram_tester.GetAllSamples(
+                "Navigation.All.WastedSpeculativeRFHCase"),
+            testing::ElementsAre(
+                base::Bucket(
+                    WastedSpeculativeRFHCase::kNotWasted_WasUnassociated, 1),
+                base::Bucket(WastedSpeculativeRFHCase::
+                                 kNotWasted_NowKeepSameSpeculativeRFH,
+                             1)));
+      } else {
+        // The navigation ends up reusing the current active RFH instead.
+        wasted_speculative_rfh = true;
+        EXPECT_THAT(
+            histogram_tester.GetAllSamples(
+                "Navigation.All.WastedSpeculativeRFHCase"),
+            testing::ElementsAre(
+                base::Bucket(
+                    WastedSpeculativeRFHCase::kNotWasted_WasUnassociated, 1),
+                base::Bucket(WastedSpeculativeRFHCase::kWasted_NowUseCurrentRFH,
+                             1)));
+      }
+    } else {
+      // No speculative RFH created.
+      EXPECT_THAT(
+          histogram_tester.GetAllSamples(
+              "Navigation.All.WastedSpeculativeRFHCase"),
+          testing::ElementsAre(
+              base::Bucket(WastedSpeculativeRFHCase::kNotWasted_WasUnassociated,
+                           1),
+              base::Bucket(WastedSpeculativeRFHCase::
+                               kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH,
+                           1)));
+    }
+
+    if (wasted_speculative_rfh) {
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH."
+          "WastedRFHLikelyCreatedNewProcess",
+          first_call_created_new_process, 1);
+      // The replacement RFH does not create a new process for D.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess",
+          false, 1);
+      // Process differs between the wasted speculative RFH and the newly picked
+      // RFH if the wasted one created a new process. The new RFH must be in the
+      // current / D's process.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH.ProcessDiffers",
+          first_call_created_new_process, 1);
+      // No cross-origin isolation difference.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH.CrossOriginIsolationDiffers",
+          false, 1);
+    }
+  }
+
+  {
+    // 5) Navigate (initially) same-site to D, but then redirect cross-site to
+    // E. Note that we navigate from the renderer to avoid doing a proactive
+    // BrowsingInstance swap which might cause renderer process swaps despite
+    // Site Isolation being turned off, making the metrics a bit confusing to
+    // explain.
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_d_redirect_to_e, url_e));
+
+    // GetFrameHostForNavigation is called twice for the navigation above.
+    bool wasted_speculative_rfh = false;
+    if (CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
+      // First call created speculative RFH. Second call can reuse the
+      // speculative RFH only if site isolation is turned off.
+      wasted_speculative_rfh = AreAllSitesIsolatedForTesting();
+      EXPECT_THAT(
+          histogram_tester.GetAllSamples(
+              "Navigation.All.WastedSpeculativeRFHCase"),
+          testing::ElementsAre(
+              base::Bucket(WastedSpeculativeRFHCase::kNotWasted_WasUnassociated,
+                           1),
+              base::Bucket(wasted_speculative_rfh
+                               ? WastedSpeculativeRFHCase::
+                                     kWasted_NowUseNewSpeculativeRFH
+                               : WastedSpeculativeRFHCase::
+                                     kNotWasted_NowKeepSameSpeculativeRFH,
+                           1)));
+    } else {
+      // No speculative RFH created for the initial call for D.
+      EXPECT_THAT(
+          histogram_tester.GetAllSamples(
+              "Navigation.All.WastedSpeculativeRFHCase"),
+          testing::ElementsAre(
+              base::Bucket(WastedSpeculativeRFHCase::kNotWasted_WasUnassociated,
+                           1),
+              base::Bucket(
+                  AreAllSitesIsolatedForTesting()
+                      ? WastedSpeculativeRFHCase::
+                            kNotWasted_WasUsingCurrentRFH_NowUseSpeculativeRFH
+                      : WastedSpeculativeRFHCase::
+                            kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH,
+                  1)));
+    }
+
+    if (wasted_speculative_rfh) {
+      // The wasted speculative RFH used the process for D.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH."
+          "WastedRFHLikelyCreatedNewProcess",
+          false, 1);
+      // The replacement speculative RFH created a new process for E, if site
+      // isolation is turned on, or BFCache is enabled.
+      // TODO(https://crbug.com/376777350): Investigate if we should suppress
+      // the process creation for BFCache when site isolation is turned off.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess",
+          AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled(), 1);
+      // Process differs between the wasted RFH and the newly chosen RFH if a
+      // new process is created for E.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH.ProcessDiffers",
+          AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled(), 1);
+      // No cross-origin isolation difference.
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.All.WastedSpeculativeRFH.CrossOriginIsolationDiffers",
+          false, 1);
+    }
+  }
+}
+
 // Tests that enable clearing window.name on cross-site
 // cross-BrowsingInstance navigations.
 class RenderFrameHostManagerClearWindowNameTest
@@ -6863,6 +7171,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostManagerNoSiteIsolationTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RenderFrameHostManagerDisableDeferSpeculativeRFHCreationTest,
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostManagerClearWindowNameTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));

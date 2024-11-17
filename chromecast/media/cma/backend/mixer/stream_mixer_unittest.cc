@@ -368,7 +368,7 @@ int64_t FramesToDelayUs(int64_t frames) {
 
 std::string DeathRegex(const std::string& regex) {
 // String arguments aren't passed to CHECK() in official builds.
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
+#if BUILDFLAG(IS_ANDROID) || (defined(OFFICIAL_BUILD) && defined(NDEBUG))
   return "";
 #else
   return regex;

@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("chooser_controller") {
+  sources = [
+    "title_util.cc",
+    "title_util.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:url_identity",
+    "//content/public/browser",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "title_util_browsertest.cc" ]
+    deps = [
+      ":chooser_controller",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "title_util_unittest.cc" ]
+  deps = [
+    ":chooser_controller",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/test:test_support",
+    "//components/strings:components_strings",
+    "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//url",
+  ]
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//extensions:test_support",
+    ]
+  }
+}

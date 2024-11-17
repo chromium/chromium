@@ -21,8 +21,7 @@ namespace sensitive_content {
 class SensitiveContentClient;
 
 // Contains platform-independent logic which tracks whether sensitive form
-// fields are present or not. It is owned by the embedder-specific
-// implementation of `SensitiveContentClient`.
+// fields are present or not. It is owned by the `SensitiveContentClient`.
 class SensitiveContentManager final
     : public autofill::AutofillManager::Observer {
  public:

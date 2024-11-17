@@ -37,6 +37,8 @@ build_webui("build") {
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/browser/resources/chromeos/gaia_action_buttons:build_ts",
+    "//chrome/browser/resources/chromeos/supervision:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
@@ -46,11 +48,18 @@ build_webui("build") {
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
                     target_gen_dir) ]
   if (is_chromeos_ash) {
-    ts_path_mappings +=
-        [ "chrome://chrome-signin/arc_account_picker/*|" +
+    ts_path_mappings += [
+      "chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js|" + rebase_path(
+              "${root_gen_dir}/chrome/browser/resources/chromeos/gaia_action_buttons/tsc/gaia_action_buttons.d.ts",
+              target_gen_dir),
+      "chrome://chrome-signin/arc_account_picker/*|" +
           rebase_path(
               "//chrome/browser/resources/chromeos/arc_account_picker/*",
-              target_gen_dir) ]
+              target_gen_dir),
+      "/supervision/*|" + rebase_path(
+              "${root_gen_dir}/chrome/browser/resources/chromeos/supervision/tsc/*",
+              target_gen_dir),
+    ]
   }
   webui_context_type = "trusted"
 }

@@ -4,6 +4,7 @@
 
 #include "base/memory/aligned_memory.h"
 
+#include <stdint.h>
 #include <string.h>
 
 #include <memory>
@@ -12,6 +13,29 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
+
+TEST(AlignedMemoryTest, AlignedUninit) {
+  {
+    base::AlignedHeapArray<char> h = AlignedUninit<char>(8, 32);
+    EXPECT_EQ(h.size(), 8u);
+    EXPECT_TRUE(IsAligned(h.data(), 32));
+  }
+  {
+    base::AlignedHeapArray<int16_t> h = AlignedUninit<int16_t>(8, 32);
+    EXPECT_EQ(h.size(), 8u);
+    EXPECT_TRUE(IsAligned(h.data(), 32));
+  }
+}
+
+TEST(AlignedMemoryTest, AlignedUninitCharArray) {
+  auto [h, s] = AlignedUninitCharArray<int16_t>(8, 32);
+  static_assert(std::same_as<base::AlignedHeapArray<char>, decltype(h)>);
+  static_assert(std::same_as<base::span<int16_t>, decltype(s)>);
+  EXPECT_EQ(h.size(), 8u * sizeof(int16_t));
+  EXPECT_TRUE(IsAligned(h.data(), 32));
+  EXPECT_EQ(s.size(), 8u);
+  EXPECT_TRUE(IsAligned(s.data(), 32));
+}
 
 TEST(AlignedMemoryTest, DynamicAllocation) {
   void* p = AlignedAlloc(8, 8);

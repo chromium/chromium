@@ -6,11 +6,14 @@
 
 #include "base/command_line.h"
 #include "base/containers/enum_set.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
@@ -28,10 +31,13 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -97,7 +103,6 @@ webapps::AppId InstallWebApp(Profile* profile,
   if (web_app_info->title.empty())
     web_app_info->title = u"WebAppInstallInfo App Name";
 
-  webapps::AppId app_id;
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       future;
   auto* provider = WebAppProvider::GetForTest(profile);
@@ -140,7 +145,13 @@ webapps::AppId InstallWebApp(Profile* profile,
   // Allow updates to be published to App Service listeners.
   base::RunLoop().RunUntilIdle();
 
-  return future.Get<webapps::AppId>();
+  webapps::AppId app_id = future.Get<webapps::AppId>();
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    apps::AppReadinessWaiter(profile, app_id,
+                             base::BindRepeating(apps_util::IsInstalled))
+        .Await();
+  }
+  return app_id;
 }
 
 webapps::AppId InstallWebAppWithoutOsIntegration(

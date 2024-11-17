@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,8 +25,8 @@
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/screen.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -90,7 +91,7 @@ bool TerminalSystemAppDelegate::ShouldShowInLauncher() const {
   return profile()->GetPrefs()->GetBoolean(
              crostini::prefs::kTerminalSshAllowedByPolicy) ||
          crostini::CrostiniFeatures::Get()->IsAllowedNow(profile(), &reason) ||
-         !guest_os::GuestOsService::GetForProfile(profile())
+         !guest_os::GuestOsServiceFactory::GetForProfile(profile())
               ->TerminalProviderRegistry()
               ->List()
               .empty();

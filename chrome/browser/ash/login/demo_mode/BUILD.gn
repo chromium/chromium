@@ -83,6 +83,24 @@ static_library("demo_mode") {
   ]
 }
 
+static_library("demo_mode_login") {
+  sources = [
+    "demo_login_controller.cc",
+    "demo_login_controller.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chromeos/ash/components/demo_mode",
+  ]
+}
+
 static_library("test_support") {
   testonly = true
 
@@ -154,6 +172,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/system",
@@ -178,6 +197,7 @@ source_set("unit_tests") {
 
   sources = [
     "demo_components_unittest.cc",
+    "demo_login_controller_unittest.cc",
     "demo_mode_dimensions_unittest.cc",
     "demo_session_unittest.cc",
     "demo_setup_controller_unittest.cc",
@@ -185,6 +205,7 @@ source_set("unit_tests") {
 
   deps = [
     ":demo_mode",
+    ":demo_mode_login",
     ":test_support",
     "//ash/constants",
     "//base",
@@ -198,8 +219,11 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/login:test_support",
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/browser/ui/ash/wallpaper:test_support",
     "//chrome/common:constants",
@@ -209,6 +233,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/system",
     "//chromeos/constants",

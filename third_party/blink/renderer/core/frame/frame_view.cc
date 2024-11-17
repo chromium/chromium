@@ -77,15 +77,20 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   gfx::Transform main_frame_transform_matrix;
   DocumentLifecycle::LifecycleState parent_lifecycle_state =
       owner_document.Lifecycle().GetState();
+
+  bool should_compute_occlusion = false;
   mojom::blink::FrameOcclusionState occlusion_state =
       owner_document.GetFrame()->GetOcclusionState();
-  bool should_compute_occlusion =
-      needs_occlusion_tracking &&
-      occlusion_state ==
-          mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded &&
-      parent_lifecycle_state >= DocumentLifecycle::kPrePaintClean;
-  if (!should_compute_occlusion) {
+  if (occlusion_state ==
+      mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded) {
+    // We can't propagate kGuaranteedNotOccluded from the parent without testing
+    // occlusion of this frame. If we don't ultimately do an occlusion test on
+    // this frame, then we should propagate "unknown".
     occlusion_state = mojom::blink::FrameOcclusionState::kUnknown;
+    if (needs_occlusion_tracking &&
+        parent_lifecycle_state >= DocumentLifecycle::kPrePaintClean) {
+      should_compute_occlusion = true;
+    }
   }
 
   LayoutEmbeddedContent* owner_layout_object =
@@ -159,8 +164,12 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
         rect_in_parent_stable_since_for_iov2_ = base::TimeTicks::Now();
       }
     }
-    if (should_compute_occlusion && !geometry.IsVisible())
-      occlusion_state = mojom::blink::FrameOcclusionState::kPossiblyOccluded;
+    if (should_compute_occlusion) {
+      occlusion_state =
+          geometry.IsVisible()
+              ? mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded
+              : mojom::blink::FrameOcclusionState::kPossiblyOccluded;
+    }
 
     // Generate matrix to transform from the space of the containing document
     // to the space of the iframe's contents.
@@ -248,11 +257,6 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     }
     main_frame_transform_matrix =
         child_frame_to_root_frame.AccumulatedTransform();
-  } else if (occlusion_state ==
-             mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded) {
-    // If the parent LocalFrameView is throttled and out-of-date, then we can't
-    // get any useful information.
-    occlusion_state = mojom::blink::FrameOcclusionState::kUnknown;
   }
 
   // An iframe's content is always pixel-snapped, even if the iframe element has

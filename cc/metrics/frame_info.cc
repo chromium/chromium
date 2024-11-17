@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/files/file_util.h"
 #include "build/build_config.h"
 
 namespace cc {
@@ -89,6 +90,8 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
 
     compositor_update_was_dropped =
         other.final_state == FrameFinalState::kDropped;
+    raster_property_was_dropped =
+        other.final_state_raster_property == FrameFinalState::kDropped;
 
     compositor_final_state = other.final_state;
     compositor_termination_time = other.termination_time;
@@ -103,6 +106,8 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
 
     main_update_was_dropped = other.final_state == FrameFinalState::kDropped;
     compositor_update_was_dropped = final_state == FrameFinalState::kDropped;
+    raster_property_was_dropped =
+        final_state_raster_property == FrameFinalState::kDropped;
 
     compositor_final_state = final_state;
     compositor_termination_time = termination_time;
@@ -171,6 +176,17 @@ bool FrameInfo::WasSmoothCompositorUpdateDropped() const {
   if (was_merged)
     return compositor_update_was_dropped;
   return final_state == FrameFinalState::kDropped;
+}
+
+bool FrameInfo::WasSmoothRasterPropertyUpdateDropped() const {
+  if (!IsCompositorSmooth(smooth_thread_raster_property)) {
+    return false;
+  }
+
+  if (was_merged) {
+    return raster_property_was_dropped;
+  }
+  return final_state_raster_property == FrameFinalState::kDropped;
 }
 
 bool FrameInfo::WasSmoothMainUpdateDropped() const {

@@ -93,7 +93,7 @@ void TrackerImplAndroid::NotifyEvent(
   tracker_->NotifyEvent(event);
 }
 
-bool TrackerImplAndroid::ShouldTriggerHelpUI(
+bool TrackerImplAndroid::ShouldTriggerHelpUi(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {
@@ -104,7 +104,7 @@ bool TrackerImplAndroid::ShouldTriggerHelpUI(
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-TrackerImplAndroid::ShouldTriggerHelpUIWithSnooze(
+TrackerImplAndroid::ShouldTriggerHelpUiWithSnooze(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {
@@ -117,7 +117,7 @@ TrackerImplAndroid::ShouldTriggerHelpUIWithSnooze(
       env, triggerDetails.ShouldShowIph(), triggerDetails.ShouldShowSnooze());
 }
 
-bool TrackerImplAndroid::WouldTriggerHelpUI(
+bool TrackerImplAndroid::WouldTriggerHelpUi(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
     const base::android::JavaParamRef<jstring>& jfeature) {

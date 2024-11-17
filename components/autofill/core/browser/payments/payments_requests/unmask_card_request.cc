@@ -160,8 +160,7 @@ void ParseAsCvcChallengeOption(
       challenge_info_position_string = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD);
     } else {
-      NOTREACHED_IN_MIGRATION();
-      parsed_challenge_option.cvc_position = CvcPosition::kUnknown;
+      NOTREACHED();
     }
   }
 
@@ -225,11 +224,10 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
 }  // namespace
 
 UnmaskCardRequest::UnmaskCardRequest(
-    const PaymentsNetworkInterface::UnmaskRequestDetails& request_details,
+    const UnmaskRequestDetails& request_details,
     const bool full_sync_enabled,
-    base::OnceCallback<
-        void(PaymentsAutofillClient::PaymentsRpcResult,
-             const PaymentsNetworkInterface::UnmaskResponseDetails&)> callback)
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                            const UnmaskResponseDetails&)> callback)
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
       callback_(std::move(callback)) {
@@ -304,15 +302,14 @@ std::string UnmaskCardRequest::GetRequestContent() {
 
       std::string_view cvc_position = "CVC_POSITION_UNKNOWN";
       switch (request_details_.selected_challenge_option->cvc_position) {
-        case autofill::CvcPosition::kFrontOfCard:
+        case CvcPosition::kFrontOfCard:
           cvc_position = "CVC_POSITION_FRONT";
           break;
-        case autofill::CvcPosition::kBackOfCard:
+        case CvcPosition::kBackOfCard:
           cvc_position = "CVC_POSITION_BACK";
           break;
-        case autofill::CvcPosition::kUnknown:
-          NOTREACHED_IN_MIGRATION();
-          break;
+        case CvcPosition::kUnknown:
+          NOTREACHED();
       }
       challenge_option.Set("cvc_position", cvc_position);
 
@@ -351,21 +348,23 @@ std::string UnmaskCardRequest::GetRequestContent() {
   }
 
   if (request_details_.last_committed_primary_main_frame_origin.has_value()) {
-    base::Value::Dict virtual_card_request_info;
-    virtual_card_request_info.Set(
-        "merchant_domain",
+    std::string merchant_domain =
         request_details_.last_committed_primary_main_frame_origin.value()
-            .spec());
-    request_dict.Set("virtual_card_request_info",
-                     std::move(virtual_card_request_info));
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableMerchantDomainInUnmaskCardRequest) &&
-      request_details_.merchant_domain_for_footprints.has_value()) {
-    request_dict.Set(
-        "merchant_domain",
-        request_details_.merchant_domain_for_footprints->Serialize());
+            .spec();
+    if (request_details_.card.record_type() ==
+        CreditCard::RecordType::kVirtualCard) {
+      base::Value::Dict virtual_card_request_info;
+      virtual_card_request_info.Set("merchant_domain", merchant_domain);
+      request_dict.Set("virtual_card_request_info",
+                       std::move(virtual_card_request_info));
+    } else if (request_details_.card.card_info_retrieval_enrollment_state() ==
+               CreditCard::CardInfoRetrievalEnrollmentState::
+                   kRetrievalEnrolled) {
+      base::Value::Dict card_retrieval_request_info;
+      card_retrieval_request_info.Set("merchant_domain", merchant_domain);
+      request_dict.Set("card_retrieval_request_info",
+                       std::move(card_retrieval_request_info));
+    }
   }
 
   std::string json_request;
@@ -457,7 +456,7 @@ void UnmaskCardRequest::ParseResponse(const base::Value::Dict& response) {
     response_details_.card_type =
         PaymentsAutofillClient::PaymentsRpcCardType::kServerCard;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   const base::Value::Dict* decline_details =

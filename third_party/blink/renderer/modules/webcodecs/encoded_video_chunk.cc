@@ -79,8 +79,10 @@ EncodedVideoChunk* EncodedVideoChunk::Create(ScriptState* script_state,
 EncodedVideoChunk::EncodedVideoChunk(scoped_refptr<media::DecoderBuffer> buffer)
     : buffer_(std::move(buffer)) {}
 
-String EncodedVideoChunk::type() const {
-  return buffer_->is_key_frame() ? "key" : "delta";
+V8EncodedVideoChunkType EncodedVideoChunk::type() const {
+  return V8EncodedVideoChunkType(buffer_->is_key_frame()
+                                     ? V8EncodedVideoChunkType::Enum::kKey
+                                     : V8EncodedVideoChunkType::Enum::kDelta);
 }
 
 int64_t EncodedVideoChunk::timestamp() const {

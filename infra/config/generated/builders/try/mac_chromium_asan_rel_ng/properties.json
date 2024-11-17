@@ -74,7 +74,8 @@
           "builder": "Mac ASan 64 Tests (1)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac_chromium_asan_rel_ng/targets"
     }
   },
   "$build/reclient": {

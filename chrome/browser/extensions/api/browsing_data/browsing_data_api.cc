@@ -19,7 +19,6 @@
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/common/pref_names.h"
@@ -29,6 +28,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -96,7 +96,13 @@ bool IsSyncRunning(Profile* profile) {
   if (profile->IsOffTheRecord()) {
     return false;
   }
+  // TODO(crbug.com/371426261): Refactor sync utils so this function can be
+  // called on android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return GetSyncStatusMessageType(profile) == SyncStatusMessageType::kSynced;
+#else
+  return false;
+#endif
 }
 }  // namespace
 

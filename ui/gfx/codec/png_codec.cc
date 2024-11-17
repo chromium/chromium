@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -27,6 +29,12 @@
 
 namespace gfx {
 
+PNGCodec::DecodeOutput::DecodeOutput() = default;
+PNGCodec::DecodeOutput::DecodeOutput(PNGCodec::DecodeOutput&& other) = default;
+PNGCodec::DecodeOutput& PNGCodec::DecodeOutput::operator=(
+    PNGCodec::DecodeOutput&& other) = default;
+PNGCodec::DecodeOutput::~DecodeOutput() = default;
+
 // Decoder --------------------------------------------------------------------
 
 namespace {
@@ -38,29 +46,41 @@ std::unique_ptr<SkCodec> CreatePngDecoder(std::unique_ptr<SkStream> stream,
     return SkPngRustDecoder::Decode(std::move(stream), result);
 #else
     // The `if` condition guarantees `SKIA_BUILD_RUST_PNG`.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 
   return SkPngDecoder::Decode(std::move(stream), result);
 }
 
-bool PrepareForPNGDecode(const unsigned char* input,
-                         size_t input_size,
-                         PNGCodec::ColorFormat format,
-                         std::unique_ptr<SkCodec>* codec,
-                         SkImageInfo* image_info) {
+struct PreparationOutput {
+  std::unique_ptr<SkCodec> codec;
+  SkImageInfo image_info;
+};
+
+std::optional<PreparationOutput> PrepareForPNGDecode(
+    base::span<const uint8_t> input,
+    PNGCodec::ColorFormat format) {
+  PreparationOutput output;
+
   // Parse the input stream with the PNG decoder, yielding a SkCodec.
-  auto stream = std::make_unique<SkMemoryStream>(input, input_size,
+  auto stream = std::make_unique<SkMemoryStream>(input.data(), input.size(),
                                                  /*copyData=*/false);
   SkCodec::Result result;
-  *codec = CreatePngDecoder(std::move(stream), &result);
-  if (!*codec || result != SkCodec::kSuccess) {
-    return false;
+  output.codec = CreatePngDecoder(std::move(stream), &result);
+  if (!output.codec || result != SkCodec::kSuccess) {
+    return std::nullopt;
+  }
+
+  // Reject images that would exceed INT_MAX bytes.
+  SkISize size = output.codec->dimensions();
+  constexpr int kBytesPerPixel = 4;
+  if (size.area() >= (INT_MAX / kBytesPerPixel)) {
+    return std::nullopt;
   }
 
   // Create an SkImageInfo matching the PNG's, but with our desired format.
-  SkImageInfo codec_info = (*codec)->getInfo();
+  SkImageInfo codec_info = output.codec->getInfo();
   SkAlphaType alpha_type = codec_info.alphaType();
   SkColorType color_type;
   switch (format) {
@@ -77,81 +97,83 @@ bool PrepareForPNGDecode(const unsigned char* input,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid color format " << format;
-      return false;
+      NOTREACHED() << "Invalid color format " << format;
   }
-  *image_info =
+  output.image_info =
       SkImageInfo::Make(codec_info.width(), codec_info.height(), color_type,
                         alpha_type, codec_info.refColorSpace());
 
-  // Reject images that would exceed INT_MAX bytes.
-  constexpr int kBytesPerPixel = 4;
-  return image_info->dimensions().area() < (INT_MAX / kBytesPerPixel);
+  return output;
 }
 
 }  // namespace
 
 // static
-bool PNGCodec::Decode(const unsigned char* input,
-                      size_t input_size,
-                      ColorFormat format,
-                      std::vector<unsigned char>* output,
-                      int* w,
-                      int* h) {
-  DCHECK(output);
+std::optional<PNGCodec::DecodeOutput> PNGCodec::Decode(
+    base::span<const uint8_t> input,
+    ColorFormat format) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ImageDecoder.Png.UiGfxIntoVector");
 
-  std::unique_ptr<SkCodec> codec;
-  SkImageInfo info;
-  bool ok = PrepareForPNGDecode(input, input_size, format, &codec, &info);
-
-  *w = info.width();
-  *h = info.height();
-  if (!ok) {
-    return false;
+  std::optional<PreparationOutput> preparation_output =
+      PrepareForPNGDecode(input, format);
+  if (!preparation_output) {
+    return std::nullopt;
   }
+
+  DecodeOutput output;
+  output.width = preparation_output->image_info.width();
+  output.height = preparation_output->image_info.height();
 
   // Always decode into vanilla sRGB, because the output array is a bag of RGBA
   // pixels and doesn't have an associated colorspace.
-  SkImageInfo info_srgb = info.makeColorSpace(SkColorSpace::MakeSRGB());
+  SkImageInfo info_srgb =
+      preparation_output->image_info.makeColorSpace(SkColorSpace::MakeSRGB());
 
   // Decode the pixels into the `output` vector.
-  output->resize(info_srgb.computeMinByteSize());
-  SkCodec::Result result =
-      codec->getPixels(info_srgb, &output->front(), info.minRowBytes());
-  return result == SkCodec::kSuccess;
+  output.output.resize(info_srgb.computeMinByteSize());
+  SkCodec::Result result = preparation_output->codec->getPixels(
+      info_srgb, output.output.data(),
+      preparation_output->image_info.minRowBytes());
+  if (result != SkCodec::kSuccess) {
+    return std::nullopt;
+  }
+  return output;
 }
 
-// static
-bool PNGCodec::Decode(const unsigned char* input,
-                      size_t input_size,
-                      SkBitmap* bitmap) {
-  DCHECK(bitmap);
+SkBitmap PNGCodec::Decode(base::span<const uint8_t> input) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ImageDecoder.Png.UiGfxIntoSkBitmap");
 
-  std::unique_ptr<SkCodec> codec;
-  SkImageInfo info;
-  if (!PrepareForPNGDecode(input, input_size, FORMAT_SkBitmap, &codec, &info)) {
-    return false;
+  std::optional<PreparationOutput> preparation_output =
+      PrepareForPNGDecode(input, FORMAT_SkBitmap);
+  if (!preparation_output) {
+    return SkBitmap();
   }
 
   // The image alpha type is likely to be "unpremultiplied," as this is set by
   // the PNG standard. However, Skia prefers premultiplied bitmaps. We update
   // the image-info struct to specify premultiplication; the SkCodec will
   // automatically fix up the pixels as it runs.
-  SkAlphaType alpha = info.alphaType();
+  SkAlphaType alpha = preparation_output->image_info.alphaType();
   if (alpha == kUnpremul_SkAlphaType) {
-    info = info.makeAlphaType(kPremul_SkAlphaType);
+    preparation_output->image_info =
+        preparation_output->image_info.makeAlphaType(kPremul_SkAlphaType);
   }
 
-  // Decode the image pixels directly onto the SkBitmap. Alpha premultiplication
+  // Decode the image pixels directly into the SkBitmap. Alpha premultiplication
   // will be performed by `getPixels`. No colorspace conversion will occur,
   // because the bitmap uses the same colorspace as the original PNG.
-  if (!bitmap->tryAllocPixels(info)) {
-    return false;
+  SkBitmap bitmap;
+  if (!bitmap.tryAllocPixels(preparation_output->image_info)) {
+    return SkBitmap();
   }
 
-  return codec->getPixels(bitmap->pixmap()) == SkCodec::kSuccess;
+  SkCodec::Result result =
+      preparation_output->codec->getPixels(bitmap.pixmap());
+  if (result == SkCodec::kSuccess) {
+    return bitmap;
+  } else {
+    return SkBitmap();
+  }
 }
 
 // Encoder --------------------------------------------------------------------
@@ -173,33 +195,39 @@ void AddComments(SkPngEncoder::Options& options,
       static_cast<int>(comment_pointers.size()));
 }
 
-bool EncodeSkPixmap(const SkPixmap& src,
-                    const std::vector<PNGCodec::Comment>& comments,
-                    std::vector<unsigned char>* output,
-                    int zlib_level,
-                    bool disable_filters) {
-  output->clear();
-  VectorWStream dst(output);
+std::optional<std::vector<uint8_t>> EncodeSkPixmap(
+    const SkPixmap& src,
+    const std::vector<PNGCodec::Comment>& comments,
+    int zlib_level,
+    bool disable_filters) {
+  std::vector<uint8_t> output;
+  VectorWStream dst(&output);
 
   SkPngEncoder::Options options;
   AddComments(options, comments);
   options.fZLibLevel = zlib_level;
-  if (disable_filters)
+  if (disable_filters) {
     options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
-  return SkPngEncoder::Encode(&dst, src, options);
+  }
+
+  if (!SkPngEncoder::Encode(&dst, src, options)) {
+    return std::nullopt;
+  }
+
+  return output;
 }
 
-bool EncodeSkPixmap(const SkPixmap& src,
-                    bool discard_transparency,
-                    const std::vector<PNGCodec::Comment>& comments,
-                    std::vector<unsigned char>* output,
-                    int zlib_level,
-                    bool disable_filters) {
+std::optional<std::vector<uint8_t>> EncodeSkPixmap(
+    const SkPixmap& src,
+    bool discard_transparency,
+    const std::vector<PNGCodec::Comment>& comments,
+    int zlib_level,
+    bool disable_filters) {
   if (discard_transparency) {
     SkImageInfo opaque_info = src.info().makeAlphaType(kOpaque_SkAlphaType);
     SkBitmap copy;
     if (!copy.tryAllocPixels(opaque_info)) {
-      return false;
+      return std::nullopt;
     }
     SkPixmap opaque_pixmap;
     bool success = copy.peekPixels(&opaque_pixmap);
@@ -211,8 +239,7 @@ bool EncodeSkPixmap(const SkPixmap& src,
         src.readPixels(opaque_info.makeAlphaType(kUnpremul_SkAlphaType),
                        opaque_pixmap.writable_addr(), opaque_pixmap.rowBytes());
     DCHECK(success);
-    return EncodeSkPixmap(opaque_pixmap, comments, output, zlib_level,
-                          disable_filters);
+    return EncodeSkPixmap(opaque_pixmap, comments, zlib_level, disable_filters);
   }
 
   // If the image's pixels are all opaque, encode the PNG as opaque, regardless
@@ -220,38 +247,35 @@ bool EncodeSkPixmap(const SkPixmap& src,
   if (src.info().alphaType() != kOpaque_SkAlphaType && src.computeIsOpaque()) {
     SkPixmap opaque_pixmap{src.info().makeAlphaType(kOpaque_SkAlphaType),
                            src.addr(), src.rowBytes()};
-    return EncodeSkPixmap(opaque_pixmap, comments, output, zlib_level,
-                          disable_filters);
+    return EncodeSkPixmap(opaque_pixmap, comments, zlib_level, disable_filters);
   }
 
   // Encode the PNG without any conversions.
-  return EncodeSkPixmap(src, comments, output, zlib_level, disable_filters);
+  return EncodeSkPixmap(src, comments, zlib_level, disable_filters);
 }
 
-bool EncodeSkBitmap(const SkBitmap& input,
-                    bool discard_transparency,
-                    std::vector<unsigned char>* output,
-                    int zlib_level,
-                    bool disable_filters) {
+std::optional<std::vector<uint8_t>> EncodeSkBitmap(const SkBitmap& input,
+                                                   bool discard_transparency,
+                                                   int zlib_level,
+                                                   bool disable_filters) {
   SkPixmap src;
   if (!input.peekPixels(&src)) {
-    return false;
+    return std::nullopt;
   }
   return EncodeSkPixmap(src, discard_transparency,
-                        std::vector<PNGCodec::Comment>(), output, zlib_level,
+                        std::vector<PNGCodec::Comment>(), zlib_level,
                         disable_filters);
 }
 
 }  // namespace
 
-// static
-bool PNGCodec::Encode(const unsigned char* input,
-                      ColorFormat format,
-                      const Size& size,
-                      int row_byte_width,
-                      bool discard_transparency,
-                      const std::vector<Comment>& comments,
-                      std::vector<unsigned char>* output) {
+std::optional<std::vector<uint8_t>> PNGCodec::Encode(
+    const unsigned char* input,
+    ColorFormat format,
+    const Size& size,
+    int row_byte_width,
+    bool discard_transparency,
+    const std::vector<Comment>& comments) {
   // Initialization required for Windows although the switch covers all cases.
   SkColorType colorType = kN32_SkColorType;
   switch (format) {
@@ -270,36 +294,22 @@ bool PNGCodec::Encode(const unsigned char* input,
   SkImageInfo info =
       SkImageInfo::Make(size.width(), size.height(), colorType, alphaType);
   SkPixmap src(info, input, row_byte_width);
-  return EncodeSkPixmap(src, discard_transparency, comments, output,
-                        DEFAULT_ZLIB_COMPRESSION, /* disable_filters= */ false);
+  return EncodeSkPixmap(src, discard_transparency, comments,
+                        DEFAULT_ZLIB_COMPRESSION, /*disable_filters=*/false);
 }
 
-// static
-bool PNGCodec::EncodeBGRASkBitmap(const SkBitmap& input,
-                                  bool discard_transparency,
-                                  std::vector<unsigned char>* output) {
-  return EncodeSkBitmap(input, discard_transparency, output,
-                        DEFAULT_ZLIB_COMPRESSION, /* disable_filters= */ false);
+std::optional<std::vector<uint8_t>> PNGCodec::EncodeBGRASkBitmap(
+    const SkBitmap& input,
+    bool discard_transparency) {
+  return EncodeSkBitmap(input, discard_transparency, DEFAULT_ZLIB_COMPRESSION,
+                        /*disable_filters=*/false);
 }
 
-// static
-bool PNGCodec::EncodeA8SkBitmap(const SkBitmap& input,
-                                std::vector<unsigned char>* output) {
-  DCHECK_EQ(input.colorType(), kAlpha_8_SkColorType);
-  auto info = input.info()
-                  .makeColorType(kGray_8_SkColorType)
-                  .makeAlphaType(kOpaque_SkAlphaType);
-  SkPixmap src(info, input.getAddr(0, 0), input.rowBytes());
-  return EncodeSkPixmap(src, std::vector<PNGCodec::Comment>(), output,
-                        DEFAULT_ZLIB_COMPRESSION, /* disable_filters= */ false);
-}
-
-// static
-bool PNGCodec::FastEncodeBGRASkBitmap(const SkBitmap& input,
-                                      bool discard_transparency,
-                                      std::vector<unsigned char>* output) {
-  return EncodeSkBitmap(input, discard_transparency, output, Z_BEST_SPEED,
-                        /* disable_filters= */ true);
+std::optional<std::vector<uint8_t>> PNGCodec::FastEncodeBGRASkBitmap(
+    const SkBitmap& input,
+    bool discard_transparency) {
+  return EncodeSkBitmap(input, discard_transparency, Z_BEST_SPEED,
+                        /*disable_filters=*/true);
 }
 
 PNGCodec::Comment::Comment(const std::string& k, const std::string& t)

@@ -79,16 +79,17 @@ void AddTestURLDataSource(const std::string& source_name,
              content::WebUIDataSource::GotDataCallback callback) {
             scoped_refptr<base::RefCountedString> ref_contents(
                 new base::RefCountedString);
-            if (id == "manifest.json")
+            if (id == "manifest.json") {
               ref_contents->as_string() = kManifestText;
-            else if (id == "pwa.html")
+            } else if (id == "pwa.html") {
               ref_contents->as_string() = kPwaHtml;
-            else if (id == "sw.js")
+            } else if (id == "sw.js") {
               ref_contents->as_string() = kSwJs;
-            else if (id == "page2.html")
+            } else if (id == "page2.html") {
               ref_contents->as_string() = kPage2Html;
-            else
-              NOTREACHED_IN_MIGRATION();
+            } else {
+              NOTREACHED();
+            }
 
             std::move(callback).Run(ref_contents);
           }));

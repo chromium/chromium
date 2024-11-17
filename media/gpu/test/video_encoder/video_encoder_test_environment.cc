@@ -296,7 +296,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
 #endif
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_VAAPI)
-  combined_enabled_features.push_back(media::kVaapiVideoEncodeLinux);
+  combined_enabled_features.push_back(media::kAcceleratedVideoEncodeLinux);
 #endif
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

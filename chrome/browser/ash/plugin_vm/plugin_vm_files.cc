@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
@@ -160,7 +161,7 @@ void LaunchPluginVmApp(Profile* profile,
     return std::move(callback).Run(LaunchPluginVmAppResult::FAILED,
                                    "Could not get PluginVmManager");
   }
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   base::FilePath vm_mount = ChromeOSBaseDirectory();
 
   std::vector<std::string> launch_args;

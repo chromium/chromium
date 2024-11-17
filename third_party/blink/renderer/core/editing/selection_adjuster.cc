@@ -164,8 +164,7 @@ class GranularityAdjuster final {
         return StartOfSentencePosition(passed_start.GetPosition());
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return passed_start.GetPosition();
+    NOTREACHED();
   }
 
   template <typename Strategy>
@@ -300,8 +299,7 @@ class GranularityAdjuster final {
         return EndOfSentence(CreateVisiblePosition(passed_end))
             .DeepEquivalent();
     }
-    NOTREACHED_IN_MIGRATION();
-    return passed_end.GetPosition();
+    NOTREACHED();
   }
 
   template <typename Strategy>

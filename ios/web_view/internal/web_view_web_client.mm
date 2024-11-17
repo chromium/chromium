@@ -15,7 +15,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
+#import "components/autofill/ios/form_util/programmatic_form_submission_handler_java_script_feature.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
@@ -94,7 +96,7 @@ base::RefCountedMemory* WebViewWebClient::GetDataResourceBytes(
 
 std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
     web::BrowserState* browser_state) const {
-  return {
+  std::vector<web::JavaScriptFeature*> features = {
       autofill::AutofillJavaScriptFeature::GetInstance(),
       autofill::FormHandlersJavaScriptFeature::GetInstance(),
       autofill::SuggestionControllerJavaScriptFeature::GetInstance(),
@@ -105,6 +107,14 @@ std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
       translate::TranslateJavaScriptFeature::GetInstance(),
       WebViewMessageHandlerJavaScriptFeature::FromBrowserState(browser_state),
       WebViewScriptsJavaScriptFeature::FromBrowserState(browser_state)};
+
+  if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
+    features.push_back(
+        autofill::ProgrammaticFormSubmissionHandlerJavaScriptFeature::
+            GetInstance());
+  }
+
+  return features;
 }
 
 void WebViewWebClient::PrepareErrorPage(

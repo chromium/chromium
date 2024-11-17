@@ -32,9 +32,15 @@
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "media/gpu/windows/mf_video_processor_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
+
+struct FramerateAndResolution {
+  uint32_t frame_rate;
+  gfx::Size resoluion;
+};
 
 class VideoRateControlWrapper;
 class TemporalScalabilityIdExtractor;
@@ -106,11 +112,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   class EncodeOutput;
 
   // Pending encode input.
-  struct PendingInput : public VideoEncoder::PendingEncode {
-    // If true, output bits should be discarded and the rate control object
-    // shouldn't be let known about the encode.
-    bool discard_output = false;
-  };
+  struct PendingInput;
 
   // Metadata whose meaning should be carried over from input to output.
   struct OutOfBandMetadata {
@@ -137,9 +139,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     kError,
   };
 
-  PendingInput MakeInput(scoped_refptr<media::VideoFrame> frame,
-                         const VideoEncoder::EncodeOptions& options,
-                         bool discard_output);
+  void QueueInput(scoped_refptr<media::VideoFrame> frame,
+                  const VideoEncoder::EncodeOptions& options,
+                  bool discard_output);
   void EncodeInternal(scoped_refptr<VideoFrame> frame,
                       const EncodeOptions& options,
                       bool discard_output);
@@ -175,9 +177,12 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void FeedInputs();
 
   // Populates input sample buffer with contents of a video frame
-  HRESULT PopulateInputSampleBuffer(const PendingInput& input);
-  HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame);
-  HRESULT CopyInputSampleBufferFromGpu(const VideoFrame& frame);
+  HRESULT PopulateInputSampleBuffer(const PendingInput& input,
+                                    scoped_refptr<VideoFrame> frame);
+  HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame,
+                                       ComMFSample input_sample);
+  HRESULT CopyInputSampleBufferFromGpu(scoped_refptr<VideoFrame> frame,
+                                       ComMFSample input_sample);
 
   bool IsTemporalScalabilityCoding() const { return num_temporal_layers_ > 1; }
 
@@ -191,9 +196,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // process all inputs, produce all outputs and tell us when it's done.
   void DrainEncoder();
 
-  // Check if |size| is supported. As max resolution is hard coded at this time,
-  // frame size larger than 1920x1088 will be rejected even it could be
-  // supported by hardware and driver.
+  // Check if |size| is supported.
   bool IsFrameSizeAllowed(gfx::Size size);
   // Update frame size without re-initializing the encoder.
   void UpdateFrameSize(const gfx::Size& size);
@@ -286,10 +289,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   ComMFMediaType imf_input_media_type_;
   ComMFMediaType imf_output_media_type_;
 
-  ComMFSample input_sample_;
-  // True if `input_sample_` has been populated with data/metadata
-  // of the next frame to be encoded.
-  bool has_prepared_input_sample_ = false;
+  // MF video processor used for color format conversion; only
+  // created if needed.
+  std::unique_ptr<MediaFoundationVideoProcessorAccelerator> mf_video_processor_;
 
   // Variables used by video processing for scaling.
   ComD3D11VideoProcessor video_processor_;
@@ -330,13 +332,17 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // output. Every input pushes back a new entry, and outputs consumes entries
   // from the front.
   base::circular_deque<OutOfBandMetadata> sample_metadata_queue_;
+  gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds workarounds_;
 
   // This counter starts from 0, used for managing the METransformNeedInput
   // events sent by MFT encoder.
   uint32_t encoder_needs_input_counter_;
 
-  gfx::Size max_resolution_;
+  // Max supported framerate and resolution combinations.
+  std::vector<FramerateAndResolution> max_framerate_and_resolutions_;
+
+  bool encoder_produces_svc_spec_compliant_bitstream_ = false;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

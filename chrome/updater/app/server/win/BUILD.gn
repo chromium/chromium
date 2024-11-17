@@ -210,15 +210,18 @@ midl_user_system_idl("updater_legacy_idl") {
   replacement_guids = updater_legacy_idl_guids
 }
 
-# The COM server needs to work with Windows 7, so explicitly setting the defines
-# to reflect this. Otherwise, WRL uses APIs that are only available in later
-# Windows versions.
+# The COM servers only need to use classic COM, and not WinRT. <wrl/module.h>
+# will use WinRT when targeting `NTDDI` versions of Windows 8.1 and up, so the
+# `NTDDI_VERSION` is set explicitly to Windows 8.0 here to avoid the WinRT
+# dependency.
 config("winver") {
   defines = [
-    "NTDDI_VERSION=NTDDI_WIN7",
+    "NTDDI_VERSION=NTDDI_WIN8",
 
-    # Hardcoding version 0x0601, since _WIN32_WINNT_WIN7 may not be defined.
-    "_WIN32_WINNT=0x0601",
-    "WINVER=0x0601",
+    # We can't say `=_WIN32_WINNT_WIN10` here because some files do
+    # `#if WINVER < 0x0600` without including windows.h before,
+    # and then _WIN32_WINNT_WIN10 isn't yet known to be 0x0A00.
+    "_WIN32_WINNT=0x0A00",
+    "WINVER=0x0A00",
   ]
 }

@@ -44,6 +44,9 @@ class FirmwareUpdateAppUI : public ui::MojoWebDialogUI {
       mojo::PendingReceiver<firmware_update::mojom::UpdateProvider> receiver);
 
   void BindInterface(
+      mojo::PendingReceiver<firmware_update::mojom::SystemUtils> receiver);
+
+  void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>);
 
  private:

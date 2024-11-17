@@ -76,9 +76,13 @@ def main():
                       required=True,
                       help='where to write output rustc flags')
   parser.add_argument('--target', help='rust target triple')
+  parser.add_argument('--target-abi', help='rust target_abi')
   parser.add_argument('--pointer-width', help='rust target pointer width')
   parser.add_argument('--features', help='features', nargs='+')
   parser.add_argument('--env', help='environment variable', nargs='+')
+  parser.add_argument('--rustflags',
+                      help=('path to a file of newline-separated command line '
+                            'flags for rustc'))
   parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
   parser.add_argument('--generated-files', nargs='+', help='any generated file')
   parser.add_argument('--out-dir', required=True, help='target out dir')
@@ -140,10 +144,14 @@ def main():
       env["CARGO_CFG_TARGET_FAMILY"] = "windows"
     else:
       env["CARGO_CFG_TARGET_FAMILY"] = "unix"
+    env["CARGO_CFG_TARGET_ABI"] = args.target_abi if args.target_abi else ""
     if args.features:
       for f in args.features:
         feature_name = f.upper().replace("-", "_")
         env["CARGO_FEATURE_%s" % feature_name] = "1"
+    if args.rustflags:
+      with open(args.rustflags) as flags:
+        env["CARGO_ENCODED_RUSTFLAGS"] = '\x1f'.join(flags.readlines())
     if args.env:
       for e in args.env:
         (k, v) = e.split("=")

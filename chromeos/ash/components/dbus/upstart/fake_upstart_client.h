@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
   void StartJob(const std::string& job,
                 const std::vector<std::string>& upstart_env,
                 chromeos::VoidDBusMethodCallback callback) override;
+  void StartJobWithTimeout(const std::string& job,
+                           const std::vector<std::string>& upstart_env,
+                           chromeos::VoidDBusMethodCallback callback,
+                           int timeout_ms) override;
   void StartJobWithErrorDetails(
       const std::string& job,
       const std::vector<std::string>& upstart_env,

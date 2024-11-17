@@ -435,7 +435,7 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     root_view->SetLastPointerType(ui::EventPointerType::kTouch);
     root_view->SetInsets(gfx::Insets::TLBR(0, 0, keyboard_height, 0));
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   }
 

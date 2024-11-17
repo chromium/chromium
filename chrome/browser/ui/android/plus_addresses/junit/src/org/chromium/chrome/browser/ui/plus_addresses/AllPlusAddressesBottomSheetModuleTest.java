@@ -67,7 +67,6 @@ public class AllPlusAddressesBottomSheetModuleTest {
 
     private Activity mActivity;
     private AllPlusAddressesBottomSheetCoordinator mCoordinator;
-    private AllPlusAddressesBottomSheetUIInfo mUIInfo;
 
     @Before
     public void setUp() {
@@ -76,8 +75,6 @@ public class AllPlusAddressesBottomSheetModuleTest {
         mCoordinator =
                 new AllPlusAddressesBottomSheetCoordinator(
                         mActivity, mBottomSheetController, mDelegate, mFaviconHelper);
-        mUIInfo = new AllPlusAddressesBottomSheetUIInfo();
-        mUIInfo.setPlusProfiles(List.of(PROFILE_1));
 
         // `BottomSheetController#hideContent()` is called when the model is initially bound to the
         // view. The mock is reset to avoid confusing expectations in the tests.
@@ -90,7 +87,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
 
-        mCoordinator.showPlusProfiles(mUIInfo);
+        mCoordinator.showPlusProfiles(List.of(PROFILE_1));
         verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));
         verify(mBottomSheetController).hideContent(any(BottomSheetContent.class), eq(true));
     }
@@ -101,7 +98,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
 
-        mCoordinator.showPlusProfiles(mUIInfo);
+        mCoordinator.showPlusProfiles(List.of(PROFILE_1));
         verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
 
         AllPlusAddressesBottomSheetView view = mViewCaptor.getValue();
@@ -125,7 +122,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
 
-        mCoordinator.showPlusProfiles(mUIInfo);
+        mCoordinator.showPlusProfiles(List.of(PROFILE_1));
         verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
 
         AllPlusAddressesBottomSheetView view = mViewCaptor.getValue();
@@ -163,7 +160,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
 
-        mCoordinator.showPlusProfiles(mUIInfo);
+        mCoordinator.showPlusProfiles(List.of(PROFILE_1));
         ArgumentCaptor<BottomSheetObserver> observerCaptor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController).addObserver(observerCaptor.capture());
@@ -184,7 +181,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
 
-        mCoordinator.showPlusProfiles(mUIInfo);
+        mCoordinator.showPlusProfiles(List.of(PROFILE_1));
         ArgumentCaptor<BottomSheetObserver> observerCaptor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController).addObserver(observerCaptor.capture());
@@ -207,7 +204,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
 
-        mCoordinator.showPlusProfiles(mUIInfo);
+        mCoordinator.showPlusProfiles(List.of(PROFILE_1));
         verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
 
         AllPlusAddressesBottomSheetView view = mViewCaptor.getValue();

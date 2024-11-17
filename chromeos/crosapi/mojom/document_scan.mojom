@@ -8,7 +8,7 @@ module crosapi.mojom;
 // third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
 
 // The failure mode of a scan job.
-[Stable, Extensible]
+[Extensible]
 enum ScanFailureMode {
   // No failure occurred.
   [Default] kNoFailure = 0,
@@ -38,7 +38,7 @@ enum ScanFailureMode {
 // Indicates the result of each operation performed by the backend.  It
 // contains the same causes as SANE_Status plus additional statuses that come
 // from the IPC layers and image conversion stages.
-[Stable, Extensible]
+[Extensible]
 enum ScannerOperationResult {
   // An unknown or generic failure occurred.
   [Default] kUnknown = 0,
@@ -93,7 +93,6 @@ enum ScannerOperationResult {
 };
 
 // Information about a scanner that was returned from `GetScannerList()`.
-[Stable]
 struct ScannerInfo {
   // Connection string that can be used with `OpenScanner()`.
   string id@0;
@@ -125,7 +124,7 @@ struct ScannerInfo {
 
   // The enum below is exactly the same as its counterpart in
   // third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
-  [Stable, Extensible]
+  [Extensible]
   enum ConnectionType {
     // Scanner has an unknown connection type.
     [Default] kUnspecified = 0,
@@ -146,7 +145,6 @@ struct ScannerInfo {
 
 // A set of criteria that can be passed to `GetScannerList()`. Only
 // devices that match all of the criteria will be returned.
-[Stable]
 struct ScannerEnumFilter {
   // Return only directly connected devices.
   bool local@0;
@@ -159,7 +157,7 @@ struct ScannerEnumFilter {
 // third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
 //
 // The type of an option.  This is the same set of types as SANE_Value_Type.
-[Stable, Extensible]
+[Extensible]
 enum OptionType {
   [Default] kUnknown = 0,
   kBool = 1,
@@ -175,7 +173,7 @@ enum OptionType {
 //
 // The unit of measurement for an option.  This is the same set of units as
 // SANE_Unit.
-[Stable, Extensible]
+[Extensible]
 enum OptionUnit {
   // Value is a unitless number, e.g., threshold.
   [Default] kUnitless = 0,
@@ -201,7 +199,6 @@ enum OptionUnit {
 
 // The value of a `ScannerOption`.  The active field must match the
 // `OptionType` of the option.
-[Stable]
 union OptionValue {
   bool bool_value;
   int32 int_value;
@@ -215,7 +212,7 @@ union OptionValue {
 // third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
 //
 // The type of a constraint.  These correspond to SANE_Constraint_Type.
-[Stable, Extensible]
+[Extensible]
 enum OptionConstraintType {
   [Default] kNone = 0,
   kIntRange = 1,
@@ -226,7 +223,6 @@ enum OptionConstraintType {
 };
 
 // A range of valid values for an option of type `OptionType.kInt`.
-[Stable]
 struct IntRange {
   int32 min@0;
   int32 max@1;
@@ -234,7 +230,6 @@ struct IntRange {
 };
 
 // A range of valid values for an option of type `OptionType.kFixed`.
-[Stable]
 struct FixedRange {
   double min@0;
   double max@1;
@@ -243,7 +238,6 @@ struct FixedRange {
 
 // The specific restriction imposed by an `OptionConstraint`.  Each type of
 // restriction corresponds to a value of `OptionConstraintType`.
-[Stable]
 union OptionConstraintRestriction {
   IntRange int_range;
   FixedRange fixed_range;
@@ -254,7 +248,6 @@ union OptionConstraintRestriction {
 
 // A constraint on the allowed values of a `ScannerOption`.  The `type` field
 // indicates which union member of `constraint` is expected to be set.
-[Stable]
 struct OptionConstraint {
   OptionConstraintType type@0;
   OptionConstraintRestriction restriction@1;
@@ -263,7 +256,7 @@ struct OptionConstraint {
 // How an option can be configured.  An option can be configured through
 // software, through hardware, or neither (read-only).  The SANE model does not
 // permit an option to be configured in both hardware and software.
-[Stable, Extensible]
+[Extensible]
 enum OptionConfigurability {
   // Option is read-only and cannot be changed.
   kNotConfigurable = 0,
@@ -278,7 +271,6 @@ enum OptionConfigurability {
 // A self-describing scanner option, in the style of SANE_Option_Descriptor.  A
 // `ScannerOption` represents an individual option with display information, an
 // optional current value, and an optional constraint on valid values.
-[Stable]
 struct ScannerOption {
   // Option name using lowercase a-z, numbers, and dashes.
   string name@0;
@@ -327,7 +319,6 @@ struct ScannerOption {
 
 // The result of combining lorgnette's d-bus response with Chrome's mDNS
 // discovery for `GetScannerList()`.
-[Stable]
 struct GetScannerListResponse {
   // The backend's enumeration result.
   ScannerOperationResult result@0;
@@ -337,7 +328,6 @@ struct GetScannerListResponse {
 };
 
 // The response from calling `OpenScanner()`.
-[Stable]
 struct OpenScannerResponse {
   // Same scanner_id value passed to `OpenScanner()`.
   string scanner_id@0;
@@ -358,7 +348,6 @@ struct OpenScannerResponse {
 };
 
 // The response from calling `CloseScanner()`.
-[Stable]
 struct CloseScannerResponse {
   // Same scanner_handle value passed to `CloseScanner()`.
   string scanner_handle@0;
@@ -370,7 +359,6 @@ struct CloseScannerResponse {
 // Options for `StartPreparedScan()` that are not already specified via a
 // `ScannerOption`.  These tend to cover how the scanning framework itself works
 // as opposed to how a scanner works.
-[Stable]
 struct StartScanOptions {
   // The desired MIME type for returned scans.
   string format@0;
@@ -381,7 +369,6 @@ struct StartScanOptions {
 };
 
 // The response from calling `StartPreparedScan()`.
-[Stable]
 struct StartPreparedScanResponse {
   // The same scanner handle that was passed to `StartPreparedScan()`.
   string scanner_handle@0;
@@ -395,7 +382,6 @@ struct StartPreparedScanResponse {
 };
 
 // The response from calling `ReadScanData()`.
-[Stable]
 struct ReadScanDataResponse {
   // The same job handle that was passed to `ReadScanData()`.
   string job_handle@0;
@@ -414,7 +400,6 @@ struct ReadScanDataResponse {
 };
 
 // Used to set an option from `ScannerOption`.
-[Stable]
 struct OptionSetting {
   // The name of the option.
   string name@0;
@@ -428,7 +413,6 @@ struct OptionSetting {
 };
 
 // A group containing a list of option names.
-[Stable]
 struct OptionGroup {
   // Printable title, e.g. "Geometry options".
   string title@0;
@@ -439,7 +423,6 @@ struct OptionGroup {
 
 
 // The result from setting an option.
-[Stable]
 struct SetOptionResult {
   // The name of the option that was set.
   string name@0;
@@ -449,7 +432,6 @@ struct SetOptionResult {
 };
 
 // The response from calling `SetOptions()`.
-[Stable]
 struct SetOptionsResponse {
   // The same scanner handle that was passed to `SetOptions()`.
   string scanner_handle@0;
@@ -462,7 +444,6 @@ struct SetOptionsResponse {
 };
 
 // The response from calling `GetOptionGroups`.
-[Stable]
 struct GetOptionGroupsResponse {
   // The same scanner handle that was passed to `GetOptionGroups()`.
   string scanner_handle@0;
@@ -475,7 +456,6 @@ struct GetOptionGroupsResponse {
 };
 
 // The response from calling `CancelScan`.
-[Stable]
 struct CancelScanResponse {
   // The same job handle that was passed to `CancelScan()`.
   string job_handle@0;
@@ -487,7 +467,7 @@ struct CancelScanResponse {
 // This interface is used to access scanners.
 // Next version: 6
 // Next method id: 10
-[Stable, Uuid="f0c77c02-b5c1-4919-8218-3076ecad58db"]
+[Uuid="f0c77c02-b5c1-4919-8218-3076ecad58db"]
 interface DocumentScan {
   // Returns the names of all available, de-duplicated scanners.
   GetScannerNames@0() => (array<string> scanner_names);

@@ -20,7 +20,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -340,44 +339,6 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
                 Log.i(TAG, msg);
             }
         }
-
-        if (caller.equals(HANDLE_BACK_PRESSED) && !mUseSystemBack) {
-            final var actionOfSystemBackArm = determineBackPressAction(mObservedTab);
-            if (actionOfSystemBackArm.first != minimizeApp
-                    || actionOfSystemBackArm.second != shouldCloseTab) {
-                int systemBackArmResult =
-                        getActionType(actionOfSystemBackArm.first, actionOfSystemBackArm.second);
-                String systemBackArmResultString =
-                        getActionAsString(
-                                actionOfSystemBackArm.first, actionOfSystemBackArm.second);
-                String expectedResultString = getActionAsString(minimizeApp, shouldCloseTab);
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Android.BackPress.Failure." + expectedResultString,
-                        systemBackArmResult,
-                        MinimizeAppAndCloseTabType.NUM_TYPES);
-
-                String msg =
-                        String.format(
-                                Locale.US,
-                                "%s - different behavior. expected: %s; actual: %s, system back arm"
-                                    + " supplier %s; currentTab %s;  mTabOnStart %s open from"
-                                    + " external %s; layout on start: %s, on pressed: %s; nav mode"
-                                    + " %s",
-                                caller,
-                                expectedResultString,
-                                systemBackArmResultString,
-                                mSystemBackPressSupplier.get(),
-                                currentTab,
-                                mTabOnStart,
-                                currentTab != null
-                                        && TabAssociatedApp.isOpenedFromExternalApp(currentTab),
-                                mLayoutTypeOnStart,
-                                getLayoutType(),
-                                getNavigationMode());
-                assert false : msg;
-                Log.i(TAG, msg);
-            }
-        }
     }
 
     @Override
@@ -411,23 +372,6 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
                 : "3-button";
     }
 
-    private String getActionAsString(boolean minimizeApp, boolean shouldCloseTab) {
-        if (minimizeApp && !shouldCloseTab) return "MinimizeApp";
-        if (minimizeApp && shouldCloseTab) return "MinimizeAppAndCloseTab";
-        assert !minimizeApp && shouldCloseTab;
-        return "CloseTab";
-    }
-
-    private @MinimizeAppAndCloseTabType int getActionType(
-            boolean minimizeApp, boolean shouldCloseTab) {
-        if (minimizeApp && !shouldCloseTab) return MinimizeAppAndCloseTabType.MINIMIZE_APP;
-        if (minimizeApp && shouldCloseTab) {
-            return MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB;
-        }
-        assert !minimizeApp && shouldCloseTab;
-        return MinimizeAppAndCloseTabType.CLOSE_TAB;
-    }
-
     static boolean shouldUseSystemBack() {
         // https://developer.android.com/about/versions/12/behavior-changes-all#back-press
         // Starting from 12, root launcher activities are no longer finished on Back press.
@@ -435,7 +379,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
         boolean isAtLeastT =
                 (sVersionForTesting == null ? VERSION.SDK_INT : sVersionForTesting)
                         >= VERSION_CODES.TIRAMISU;
-        return isAtLeastT && ChromeFeatureList.sBackToHomeAnimation.isEnabled();
+        return isAtLeastT;
     }
 
     static void setVersionForTesting(Integer version) {

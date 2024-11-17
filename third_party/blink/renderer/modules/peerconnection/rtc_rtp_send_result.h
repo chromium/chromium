@@ -15,12 +15,14 @@
 
 namespace blink {
 
+class V8RTCRtpUnsentReason;
+
 class RTCRtpSendResult : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   RTCRtpSent* sent();
-  String unsent();
+  std::optional<V8RTCRtpUnsentReason> unsent();
 };
 
 }  // namespace blink

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import base64
 import functools
 import io
 import json
@@ -107,11 +108,30 @@ class BisectTest(BisectTestCase):
                                             try_args=options.args)
     return (minrev, maxrev)
 
-  def testBisectConsistentAnswer(self):
+  @patch('builtins.print')
+  def testBisectConsistentAnswer(self, mock_print):
+
+    def get_steps():
+      steps = []
+      for call in mock_print.call_args_list:
+        if call.args and call.args[0].startswith('You have'):
+          steps.append(int(re.search(r'(\d+) steps', call.args[0])[1]))
+      return steps
+
     self.assertEqual(self.bisect(1000, 100, lambda *args: 'g'), (100, 101))
+    self.assertSequenceEqual(get_steps(), range(10, 1, -1))
+
+    mock_print.reset_mock()
     self.assertEqual(self.bisect(100, 1000, lambda *args: 'b'), (100, 101))
+    self.assertSequenceEqual(get_steps(), range(10, 0, -1))
+
+    mock_print.reset_mock()
     self.assertEqual(self.bisect(2000, 200, lambda *args: 'b'), (1999, 2000))
+    self.assertSequenceEqual(get_steps(), range(11, 0, -1))
+
+    mock_print.reset_mock()
     self.assertEqual(self.bisect(200, 2000, lambda *args: 'g'), (1999, 2000))
+    self.assertSequenceEqual(get_steps(), range(11, 1, -1))
 
   @patch('bisect-builds.ArchiveBuild.run_revision', return_value=(0, '', ''))
   def test_bisect_should_retry(self, mock_run_revision):
@@ -214,6 +234,24 @@ class DownloadJobTest(BisectTestCase):
     self.assertEqual(mock_close.call_count, 2)
     mock_unlink.assert_has_calls([call('some-file.apks'), call('file2.apk')])
     self.assertEqual(mock_gsutil.call_count, 2)
+
+
+  @patch(
+      "urllib.request.urlopen",
+      side_effect=urllib.request.HTTPError('url', 404, 'Not Found', None, None),
+  )
+  @patch('subprocess.Popen', spec=subprocess.Popen)
+  @patch('bisect-builds.GSUTILS_PATH', new='/some/path')
+  def test_download_failure_should_raised(self, mock_Popen, mock_urlopen):
+    fetch = bisect_builds.DownloadJob('http://some-file.zip', 123)
+    with self.assertRaises(urllib.request.HTTPError):
+      fetch.start().wait_for()
+
+    mock_Popen.return_value.communicate.return_value = (b'', b'status=403')
+    mock_Popen.return_value.returncode = 1
+    fetch = bisect_builds.DownloadJob('gs://some-file.zip', 123)
+    with self.assertRaises(bisect_builds.BisectException):
+      fetch.start().wait_for()
 
 
 class ArchiveBuildTest(BisectTestCase):
@@ -385,6 +423,45 @@ class ArchiveBuildTest(BisectTestCase):
                            [])
     mock_Popen.assert_called_once_with(
         'temp-dir/linux64/chrome --user-data-dir=temp-dir/profile',
+        cwd=None,
+        shell=True,
+        bufsize=-1,
+        stdout=ANY,
+        stderr=ANY)
+
+  @patch('subprocess.Popen', spec=subprocess.Popen)
+  def test_launch_revision_should_run_command_for_mac(self, mock_Popen):
+    mock_Popen.return_value.communicate.return_value = ('', '')
+    mock_Popen.return_value.returncode = 0
+    build = self.create_build()
+    build._launch_revision(
+        'temp-dir', {
+            'chrome':
+            'temp-dir/full-build-mac/'
+            'Google Chrome.app/Contents/MacOS/Google Chrome'
+        }, [])
+    mock_Popen.assert_called_once_with(
+        "'temp-dir/full-build-mac/"
+        "Google Chrome.app/Contents/MacOS/Google Chrome'"
+        ' --user-data-dir=temp-dir/profile',
+        cwd=None,
+        shell=True,
+        bufsize=-1,
+        stdout=ANY,
+        stderr=ANY)
+
+  @patch('subprocess.Popen', spec=subprocess.Popen)
+  def test_launch_revision_should_run_command_for_win(self, mock_Popen):
+    mock_Popen.return_value.communicate.return_value = ('', '')
+    mock_Popen.return_value.returncode = 0
+    build = self.create_build()
+    build._launch_revision(
+        'C:\\temp-dir', {
+            'chrome': 'C:\\temp-dir\\full-build-win\\chrome.exe'
+        }, [])
+    mock_Popen.assert_called_once_with(
+        "'C:\\temp-dir\\full-build-win\\chrome.exe' "
+        '--user-data-dir=C:\\temp-dir/profile',
         cwd=None,
         shell=True,
         bufsize=-1,
@@ -633,7 +710,7 @@ class SnapshotBuildTest(BisectTestCase):
   '''
 
   @maybe_patch('urllib.request.urlopen',
-               return_value=io.StringIO(CommonDataXMLContent))
+               return_value=io.BytesIO(CommonDataXMLContent.encode('utf8')))
   @patch('bisect-builds.GetChromiumRevision', return_value=1313185)
   def test_get_rev_list(self, mock_GetChromiumRevision, mock_urlopen):
     options = bisect_builds.ParseCommandLine(
@@ -759,7 +836,7 @@ class ASANBuildTest(BisectTestCase):
   '''
 
   @maybe_patch('urllib.request.urlopen',
-               return_value=io.StringIO(CommonDataXMLContent))
+               return_value=io.BytesIO(CommonDataXMLContent.encode('utf8')))
   def test_get_rev_list(self, mock_urlopen):
     options = bisect_builds.ParseCommandLine([
         '--asan', '-a', 'mac', '-g', '1313161', '-b', '1313210',
@@ -1217,7 +1294,8 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
               'gs://bling-archive/128.0.6536.0/20240613011356/Chromium.tar.gz',
           ]
       ])
-  def test_list_rev(self, mock_GsutilList):
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, '', ''))
+  def test_list_rev(self, mock_run, mock_GsutilList):
     options = bisect_builds.ParseCommandLine([
         '-r', '-a', 'ios-simulator', '--device-id', '321', '-g', '128.0.6534.0',
         '-b', '128.0.6536.0', '--no-local-cache'
@@ -1225,6 +1303,7 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
     build = bisect_builds.create_archive_build(options)
     self.assertIsInstance(build, bisect_builds.IOSSimulatorReleaseBuild)
     self.assertEqual(build.get_rev_list(), ['128.0.6534.0', '128.0.6536.0'])
+    mock_run.assert_called_once_with(['xcrun', 'simctl', 'boot', '321'])
     mock_GsutilList.assert_any_call('gs://bling-archive')
     mock_GsutilList.assert_any_call(*[
         'gs://bling-archive/%s/*/Chromium.tar.gz' % x for x in [
@@ -1249,6 +1328,7 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
                                                     'tempdir')
     self.assertEqual(mock_glob.call_count, 2)
     mock_run.assert_has_calls([
+        call(['xcrun', 'simctl', 'boot', '321']),
         call(['xcrun', 'simctl', 'install', '321', ANY]),
         call(['plutil', '-extract', 'CFBundleIdentifier', 'raw', 'Info.plist']),
     ])
@@ -1283,6 +1363,7 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
     with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
       build.run_revision(download, tempdir, options.args)
     mock_run.assert_has_calls([
+        call(['xcrun', 'simctl', 'boot', '321']),
         call(['xcrun', 'simctl', 'install', '321', ANY]),
         call(['plutil', '-extract', 'CFBundleIdentifier', 'raw', ANY]),
         call(['xcrun', 'simctl', 'launch', '321', 'stdout'])
@@ -1352,7 +1433,8 @@ class MaybeSwitchBuildTypeTest(BisectTestCase):
 
 class MethodTest(BisectTestCase):
 
-  def test_ParseCommandLine(self):
+  @patch('sys.stderr', new_callable=io.StringIO)
+  def test_ParseCommandLine(self, mock_stderr):
     opts = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '1', 'args1', 'args2 3', '-b', '2'])
     self.assertEqual(opts.build_type, 'snapshot')
@@ -1366,12 +1448,38 @@ class MethodTest(BisectTestCase):
         ['-a', 'linux64', '-g', '1', '--', 'args1', 'args2 3', '-b', '2'])
     self.assertEqual(opts.args, ['args1', 'args2 3', '-b', '2'])
 
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(['-a', 'mac64', '-o', '-g', '1'])
+      self.assertRegexpMatches(
+          mock_stderr.getvalue(), r'To bisect for mac64, please choose from '
+          r'release(-r), snapshot(-s)')
+
+  @patch('bisect-builds._DetectArchive', return_value='linux64')
+  def test_ParseCommandLine_DetectArchive(self, mock_detect_archive):
+    opts = bisect_builds.ParseCommandLine(['-o', '-g', '1'])
+    self.assertEqual(opts.archive, 'linux64')
+
+  @patch('urllib.request.urlopen')
+  @patch('builtins.open')
+  @patch('sys.stdout', new_callable=io.StringIO)
+  def test_update_script(self, mock_stdout, mock_open, mock_urlopen):
+    mock_urlopen.return_value = io.BytesIO(
+        base64.b64encode('content'.encode('utf-8')))
+    with self.assertRaises(SystemExit):
+      bisect_builds.ParseCommandLine(['--update-script'])
+    mock_urlopen.assert_called_once_with(
+        'https://chromium.googlesource.com/chromium/src/+/HEAD/'
+        'tools/bisect-builds.py?format=TEXT')
+    mock_open.assert_called_once()
+    mock_open.return_value.__enter__().write.assert_called_once_with('content')
+    self.assertEqual(mock_stdout.getvalue(), 'Update successful!\n')
+
   @patch("urllib.request.urlopen",
          side_effect=[
              urllib.request.HTTPError('url', 404, 'Not Found', None, None),
              urllib.request.HTTPError('url', 404, 'Not Found', None, None),
-             io.StringIO("NOT_A_JSON"),
-             io.StringIO('{"chromium_main_branch_position": 123}'),
+             io.BytesIO(b"NOT_A_JSON"),
+             io.BytesIO(b'{"chromium_main_branch_position": 123}'),
          ])
   def test_GetRevisionFromVersion(self, mock_urlopen):
     self.assertEqual(123,
@@ -1381,6 +1489,26 @@ class MethodTest(BisectTestCase):
              '?version=127.0.6533.134'),
         call('https://chromiumdash.appspot.com/fetch_version'
              '?version=127.0.6533.0'),
+    ])
+
+  @maybe_patch("urllib.request.urlopen",
+               side_effect=[
+                   io.BytesIO(b'{"chromium_main_branch_position": null}'),
+                   io.BytesIO(b'{"message": "DEP\\n"}'),
+                   io.BytesIO(b')]}\'\n{"message": "Cr-Branched-From: '
+                              b'3d60439cfb36485e76a1c5bb7f513d3721b20da1-'
+                              b'refs/heads/master@{#870763}\\n"}'),
+               ])
+  def test_GetRevisionFromSourceTag(self, mock_urlopen):
+    self.assertEqual(870763,
+                     bisect_builds.GetRevisionFromVersion('91.0.4472.38'))
+    mock_urlopen.assert_has_calls([
+        call('https://chromiumdash.appspot.com/fetch_version'
+             '?version=91.0.4472.38'),
+        call('https://chromium.googlesource.com/chromium/src/'
+             '+/refs/tags/91.0.4472.38?format=JSON'),
+        call('https://chromium.googlesource.com/chromium/src/'
+             '+/refs/tags/91.0.4472.38^?format=JSON'),
     ])
 
 

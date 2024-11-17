@@ -40,18 +40,16 @@ import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridgeJni;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -103,8 +101,6 @@ public class SigninManagerImplTest {
                     .givenName("given name")
                     .build();
 
-    @Rule public final JniMocker mocker = new JniMocker();
-
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -128,11 +124,11 @@ public class SigninManagerImplTest {
 
     @Before
     public void setUp() {
-        mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
-        mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        mocker.mock(BrowsingDataBridgeJni.TEST_HOOKS, mBrowsingDataBridgeNativeMock);
-        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativeMock);
+        SigninManagerImplJni.setInstanceForTesting(mNativeMock);
+        IdentityManagerJni.setInstanceForTesting(mIdentityManagerNativeMock);
+        BrowsingDataBridgeJni.setInstanceForTesting(mBrowsingDataBridgeNativeMock);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNativeMock);
         when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefService);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         BookmarkModel.setInstanceForTesting(FakeBookmarkModel.createModel());
@@ -336,49 +332,6 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void signOutNonSyncingAccountFromJavaWithManagedDomain() {
-        createSigninManager();
-        when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
-
-        // Trigger the sign out flow!
-        mSigninManager.signOut(SignoutReason.TEST);
-
-        // The primary account should be cleared *before* clearing any account data.
-        // For more information see crbug.com/589028.
-        InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
-        verify(mIdentityMutator)
-                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(List.of(), null);
-
-        // Sign-out should only clear the profile when the user is managed.
-        inOrder.verify(mNativeMock).wipeProfileData(eq(NATIVE_SIGNIN_MANAGER), any());
-        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void signOutSyncingAccountFromJavaWithManagedDomain() {
-        createSigninManager();
-        when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
-
-        // Trigger the sign out flow!
-        mSigninManager.signOut(SignoutReason.TEST);
-
-        // The primary account should be cleared *before* clearing any account data.
-        // For more information see crbug.com/589028.
-        InOrder inOrder = inOrder(mNativeMock, mIdentityMutator);
-        inOrder.verify(mIdentityMutator).clearPrimaryAccount(eq(SignoutReason.TEST));
-        verify(mIdentityMutator)
-                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(List.of(), null);
-
-        // Sign-out should only clear the profile when the user is managed.
-        inOrder.verify(mNativeMock).wipeProfileData(eq(NATIVE_SIGNIN_MANAGER), any());
-        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void signOutSignedInAccountFromJavaWithManagedDomain() {
         createSigninManager();
         when(mNativeMock.getManagementDomain(NATIVE_SIGNIN_MANAGER)).thenReturn("TestDomain");
@@ -440,9 +393,6 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
-    })
     public void syncPromoShowCountResetWhenSignOutSyncingAccount() {
         createSigninManager();
         ChromeSharedPreferences.getInstance()
@@ -597,7 +547,8 @@ public class SigninManagerImplTest {
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
 
-        mSigninManager.wipeSyncUserData(() -> {}, SigninManager.DataWipeOption.WIPE_SYNC_DATA);
+        mSigninManager.wipeSyncUserData(
+                CallbackUtils.emptyRunnable(), SigninManager.DataWipeOption.WIPE_SYNC_DATA);
 
         // Passwords should be among the cleared types.
         int[] expectedClearedTypes =
@@ -630,7 +581,8 @@ public class SigninManagerImplTest {
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(ACCOUNT_INFO);
 
-        mSigninManager.wipeSyncUserData(() -> {}, SigninManager.DataWipeOption.WIPE_SYNC_DATA);
+        mSigninManager.wipeSyncUserData(
+                CallbackUtils.emptyRunnable(), SigninManager.DataWipeOption.WIPE_SYNC_DATA);
 
         // Passwords should not be among the cleared types.
         int[] expectedClearedTypes =
@@ -706,11 +658,6 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    // TODO(crbug.com/40858677): Disabling the feature explicitly, because native is not available
-    // to
-    // provide a default value. This should be enabled if the feature is enabled by default or
-    // removed if the flag is removed.
-    @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
     public void callbackNotifiedOnSignout() {
         createSigninManager();
         doAnswer(
@@ -815,7 +762,6 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
     public void signInStateObserverCallOnSignOut() {
         createSigninManager();
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(

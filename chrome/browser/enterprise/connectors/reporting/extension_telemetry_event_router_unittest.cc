@@ -75,8 +75,6 @@ class MockRealtimeReportingClient : public RealtimeReportingClient {
                void(const std::string&,
                     const ReportingSettings& settings,
                     base::Value::Dict event));
-
-  MOCK_METHOD(std::string, GetProfileUserName, (), (const, override));
 };
 
 std::unique_ptr<KeyedService> MakeMockRealtimeReportingClient(
@@ -102,6 +100,8 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
 
     mock_realtime_reporting_client_ = static_cast<MockRealtimeReportingClient*>(
         RealtimeReportingClientFactory::GetForProfile(profile_));
+    mock_realtime_reporting_client_->SetProfileUserNameForTesting(
+        kFakeProfileUsername);
 
     test::SetOnSecurityEventReporting(
         profile_->GetPrefs(), /*enabled=*/true,
@@ -281,8 +281,6 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
       ExtensionInfo::InstallLocation_Name(install_location_).c_str());
   base::Value::Dict expected_event = base::test::ParseJsonDict(event_json);
 
-  EXPECT_CALL(*mock_realtime_reporting_client_, GetProfileUserName())
-      .WillRepeatedly(Return(kFakeProfileUsername));
   EXPECT_CALL(*mock_realtime_reporting_client_,
               ReportRealtimeEvent(kExtensionTelemetryEvent, _,
                                   Eq(ByRef(expected_event))));

@@ -172,6 +172,11 @@ constexpr CGFloat kFaviconContainerBorderWidth = 1.5;
           constraintEqualToAnchor:contentView.trailingAnchor],
     ]];
     [self resetColors];
+
+    if (@available(iOS 17, *)) {
+      [self registerForTraitChanges:TraitCollectionSetForTraits(nil)
+                         withAction:@selector(resetColors)];
+    }
   }
   return self;
 }
@@ -187,10 +192,15 @@ constexpr CGFloat kFaviconContainerBorderWidth = 1.5;
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
   [self resetColors];
 }
+#endif
 
 #pragma mark - UIAccessibility
 

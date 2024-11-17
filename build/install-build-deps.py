@@ -52,14 +52,16 @@ def parse_args(argv):
   parser.add_argument(
       "--android",
       action="store_true",
-      help="Enable installation of android dependencies",
-  )
+      # Deprecated flag retained as functional for backward compatibility:
+      # Enable installation of android dependencies
+      help=argparse.SUPPRESS)
   parser.add_argument(
       "--no-android",
       action="store_false",
       dest="android",
-      help="Disable installation of android dependencies",
-  )
+      # Deprecated flag retained as functional for backward compatibility:
+      # Enable installation of android dependencies
+      help=argparse.SUPPRESS)
   parser.add_argument("--arm",
                       action="store_true",
                       help="Enable installation of arm cross toolchain")
@@ -254,7 +256,6 @@ def dev_list():
       "pkgconf",
       "rpm",
       "ruby",
-      "subversion",
       "uuid-dev",
       "wdiff",
       "x11-utils",
@@ -296,6 +297,10 @@ def dev_list():
 
   if package_exists("libinput-dev"):
     packages.append("libinput-dev")
+
+  # So accessibility APIs work, needed for AX fuzzer
+  if package_exists("at-spi2-core"):
+    packages.append("at-spi2-core")
 
   # Cross-toolchain strip is needed for building the sysroots.
   if package_exists("binutils-arm-linux-gnueabihf"):

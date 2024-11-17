@@ -3,18 +3,25 @@
 <translationbundle lang="id">
 <translation id="1444443021901415601">Chrome mencatat topik minat berdasarkan histori penjelajahan terbaru Anda</translation>
 <translation id="2252052615723281030">Saat login ke Chrome, setelan ini dapat membantu Anda menjaga privasi alamat IP. Jika Chrome mencurigai bahwa salah satu situs mungkin melacak Anda, beberapa traffic dapat dikirim melalui server privasi.</translation>
+<translation id="235789365079050412">Kebijakan Privasi Google</translation>
 <translation id="2793385791865768072">Chromium mencatat topik minat berdasarkan histori penjelajahan terbaru Anda</translation>
+<translation id="2979365474350987274">Cookie pihak ketiga dibatasi</translation>
 <translation id="33479675708419823">Saat login ke Chrome, setelan ini dapat membantu Anda menjaga privasi alamat IP. Jika Chrome mencurigai bahwa salah satu situs mungkin melacak Anda, beberapa traffic dapat dikirim melalui server privasi. Pelajari lebih lanjut <ph name="LINK_BEGIN" />cara kerja perlindungan IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Pelajari lebih lanjut cara menyembunyikan alamat IP</translation>
+<translation id="385051799172605136">Kembali</translation>
 <translation id="4041687306270459969">Topik iklan yang tersimpan lebih dari 4 minggu akan otomatis dihapus. Topik mencakup hal-hal seperti Olahraga, Pakaian, dan lainnya</translation>
 <translation id="4177501066905053472">Topik iklan</translation>
 <translation id="4301151630239508244">Topik iklan hanyalah salah satu dari banyak hal yang dapat digunakan situs untuk mempersonalisasi iklan. Bahkan tanpa topik iklan, situs tetap dapat menampilkan iklan kepada Anda, tetapi iklan tersebut mungkin kurang dipersonalisasi. Pelajari lebih lanjut cara <ph name="BEGIN_LINK_1" />mengelola privasi iklan<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Pelajari lebih lanjut cara Google melindungi data Anda dalam <ph name="BEGIN_LINK" />Kebijakan Privasi<ph name="END_LINK" /> kami.</translation>
 <translation id="453692855554576066">Anda dapat melihat topik iklan di setelan Chromium dan memblokir topik yang tidak ingin Anda bagikan ke situs</translation>
 <translation id="4598427486995631491">Sembunyikan alamat IP Anda</translation>
 <translation id="4692439979815346597">Anda dapat melihat topik iklan di setelan Chrome dan memblokir topik yang tidak ingin Anda bagikan ke situs</translation>
 <translation id="5413586988657235240">Situs yang Anda buka dapat meminta topik kepada Chromium untuk menampilkan iklan yang relevan sekaligus melindungi histori penjelajahan dan identitas Anda</translation>
+<translation id="6053735090575989697">Pelajari lebih lanjut cara Google melindungi data Anda dalam Kebijakan Privasi kami.</translation>
 <translation id="6186536480878693792">Situs yang Anda buka dapat meminta topik kepada Chrome untuk menampilkan iklan yang relevan sekaligus melindungi histori penjelajahan dan identitas Anda</translation>
+<translation id="6195163219142236913">Cookie pihak ketiga dibatasi</translation>
 <translation id="6371812158043974664">Saat login ke Chromium, setelan ini dapat membantu Anda menjaga privasi alamat IP. Jika Chromium mencurigai bahwa salah satu situs mungkin melacak Anda, beberapa traffic dapat dikirim melalui server privasi. Pelajari lebih lanjut <ph name="LINK_BEGIN" />cara kerja perlindungan IP<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Pelajari lebih lanjut cara Google melindungi data Anda dalam <ph name="BEGIN_LINK1" />Kebijakan Privasi<ph name="LINK_END1" /> kami.</translation>
 <translation id="7040031291654706261">Pelajari <ph name="BEGIN_LINK" />cara kerja perlindungan IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Tinjau setelan topik iklan Anda</translation>
 </translationbundle>

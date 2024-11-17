@@ -25,11 +25,13 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "media/gpu/chromeos/frame_registry.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/oop_video_decoder.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
+#include "media/gpu/chromeos/registered_frame_converter.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
@@ -188,8 +190,7 @@ void VideoDecoderMixin::Initialize(const VideoDecoderConfig& config,
                                    InitCB init_cb,
                                    const OutputCB& output_cb,
                                    const WaitingCB& waiting_cb) {
-  NOTREACHED_IN_MIGRATION()
-      << "FrameResource version of Initialize is used instead";
+  NOTREACHED() << "FrameResource version of Initialize is used instead";
 }
 
 void VideoDecoderMixin::ReleaseSecureBuffer(uint64_t secure_handle) {}
@@ -230,8 +231,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 #if BUILDFLAG(USE_VAAPI)
     create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-    if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder) &&
-        IsV4L2DecoderStateful()) {
+    if (IsV4L2DecoderStateful()) {
       create_decoder_function_cb =
           base::BindOnce(&V4L2StatefulVideoDecoder::Create);
     } else {
@@ -252,11 +252,12 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 }
 
 // static
-std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForVDAAdapterForARC(
+std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForARC(
     const gpu::GpuDriverBugWorkarounds& workarounds,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
-    std::vector<Fourcc> renderable_fourccs) {
+    std::vector<Fourcc> renderable_fourccs,
+    std::unique_ptr<MediaLog> media_log) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
   DCHECK(!renderable_fourccs.empty());
@@ -272,8 +273,9 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForVDAAdapterForARC(
 
   auto* pipeline = new VideoDecoderPipeline(
       workarounds, std::move(client_task_runner), std::move(frame_pool),
-      /*frame_converter=*/nullptr, std::move(renderable_fourccs),
-      std::make_unique<NullMediaLog>(), std::move(create_decoder_function_cb),
+      RegisteredFrameConverter::Create(base::MakeRefCounted<FrameRegistry>()),
+      std::move(renderable_fourccs), std::move(media_log),
+      std::move(create_decoder_function_cb),
       /*uses_oop_video_decoder=*/false,
       // TODO(b/195769334): Set this properly once OOP-VD is enabled for ARC.
       /*in_video_decoder_process=*/false);
@@ -290,8 +292,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
 #if BUILDFLAG(USE_VAAPI)
   create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-  if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder) &&
-      IsV4L2DecoderStateful()) {
+  if (IsV4L2DecoderStateful()) {
     create_decoder_function_cb =
         base::BindOnce(&V4L2StatefulVideoDecoder::Create);
   } else {

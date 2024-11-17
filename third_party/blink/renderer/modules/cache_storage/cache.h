@@ -48,6 +48,7 @@ class ExceptionState;
 class Response;
 class Request;
 class ScriptState;
+class V8UnionResponseOrUndefined;
 
 class MODULES_EXPORT Cache : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -63,10 +64,11 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   Cache& operator=(const Cache&) = delete;
 
   // From Cache.idl:
-  ScriptPromise<Response> match(ScriptState* script_state,
-                                const V8RequestInfo* request,
-                                const CacheQueryOptions* options,
-                                ExceptionState& exception_state);
+  ScriptPromise<V8UnionResponseOrUndefined> match(
+      ScriptState* script_state,
+      const V8RequestInfo* request,
+      const CacheQueryOptions* options,
+      ExceptionState& exception_state);
   ScriptPromise<IDLSequence<Response>> matchAll(ScriptState*, ExceptionState&);
   ScriptPromise<IDLSequence<Response>> matchAll(
       ScriptState* script_state,
@@ -105,12 +107,13 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   class BarrierCallbackForPutComplete;
   class CodeCacheHandleCallbackForPut;
   class ResponseBodyLoader;
-  class FetchHandler;
+  class FetchResolveHandler;
+  class FetchRejectHandler;
 
-  ScriptPromise<Response> MatchImpl(ScriptState*,
-                                    const Request*,
-                                    const CacheQueryOptions*,
-                                    ExceptionState&);
+  ScriptPromise<V8UnionResponseOrUndefined> MatchImpl(ScriptState*,
+                                                      const Request*,
+                                                      const CacheQueryOptions*,
+                                                      ExceptionState&);
   ScriptPromise<IDLSequence<Response>> MatchAllImpl(ScriptState*,
                                                     const Request*,
                                                     const CacheQueryOptions*,

@@ -24,7 +24,7 @@ gfx::Size GetLargestDisplaySizeLandscape();
 
 // Helper function to validate the Manta API output data.
 bool IsValidOutput(const manta::proto::OutputData& output,
-                   const std::string_view source);
+                   std::string_view source);
 
 // Common helper function between `FetchThumbnails` and `FetchWallpaper`.
 manta::proto::Request CreateMantaRequest(

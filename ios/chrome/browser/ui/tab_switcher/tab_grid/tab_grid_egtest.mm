@@ -345,7 +345,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   web::test::SetUpSimpleHttpServer(responses);
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Ensure that the default search engine is reset.
   if ([self isRunningTest:@selector
             (testSearchOnWebSuggestedActionInRegularTabsSearch)] ||
@@ -375,7 +375,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
     [ChromeEarlGrey signOutAndClearIdentities];
   }
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests entering and leaving the tab grid.
@@ -463,10 +463,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // correctly recovered when pressing undo and there is no selection mode when
 // there are inactive tabs but no regular tabs.
 - (void)testCloseAllAndUndoCloseAllWithInactiveTabs {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
-                           @"only supported on iPhone.");
-  }
   [self loadTestURLsInNewTabs];
   [self relaunchAppWithInactiveTabsEnabled];
 
@@ -759,6 +755,17 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           IdentifierForCellAtIndex(0))]
       assertWithMatcher:matcher];
+}
+
+// Tests that the incognito buttons are correctly displayed (regression for
+// crbug.com/359698935).
+- (void)testIncognitoButtons {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
 }
 
 #pragma mark - Recent Tabs
@@ -1321,6 +1328,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
+  // For unknown reasons the drag below sometimes fails to recognize the second
+  // window as a drop point. Triggering a background / foreground seems to
+  // reduce this flake.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
   // DnD first tab of left window to left edge of first tab in second window.
   // Note: move to left half of the destination tile, to avoid unwanted
   // scrolling that would happen closer to the left edge.
@@ -1411,6 +1423,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       selectElementWithMatcher:chrome_test_util::TabGridEditSelectAllButton()]
       performAction:grey_tap()];
 
+  // For unknown reasons the drag below sometimes fails to recognize the second
+  // window as a drop point. Triggering a background / foreground seems to
+  // reduce this flake.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
   // DnD first tab of left window to left edge of first tab in second window.
   // Note: move to left half of the destination tile, to avoid unwanted
   // scrolling that would happen closer to the left edge.
@@ -1489,6 +1506,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SelectedStateTitleSelection(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // For unknown reasons the drag below sometimes fails to recognize the second
+  // window as a drop point. Triggering a background / foreground seems to
+  // reduce this flake.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
   // DnD first tab of left window to left edge of first tab in second window.
   // Note: move to left half of the destination tile, to avoid unwanted
@@ -2005,12 +2027,12 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   NSString* snackbarMessage = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           pattern, "count", 2, "title",
-          base::SysNSStringToUTF16(@"Mobile Bookmarks")));
+          base::SysNSStringToUTF16(@"Mobile bookmarks")));
   [self waitForSnackBarMessageText:snackbarMessage
       triggeredByTappingItemWithMatcher:grey_allOf(grey_kindOfClassName(
                                                        @"UITableViewCell"),
                                                    grey_descendant(grey_text(
-                                                       @"Mobile Bookmarks")),
+                                                       @"Mobile bookmarks")),
                                                    nil)];
 
   [BookmarkEarlGrey
@@ -2848,6 +2870,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(kTitle2)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Make sure that we can change the search text and so update the query.
+  PerformTabGridSearch(kTitle1);
+
+  // Make sure that search mode is still active and searching the new query.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(kTitle1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that tapping on search history action in the Recent Tabs search mode
@@ -2893,6 +2924,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(kTitle2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Make sure that we can change the search text and so update the query.
+  PerformTabGridSearch(kTitle1);
+
+  // Make sure that search mode is still active and searching the new query.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(kTitle1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -3174,10 +3214,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that interacting with the Tab Grid search UI shows the correct header
 // at each step.
 - (void)testSearchHeaderWithInactiveTabs {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
-                           @"only supported on iPhone.");
-  }
   [self loadTestURLsInNewTabs];
   [self relaunchAppWithInactiveTabsEnabled];
 
@@ -3412,6 +3448,50 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
 }
 
+// Tests that the Done button in the Incognito panel is correctly
+// enabled/disabled based on the presence of Incognito tabs, and correctly opens
+// the Tab Grid after the Incognito browser has been recreated.
+- (void)testDoneInIncognitoAfterClosingLastIncognitoTab {
+  // Open an Incognito tab.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  // Go to Incognito grid.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+  [self verifyVisibleTabsCount:1];
+
+  // Tab the Done button.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Go back to Incognito grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Close the Incognito tab. This recreates the Incognito browser and opens the
+  // tab grid, as it was the last tab.
+  [ChromeEarlGrey closeCurrentTab];
+  [self verifyVisibleTabsCount:0];
+
+  // Verify the Done button is disabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_accessibilityTrait(
+                            UIAccessibilityTraitNotEnabled)];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  // Verify the Tab Grid's Done button is enabled and opens the tab.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Verify that the Tab Grid is closed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - Helper Methods
 
 - (void)loadTestURLs {
@@ -3613,10 +3693,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 - (void)relaunchAppWithInactiveTabsEnabled {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdImmediateDemoParam);
+  config.features_enabled.push_back(kInactiveTabsIPadFeature);
+  config.additional_args.push_back("-InactiveTabsTestMode");
+  config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 

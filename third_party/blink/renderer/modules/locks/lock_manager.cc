@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/locks/lock.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -46,7 +47,7 @@ constexpr char kInvalidStateErrorMessage[] = "The document is not active.";
 
 LockInfo* ToLockInfo(const mojom::blink::LockInfoPtr& record) {
   LockInfo* info = LockInfo::Create();
-  info->setMode(Lock::ModeToString(record->mode));
+  info->setMode(Lock::ModeToEnum(record->mode));
   info->setName(record->name);
   info->setClientId(record->client_id);
   return info;
@@ -183,7 +184,7 @@ class LockManager::LockRequestImpl final
     manager_->held_locks_.insert(lock);
 
     // Note that either invoking `callback` or calling
-    // ScriptPromiseUntyped::Cast to convert the resulting value to a Promise
+    // ToResolvedPromise to convert the resulting value to a Promise
     // can or will execute javascript. This means that the ExecutionContext
     // could be synchronously destroyed, and the `lock` might be released before
     // HoldUntil is called. This is safe, as releasing a lock twice is harmless.
@@ -286,7 +287,12 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
 
   // 5. If origin is an opaque origin, then reject promise with a
   // "SecurityError" DOMException.
-  if (!context->GetSecurityOrigin()->CanAccessLocks()) {
+  //
+  // TODO(crbug.com/373899208): It's safe to bypass the opaque origin check for
+  // shared storage worklets. However, it'd be better to give shared storage
+  // worklets the correct security origin to avoid bypassing this check.
+  if (!context->GetSecurityOrigin()->CanAccessLocks() &&
+      !context->IsSharedStorageWorkletGlobalScope()) {
     exception_state.ThrowSecurityError(
         "Access to the Locks API is denied in this context.");
     return EmptyPromise();
@@ -295,7 +301,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);
   }
 
-  mojom::blink::LockMode mode = Lock::StringToMode(options->mode());
+  mojom::blink::LockMode mode = Lock::EnumToMode(options->mode().AsEnum());
 
   // 6. Otherwise, if name starts with U+002D HYPHEN-MINUS (-), then reject
   // promise with a "NotSupportedError" DOMException.
@@ -519,7 +525,8 @@ void LockManager::CheckStorageAccessAllowed(
     ExecutionContext* context,
     ScriptPromiseResolverBase* resolver,
     base::OnceCallback<void()> callback) {
-  DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
+  DCHECK(context->IsWindow() || context->IsWorkerGlobalScope() ||
+         context->IsSharedStorageWorkletGlobalScope());
 
   auto wrapped_callback = WTF::BindOnce(
       &LockManager::DidCheckStorageAccessAllowed, WrapWeakPersistent(this),
@@ -539,9 +546,10 @@ void LockManager::CheckStorageAccessAllowed(
     frame->AllowStorageAccessAndNotify(
         WebContentSettingsClient::StorageType::kWebLocks,
         std::move(wrapped_callback));
-  } else {
+  } else if (auto* worker_global_scope =
+                 DynamicTo<WorkerGlobalScope>(context)) {
     WebContentSettingsClient* content_settings_client =
-        To<WorkerGlobalScope>(context)->ContentSettingsClient();
+        worker_global_scope->ContentSettingsClient();
     if (!content_settings_client) {
       std::move(wrapped_callback).Run(true);
       return;
@@ -549,6 +557,14 @@ void LockManager::CheckStorageAccessAllowed(
     content_settings_client->AllowStorageAccess(
         WebContentSettingsClient::StorageType::kWebLocks,
         std::move(wrapped_callback));
+  } else {
+    // Shared storage always allows WebLocks as long as the
+    // `SharedStorageWorkletGlobalScope` is allowed in the first place.
+    //
+    // TODO(crbug.com/373891801): A more generic way is to provide
+    // `WebContentSettingsClient` to shared storage worklets.
+    CHECK(context->IsSharedStorageWorkletGlobalScope());
+    std::move(wrapped_callback).Run(true);
   }
 }
 

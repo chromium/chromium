@@ -30,4 +30,9 @@ interface AnchorElementInteractionHost {
     // In the browser process, the URL gets preloaded.
     OnPointerHover(url.mojom.Url target,
                    AnchorElementPointerData mouse_data);
+
+    // The renderer calls OnViewportHeuristicTriggered for selected anchor
+    // elements that are part of the HTTP family, in the viewport, and meet
+    // certain other criteria used by the heuristic.
+    OnViewportHeuristicTriggered(url.mojom.Url target);
 };

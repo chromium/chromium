@@ -39,9 +39,9 @@
 
 namespace grpc_support {
 
-BidirectionalStream::WriteBuffers::WriteBuffers() {}
+BidirectionalStream::WriteBuffers::WriteBuffers() = default;
 
-BidirectionalStream::WriteBuffers::~WriteBuffers() {}
+BidirectionalStream::WriteBuffers::~WriteBuffers() = default;
 
 void BidirectionalStream::WriteBuffers::Clear() {
   write_buffer_list.clear();

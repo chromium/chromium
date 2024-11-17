@@ -54,20 +54,17 @@ LeveldbValueStore::~LeveldbValueStore() {
 
 size_t LeveldbValueStore::GetBytesInUse(const std::string& key) {
   // Let SettingsStorageQuotaEnforcer implement this.
-  NOTREACHED_IN_MIGRATION() << "Not implemented";
-  return 0;
+  NOTREACHED() << "Not implemented";
 }
 
 size_t LeveldbValueStore::GetBytesInUse(const std::vector<std::string>& keys) {
   // Let SettingsStorageQuotaEnforcer implement this.
-  NOTREACHED_IN_MIGRATION() << "Not implemented";
-  return 0;
+  NOTREACHED() << "Not implemented";
 }
 
 size_t LeveldbValueStore::GetBytesInUse() {
   // Let SettingsStorageQuotaEnforcer implement this.
-  NOTREACHED_IN_MIGRATION() << "Not implemented";
-  return 0;
+  NOTREACHED() << "Not implemented";
 }
 
 ValueStore::ReadResult LeveldbValueStore::Get(const std::string& key) {

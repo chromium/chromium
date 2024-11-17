@@ -87,14 +87,16 @@ GetHeaderResult GetSingleHeaderValue(const HttpResponseHeaders* headers,
                                      std::string_view name,
                                      std::string* value) {
   size_t iter = 0;
-  size_t num_values = 0;
-  std::string temp_value;
-  while (headers->EnumerateHeader(&iter, name, &temp_value)) {
-    if (++num_values > 1)
+  bool found_value = false;
+  while (std::optional<std::string_view> maybe_value =
+             headers->EnumerateHeader(&iter, name)) {
+    if (found_value) {
       return GET_HEADER_MULTIPLE;
-    *value = temp_value;
+    }
+    found_value = true;
+    *value = *maybe_value;
   }
-  return num_values > 0 ? GET_HEADER_OK : GET_HEADER_MISSING;
+  return found_value ? GET_HEADER_OK : GET_HEADER_MISSING;
 }
 
 bool ValidateHeaderHasSingleValue(GetHeaderResult result,

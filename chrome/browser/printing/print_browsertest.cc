@@ -256,10 +256,7 @@ class TestPrintRenderFrame
   }
 
   // mojom::PrintRenderFrameInterceptorForTesting
-  mojom::PrintRenderFrame* GetForwardingInterface() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  mojom::PrintRenderFrame* GetForwardingInterface() override { NOTREACHED(); }
   void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
                          PrintFrameContentCallback callback) override {
     // Sends the printed result back.
@@ -2214,6 +2211,12 @@ class PrintCompositorDocumentDataTypeBrowserTest
          {{features::kEnableOopPrintDriversJobPrint.name, "true"}}});
     if (GetParam() == DocumentDataType::kXps) {
       enabled_features.push_back({features::kUseXpsForPrinting, {}});
+
+      // Use of XPS printing requires using LPAC for the sandbox, otherwise
+      // the permissions for token-based sandboxing have to be significantly
+      // relaxed.
+      enabled_features.push_back(
+          {sandbox::policy::features::kPrintCompositorLPAC, {}});
     } else {
       disabled_features.push_back(features::kUseXpsForPrinting);
     }

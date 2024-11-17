@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from './assert.js';
-import * as Comlink from './lib/comlink.js';
+import * as comlink from './lib/comlink.js';
 import {WaitableEvent} from './waitable_event.js';
 
 const domReady = new WaitableEvent();
@@ -31,4 +31,4 @@ document.addEventListener('DOMContentLoaded', () => {
   domReady.signal();
 });
 
-Comlink.expose(exposedObjects, Comlink.windowEndpoint(self.parent, self));
+comlink.expose(exposedObjects, comlink.windowEndpoint(self.parent, self));

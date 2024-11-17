@@ -119,6 +119,7 @@ const int kDistanceFromPinKeyboardToBigUserViewBottomDp = 50;
 constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 24;
 
 constexpr int kDistanceBetweenPasswordFieldAndAuthFactorsViewDp = 90;
+constexpr int kDistanceBetweenPasswordFieldAndPinStatusMessageViewDp = 20;
 
 constexpr base::TimeDelta kChallengeResponseResetAfterFailureDelay =
     base::Seconds(5);
@@ -390,7 +391,8 @@ struct LoginAuthUserView::UiState {
     auth_factor_is_hiding_password = view->HasAuthMethod(
         LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
     pin_is_locked = view->ShouldShowPinStatusMessage();
-    show_recover_button = view->HasAuthMethod(LoginAuthUserView::AUTH_RECOVERY);
+    show_recover_button =
+        view->HasAuthMethod(LoginAuthUserView::AUTH_PIN_LOCKED_SHOW_RECOVERY);
 
     non_pin_y_start_in_screen = view->GetBoundsInScreen().y();
     pin_start_in_screen = view->pin_view_->GetBoundsInScreen().origin();
@@ -798,8 +800,9 @@ void LoginAuthUserView::SetAuthMethods(
   recover_button_->SetVisible(current_state.show_recover_button);
   pin_status_message_view_->SetVisible(current_state.pin_is_locked);
   if (current_state.pin_is_locked) {
-    pin_status_message_view_->SetPinAvailbleAt(
-        auth_metadata.pin_available_at.value());
+    pin_status_message_view_->SetPinInfo(user.basic_user_info.account_id,
+                                         auth_metadata.pin_available_at.value(),
+                                         current_state.show_recover_button);
   }
 
   // Adjust the PIN keyboard visibility before the password textfield's one, so
@@ -1330,7 +1333,7 @@ void LoginAuthUserView::OnPinTextChanged(bool is_empty) {
 
 void LoginAuthUserView::OnRecoverButtonPressed() {
   DCHECK(recover_button_);
-  DCHECK(HasAuthMethod(AUTH_RECOVERY));
+  DCHECK(HasAuthMethod(AUTH_PIN_LOCKED_SHOW_RECOVERY));
   on_recover_button_pressed_.Run();
 }
 
@@ -1446,16 +1449,9 @@ void LoginAuthUserView::UpdateInputFieldMode() {
     return;
   }
 
-  if (features::IsAllowPasswordlessSetupEnabled()) {
-    if (!HasAuthMethod(AUTH_PASSWORD) && !HasAuthMethod(AUTH_PIN)) {
-      input_field_mode_ = InputFieldMode::kNone;
-      return;
-    }
-  } else {
-    if (!HasAuthMethod(AUTH_PASSWORD)) {
-      input_field_mode_ = InputFieldMode::kNone;
-      return;
-    }
+  if (!HasAuthMethod(AUTH_PASSWORD) && !HasAuthMethod(AUTH_PIN)) {
+    input_field_mode_ = InputFieldMode::kNone;
+    return;
   }
 
   if (!HasAuthMethod(AUTH_PIN)) {
@@ -1467,12 +1463,9 @@ void LoginAuthUserView::UpdateInputFieldMode() {
   const bool is_auto_submit_supported =
       LoginPinInputView::IsAutosubmitSupported(pin_length);
 
-  if (features::IsAllowPasswordlessSetupEnabled()) {
-    CHECK(HasAuthMethod(AUTH_PASSWORD) || HasAuthMethod(AUTH_PIN));
-    if (!HasAuthMethod(AUTH_PASSWORD)) {
-      input_field_mode_ = GetPinInputMode(/*has_password*/ false, pin_length);
-      return;
-    }
+  if (!HasAuthMethod(AUTH_PASSWORD)) {
+    input_field_mode_ = GetPinInputMode(/*has_password*/ false, pin_length);
+    return;
   }
 
   // Uses combined password/pin if autosubmit is disabled.
@@ -1534,7 +1527,8 @@ bool LoginAuthUserView::ShouldShowPinStatusMessage() const {
   // When `pin_available_at` is present, pin status message should be shown when
   // in `kPasswordOnly` mode or when the recover button is present.
   return input_field_mode_ == InputFieldMode::kPasswordOnly ||
-         HasAuthMethod(AUTH_RECOVERY);
+         HasAuthMethod(AUTH_PIN_LOCKED) ||
+         HasAuthMethod(AUTH_PIN_LOCKED_SHOW_RECOVERY);
 }
 
 gfx::Size LoginAuthUserView::GetPaddingBelowUserView() const {
@@ -1564,6 +1558,10 @@ gfx::Size LoginAuthUserView::GetPaddingBelowPasswordView() const {
 
   if (state.has_pinpad) {
     return SizeFromHeight(kDistanceBetweenPasswordFieldAndPinKeyboardDp);
+  }
+  if (state.pin_is_locked) {
+    return SizeFromHeight(
+        kDistanceBetweenPasswordFieldAndPinStatusMessageViewDp);
   }
   if (state.has_fingerprint ||
       (auth_factors_view_ && auth_factors_view_->GetVisible())) {

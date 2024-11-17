@@ -142,12 +142,6 @@ class SupervisedUserInterstitialBlockingPage
 
   // web::WebStateObserver implementation:
   void WebStateDestroyed(web::WebState* web_state) override;
-  void PageLoaded(
-      web::WebState* web_state,
-      web::PageLoadCompletionStatus load_completion_status) override;
-
-  // Marks the SU interstitial first time banner as shown for a visible page.
-  void MaybeUpdateFirstTimeInterstitialBanner();
 
   const std::unique_ptr<supervised_user::SupervisedUserInterstitial>
       interstitial_;

@@ -9,17 +9,14 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class MailtoHandlerService;
+class ProfileIOS;
 
 // Singleton that owns all MailtoHandlerServices and associates them with
 // profiles.
 class MailtoHandlerServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static MailtoHandlerService* GetForBrowserState(ProfileIOS* profile);
-
   static MailtoHandlerService* GetForProfile(ProfileIOS* profile);
   static MailtoHandlerServiceFactory* GetInstance();
 

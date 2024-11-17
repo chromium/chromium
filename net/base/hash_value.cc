@@ -124,8 +124,7 @@ bool operator<(const HashValue& lhs, const HashValue& rhs) {
       return lhs.fingerprint.sha256 < rhs.fingerprint.sha256;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool operator>(const HashValue& lhs, const HashValue& rhs) {

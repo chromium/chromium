@@ -162,19 +162,20 @@ IN_PROC_BROWSER_TEST_F(ReloadCacheControlBrowserTest, NavigateToSame) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
   CheckCacheControl(kExpectedCacheControlForNormalLoad);
 
-  // The second navigation is the same page navigation. This should be handled
-  // as a reload, revalidating the main resource, but following cache protocols
-  // for others.
+  // The second navigation is the same page navigation from address bar. This
+  // should be handled as a replacement navigation, with normal load cache
+  // protocols. See https://github.com/whatwg/html/issues/10597 for spec
+  // discussion.
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  CheckCacheControl(kExpectedCacheControlForReload);
+  CheckCacheControl(kExpectedCacheControlForNormalLoad);
 
   shell()->ShowDevTools();
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  CheckCacheControl(kExpectedCacheControlForReload);
+  CheckCacheControl(kExpectedCacheControlForNormalLoad);
 
   shell()->CloseDevTools();
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  CheckCacheControl(kExpectedCacheControlForReload);
+  CheckCacheControl(kExpectedCacheControlForNormalLoad);
 }
 
 // Reloading with ReloadType::NORMAL should respect service workers.

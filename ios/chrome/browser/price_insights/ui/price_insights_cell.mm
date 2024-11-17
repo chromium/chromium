@@ -73,6 +73,12 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   UIButton* _trackButton;
   NSLayoutConstraint* _trackButtonWidthConstraint;
   UILabel* _priceTrackingSubtitle;
+  UILabel* _priceTrackingTitle;
+  UILabel* _buyingOptionsTitle;
+  UILabel* _buyingOptionsSubtitle;
+  UILabel* _priceHistoryTitle;
+  UILabel* _priceHistoryPrimarySubtitle;
+  UILabel* _priceHistorySecondarySubtitle;
 }
 
 #pragma mark - Public
@@ -95,6 +101,13 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
     AddSameConstraintsWithInsets(
         _contentStackView, self.contentView,
         NSDirectionalEdgeInsetsMake(0, kHorizontalInset, 0, kHorizontalInset));
+
+    // Listen to content size change to update labels font.
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(updateLabelsFont)
+               name:UIContentSizeCategoryDidChangeNotification
+             object:nil];
   }
   return self;
 }
@@ -168,6 +181,26 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   return self.item;
 }
 
+#pragma mark - Notifications
+
+- (void)updateLabelsFont {
+  _priceTrackingTitle.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  _priceTrackingSubtitle.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
+  _buyingOptionsTitle.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  _buyingOptionsSubtitle.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
+  _priceHistoryTitle.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  _priceHistoryPrimarySubtitle.font =
+      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+  _priceHistorySecondarySubtitle.font =
+      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+  [self setOrUpdateTrackButton];
+}
+
 #pragma mark - Private
 
 // Returns whether or not there are any variants.
@@ -182,13 +215,14 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
 
 // Method that creates a view for price tracking.
 - (void)configurePriceTracking {
-  UILabel* priceTrackingTitle = [self createLabel];
-  [priceTrackingTitle setAccessibilityIdentifier:kPriceTrackingTitleIdentifier];
-  priceTrackingTitle.font =
+  _priceTrackingTitle = [self createLabel];
+  [_priceTrackingTitle
+      setAccessibilityIdentifier:kPriceTrackingTitleIdentifier];
+  _priceTrackingTitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
-  priceTrackingTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  priceTrackingTitle.text = self.item.title;
-  priceTrackingTitle.accessibilityTraits = UIAccessibilityTraitHeader;
+  _priceTrackingTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  _priceTrackingTitle.text = self.item.title;
+  _priceTrackingTitle.accessibilityTraits = UIAccessibilityTraitHeader;
 
   _priceTrackingSubtitle = [self createLabel];
   [_priceTrackingSubtitle
@@ -199,8 +233,9 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   _priceTrackingSubtitle.numberOfLines = 2;
   [self setOrUpdateTrackingSubtitleText];
 
-  UIStackView* verticalStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ priceTrackingTitle, _priceTrackingSubtitle ]];
+  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _priceTrackingTitle, _priceTrackingSubtitle
+  ]];
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.distribution = UIStackViewDistributionFill;
   verticalStack.alignment = UIStackViewAlignmentLeading;
@@ -237,24 +272,28 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
 
 // Method that creates a view for the buying options module.
 - (void)configureBuyingOptions {
-  UILabel* title = [self createLabel];
-  [title setAccessibilityIdentifier:kBuyingOptionsTitleIdentifier];
-  title.font =
+  _buyingOptionsTitle = [self createLabel];
+  [_buyingOptionsTitle
+      setAccessibilityIdentifier:kBuyingOptionsTitleIdentifier];
+  _buyingOptionsTitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
-  title.text = l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE);
-  title.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  title.accessibilityTraits = UIAccessibilityTraitHeader;
+  _buyingOptionsTitle.text =
+      l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE);
+  _buyingOptionsTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  _buyingOptionsTitle.accessibilityTraits = UIAccessibilityTraitHeader;
 
-  UILabel* subtitle = [self createLabel];
-  [subtitle setAccessibilityIdentifier:kBuyingOptionsSubtitleIdentifier];
-  subtitle.font =
+  _buyingOptionsSubtitle = [self createLabel];
+  [_buyingOptionsSubtitle
+      setAccessibilityIdentifier:kBuyingOptionsSubtitleIdentifier];
+  _buyingOptionsSubtitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
-  subtitle.text =
+  _buyingOptionsSubtitle.text =
       l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE);
-  subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  _buyingOptionsSubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
-  UIStackView* verticalStack =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ title, subtitle ]];
+  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _buyingOptionsTitle, _buyingOptionsSubtitle
+  ]];
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.distribution = UIStackViewDistributionFill;
   verticalStack.alignment = UIStackViewAlignmentLeading;
@@ -308,36 +347,38 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
   verticalStack.spacing = kPriceTrackingVerticalStackViewSpacing;
   verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
 
-  UILabel* title = [self createLabel];
-  [title setAccessibilityIdentifier:kPriceHistoryTitleIdentifier];
-  title.font =
+  _priceHistoryTitle = [self createLabel];
+  [_priceHistoryTitle setAccessibilityIdentifier:kPriceHistoryTitleIdentifier];
+  _priceHistoryTitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
-  title.text = titleText;
-  title.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  title.accessibilityTraits = UIAccessibilityTraitHeader;
-  [verticalStack addArrangedSubview:title];
+  _priceHistoryTitle.text = titleText;
+  _priceHistoryTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  _priceHistoryTitle.accessibilityTraits = UIAccessibilityTraitHeader;
+  [verticalStack addArrangedSubview:_priceHistoryTitle];
 
   if (primarySubtitleText.length) {
-    UILabel* primarySubtitle = [self createLabel];
-    [primarySubtitle
+    _priceHistoryPrimarySubtitle = [self createLabel];
+    [_priceHistoryPrimarySubtitle
         setAccessibilityIdentifier:kPriceHistoryPrimarySubtitleIdentifier];
-    primarySubtitle.font =
+    _priceHistoryPrimarySubtitle.font =
         CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
-    primarySubtitle.text = primarySubtitleText;
-    primarySubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    [verticalStack addArrangedSubview:primarySubtitle];
+    _priceHistoryPrimarySubtitle.text = primarySubtitleText;
+    _priceHistoryPrimarySubtitle.textColor =
+        [UIColor colorNamed:kTextSecondaryColor];
+    [verticalStack addArrangedSubview:_priceHistoryPrimarySubtitle];
 
     // Set secondarySubtitle only if both primarySubtitle and
     // secondarySubtitle are present.
     if (secondarySubtitleText.length) {
-      UILabel* secondarySubtitle = [self createLabel];
-      [secondarySubtitle
+      _priceHistorySecondarySubtitle = [self createLabel];
+      [_priceHistorySecondarySubtitle
           setAccessibilityIdentifier:kPriceHistorySecondarySubtitleIdentifier];
-      secondarySubtitle.font =
+      _priceHistorySecondarySubtitle.font =
           CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
-      secondarySubtitle.text = secondarySubtitleText;
-      secondarySubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
-      [verticalStack addArrangedSubview:secondarySubtitle];
+      _priceHistorySecondarySubtitle.text = secondarySubtitleText;
+      _priceHistorySecondarySubtitle.textColor =
+          [UIColor colorNamed:kTextSecondaryColor];
+      [verticalStack addArrangedSubview:_priceHistorySecondarySubtitle];
     }
   }
 
@@ -415,6 +456,18 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
         [UIButtonConfiguration plainButtonConfiguration];
     configuration.baseForegroundColor = [UIColor colorNamed:kSolidWhiteColor];
     configuration.background.backgroundColor = [UIColor colorNamed:kBlueColor];
+
+    // Ensure the foreground color is applied and doesn't change.
+    configuration.titleTextAttributesTransformer =
+        ^NSDictionary<NSAttributedStringKey, id>*(
+            NSDictionary<NSAttributedStringKey, id>* incomingAttributes) {
+      NSMutableDictionary* outgoingAttributes =
+          [incomingAttributes mutableCopy];
+      outgoingAttributes[NSForegroundColorAttributeName] =
+          [UIColor colorNamed:kSolidWhiteColor];
+      return outgoingAttributes;
+    };
+
     configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
     configuration.contentInsets = NSDirectionalEdgeInsetsMake(
         kTrackButtonVerticalPadding, 0, kTrackButtonVerticalPadding, 0);

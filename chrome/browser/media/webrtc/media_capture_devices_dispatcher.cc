@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/media_access_handler.h"
@@ -41,10 +42,12 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+#include "chrome/browser/media/webrtc/display_media_access_handler.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/common/content_features.h"
-#else
-#include "chrome/browser/media/webrtc/display_media_access_handler.h"
 #endif  //  BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -86,10 +89,15 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
       media_stream_capture_indicator_(new MediaStreamCaptureIndicator()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  if (base::FeatureList::IsEnabled(kAndroidMediaPicker)) {
+    media_access_handlers_.push_back(
+        std::make_unique<DisplayMediaAccessHandler>());
+  }
+#elif !BUILDFLAG(IS_ANDROID)
   media_access_handlers_.push_back(
       std::make_unique<DisplayMediaAccessHandler>());
-#endif  //  BUILDFLAG(IS_ANDROID)
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -164,6 +172,17 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
                           blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
                           nullptr);
 }
+
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_FUCHSIA)
+void MediaCaptureDevicesDispatcher::ProcessSelectAudioOutputRequest(
+    Browser* browser,
+    const content::SelectAudioOutputRequest& request,
+    content::SelectAudioOutputCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  picker_views_ = SelectAudioOutputPicker::Create(request);
+  picker_views_->Show(browser, request, std::move(callback));
+}
+#endif
 
 bool MediaCaptureDevicesDispatcher::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,

@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -18,19 +19,18 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
+#include "extensions/browser/api/storage/storage_utils.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 
 namespace {
 
-// Gets an extension with ID `id`. If no extension is found, or the provided
-// `host` is not a service worker associated with the extension (which should
-// therefore be allowed storage data access), returns a std::nullopt.
-std::optional<const extensions::Extension*> MaybeGetExtension(
+// Gets an extension with ID `id`. If no extension is found, returns a
+// std::nullopt.
+std::optional<const extensions::Extension*> GetExtension(
     const std::string& id,
     scoped_refptr<content::DevToolsAgentHost> host) {
   content::BrowserContext* context = host->GetBrowserContext();
-
   if (!context) {
     return std::nullopt;
   }
@@ -39,30 +39,71 @@ std::optional<const extensions::Extension*> MaybeGetExtension(
       extensions::ExtensionRegistry::Get(context);
 
   const extensions::Extension* extension =
-      registry->GetExtensionById(id, extensions::ExtensionRegistry::ENABLED);
+      registry->enabled_extensions().GetByID(id);
 
-  if (!extension) {
-    return std::nullopt;
+  return extension ? std::optional(extension) : std::nullopt;
+}
+
+// Returns true if `host` should be able to access data from `storage_area` for
+// the given `extension`.
+bool CanAccessStorage(scoped_refptr<content::DevToolsAgentHost> host,
+                      const extensions::Extension& extension,
+                      extensions::StorageAreaNamespace storage_area) {
+  content::BrowserContext* context = host->GetBrowserContext();
+  if (!context) {
+    return false;
   }
 
   // Allow a service worker to access extension storage if it corresponds to
   // the extension whose storage is being accessed.
   if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker) {
-    extensions::ProcessManager* process_manager =
-        extensions::ProcessManager::Get(context);
-    std::vector<extensions::WorkerId> worker_ids =
-        process_manager->GetServiceWorkersForExtension(extension->id());
-
-    for (auto& worker : worker_ids) {
-      if (worker.render_process_id == host->GetProcessHost()->GetID()) {
-        return std::optional(extension);
-      }
+    if (!host->GetProcessHost()) {
+      return false;
     }
+
+    return extensions::storage_utils::CanRendererAccessExtensionStorage(
+        *context, extension, /*storage_area=*/std::nullopt,
+        /*render_frame_host=*/nullptr, *host->GetProcessHost());
   }
 
-  // TODO: Allow other target types to read from storage if a content script is
-  // injected into them.
-  return std::nullopt;
+  // Allow a page or frame target to access extension storage if it is
+  // associated with a renderer that hosts an extension origin or has an
+  // extension injected into it.
+  if (host->GetType() == ChromeDevToolsManagerDelegate::kTypeBackgroundPage ||
+      host->GetType() == content::DevToolsAgentHost::kTypePage ||
+      host->GetType() == content::DevToolsAgentHost::kTypeFrame) {
+    if (!host->GetWebContents() ||
+        !host->GetWebContents()->GetPrimaryMainFrame()) {
+      return false;
+    }
+
+    bool can_access_storage = false;
+
+    // The content/ layer doesn't expose a way for us to get the frame
+    // associated with DevToolsAgentHost. As a compromise, allow access if any
+    // frame associated with the WebContents has access. This is safe as there
+    // are no instances where a client can attach to one frame in a WebContents
+    // but not another.
+    host->GetWebContents()
+        ->GetPrimaryMainFrame()
+        ->ForEachRenderFrameHostWithAction(
+            [&extension,
+             &can_access_storage](content::RenderFrameHost* render_frame_host) {
+              if (extensions::storage_utils::CanRendererAccessExtensionStorage(
+                      *render_frame_host->GetBrowserContext(), extension,
+                      /*storage_area=*/std::nullopt, render_frame_host,
+                      *render_frame_host->GetProcess())) {
+                can_access_storage = true;
+                return content::RenderFrameHost::FrameIterationAction::kStop;
+              }
+
+              return content::RenderFrameHost::FrameIterationAction::kContinue;
+            });
+
+    return can_access_storage;
+  }
+
+  return false;
 }
 
 struct GetExtensionAndStorageFrontendResult {
@@ -74,7 +115,7 @@ struct GetExtensionAndStorageFrontendResult {
 };
 
 GetExtensionAndStorageFrontendResult GetExtensionAndStorageFrontend(
-    const std::string target_id_,
+    const std::string& target_id_,
     const protocol::String& extension_id,
     const protocol::String& storage_area) {
   GetExtensionAndStorageFrontendResult result;
@@ -86,17 +127,8 @@ GetExtensionAndStorageFrontendResult GetExtensionAndStorageFrontend(
   CHECK(host);
 
   content::BrowserContext* context = host->GetBrowserContext();
-
   if (!context) {
     result.error = "No associated browser context.";
-    return result;
-  }
-
-  std::optional<const extensions::Extension*> optional_extension =
-      MaybeGetExtension(extension_id, host);
-
-  if (!optional_extension) {
-    result.error = "Extension not found.";
     return result;
   }
 
@@ -105,6 +137,15 @@ GetExtensionAndStorageFrontendResult GetExtensionAndStorageFrontend(
 
   if (namespace_result == extensions::StorageAreaNamespace::kInvalid) {
     result.error = "Storage area is invalid.";
+    return result;
+  }
+
+  std::optional<const extensions::Extension*> optional_extension =
+      GetExtension(extension_id, host);
+
+  if (!optional_extension ||
+      !CanAccessStorage(host, **optional_extension, namespace_result)) {
+    result.error = "Extension not found.";
     return result;
   }
 
@@ -176,7 +217,7 @@ void ExtensionsHandler::GetStorageItems(
 
   result.frontend->GetValues(
       result.extension.get(), result.storage_namespace,
-      keys ? std::optional(keys.value()) : std::nullopt,
+      keys ? std::optional(std::move(*keys)) : std::nullopt,
       base::BindOnce(&ExtensionsHandler::OnGetStorageItemsFinished,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -70,7 +70,6 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
         String description =
                 getTitle()
                         + getContext()
-                                .getResources()
                                 .getString(
                                         mExpanded
                                                 ? R.string.accessibility_expanded_group

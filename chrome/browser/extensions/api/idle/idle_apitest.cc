@@ -4,20 +4,29 @@
 
 #include <memory>
 
-#include "chrome/browser/extensions/extension_apitest.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/idle/idle_manager_factory.h"
 #include "extensions/browser/api/idle/test_idle_provider.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace extensions {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+#if BUILDFLAG(IS_ANDROID)
+using IdleApiTestBase = ExtensionPlatformApiTest;
+#else
+using IdleApiTestBase = ExtensionApiTest;
+#endif  // BUILDFLAG(IS_ANDROID)
 
-class IdleApiTest : public ExtensionApiTest,
-                    public testing::WithParamInterface<ContextType> {
+class IdleApiTest : public IdleApiTestBase {
  public:
-  IdleApiTest() : ExtensionApiTest(GetParam()) {}
+  IdleApiTest() = default;
   ~IdleApiTest() override = default;
   IdleApiTest(const IdleApiTest& other) = delete;
   IdleApiTest& operator=(const IdleApiTest& other) = delete;
@@ -32,22 +41,14 @@ class IdleApiTest : public ExtensionApiTest,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         IdleApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         IdleApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(IdleApiTest, QueryStateActive) {
+IN_PROC_BROWSER_TEST_F(IdleApiTest, QueryStateActive) {
   // Set up a test IdleProvider in the active state.
   SetTestIdleProvider(/*idle_time=*/0, /*locked=*/false);
   ASSERT_TRUE(
       RunExtensionTest("idle/query_state", {.custom_arg = "queryStateActive"}));
 }
 
-IN_PROC_BROWSER_TEST_P(IdleApiTest, QueryStateIdle) {
+IN_PROC_BROWSER_TEST_F(IdleApiTest, QueryStateIdle) {
   // Set up a test IdleProvider in the idle state. The JS test uses the
   // value 15 for its "intervalInSeconds" value.
   SetTestIdleProvider(/*idle_time=*/15, /*locked=*/false);
@@ -55,7 +56,7 @@ IN_PROC_BROWSER_TEST_P(IdleApiTest, QueryStateIdle) {
       RunExtensionTest("idle/query_state", {.custom_arg = "queryStateIdle"}));
 }
 
-IN_PROC_BROWSER_TEST_P(IdleApiTest, QueryStateAlmostIdle) {
+IN_PROC_BROWSER_TEST_F(IdleApiTest, QueryStateAlmostIdle) {
   // Set up a test IdleProvider in the active state, just about to transition
   // to idle. The JS test uses the value 15 for its "intervalInSeconds" value.
   SetTestIdleProvider(/*idle_time=*/14, /*locked=*/false);
@@ -63,14 +64,14 @@ IN_PROC_BROWSER_TEST_P(IdleApiTest, QueryStateAlmostIdle) {
       RunExtensionTest("idle/query_state", {.custom_arg = "queryStateActive"}));
 }
 
-IN_PROC_BROWSER_TEST_P(IdleApiTest, QueryStateLocked) {
+IN_PROC_BROWSER_TEST_F(IdleApiTest, QueryStateLocked) {
   // Set up a test IdleProvider in the locked state.
   SetTestIdleProvider(/*idle_time=*/0, /*locked=*/true);
   ASSERT_TRUE(
       RunExtensionTest("idle/query_state", {.custom_arg = "queryStateLocked"}));
 }
 
-IN_PROC_BROWSER_TEST_P(IdleApiTest, SetDetectionInterval) {
+IN_PROC_BROWSER_TEST_F(IdleApiTest, SetDetectionInterval) {
   // The default value for this property is 60. 37 seems random enough for this
   // test.
   ASSERT_TRUE(
@@ -81,11 +82,11 @@ IN_PROC_BROWSER_TEST_P(IdleApiTest, SetDetectionInterval) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(IdleApiTest, IdleGetAutoLockDelay) {
+IN_PROC_BROWSER_TEST_F(IdleApiTest, IdleGetAutoLockDelay) {
   ASSERT_TRUE(RunExtensionTest("idle/get_auto_lock_delay")) << message_;
 }
 #else
-IN_PROC_BROWSER_TEST_P(IdleApiTest, UnsupportedIdleGetAutoLockDelay) {
+IN_PROC_BROWSER_TEST_F(IdleApiTest, UnsupportedIdleGetAutoLockDelay) {
   ASSERT_TRUE(RunExtensionTest("idle/unsupported_get_auto_lock_delay"));
 }
 #endif

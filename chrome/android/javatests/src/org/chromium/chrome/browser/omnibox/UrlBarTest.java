@@ -40,9 +40,11 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.Clipboard;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
@@ -672,6 +674,24 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void typingStarted_emittedOncePerFocus() {
+        testTypingStarted_emittedOncePerFocus();
+    }
+
+    @Test
+    @SmallTest
+    public void typingStarted_emittedOncePerFocusWithRetainOmniboxOnFocusDisabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        testTypingStarted_emittedOncePerFocus();
+    }
+
+    @Test
+    @SmallTest
+    public void typingStarted_emittedOncePerFocusWithRetainOmniboxOnFocusEnabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        testTypingStarted_emittedOncePerFocus();
+    }
+
+    private void testTypingStarted_emittedOncePerFocus() {
         var listener = mock(Runnable.class);
 
         mOmnibox.clearFocus();
@@ -695,6 +715,24 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void typingStarted_emittedOnceEveryFocus() {
+        testTypingStarted_emittedOnceEveryFocus();
+    }
+
+    @Test
+    @SmallTest
+    public void typingStarted_emittedOnceEveryFocusWithRetainOmniboxOnFocusDisabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        testTypingStarted_emittedOnceEveryFocus();
+    }
+
+    @Test
+    @SmallTest
+    public void typingStarted_emittedOnceEveryFocusWithRetainOmniboxOnFocusEnabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        testTypingStarted_emittedOnceEveryFocus();
+    }
+
+    private void testTypingStarted_emittedOnceEveryFocus() {
         var listener = mock(Runnable.class);
 
         mOmnibox.clearFocus();
@@ -721,6 +759,29 @@ public class UrlBarTest {
     @SmallTest
     @RequiresRestart("crbug.com/358170962")
     public void typingStarted_notEmittedForNonTypingCharacters() {
+        testTypingStarted_notEmittedForNonTypingCharacters(
+                /* expectRetainOmniboxOnFocus= */ ThreadUtils.runOnUiThreadBlocking(
+                        OmniboxFeatures::shouldRetainOmniboxOnFocus));
+    }
+
+    @Test
+    @SmallTest
+    @RequiresRestart("crbug.com/358170962")
+    public void typingStarted_notEmittedForNonTypingCharactersWithRetainOmniboxOnFocusDisabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        testTypingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @RequiresRestart("crbug.com/358170962")
+    public void typingStarted_notEmittedForNonTypingCharactersWithRetainOmniboxOnFocusEnabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        testTypingStarted_notEmittedForNonTypingCharacters(/* expectRetainOmniboxOnFocus= */ true);
+    }
+
+    private void testTypingStarted_notEmittedForNonTypingCharacters(
+            boolean expectRetainOmniboxOnFocus) {
         var listener = mock(Runnable.class);
 
         mOmnibox.clearFocus();
@@ -729,13 +790,22 @@ public class UrlBarTest {
         mOmnibox.requestFocus();
 
         var nonTypingKeys =
-                List.of(
-                        KeyEvent.KEYCODE_F1,
-                        KeyEvent.KEYCODE_TAB,
-                        KeyEvent.KEYCODE_SHIFT_LEFT,
-                        KeyEvent.KEYCODE_DEL,
-                        KeyEvent.KEYCODE_PAGE_UP,
-                        KeyEvent.KEYCODE_DPAD_LEFT);
+                new ArrayList<>(
+                        List.of(
+                                KeyEvent.KEYCODE_F1,
+                                KeyEvent.KEYCODE_SHIFT_LEFT,
+                                KeyEvent.KEYCODE_DEL,
+                                KeyEvent.KEYCODE_PAGE_UP,
+                                KeyEvent.KEYCODE_DPAD_LEFT));
+
+        // When retaining omnibox on focus, the tab key causes selection of the first omnibox
+        // suggestion. This results in a push to the model which, in turn, results in a typing
+        // started event. This is not a real world scenario for the NTP on Large-Form-Factor
+        // devices, where the omnibox is pre-focused and the tab key reveals the suggestions list,
+        // so this is acceptable.
+        if (!expectRetainOmniboxOnFocus) {
+            nonTypingKeys.add(KeyEvent.KEYCODE_TAB);
+        }
 
         for (int key : nonTypingKeys) {
             mOmnibox.sendKey(key);
@@ -746,6 +816,25 @@ public class UrlBarTest {
     @Test
     @SmallTest
     public void typingStarted_clipboardPasteTriggersTypingStarted() {
+        testTypingStarted_clipboardPasteTriggersTypingStarted();
+    }
+
+    @Test
+    @SmallTest
+    public void
+            typingStarted_clipboardPasteTriggersTypingStartedWithRetainOmniboxOnFocusDisabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
+        testTypingStarted_clipboardPasteTriggersTypingStarted();
+    }
+
+    @Test
+    @SmallTest
+    public void typingStarted_clipboardPasteTriggersTypingStartedWithRetainOmniboxOnFocusEnabled() {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.TRUE);
+        testTypingStarted_clipboardPasteTriggersTypingStarted();
+    }
+
+    private void testTypingStarted_clipboardPasteTriggersTypingStarted() {
         var listener = mock(Runnable.class);
 
         mOmnibox.clearFocus();
@@ -757,8 +846,7 @@ public class UrlBarTest {
                 () -> {
                     Clipboard.getInstance().setText("");
                     // Paste directly. This is because Keyboard paste normally goes through an IME,
-                    // which
-                    // requires a lengthier process, rendering test flaky.
+                    // which requires a lengthier process, rendering test flaky.
                     mUrlBar.onTextContextMenuItem(android.R.id.paste);
                 });
         verifyNoInteractions(listener);
@@ -767,8 +855,7 @@ public class UrlBarTest {
                 () -> {
                     Clipboard.getInstance().setText("asdf");
                     // Paste directly. This is because Keyboard paste normally goes through an IME,
-                    // which
-                    // requires a lengthier process, rendering test flaky.
+                    // which requires a lengthier process, rendering test flaky.
                     mUrlBar.onTextContextMenuItem(android.R.id.paste);
                 });
         verify(listener).run();

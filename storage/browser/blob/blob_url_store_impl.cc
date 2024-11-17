@@ -159,6 +159,25 @@ void BlobURLStoreImpl::ResolveForNavigation(
   std::move(callback).Run(registry_->GetUnsafeAgentClusterID(url));
 }
 
+void BlobURLStoreImpl::ResolveForWorkerScriptFetch(
+    const GURL& url,
+    mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
+    ResolveForNavigationCallback callback) {
+  if (!registry_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kBlockCrossPartitionBlobUrlFetching) &&
+      !registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
+                              storage_key_)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  ResolveForNavigation(url, std::move(token), std::move(callback));
+}
+
 bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
                                       const char* method) const {
   // TODO(crbug.com/40810120): Remove crash keys.

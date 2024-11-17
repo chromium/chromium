@@ -405,8 +405,7 @@ void DialogDelegate::RemoveObserver(DialogObserver* observer) {
 }
 
 void DialogDelegate::DialogModelChanged() {
-  for (DialogObserver& observer : observer_list_)
-    observer.OnDialogChanged();
+  observer_list_.Notify(&DialogObserver::OnDialogChanged);
 }
 
 void DialogDelegate::TriggerInputProtection(bool force_early) {

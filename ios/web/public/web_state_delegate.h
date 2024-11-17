@@ -105,6 +105,10 @@ class WebStateDelegate {
   // more info.
   virtual id<CRWResponderInputView> GetResponderInputView(WebState* source);
 
+  // Provides an opportunity to the delegate to react to the creation of the web
+  // view.
+  virtual void OnNewWebViewCreated(WebState* source);
+
  protected:
   virtual ~WebStateDelegate();
 

@@ -49,7 +49,7 @@
 
   self.viewController = [[PrimaryToolbarViewController alloc] init];
   self.viewController.shouldHideOmniboxOnNTP =
-      !self.browser->GetBrowserState()->IsOffTheRecord();
+      !self.browser->GetProfile()->IsOffTheRecord();
   self.viewController.omniboxCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   self.viewController.popupMenuCommandsHandler = HandlerForProtocol(

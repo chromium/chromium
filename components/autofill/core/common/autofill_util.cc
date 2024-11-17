@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
@@ -133,8 +134,7 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
       return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SubmissionIndicatorEvent::NONE;
+  NOTREACHED();
 }
 
 GURL StripAuthAndParams(const GURL& gurl) {
@@ -183,6 +183,12 @@ bool IsAddressFieldSwappingEnabled() {
 #else
   return true;
 #endif
+}
+
+std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list) {
+  std::vector<std::u16string> titles = base::ToVector(
+      titles_list, [](const auto& list_item) { return list_item.first; });
+  return base::JoinString(titles, u",");
 }
 
 }  // namespace autofill

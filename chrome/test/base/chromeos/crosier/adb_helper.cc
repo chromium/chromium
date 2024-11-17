@@ -168,7 +168,7 @@ bool AdbHelper::InstallApk(const base::FilePath& apk_path) {
   return false;
 }
 
-bool AdbHelper::Command(const std::string_view command) {
+bool AdbHelper::Command(std::string_view command) {
   auto result = TestSudoHelperClient().RunCommand(
       base::StrCat({"ADB_VENDOR_KEYS=", vendor_key_file_.value(), " adb -s ",
                     serial_, " ", command}));

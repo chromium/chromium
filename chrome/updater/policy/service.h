@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
 
 namespace updater {
@@ -96,9 +97,10 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   };
 
   PolicyService(std::vector<scoped_refptr<PolicyManagerInterface>> managers,
-                bool usage_stats_enabled);
+                scoped_refptr<PersistedData> persisted_data);
   PolicyService(scoped_refptr<ExternalConstants> external_constants,
-                bool usage_stats_enabled);
+                scoped_refptr<PersistedData> persisted_data,
+                bool is_ceca_experiment_enabled);
   PolicyService(const PolicyService&) = delete;
   PolicyService& operator=(const PolicyService&) = delete;
 
@@ -138,7 +140,14 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // Helper methods.
   base::Value GetAllPolicies() const;
   std::string GetAllPoliciesAsString() const;
-  bool AreUpdatesSuppressedNow(const base::Time& now = base::Time::Now()) const;
+  bool AreUpdatesSuppressedNow(base::Time now = base::Time::Now()) const;
+
+  // Returns whether the Chrome Enterprise Companion App experiment is enabled.
+  bool IsCecaExperimentEnabled() const { return is_ceca_experiment_enabled_; }
+
+  // Queries whether the machine appears to be cloud managed by Chrome
+  // Enterprise Core (formerly Chrome Enterprise Cloud Management).
+  void IsCloudManaged(base::OnceCallback<void(bool)> callback) const;
 
  protected:
   virtual ~PolicyService();
@@ -200,7 +209,8 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   std::set<std::string> GetAppsWithPolicy() const;
 
   base::OnceCallback<void(int)> fetch_policies_callback_;
-  const bool usage_stats_enabled_;
+  scoped_refptr<PersistedData> persisted_data_;
+  const bool is_ceca_experiment_enabled_;
 };
 
 // Decouples the proxy configuration from `PolicyService`.

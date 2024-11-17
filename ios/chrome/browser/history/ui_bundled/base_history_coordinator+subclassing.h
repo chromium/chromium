@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/history/ui_bundled/history_menu_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 
 @interface BaseHistoryCoordinator (Subclassing) <
     BrowserObserving,
@@ -17,6 +18,7 @@
     HistoryTableViewControllerDelegate>
 
 @property(nonatomic, strong) BaseHistoryViewController* viewController;
+@property(nonatomic, readonly) MenuScenarioHistogram scenario;
 
 @end
 

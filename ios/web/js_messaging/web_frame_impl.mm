@@ -45,6 +45,13 @@ NSString* CreateFunctionCallWithParamaters(
       stringWithFormat:@"__gCrWeb.%s(%@)", name.c_str(),
                        [parameter_strings componentsJoinedByString:@","]];
 }
+
+// The NSError message returned for frames which can not execute JavaScript.
+// This string is used to filter these errors because they share a more general
+// error code `WKErrorJavaScriptExceptionOccurred`.
+const NSString* kCannotExecuteJSInDocumentErrorMessage =
+    @"Cannot execute JavaScript in this document";
+
 }  // namespace
 
 namespace web {
@@ -55,12 +62,14 @@ WebFrameImpl::WebFrameImpl(WKFrameInfo* frame_info,
                            const std::string& frame_id,
                            bool is_main_frame,
                            GURL security_origin,
-                           web::WebState* web_state)
+                           web::WebState* web_state,
+                           ContentWorld content_world)
     : frame_info_(frame_info),
       frame_id_(base::ToLowerASCII(frame_id)),
       is_main_frame_(is_main_frame),
       security_origin_(security_origin),
-      web_state_(web_state) {
+      web_state_(web_state),
+      content_world_(content_world) {
   DCHECK(frame_info_);
   DCHECK(web_state_);
   web_state->AddObserver(this);
@@ -114,8 +123,8 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
 bool WebFrameImpl::CallJavaScriptFunction(const std::string& name,
                                           const base::Value::List& parameters) {
   JavaScriptContentWorld* content_world =
-      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-          GetBrowserState());
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
 
   return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               /*reply_with_result=*/false);
@@ -135,8 +144,8 @@ bool WebFrameImpl::CallJavaScriptFunction(
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   JavaScriptContentWorld* content_world =
-      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-          GetBrowserState());
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
   return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               std::move(callback), timeout);
 }
@@ -189,8 +198,8 @@ bool WebFrameImpl::ExecuteJavaScript(
     const std::u16string& script,
     ExecuteJavaScriptCallbackWithError callback) {
   JavaScriptContentWorld* content_world =
-      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
-          GetBrowserState());
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
 
   return ExecuteJavaScriptInContentWorld(script, content_world,
                                          std::move(callback));
@@ -243,25 +252,42 @@ void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
   std::u16string executed_script = base::SysNSStringToUTF16(script);
   std::u16string error_string =
       base::SysNSStringToUTF16(error.userInfo[NSLocalizedDescriptionKey]);
-  std::u16string exception =
-      base::SysNSStringToUTF16(error.userInfo[@"WKJavaScriptExceptionMessage"]);
+  NSString* ns_exception = error.userInfo[@"WKJavaScriptExceptionMessage"];
+  std::u16string exception = base::SysNSStringToUTF16(ns_exception);
 
   DLOG(WARNING) << "Script execution of:" << executed_script
                 << "\nfailed with error: " << error_string
                 << "\nand exception: " << exception;
 
-  UMA_HISTOGRAM_BOOLEAN("IOS.Javascript.ScriptExecutionFailed",
-                        /**/ true);
+  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.ScriptExecutionFailed", true);
 
-  if (base::FeatureList::IsEnabled(features::kLogJavaScriptErrors)) {
-    SCOPED_CRASH_KEY_STRING256("JavaScript", "script",
-                               base::UTF16ToUTF8(executed_script));
-    SCOPED_CRASH_KEY_STRING256("JavaScript", "error",
-                               base::UTF16ToUTF8(error_string));
-    SCOPED_CRASH_KEY_STRING256("JavaScript", "exception",
-                               base::UTF16ToUTF8(exception));
-    base::debug::DumpWithoutCrashing();
+  if (!base::FeatureList::IsEnabled(features::kLogJavaScriptErrors)) {
+    return;
   }
+
+  // Do not log invalid target frame errors. This error means that the frame is
+  // no longer valid. This is an expected failure state as native code only has
+  // an outdated view of the web frames (updated asyncronously via JS messages
+  // or navigation callbacks).
+  if (error.domain == WKErrorDomain &&
+      error.code == WKErrorJavaScriptInvalidFrameTarget) {
+    return;
+  }
+
+  // Some frames do not allow JavaScript execution, there is no need to report
+  // this as an error as it is an expected case.
+  if (error.domain == WKErrorDomain &&
+      [kCannotExecuteJSInDocumentErrorMessage isEqualToString:ns_exception]) {
+    return;
+  }
+
+  SCOPED_CRASH_KEY_STRING256("JavaScript", "script",
+                             base::UTF16ToUTF8(executed_script));
+  SCOPED_CRASH_KEY_STRING256("JavaScript", "error",
+                             base::UTF16ToUTF8(error_string));
+  SCOPED_CRASH_KEY_STRING256("JavaScript", "exception",
+                             base::UTF16ToUTF8(exception));
+  base::debug::DumpWithoutCrashing();
 }
 
 bool WebFrameImpl::ExecuteJavaScriptFunction(

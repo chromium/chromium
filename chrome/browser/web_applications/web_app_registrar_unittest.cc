@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -62,15 +62,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
-
-using web_app::test::CrosapiParam;
-using web_app::test::WithCrosapiParam;
 #endif
 
 namespace web_app {
@@ -248,7 +243,7 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
   auto web_app = std::make_unique<WebApp>(app_id);
   auto web_app2 = std::make_unique<WebApp>(app_id2);
 
-  web_app->AddSource(WebAppManagement::kSync);
+  web_app->AddSource(WebAppManagement::kUserInstalled);
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName(name);
@@ -907,10 +902,11 @@ TEST_F(WebAppRegistrarTest, CountUserInstalledApps) {
 
   // User-installed apps have one of the following types:
   // - `WebAppManagement::kSync`
+  // - `WebAppManagement::kUserInstalled`
   // - `WebAppManagement::kWebAppStore`
   // - `WebAppManagement::kOneDriveIntegration`
   // - `WebAppManagement::kIwaUserInstalled`
-  EXPECT_EQ(4, registrar().CountUserInstalledApps());
+  EXPECT_EQ(5, registrar().CountUserInstalledApps());
 }
 
 TEST_F(WebAppRegistrarTest, CountUserInstalledAppsDiy) {
@@ -958,9 +954,11 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
   const webapps::AppId app_id = isolated_web_app->app_id();
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-      base::Version("1.0.0")));
+  isolated_web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
   RegisterAppUnsafe(std::move(isolated_web_app));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs =
@@ -986,9 +984,11 @@ TEST_F(
   const webapps::AppId app_id = isolated_web_app->app_id();
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-      base::Version("1.0.0")));
+  isolated_web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
   isolated_web_app->SetInstallState(
       proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
   RegisterAppUnsafe(std::move(isolated_web_app));
@@ -1015,9 +1015,11 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
   ASSERT_TRUE(url_info.has_value());
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-      base::Version("1.0.0")));
+  isolated_web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
   RegisterAppUnsafe(std::move(isolated_web_app));
 
   auto output_config =
@@ -1114,9 +1116,11 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
-  web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageProxy{url::Origin::Create(GURL("http://127.0.0.1:8080"))},
-      base::Version("1.0.0")));
+  web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageProxy{url::Origin::Create(GURL("http://127.0.0.1:8080"))},
+          base::Version("1.0.0"))
+          .Build());
 
   RegisterAppUnsafe(std::move(web_app));
 
@@ -1493,10 +1497,9 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
+class WebAppRegistrarAshTest : public WebAppTest {
  public:
   void SetUp() override {
-    // Set up user manager to so that Lacros mode can be enabled.
     // TODO(crbug.com/40275387): Consider setting up a fake user in all Ash web
     // app tests.
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
@@ -1511,8 +1514,6 @@ class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
     // Need to run the WebAppTest::SetUp() after the fake user manager set up
     // so that the scoped_user_manager can be destructed in the correct order.
     WebAppTest::SetUp();
-
-    VerifyLacrosStatus();
   }
   WebAppRegistrarAshTest() = default;
   ~WebAppRegistrarAshTest() override = default;
@@ -1522,7 +1523,7 @@ class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
-TEST_P(WebAppRegistrarAshTest, SourceSupported) {
+TEST_F(WebAppRegistrarAshTest, SourceSupported) {
   const GURL example_url("https://example.com/my-app/start");
   const GURL swa_url("chrome://swa/start");
   const GURL uninstalling_url("https://example.com/uninstalling/start");
@@ -1551,24 +1552,13 @@ TEST_P(WebAppRegistrarAshTest, SourceSupported) {
     registrar.InitRegistry(std::move(registry));
   }
 
-  if (GetParam() == CrosapiParam::kEnabled) {
-    // Non-system web apps are managed by Lacros, excluded in Ash
-    // WebAppRegistrar.
-    EXPECT_EQ(registrar.CountUserInstalledApps(), 0);
-    EXPECT_EQ(CountApps(registrar.GetApps()), 1);
+  EXPECT_EQ(registrar.CountUserInstalledApps(), 1);
+  EXPECT_EQ(CountApps(registrar.GetApps()), 2);
 
-    EXPECT_FALSE(registrar.FindAppWithUrlInScope(example_url).has_value());
-    EXPECT_TRUE(registrar.GetAppScope(example_id).is_empty());
-    EXPECT_FALSE(registrar.GetAppUserDisplayMode(example_id).has_value());
-  } else {
-    EXPECT_EQ(registrar.CountUserInstalledApps(), 1);
-    EXPECT_EQ(CountApps(registrar.GetApps()), 2);
-
-    EXPECT_EQ(registrar.FindAppWithUrlInScope(example_url), example_id);
-    EXPECT_EQ(registrar.GetAppScope(example_id),
-              GURL("https://example.com/my-app/"));
-    EXPECT_TRUE(registrar.GetAppUserDisplayMode(example_id).has_value());
-  }
+  EXPECT_EQ(registrar.FindAppWithUrlInScope(example_url), example_id);
+  EXPECT_EQ(registrar.GetAppScope(example_id),
+            GURL("https://example.com/my-app/"));
+  EXPECT_TRUE(registrar.GetAppUserDisplayMode(example_id).has_value());
 
   EXPECT_EQ(registrar.FindAppWithUrlInScope(swa_url), swa_id);
   EXPECT_EQ(registrar.GetAppScope(swa_id), GURL("chrome://swa/"));
@@ -1581,11 +1571,6 @@ TEST_P(WebAppRegistrarAshTest, SourceSupported) {
   EXPECT_FALSE(base::Contains(registrar.GetAppIds(), uninstalling_id));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppRegistrarAshTest,
-                         ::testing::Values(CrosapiParam::kEnabled,
-                                           CrosapiParam::kDisabled),
-                         WithCrosapiParam::ParamToString);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -60,7 +60,7 @@ base::Value::Dict GetBackgroundInfoAsDict(
     const GURL& action_url,
     const std::optional<std::string>& collection_id,
     const std::optional<std::string>& resume_token,
-    const std::optional<int> refresh_timestamp) {
+    std::optional<int> refresh_timestamp) {
   base::Value::Dict background_info;
   background_info.Set(kNtpCustomBackgroundURL,
                       base::Value(background_url.spec()));

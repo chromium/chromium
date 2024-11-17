@@ -146,8 +146,8 @@ void GraphicsMemoryDumpProvider::ParseResponseAndAddToDump(
   }
 }
 
-GraphicsMemoryDumpProvider::GraphicsMemoryDumpProvider() {}
+GraphicsMemoryDumpProvider::GraphicsMemoryDumpProvider() = default;
 
-GraphicsMemoryDumpProvider::~GraphicsMemoryDumpProvider() {}
+GraphicsMemoryDumpProvider::~GraphicsMemoryDumpProvider() = default;
 
 }  // namespace tracing

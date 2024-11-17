@@ -667,8 +667,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
             case apps::PatternMatchType::kFileExtension:
             case apps::PatternMatchType::kIsDirectory:
             case apps::PatternMatchType::kSuffix:
-              NOTREACHED_IN_MIGRATION();
-              return arc::IntentFilter();
+              NOTREACHED();
           }
           paths.emplace_back(condition_value->value, match_type);
         }
@@ -685,8 +684,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
         }
         break;
       case apps::ConditionType::kFile:
-        NOTREACHED_IN_MIGRATION();
-        return arc::IntentFilter();
+        NOTREACHED();
     }
   }
   return arc::IntentFilter(package_name, std::move(actions),

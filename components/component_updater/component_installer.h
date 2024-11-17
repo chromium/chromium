@@ -225,7 +225,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
 
   void DeleteUnselectedComponentVersions(
       const base::FilePath& base_dir,
-      const std::optional<base::Version>& selected_version);
+      std::optional<base::Version> selected_version);
   std::optional<base::FilePath> GetComponentDirectory();
   void ComponentReady(base::Value::Dict manifest);
   void UninstallOnTaskRunner();

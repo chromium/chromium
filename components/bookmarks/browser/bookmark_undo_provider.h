@@ -14,14 +14,14 @@ class BookmarkNode;
 // The interface for providing undo support.
 class BookmarkUndoProvider {
  public:
-  // Restores the previously removed |node| at |parent| in the specified
-  // |index|.
+  // Restores the previously removed `node` at `parent` in the specified
+  // `index`.
   virtual void RestoreRemovedNode(const BookmarkNode* parent,
                                   size_t index,
                                   std::unique_ptr<BookmarkNode> node) = 0;
 
  protected:
-  virtual ~BookmarkUndoProvider() {}
+  virtual ~BookmarkUndoProvider() = default;
 };
 
 }  // namespace bookmarks

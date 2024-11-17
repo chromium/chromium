@@ -132,7 +132,6 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 }
 
 - (void)handlePartialTranslateSelection {
-  DCHECK(base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate));
   WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
   if (!tabHelper) {
     return;
@@ -145,7 +144,6 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 }
 
 - (BOOL)canHandlePartialTranslateSelection {
-  DCHECK(base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate));
   WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
   if (!tabHelper) {
     return NO;
@@ -157,15 +155,6 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 - (BOOL)shouldInstallPartialTranslate {
   if (ios::provider::PartialTranslateLimitMaxCharacters() == 0u) {
     // Feature is not available.
-    return NO;
-  }
-  if (!IsPartialTranslateEnabled()) {
-    // Feature is not enabled.
-    return NO;
-  }
-  if (self.incognito && !ShouldShowPartialTranslateInIncognito()) {
-    // Feature is enabled, but disabled in incognito, and the current tab is in
-    // incognito.
     return NO;
   }
   if (!_translateEnabled.GetValue() && _translateEnabled.IsManaged()) {

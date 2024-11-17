@@ -15,7 +15,7 @@ struct NamedColor;
 %global-table
 %compare-strncmp
 %define class-name ColorDataHash
-%define lookup-function-name findColorImpl
+%define lookup-function-name FindColorImpl
 %define hash-function-name colordata_hash_function
 %enum
 %%
@@ -172,8 +172,8 @@ yellow, 0xffffff00
 yellowgreen, 0xff9acd32
 %%
 
-const struct NamedColor* FindColor(const char* str, unsigned len) {
-  return ColorDataHash::findColorImpl(str, len);
+const struct NamedColor* FindColor(std::string_view str) {
+  return ColorDataHash::FindColorImpl(str.data(), str.size());
 }
 
 } // namespace blink

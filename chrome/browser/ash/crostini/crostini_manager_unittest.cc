@@ -31,7 +31,9 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -1852,12 +1854,13 @@ TEST_F(CrostiniManagerRestartTest, StopAfterLxdAvailableThenFullRestart) {
 
 TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
   auto* terminal_registry =
-      guest_os::GuestOsService::GetForProfile(profile_.get())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
           ->TerminalProviderRegistry();
-  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
-                             ->MountProviderRegistry();
+  auto* mount_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
+          ->MountProviderRegistry();
   auto* share_service =
-      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
 
   TestFuture<CrostiniResult> restart_result;
   RestartCrostini(container_id(), restart_result.GetCallback());
@@ -1879,12 +1882,13 @@ TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
 TEST_F(CrostiniManagerRestartTest,
        DeleteUnregistersContainersWhenDoesNotExist) {
   auto* terminal_registry =
-      guest_os::GuestOsService::GetForProfile(profile_.get())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
           ->TerminalProviderRegistry();
-  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
-                             ->MountProviderRegistry();
+  auto* mount_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
+          ->MountProviderRegistry();
   auto* share_service =
-      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
   vm_tools::cicerone::DeleteLxdContainerResponse response;
   response.set_status(
       vm_tools::cicerone::DeleteLxdContainerResponse::DOES_NOT_EXIST);
@@ -1910,12 +1914,13 @@ TEST_F(CrostiniManagerRestartTest,
 
 TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
   auto* terminal_registry =
-      guest_os::GuestOsService::GetForProfile(profile_.get())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
           ->TerminalProviderRegistry();
-  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
-                             ->MountProviderRegistry();
+  auto* mount_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
+          ->MountProviderRegistry();
   auto* share_service =
-      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
 
   TestFuture<CrostiniResult> restart_result;
   RestartCrostini(container_id(), restart_result.GetCallback());
@@ -2063,6 +2068,80 @@ TEST_F(CrostiniManagerTest, ExportDiskImageSuccess) {
                                       result_future.GetCallback());
 
   EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
+}
+
+TEST_F(CrostiniManagerTest, ImportDiskImageFailure) {
+  base::ScopedTempFile import_path;
+  EXPECT_TRUE(import_path.Create());
+  TestFuture<CrostiniResult> result_future;
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 0);
+
+  vm_tools::concierge::ImportDiskImageResponse failure_response;
+  failure_response.set_status(vm_tools::concierge::DISK_STATUS_FAILED);
+  fake_concierge_client_->set_import_disk_image_response(failure_response);
+
+  crostini_manager()->ImportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      import_path.path(),
+                                      result_future.GetCallback());
+
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED);
+}
+
+TEST_F(CrostiniManagerTest, ImportDiskImageNoSpaceFailure) {
+  base::ScopedTempFile import_path;
+  EXPECT_TRUE(import_path.Create());
+  TestFuture<CrostiniResult> result_future;
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 0);
+
+  vm_tools::concierge::DiskImageStatusResponse progress_signal;
+  progress_signal.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  progress_signal.set_progress(50);
+  vm_tools::concierge::DiskImageStatusResponse no_space_signal;
+  no_space_signal.set_status(vm_tools::concierge::DISK_STATUS_NOT_ENOUGH_SPACE);
+  std::vector<vm_tools::concierge::DiskImageStatusResponse> signals;
+  signals.emplace_back(progress_signal);
+  signals.emplace_back(no_space_signal);
+  fake_concierge_client_->set_disk_image_status_signals(signals);
+
+  vm_tools::concierge::ImportDiskImageResponse response;
+  response.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  ash::FakeConciergeClient::Get()->set_import_disk_image_response(response);
+
+  crostini_manager()->ImportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      import_path.path(),
+                                      result_future.GetCallback());
+
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
+  EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE);
+}
+
+TEST_F(CrostiniManagerTest, ImportDiskImageSuccess) {
+  base::ScopedTempFile import_path;
+  EXPECT_TRUE(import_path.Create());
+  TestFuture<CrostiniResult> result_future;
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 0);
+
+  vm_tools::concierge::DiskImageStatusResponse progress_signal;
+  progress_signal.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  progress_signal.set_progress(50);
+  vm_tools::concierge::DiskImageStatusResponse done_signal;
+  done_signal.set_status(vm_tools::concierge::DISK_STATUS_CREATED);
+  std::vector<vm_tools::concierge::DiskImageStatusResponse> signals;
+  signals.emplace_back(progress_signal);
+  signals.emplace_back(done_signal);
+  fake_concierge_client_->set_disk_image_status_signals(signals);
+
+  vm_tools::concierge::ImportDiskImageResponse response;
+  response.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  ash::FakeConciergeClient::Get()->set_import_disk_image_response(response);
+
+  crostini_manager()->ImportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      import_path.path(),
+                                      result_future.GetCallback());
+
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
   EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
 }
 

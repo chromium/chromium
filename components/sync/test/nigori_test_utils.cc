@@ -188,9 +188,9 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
   }
 
   // Create the cryptographer, which encrypts with the key derived from
-  // |passphrase_key_params| and can decrypt with the key derived from
-  // |old_key_params| if given. |encryption_keybag| is a serialized version
-  // of this cryptographer |key_bag| encrypted with its encryption key.
+  // `passphrase_key_params` and can decrypt with the key derived from
+  // `old_key_params` if given. `encryption_keybag` is a serialized version
+  // of this cryptographer `key_bag` encrypted with its encryption key.
   auto cryptographer = CryptographerImpl::FromSingleKeyForTesting(
       passphrase_key_params.password, passphrase_key_params.derivation_params);
   if (old_key_params) {

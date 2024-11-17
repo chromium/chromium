@@ -17,8 +17,7 @@ namespace safe_browsing {
 uint32_t HashMessage(const google::protobuf::MessageLite& message) {
   std::string message_string;
   if (!message.SerializeToString(&message_string)) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   return base::Hash(message_string);
 }

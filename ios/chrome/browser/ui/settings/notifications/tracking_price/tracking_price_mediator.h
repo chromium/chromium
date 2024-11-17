@@ -31,6 +31,9 @@ class ShoppingService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Stops observing all objects.
+- (void)disconnect;
+
 // View controller.
 @property(nonatomic, weak) id<TrackingPriceConsumer> consumer;
 

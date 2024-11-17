@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrCheckboxElement, SettingsResetPageElement, SettingsResetProfileDialogElement} from 'chrome://settings/lazy_load.js';
 import {ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestResetBrowserProxy} from './test_reset_browser_proxy.js';
 
@@ -90,11 +90,11 @@ suite('DialogTests', function() {
         resetPage.shadowRoot!.querySelector('settings-reset-profile-dialog');
     assertTrue(!!dialog);
 
-    const checkbox = dialog!.shadowRoot!.querySelector<CrCheckboxElement>(
+    const checkbox = dialog.shadowRoot!.querySelector<CrCheckboxElement>(
         '[slot=footer] cr-checkbox')!;
     assertTrue(checkbox.checked);
     const showReportedSettingsLink =
-        dialog!.shadowRoot!.querySelector<HTMLElement>('[slot=footer] a');
+        dialog.shadowRoot!.querySelector<HTMLElement>('[slot=footer] a');
     assertTrue(!!showReportedSettingsLink);
     showReportedSettingsLink!.click();
 
@@ -102,12 +102,14 @@ suite('DialogTests', function() {
     // Ensure that the checkbox was not toggled as a result of
     // clicking the link.
     assertTrue(checkbox.checked);
-    assertFalse(dialog!.$.reset.disabled);
-    assertFalse(dialog!.$.resetSpinner.active);
-    dialog!.$.reset.click();
-    assertTrue(dialog!.$.reset.disabled);
-    assertTrue(dialog!.$.cancel.disabled);
-    assertTrue(dialog!.$.resetSpinner.active);
+    assertFalse(dialog.$.reset.disabled);
+    const spinner = dialog.shadowRoot!.querySelector('.spinner');
+    assertTrue(!!spinner);
+    assertFalse(isVisible(spinner));
+    dialog.$.reset.click();
+    assertTrue(dialog.$.reset.disabled);
+    assertTrue(dialog.$.cancel.disabled);
+    assertTrue(isVisible(spinner));
     await resetPageBrowserProxy.whenCalled('performResetProfileSettings');
   });
 

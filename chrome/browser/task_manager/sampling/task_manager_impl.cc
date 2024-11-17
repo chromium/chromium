@@ -366,7 +366,7 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
       // Build the parent-to-child map, for use later.
       for (const Task* task : tasks) {
         if (task->HasParentTask())
-          children[task->GetParentTask()].push_back(task);
+          children[task->GetParentTask().get()].push_back(task);
         else
           DCHECK(!group_task->HasParentTask());
       }

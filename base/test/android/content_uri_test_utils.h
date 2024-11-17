@@ -5,20 +5,29 @@
 #ifndef BASE_TEST_ANDROID_CONTENT_URI_TEST_UTILS_H_
 #define BASE_TEST_ANDROID_CONTENT_URI_TEST_UTILS_H_
 
+#include <optional>
+
 namespace base {
 class FilePath;
 
 namespace test::android {
 
-// NativeTest app has a FileProvider org.chromium.native_test.fileprovider which
-// includes files from its cache dir. If `file_name` is a path under the cache
-// dir such as a path created under a ScopedTempDir, we can map it to a content
-// URI.
-//
-// Returns true and sets `content_uri` from `file_name` if mapping succeeds,
-// else returns false.
-bool GetContentUriFromCacheDirFilePath(const FilePath& file_name,
-                                       FilePath* content_uri);
+// Returns a content-URI for FileProvider org.chromium.native_test.fileprovider
+// representing `path` if it is a valid file or dir under the android app cache
+// dir such as a path created in a ScopedTempDir, else returns std::nullopt.
+std::optional<FilePath> GetContentUriFromCacheDirFilePath(const FilePath& path);
+
+// Similar to GetContentUriFromCacheDirFilePath() but files are first read into
+// memory and any file descriptor will not be backed by a local file. This
+// mimics how an in-memory or network-backed ContentProvider will behave.
+std::optional<FilePath> GetInMemoryContentUriFromCacheDirFilePath(
+    const FilePath& path);
+
+// Returns a DocumentFile Tree URI for the specified directory which must be
+// under the cache dir, else returns std::nullopt. This mimics how a
+// DocumentsProvider will work with ACTION_OPEN_DOCUMENT_TREE.
+std::optional<FilePath> GetInMemoryContentTreeUriFromCacheDirDirectory(
+    const FilePath& directory);
 
 }  // namespace test::android
 }  // namespace base

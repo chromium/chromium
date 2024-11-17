@@ -1,0 +1,18 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "enterprise.profile_badging.toolbar_settings",
+      "pref_location": "user_profile",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
+  }
+]

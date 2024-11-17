@@ -65,12 +65,11 @@ NSString* const kSyncTestErrorDomain = @"SyncTestDomain";
 // `create_http_post_provider_factory_cb`.
 void OverrideSyncNetwork(const syncer::CreateHttpPostProviderFactory&
                              create_http_post_provider_factory_cb) {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
-  DCHECK(browser_state);
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  DCHECK(profile);
   syncer::SyncServiceImpl* service =
       SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
-          browser_state);
+          profile);
   service->OverrideNetworkForTest(create_http_post_provider_factory_cb);
 }
 
@@ -121,10 +120,9 @@ void FlushFakeSyncServerToDisk() {
 }
 
 void TriggerSyncCycle(syncer::DataType type) {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForProfile(profile);
   sync_service->TriggerRefresh({type});
 }
 
@@ -171,8 +169,8 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
       !base::Uuid::ParseCaseInsensitive(originator_client_item_id).is_valid());
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(
-          title, std::move(originator_client_item_id));
+      entity_builder_factory.NewBookmarkEntityBuilder(title)
+          .SetOriginatorClientItemId(std::move(originator_client_item_id));
   gSyncFakeServer->InjectEntity(
       bookmark_builder
           .SetGeneration(fake_server::BookmarkEntityBuilder::
@@ -220,20 +218,17 @@ void AddSessionToFakeSyncServer(
 }
 
 bool IsSyncEngineInitialized() {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
-  DCHECK(browser_state);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  DCHECK(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   return syncService->IsEngineInitialized();
 }
 
 std::string GetSyncCacheGuid() {
   DCHECK(IsSyncEngineInitialized());
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   syncer::DeviceInfoSyncService* service =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
+      DeviceInfoSyncServiceFactory::GetForProfile(profile);
   const syncer::LocalDeviceInfoProvider* info_provider =
       service->GetLocalDeviceInfoProvider();
   return info_provider->GetLocalDeviceInfo()->guid();
@@ -305,10 +300,9 @@ void DeleteAutofillProfileFromFakeSyncServer(std::string guid) {
 }
 
 bool IsAutofillProfilePresent(std::string guid, std::string full_name) {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   autofill::PersonalDataManager* personal_data_manager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(browser_state);
+      autofill::PersonalDataManagerFactory::GetForProfile(profile);
   const autofill::AutofillProfile* autofill_profile =
       personal_data_manager->address_data_manager().GetProfileByGUID(guid);
 
@@ -321,10 +315,9 @@ bool IsAutofillProfilePresent(std::string guid, std::string full_name) {
 }
 
 void ClearAutofillProfile(std::string guid) {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   autofill::PersonalDataManager* personal_data_manager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(browser_state);
+      autofill::PersonalDataManagerFactory::GetForProfile(profile);
   personal_data_manager->RemoveByGUID(guid);
 }
 
@@ -365,11 +358,10 @@ BOOL VerifyHistoryOnSyncServer(const std::multiset<GURL>& expected_urls,
 }
 
 void AddTypedURLToClient(const GURL& url, base::Time visitTimestamp) {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   history::HistoryService* historyService =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   historyService->AddPage(url, visitTimestamp, 0, 1, GURL(),
                           history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
@@ -424,11 +416,10 @@ BOOL IsUrlPresentOnClient(const GURL& url,
                           BOOL expect_present,
                           NSError** error) {
   // Call the history service.
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   const GURL block_safe_url(url);
   std::set<GURL> origins;
@@ -471,11 +462,10 @@ BOOL IsUrlPresentOnClient(const GURL& url,
 }
 
 void DeleteTypedUrlFromClient(const GURL& url) {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   history_service->DeleteURLs({url});
 }

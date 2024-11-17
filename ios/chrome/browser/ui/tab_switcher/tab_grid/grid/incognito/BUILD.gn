@@ -21,6 +21,7 @@ source_set("incognito") {
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -28,7 +29,6 @@ source_set("incognito") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/supervised_user/model:capabilities",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_idle_status_handler",
@@ -59,7 +59,9 @@ source_set("incognito_ui") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_commands",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:ui",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",

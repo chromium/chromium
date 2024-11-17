@@ -23,12 +23,7 @@ source_set("enterprise_device_attributes") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/crosapi",
     "//chrome/browser/profiles:profile",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/crosapi" ]
-  } else {
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
 }

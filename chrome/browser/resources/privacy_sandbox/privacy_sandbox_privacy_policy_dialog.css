@@ -1,0 +1,55 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+iframe {
+  height: calc(100vh -
+    var(--privacy-sandbox-dialog-buttons-row-height) -
+    var(--privacy-sandbox-privacy-policy-back-button-section-height));
+  width: 96vw;
+  padding-right: 24px;
+  padding-left: 24px;
+}
+
+:host(:not([should-show])) iframe {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+
+:host([should-show]) iframe {
+  position: relative;
+  z-index: auto;
+}
+
+#backButton {
+  --cr-icon-button-size: 24px;
+  --cr-icon-button-icon-size: 24px;
+  margin-left: -4px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.button-container {
+  display: flex;
+  width: 600px;
+  padding: 24px 40px;
+  align-items: flex-end;
+  gap: 16px;
+  border-bottom: 1px solid #E1E3E1; /* Light mode border */
+}
+
+:host(:not([should-show])) .button-container {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .button-container {
+    border-bottom: 1px solid #505254; /* Dark mode border */
+  }
+}

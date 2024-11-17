@@ -43,8 +43,7 @@ bool IsCharInClass(char16_t c, const std::string& class_name) {
   // Symbols are not covered because there is not fixed definition and because
   // symbols are treated like other character classes, so the importance of
   // dealing with them here is limited.
-  NOTREACHED_IN_MIGRATION() << "Don't call IsCharInClass for symbols";
-  return false;
+  NOTREACHED() << "Don't call IsCharInClass for symbols";
 }
 
 size_t CountCharsInClass(const std::u16string& password,
@@ -68,8 +67,7 @@ PasswordRequirementsSpec_CharacterClass* GetMutableCharClass(
   } else if (class_name == kSymbol) {
     return spec->mutable_symbols();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 class PasswordGeneratorTest : public testing::Test {

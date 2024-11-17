@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1066101356081285416">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Die Sendungsnummer und der Name der Website werden an Google gesendet, um diese Funktion bereitzustellen und die Einkaufsfunktionen von Google für alle zu verbessern. Du kannst dies jederzeit in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> aktualisieren.</translation>
+<translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1143896152279775643">Dein Passwort wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="1146503048444965320">Neuen Tab in Chrome öffnen</translation>
 <translation id="1166460004393506534">Browserdaten in Chrome löschen</translation>
@@ -38,7 +39,9 @@ Wichtige Hinweise:
 <translation id="1670609221633730681">Chrome-Tipp: Position der Adressleiste auswählen</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Fügt die eingegebenen URLs zu deinen Lesezeichen in Chrome hinzu.</translation>
+<translation id="1799920918471566157">Chrome-Tipps</translation>
 <translation id="1830634592642484976">Diese Adresse ist derzeit in Chrome gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="USER_EMAIL" />).</translation>
+<translation id="1891812034154776216">Offene Inkognitotabs beim Verlassen von Chrome ausblenden</translation>
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
 <translation id="1965935827552890526">Du kannst zu deinem offenen Chrome-Fenster zurückkehren, um dein vorherige Aktion abzuschließen.</translation>
@@ -70,6 +73,7 @@ Wichtige Hinweise:
 <translation id="2689064829982324496">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chrome abmeldest<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
 <translation id="2703746758996815929">Wenn du hilfreiche Tipps zu Chrome erhalten möchtest, aktiviere die Benachrichtigungen in den iOS-Einstellungen.</translation>
+<translation id="2728851697704606655">Mit Google Lens übersetzen</translation>
 <translation id="2736805085127235148">Chrome-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
 <translation id="2754428955276778271">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.
 
@@ -247,6 +251,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7581063337314642333">Tab-Raster in Chrome aufrufen</translation>
 <translation id="7599894504325210080">Autofill-Ansicht in Chrome erweitert</translation>
 <translation id="7642373780953416937">Du erhältst Benachrichtigungen bei Problemen mit dem Datenschutz oder der Sicherheit, die Chrome automatisch für dich erkennt.</translation>
+<translation id="7660356333829433649">Schaue später noch einmal hier vorbei, um weitere nützliche Tipps zu erhalten, wie du Chrome optimal nutzen kannst.</translation>
 <translation id="7662994914830945754">Melde dich an und aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
 <translation id="7693590760643069321">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="7698568245838009292">Chrome möchte auf deine Kamera zugreifen</translation>
@@ -261,6 +266,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7948283758957877064">Jetzt neu bei Chrome</translation>
 <translation id="8000174216052461231">Chrome-Tipp: Den stärksten Chrome-Schutz nutzen</translation>
 <translation id="8006014511203279255">Öffne Links immer in Chrome, wenn du sie in Messages oder anderen Apps antippst.</translation>
+<translation id="8014670471808569312">Chrome bietet an, dein Passwort zu speichern.</translation>
 <translation id="8018153653741938705">Besser geschützt mit Google Chrome</translation>
 <translation id="8022947259858476807">Verwende Chrome als deinen Standardbrowser, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="804638182476029347">Chrome-Benachrichtigungen erlauben, Benachrichtigungen zu Preisnachlässen abzurufen</translation>
@@ -292,6 +298,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="8558480467877843976">Du kannst jetzt Chrome jederzeit nutzen, wenn du surfst oder auf Links in Nachrichten, Dokumenten und anderen Apps tippst.</translation>
 <translation id="8603022514504485810">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“.</translation>
+<translation id="8673726683583791503">Mit Google Lens einkaufen</translation>
 <translation id="8727043961453758442">Chrome optimal nutzen</translation>
 <translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>

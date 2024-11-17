@@ -22,12 +22,12 @@ ImageFetcherImpl::ImageFetcherImpl(
       image_decoder_(std::move(image_decoder)),
       image_data_fetcher_(new ImageDataFetcher(url_loader_factory)) {}
 
-ImageFetcherImpl::~ImageFetcherImpl() {}
+ImageFetcherImpl::~ImageFetcherImpl() = default;
 
-ImageFetcherImpl::ImageRequest::ImageRequest() {}
+ImageFetcherImpl::ImageRequest::ImageRequest() = default;
 ImageFetcherImpl::ImageRequest::ImageRequest(ImageRequest&& other) = default;
 
-ImageFetcherImpl::ImageRequest::~ImageRequest() {}
+ImageFetcherImpl::ImageRequest::~ImageRequest() = default;
 
 void ImageFetcherImpl::FetchImageAndData(
     const GURL& image_url,

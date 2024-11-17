@@ -15,7 +15,7 @@
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
-#include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -30,7 +30,8 @@ namespace ash::boca {
 
 namespace {
 content::WebUIDataSource* CreateAndAddHostDataSource(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    BocaUIDelegate* delegate) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeBocaAppUntrustedURL);
 
@@ -44,19 +45,16 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
   return source;
 }
 
-void PopulateLoadTimeData(content::WebUIDataSource* source) {
-  source->AddBoolean("isProducer", ash::boca_util::IsProducer());
-  source->AddBoolean("isConsumer", ash::boca_util::IsConsumer());
-}
-
 }  // namespace
 
-BocaUI::BocaUI(content::WebUI* web_ui)
-    : UntrustedWebUIController(web_ui), web_ui_(web_ui) {
+BocaUI::BocaUI(content::WebUI* web_ui,
+               std::unique_ptr<BocaUIDelegate> delegate,
+               bool is_producer)
+    : UntrustedWebUIController(web_ui), is_producer_(is_producer) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* host_source =
-      CreateAndAddHostDataSource(browser_context);
+      CreateAndAddHostDataSource(browser_context, delegate.get());
 
   // Allow styles to include inline styling needed for Polymer elements and
   // the material 3 dynamic palette.
@@ -72,7 +70,9 @@ BocaUI::BocaUI(content::WebUI* web_ui)
   // Enables the page to load images. The page is restricted to only loading
   // images from data URLs passed to the page.
   host_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ImgSrc, "img-src data:;");
+      network::mojom::CSPDirectiveName::ImgSrc,
+      "img-src data: 'self' https://lh3.googleusercontent.com "
+      "https://www.gstatic.com/chromecast/home/chromeos;");
 
   // For testing
   host_source->OverrideContentSecurityPolicy(
@@ -92,7 +92,7 @@ BocaUI::BocaUI(content::WebUI* web_ui)
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
-  PopulateLoadTimeData(host_source);
+  delegate->PopulateLoadTimeData(host_source);
   host_source->UseStringsJs();
 
 #if !DCHECK_IS_ON()
@@ -122,9 +122,10 @@ void BocaUI::Create(
     mojo::PendingReceiver<boca::mojom::PageHandler> page_handler,
     mojo::PendingRemote<boca::mojom::Page> page) {
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
-      this, std::move(page_handler), std::move(page), web_ui_,
+      std::move(page_handler), std::move(page), web_ui(),
       std::make_unique<ClassroomPageHandlerImpl>(),
-      std::make_unique<SessionClientImpl>());
+      BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
+      is_producer_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)

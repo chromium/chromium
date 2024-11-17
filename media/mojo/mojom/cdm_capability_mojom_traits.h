@@ -59,6 +59,18 @@ struct StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability> {
                    media::CdmCapability* output);
 };
 
+template <>
+struct EnumTraits<media::mojom::CdmCapabilityQueryStatus,
+                  media::CdmCapabilityQueryStatus> {
+  static media::mojom::CdmCapabilityQueryStatus ToMojom(
+      media::CdmCapabilityQueryStatus input);
+
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::mojom::CdmCapabilityQueryStatus input,
+                        media::CdmCapabilityQueryStatus* output);
+};
+
 }  // namespace mojo
 
 #endif  // MEDIA_MOJO_MOJOM_CDM_CAPABILITY_MOJOM_TRAITS_H_

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/request_handler_for_psm_auto_enrollment.h"
 #include "private_membership_rlwe.pb.h"
@@ -47,8 +48,7 @@ RlweTestCase LoadTestCase(bool is_member) {
     }
   }
 
-  CHECK(false) << "Could not find psm test data for is_member == " << is_member;
-  return {};
+  NOTREACHED() << "Could not find psm test data for is_member == " << is_member;
 }
 
 RlweClientFactory CreateClientFactory(bool is_member) {

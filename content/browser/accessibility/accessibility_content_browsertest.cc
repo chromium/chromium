@@ -32,8 +32,9 @@ void AccessibilityContentBrowserTest::
     LoadInitialAccessibilityTreeFromHtmlFilePath(
         const std::string& html_file_path,
         ui::AXMode accessibility_mode) {
-  if (!embedded_test_server()->Started())
+  if (!embedded_test_server()->Started()) {
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
   ASSERT_TRUE(embedded_test_server()->Started());
   LoadInitialAccessibilityTreeFromUrl(
       embedded_test_server()->GetURL(html_file_path), accessibility_mode);
@@ -129,8 +130,9 @@ ui::BrowserAccessibility* AccessibilityContentBrowserTest::FindNodeInSubtree(
   for (uint32_t i = 0; i < node->PlatformChildCount(); ++i) {
     ui::BrowserAccessibility* result =
         FindNodeInSubtree(node->PlatformGetChild(i), role, name_or_value);
-    if (result)
+    if (result) {
       return result;
+    }
   }
 
   return nullptr;

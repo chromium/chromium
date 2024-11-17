@@ -18,7 +18,7 @@ namespace bubble_anchor_util {
 
 // Indicates which browser component to use as an anchor.
 // Used as a parameter of GetPageInfoAnchorView().
-enum Anchor {
+enum class Anchor {
   kLocationBar,
   kAppMenuButton,
   kCustomTabBar,

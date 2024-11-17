@@ -61,10 +61,6 @@ String ResetInputType::DefaultLabel() const {
   return GetLocale().QueryString(IDS_FORM_RESET_LABEL);
 }
 
-bool ResetInputType::IsTextButton() const {
-  return true;
-}
-
 void ResetInputType::AdjustStyle(ComputedStyleBuilder& builder) {
   builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
   builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);

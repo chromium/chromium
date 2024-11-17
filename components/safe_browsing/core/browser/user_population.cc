@@ -38,8 +38,7 @@ ChromeUserPopulation GetUserPopulation(
     bool is_under_advanced_protection,
     const policy::BrowserPolicyConnector* browser_policy_connector,
     std::optional<size_t> num_profiles,
-    std::optional<size_t> num_loaded_profiles,
-    std::optional<size_t> num_open_profiles) {
+    std::optional<size_t> num_loaded_profiles) {
   ChromeUserPopulation population;
 
   population.set_user_population(GetUserPopulationPref(prefs));
@@ -68,9 +67,6 @@ ChromeUserPopulation GetUserPopulation(
 
   if (num_loaded_profiles)
     population.set_number_of_loaded_profiles(*num_loaded_profiles);
-
-  if (num_open_profiles)
-    population.set_number_of_open_profiles(*num_open_profiles);
 
   population.set_is_signed_in(is_signed_in);
 

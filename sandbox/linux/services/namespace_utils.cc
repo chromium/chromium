@@ -78,8 +78,7 @@ bool NamespaceUtils::KernelSupportsUnprivilegedNamespace(int type) {
       path = "/proc/self/ns/uts";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   return base::PathExists(base::FilePath(path));

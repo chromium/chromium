@@ -26,6 +26,7 @@ class CheckForUpdatesTask
   CheckForUpdatesTask(
       scoped_refptr<Configurator> config,
       UpdaterScope scope,
+      const std::string& task_name,
       base::OnceCallback<void(base::OnceCallback<void(UpdateService::Result)>)>
           update_checker);
   void Run(base::OnceClosure callback);
@@ -39,6 +40,7 @@ class CheckForUpdatesTask
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<Configurator> config_;
+  const std::string task_name_;
   UpdateChecker update_checker_;
   scoped_refptr<updater::PersistedData> persisted_data_;
   scoped_refptr<update_client::UpdateClient> update_client_;

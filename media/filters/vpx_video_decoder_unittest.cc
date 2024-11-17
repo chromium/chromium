@@ -102,8 +102,7 @@ class VpxVideoDecoderTest : public testing::Test {
         case DecoderStatus::Codes::kOk:
           break;
         case DecoderStatus::Codes::kAborted:
-          NOTREACHED_IN_MIGRATION();
-          [[fallthrough]];
+          NOTREACHED();
         default:
           DCHECK(output_frames_.empty());
           return status;

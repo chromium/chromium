@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_data.h"

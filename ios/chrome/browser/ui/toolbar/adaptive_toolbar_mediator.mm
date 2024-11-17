@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -27,7 +28,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -84,14 +85,6 @@
 - (void)updateConsumerForWebState:(web::WebState*)webState {
   [self updateNavigationBackAndForwardStateForWebState:webState];
   [self updateShareMenuForWebState:webState];
-}
-
-- (void)updateConsumerWithTabGridButtonIPHHighlighted:(BOOL)iphHighlighted {
-  [self.consumer setTabGridButtonIPHHighlighted:iphHighlighted];
-}
-
-- (void)updateConsumerWithNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
-  [self.consumer setNewTabButtonIPHHighlighted:iphHighlighted];
 }
 
 - (void)disconnect {
@@ -177,7 +170,7 @@
     return;
   }
 
-  [self.consumer setTabGridButtonStyle:[self tabGridButtonStyleToDisplay]];
+  [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
 
   const int tabCount = [self tabCountToDisplay];
   switch (change.type()) {
@@ -214,7 +207,7 @@
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(_webStateList, webStateList);
-  [self.consumer setTabGridButtonStyle:[self tabGridButtonStyleToDisplay]];
+  [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
   [self.consumer setTabCount:[self tabCountToDisplay] addedInBackground:NO];
 }
 
@@ -459,7 +452,14 @@
   } else {
     cameraSearch = [self.actionFactory actionToShowQRScanner];
   }
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  UIAction* openAIMenu = [self.actionFactory actionToOpenAIMenu];
+  staticActions =
+      @[ newSearch, newIncognitoSearch, voiceSearch, cameraSearch, openAIMenu ];
+#else
   staticActions = @[ newSearch, newIncognitoSearch, voiceSearch, cameraSearch ];
+#endif
 
   UIMenuElement* clipboardAction = [self menuElementForPasteboard];
 
@@ -534,32 +534,29 @@
   return isGoogleDefaultSearchProvider;
 }
 
-// Returns the tab count to display in the Tab Grid button.
-- (int)tabCountToDisplay {
+// Returns the tab group of the active web state, if any.
+- (const TabGroup*)activeWebStateTabGroup {
   if (IsTabGroupIndicatorEnabled()) {
     const int active_index = _webStateList->active_index();
     if (active_index != WebStateList::kInvalidIndex) {
-      const TabGroup* activeTabGroup =
-          _webStateList->GetGroupOfWebStateAt(active_index);
-      if (activeTabGroup) {
-        return activeTabGroup->range().count();
-      }
+      return _webStateList->GetGroupOfWebStateAt(active_index);
     }
   }
-  return _webStateList->count();
+  return nullptr;
 }
 
-// Returns the style to display in the Tab Grid button.
-- (ToolbarTabGridButtonStyle)tabGridButtonStyleToDisplay {
-  if (IsTabGroupIndicatorEnabled()) {
-    const int active_index = _webStateList->active_index();
-    if (active_index != WebStateList::kInvalidIndex) {
-      if (_webStateList->GetGroupOfWebStateAt(active_index)) {
-        return ToolbarTabGridButtonStyle::kTabGroup;
-      }
-    }
-  }
-  return ToolbarTabGridButtonStyle::kNormal;
+// Returns the tab count to display in the Tab Grid button.
+- (int)tabCountToDisplay {
+  const TabGroup* activeTabGroup = [self activeWebStateTabGroup];
+  return activeTabGroup ? activeTabGroup->range().count()
+                        : _webStateList->count();
+}
+
+// Returns the tab group state to display in the Tab Grid button.
+- (ToolbarTabGroupState)tabGroupStateToDisplay {
+  return [self activeWebStateTabGroup] != nullptr
+             ? ToolbarTabGroupState::kTabGroup
+             : ToolbarTabGroupState::kNormal;
 }
 
 @end

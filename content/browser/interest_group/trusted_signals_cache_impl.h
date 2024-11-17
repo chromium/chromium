@@ -109,7 +109,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // The `callback` parameter may be invoked synchronously or asynchronously,
   // and may fail.
   using GetCoordinatorKeyCallback = base::RepeatingCallback<void(
-      std::optional<url::Origin> coordinator,
+      const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback)>;
 
@@ -167,13 +167,13 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   TrustedSignalsCacheImpl(const TrustedSignalsCacheImpl&) = delete;
   TrustedSignalsCacheImpl& operator=(const TrustedSignalsCacheImpl&) = delete;
 
-  // Creates a TrustedSignalsCache pipe for a bidder script process. It may only
-  // be used for `signals_type` fetches for `script_origin`, where `origin` is
-  // origin of the script that will receive those signals (i.e., the seller
-  // origin or InterestGroup origin, depending on whether these are scoring or
-  // bidding signals).
-  mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
-  CreateMojoPipe(SignalsType signals_type, const url::Origin& script_origin);
+  // Creates a TrustedSignalsCache Remote to be sent to a Protected Audiences
+  // JavaScript process. It may only be used for `signals_type` fetches for
+  // `script_origin`, where `origin` is origin of the script that will receive
+  // those signals (i.e., the seller origin or InterestGroup owner).
+  mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache> CreateRemote(
+      SignalsType signals_type,
+      const url::Origin& script_origin);
 
   // Requests bidding signals for the specified interest group. Return value is
   // a Handle which must be kept alive until the response to the request is no
@@ -535,7 +535,8 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // released, at which point any associated BiddingCacheEntries are destroyed,
   // and the CompressionGroupData removed from any associated Fetch, destroying
   // the Fetch if no longer needed.
-  std::map<base::UnguessableToken, CompressionGroupData*>
+  std::map<base::UnguessableToken,
+           raw_ptr<CompressionGroupData, CtnExperimental>>
       compression_group_data_map_;
 };
 

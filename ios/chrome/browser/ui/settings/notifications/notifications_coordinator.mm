@@ -80,15 +80,13 @@
 
 - (void)start {
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   syncer::DeviceInfoSyncService* deviceInfoSyncService =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(
-          self.browser->GetProfile());
+      DeviceInfoSyncServiceFactory::GetForProfile(self.browser->GetProfile());
   _notificationsObserver = [[NotificationsSettingsObserver alloc]
       initWithPrefService:prefService
                localState:GetApplicationContext()->GetLocalState()];
@@ -105,7 +103,7 @@
   self.viewController.presentationDelegate = self;
   self.viewController.modelDelegate = self.mediator;
   self.viewController.isContentNotificationEnabled =
-      IsContentNotificationEnabled(self.browser->GetBrowserState());
+      IsContentNotificationEnabled(self.browser->GetProfile());
   self.mediator.consumer = self.viewController;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];

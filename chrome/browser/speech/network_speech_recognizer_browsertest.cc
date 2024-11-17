@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(NetworkSpeechRecognizerBrowserTest, RecognizeSpeech) {
           ->profile()
           ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcessIOThread(),
-      "en" /* accept_language */, "en" /* locale */);
+      "en" /* locale */);
 
   testing::InSequence seq;
   EXPECT_CALL(*mock_speech_delegate_,

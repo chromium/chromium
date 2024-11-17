@@ -12,6 +12,7 @@ import optparse
 import os
 import pathlib
 import re
+import shlex
 import shutil
 import sys
 import time
@@ -33,63 +34,54 @@ _JAVAC_EXTRACTOR = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party',
 # Use this when trying to enable more checks.
 ERRORPRONE_CHECKS_TO_APPLY = []
 
+# Checks to disable in tests.
+TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
+    # Too much effort to enable.
+    'UnusedVariable',
+]
+
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
-    # Temporarily disabling to roll doubledown.
-    # TODO(wnwen): Re-enable this upstream.
     'InlineMeInliner',
-    # The following are super useful, but existing issues need to be fixed first
-    # before they can start failing the build on new errors.
+    'InlineMeSuggester',
+    # High priority to enable:
+    'HidingField',
+    'AlreadyChecked',
+    'DirectInvocationOnMock',
+    'MockNotUsedInProduction',
+    # High priority to enable in non-tests:
+    'JdkObsolete',
+    'UnusedMethod',
+    'ReturnValueIgnored',
+    'StaticAssignmentInConstructor',
+    # These are all for Javadoc, which we don't really care about.
+    # vvv
+    'InvalidBlockTag',
     'InvalidParam',
     'InvalidLink',
     'InvalidInlineTag',
-    'EmptyBlockTag',
-    'InvalidBlockTag',
-    'StaticAssignmentInConstructor',
-    'MutablePublicArray',
+    'MalformedInlineTag',
+    'MissingSummary',
     'UnescapedEntity',
+    'UnrecognisedJavadocTag',
+    # ^^^
+    'MutablePublicArray',
     'NonCanonicalType',
-    'AlmostJavadoc',
-    'ReturnValueIgnored',
-    # The following are added for errorprone update: https://crbug.com/1216032
-    'InlineMeSuggester',
     'DoNotClaimAnnotations',
     'JavaUtilDate',
     'IdentityHashMapUsage',
-    'UnnecessaryMethodReference',
-    'LongFloatConversion',
-    'CharacterGetNumericValue',
-    'ErroneousThreadPoolConstructorChecker',
     'StaticMockMember',
-    'MissingSuperCall',
-    'ToStringReturnsNull',
-    # If possible, this should be automatically fixed if turned on:
-    'MalformedInlineTag',
-    # TODO(crbug.com/41384359): Follow steps in bug
-    'DoubleBraceInitialization',
+    # Triggers in tests where this is useful to do.
+    'StaticAssignmentOfThrowable',
     # TODO(crbug.com/41384349): Follow steps in bug.
     'CatchAndPrintStackTrace',
-    # TODO(crbug.com/41364336): Follow steps in bug.
-    'SynchronizeOnNonFinalField',
     # TODO(crbug.com/41364806): Follow steps in bug.
     'TypeParameterUnusedInFormals',
-    # TODO(crbug.com/41365724): Follow steps in bug.
-    'CatchFail',
-    # TODO(crbug.com/41365725): Follow steps in bug.
-    'JUnitAmbiguousTestClass',
     # Android platform default is always UTF-8.
     # https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
     'DefaultCharset',
-    # Low priority since there are lots of tags that don't fit this check.
-    'UnrecognisedJavadocTag',
-    # Low priority since the alternatives still work.
-    'JdkObsolete',
-    # We don't use that many lambdas.
-    'FunctionalInterfaceClash',
     # There are lots of times when we just want to post a task.
     'FutureReturnValueIgnored',
-    # Nice to be explicit about operators, but not necessary.
-    'OperatorPrecedence',
     # Just false positives in our code.
     'ThreadJoinLoop',
     # Low priority corner cases with String.split.
@@ -98,43 +90,12 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'StringSplitter',
     # Preferred to use another method since it propagates exceptions better.
     'ClassNewInstance',
-    # Nice to have static inner classes but not necessary.
-    'ClassCanBeStatic',
-    # Explicit is better than implicit.
-    'FloatCast',
     # Results in false positives.
     'ThreadLocalUsage',
-    # Also just false positives.
-    'Finally',
-    # False positives for Chromium.
-    'FragmentNotInstantiable',
-    # Low priority to fix.
-    'HidingField',
-    # Low priority.
-    'IntLongMath',
-    # Low priority.
-    'BadComparable',
     # Low priority.
     'EqualsHashCode',
-    # Nice to fix but low priority.
-    'TypeParameterShadowing',
-    # Good to have immutable enums, also low priority.
-    'ImmutableEnumChecker',
-    # False positives for testing.
-    'InputStreamSlowMultibyteRead',
-    # Nice to have better primitives.
-    'BoxedPrimitiveConstructor',
     # Not necessary for tests.
     'OverrideThrowableToString',
-    # Nice to have better type safety.
-    'CollectionToArraySafeParameter',
-    # Makes logcat debugging more difficult, and does not provide obvious
-    # benefits in the Chromium codebase.
-    'ObjectToString',
-    # Triggers on private methods that are @CalledByNative.
-    'UnusedMethod',
-    # Triggers on generated R.java files.
-    'UnusedVariable',
     # Not that useful.
     'UnsafeReflectiveConstructionCast',
     # Not that useful.
@@ -143,115 +104,30 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'EqualsGetClass',
     # A lot of false-positives from CharSequence.equals().
     'UndefinedEquals',
-    # Nice to have.
-    'ExtendingJUnitAssert',
-    # Nice to have.
-    'SystemExitOutsideMain',
-    # Nice to have.
-    'TypeParameterNaming',
-    # Nice to have.
-    'UnusedException',
-    # Nice to have.
-    'UngroupedOverloads',
-    # Nice to have.
-    'FunctionalInterfaceClash',
-    # Nice to have.
-    'InconsistentOverloads',
     # Dagger generated code triggers this.
     'SameNameButDifferent',
-    # Nice to have.
+    # Does not apply to Android because it assumes no desugaring.
     'UnnecessaryLambda',
-    # Nice to have.
-    'UnnecessaryAnonymousClass',
-    # Nice to have.
-    'LiteProtoToString',
-    # Nice to have.
-    'MissingSummary',
-    # Nice to have.
-    'ReturnFromVoid',
     # Nice to have.
     'EmptyCatch',
     # Nice to have.
     'BadImport',
     # Nice to have.
     'UseCorrectAssertInTests',
-    # Nice to have.
-    'InlineFormatString',
-    # Nice to have.
-    'DefaultPackage',
     # Must be off since we are now passing in annotation processor generated
     # code as a source jar (deduplicating work with turbine).
     'RefersToDaggerCodegen',
-    # We already have presubmit checks for this. Not necessary to warn on
-    # every build.
+    # We already have presubmit checks for this. We don't want it to fail
+    # local compiles.
     'RemoveUnusedImports',
-    # We do not care about unnecessary parenthesis enough to check for them.
-    'UnnecessaryParentheses',
-    # The only time we trigger this is when it is better to be explicit in a
-    # list of unicode characters, e.g. FindAddress.java
+    # Only has false positives (would not want to enable this).
     'UnicodeEscape',
-    # Nice to have.
-    'AlreadyChecked',
     # A lot of existing violations. e.g. Should return List and not ArrayList
     'NonApiType',
     # Nice to have.
-    'LongDoubleConversion',
-    # Nice to have.
-    'ReturnAtTheEndOfVoidFunction',
-    # Nice to have.
-    'NarrowCalculation',
-    # Nice to have.
-    'Finalize',
-    # Nice to have.
-    'NotJavadoc',
-    # Nice to have.
-    'NullablePrimitive',
-    # Nice to have.
-    'DirectInvocationOnMock',
-    # Nice to have.
-    'EmptyTopLevelDeclaration',
-    # Nice to have.
     'StringCharset',
     # Nice to have.
-    'UnnecessaryStringBuilder',
-    # Nice to have.
-    'JUnitIncompatibleType',
-    # Nice to have.
-    'MockNotUsedInProduction',
-    # Nice to have.
-    'ImpossibleNullComparison',
-    # Nice to have.
-    'UnusedTypeParameter',
-    # Nice to have.
-    'EnumOrdinal',
-    # Nice to have.
-    'NullableOptional',
-    # Nice to have.
-    'SelfAssertion',
-    # Nice to have.
-    'IgnoredPureGetter',
-    # Nice to have.
-    'UnnecessaryLongToIntConversion',
-    # Nice to have.
     'StringCaseLocaleUsage',
-    # Nice to have.
-    'InlineTrivialConstant',
-    # Nice to have.
-    'VoidUsed',
-    # Nice to have.
-    'SuperCallToObjectMethod',
-    # Nice to have.
-    'JUnit4TestNotRun',
-    # Nice to have.
-    'StaticAssignmentOfThrowable',
-    # Nice to have.
-    'SuperCallToObjectMethod',
-    # Nice to have.
-    'ComparisonOutOfRange',
-    # Nice to have.
-    'ExtendsObject',
-    # Nice to have
-    'AddressSelection',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -470,10 +346,12 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
 
   # Use the build server for errorprone runs.
   if (options.enable_errorprone and not options.skip_build_server
-      and server_utils.MaybeRunCommand(name=options.target_name,
-                                       argv=sys.argv,
-                                       stamp_file=options.jar_path,
-                                       force=options.use_build_server)):
+      and server_utils.MaybeRunCommand(
+          name=options.target_name,
+          argv=sys.argv,
+          stamp_file=options.jar_path,
+          force=options.use_build_server,
+          experimental=options.experimental_build_server)):
     return
 
   if options.enable_kythe_annotations:
@@ -589,7 +467,7 @@ def _RunCompiler(changes,
     if java_files:
       os.makedirs(classes_dir)
 
-      if enable_partial_javac:
+      if enable_partial_javac and changes:
         all_changed_paths_are_java = all(
             p.endswith(".java") for p in changes.IterChangedPaths())
         if (all_changed_paths_are_java and not changes.HasStringChanges()
@@ -604,9 +482,19 @@ def _RunCompiler(changes,
           # As a build speed optimization (crbug.com/1170778), re-compile only
           # java files which have changed. Re-use old jar .info file.
           java_files = list(changes.IterChangedPaths())
+
+          # Disable srcjar extraction, since we know the srcjar didn't show as
+          # changed (only .java files).
           java_srcjars = None
 
-          build_utils.ExtractAll(jar_path, classes_dir, pattern='*.class')
+          # @ServiceImpl has class retention, so will alter header jars when
+          # modified (and hence not reach this block).
+          # Likewise, nothing in .info files can change if header jar did not
+          # change.
+          parse_java_files = False
+
+          # Extracts .class as well as META-INF/services.
+          build_utils.ExtractAll(jar_path, classes_dir)
 
     if intermediates_out_dir is None:
       intermediates_out_dir = temp_dir
@@ -651,6 +539,10 @@ def _RunCompiler(changes,
         before_join_callback = lambda: metadata_parser.ParseAndWriteInfoFile(
             jar_info_path, java_files, kt_files)
 
+      if options.print_javac_command_line:
+        print(shlex.join(cmd))
+        return
+
       build_utils.CheckOutput(cmd,
                               print_stdout=options.chromium_code,
                               stdout_filter=process_javac_output_partial,
@@ -660,6 +552,8 @@ def _RunCompiler(changes,
       end = time.time() - start
       logging.info('Java compilation took %ss', end)
     elif parse_java_files:
+      if options.print_javac_command_line:
+        raise Exception('need java files for --print-javac-command-line.')
       metadata_parser.ParseAndWriteInfoFile(jar_info_path, java_files, kt_files)
 
     CreateJarFile(jar_path, classes_dir, metadata_parser.services_map,
@@ -676,7 +570,9 @@ def _RunCompiler(changes,
 
     logging.info('Completed all steps in _RunCompiler')
   finally:
-    shutil.rmtree(temp_dir)
+    # preserve temp_dir for rsp fie when --print-javac-command-line
+    if not options.print_javac_command_line:
+      shutil.rmtree(temp_dir)
 
 
 def _ParseOptions(argv):
@@ -690,11 +586,13 @@ def _ParseOptions(argv):
   parser.add_option('--use-build-server',
                     action='store_true',
                     help='Always use the build server.')
-  parser.add_option(
-      '--java-srcjars',
-      action='append',
-      default=[],
-      help='List of srcjars to include in compilation.')
+  parser.add_option('--experimental-build-server',
+                    action='store_true',
+                    help='Use experimental build server features.')
+  parser.add_option('--java-srcjars',
+                    action='append',
+                    default=[],
+                    help='List of srcjars to include in compilation.')
   parser.add_option(
       '--generated-dir',
       help='Subdirectory within target_gen_dir to place extracted srcjars and '
@@ -731,16 +629,21 @@ def _ParseOptions(argv):
       '--enable-errorprone',
       action='store_true',
       help='Enable errorprone checks')
-  parser.add_option(
-      '--warnings-as-errors',
-      action='store_true',
-      help='Treat all warnings as errors.')
+  parser.add_option('--testonly',
+                    action='store_true',
+                    help='Disable some Error Prone checks')
+  parser.add_option('--warnings-as-errors',
+                    action='store_true',
+                    help='Treat all warnings as errors.')
   parser.add_option('--jar-path', help='Jar output path.')
   parser.add_option(
       '--javac-arg',
       action='append',
       default=[],
       help='Additional arguments to pass to javac.')
+  parser.add_option('--print-javac-command-line',
+                    action='store_true',
+                    help='Just show javac command line (for ide_query).')
   parser.add_option(
       '--enable-kythe-annotations',
       action='store_true',
@@ -831,11 +734,19 @@ def main(argv):
                             for x in ERRORPRONE_WARNINGS_TO_DISABLE)
     errorprone_flags.extend('-Xep:{}:WARN'.format(x)
                             for x in ERRORPRONE_WARNINGS_TO_ENABLE)
+    if options.testonly:
+      errorprone_flags.extend('-Xep:{}:OFF'.format(x)
+                              for x in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE)
 
     if ERRORPRONE_CHECKS_TO_APPLY:
+      to_apply = list(ERRORPRONE_CHECKS_TO_APPLY)
+      if options.testonly:
+        to_apply = [
+            x for x in to_apply
+            if x not in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE
+        ]
       errorprone_flags += [
-          '-XepPatchLocation:IN_PLACE',
-          '-XepPatchChecks:,' + ','.join(ERRORPRONE_CHECKS_TO_APPLY)
+          '-XepPatchLocation:IN_PLACE', '-XepPatchChecks:,' + ','.join(to_apply)
       ]
 
     # These are required to use JDK 16, and are taken directly from
@@ -876,6 +787,13 @@ def main(argv):
 
   javac_args.extend(options.javac_arg)
 
+  if options.print_javac_command_line:
+    if options.java_srcjars:
+      raise Exception(
+          '--print-javac-command-line does not work with --java-srcjars')
+    _OnStaleMd5(None, options, javac_cmd, javac_args, java_files, kt_files)
+    return 0
+
   classpath_inputs = options.classpath + options.processorpath
 
   depfile_deps = classpath_inputs
@@ -903,6 +821,7 @@ def main(argv):
                                        input_strings=input_strings,
                                        output_paths=output_paths,
                                        pass_changes=True)
+  return 0
 
 
 if __name__ == '__main__':

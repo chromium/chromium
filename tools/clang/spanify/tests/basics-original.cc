@@ -228,7 +228,7 @@ void fct() {
 namespace buffers_into_arrays {
 void fct() {
   // Expected rewrite:
-  // std::array<int, 4> buf = {1, 2, 3, 4};
+  // auto buf = std::to_array<int>({1, 2, 3, 4});
   int buf[] = {1, 2, 3, 4};
   int index = 0;
   buf[index] = 11;
@@ -244,7 +244,7 @@ struct B {
 
 void fct() {
   // Expected rewrite:
-  // base::span<namespace_stuff::ns1::B> ptr = new ns1::B[32];
+  // base::span<ns1::B> ptr = new ns1::B[32];
   auto* buf = new ns1::B[32];
   // However since there is no viable conversion from `B*` into
   // `base::span<ns1::B>`, the rewrite will cause compile error.

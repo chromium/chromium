@@ -5,15 +5,16 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/permissions_manager.h"
@@ -281,38 +282,80 @@ TEST_F(SitePermissionsHelperUnitTest,
             SiteInteraction::kNone);
 }
 
-// Tests that updating permission only applies the permission to the upgraded
-// site and not others.
+// Tests that updating site access only applies to the specified extensions for
+// the current site.
 TEST_F(SitePermissionsHelperUnitTest, UpdateSiteAccess_OnlySiteSelected) {
-  const GURL site("https://allowed.example");
-  auto extension = InstallExtensionWithPermissions(
-      "extension", /*host_permissions=*/{site.spec()});
-  const GURL site_without_permission("https://disallowed.com");
-  auto* site_contents = AddTab(site);
+  auto extensionA =
+      InstallExtensionWithPermissions("Extension A", {"*://requested.com/*"});
+  auto extensionB =
+      InstallExtensionWithPermissions("Extension b", {"<all_urls>"});
 
-  // Extension should only have on-click access to both sites.
-  ASSERT_EQ(PermissionsManager::UserSiteAccess::kOnSite,
-            permissions_manager()->GetUserSiteAccess(*extension, site));
-  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
-            permissions_manager()->GetUserSiteAccess(*extension,
-                                                     site_without_permission));
+  const GURL requested_site("https://requested.com");
+  const GURL other_site("https://other.com");
 
-  // Switch the extension from on-click to always on site.
+  // Open a site requested by both extensions.
+  content::WebContents* site_contents = AddTab(requested_site);
   ExtensionActionRunner* action_runner =
       ExtensionActionRunner::GetForWebContents(site_contents);
   ASSERT_TRUE(action_runner);
   action_runner->accept_bubble_for_testing(false);
+
+  // Extension A should have 'on site' access for the site it requested and 'on
+  // click' for a site it didn't request. Extension A should have 'on all sites'
+  // access for both sites.
+  // TODO(emiliapaz): Technically, extensionA has 'never' site access. However,
+  // there is not that option in UserSiteAccess. Thus we default to the 'lower
+  // tier' access which is 'on click'. Separately, we compute whether the
+  // extension requested access. Access is granted iff extension requested
+  // access and user granted it, thus it doesn't matter that user access is
+  // 'on click' if extension didn't request access; access won't be granted.
+  // We should consider adding a CHECK in GetUserSiteAccess() so it's only
+  // called when user can select site access.
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnSite,
+      permissions_manager()->GetUserSiteAccess(*extensionA, requested_site));
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
+            permissions_manager()->GetUserSiteAccess(*extensionA, other_site));
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnAllSites,
+      permissions_manager()->GetUserSiteAccess(*extensionB, requested_site));
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnAllSites,
+            permissions_manager()->GetUserSiteAccess(*extensionB, other_site));
+
+  // Update extension A site access to be 'on click' for requested.com.
   permissions_helper()->UpdateSiteAccess(
-      *extension, site_contents, PermissionsManager::UserSiteAccess::kOnClick);
+      *extensionA, site_contents, PermissionsManager::UserSiteAccess::kOnClick);
 
-  // Confirm always on site permission applied.
+  // Extension A should have 'on click' access for both sites. Extension B
+  // should still have 'on all sites' for both sites.
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnClick,
+      permissions_manager()->GetUserSiteAccess(*extensionA, requested_site));
   EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
-            permissions_manager()->GetUserSiteAccess(*extension, site));
+            permissions_manager()->GetUserSiteAccess(*extensionA, other_site));
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnAllSites,
+      permissions_manager()->GetUserSiteAccess(*extensionB, requested_site));
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnAllSites,
+            permissions_manager()->GetUserSiteAccess(*extensionB, other_site));
 
-  // Site without permission should remain without access.
+  // Update extension A and B site access to be 'on site' for requested.com.
+  permissions_helper()->UpdateSiteAccess(
+      {extensionA.get(), extensionB.get()}, site_contents,
+      PermissionsManager::UserSiteAccess::kOnSite);
+
+  // Extension A and B should have 'on site' access for requested.com and 'on
+  // click' access for other.com.
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnSite,
+      permissions_manager()->GetUserSiteAccess(*extensionA, requested_site));
   EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
-            permissions_manager()->GetUserSiteAccess(*extension,
-                                                     site_without_permission));
+            permissions_manager()->GetUserSiteAccess(*extensionA, other_site));
+  EXPECT_EQ(
+      PermissionsManager::UserSiteAccess::kOnSite,
+      permissions_manager()->GetUserSiteAccess(*extensionB, requested_site));
+  EXPECT_EQ(PermissionsManager::UserSiteAccess::kOnClick,
+            permissions_manager()->GetUserSiteAccess(*extensionB, other_site));
 }
 
 class SitePermissionsHelperWithUserHostControlsUnitTest

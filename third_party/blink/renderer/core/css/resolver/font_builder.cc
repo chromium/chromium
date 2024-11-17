@@ -81,9 +81,6 @@ AtomicString FontBuilder::StandardFontFamilyName() const {
 AtomicString FontBuilder::GenericFontFamilyName(
     FontDescription::GenericFamilyType generic_family) const {
   switch (generic_family) {
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case FontDescription::kNoFamily:
       return AtomicString();
     // While the intention is to phase out kWebkitBodyFamily, it should still
@@ -100,6 +97,8 @@ AtomicString FontBuilder::GenericFontFamilyName(
       return font_family_names::kCursive;
     case FontDescription::kFantasyFamily:
       return font_family_names::kFantasy;
+    default:
+      NOTREACHED();
   }
 }
 

@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/util/process_version.gni")
-import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/updater/updater_process_version_rc_template.gni")
 import("//testing/test.gni")
 
 source_set("test_strings") {
@@ -49,21 +49,9 @@ source_set("test_executables") {
   ]
 }
 
-# `process_version_rc_template` invokes `process_version` with the default
-# template rc file which is at //chrome/app/chrome_version.rc.version.
-process_version_rc_template("version") {
-  _internal_name = "$updater_product_full_display_name"
-  extra_args = [
-    "-e",
-    "PRODUCT_FULLNAME=\"$updater_product_full_display_name\"",
-    "-e",
-    "INTERNAL_NAME=\"$updater_product_full_display_name\"",
-    "-e",
-    "ORIGINAL_FILENAME=\"updater_test_process.exe\"",
-    "-e",
-    "PRODUCT_SHORTNAME=\"$updater_product_full_name\"",
-  ]
-  output = "$target_gen_dir/updater_test_process.rc"
+updater_process_version_rc_template("version") {
+  original_filename = "updater_test_process.exe"
+  rc = "updater_test_process.rc"
 }
 
 executable("updater_test_process") {

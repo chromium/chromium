@@ -91,8 +91,6 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         int PROBE_DEFAULT_URL = 2;
         // By probing the fallback URL.
         int PROBE_FALLBACK_URL = 3;
-        // Count.
-        int RESULT_COUNT = 4;
     }
 
     // The result of the HTTP probing. Defined in tools/metrics/histograms/enums.xml.
@@ -145,7 +143,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     }
 
     /** Implementation that talks with the Android connectivity manager service. */
-    public class DelegateImpl implements Delegate {
+    public static class DelegateImpl implements Delegate {
         @Override
         public @ConnectionState int inferConnectionStateFromSystem() {
             // NET_CAPABILITY_VALIDATED and NET_CAPABILITY_CAPTIVE_PORTAL are only available on
@@ -216,14 +214,10 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     private @ConnectionState int mConnectionState = ConnectionState.NONE;
 
     private String mUserAgentString;
-    private boolean mIsCheckingConnectivity;
     private @ConnectivityCheckingStage int mConnectivityCheckingStage =
             ConnectivityCheckingStage.NOT_STARTED;
     // The delay time, in milliseconds, before we can send next http probe request.
     private int mConnectivityCheckDelayMs;
-    // The starting time, in milliseconds since boot, when we start to do http probes to validate
-    // the connectivity. This is used in UMA reporting.
-    private long mConnectivityCheckStartTimeMs;
     private Handler mHandler;
     private Runnable mRunnable;
 
@@ -283,7 +277,6 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     private void performConnectivityCheck() {
         mConnectivityCheckingStage = ConnectivityCheckingStage.FROM_SYSTEM;
         mConnectivityCheckDelayMs = 0;
-        mConnectivityCheckStartTimeMs = SystemClock.elapsedRealtime();
 
         // Check the Android system to determine the network connectivity. If unavailable, as in
         // Android version below Marshmallow, we will kick off our own probes.
@@ -497,7 +490,6 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
             if (mConnectionState == ConnectionState.NONE) {
                 setConnectionState(ConnectionState.NO_INTERNET);
             }
-            mIsCheckingConnectivity = false;
             return;
         }
         Log.i(TAG, "Retry after " + mConnectivityCheckDelayMs + "ms");

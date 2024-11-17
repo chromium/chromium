@@ -134,7 +134,7 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Read(
 
 base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
     int64_t offset,
-    const base::span<uint8_t> data) {
+    base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_GE(offset, 0);
 

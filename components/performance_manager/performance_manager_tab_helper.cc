@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -24,12 +25,17 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
 
 namespace performance_manager {
 
@@ -176,20 +182,28 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
 
   content::RenderFrameHost* parent = render_frame_host->GetParent();
   FrameNodeImpl* parent_frame_node = nullptr;
+  // Get the outer document for a <fencedframe>, MPArch <webview>.
+  FrameNodeImpl* outer_document_for_inner_frame_root = nullptr;
   if (parent) {
     DCHECK(base::Contains(frames_, parent));
     parent_frame_node = frames_[parent].get();
-  }
-
-  // Get the outer document for a <fencedframe>.
-  FrameNodeImpl* outer_document_for_fenced_frame = nullptr;
-  if (render_frame_host->IsFencedFrameRoot()) {
-    CHECK(!parent_frame_node);
+  } else if (render_frame_host->IsFencedFrameRoot()) {
     content::RenderFrameHost* outer_document =
         render_frame_host->GetParentOrOuterDocument();
     CHECK(outer_document);
-    outer_document_for_fenced_frame = GetExistingFrameNode(outer_document);
+    outer_document_for_inner_frame_root = GetExistingFrameNode(outer_document);
   }
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  else if (auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(
+               render_frame_host)) {
+    if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+      content::RenderFrameHost* outer_document = guest->owner_rfh();
+      CHECK(outer_document);
+      outer_document_for_inner_frame_root =
+          GetExistingFrameNode(outer_document);
+    }
+  }
+#endif
 
   // Ideally, creation would not be required here, but it is possible in tests
   // for the RenderProcessUserData to not have attached at this point.
@@ -209,7 +223,8 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
   std::unique_ptr<FrameNodeImpl> frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node, page_node_.get(), parent_frame_node,
-          outer_document_for_fenced_frame, render_frame_host->GetRoutingID(),
+          outer_document_for_inner_frame_root,
+          render_frame_host->GetRoutingID(),
           blink::LocalFrameToken(render_frame_host->GetFrameToken()),
           site_instance->GetBrowsingInstanceId(),
           site_instance->GetSiteInstanceGroupId(),
@@ -343,15 +358,15 @@ void PerformanceManagerTabHelper::
   CHECK(render_frame_host->IsRenderFrameLive());
 
   // Getting address of overloaded function.
-  void (FrameNodeImpl::*set_viewport_intersection_state_fn)(
+  void (FrameNodeImpl::*set_viewport_intersection_fn)(
       const blink::mojom::ViewportIntersectionState&) =
-      &FrameNodeImpl::SetViewportIntersectionState;
+      &FrameNodeImpl::SetViewportIntersection;
 
   auto* frame_node = frame_it->second.get();
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(set_viewport_intersection_state_fn,
-                                base::Unretained(frame_node),
-                                viewport_intersection_state));
+      FROM_HERE,
+      base::BindOnce(set_viewport_intersection_fn, base::Unretained(frame_node),
+                     viewport_intersection_state));
 }
 
 void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
@@ -368,13 +383,12 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   CHECK(render_frame_host->IsRenderFrameLive());
 
   // Getting address of overloaded function.
-  void (FrameNodeImpl::*set_viewport_intersection_state_fn)(
-      blink::mojom::FrameVisibility) =
-      &FrameNodeImpl::SetViewportIntersectionState;
+  void (FrameNodeImpl::*set_viewport_intersection_fn)(
+      blink::mojom::FrameVisibility) = &FrameNodeImpl::SetViewportIntersection;
 
   auto* frame_node = frame_it->second.get();
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(set_viewport_intersection_state_fn,
+      FROM_HERE, base::BindOnce(set_viewport_intersection_fn,
                                 base::Unretained(frame_node), visibility));
 }
 

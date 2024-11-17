@@ -181,7 +181,7 @@ class VoiceMenu {
         if (pitch == null || tone == null) {
             return null;
         }
-        return mContext.getResources().getString(R.string.readaloud_voice_description, pitch, tone);
+        return mContext.getString(R.string.readaloud_voice_description, pitch, tone);
     }
 
     @Nullable
@@ -216,7 +216,7 @@ class VoiceMenu {
 
     @Nullable
     private String getStringOrNull(int id) {
-        return id != 0 ? mContext.getResources().getString(id) : null;
+        return id != 0 ? mContext.getString(id) : null;
     }
 
     InteractionHandler getInteractionHandler() {

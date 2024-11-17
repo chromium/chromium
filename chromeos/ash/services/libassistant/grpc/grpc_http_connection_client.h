@@ -92,9 +92,14 @@ class GrpcHttpConnectionClient {
 
   // `http_connection` owns itself and will be deleted when `Close()` is called.
   // When clean up `http_connections_`, will call `Close()` on the elements.
-  base::flat_map<int, assistant_client::HttpConnection*> http_connections_;
+  base::flat_map<int,
+                 raw_ptr<assistant_client::HttpConnection, CtnExperimental>>
+      http_connections_;
   // `delegate` owns itself.
-  base::flat_map<int, assistant_client::HttpConnection::Delegate*> delegates_;
+  base::flat_map<
+      int,
+      raw_ptr<assistant_client::HttpConnection::Delegate, CtnExperimental>>
+      delegates_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<GrpcHttpConnectionClient> weak_factory_{this};

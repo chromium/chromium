@@ -25,8 +25,8 @@ class ContentAnalysisDownloadsDelegate
       const std::u16string& custom_message,
       GURL custom_learn_more_url,
       bool bypass_justification_required,
-      base::OnceCallback<void()> open_file_callback,
-      base::OnceCallback<void()> discard_file_callback,
+      base::OnceClosure open_file_callback,
+      base::OnceClosure discard_file_callback,
       download::DownloadItem* download_item,
       const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
           custom_rule_message);
@@ -62,6 +62,9 @@ class ContentAnalysisDownloadsDelegate
   // (which may be undefined).
   void ResetCallbacks();
 
+  // Called when the user opts to open the downloaded file.
+  void Open();
+
   // Custom message for rule.
   ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
       custom_rule_message_;
@@ -70,8 +73,8 @@ class ContentAnalysisDownloadsDelegate
   std::u16string custom_message_;
   GURL custom_learn_more_url_;
   bool bypass_justification_required_;
-  base::OnceCallback<void()> open_file_callback_;
-  base::OnceCallback<void()> discard_file_callback_;
+  base::OnceClosure open_file_callback_;
+  base::OnceClosure discard_file_callback_;
   raw_ptr<download::DownloadItem> download_item_;
 };
 

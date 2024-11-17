@@ -13,6 +13,7 @@
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
@@ -117,7 +118,7 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
   ASSERT_TRUE(constrained_cert);
   base::span<const ChromeRootCertConstraints> constraints =
       trust_store_chrome->GetConstraintsForCert(constrained_cert.get());
-  ASSERT_EQ(constraints.size(), 2U);
+  ASSERT_EQ(constraints.size(), 3U);
 
   EXPECT_FALSE(constraints[0].sct_all_after.has_value());
   ASSERT_TRUE(constraints[0].sct_not_after.has_value());
@@ -129,6 +130,8 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
   ASSERT_TRUE(constraints[0].max_version_exclusive.has_value());
   EXPECT_EQ(constraints[0].max_version_exclusive.value().components(),
             std::vector<uint32_t>({125, 0, 6368, 2}));
+  EXPECT_THAT(constraints[0].permitted_dns_names,
+              testing::ElementsAre("foo.example.com", "bar.example.com"));
 
   EXPECT_FALSE(constraints[1].sct_not_after.has_value());
   ASSERT_TRUE(constraints[1].sct_all_after.has_value());
@@ -140,6 +143,10 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
   EXPECT_FALSE(constraints[1].max_version_exclusive.has_value());
   EXPECT_EQ(constraints[1].min_version.value().components(),
             std::vector<uint32_t>({128}));
+  EXPECT_TRUE(constraints[1].permitted_dns_names.empty());
+
+  EXPECT_THAT(constraints[2].permitted_dns_names,
+              testing::ElementsAre("baz.example.com"));
 
   // Other certificates should return nullptr if they are queried for CRS
   // constraints. Which test cert used here isn't important as long as it isn't
@@ -183,16 +190,25 @@ TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {
       override_constraints;
 
   override_constraints[crypto::SHA256Hash(root3->cert_span())] = {
-      {std::nullopt, std::nullopt, std::nullopt,
-       /*max_version_exclusive=*/std::make_optional(base::Version("31"))}};
+      {std::nullopt,
+       std::nullopt,
+       std::nullopt,
+       /*max_version_exclusive=*/std::make_optional(base::Version("31")),
+       {}}};
 
   override_constraints[crypto::SHA256Hash(root4->cert_span())] = {
-      {std::nullopt, std::nullopt, std::nullopt,
-       /*max_version_exclusive=*/std::make_optional(base::Version("41"))}};
+      {std::nullopt,
+       std::nullopt,
+       std::nullopt,
+       /*max_version_exclusive=*/std::make_optional(base::Version("41")),
+       {}}};
 
   override_constraints[crypto::SHA256Hash(root6->cert_span())] = {
-      {std::nullopt, std::nullopt, std::nullopt,
-       /*max_version_exclusive=*/std::make_optional(base::Version("61"))}};
+      {std::nullopt,
+       std::nullopt,
+       std::nullopt,
+       /*max_version_exclusive=*/std::make_optional(base::Version("61")),
+       {}}};
 
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
@@ -325,6 +341,7 @@ TEST(TrustStoreChromeTestNoFixture, ParseCommandLineConstraintsErrorHandling) {
     EXPECT_FALSE(constraint1.sct_all_after.has_value());
     EXPECT_FALSE(constraint1.min_version.has_value());
     EXPECT_FALSE(constraint1.max_version_exclusive.has_value());
+    EXPECT_THAT(constraint1.permitted_dns_names, testing::IsEmpty());
   }
   {
     constexpr uint8_t hash[] = {0xa7, 0xe0, 0xc7, 0x5d, 0x7f, 0x77, 0x2f, 0xcc,
@@ -342,6 +359,7 @@ TEST(TrustStoreChromeTestNoFixture, ParseCommandLineConstraintsErrorHandling) {
     EXPECT_FALSE(constraint1.sct_all_after.has_value());
     EXPECT_FALSE(constraint1.min_version.has_value());
     EXPECT_FALSE(constraint1.max_version_exclusive.has_value());
+    EXPECT_THAT(constraint1.permitted_dns_names, testing::IsEmpty());
   }
 
   {
@@ -360,6 +378,7 @@ TEST(TrustStoreChromeTestNoFixture, ParseCommandLineConstraintsErrorHandling) {
     EXPECT_FALSE(constraint.sct_all_after.has_value());
     EXPECT_FALSE(constraint.min_version.has_value());
     EXPECT_EQ(constraint.max_version_exclusive, base::Version({2, 3}));
+    EXPECT_THAT(constraint.permitted_dns_names, testing::IsEmpty());
   }
 }
 
@@ -392,7 +411,8 @@ TEST(TrustStoreChromeTestNoFixture,
       "784ecaa8b9dfcc826547f806f759abd6b4481582fc7e377dc3e6a0a959025126,"
       "a7e0c75d7f772fccf26a6ac1f7b0a86a482e2f3d326bc911c95d56ff3d4906d5:"
       "sctnotafter=123456,sctallafter=7689,"
-      "minversion=1.2.3.4,maxversionexclusive=10+"
+      "minversion=1.2.3.4,maxversionexclusive=10,"
+      "dns=foo.com,dns=bar.com+"
       "a7e0c75d7f772fccf26a6ac1f7b0a86a482e2f3d326bc911c95d56ff3d4906d5,"
       "568c8ef6b526d1394bca052ba3e4d1f4d7a8d9c88c55a1a9ab7ca0fae2dc5473:"
       "sctallafter=9876543,sctnotafter=1234567890");
@@ -415,6 +435,8 @@ TEST(TrustStoreChromeTestNoFixture,
               7689);
     EXPECT_EQ(constraint1.min_version, base::Version({1, 2, 3, 4}));
     EXPECT_EQ(constraint1.max_version_exclusive, base::Version({10}));
+    EXPECT_THAT(constraint1.permitted_dns_names,
+                testing::ElementsAre("foo.com", "bar.com"));
   }
 
   {
@@ -435,6 +457,8 @@ TEST(TrustStoreChromeTestNoFixture,
               7689);
     EXPECT_EQ(constraint1.min_version, base::Version({1, 2, 3, 4}));
     EXPECT_EQ(constraint1.max_version_exclusive, base::Version({10}));
+    EXPECT_THAT(constraint1.permitted_dns_names,
+                testing::ElementsAre("foo.com", "bar.com"));
 
     const auto& constraint2 = it->second[1];
     ASSERT_TRUE(constraint2.sct_not_after.has_value());
@@ -445,6 +469,7 @@ TEST(TrustStoreChromeTestNoFixture,
               9876543);
     EXPECT_FALSE(constraint2.min_version.has_value());
     EXPECT_FALSE(constraint2.max_version_exclusive.has_value());
+    EXPECT_THAT(constraint2.permitted_dns_names, testing::IsEmpty());
   }
 
   {
@@ -464,6 +489,7 @@ TEST(TrustStoreChromeTestNoFixture,
               9876543);
     EXPECT_FALSE(constraint1.min_version.has_value());
     EXPECT_FALSE(constraint1.max_version_exclusive.has_value());
+    EXPECT_THAT(constraint1.permitted_dns_names, testing::IsEmpty());
   }
 }
 

@@ -197,8 +197,8 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
 }
 
 - (BOOL)runModalLoopForApplication:(NSApplication*)app {
-  [[maybe_unused]] ConfirmQuitPanelController* __attribute__((
-      objc_precise_lifetime)) keepAlive = self;
+  [[maybe_unused]] NS_VALID_UNTIL_END_OF_SCOPE ConfirmQuitPanelController*
+      keepAlive = self;
 
   // If this is the second of two such attempts to quit within a certain time
   // interval, then just quit.
@@ -305,8 +305,8 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
 - (void)showWindow:(id)sender {
   // If a panel that is fading out is going to be reused here, make sure it
   // does not get released when the animation finishes.
-  [[maybe_unused]] ConfirmQuitPanelController* __attribute__((
-      objc_precise_lifetime)) keepAlive = self;
+  [[maybe_unused]] NS_VALID_UNTIL_END_OF_SCOPE ConfirmQuitPanelController*
+      keepAlive = self;
 
   self.window.animations = @{};
   [self.window center];

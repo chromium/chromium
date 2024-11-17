@@ -6,7 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/prefs/pref_service.h"
-#import "components/saved_tab_groups/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
@@ -45,7 +45,7 @@
         (id<DisabledGridViewControllerDelegate>)disabledViewControllerDelegate {
   CHECK(baseViewController);
   CHECK(regularBrowser);
-  CHECK(!regularBrowser->GetBrowserState()->IsOffTheRecord());
+  CHECK(!regularBrowser->GetProfile()->IsOffTheRecord());
   CHECK(toolbarsMutator);
   CHECK(disabledViewControllerDelegate);
   self = [super initWithBaseViewController:baseViewController
@@ -63,7 +63,7 @@
   _gridContainerViewController = [[GridContainerViewController alloc] init];
 
   BOOL regularModeDisabled =
-      IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
+      IsIncognitoModeForced(self.browser->GetProfile()->GetPrefs());
   if (regularModeDisabled) {
     _disabledViewController =
         [[DisabledGridViewController alloc] initWithPage:TabGridPageTabGroups];
@@ -76,14 +76,13 @@
   }
 
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          self.browser->GetProfile());
   WebStateList* regularWebStateList = self.browser->GetWebStateList();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      IOSChromeFaviconLoaderFactory::GetForProfile(self.browser->GetProfile());
   BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(self.browser->GetBrowserState());
+      BrowserListFactory::GetForProfile(self.browser->GetProfile());
 
   _mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:tabGroupSyncService
@@ -135,8 +134,8 @@
 - (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
            openGroupWithSyncID:(const base::Uuid&)syncID {
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          self.browser->GetProfile());
   tabGroupSyncService->OpenTabGroup(
       syncID,
       std::make_unique<tab_groups::IOSTabGroupActionContext>(self.browser));

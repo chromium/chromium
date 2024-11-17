@@ -15,8 +15,9 @@
 # run virtual test suites.
 virtual/* [ Skip ]
 
-# CustomizableSelect Crashes
-crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Crash ]
+# CustomizableSelect Crashes crbug.com/1401767
+# Several behavior differences between <selectlist> and <select style="appearance:base-select"> crbug.com/366394195
+crbug.com/1401767 external/wpt/html/semantics/forms/the-select-element/select-marker-end-aligned.tentative.html [ Crash Failure ]
 
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
@@ -49,6 +50,15 @@ wpt_internal/webcodecs/annexb_decoding.https.any.html [ Skip ]
 wpt_internal/webcodecs/annexb_decoding.https.any.worker.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
+
+# Flaky failure after enable swiftshader on headless shell
+crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-063-print.html [ Failure Pass ]
+crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-064-print.html [ Failure Pass ]
+
+# DCHECKs after being migrated to headless shell:
+#   [1114/152420.908516:FATAL:ax_object.cc(5100)] Check failed: obj->IsUsedForLabelOrDescription().
+crbug.com/379189288 external/wpt/custom-elements/element-internals-aria-element-reflection.html [ Crash Pass ]
+crbug.com/379189288 external/wpt/custom-elements/reactions/AriaMixin-element-attributes.html [ Crash ]
 
 # Times out
 http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]

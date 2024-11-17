@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/features.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_filter.h"
@@ -118,19 +119,28 @@ class DiscardableImageMap::Generator {
       PaintOpType op_type = op.GetType();
       if (op_type == PaintOpType::kDrawImage) {
         const auto& image_op = static_cast<const DrawImageOp&>(op);
+        PaintFlags::FilterQuality quality =
+            base::FeatureList::IsEnabled(
+                features::kPreserveDiscardableImageMapQuality)
+                ? image_op.GetImageQuality()
+                : image_op.flags.getFilterQuality();
         AddImage(
             image_op.image, image_op.flags.useDarkModeForImage(),
             SkRect::MakeIWH(image_op.image.width(), image_op.image.height()),
-            op_rect, ctm, image_op.flags.getFilterQuality());
+            op_rect, ctm, quality);
       } else if (op_type == PaintOpType::kDrawImageRect) {
         const auto& image_rect_op = static_cast<const DrawImageRectOp&>(op);
         // TODO(crbug.com/40735471): Make a RectToRect method that uses SkM44s
         // in MathUtil.
         SkM44 matrix = ctm * SkM44(SkMatrix::RectToRect(image_rect_op.src,
                                                         image_rect_op.dst));
+        PaintFlags::FilterQuality quality =
+            base::FeatureList::IsEnabled(
+                features::kPreserveDiscardableImageMapQuality)
+                ? image_rect_op.GetImageQuality()
+                : image_rect_op.flags.getFilterQuality();
         AddImage(image_rect_op.image, image_rect_op.flags.useDarkModeForImage(),
-                 image_rect_op.src, op_rect, matrix,
-                 image_rect_op.flags.getFilterQuality());
+                 image_rect_op.src, op_rect, matrix, quality);
       } else if (op_type == PaintOpType::kDrawSkottie) {
         const auto& skottie_op = static_cast<const DrawSkottieOp&>(op);
         for (const auto& image_pair : skottie_op.images) {
@@ -278,7 +288,7 @@ class DiscardableImageMap::Generator {
 
     if (paint_image.IsPaintWorklet()) {
       map_.paint_worklet_inputs_.emplace_back(
-          paint_image.paint_worklet_input().value(), paint_image.stable_id());
+          paint_image.GetPaintWorkletInput(), paint_image.stable_id());
     }
 
     auto& rects = map_.image_id_to_rects_[paint_image.stable_id()];

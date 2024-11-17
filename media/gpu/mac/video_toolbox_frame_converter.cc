@@ -152,11 +152,6 @@ void VideoToolboxFrameConverter::Initialize() {
     DestroyStub();
     return;
   }
-
-  texture_rectangle_ = stub_->decoder_context()
-                           ->GetFeatureInfo()
-                           ->feature_flags()
-                           .arb_texture_rectangle;
 }
 
 void VideoToolboxFrameConverter::DestroyStub() {
@@ -239,7 +234,7 @@ void VideoToolboxFrameConverter::Convert(
   }
 
   auto shared_image = shared_image_interface->CreateSharedImage(
-      {*format, coded_size, metadata->color_space, kTopLeft_GrSurfaceOrigin,
+      {*format, coded_size, color_space, kTopLeft_GrSurfaceOrigin,
        kOpaque_SkAlphaType, shared_image_usage, kSharedImageDebugLabel},
       std::move(handle));
   if (!shared_image) {
@@ -248,8 +243,6 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-
-  GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
 
   // |image| must be retained until after the release sync token passes.
   VideoFrame::ReleaseMailboxCB release_cb = base::BindPostTask(
@@ -262,7 +255,7 @@ void VideoToolboxFrameConverter::Convert(
   // expensive whenever the renderer is not doing readback.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       video_pixel_format, shared_image, shared_image->creation_sync_token(),
-      target, std::move(release_cb), coded_size, visible_rect, natural_size,
+      std::move(release_cb), coded_size, visible_rect, natural_size,
       metadata->timestamp);
 
   if (!frame) {
@@ -273,8 +266,6 @@ void VideoToolboxFrameConverter::Convert(
 
   frame->set_color_space(color_space);
   frame->set_hdr_metadata(metadata->hdr_metadata);
-  frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
   if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
     frame->metadata().frame_duration = metadata->duration;
   }

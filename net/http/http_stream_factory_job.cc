@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,6 +24,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/session_usage.h"
+#include "net/base/url_util.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -46,6 +48,7 @@
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/spdy/bidirectional_stream_spdy_impl.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -494,6 +497,7 @@ void HttpStreamFactory::Job::OnNeedsClientAuthCallback(
 }
 
 void HttpStreamFactory::Job::OnPreconnectsComplete(int result) {
+  RecordPreconnectHistograms(result);
   delegate_->OnPreconnectsComplete(this, result);
   // |this| may be deleted after this call.
 }
@@ -614,9 +618,7 @@ int HttpStreamFactory::Job::DoLoop(int result) {
         rv = DoCreateStreamComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
   return rv;
@@ -827,6 +829,11 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
                 proxy_info_.traffic_annotation())
           : std::nullopt;
 
+  auto initiator =
+      (job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3)
+          ? MultiplexedSessionCreationInitiator::kPreconnect
+          : MultiplexedSessionCreationInitiator::kUnknown;
+
   // The QuicSessionRequest will take care of connecting to any proxies in the
   // proxy chain.
   int rv = quic_request_.Request(
@@ -836,6 +843,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
       server_cert_verifier_flags, origin_url_, net_log_, &net_error_details_,
+      initiator,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {
@@ -1126,10 +1134,16 @@ int HttpStreamFactory::Job::DoCreateStream() {
     connection_->CloseIdleSocketsInGroup("Switching to HTTP2 session");
   }
 
+  auto initiator =
+      (job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3)
+          ? MultiplexedSessionCreationInitiator::kPreconnect
+          : MultiplexedSessionCreationInitiator::kUnknown;
+
   base::WeakPtr<SpdySession> spdy_session;
   int rv =
       session_->spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
-          spdy_session_key_, std::move(connection_), net_log_, &spdy_session);
+          spdy_session_key_, std::move(connection_), net_log_, initiator,
+          &spdy_session);
 
   if (rv != OK) {
     return rv;
@@ -1261,6 +1275,19 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
   // Only throttle the request if the server is believed to support H2.
   return session_->http_server_properties()->GetSupportsSpdy(
       scheme_host_port, request_info_.network_anonymization_key);
+}
+
+void HttpStreamFactory::Job::RecordPreconnectHistograms(int result) {
+  if (!IsGoogleHost(destination_.host())) {
+    return;
+  }
+  if (using_quic_) {
+    // TODO(crbug.com/376304027): Expand this to non-Quic as well. Currently,
+    // H1 and H2 does not return precise failure reason.
+    base::UmaHistogramSparse(
+        "Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult",
+        -result);
+  }
 }
 
 }  // namespace net

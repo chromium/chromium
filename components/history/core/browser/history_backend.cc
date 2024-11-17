@@ -1031,8 +1031,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                      external_referrer_url, t, request.hidden,
                      request.visit_source, IsTypedIncrement(t), opener_visit,
                      request.consider_for_ntp_most_visited,
-                     request.local_navigation_id, request.title, top_level_url,
-                     frame_url, request.app_id)
+                     request.is_ephemeral, request.local_navigation_id,
+                     request.title, top_level_url, frame_url, request.app_id)
             .second;
 
     // Update the segment for this visit. KEYWORD_GENERATED visits should not
@@ -1163,8 +1163,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                        should_increment_typed_count,
                        redirect_index == 0 ? opener_visit : 0,
                        request.consider_for_ntp_most_visited,
-                       request.local_navigation_id, request.title,
-                       top_level_url, frame_url, request.app_id)
+                       request.is_ephemeral, request.local_navigation_id,
+                       request.title, top_level_url, frame_url, request.app_id)
               .second;
 
       if (t & ui::PAGE_TRANSITION_CHAIN_START) {
@@ -1289,7 +1289,7 @@ void HistoryBackend::InitImpl(
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Fill the in-memory database and send it back to the history service on the
@@ -1369,6 +1369,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     bool should_increment_typed_count,
     VisitID opener_visit,
     bool consider_for_ntp_most_visited,
+    bool is_ephemeral,
     std::optional<int64_t> local_navigation_id,
     std::optional<std::u16string> title,
     std::optional<GURL> top_level_url,
@@ -1379,8 +1380,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     std::optional<VisitID> originator_visit_id,
     std::optional<VisitID> originator_referring_visit,
     std::optional<VisitID> originator_opener_visit,
-    bool is_known_to_sync,
-    bool is_ephemeral) {
+    bool is_known_to_sync) {
   DCHECK(url.is_valid());
   // See if this URL is already in the DB.
   URLRow url_info(url);
@@ -1745,7 +1745,7 @@ VisitID HistoryBackend::AddSyncedVisit(
       url, visit.visit_time, visit.referring_visit, visit.external_referrer_url,
       visit.transition, hidden, VisitSource::SOURCE_SYNCED,
       IsTypedIncrement(visit.transition), visit.opener_visit,
-      visit.consider_for_ntp_most_visited,
+      visit.consider_for_ntp_most_visited, /*is_ephemeral=*/false,
       /*local_navigation_id=*/std::nullopt, title,
       /*top_level_url=*/std::nullopt, /*frame_url=*/std::nullopt, visit.app_id,
       visit.visit_duration, visit.originator_cache_guid,

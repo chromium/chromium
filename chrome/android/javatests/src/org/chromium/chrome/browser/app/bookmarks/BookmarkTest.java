@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -63,6 +64,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -92,8 +94,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TestingDelegate;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -115,6 +117,8 @@ import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.ViewType;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -126,10 +130,10 @@ import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -170,6 +174,8 @@ public class BookmarkTest {
 
     @Mock private SyncService mSyncService;
     @Mock private ShoppingService mShoppingService;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
     private BookmarkModel mBookmarkModel;
@@ -192,8 +198,11 @@ public class BookmarkTest {
     @Before
     public void setUp() {
         // Setup the shopping service.
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
-        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+        ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
+        doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
+
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(
@@ -340,7 +349,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testShowBookmarkManager_Phone() throws InterruptedException {
         BookmarkTestUtil.loadEmptyPartnerBookmarksForTesting(mBookmarkModel);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
@@ -374,7 +383,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testFolderNavigation_Phone() throws InterruptedException, ExecutionException {
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();
@@ -448,7 +457,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testOpenFromReadingListAndNavigateBack() throws Exception {
         openBookmarkManager();
         runOnUiThreadBlocking(
@@ -522,7 +531,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testSearchBookmarks_pressBack() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTesting(
                 SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE);
@@ -670,7 +679,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Tablets don't have a close button.
+    @Restriction({DeviceFormFactor.PHONE}) // Tablets don't have a close button.
     public void testCloseBookmarksWhileStillLoading() throws Exception {
         BookmarkManagerCoordinator.preventLoadingForTesting(true);
 
@@ -685,7 +694,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // see crbug.com/1429025
+    @Restriction({DeviceFormFactor.PHONE}) // see crbug.com/1429025
     public void testEditHiddenWhileStillLoading() throws Exception {
         BookmarkManagerCoordinator.preventLoadingForTesting(true);
 
@@ -1155,8 +1164,8 @@ public class BookmarkTest {
         onView(withText("Move up")).perform(click());
 
         // Confirm that the "Google" bookmark is now on top, and that the "test" folder is 2nd
-        assertTrue((getNthBookmarkRow(1)).getTitleForTesting().equals(TEST_PAGE_TITLE_GOOGLE));
-        assertTrue((getNthBookmarkRow(2)).getTitleForTesting().equals(TEST_FOLDER_TITLE));
+        assertTrue(getNthBookmarkRow(1).getTitleForTesting().equals(TEST_PAGE_TITLE_GOOGLE));
+        assertTrue(getNthBookmarkRow(2).getTitleForTesting().equals(TEST_FOLDER_TITLE));
     }
 
     @Test
@@ -1180,8 +1189,8 @@ public class BookmarkTest {
         onView(withText("Move down")).perform(click());
 
         // Confirm that the "Google" bookmark is now on top, and that the "test" folder is 2nd
-        assertTrue((getNthBookmarkRow(1)).getTitleForTesting().equals(TEST_PAGE_TITLE_GOOGLE));
-        assertTrue((getNthBookmarkRow(2)).getTitleForTesting().equals(TEST_FOLDER_TITLE));
+        assertTrue(getNthBookmarkRow(1).getTitleForTesting().equals(TEST_PAGE_TITLE_GOOGLE));
+        assertTrue(getNthBookmarkRow(2).getTitleForTesting().equals(TEST_FOLDER_TITLE));
     }
 
     @Test
@@ -1685,7 +1694,7 @@ public class BookmarkTest {
      */
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testRecordsHistogramWhenBookmarkManagerOpened_InRegular() throws Throwable {
         assertEquals(
                 0,
@@ -1719,7 +1728,7 @@ public class BookmarkTest {
      */
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testRecordsHistogramWhenBookmarkManagerOpened_InIncognito() throws Throwable {
         assertEquals(
                 0,
@@ -1745,10 +1754,9 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testShoppingFilterInBookmarks() throws InterruptedException, ExecutionException {
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
-        doReturn(true).when(mShoppingService).isShoppingListEligible();
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         BookmarkId id = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         PowerBookmarkMeta.Builder meta =
                 PowerBookmarkMeta.newBuilder()
@@ -1786,10 +1794,10 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testShoppingDataPresentButFeatureDisabled()
             throws InterruptedException, ExecutionException {
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         BookmarkId id = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         PowerBookmarkMeta.Builder meta =
                 PowerBookmarkMeta.newBuilder()
@@ -1820,7 +1828,7 @@ public class BookmarkTest {
     private void openBookmarkManager() throws InterruptedException {
         if (mActivityTestRule.getActivity().isTablet()) {
             String rootFolderId = "folder/0";
-            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL + rootFolderId);
+            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL + rootFolderId);
             mItemsContainer =
                     mActivityTestRule
                             .getActivity()
@@ -2160,7 +2168,7 @@ public class BookmarkTest {
     private void loadBookmarkModel() {
         runOnUiThreadBlocking(
                 () -> {
-                    mBookmarkModel.finishLoadingBookmarkModel(() -> {});
+                    mBookmarkModel.finishLoadingBookmarkModel(CallbackUtils.emptyRunnable());
                 });
         CriteriaHelper.pollUiThread(
                 () -> {

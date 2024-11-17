@@ -114,7 +114,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   } else if (features::IsBootAnimationEnabled()) {
     auto product_name =
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_CROS_OOBE_PRODUCT_NAME);
     builder->AddF("welcomeScreenGreeting",
                   IDS_WELCOME_SCREEN_GREETING_CLOUD_READY,

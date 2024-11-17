@@ -57,6 +57,7 @@ void WorkerDevToolsManager::WorkerCreated(
       process_id,
       /*url=*/GURL(), /*name=*/"", host->GetToken().value(), /*parent_id=*/"",
       /*destroyed_callback=*/base::DoNothing());
+  base::UmaHistogramCounts1000("Worker.DevTools.AgentHost.Size", hosts_.size());
 
   devtools_instrumentation::ThrottleWorkerMainScriptFetch(
       host->GetToken().value(), ancestor_render_frame_host_id,
@@ -65,6 +66,14 @@ void WorkerDevToolsManager::WorkerCreated(
 
 void WorkerDevToolsManager::WorkerDestroyed(const DedicatedWorkerHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // If the worker thread in the renderer has never establiashed a mojo
+  // connection to the DedicatedWorkerDevToolsAgentHost we need to
+  // explicitly run disconnect.
+  // Generally, the host should be there except for unit tests.
+  if (!hosts_.contains(host)) {
+    return;
+  }
+  hosts_[host]->DisconnectIfNotCreated();
   hosts_.erase(host);
 }
 

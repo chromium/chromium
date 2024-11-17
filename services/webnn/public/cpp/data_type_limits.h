@@ -38,6 +38,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes greater_or_equal_input,
                  SupportedDataTypes lesser_input,
                  SupportedDataTypes lesser_or_equal_input,
+                 SupportedDataTypes logical_and_input,
+                 SupportedDataTypes logical_or_input,
+                 SupportedDataTypes logical_xor_input,
                  SupportedDataTypes logical_not_input,
                  SupportedDataTypes logical_output,
                  SupportedDataTypes abs_input,
@@ -95,6 +98,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes relu_input,
                  SupportedDataTypes resample2d_input,
                  SupportedDataTypes reshape_input,
+                 SupportedDataTypes scatter_elements_input,
+                 SupportedDataTypes scatter_elements_indices,
                  SupportedDataTypes scatter_nd_input,
                  SupportedDataTypes scatter_nd_indices,
                  SupportedDataTypes sigmoid_input,
@@ -145,6 +150,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes greater_or_equal_input;
   SupportedDataTypes lesser_input;
   SupportedDataTypes lesser_or_equal_input;
+  SupportedDataTypes logical_and_input;
+  SupportedDataTypes logical_or_input;
+  SupportedDataTypes logical_xor_input;
   SupportedDataTypes logical_not_input;
   SupportedDataTypes logical_output;
   SupportedDataTypes abs_input;
@@ -202,6 +210,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes relu_input;
   SupportedDataTypes resample2d_input;
   SupportedDataTypes reshape_input;
+  SupportedDataTypes scatter_elements_input;
+  SupportedDataTypes scatter_elements_indices;
   SupportedDataTypes scatter_nd_input;
   SupportedDataTypes scatter_nd_indices;
   SupportedDataTypes sigmoid_input;
@@ -245,6 +255,9 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.greater_or_equal_input == rhs.greater_or_equal_input &&
          lhs.lesser_input == rhs.lesser_input &&
          lhs.lesser_or_equal_input == rhs.lesser_or_equal_input &&
+         lhs.logical_and_input == rhs.logical_and_input &&
+         lhs.logical_or_input == rhs.logical_or_input &&
+         lhs.logical_xor_input == rhs.logical_xor_input &&
          lhs.logical_not_input == rhs.logical_not_input &&
          lhs.logical_output == rhs.logical_output &&
          lhs.abs_input == rhs.abs_input &&
@@ -302,6 +315,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.relu_input == rhs.relu_input &&
          lhs.resample2d_input == rhs.resample2d_input &&
          lhs.reshape_input == rhs.reshape_input &&
+         lhs.scatter_elements_input == rhs.scatter_elements_input &&
+         lhs.scatter_elements_indices == rhs.scatter_elements_indices &&
          lhs.scatter_nd_input == rhs.scatter_nd_input &&
          lhs.scatter_nd_indices == rhs.scatter_nd_indices &&
          lhs.sigmoid_input == rhs.sigmoid_input &&

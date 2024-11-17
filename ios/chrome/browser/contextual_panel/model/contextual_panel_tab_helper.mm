@@ -253,8 +253,8 @@ void ContextualPanelTabHelper::AllRequestsFinished() {
   // Sort configurations so the highest relevance is first.
   std::sort(sorted_weak_configurations_.begin(),
             sorted_weak_configurations_.end(),
-            [](base::WeakPtr<ContextualPanelItemConfiguration> first,
-               base::WeakPtr<ContextualPanelItemConfiguration> second) {
+            [](const base::WeakPtr<ContextualPanelItemConfiguration>& first,
+               const base::WeakPtr<ContextualPanelItemConfiguration>& second) {
               if (!first) {
                 return false;
               }

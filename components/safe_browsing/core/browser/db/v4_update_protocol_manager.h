@@ -35,8 +35,6 @@ class SharedURLLoaderFactory;
 
 namespace safe_browsing {
 
-class V4UpdateProtocolManagerFactory;
-
 // V4UpdateCallback is invoked when a scheduled update completes.
 // Parameters:
 //   - The vector of update response protobufs received from the server for
@@ -54,14 +52,11 @@ class V4UpdateProtocolManager {
 
   ~V4UpdateProtocolManager();
 
-  // Makes the passed |factory| the factory used to instantiate
-  // a V4UpdateProtocolManager. Useful for tests.
-  static void RegisterFactory(V4UpdateProtocolManagerFactory* factory) {
-    factory_ = factory;
-  }
-
-  // Create an instance of the safe browsing v4 protocol manager.
-  static std::unique_ptr<V4UpdateProtocolManager> Create(
+  // Constructs a V4UpdateProtocolManager that issues network requests using
+  // |url_loader_factory|. It schedules updates to get the hash prefixes for
+  // SafeBrowsing lists, and invoke |callback| when the results are retrieved.
+  // The callback may be invoked synchronously.
+  V4UpdateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config,
       V4UpdateCallback update_callback,
@@ -79,17 +74,6 @@ class V4UpdateProtocolManager {
   // have a null value if no response has been received.
   const base::Time& last_response_time() const;
 
- protected:
-  // Constructs a V4UpdateProtocolManager that issues network requests using
-  // |url_loader_factory|. It schedules updates to get the hash prefixes for
-  // SafeBrowsing lists, and invoke |callback| when the results are retrieved.
-  // The callback may be invoked synchronously.
-  V4UpdateProtocolManager(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config,
-      V4UpdateCallback update_callback,
-      ExtendedReportingLevelCallback extended_reporting_level_callback);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(V4UpdateProtocolManagerTest,
                            TestGetUpdatesErrorHandlingNetwork);
@@ -105,7 +89,6 @@ class V4UpdateProtocolManager {
                            TestGetUpdatesHasTimeout);
   FRIEND_TEST_ALL_PREFIXES(V4UpdateProtocolManagerTest,
                            TestExtendedReportingLevelIncluded);
-  friend class V4UpdateProtocolManagerFactoryImpl;
 
   void OnURLLoaderCompleteInternal(int net_error,
                                    int response_code,
@@ -160,10 +143,6 @@ class V4UpdateProtocolManager {
   // Get the next update interval, considering whether we are in backoff.
   base::TimeDelta GetNextUpdateInterval(bool back_off);
 
-  // The factory that controls the creation of V4UpdateProtocolManager.
-  // This is used by tests.
-  static V4UpdateProtocolManagerFactory* factory_;
-
   // The last known state of the lists.
   // Updated after every successful update of the database.
   std::unique_ptr<StoreStateMap> store_state_map_;
@@ -209,24 +188,6 @@ class V4UpdateProtocolManager {
   ExtendedReportingLevelCallback extended_reporting_level_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-};
-
-// Interface of a factory to create V4UpdateProtocolManager.  Useful for tests.
-class V4UpdateProtocolManagerFactory {
- public:
-  V4UpdateProtocolManagerFactory() {}
-
-  V4UpdateProtocolManagerFactory(const V4UpdateProtocolManagerFactory&) =
-      delete;
-  V4UpdateProtocolManagerFactory& operator=(
-      const V4UpdateProtocolManagerFactory&) = delete;
-
-  virtual ~V4UpdateProtocolManagerFactory() {}
-  virtual std::unique_ptr<V4UpdateProtocolManager> CreateProtocolManager(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const V4ProtocolConfig& config,
-      V4UpdateCallback update_callback,
-      ExtendedReportingLevelCallback extended_reporting_level_callback) = 0;
 };
 
 }  // namespace safe_browsing

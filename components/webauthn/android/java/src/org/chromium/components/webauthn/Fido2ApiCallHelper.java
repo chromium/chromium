@@ -19,6 +19,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
+import org.chromium.components.webauthn.Fido2ApiCall.WebauthnCredentialDetailsListResult;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -59,8 +60,7 @@ public class Fido2ApiCallHelper {
                         .getFido2ApiCallParams(authenticationContextProvider.getWebContents());
         Fido2ApiCall call = new Fido2ApiCall(authenticationContextProvider.getContext(), params);
         Parcel args = call.start();
-        Fido2ApiCall.WebauthnCredentialDetailsListResult result =
-                new Fido2ApiCall.WebauthnCredentialDetailsListResult();
+        WebauthnCredentialDetailsListResult result = new WebauthnCredentialDetailsListResult();
         args.writeStrongBinder(result);
         args.writeString(relyingPartyId);
 
@@ -72,6 +72,30 @@ public class Fido2ApiCallHelper {
                         result);
         task.addOnSuccessListener(successCallback);
         task.addOnFailureListener(failureCallback);
+    }
+
+    public void invokePasskeyCacheGetCredentials(
+            AuthenticationContextProvider authenticationContextProvider,
+            String relyingParty,
+            OnSuccessListener<List<WebauthnCredentialDetails>> successListener,
+            OnFailureListener failureListener) {
+        Fido2ApiCall call =
+                new Fido2ApiCall(
+                        authenticationContextProvider.getContext(), Fido2ApiCall.PERSISTENT_API);
+        Parcel args = call.start();
+        WebauthnCredentialDetailsListResult result = new WebauthnCredentialDetailsListResult();
+        result.setInterface(Fido2ApiCall.PERSISTENT_API_INTERFACE);
+        args.writeStrongBinder(result);
+        args.writeString(relyingParty);
+
+        Task<List<WebauthnCredentialDetails>> task =
+                call.run(
+                        Fido2ApiCall.METHOD_LIST_PASSKEYS_FOR_RP,
+                        Fido2ApiCall.TRANSACTION_LIST_PASSKEYS_FOR_RP,
+                        args,
+                        result);
+        task.addOnSuccessListener(successListener);
+        task.addOnFailureListener(failureListener);
     }
 
     public void invokeFido2MakeCredential(

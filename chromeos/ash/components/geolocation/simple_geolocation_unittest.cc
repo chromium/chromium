@@ -251,7 +251,8 @@ TEST_F(SimpleGeolocationTest, ResponseOK) {
   SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(1), false, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                     base::Unretained(&receiver)));
+                     base::Unretained(&receiver)),
+      SimpleGeolocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
 
   EXPECT_EQ(kExpectedPosition, receiver.position().ToString());
@@ -270,7 +271,8 @@ TEST_F(SimpleGeolocationTest, ResponseOKWithRetries) {
   SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(1), false, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                     base::Unretained(&receiver)));
+                     base::Unretained(&receiver)),
+      SimpleGeolocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
   EXPECT_EQ(kExpectedPosition, receiver.position().ToString());
   EXPECT_FALSE(receiver.server_error());
@@ -289,7 +291,8 @@ TEST_F(SimpleGeolocationTest, ResponseWithErrorTooManyRequestsIsNotRetried) {
   SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(1), false, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                     base::Unretained(&receiver)));
+                     base::Unretained(&receiver)),
+      SimpleGeolocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
 
   // Check that Geoposition is not populated.
@@ -314,7 +317,8 @@ TEST_F(SimpleGeolocationTest, InvalidResponse) {
   SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(timeout_seconds), false, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                     base::Unretained(&receiver)));
+                     base::Unretained(&receiver)),
+      SimpleGeolocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
 
   std::string receiver_position = receiver.position().ToString();
@@ -354,7 +358,8 @@ TEST_F(SimpleGeolocationTest, NoWiFi) {
   SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(1), true, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                     base::Unretained(&receiver)));
+                     base::Unretained(&receiver)),
+      SimpleGeolocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
   EXPECT_EQ(kIPOnlyRequestBody, requests_monitor.last_request_body());
 
@@ -383,7 +388,8 @@ TEST_F(SimpleGeolocationTest, SystemGeolocationPermissionDenied) {
       SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
           base::Seconds(1), send_wifi, send_cell,
           base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                         base::Unretained(&receiver)));
+                         base::Unretained(&receiver)),
+          SimpleGeolocationProvider::ClientId::kForTesting);
 
       // Waiting is not needed, requests are dropped, thus nothing is pending.
       EXPECT_EQ(0U, requests_monitor.requests_count());
@@ -493,7 +499,8 @@ TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
     SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
         base::Seconds(1), send_wifi_access_points, false,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                       base::Unretained(&receiver)));
+                       base::Unretained(&receiver)),
+        SimpleGeolocationProvider::ClientId::kForTesting);
     receiver.WaitUntilRequestDone();
     EXPECT_EQ(kIPOnlyRequestBody, requests_monitor.last_request_body());
 
@@ -520,7 +527,8 @@ TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
     SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
         base::Seconds(1), send_wifi_access_points, false,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                       base::Unretained(&receiver)));
+                       base::Unretained(&receiver)),
+        SimpleGeolocationProvider::ClientId::kForTesting);
     receiver.WaitUntilRequestDone();
     if (send_wifi_access_points) {
       // Sending WiFi data is enabled.
@@ -556,7 +564,8 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
     SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
         base::Seconds(1), false, send_cell_towers,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                       base::Unretained(&receiver)));
+                       base::Unretained(&receiver)),
+        SimpleGeolocationProvider::ClientId::kForTesting);
     receiver.WaitUntilRequestDone();
     EXPECT_EQ(kIPOnlyRequestBody, requests_monitor.last_request_body());
 
@@ -581,7 +590,8 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
     SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
         base::Seconds(1), false, send_cell_towers,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
-                       base::Unretained(&receiver)));
+                       base::Unretained(&receiver)),
+        SimpleGeolocationProvider::ClientId::kForTesting);
     receiver.WaitUntilRequestDone();
     if (send_cell_towers) {
       // Sending Cellular data is enabled.

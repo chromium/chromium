@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -160,7 +161,7 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
     return;
   }
 
-  DoStarterPackAutocompletion(input);
+  AddFeaturedKeywordMatches(input);
 }
 
 void FeaturedSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
@@ -181,7 +182,7 @@ void FeaturedSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
 
 FeaturedSearchProvider::~FeaturedSearchProvider() = default;
 
-void FeaturedSearchProvider::DoStarterPackAutocompletion(
+void FeaturedSearchProvider::AddFeaturedKeywordMatches(
     const AutocompleteInput& input) {
   // When the user's input begins with '@', we want to prioritize providing
   // suggestions for all active starter pack search engines.
@@ -202,9 +203,7 @@ void FeaturedSearchProvider::DoStarterPackAutocompletion(
         }
 
         AddStarterPackMatch(*match, input);
-      } else if (base::FeatureList::IsEnabled(
-                     omnibox::kShowFeaturedEnterpriseSiteSearch) &&
-                 match->featured_by_policy()) {
+      } else if (match->featured_by_policy()) {
         AddFeaturedEnterpriseSearchMatch(*match, input);
       }
     }
@@ -273,6 +272,15 @@ void FeaturedSearchProvider::AddStarterPackMatch(
     match.allowed_to_be_default_match = false;
     match.keyword = template_url.keyword();
   } else {
+    // The Gemini provider should be ranked first.
+    // TODO(b/41494524): Currently templateurlservice returns the keywords in
+    //  alphabetical order, which is the order we rank them. There should be a
+    //  more sustainable way for specifying the order they should appear in the
+    //  omnibox.
+    if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
+        template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
+      match.relevance = kGeminiRelevance;
+    }
     match.description = template_url.short_name();
     match.description_class.emplace_back(0, ACMatchClassification::NONE);
     match.contents = destination_url;
@@ -400,8 +408,7 @@ bool FeaturedSearchProvider::ShouldShowEnterpriseFeaturedSearchIPHMatch(
   // - The user has not successfully used at least one featured engine.
   TemplateURLService::TemplateURLVector featured_engines =
       template_url_service_->GetFeaturedEnterpriseSearchEngines();
-  return OmniboxFieldTrial::IsFeaturedEnterpriseSearchIPHEnabled() &&
-         input.IsZeroSuggest() && !featured_engines.empty() &&
+  return input.IsZeroSuggest() && !featured_engines.empty() &&
          ShouldShowIPH(IphType::kFeaturedEnterpriseSearch) &&
          base::ranges::all_of(featured_engines, [](auto turl) {
            return turl->usage_count() == 0;
@@ -456,7 +463,7 @@ bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsSettingsPromoIphMatch()
   // - The user has not deleted the IPH suggestion.
   return client_->IsHistoryEmbeddingsSettingVisible() &&
          !client_->IsHistoryEmbeddingsEnabled() &&
-         history_embeddings::kOmniboxScoped.Get() &&
+         history_embeddings::GetFeatureParameters().omnibox_scoped &&
          ShouldShowIPH(IphType::kHistoryEmbeddingsSettingsPromo);
 }
 
@@ -466,7 +473,10 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsSettingsPromoIphMatch() {
                         u" ";
   std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH_LINK_TEXT);
-  GURL link_url = GURL("chrome://settings/historySearch");
+  GURL link_url = GURL(base::FeatureList::IsEnabled(
+                           optimization_guide::features::kAiSettingsPageRefresh)
+                           ? "chrome://settings/ai/historySearch"
+                           : "chrome://settings/historySearch");
   AddIPHMatch(IphType::kHistoryEmbeddingsSettingsPromo, text, u"", link_text,
               link_url, true);
 }
@@ -477,7 +487,7 @@ bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsDisclaimerIphMatch()
   // by `ShouldShowIPH()` (i.e. shown count or dismissal) because this is a
   // disclaimer.
   return client_->IsHistoryEmbeddingsEnabled() &&
-         history_embeddings::kOmniboxScoped.Get();
+         history_embeddings::GetFeatureParameters().omnibox_scoped;
 }
 
 void FeaturedSearchProvider::AddHistoryEmbeddingsDisclaimerIphMatch() {
@@ -486,7 +496,10 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsDisclaimerIphMatch() {
       u" ";
   std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH_LINK_TEXT);
-  GURL link_url = GURL("chrome://settings/historySearch");
+  GURL link_url = GURL(base::FeatureList::IsEnabled(
+                           optimization_guide::features::kAiSettingsPageRefresh)
+                           ? "chrome://settings/ai/historySearch"
+                           : "chrome://settings/historySearch");
   AddIPHMatch(IphType::kHistoryEmbeddingsDisclaimer, text, u"", link_text,
               link_url, false);
 }
@@ -499,7 +512,8 @@ bool FeaturedSearchProvider::ShouldShowHistoryScopePromoIphMatch(
   // directly related to embeddings so it's ok to show to users who can't opt-in
   // to embeddings.
   return input.IsZeroSuggest() && !client_->IsHistoryEmbeddingsEnabled() &&
-         history_embeddings::kOmniboxScoped.Get() &&
+         history_embeddings::GetFeatureParameters().omnibox_scoped &&
+         !client_->IsOffTheRecord() &&
          ShouldShowIPH(IphType::kHistoryScopePromo);
 }
 
@@ -514,7 +528,7 @@ bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsScopePromoIphMatch(
   // Shown in the zero state when history embeddings is enabled (& opted-in) for
   // the omnibox.
   return input.IsZeroSuggest() && client_->IsHistoryEmbeddingsEnabled() &&
-         history_embeddings::kOmniboxScoped.Get() &&
+         history_embeddings::GetFeatureParameters().omnibox_scoped &&
          ShouldShowIPH(IphType::kHistoryEmbeddingsScopePromo);
 }
 

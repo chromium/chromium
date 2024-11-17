@@ -6,6 +6,10 @@
 
 namespace ui {
 
+BASE_FEATURE(kBlockTelephonyDevicePhoneMute,
+             "BlockTelephonyDevicePhoneMute",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableFastTouchpadClick,
              "EnableFastTouchpadClick",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -43,6 +47,7 @@ BASE_FEATURE(kEnablePalmOnToolTypePalm,
              "EnablePalmOnToolTypePalm",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+/// Used for marking the whole screen as a palm when any palm is detected.
 BASE_FEATURE(kEnablePalmSuppression,
              "EnablePalmSuppression",
              base::FEATURE_ENABLED_BY_DEFAULT);

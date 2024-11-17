@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_block_modulator.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_mediator.h"
@@ -39,7 +40,7 @@
   NSMutableArray<PanelBlockModulator*>* _modulators;
 
   // The contextual panel tab helper to use for this panel.
-  ContextualPanelTabHelper* _contextualPanelTabHelper;
+  raw_ptr<ContextualPanelTabHelper> _contextualPanelTabHelper;
 
   // Read-write version of `self.baseViewController` as the base view
   // controller for this coordinator changes during its lifetime.

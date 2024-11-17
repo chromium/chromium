@@ -6,3 +6,6 @@
 
 NSString* const kEditProfileBottomSheetCancelButton =
     @"EditProfileBottomSheetCancelButton";
+
+NSString* const kEditProfileBottomSheetViewIdentfier =
+    @"EditProfileBottomSheetViewIdentfier";

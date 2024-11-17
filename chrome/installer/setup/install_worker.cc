@@ -661,10 +661,8 @@ std::wstring TransformCloudManagementBrandCode(const std::wstring& brand_code,
     const wchar_t* cbe_brand;
     const wchar_t* cbcm_brand;
   } kCbcmBrandRemapping[] = {
-      {L"GCE", L"GCC"},
-      {L"GCF", L"GCK"},
-      {L"GCG", L"GCL"},
-      {L"GCH", L"GCM"},
+      {L"GCE", L"GCC"}, {L"GCF", L"GCK"}, {L"GCG", L"GCL"}, {L"GCH", L"GCM"},
+      {L"GCO", L"GCT"}, {L"GCP", L"GCU"}, {L"GCQ", L"GCV"}, {L"GCS", L"GCW"},
   };
   if (to_cbcm) {
     for (auto mapping : kCbcmBrandRemapping) {
@@ -866,8 +864,7 @@ void AddInstallWorkItems(const InstallParams& install_params,
       base::BindOnce(
           [](const base::FilePath& target_path, const base::FilePath& temp_path,
              const CallbackWorkItem& work_item) {
-            return ConfigureAppContainerSandbox(
-                std::array<const base::FilePath*, 2>{&target_path, &temp_path});
+            return ConfigureAppContainerSandbox({&target_path, &temp_path});
           },
           target_path, temp_path),
       base::DoNothing());
@@ -1149,8 +1146,14 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
       cmd_line.AppendSwitch(installer::switches::kSystemLevel);
     // Log everything for now.
     cmd_line.AppendSwitch(installer::switches::kVerboseLogging);
+    // This will make the updater append
+    // <prev_windows_version>-<new_windows_version> to the upgrade commandline.
+    cmd_line.AppendArg("%1");
 
-    AppCommand cmd(kCmdOnOsUpgrade, cmd_line.GetCommandLineString());
+    // `GetCommandLineStringWithUnsafeInsertSequences` should be safe to use
+    // because the updater will do the substitution, not the Windows shell.
+    AppCommand cmd(kCmdOnOsUpgrade,
+                   cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
     cmd.set_is_auto_run_on_os_upgrade(true);
     cmd.AddCreateAppCommandWorkItems(root_key, install_list);
   }

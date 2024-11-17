@@ -125,6 +125,15 @@ struct ServerCvc {
 //                      kNetwork denotes that it is a network-level enrollment.
 //   product_terms_url  Issuer terms of service to be displayed on the settings
 //                      page.
+//   card_info_retrieval_enrollment_state
+//                      An enum indicating the enrollment state of this card
+//                      for card info(card number, expiry and cvc) runtime
+//                      retrieval from issuer. kRetrievalUnspecified is the
+//                      default value. kRetrievalEnrolled means the card has
+//                      been enrolled. kRetrievalUnenrolledAndNotEligible means
+//                      the card is not enrolled and is not eligible for
+//                      enrollment. kRetrievalUnenrolledAndEligible means the
+//                      card is not enrolled but is eligible for enrollment.
 // -----------------------------------------------------------------------------
 // server_card_cloud_token_data
 //                      Stores data related to Cloud Primary Account Number
@@ -568,6 +577,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion129AddGenericPaymentInstrumentsTable();
   bool MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn();
   bool MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable();
+  bool MigrateToVersion135AddCardInfoRetrievalEnrollmentState();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.

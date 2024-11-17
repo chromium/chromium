@@ -148,6 +148,24 @@ class H265DecoderTest : public ::testing::Test {
   // If |set_stream_expect| is true, it will setup EXPECT_CALL for SetStream.
   AcceleratedVideoDecoder::DecodeResult Decode(bool set_stream_expect = true);
 
+  void ResetExpectations() {
+    // Sets default behaviors for mock methods for convenience.
+    ON_CALL(*accelerator_, CreateH265Picture()).WillByDefault(Invoke([]() {
+      return new H265Picture();
+    }));
+    ON_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+        .WillByDefault(Return(H265Decoder::H265Accelerator::Status::kOk));
+    ON_CALL(*accelerator_, SubmitDecode(_))
+        .WillByDefault(Return(H265Decoder::H265Accelerator::Status::kOk));
+    ON_CALL(*accelerator_, OutputPicture(_)).WillByDefault(Return(true));
+    ON_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+        .With(Args<10, 11>(SubsampleSizeMatches()))
+        .WillByDefault(Return(H265Decoder::H265Accelerator::Status::kOk));
+    EXPECT_CALL(*accelerator_, SetStream(_, _))
+        .WillRepeatedly(
+            Return(H265Decoder::H265Accelerator::Status::kNotSupported));
+  }
+
  protected:
   std::unique_ptr<H265Decoder> decoder_;
   raw_ptr<MockH265Accelerator> accelerator_;
@@ -163,22 +181,7 @@ void H265DecoderTest::SetUp() {
   accelerator_ = mock_accelerator.get();
   decoder_.reset(new H265Decoder(std::move(mock_accelerator),
                                  VIDEO_CODEC_PROFILE_UNKNOWN));
-
-  // Sets default behaviors for mock methods for convenience.
-  ON_CALL(*accelerator_, CreateH265Picture()).WillByDefault(Invoke([]() {
-    return new H265Picture();
-  }));
-  ON_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
-      .WillByDefault(Return(H265Decoder::H265Accelerator::Status::kOk));
-  ON_CALL(*accelerator_, SubmitDecode(_))
-      .WillByDefault(Return(H265Decoder::H265Accelerator::Status::kOk));
-  ON_CALL(*accelerator_, OutputPicture(_)).WillByDefault(Return(true));
-  ON_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
-      .With(Args<10, 11>(SubsampleSizeMatches()))
-      .WillByDefault(Return(H265Decoder::H265Accelerator::Status::kOk));
-  ON_CALL(*accelerator_, SetStream(_, _))
-      .WillByDefault(
-          Return(H265Decoder::H265Accelerator::Status::kNotSupported));
+  ResetExpectations();
 }
 
 void H265DecoderTest::SetInputFrameFiles(
@@ -219,6 +222,7 @@ TEST_F(H265DecoderTest, DecodeSingleFrame) {
   EXPECT_CALL(*accelerator_, CreateH265Picture()).WillOnce(Return(nullptr));
   EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfSurfaces, Decode());
   EXPECT_TRUE(Mock::VerifyAndClearExpectations(&*accelerator_));
+  ResetExpectations();
 
   {
     InSequence sequence;

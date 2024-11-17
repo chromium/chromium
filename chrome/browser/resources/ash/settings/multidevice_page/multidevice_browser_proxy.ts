@@ -4,7 +4,7 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {MultiDeviceFeature, MultiDevicePageContentData, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
+import type {MultiDeviceFeature, MultiDevicePageContentData, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
 
 
 export interface MultiDeviceBrowserProxy {

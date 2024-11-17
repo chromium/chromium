@@ -73,6 +73,8 @@ public class SiteSettingsCategory {
         Type.ZOOM,
         Type.STORAGE_ACCESS,
         Type.TRACKING_PROTECTION,
+        Type.FILE_EDITING,
+        Type.JAVASCRIPT_OPTIMIZER,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -111,9 +113,11 @@ public class SiteSettingsCategory {
         int STORAGE_ACCESS = 29;
         int TRACKING_PROTECTION = 30;
         int HAND_TRACKING = 31;
+        int FILE_EDITING = 32;
+        int JAVASCRIPT_OPTIMIZER = 33;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 32;
+        int NUM_ENTRIES = 34;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -220,6 +224,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.REQUEST_DESKTOP_SITE;
             case Type.DEVICE_LOCATION:
                 return ContentSettingsType.GEOLOCATION;
+            case Type.FILE_EDITING:
+                return ContentSettingsType.FILE_SYSTEM_WRITE_GUARD;
             case Type.FEDERATED_IDENTITY_API:
                 return ContentSettingsType.FEDERATED_IDENTITY_API;
             case Type.HAND_TRACKING:
@@ -228,6 +234,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.IDLE_DETECTION;
             case Type.JAVASCRIPT:
                 return ContentSettingsType.JAVASCRIPT;
+            case Type.JAVASCRIPT_OPTIMIZER:
+                return ContentSettingsType.JAVASCRIPT_OPTIMIZER;
             case Type.MICROPHONE:
                 return ContentSettingsType.MEDIASTREAM_MIC;
             case Type.NFC:
@@ -305,12 +313,16 @@ public class SiteSettingsCategory {
                 return "device_location";
             case Type.FEDERATED_IDENTITY_API:
                 return "federated_identity_api";
+            case Type.FILE_EDITING:
+                return "file_editing";
             case Type.HAND_TRACKING:
                 return "hand_tracking";
             case Type.IDLE_DETECTION:
                 return "idle_detection";
             case Type.JAVASCRIPT:
                 return "javascript";
+            case Type.JAVASCRIPT_OPTIMIZER:
+                return "javascript_optimizer";
             case Type.MICROPHONE:
                 return "microphone";
             case Type.NFC:
@@ -578,10 +590,8 @@ public class SiteSettingsCategory {
         } else if (type == ContentSettingsType.NOTIFICATIONS) {
             permission_string = R.string.android_notifications_permission_off;
         }
-        return context.getResources()
-                .getString(
-                        plural ? R.string.android_permission_off_plural : permission_string,
-                        appName);
+        return context.getString(
+                plural ? R.string.android_permission_off_plural : permission_string, appName);
     }
 
     /** Returns the message to display when per-app permission is blocked. */

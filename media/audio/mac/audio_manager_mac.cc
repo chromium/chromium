@@ -719,11 +719,11 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
   // aggregate device itself.  It also only runs in mono, but we allow upmixing
   // to stereo since we can't claim a device works either in stereo without echo
   // cancellation or mono with echo cancellation.
-  if ((params.channel_layout() == CHANNEL_LAYOUT_MONO ||
+  if (media::IsSystemEchoCancellationEnforced() &&
+      (params.channel_layout() == CHANNEL_LAYOUT_MONO ||
        params.channel_layout() == CHANNEL_LAYOUT_STEREO) &&
       GetDeviceTransportType(device) != kAudioDeviceTransportTypeAggregate) {
-    params.set_effects(params.effects() |
-                       AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
+    params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
   }
 
   return params;

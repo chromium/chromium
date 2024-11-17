@@ -121,10 +121,10 @@ TEST_F(TextOffsetMappingTest, ComputeTextOffsetWithFloat) {
   InsertStyleElement("b { float:right; }");
   EXPECT_EQ("|aBCDe", ComputeTextOffset("<p>|a<b>BCD</b>e</p>"));
   EXPECT_EQ("a|BCDe", ComputeTextOffset("<p>a|<b>BCD</b>e</p>"));
-  EXPECT_EQ("a|BCDe", ComputeTextOffset("<p>a<b>|BCD</b>e</p>"));
-  EXPECT_EQ("aB|CDe", ComputeTextOffset("<p>a<b>B|CD</b>e</p>"));
-  EXPECT_EQ("aBC|De", ComputeTextOffset("<p>a<b>BC|D</b>e</p>"));
-  EXPECT_EQ("aBCD|e", ComputeTextOffset("<p>a<b>BCD|</b>e</p>"));
+  EXPECT_EQ("|BCD", ComputeTextOffset("<p>a<b>|BCD</b>e</p>"));
+  EXPECT_EQ("B|CD", ComputeTextOffset("<p>a<b>B|CD</b>e</p>"));
+  EXPECT_EQ("BC|D", ComputeTextOffset("<p>a<b>BC|D</b>e</p>"));
+  EXPECT_EQ("BCD|", ComputeTextOffset("<p>a<b>BCD|</b>e</p>"));
   EXPECT_EQ("aBCD|e", ComputeTextOffset("<p>a<b>BCD</b>|e</p>"));
   EXPECT_EQ("aBCDe|", ComputeTextOffset("<p>a<b>BCD</b>e|</p>"));
 }
@@ -189,60 +189,34 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithPRE) {
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBY) {
   const char* whole_text_selected = "^<ruby>abc<rt>123|</rt></ruby>";
-  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>123</rt></ruby>",
-            GetRange("<ruby>|abc<rt>123</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^123|</rt></ruby>",
-            GetRange("<ruby>abc<rt>1|23</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>|abc<rt>123</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>abc<rt>1|23</rt></ruby>"));
 }
 
 // http://crbug.com/1124584
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
-  // We should not make <ruby> as |InlineContent| container because "XYZ" comes
-  // before "abc" but in DOM tree, order is "abc" then "XYZ".
-  // Layout tree:
-  //  LayoutBlockFlow {BODY} at (8,8) size 784x27
-  //   LayoutRubyAsBlock {RUBY} at (0,0) size 784x27
-  //     LayoutRubyColumn (anonymous) at (0,7) size 22x20
-  //       LayoutRubyText {RT} at (0,-10) size 22x12
-  //         LayoutText {#text} at (2,0) size 18x12
-  //           text run at (2,0) width 18: "XYZ"
-  //       LayoutRubyBase (anonymous) at (0,0) size 22x20
-  //         LayoutText {#text} at (0,0) size 22x19
-  //           text run at (0,0) width 22: "abc"
   const char* whole_text_selected = "<ruby>^abc<rt>XYZ|</rt></ruby>";
-  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
   InsertStyleElement("ruby { display: block; }");
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
-            GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
-            GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^XYZ|</rt></ruby>",
-            GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsInlineBlock) {
   const char* whole_text_selected = "^<ruby>abc<rt>XYZ|</rt></ruby>";
-  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
   InsertStyleElement("ruby { display: inline-block; }");
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
-            GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
-            GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^XYZ|</rt></ruby>",
-            GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ(whole_text_selected, GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBYandBR) {
   const char* whole_text_selected =
       "^<ruby>abc<br>def<rt>123<br>456|</rt></ruby>";
-  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected
-                       : "<ruby>^abc<br>def|<rt>123<br>456</rt></ruby>",
+  EXPECT_EQ(whole_text_selected,
             GetRange("<ruby>|abc<br>def<rt>123<br>456</rt></ruby>"))
       << "RT(LayoutRubyColumn) is a block";
-  EXPECT_EQ(is_ruby_lb ? whole_text_selected
-                       : "<ruby>abc<br>def<rt>^123<br>456|</rt></ruby>",
+  EXPECT_EQ(whole_text_selected,
             GetRange("<ruby>abc<br>def<rt>123|<br>456</rt></ruby>"))
       << "RUBY introduce LayoutRuleBase for 'abc'";
 }
@@ -382,8 +356,64 @@ TEST_F(TextOffsetMappingTest, RangeWithMulticol) {
 TEST_F(TextOffsetMappingTest, RangeWithNestedFloat) {
   InsertStyleElement("b, i { float: right; }");
   // Note: Legacy: BODY is inline, NG: BODY is block.
-  EXPECT_EQ("^<b>abc <i>def</i> ghi</b>xyz|",
+  EXPECT_EQ("<b>abc <i>^def|</i> ghi</b>xyz",
             GetRange("<b>abc <i>d|ef</i> ghi</b>xyz"));
+}
+
+// http://crbug.com/40711666
+TEST_F(TextOffsetMappingTest, RangeWithFloatingListItem) {
+  InsertStyleElement("li { float: left; margin-right: 40px; }");
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>|First</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>F|irst</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>Fir|st</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>Firs|t</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>First|</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>|Second</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>S|econd</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Se|cond</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Sec|ond</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Seco|nd</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Secon|d</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Second|</li></ul>"));
+}
+
+TEST_F(TextOffsetMappingTest, RangeWithListItem) {
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>|First</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>F|irst</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>Fir|st</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>Firs|t</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>^First|</li><li>Second</li></ul>",
+            GetRange("<ul><li>First|</li><li>Second</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>|Second</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>S|econd</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Se|cond</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Sec|ond</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Seco|nd</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Secon|d</li></ul>"));
+  EXPECT_EQ("<ul><li>First</li><li>^Second|</li></ul>",
+            GetRange("<ul><li>First</li><li>Second|</li></ul>"));
 }
 
 TEST_F(TextOffsetMappingTest, RangeWithNestedInlineBlock) {

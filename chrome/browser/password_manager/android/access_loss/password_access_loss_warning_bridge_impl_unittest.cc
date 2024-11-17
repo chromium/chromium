@@ -33,6 +33,11 @@ class PasswordAccessLossWarningBridgeImplTest : public testing::Test {
 
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
         getGMSVersionForTestSetUp(/*is_up_to_date=*/false));
+
+    // There were local passwords stored in the login database.
+    // The pref needs to be explicitly set for the warning to show up.
+    pref_service()->SetBoolean(
+        password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
   }
 
   std::string getGMSVersionForTestSetUp(bool is_up_to_date) {

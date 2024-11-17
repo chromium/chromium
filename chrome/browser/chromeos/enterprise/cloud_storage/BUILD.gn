@@ -18,6 +18,7 @@ static_library("cloud_storage") {
   ]
 
   deps = [
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/chromeos/extensions/odfs_config_private",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/extensions",
@@ -33,5 +34,19 @@ static_library("cloud_storage") {
   allow_circular_includes_from = [
     "//chrome/browser/chromeos/extensions/odfs_config_private",
     "//chrome/browser/chromeos/upload_office_to_cloud",
+  ]
+}
+
+source_set("cloud_storage_pref_utils") {
+  sources = [
+    "pref_utils.cc",
+    "pref_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:constants",
+    "//components/pref_registry",
+    "//components/prefs",
   ]
 }

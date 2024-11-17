@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/freetype_buildflags.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -111,7 +112,9 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   mutable std::map<base::UnguessableToken, base::ReadOnlySharedMemoryMapping>
       mapped_regions_;
 
+#if BUILDFLAG(ENABLE_FREETYPE)
   sk_sp<SkFontMgr> custom_fnt_mgr_;
+#endif
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   mutable base::SequenceLocalStorageSlot<
       mojo::Remote<font_data_service::mojom::FontDataService>>

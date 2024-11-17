@@ -4,7 +4,6 @@
 
 package org.chromium.components.content_relationship_verification;
 
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -16,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
@@ -118,16 +116,15 @@ public abstract class OriginVerifier {
     }
 
     /**
-     * Main constructor.
-     * Use {@link OriginVerifier#start}
+     * Main constructor. Use {@link OriginVerifier#start}
+     *
      * @param packageName The package for the Android application for verification.
      * @param relation Digital Asset Links relation to use during verification, one of
-     *         "delegate_permission/common.use_as_origin",
-     * "delegate_permission/common.handle_all_urls".
+     *     "delegate_permission/common.use_as_origin", "delegate_permission/common.handle_all_urls".
      * @param webContents The web contents of the tab used for reporting errors to DevTools. Can be
-     *         null if unavailable.
+     *     null if unavailable.
      * @param browserContextHandle handle to retrieve the browser context for creating the url
-     *         loader factory. If null, initialize the native side before calling {@code start}
+     *     loader factory. If null, initialize the native side before calling {@code start}
      * @param verificationResultStore The {@link VerificationResultStore} for persisting results.
      */
     public OriginVerifier(
@@ -137,7 +134,6 @@ public abstract class OriginVerifier {
             @Nullable BrowserContextHandle browserContextHandle,
             VerificationResultStore verificationResultStore) {
         mPackageName = packageName;
-        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
 
         mSignatureFingerprints =
                 PackageUtils.getCertificateSHA256FingerprintForPackage(packageName);

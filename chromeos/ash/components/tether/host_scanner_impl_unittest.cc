@@ -151,13 +151,7 @@ std::vector<ScannedDeviceInfo> CreateFakeScannedDeviceInfos(
         connection_strength = 101 + i;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        // Set values for |battery_percentage| and |connection_strength| here to
-        // prevent a compiler warning which says that they may be unset at this
-        // point.
-        battery_percentage = 0;
-        connection_strength = 0;
-        break;
+        NOTREACHED();
     }
 
     DeviceStatus device_status = CreateTestDeviceStatus(

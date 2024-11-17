@@ -44,7 +44,8 @@
           "builder": "linux-perfetto-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-perfetto-rel/targets"
     }
   },
   "$build/reclient": {

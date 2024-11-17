@@ -5,6 +5,7 @@
 #include "chrome/browser/device_reauth/chromeos/device_authenticator_chromeos.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -39,6 +40,9 @@ bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometrics() {
     g_browser_process->local_state()->SetBoolean(
         password_manager::prefs::kHadBiometricsAvailable, /*value=*/true);
   }
+
+  base::UmaHistogramEnumeration("PasswordManager.BiometricAvailabilityChromeOS",
+                                status);
   return is_available;
 }
 

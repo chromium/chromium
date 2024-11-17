@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/app_list/arc/intent.h"
+
 #include <string>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/app_list/arc/intent.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

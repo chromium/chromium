@@ -173,7 +173,9 @@ void MockClipboardHost::WriteBookmark(const std::string& url,
 void MockClipboardHost::WriteImage(const SkBitmap& bitmap) {
   if (needs_reset_)
     Reset();
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_);
+  png_ =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false)
+          .value_or(std::vector<uint8_t>());
 }
 
 void MockClipboardHost::CommitWrite() {

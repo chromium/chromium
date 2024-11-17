@@ -100,11 +100,14 @@
   color: var(--cr-input-error-color);
   display: var(--cr-input-error-display, block);
   font-size: 11px;
-  height: var(--cr-form-field-label-height);
+  min-height: var(--cr-form-field-label-height);
   line-height: 16px;
   margin: 4px 10px;
   visibility: hidden;
   white-space: var(--cr-input-error-white-space);
+  height: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 :host([invalid]) #error {

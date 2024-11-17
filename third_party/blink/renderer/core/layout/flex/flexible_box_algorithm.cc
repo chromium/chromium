@@ -148,8 +148,7 @@ LayoutUnit FlexItem::FlowAwareMarginBefore() const {
     case PhysicalDirection::kLeft:
       return physical_margins_.right;
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 LayoutUnit FlexItem::FlowAwareMarginAfter() const {
@@ -163,8 +162,7 @@ LayoutUnit FlexItem::FlowAwareMarginAfter() const {
     case PhysicalDirection::kLeft:
       return physical_margins_.left;
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 LayoutUnit FlexItem::MarginBlockEnd() const {
@@ -318,19 +316,16 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
     case ItemPosition::kAuto:
     case ItemPosition::kNormal:
     case ItemPosition::kAnchorCenter:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case ItemPosition::kSelfStart:
     case ItemPosition::kSelfEnd:
     case ItemPosition::kStart:
     case ItemPosition::kEnd:
     case ItemPosition::kLeft:
     case ItemPosition::kRight:
-      NOTREACHED_IN_MIGRATION()
-          << static_cast<int>(position)
-          << " AlignmentForChild should have transformed this "
-             "position value to something we handle below.";
-      break;
+      NOTREACHED() << static_cast<int>(position)
+                   << " AlignmentForChild should have transformed this "
+                      "position value to something we handle below.";
     case ItemPosition::kStretch:
       // Actual stretching must be handled by the caller. Since wrap-reverse
       // flips cross start and cross end, stretch children should be aligned
@@ -518,8 +513,8 @@ void FlexLine::ComputeLineItemsPosition() {
 
   const LayoutUnit auto_margin_offset = ApplyMainAxisAutoMarginAdjustment();
 
-  LayoutUnit max_major_descent;
-  LayoutUnit max_minor_descent;
+  LayoutUnit max_major_descent = LayoutUnit::Min();
+  LayoutUnit max_minor_descent = LayoutUnit::Min();
 
   LayoutUnit max_child_cross_axis_extent;
   for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
@@ -754,20 +749,16 @@ LayoutUnit FlexibleBoxAlgorithm::IntrinsicContentBlockSize() const {
 }
 
 PhysicalDirection FlexibleBoxAlgorithm::MainAxisDirection() const {
-  WritingDirectionMode writing_direction = style_->GetWritingDirection();
-  if (style_->ResolvedIsRowFlexDirection()) {
-    return writing_direction.InlineEnd();
-  }
-  DCHECK(style_->ResolvedIsColumnFlexDirection());
-  return writing_direction.BlockEnd();
+  const WritingDirectionMode writing_direction = style_->GetWritingDirection();
+  return style_->ResolvedIsColumnFlexDirection()
+             ? writing_direction.BlockEnd()
+             : writing_direction.InlineEnd();
 }
 
 PhysicalDirection FlexibleBoxAlgorithm::CrossAxisDirection() const {
-  WritingDirectionMode mode = style_->GetWritingDirection();
-  if (!style_->ResolvedIsColumnFlexDirection()) {
-    return mode.BlockEnd();
-  }
-  return mode.InlineEnd();
+  const WritingDirectionMode writing_direction = style_->GetWritingDirection();
+  return style_->ResolvedIsColumnFlexDirection() ? writing_direction.InlineEnd()
+                                                 : writing_direction.BlockEnd();
 }
 
 // static

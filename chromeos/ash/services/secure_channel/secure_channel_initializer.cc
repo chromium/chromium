@@ -160,7 +160,7 @@ void SecureChannelInitializer::OnBluetoothAdapterReceived(
                   << "Bluetooth adapter has been fetched. Passing all queued "
                   << "requests to the service.";
 
-  secure_channel_impl_ = SecureChannelImpl::Factory::Create(bluetooth_adapter);
+  secure_channel_impl_ = std::make_unique<SecureChannelImpl>(bluetooth_adapter);
 
   if (nearby_connector_)
     secure_channel_impl_->SetNearbyConnector(std::move(nearby_connector_));

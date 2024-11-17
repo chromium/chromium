@@ -60,7 +60,7 @@ class PerfBenchmarkTest(unittest.TestCase):
     self.assertEqual(num_expected_matches, len(ruleset_data_to_copy))
 
   # Flaky: https://crbug.com/1342706
-  @decorators.Disabled('android-nougat', 'android-oreo')
+  @decorators.Disabled('android-nougat', 'android-oreo', 'android-pie')
   def testVariationArgs(self):
     benchmark = perf_benchmark.PerfBenchmark()
     options = options_for_unittests.GetCopy()

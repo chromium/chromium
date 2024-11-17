@@ -84,9 +84,7 @@ class ScopedServer {
 
   std::string download_path() const { return "/download"; }
   GURL download_url() const { return test_server_->GetURL(download_path()); }
-  void set_download_delay(const base::TimeDelta& delay) {
-    download_delay_ = delay;
-  }
+  void set_download_delay(base::TimeDelta delay) { download_delay_ = delay; }
 
   std::string crash_report_path() const { return "/crash"; }
   GURL crash_upload_url() const {

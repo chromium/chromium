@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/hats/hats_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_survey_service.h"
 
@@ -29,6 +30,7 @@ class PrivacySandboxSurveyDesktopController : public KeyedService {
 
  private:
   void OnSentimentSurveyShown(Profile* profile);
+  void OnSentimentSurveyFailure();
 
   raw_ptr<PrivacySandboxSurveyService> survey_service_;
   base::WeakPtrFactory<PrivacySandboxSurveyDesktopController> weak_ptr_factory_{

@@ -370,5 +370,5 @@ std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
       DCHECK(!embedder_histogram_suffix_.empty());
       return histogram_name + ".Embedder_" + embedder_histogram_suffix_;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

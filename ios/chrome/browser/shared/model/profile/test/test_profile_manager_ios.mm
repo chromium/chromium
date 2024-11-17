@@ -11,13 +11,19 @@
 #import "base/test/test_file_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/test/testing_application_context.h"
 
 TestProfileManagerIOS::TestProfileManagerIOS()
     : profile_attributes_storage_(GetApplicationContext()->GetLocalState()),
       profile_data_dir_(base::CreateUniqueTempDirectoryScopedToTest()) {
   CHECK_EQ(GetApplicationContext()->GetProfileManager(), nullptr);
-  TestingApplicationContext::GetGlobal()->SetProfileManager(this);
+  TestingApplicationContext* app_context =
+      TestingApplicationContext::GetGlobal();
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      app_context->GetSystemIdentityManager(), this);
+  app_context->SetProfileManagerAndAccountProfileMapper(
+      this, account_profile_mapper_.get());
 }
 
 TestProfileManagerIOS::~TestProfileManagerIOS() {
@@ -28,7 +34,14 @@ TestProfileManagerIOS::~TestProfileManagerIOS() {
     observer.OnProfileManagerDestroyed(this);
   }
 
-  TestingApplicationContext::GetGlobal()->SetProfileManager(nullptr);
+  // The profiles must be destroyed before the AccountProfileMapper is removed
+  // from the ApplicationContext, since some keyed services (owned by the
+  // profiles) might access the AccountProfileMapper during their destruction.
+  DestroyAllProfiles();
+
+  TestingApplicationContext* app_context =
+      TestingApplicationContext::GetGlobal();
+  app_context->SetProfileManagerAndAccountProfileMapper(nullptr, nullptr);
 }
 
 void TestProfileManagerIOS::AddObserver(ProfileManagerObserverIOS* observer) {
@@ -47,21 +60,26 @@ void TestProfileManagerIOS::RemoveObserver(
 
 void TestProfileManagerIOS::LoadProfiles() {}
 
-ProfileIOS* TestProfileManagerIOS::GetLastUsedProfileDeprecatedDoNotUse() {
-  return GetProfileWithName(last_used_profile_name_);
-}
-
 ProfileIOS* TestProfileManagerIOS::GetProfileWithName(std::string_view name) {
   auto iterator = profiles_map_.find(name);
   return iterator != profiles_map_.end() ? iterator->second.get() : nullptr;
 }
 
-std::vector<ProfileIOS*> TestProfileManagerIOS::GetLoadedProfiles() {
+std::vector<ProfileIOS*> TestProfileManagerIOS::GetLoadedProfiles() const {
   std::vector<ProfileIOS*> loaded_profiles;
   for (auto& [name, profile] : profiles_map_) {
     loaded_profiles.push_back(profile.get());
   }
   return loaded_profiles;
+}
+
+bool TestProfileManagerIOS::HasProfileWithName(std::string_view name) const {
+  return profiles_map_.find(name) != profiles_map_.end();
+}
+
+bool TestProfileManagerIOS::CanCreateProfileWithName(
+    std::string_view name) const {
+  return true;
 }
 
 bool TestProfileManagerIOS::LoadProfileAsync(
@@ -106,6 +124,10 @@ ProfileIOS* TestProfileManagerIOS::CreateProfile(std::string_view name) {
   return GetProfileWithName(name);
 }
 
+void TestProfileManagerIOS::DestroyAllProfiles() {
+  profiles_map_.clear();
+}
+
 ProfileAttributesStorageIOS*
 TestProfileManagerIOS::GetProfileAttributesStorage() {
   return &profile_attributes_storage_;
@@ -123,9 +145,6 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   DCHECK(insertion_success);
 
   profile_attributes_storage_.AddProfile(profile_name);
-  if (last_used_profile_name_.empty()) {
-    last_used_profile_name_ = profile_name;
-  }
 
   for (auto& observer : observers_) {
     observer.OnProfileCreated(this, iterator->second.get());

@@ -19,6 +19,7 @@
 <translation id="115443833402798225">হাঙ্গুল আনমাটে</translation>
 <translation id="1155759005174418845">ক্যাটালান</translation>
 <translation id="1168100932582989117">Google নাম সার্ভার</translation>
+<translation id="1170788066030116158">ক্যাপচার করার তারিখ</translation>
 <translation id="1172970565351728681">আরও প্রায় <ph name="REMAINING_TIME" /> সময় লাগবে</translation>
 <translation id="1173894706177603556">পুনঃনামকরণ</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, বিবরণ</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">দূরবর্তী লোকেশন থেকে প্রমাণীকরণ সার্টিফিকেট প্রত্যাখ্যান করা হয়েছে</translation>
 <translation id="4394214039309501350">এক্সটার্নাল লিঙ্ক</translation>
 <translation id="4394980935660306080">এই সপ্তাহের শুরুর দিকে</translation>
+<translation id="4397435965699247285">অফলাইনে OneDrive উপলভ্য নেই</translation>
 <translation id="4398096759193130964">আইটেমগুলি ফিরিয়ে আনুন বা ট্র্যাশের বাইরে নতুন কোনও ফোল্ডারে এগুলি টেনে আনুন</translation>
 <translation id="4401287888955153199">জিপ ফাইল থেকে সব কন্টেন্ট এক্সট্র্যাক্ট করুন</translation>
 <translation id="4410695710508688828">এক্সট্র্যাক্ট করা যায়নি। <ph name="ERROR_MESSAGE" /></translation>

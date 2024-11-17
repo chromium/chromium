@@ -99,8 +99,7 @@ struct GPU_GLES2_EXPORT TextureUnit {
       case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
         return bound_texture_2d_array.get();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
   }
 
@@ -119,8 +118,7 @@ struct GPU_GLES2_EXPORT TextureUnit {
       case GL_TEXTURE_2D_ARRAY:
         return bound_texture_2d_array.get();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
   }
 
@@ -145,7 +143,7 @@ struct GPU_GLES2_EXPORT TextureUnit {
         bound_texture_2d_array = texture_ref;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 };
@@ -280,8 +278,7 @@ struct GPU_GLES2_EXPORT ContextState {
         return;
       cached_stencil_back_writemask = mask;
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     api()->glStencilMaskSeparateFn(op, mask);
   }

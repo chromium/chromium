@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
+#include "chrome/browser/ash/file_manager/file_tasks_notifier_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
@@ -117,7 +118,7 @@ void FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse(
   SelectFileDialogExtension::OnFileSelected(GetFileDialogRoutingID(this),
                                             files[0], index);
   if (auto* notifier =
-          file_manager::file_tasks::FileTasksNotifier::GetForProfile(
+          file_manager::file_tasks::FileTasksNotifierFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context()))) {
     notifier->NotifyFileDialogSelection({files[0]}, for_open);
   }
@@ -210,7 +211,7 @@ void FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse(
   SelectFileDialogExtension::OnMultiFilesSelected(GetFileDialogRoutingID(this),
                                                   files);
   if (auto* notifier =
-          file_manager::file_tasks::FileTasksNotifier::GetForProfile(
+          file_manager::file_tasks::FileTasksNotifierFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context()))) {
     notifier->NotifyFileDialogSelection(files, for_open);
   }

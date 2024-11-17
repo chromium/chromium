@@ -7,13 +7,17 @@
 
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/webauthn/passkey_updated_confirmation_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // A view informing the user that their passkey was updated.
 class PasskeyUpdatedConfirmationView : public PasswordBubbleViewBase {
+  METADATA_HEADER(PasskeyUpdatedConfirmationView, PasswordBubbleViewBase)
+
  public:
   PasskeyUpdatedConfirmationView(content::WebContents* web_contents,
                                  views::View* anchor_view,
-                                 DisplayReason display_reason);
+                                 DisplayReason display_reason,
+                                 std::string passkey_rp_id);
   ~PasskeyUpdatedConfirmationView() override;
 
  private:

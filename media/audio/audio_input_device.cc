@@ -491,7 +491,7 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   stats_reporter_.ReportCallback(delay, glitch_info);
 
   capture_callback_->Capture(audio_bus, capture_time, glitch_info,
-                             buffer->params.volume, buffer->params.key_pressed);
+                             buffer->params.volume);
 
   if (++current_segment_id_ >= total_segments_)
     current_segment_id_ = 0u;

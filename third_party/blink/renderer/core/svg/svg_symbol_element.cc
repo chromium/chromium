@@ -33,12 +33,6 @@ void SVGSymbolElement::Trace(Visitor* visitor) const {
   SVGFitToViewBox::Trace(visitor);
 }
 
-void SVGSymbolElement::SvgAttributeChanged(
-    const SvgAttributeChangedParams& params) {
-  if (SVGFitToViewBox::IsKnownAttribute(params.name))
-    InvalidateInstances();
-}
-
 LayoutObject* SVGSymbolElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGHiddenContainer>(this);
 }

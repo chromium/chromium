@@ -90,7 +90,7 @@ const unsigned char kPngDataChunkType[4] = { 'I', 'D', 'A', 'T' };
 const char kPakFileExtension[] = ".pak";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Pointers to the functions |lottie::ParseLottieAsStillImage| and
 // |lottie::ParseLottieAsThemedStillImage|, so that dependencies used by those
 // functions do not need to be included directly in ui/base.
@@ -102,7 +102,6 @@ ResourceBundle::LottieThemedImageParseFunction
 
 ResourceBundle* g_shared_instance_ = nullptr;
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
   base::FilePath path;
   if (base::PathService::Get(base::DIR_ASSETS, &path))
@@ -115,7 +114,6 @@ base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
   return base::FilePath(pak_name.c_str());
 #endif  // BUILDFLAG(IS_WIN)
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 SkBitmap CreateEmptyBitmap() {
   SkBitmap bitmap;
@@ -362,7 +360,7 @@ ResourceBundle& ResourceBundle::GetSharedInstance() {
   return *g_shared_instance_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 void ResourceBundle::SetLottieParsingFunctions(
     LottieImageParseFunction parse_lottie_as_still_image,
@@ -621,7 +619,7 @@ std::optional<ResourceBundle::LottieData> ResourceBundle::GetLottieData(
   return result;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
     int resource_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -644,6 +642,18 @@ const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
 #endif
 
 constexpr uint8_t ResourceBundle::kBrotliConst[];
+
+bool ResourceBundle::HasDataResource(int resource_id) const {
+  if (delegate_ && delegate_->HasDataResource(resource_id)) {
+    return true;
+  }
+  for (const auto& resource_handle : resource_handles_) {
+    if (resource_handle->HasResource(static_cast<uint16_t>(resource_id))) {
+      return true;
+    }
+  }
+  return false;
+}
 
 base::RefCountedMemory* ResourceBundle::LoadDataResourceBytes(
     int resource_id) const {
@@ -702,7 +712,7 @@ std::string_view ResourceBundle::GetRawDataResourceForScale(
   if (scale_factor != ui::k100Percent) {
     for (const auto& resource_handle : resource_handles_) {
       if (resource_handle->GetResourceScaleFactor() == scale_factor) {
-        if (auto data = resource_handle->GetStringPiece(
+        if (auto data = resource_handle->GetStringView(
                 static_cast<uint16_t>(resource_id));
             data.has_value()) {
           if (loaded_scale_factor) {
@@ -719,7 +729,7 @@ std::string_view ResourceBundle::GetRawDataResourceForScale(
          resource_handle->GetResourceScaleFactor() == ui::k200Percent ||
          resource_handle->GetResourceScaleFactor() == ui::k300Percent ||
          resource_handle->GetResourceScaleFactor() == ui::kScaleFactorNone)) {
-      if (auto data = resource_handle->GetStringPiece(
+      if (auto data = resource_handle->GetStringView(
               static_cast<uint16_t>(resource_id));
           data.has_value()) {
         if (loaded_scale_factor) {
@@ -759,12 +769,12 @@ std::string ResourceBundle::LoadLocalizedResourceString(int resource_id) const {
   std::string_view data;
   if (locale_resources_data_.get()) {
     data = locale_resources_data_
-               ->GetStringPiece(static_cast<uint16_t>(resource_id))
+               ->GetStringView(static_cast<uint16_t>(resource_id))
                .value_or(std::string_view());
   }
   if (data.empty() && secondary_locale_resources_data_.get()) {
     data = secondary_locale_resources_data_
-               ->GetStringPiece(static_cast<uint16_t>(resource_id))
+               ->GetStringView(static_cast<uint16_t>(resource_id))
                .value_or(std::string_view());
   }
   if (data.empty()) {
@@ -812,7 +822,7 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
     base::AutoLock lock_scope(*locale_resources_data_lock_);
 
     if (locale_resources_data_.get()) {
-      if (auto data = locale_resources_data_->GetStringPiece(
+      if (auto data = locale_resources_data_->GetStringView(
               static_cast<uint16_t>(resource_id));
           data.has_value() && !data->empty()) {
         return new base::RefCountedStaticMemory(base::as_byte_span(*data));
@@ -820,7 +830,7 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
     }
 
     if (secondary_locale_resources_data_.get()) {
-      if (auto data = secondary_locale_resources_data_->GetStringPiece(
+      if (auto data = secondary_locale_resources_data_->GetStringView(
               static_cast<uint16_t>(resource_id));
           data.has_value() && !data->empty()) {
         return new base::RefCountedStaticMemory(base::as_byte_span(*data));
@@ -974,12 +984,11 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
 
 void ResourceBundle::FreeImages() {
   images_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   image_models_.clear();
 #endif
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void ResourceBundle::LoadChromeResources() {
   // Always load the 1x data pack first as the 2x data pack contains both 1x and
   // 2x images. The 1x data pack only has 1x images, thus passes in an accurate
@@ -994,7 +1003,6 @@ void ResourceBundle::LoadChromeResources() {
         GetResourcesPakFilePath("chrome_200_percent.pak"), k200Percent);
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ResourceBundle::AddDataPackFromPathInternal(
     const base::FilePath& path,
@@ -1057,7 +1065,7 @@ void ResourceBundle::InitDefaultFontList() {
 
 gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
   DCHECK(!resource_handles_.empty()) << "Missing call to SetResourcesDataDLL?";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<LottieData> data = GetLottieData(resource_id);
   if (data) {
     return (*g_parse_lottie_as_still_image_)(std::move(*data));
@@ -1089,17 +1097,16 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
   if (!memory.get())
     return false;
 
-  if (DecodePNG(memory->data(), memory->size(), bitmap, fell_back_to_1x)) {
+  if (DecodePNG(*memory, bitmap, fell_back_to_1x)) {
     return true;
   }
 
 #if !BUILDFLAG(IS_IOS)
   // iOS does not compile or use the JPEG codec.  On other platforms,
   // 99% of our assets are PNGs, however fallback to JPEG.
-  std::unique_ptr<SkBitmap> jpeg_bitmap(
-      gfx::JPEGCodec::Decode(memory->data(), memory->size()));
-  if (jpeg_bitmap.get()) {
-    bitmap->swap(*jpeg_bitmap.get());
+  SkBitmap jpeg_bitmap = gfx::JPEGCodec::Decode(*memory);
+  if (!jpeg_bitmap.isNull()) {
+    bitmap->swap(jpeg_bitmap);
     *fell_back_to_1x = false;
     return true;
   }
@@ -1153,7 +1160,7 @@ gfx::Image& ResourceBundle::GetEmptyImage() {
   return empty_image_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const ui::ImageModel& ResourceBundle::GetEmptyImageModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1187,11 +1194,11 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   std::optional<std::string_view> data;
   ResourceHandle::TextEncodingType encoding =
       locale_resources_data_->GetTextEncodingType();
-  if (!(data = locale_resources_data_->GetStringPiece(
+  if (!(data = locale_resources_data_->GetStringView(
             static_cast<uint16_t>(resource_id)))
            .has_value()) {
     if (secondary_locale_resources_data_.get() &&
-        (data = secondary_locale_resources_data_->GetStringPiece(
+        (data = secondary_locale_resources_data_->GetStringView(
              static_cast<uint16_t>(resource_id)))
             .has_value()) {
       // Fall back on the secondary locale pak if it exists.
@@ -1264,15 +1271,12 @@ bool ResourceBundle::PNGContainsFallbackMarker(base::span<const uint8_t> buf) {
 }
 
 // static
-bool ResourceBundle::DecodePNG(const unsigned char* buf,
-                               size_t size,
+bool ResourceBundle::DecodePNG(base::span<const uint8_t> buf,
                                SkBitmap* bitmap,
                                bool* fell_back_to_1x) {
-  *fell_back_to_1x = PNGContainsFallbackMarker(
-      // TODO(crbug.com/40284755): DecodePNG should be receiving a span. We
-      // can't tell that the size is correct from here.
-      UNSAFE_TODO(base::span(buf, size)));
-  return gfx::PNGCodec::Decode(buf, size, bitmap);
+  *fell_back_to_1x = PNGContainsFallbackMarker(buf);
+  *bitmap = gfx::PNGCodec::Decode(buf);
+  return !bitmap->isNull();
 }
 
 }  // namespace ui

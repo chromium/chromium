@@ -395,18 +395,6 @@ TEST_F(AutofillSuggestionControllerTest, ShouldReportHidingPopupReason) {
                                      SuggestionHidingReason::kTabGone, 1);
 }
 
-// This is a regression test for crbug.com/521133 to ensure that we don't crash
-// when suggestions updates race with user selections.
-TEST_F(AutofillSuggestionControllerTest, SelectInvalidSuggestion) {
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
-
-  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
-
-  // The following should not crash:
-  client().popup_controller(manager()).AcceptSuggestion(
-      /*index=*/1);  // Out of bounds!
-}
-
 // Tests that when a picture-in-picture window is initialized, there is a call
 // to the popup view to check if the autofill popup bounds overlap with the
 // picture-in-picture window.

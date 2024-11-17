@@ -32,13 +32,17 @@ class WebView : public guest_view::GuestView<WebView> {
   // guest_view::GuestView<WebView>:
   const char* GetAPINamespace() const override;
   int GetTaskPrefix() const override;
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) override;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) override;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;
+
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
 };
 
 }  // namespace webui_examples

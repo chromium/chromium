@@ -39,7 +39,7 @@ void UpdateAccountsPrefs(
     PrefService& pref_service,
     const signin::IdentityManager& identity_manager,
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
-  if (!accounts_in_cookie_jar_info.accounts_are_fresh) {
+  if (!accounts_in_cookie_jar_info.AreAccountsFresh()) {
     return;
   }
 
@@ -227,14 +227,14 @@ void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
   // We can fully regenerate the info about all accounts only when there are no
   // signed-out accounts. This means that for instance clearing cookies will
   // reset the info.
-  if (accounts_in_cookie_jar_info.signed_out_accounts.empty()) {
+  if (accounts_in_cookie_jar_info.GetSignedOutAccounts().empty()) {
     entry->ClearAccountNames();
 
     // Regenerate based on the info from signed-in accounts (if not available
     // now, it will be regenerated soon via OnExtendedAccountInfoUpdated() once
     // downloaded).
     for (gaia::ListedAccount account :
-         accounts_in_cookie_jar_info.signed_in_accounts) {
+         accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()) {
       UpdateAnyAccount(
           identity_manager_->FindExtendedAccountInfoByAccountId(account.id));
     }

@@ -29,11 +29,11 @@ CreateTestBitmapResult(GURL url, int size, SkColor color = SK_ColorRED) {
   result.expired = false;
 
   // Create bitmap and fill with |color|.
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-  gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(size, color), false,
-                                    &data->as_vector());
+  std::optional<std::vector<uint8_t>> data = gfx::PNGCodec::EncodeBGRASkBitmap(
+      gfx::test::CreateBitmap(size, color), /*discard_transparency=*/false);
 
-  result.bitmap_data = data;
+  result.bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(data).value());
   result.pixel_size = gfx::Size(size, size);
   result.icon_url = url;
   result.icon_type = favicon_base::IconType::kFavicon;

@@ -65,9 +65,7 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   ~Delegate() override = default;
 
   // TurnSyncOnHelper::Delegate:
-  void ShowLoginError(const SigninUIError& error) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
@@ -88,10 +86,8 @@ class Delegate : public TurnSyncOnHelper::Delegate {
       SyncConfirmationCallback callback) override {
     AdvanceFlowOrCapture(BlockingStep::kSyncDisabled, std::move(callback));
   }
-  void ShowSyncSettings() override { NOTREACHED_IN_MIGRATION(); }
-  void SwitchToProfile(Profile* new_profile) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void ShowSyncSettings() override { NOTREACHED(); }
+  void SwitchToProfile(Profile* new_profile) override { NOTREACHED(); }
 
   BlockingStep blocking_step() const { return blocking_step_; }
 
@@ -120,8 +116,7 @@ class Delegate : public TurnSyncOnHelper::Delegate {
 
     switch (blocking_step) {
       case BlockingStep::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case BlockingStep::kMergeData:
         ASSERT_TRUE(choices_.merge_data_choice.has_value());
         std::move(absl::get<signin::SigninChoiceCallback>(blocking_callback_))
@@ -149,8 +144,7 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   void AdvanceFlowOrCapture(BlockingStep step, CallbackVariant callback) {
     switch (step) {
       case BlockingStep::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case BlockingStep::kMergeData:
         if (!choices_.merge_data_choice.has_value()) {
           break;
@@ -345,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
     case TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY:
       // This case is handled in the TurnSyncOnHelperBrowserTestWithUnoDesktop
       // test suite, since this mode is used only when Uno Desktop is enabled.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -40,7 +40,8 @@
           "builder": "linux-rel-cft",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-rel-cft/targets"
     }
   },
   "$build/reclient": {

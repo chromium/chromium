@@ -233,10 +233,8 @@ uint64_t GetDrmValueForInternalType(const InternalType& internal_state,
       return property.enums[i].value;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Failed to extract DRM value for property '" << property.name
-      << "' and enum '" << drm_enum << "'";
-  return std::numeric_limits<uint64_t>::max();
+  NOTREACHED() << "Failed to extract DRM value for property '" << property.name
+               << "' and enum '" << drm_enum << "'";
 }
 
 // Returns the internal type value that maps to the DRM property's current
@@ -263,10 +261,8 @@ const InternalType* GetDrmPropertyCurrentValueAsInternalType(
     }
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Failed to extract internal value for DRM property '" << property.name
-      << "'";
-  return nullptr;
+  NOTREACHED() << "Failed to extract internal value for DRM property '"
+               << property.name << "'";
 }
 
 // Returns the internal type value that maps to |drm_enum| within |array|.

@@ -1644,14 +1644,23 @@
   <message name="IDS_DISCOVER_PIN_SETUP_TITLE1_CHILD" desc="A title of the dialog that starts 'PIN-unlock' setup process, and asks user to type their pin, when a child account is in use.">
     Choose a PIN
   </message>
+  <message name="IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_TITLE" desc="A title of the dialog asking the user to set up a PIN as the main factor for signing in.">
+    Set a PIN to make it easier to sign in
+  </message>
   <message name="IDS_DISCOVER_PIN_SETUP_SUBTITLE1" desc="A sub-title of the dialog that starts 'PIN-unlock' setup process. Subtitle explains to the user how this feature can be configured.">
     Use a number (PIN) instead of a password to unlock your device. To set your PIN later, go to Settings.
   </message>
   <message name="IDS_DISCOVER_PIN_SETUP_SUBTITLE1_CHILD" desc="A sub-title of the dialog that starts 'PIN-unlock' setup process, when a child account is in use. Subtitle explains to the user how this feature can be configured.">
     Your child can use a number (PIN) instead of a password to unlock this device. To set a PIN later, go to Settings.
   </message>
+  <message name="IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SUBTITLE" desc="A sub-title of the dialog asking the user to set up a PIN as the main factor for signing in.">
+    Instead of entering your Google Account password to sign in, you can create a PIN for this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
   <message name="IDS_DISCOVER_PIN_SETUP_SKIP" desc="A label on the button that interrupts current setup flow.">
     Skip
+  </message>
+  <message name="IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SKIP" desc="A label on the button of the PIN setup screen allowing the user to use a password instead of a PIN">
+    Use password instead
   </message>
   <message name="IDS_DISCOVER_PIN_SETUP_TITLE2" desc="A title of the dialog that continues 'PIN-unlock' setup process, and asks user to type their pin again for verification.">
     Type your PIN again
@@ -1682,6 +1691,21 @@
   </message>
   <message name="IDS_DISCOVER_PIN_SETUP_DONE" desc="Label for the done button on the success screen in 'PIN-unlock' setup dialog.">
     Done
+  </message>
+  <message name="IDS_DISCOVER_PIN_RESET_TITLE" desc="A title of the dialog asking the user to reset their PIN">
+    Reset your PIN
+  </message>
+  <message name="IDS_DISCOVER_PIN_RESET_SUBTITLE" desc="A subtitle of the dialog asking the user to reset their PIN">
+    You can use this PIN to sign in to your device
+  </message>
+  <message name="IDS_DISCOVER_PIN_RESET_SUBTITLE_CHILD" desc="A subtitle of the dialog asking the user to reset their PIN">
+    Your child can use this PIN to sign in to their device
+  </message>
+  <message name="IDS_DISCOVER_PIN_RESET_DONE_TITLE" desc="A title of the dialog that is shown to the user when their PIN has been updated during recovery.">
+    Your PIN has been updated
+  </message>
+  <message name="IDS_DISCOVER_PIN_RESET_DONE_TITLE_CHILD" desc="A title of the dialog that is shown to the user's child when their PIN has been updated during recovery.">
+    Your child’s PIN has been updated
   </message>
   <message name="IDS_APP_START_PREPARING_PROFILE_MESSAGE" desc="Message displayed while preparing profile in which the app will be run.">
     Preparing app profile...
@@ -1886,11 +1910,17 @@
   <message name="IDS_OFFLINE_LOGIN_PASSWORD" desc="Password field text on the offline login screen. Note: should be the same as the one used on the Gaia sign-in page.">
     Enter your password
   </message>
+  <message name="IDS_OFFLINE_LOGIN_PIN" desc="PIN field placeholder text on the offline login screen.">
+    Enter your PIN
+  </message>
   <message name="IDS_OFFLINE_LOGIN_INVALID_EMAIL" desc="Alert message about invalid email on the offline login screen. Note: should be the same as the one used on the Gaia sign-in page.">
     Please enter a valid email address
   </message>
   <message name="IDS_OFFLINE_LOGIN_INVALID_PASSWORD" desc="Alert message about mismatching email and password on the device">
     The email and password you entered don't match
+  </message>
+  <message name="IDS_OFFLINE_LOGIN_INVALID_PIN" desc="Alert message about mismatching email and PIN on the device">
+    The email and PIN you entered don't match
   </message>
   <message name="IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT" desc="Text shown on next button during offline signin flow dialog. Note: should be the same as the one used on the Gaia sign-in page.">
     Next
@@ -4814,14 +4844,6 @@
     Let us know how we’re doing.
   </message>
 
-  <!-- Lock screen note app toast dialog -->
-  <message name="IDS_LOCK_SCREEN_NOTE_APP_TOAST_DIALOG_TITLE" desc="Title of the dialog shown to the user when they first launch note taking app from the lock screen - the title contains the launched app's name.">
-    Taking notes with <ph name="LOCK_SCREEN_APP_NAME">$1<ex>Lock Screen Enabled App</ex></ph>
-  </message>
-  <message name="IDS_LOCK_SCREEN_NOTE_APP_TOAST_DIALOG_MESSAGE" desc="Message shown in the body of the dialog shown to the user when they launch note taking app from the lock screen for the first time - the message has a placeholder for the launched app's name.">
-    Lock screen notes are automatically saved to <ph name="LOCK_SCREEN_APP_NAME">$1<ex>Lock Screen Enabled App</ex></ph>. Your most recent note will remain on the lock screen.
-  </message>
-
   <!-- Launcher Searchable ChromeOS internal apps -->
   <message name="IDS_INTERNAL_APP_SETTINGS" desc="The name of Settings.">
     Settings
@@ -5398,6 +5420,9 @@
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_GENERIC_DLC_ERROR_MESSAGE" desc="Generic message for the installer when Bruschetta fails to install.">
     Sorry, something went wrong installing DLC dependencies. Please try rebooting and if the issue persists file feedback with #bruschetta in the description. Error code is <ph name="ERROR">$1<ex>kUnknown</ex></ph>.
+  </message>
+  <message name="IDS_BRUSCHETTA_INSTALLER_UNINSTALLABLE_ERROR_MESSAGE" desc="Generic message for the installer when Bruschetta fails to install.">
+    Unfortunately this machine does not meet requirements for installing Bruschetta. Error code is <ph name="ERROR">$1<ex>kUnknown</ex></ph>.
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_ERROR_CLEANUP_MESSAGE" desc="More detailed message for the installer when Bruschetta fails to install and the cleaning up the incomplete install also failed.">
     Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR">$1<ex>kUnknown</ex></ph>. Cleaning up failed, you may need to do so manually.
@@ -6624,6 +6649,12 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_AUTH_SETUP_HIDE_PASSWORD" desc="A tooltip on a button that hides the password that is being shown.">
     Hide password
   </message>
+  <message name="IDS_AUTH_SETUP_SHOW_PIN" desc="A tooltip on a button that reveals the PIN.">
+    Show PIN
+  </message>
+  <message name="IDS_AUTH_SETUP_HIDE_PIN" desc="A tooltip on a button that hides the PIN that is being shown.">
+    Hide PIN
+  </message>
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT" desc="The hint about the minimal length of a password when the user sets a new password.">
     Password must be at least 8 characters
   </message>
@@ -6874,12 +6905,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Dictation sends your voice to Google to allow voice typing in any text field.
   </message>
 
-   <!-- Strings for OsUrlHandler applications -->
+   <!-- Strings for OsFlags -->
   <message name="IDS_OS_FLAGS_APP_NAME" translateable="false" desc="Name for the system flags app.">
     Flags
-  </message>
-  <message name="IDS_OS_URL_HANDLER_APP_NAME" translateable="false" desc="Name for a hidden app which shows os:// and chrome:// system pages in an app">
-    ChromeOS-URLs
   </message>
 
   <!-- Theme Selection -->
@@ -6912,29 +6940,29 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- Split Modifier Screen -->
-  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_TITLE" desc="Title of the split modifier info screen." translateable="false">
-    Test new feature on your device after setup
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_TITLE" desc="Title of the split modifier info screen.">
+    Get things done quickly with the new keyboard
   </message>
-  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SUBTITLE" desc="Subtitle of the split modifier info screen." translateable="false">
-    Test new feature on your device after setup.
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SUBTITLE" desc="Subtitle of the split modifier info screen.">
+    Start something new or get help in the flow.
   </message>
-  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TITLE" desc="Title of the first description section." translateable="false">
-    Testing
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TITLE" desc="Title of the first description section.">
+    Quick Insert
   </message>
-  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TEXT" desc="Text inside the first description section." translateable="false">
-    Test your device with the new features added to the Chromebook and more.
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TEXT" desc="Text inside the first description section.">
+    Insert links, emojis, and more. You can also get help writing with Google AI.
   </message>
-  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the first description section." translateable="false">
-    Test your device with the new features added to the Chromebook and more accessibility test.
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the first description section.">
+    Quick insert key is located beneath the tab key
   </message>
-  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TITLE" desc="Title of the second description section." translateable="false">
-    Testing
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TITLE" desc="Title of the second description section.">
+    Launcher
   </message>
-  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TEXT" desc="Text inside the second description section." translateable="false">
-    Test your device with the new features added to the Chromebook and more.
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_TEXT" desc="Text inside the second description section.">
+    Find what you’re looking for by searching Google, files, apps, and more
   </message>
-  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the second description section." translateable="false">
-    Test your device with the new features added to the Chromebook and more accessibility test.
+  <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_SECOND_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the second description section.">
+    Launcher key is located left of left alt key
   </message>
 
   <!-- Touchpad Scroll -->
@@ -7584,6 +7612,6 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
 
   <!-- Mall app -->
   <message name="IDS_MALL_APP_NAME" desc="Name of a system app which can be used to find and install apps and games">
-    Get Apps and Games
+    Apps &amp; games
   </message>
 </grit-part>

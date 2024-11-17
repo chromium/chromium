@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+group("rust_test_targets") {
+  deps = [
+    ":target1_gn2bp_test",
+    ":target2_gn2bp_test",
+  ]
+}
+
+cargo_crate("target1_gn2bp_test") {
+  crate_name = "test_rlib_crate"
+  crate_root = "crate/src/lib.rs"
+  sources = [ "crate/src/lib.rs" ]
+  build_sources = [ "crate/build.rs" ]
+  build_root = "crate/build.rs"
+  epoch = "0.2"
+}
+
+cargo_crate("target2_gn2bp_test") {
+  crate_name = "test_rlib_crate"
+  crate_root = "crate/src/lib.rs"
+  sources = [ "crate/src/lib.rs" ]
+  build_sources = [ "crate/build.rs" ]
+  build_root = "crate/build.rs"
+  epoch = "0.2"
+  features = [ "my-feature_a" ]
+  rustenv = [ "ENV_VAR_FOR_BUILD_SCRIPT=42" ]
+}

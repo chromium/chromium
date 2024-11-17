@@ -7,8 +7,6 @@
 package org.jni_zero;
 
 public class GEN_JNI {
-  public static boolean TESTING_ENABLED;
-  public static boolean REQUIRE_MOCK;
 
   public static native void org_jni_1zero_SampleForTests_addStructB(long nativeCPPClass, Object caller, Object b);
   public static native void org_jni_1zero_SampleForTests_classUnderSamePackageTest(Object arg);

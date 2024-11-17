@@ -27,10 +27,13 @@ struct AnalysisConfig {
   const char* url = nullptr;
   const char* local_path = nullptr;
 
-  const base::span<const SupportedTag> supported_tags;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION const base::span<const SupportedTag> supported_tags;
   const bool user_specific = false;
-  const base::span<const char* const> subject_names;
-  const base::span<const char* const> region_urls;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION const base::span<const char* const> subject_names;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION const base::span<const char* const> region_urls;
 };
 
 struct ReportingConfig {

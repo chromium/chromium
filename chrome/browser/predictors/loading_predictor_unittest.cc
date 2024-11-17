@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/predictors/loading_test_util.h"
+#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -48,18 +49,21 @@ class MockPreconnectManager : public PreconnectManager {
   MOCK_METHOD2(StartProxy,
                void(const GURL& url,
                     const std::vector<PreconnectRequest>& requests));
-  MOCK_METHOD2(
+  MOCK_METHOD3(
       StartPreresolveHost,
       void(const GURL& url,
-           const net::NetworkAnonymizationKey& network_anonymization_key));
-  MOCK_METHOD2(
+           const net::NetworkAnonymizationKey& network_anonymization_key,
+           net::NetworkTrafficAnnotationTag traffic_annotation));
+  MOCK_METHOD3(
       StartPreresolveHosts,
       void(const std::vector<GURL>& urls,
-           const net::NetworkAnonymizationKey& network_anonymization_key));
-  MOCK_METHOD3(StartPreconnectUrl,
+           const net::NetworkAnonymizationKey& network_anonymization_key,
+           net::NetworkTrafficAnnotationTag traffic_annotation));
+  MOCK_METHOD4(StartPreconnectUrl,
                void(const GURL& url,
                     bool allow_credentials,
-                    net::NetworkAnonymizationKey network_anonymization_key));
+                    net::NetworkAnonymizationKey network_anonymization_key,
+                    net::NetworkTrafficAnnotationTag traffic_annotation));
   MOCK_METHOD1(Stop, void(const GURL& url));
 
   void Start(const GURL& url,
@@ -338,10 +342,11 @@ TEST_F(LoadingPredictorTest, TestDontPredictOmniboxHints) {
 
 TEST_F(LoadingPredictorPreconnectTest, TestHandleOmniboxHint) {
   const GURL preconnect_suggestion = GURL("http://search.com/kittens");
-  EXPECT_CALL(*mock_preconnect_manager_,
-              StartPreconnectUrl(
-                  preconnect_suggestion, true,
-                  CreateNetworkanonymization_key(preconnect_suggestion)));
+  EXPECT_CALL(
+      *mock_preconnect_manager_,
+      StartPreconnectUrl(preconnect_suggestion, true,
+                         CreateNetworkanonymization_key(preconnect_suggestion),
+                         kLoadingPredictorPreconnectTrafficAnnotation));
   predictor_->PrepareForPageLoad(/*initiator_origin=*/std::nullopt,
                                  preconnect_suggestion, HintOrigin::OMNIBOX,
                                  true);
@@ -356,7 +361,8 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleOmniboxHint) {
   EXPECT_CALL(
       *mock_preconnect_manager_,
       StartPreresolveHost(preresolve_suggestion,
-                          net::NetworkAnonymizationKey::CreateSameSite(site)));
+                          net::NetworkAnonymizationKey::CreateSameSite(site),
+                          kLoadingPredictorPreconnectTrafficAnnotation));
   predictor_->PrepareForPageLoad(/*initiator_origin=*/std::nullopt,
                                  preresolve_suggestion, HintOrigin::OMNIBOX,
                                  false);
@@ -623,7 +629,8 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleHintWhenOnlyHttpsAllowed) {
   EXPECT_CALL(
       *mock_preconnect_manager_,
       StartPreconnectUrl(main_frame_url_https, true,
-                         CreateNetworkanonymization_key(main_frame_url_https)));
+                         CreateNetworkanonymization_key(main_frame_url_https),
+                         kLoadingPredictorPreconnectTrafficAnnotation));
   EXPECT_TRUE(predictor_->HandleHintByOrigin(main_frame_url_https,
                                              /*preconnectable=*/true,
                                              /*only_allow_https=*/true,
@@ -640,10 +647,11 @@ TEST_F(LoadingPredictorPreconnectTest,
                                               /*preconnectable=*/false,
                                               /*only_allow_https=*/true,
                                               preconnect_data));
-  EXPECT_CALL(*mock_preconnect_manager_,
-              StartPreresolveHost(
-                  main_frame_url_https,
-                  CreateNetworkanonymization_key(main_frame_url_https)));
+  EXPECT_CALL(
+      *mock_preconnect_manager_,
+      StartPreresolveHost(main_frame_url_https,
+                          CreateNetworkanonymization_key(main_frame_url_https),
+                          kLoadingPredictorPreconnectTrafficAnnotation));
   EXPECT_TRUE(predictor_->HandleHintByOrigin(main_frame_url_https,
                                              /*preconnectable=*/false,
                                              /*only_allow_https=*/true,

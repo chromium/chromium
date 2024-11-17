@@ -48,10 +48,10 @@ password_manager::PasswordForm PasswordFormFromCredential(
   if (passwordForm.blocked_by_user) {
     return nil;
   }
-  std::string site_name =
+  std::string siteName =
       password_manager::GetShownOrigin(url::Origin::Create(passwordForm.url));
 
-  NSString* serviceName = SysUTF8ToNSString(site_name);
+  NSString* serviceName = SysUTF8ToNSString(siteName);
   NSString* note =
       SysUTF16ToNSString(passwordForm.GetNoteWithEmptyUniqueDisplayName());
 
@@ -87,8 +87,10 @@ password_manager::PasswordForm PasswordFormFromCredential(
 
   DCHECK(serviceIdentifier.length);
 
+  BOOL inAccountStore = (passwordForm.in_store ==
+                         password_manager::PasswordForm::Store::kAccountStore);
   return [self initWithFavicon:favicon
-                          gaia:gaia
+                          gaia:inAccountStore ? gaia : nil
                       password:SysUTF16ToNSString(passwordForm.password_value)
                           rank:passwordForm.times_used_in_html_form
               recordIdentifier:RecordIdentifierForPasswordForm(passwordForm)

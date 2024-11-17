@@ -13,6 +13,8 @@
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/partition_alloc_constants.h"  // nogncheck
 #include "partition_alloc/shim/allocator_shim.h"        // nogncheck
+#elif BUILDFLAG(IS_WIN)
+#include <cstdlib>
 #endif
 
 // When linking a final binary, rustc has to pick between either:
@@ -63,6 +65,22 @@
 // which are linked by rustc, and thus we would otherwise get duplicate
 // definitions. The following definitions will therefore only end up being
 // used in targets which are linked by our C++ toolchain.
+//
+// # On Windows ASAN
+//
+// In ASAN builds, PartitionAlloc-Everywhere is disabled, meaning malloc() and
+// friends in C++ do not go to PartitionAlloc. So we also don't point the Rust
+// allocation functions at PartitionAlloc. Generally, this means we just direct
+// them to the Standard Library's allocator.
+//
+// However, on Windows the Standard Library uses HeapAlloc() and Windows ASAN
+// does *not* hook that method, so ASAN does not get to hear about allocations
+// made in Rust. To resolve this, we redirect allocation to _aligned_malloc
+// which Windows ASAN *does* hook.
+//
+// Note that there is a runtime option to make ASAN hook HeapAlloc() but
+// enabling it breaks Win32 APIs like CreateProcess:
+// https://issues.chromium.org/u/1/issues/368070343#comment29
 
 extern "C" {
 
@@ -77,6 +95,13 @@ extern "C" {
 #define REMAP_ALLOC_ATTRIBUTES __attribute__((weak))
 #endif  // COMPONENT_BUILD
 
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_WIN) && \
+    defined(ADDRESS_SANITIZER)
+#define USE_WIN_ALIGNED_MALLOC 1
+#else
+#define USE_WIN_ALIGNED_MALLOC 0
+#endif
+
 // This must exist as the stdlib depends on it to prove that we know the
 // alloc shims below are unstable. In the future we may be required to replace
 // them with a #[global_allocator] crate (see file comment above for more).
@@ -88,10 +113,7 @@ extern "C" {
 __attribute__((weak)) unsigned char __rust_no_alloc_shim_is_unstable;
 
 REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  extern void* __rdl_alloc(size_t size, size_t align);
-  return __rdl_alloc(size, align);
-#else
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // PartitionAlloc will crash if given an alignment larger than this.
   if (align > partition_alloc::internal::kMaxSupportedAlignment) {
     return nullptr;
@@ -102,19 +124,26 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
   } else {
     return allocator_shim::UncheckedAlignedAlloc(size, align);
   }
+#elif USE_WIN_ALIGNED_MALLOC
+  return _aligned_malloc(size, align);
+#else
+  extern void* __rdl_alloc(size_t size, size_t align);
+  return __rdl_alloc(size, align);
 #endif
 }
 
 REMAP_ALLOC_ATTRIBUTES void __rust_dealloc(void* p, size_t size, size_t align) {
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  extern void __rdl_dealloc(void* p, size_t size, size_t align);
-  __rdl_dealloc(p, size, align);
-#else
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (align <= alignof(std::max_align_t)) {
     allocator_shim::UncheckedFree(p);
   } else {
     allocator_shim::UncheckedAlignedFree(p);
   }
+#elif USE_WIN_ALIGNED_MALLOC
+  return _aligned_free(p);
+#else
+  extern void __rdl_dealloc(void* p, size_t size, size_t align);
+  __rdl_dealloc(p, size, align);
 #endif
 }
 
@@ -122,32 +151,35 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_realloc(void* p,
                                             size_t old_size,
                                             size_t align,
                                             size_t new_size) {
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  extern void* __rdl_realloc(void* p, size_t old_size, size_t align,
-                             size_t new_size);
-  return __rdl_realloc(p, old_size, align, new_size);
-#else
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (align <= alignof(std::max_align_t)) {
     return allocator_shim::UncheckedRealloc(p, new_size);
   } else {
     return allocator_shim::UncheckedAlignedRealloc(p, new_size, align);
   }
+#elif USE_WIN_ALIGNED_MALLOC
+  return _aligned_realloc(p, new_size, align);
+#else
+  extern void* __rdl_realloc(void* p, size_t old_size, size_t align,
+                             size_t new_size);
+  return __rdl_realloc(p, old_size, align, new_size);
 #endif
 }
 
 REMAP_ALLOC_ATTRIBUTES void* __rust_alloc_zeroed(size_t size, size_t align) {
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  extern void* __rdl_alloc_zeroed(size_t size, size_t align);
-  return __rdl_alloc_zeroed(size, align);
-#else
-  // TODO(danakj): It's possible that a partition_alloc::UncheckedAllocZeroed()
-  // call would perform better than partition_alloc::UncheckedAlloc() + memset.
-  // But there is no such API today. See b/342251590.
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || USE_WIN_ALIGNED_MALLOC
+  // TODO(danakj): When USE_PARTITION_ALLOC_AS_MALLOC is true, it's possible
+  // that a partition_alloc::UncheckedAllocZeroed() call would perform better
+  // than partition_alloc::UncheckedAlloc() + memset. But there is no such API
+  // today. See b/342251590.
   void* p = __rust_alloc(size, align);
   if (p) {
     memset(p, 0, size);
   }
   return p;
+#else
+  extern void* __rdl_alloc_zeroed(size_t size, size_t align);
+  return __rdl_alloc_zeroed(size, align);
 #endif
 }
 

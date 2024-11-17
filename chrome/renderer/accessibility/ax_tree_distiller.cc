@@ -81,7 +81,7 @@ void GetContentRootNodes(const ui::AXTree& tree,
 
     // Add all nodes that can be expanded. Collapsed nodes will be removed
     // later.
-    if (node->HasHtmlAttribute("aria-expanded")) {
+    if (node->data().SupportsExpandCollapse()) {
       content_root_nodes->push_back(node);
       continue;
     }
@@ -127,9 +127,7 @@ void AddContentNodesToVector(const ui::AXNode* node,
     return;
   }
 
-  auto aria_expanded_state =
-      base::UTF16ToUTF8(node->GetHtmlAttribute("aria-expanded"));
-  if (aria_expanded_state == "true") {
+  if (node->HasState(ax::mojom::State::kExpanded)) {
     content_node_ids->push_back(node->id());
     return;
   }
@@ -222,7 +220,7 @@ void AXTreeDistiller::DistillViaScreen2x(
     const ui::AXTree& tree,
     const ui::AXTreeUpdate& snapshot,
     const ukm::SourceId ukm_source_id,
-    base::TimeTicks start_time,
+    base::TimeTicks merged_start_time,
     std::vector<ui::AXNodeID>* content_node_ids_algorithm) {
   CHECK(screen_ai_service_ready_);
 
@@ -235,33 +233,59 @@ void AXTreeDistiller::DistillViaScreen2x(
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  base::TimeTicks screen2x_start_time = base::TimeTicks::Now();
   // Make a copy of |content_node_ids_algorithm| rather than sending a pointer.
   main_content_extractor_->ExtractMainContent(
-      snapshot, ukm_source_id,
+      snapshot,
       base::BindOnce(&AXTreeDistiller::ProcessScreen2xResult,
                      weak_ptr_factory_.GetWeakPtr(), tree.GetAXTreeID(),
-                     ukm_source_id, start_time, *content_node_ids_algorithm));
+                     ukm_source_id, screen2x_start_time, merged_start_time,
+                     *content_node_ids_algorithm));
 }
 
 void AXTreeDistiller::ProcessScreen2xResult(
     const ui::AXTreeID& tree_id,
     const ukm::SourceId ukm_source_id,
-    base::TimeTicks start_time,
+    base::TimeTicks screen2x_start_time,
+    base::TimeTicks merged_start_time,
     std::vector<ui::AXNodeID> content_node_ids_algorithm,
     const std::vector<ui::AXNodeID>& content_node_ids_screen2x) {
+  RecordScreen2xMetrics(ukm_source_id,
+                        base::TimeTicks::Now() - screen2x_start_time,
+                        !content_node_ids_screen2x.empty());
   // Merge the results from the algorithm and from screen2x.
   for (ui::AXNodeID content_node_id_screen2x : content_node_ids_screen2x) {
     if (!base::Contains(content_node_ids_algorithm, content_node_id_screen2x)) {
       content_node_ids_algorithm.push_back(content_node_id_screen2x);
     }
   }
-  RecordMergedMetrics(ukm_source_id, base::TimeTicks::Now() - start_time,
+  RecordMergedMetrics(ukm_source_id, base::TimeTicks::Now() - merged_start_time,
                       !content_node_ids_algorithm.empty());
   on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids_algorithm);
 
   // TODO(crbug.com/40802192): If no content nodes were identified, and
   // there is a selection, try sending Screen2x a partial tree just containing
   // the selected nodes.
+}
+
+void AXTreeDistiller::RecordScreen2xMetrics(ukm::SourceId ukm_source_id,
+                                            base::TimeDelta elapsed_time,
+                                            bool success) {
+  if (success) {
+    base::UmaHistogramTimes(
+        "Accessibility.ScreenAI.Screen2xDistillationTime.Success",
+        elapsed_time);
+    ukm::builders::Accessibility_ScreenAI(ukm_source_id)
+        .SetScreen2xDistillationTime_Success(elapsed_time.InMilliseconds())
+        .Record(ukm_recorder_.get());
+  } else {
+    base::UmaHistogramTimes(
+        "Accessibility.ScreenAI.Screen2xDistillationTime.Failure",
+        elapsed_time);
+    ukm::builders::Accessibility_ScreenAI(ukm_source_id)
+        .SetScreen2xDistillationTime_Failure(elapsed_time.InMilliseconds())
+        .Record(ukm_recorder_.get());
+  }
 }
 
 void AXTreeDistiller::ScreenAIServiceReady() {

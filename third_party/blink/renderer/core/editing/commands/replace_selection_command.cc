@@ -950,7 +950,7 @@ void ReplaceSelectionCommand::HandleStyleSpansBeforeInsertion(
   // |node| can be an inline element like <br> under <li>
   // e.g.) editing/execCommand/switch-list-type.html
   //       editing/deleting/backspace-merge-into-block.html
-  if (IsInlineElement(node)) {
+  if (IsInlineNode(node)) {
     node = EnclosingBlock(insertion_pos.AnchorNode());
     if (!node)
       return;
@@ -2064,7 +2064,7 @@ Node* ReplaceSelectionCommand::InsertAsListItems(HTMLElement* list_element,
       inserted_nodes.RespondToNodeInsertion(*list_item);
       last_node = list_item;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   if (is_start || is_middle) {

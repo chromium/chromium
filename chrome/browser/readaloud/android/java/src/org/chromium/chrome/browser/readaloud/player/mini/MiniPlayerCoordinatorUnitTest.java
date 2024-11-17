@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewStub;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,7 +27,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -38,7 +36,7 @@ import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,8 +47,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class MiniPlayerCoordinatorUnitTest {
     private static final String TITLE = "Title";
     private static final String PUBLISHER = "Publisher";
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
 
     @Mock private Activity mActivity;
@@ -81,7 +77,7 @@ public class MiniPlayerCoordinatorUnitTest {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mSharedModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
         mModel = new PropertyModel.Builder(Properties.ALL_KEYS).build();
-        mJniMocker.mock(ReadAloudMiniPlayerSceneLayerJni.TEST_HOOKS, mSceneLayerNativeMock);
+        ReadAloudMiniPlayerSceneLayerJni.setInstanceForTesting(mSceneLayerNativeMock);
         doReturn(123456789L).when(mSceneLayerNativeMock).init(any());
         doReturn(mModel).when(mMediator).getModel();
         doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
@@ -127,13 +123,13 @@ public class MiniPlayerCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnShown_requestingIPH() {
+    public void testOnShown_requestingIph() {
         // if there's no container to anchor IPH against, don't request it.
         mCoordinator.onShown(/*container*/ null);
-        verify(mUserEducationHelper, never()).requestShowIPH(any(IPHCommand.class));
+        verify(mUserEducationHelper, never()).requestShowIph(any(IphCommand.class));
 
         mCoordinator.onShown(mView);
-        verify(mUserEducationHelper).requestShowIPH(any(IPHCommand.class));
+        verify(mUserEducationHelper).requestShowIph(any(IphCommand.class));
     }
 
     @Test

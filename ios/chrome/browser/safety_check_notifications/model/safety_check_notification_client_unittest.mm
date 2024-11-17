@@ -68,7 +68,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
 
     update->Set(kSafetyCheckNotificationKey, true);
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
@@ -76,27 +76,27 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    ChromeBrowserState* browser_state =
+    ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
+    BrowserList* list = BrowserListFactory::GetForProfile(profile);
 
     mock_scene_state_ = OCMClassMock([SceneState class]);
 
     OCMStub([mock_scene_state_ activationLevel])
         .andReturn(SceneActivationLevelForegroundActive);
 
-    browser_ = std::make_unique<TestBrowser>(browser_state, mock_scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile, mock_scene_state_);
 
     list->AddBrowser(browser_.get());
 
-    pref_service_ = browser_state->GetPrefs();
+    pref_service_ = profile->GetPrefs();
 
     local_pref_service_ =
         TestingApplicationContext::GetGlobal()->GetLocalState();
 
     safety_check_manager_ =
-        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browser_state);
+        IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
 
     notification_client_ = std::make_unique<SafetyCheckNotificationClient>(
         base::SequencedTaskRunner::GetCurrentDefault());

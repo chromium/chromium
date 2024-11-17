@@ -115,13 +115,13 @@ SignedExchangeLoader::SignedExchangeLoader(
   } else {
     // Can't use HttpResponseHeaders::GetMimeType() because
     // SignedExchangeHandler checks "v=" parameter.
-    std::string content_type;
-    outer_response_head_->headers->EnumerateHeader(nullptr, "content-type",
-                                                   &content_type);
+    std::optional<std::string_view> content_type =
+        outer_response_head_->headers->EnumerateHeader(nullptr, "content-type");
 
     signed_exchange_handler_ = std::make_unique<SignedExchangeHandler>(
         network::IsUrlPotentiallyTrustworthy(outer_request_.url),
-        web_package::HasNoSniffHeader(*outer_response_head_), content_type,
+        web_package::HasNoSniffHeader(*outer_response_head_),
+        content_type.value_or(std::string_view()),
         std::make_unique<network::DataPipeToSourceStream>(
             std::move(outer_response_body)),
         base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
@@ -147,7 +147,7 @@ SignedExchangeLoader::~SignedExchangeLoader() = default;
 
 void SignedExchangeLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangeLoader::OnReceiveResponse(
@@ -156,7 +156,7 @@ void SignedExchangeLoader::OnReceiveResponse(
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangeLoader::OnReceiveRedirect(
@@ -164,7 +164,7 @@ void SignedExchangeLoader::OnReceiveRedirect(
     network::mojom::URLResponseHeadPtr response_head) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangeLoader::OnUploadProgress(
@@ -173,7 +173,7 @@ void SignedExchangeLoader::OnUploadProgress(
     OnUploadProgressCallback ack_callback) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangeLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
@@ -197,7 +197,7 @@ void SignedExchangeLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangeLoader::SetPriority(net::RequestPriority priority,

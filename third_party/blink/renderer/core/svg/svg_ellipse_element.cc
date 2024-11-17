@@ -91,7 +91,7 @@ void SVGEllipseElement::SvgAttributeChanged(
   if (attr_name == svg_names::kCxAttr || attr_name == svg_names::kCyAttr ||
       attr_name == svg_names::kRxAttr || attr_name == svg_names::kRyAttr) {
     UpdateRelativeLengthsInformation();
-    GeometryPresentationAttributeChanged(attr_name);
+    GeometryPresentationAttributeChanged(params.property);
     return;
   }
 

@@ -51,11 +51,11 @@ class ChromeAccountManagerServiceObserver
 class ChromeAccountManagerServiceTest : public PlatformTest {
  public:
   ChromeAccountManagerServiceTest() {
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
-    account_manager_ = ChromeAccountManagerServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    account_manager_ =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
   // Adds identities to the identity service.
@@ -80,19 +80,17 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> account_manager_;
 };
 
 // Tests to get identities when the restricted pattern is not set.
 TEST_F(ChromeAccountManagerServiceTest, TestHasIdentities) {
   EXPECT_EQ(account_manager_->HasIdentities(), false);
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 0);
 
   AddIdentities();
   EXPECT_EQ(account_manager_->HasIdentities(), true);
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 4);
 }
 
@@ -101,10 +99,8 @@ TEST_F(ChromeAccountManagerServiceTest,
        TestGetIdentityWithValidRestrictedPattern) {
   AddIdentities();
   EXPECT_EQ(account_manager_->HasIdentities(), true);
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
 
   SetPattern("*gmail.com");
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), false);
@@ -113,7 +109,6 @@ TEST_F(ChromeAccountManagerServiceTest,
   EXPECT_EQ((int)[account_manager_->GetAllIdentities() count], 1);
 
   SetPattern("foo2@google.com");
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), false);
@@ -128,10 +123,8 @@ TEST_F(ChromeAccountManagerServiceTest,
        TestGetIdentitiesWithValidRestrictedPattern) {
   AddIdentities();
   EXPECT_EQ(account_manager_->HasIdentities(), true);
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
 
   SetPattern("*chromium.com");
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), true);
@@ -145,10 +138,8 @@ TEST_F(ChromeAccountManagerServiceTest,
        TestGetIdentityWithInvalidRestrictedPattern) {
   AddIdentities();
   EXPECT_EQ(account_manager_->HasIdentities(), true);
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
 
   SetPattern("*none.com");
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), false);
@@ -162,10 +153,8 @@ TEST_F(ChromeAccountManagerServiceTest,
        TestGetIdentityWithAllInclusivePattern) {
   AddIdentities();
   EXPECT_EQ(account_manager_->HasIdentities(), true);
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
 
   SetPattern("*");
-  EXPECT_EQ(account_manager_->HasRestrictedIdentities(), false);
   EXPECT_EQ(account_manager_->IsValidIdentity(gmail_identity), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(google_identity), true);
   EXPECT_EQ(account_manager_->IsValidIdentity(chromium_identity1), true);

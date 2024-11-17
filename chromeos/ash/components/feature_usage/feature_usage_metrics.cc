@@ -125,7 +125,7 @@ void FeatureUsageMetrics::StopSuccessfulUsage() {
 
 void FeatureUsageMetrics::OnSuspend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  timer_.AbandonAndStop();
+  timer_.Stop();
   ReportPeriodicMetrics();
 }
 

@@ -54,8 +54,6 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using signin_ui::CompletionCallback;
-
 namespace {
 
 const int64_t kAuthenticationFlowTimeoutSeconds = 10;
@@ -64,41 +62,6 @@ NSString* const kAuthenticationSnackbarCategory =
 
 }  // namespace
 
-// Content of the managed account confirmation dialog.
-@interface ManagedConfirmationDialogContent : NSObject
-
-// Title of the dialog.
-@property(nonatomic, readonly, copy) NSString* title;
-// Subtitle of the dialog.
-@property(nonatomic, readonly, copy) NSString* subtitle;
-// Label of the accept button in the dialog.
-@property(nonatomic, readonly, copy) NSString* acceptLabel;
-// Label of the cancel button in the dialog.
-@property(nonatomic, readonly, copy) NSString* cancelLabel;
-
-- (instancetype)initWithTitle:(NSString*)title
-                     subtitle:(NSString*)subtitle
-                  acceptLabel:(NSString*)acceptLabel
-                  cancelLabel:(NSString*)cancelLabel;
-
-@end
-
-@implementation ManagedConfirmationDialogContent
-
-- (instancetype)initWithTitle:(NSString*)title
-                     subtitle:(NSString*)subtitle
-                  acceptLabel:(NSString*)acceptLabel
-                  cancelLabel:(NSString*)cancelLabel {
-  if ((self = [super init])) {
-    _title = title;
-    _subtitle = subtitle;
-    _acceptLabel = acceptLabel;
-    _cancelLabel = cancelLabel;
-  }
-  return self;
-}
-
-@end
 
 @implementation AuthenticationFlowPerformer {
   __weak id<AuthenticationFlowPerformerDelegate> _delegate;
@@ -160,13 +123,13 @@ NSString* const kAuthenticationSnackbarCategory =
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain
              toProfile:(ProfileIOS*)profile {
-  AuthenticationServiceFactory::GetForBrowserState(profile)->SignIn(
-      identity, accessPoint);
+  AuthenticationServiceFactory::GetForProfile(profile)->SignIn(identity,
+                                                               accessPoint);
 }
 
 - (void)signOutProfile:(ProfileIOS*)profile {
   __weak __typeof(_delegate) weakDelegate = _delegate;
-  AuthenticationServiceFactory::GetForBrowserState(profile)->SignOut(
+  AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
       /*force_clear_browsing_data=*/false, ^{
         [weakDelegate didSignOut];
@@ -174,38 +137,9 @@ NSString* const kAuthenticationSnackbarCategory =
 }
 
 - (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile {
-  AuthenticationServiceFactory::GetForBrowserState(profile)->SignOut(
+  AuthenticationServiceFactory::GetForProfile(profile)->SignOut(
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/false, nil);
-}
-
-// Retuns the ManagedConfirmationDialogContent that corresponds to the
-// provided `hostedDomain`, and the activation state of User Policy.
-- (ManagedConfirmationDialogContent*)
-    managedConfirmationDialogContentForHostedDomain:(NSString*)hostedDomain {
-  if (!policy::IsAnyUserPolicyFeatureEnabled()) {
-    // Show the legacy managed confirmation dialog if User Policy is disabled.
-    return [[ManagedConfirmationDialogContent alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE)
-             subtitle:l10n_util::GetNSStringF(
-                          IDS_IOS_MANAGED_SIGNIN_SUBTITLE,
-                          base::SysNSStringToUTF16(hostedDomain))
-          acceptLabel:l10n_util::GetNSString(
-                          IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON)
-          cancelLabel:l10n_util::GetNSString(IDS_CANCEL)];
-  } else {
-    // Show the release version of the managed confirmation dialog for User
-    // Policy if User Policy is enabled and there is no Sync consent.
-    return [[ManagedConfirmationDialogContent alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE)
-             subtitle:l10n_util::GetNSStringF(
-                          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
-                          base::SysNSStringToUTF16(hostedDomain))
-          acceptLabel:
-              l10n_util::GetNSString(
-                  IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL)
-          cancelLabel:l10n_util::GetNSString(IDS_CANCEL)];
-  }
 }
 
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
@@ -214,17 +148,9 @@ NSString* const kAuthenticationSnackbarCategory =
   DCHECK(!_managedConfirmationAlertCoordinator);
   DCHECK(!_errorAlertCoordinator);
 
-  ManagedConfirmationDialogContent* content =
-      [self managedConfirmationDialogContentForHostedDomain:hostedDomain];
-
   base::RecordAction(
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                               "ManagedConfirmationDialog_Presented"));
-  _managedConfirmationAlertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:viewController
-                                                   browser:browser
-                                                     title:content.title
-                                                   message:content.subtitle];
 
   __weak AuthenticationFlowPerformer* weakSelf = self;
   __weak AlertCoordinator* weakAlert = _managedConfirmationAlertCoordinator;
@@ -245,7 +171,7 @@ NSString* const kAuthenticationSnackbarCategory =
     // potential bad memory accesses.
     Browser* alertedBrowser = weakAlert.browser;
     if (alertedBrowser) {
-      PrefService* prefService = alertedBrowser->GetBrowserState()->GetPrefs();
+      PrefService* prefService = alertedBrowser->GetProfile()->GetPrefs();
       // TODO(crbug.com/40225352): Remove this line once we determined that the
       // notification isn't needed anymore.
       [strongSelf updateUserPolicyNotificationStatusIfNeeded:prefService];
@@ -264,17 +190,9 @@ NSString* const kAuthenticationSnackbarCategory =
     [strongSelf alertControllerDidDisappear:weakAlert];
     [[strongSelf delegate] didCancelManagedConfirmation];
   };
-
-  [_managedConfirmationAlertCoordinator
-      addItemWithTitle:content.cancelLabel
-                action:cancelBlock
-                 style:UIAlertActionStyleCancel];
-  [_managedConfirmationAlertCoordinator
-      addItemWithTitle:content.acceptLabel
-                action:acceptBlock
-                 style:UIAlertActionStyleDefault];
-  _managedConfirmationAlertCoordinator.noInteractionAction = cancelBlock;
-  [_managedConfirmationAlertCoordinator start];
+  _managedConfirmationAlertCoordinator =
+      ManagedConfirmationDialogContentForHostedDomain(
+          hostedDomain, browser, viewController, acceptBlock, cancelBlock);
 }
 
 - (void)completePostSignInActions:(PostSignInActionSet)postSignInActions
@@ -282,9 +200,8 @@ NSString* const kAuthenticationSnackbarCategory =
                           browser:(Browser*)browser {
   DCHECK(browser);
   base::WeakPtr<Browser> weakBrowser = browser->AsWeakPtr();
-  ProfileIOS* profile = browser->GetProfile()->GetOriginalChromeBrowserState();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(profile);
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
 
   // Signing in from bookmarks and reading list enables the corresponding
   // type.
@@ -318,7 +235,7 @@ NSString* const kAuthenticationSnackbarCategory =
     base::RecordAction(
         base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(profile);
+        AuthenticationServiceFactory::GetForProfile(profile);
     if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       // Signing in from bookmarks and reading list enables the corresponding
       // type. The undo button should handle that before signing out.
@@ -392,7 +309,7 @@ NSString* const kAuthenticationSnackbarCategory =
           base::SysNSStringToUTF8(identity.gaiaID), userEmail);
 
   policy::UserPolicySigninService* userPolicyService =
-      policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
+      policy::UserPolicySigninServiceFactory::GetForProfile(profile);
 
   __weak __typeof(self) weakSelf = self;
 
@@ -432,7 +349,7 @@ NSString* const kAuthenticationSnackbarCategory =
   DCHECK([clientID length] > 0);
 
   policy::UserPolicySigninService* policyService =
-      policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
+      policy::UserPolicySigninServiceFactory::GetForProfile(profile);
   const std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
 
   AccountId accountID =

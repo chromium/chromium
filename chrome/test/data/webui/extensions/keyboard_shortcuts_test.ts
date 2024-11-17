@@ -6,9 +6,8 @@
 
 import type {ExtensionsKeyboardShortcutsElement} from 'chrome://extensions/extensions.js';
 import {isValidKeyCode, Key, keystrokeToString} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
@@ -60,11 +59,9 @@ suite('ExtensionShortcutTest', function() {
       ],
     });
 
-    keyboardShortcuts.set('items', [noCommands, oneCommand, twoCommands]);
+    keyboardShortcuts.items = [noCommands, oneCommand, twoCommands];
 
     document.body.appendChild(keyboardShortcuts);
-
-    flush();
   });
 
   test('Layout', function() {
@@ -128,6 +125,7 @@ suite('ExtensionShortcutTest', function() {
     const params = await testDelegate.whenCalled('updateExtensionCommandScope');
     assertEquals(oneCommand.id, params[0]);
     assertEquals(oneCommand.commands[0]!.name, params[1]);
+    await microtasksFinished();
     assertEquals(selectElement.value, params[2]);
   });
 });

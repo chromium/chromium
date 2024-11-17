@@ -169,13 +169,6 @@ export class SettingsSignoutDialogElement extends
    *     option to turn off sync without deleting the profile.
    */
   private isDeleteProfileFooterVisible_(): boolean {
-    // <if expr="chromeos_lacros">
-    if (!loadTimeData.getBoolean('isSecondaryUser')) {
-      // Profile deletion is not allowed for the main profile.
-      return false;
-    }
-    // </if>
-
     // If the "Clear and Continue" button is not shown, show the footer that
     // allows the user to delete the profile.
     return !this.isClearProfileConfirmButtonVisible_();

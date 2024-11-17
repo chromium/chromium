@@ -58,7 +58,6 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/extensions/login_screen_ui",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//content/test:test_support",

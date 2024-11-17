@@ -14,6 +14,7 @@
  * [android-pixel-tangor-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-tangor-perf): Android U.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
  * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
+ * [android-pixel4_webview-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf-pgo): Android R.
  * [android-pixel6-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf): Android U.
  * [android-pixel6-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf-pgo): Android U.
  * [android-pixel6-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-pro-perf): Android T.
@@ -27,6 +28,7 @@
 
 ### Mac
 
+ * [mac-intel-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-intel-perf): Mac Mini 8,1, Core i7 3.2 GHz.
  * [mac-laptop_high_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-laptop_high_end-perf): MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
  * [mac-laptop_low_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-laptop_low_end-perf): MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
  * [mac-m1-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m1-pro-perf): Mac M1 PRO 2020.
@@ -87,4 +89,6 @@
 ### Win
 
  * [win-10_laptop_low_end-perf_HP-Candidate](https://ci.chromium.org/p/chrome/builders/ci/win-10_laptop_low_end-perf_HP-Candidate): HP 15-BS121NR Laptop Candidate.
+ * [win-arm64-snapdragon-elite-perf](https://ci.chromium.org/p/chrome/builders/ci/win-arm64-snapdragon-elite-perf): Windows Dell Snapdragon Elite.
+ * [win-arm64-snapdragon-plus-perf](https://ci.chromium.org/p/chrome/builders/ci/win-arm64-snapdragon-plus-perf): Windows Dell Snapdragon Plus.
 

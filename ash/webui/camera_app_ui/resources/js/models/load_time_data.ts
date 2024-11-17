@@ -7,7 +7,7 @@
  * controller. When loading it, it will populate data such as localized strings
  * into |loadTimeData| that is imported below.
  */
-import '../../strings.m.js';
+import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 

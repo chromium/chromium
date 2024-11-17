@@ -91,6 +91,7 @@ class EndpointFetcher {
 
     std::optional<CredentialsMode> credentials_mode;
     std::optional<int> max_retries;
+    std::optional<bool> set_site_for_cookies;
 
     class Builder final {
      public:
@@ -110,6 +111,11 @@ class EndpointFetcher {
 
       Builder& SetMaxRetries(const int retries) {
         request_params_->max_retries = retries;
+        return *this;
+      }
+
+      Builder& SetSetSiteForCookies(const bool should_set_site_for_cookies) {
+        request_params_->set_site_for_cookies = should_set_site_for_cookies;
         return *this;
       }
 
@@ -212,6 +218,7 @@ class EndpointFetcher {
 
   network::mojom::CredentialsMode GetCredentialsMode();
   int GetMaxRetries();
+  bool GetSetSiteForCookies();
 
   enum AuthType { CHROME_API_KEY, OAUTH, NO_AUTH };
   AuthType auth_type_;

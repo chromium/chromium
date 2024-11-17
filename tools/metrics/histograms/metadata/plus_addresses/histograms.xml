@@ -44,8 +44,22 @@ chromium-metrics-reviews@google.com.
   <variant name="Reserve" summary="Reserve a Plus Address"/>
 </variants>
 
+<histogram name="PlusAddresses.AccountSettings.Launch.Success"
+    enum="BooleanSuccess" expires_after="2025-03-23">
+  <owner>tchudakov@google.com</owner>
+  <owner>jkeitel@chromium.org</owner>
+  <summary>
+    Records whether Account Settings activity could be started successfully.
+    This is recorded when the user taps on the &quot;Manage plus addresses&quot;
+    action in the keyboard accessory address or password manual filling sheet,
+    or when the user opens the plus addresses settings from the Chrome settings.
+    If opening the Account Settings activity fails, the plus addresses
+    management page is opened in a CCT.
+  </summary>
+</histogram>
+
 <histogram name="PlusAddresses.AffiliationRequest.ResponseTime" units="ms"
-    expires_after="2024-12-31">
+    expires_after="2025-03-23">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <summary>
@@ -57,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.Blocklist.ParsingResult"
-    enum="PlusAddressBlocklistDataParsingResult" expires_after="2025-01-26">
+    enum="PlusAddressBlocklistDataParsingResult" expires_after="2025-03-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -68,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.NetworkRequest.OauthError"
-    enum="GoogleServiceAuthError" expires_after="2024-12-31">
+    enum="GoogleServiceAuthError" expires_after="2025-04-27">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -81,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.NetworkRequest.{Type}.Latency" units="ms"
-    expires_after="2024-12-31">
+    expires_after="2025-03-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -91,6 +105,19 @@ chromium-metrics-reviews@google.com.
     difference between when the PlusAddressHttpClient issues the request and
     when it receives a response. The PlusAddressHttpClient records this whenever
     it gets a response for the network requests it makes.
+  </summary>
+  <token key="Type" variants="PlusAddressNetworkRequestType"/>
+</histogram>
+
+<histogram name="PlusAddresses.NetworkRequest.{Type}.NetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-09-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <summary>
+    Records the net error codes of network requests. PlusAddressHttpClientImpl
+    records this whenever it gets a response from the URL loader for the network
+    requests it makes.
   </summary>
   <token key="Type" variants="PlusAddressNetworkRequestType"/>
 </histogram>
@@ -109,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.NetworkRequest.{Type}.ResponseCode"
-    enum="HttpResponseCode" expires_after="2024-12-31">
+    enum="HttpResponseCode" expires_after="2025-03-30">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -155,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.Suggestion.Events"
-    enum="PlusAddressSuggestionEvent2" expires_after="2024-12-31">
+    enum="PlusAddressSuggestionEvent2" expires_after="2025-04-13">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>mreichhoff@chromium.org</owner>
@@ -183,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.{ModalType}.{Status}.Refreshes"
-    units="refreshes" expires_after="2025-03-09">
+    units="refreshes" expires_after="2025-05-11">
   <owner>jkeitel@google.com</owner>
   <owner>brunobraga@google.com</owner>
   <summary>

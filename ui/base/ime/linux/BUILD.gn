@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
 
-assert(is_linux || is_chromeos_lacros)
+assert(is_linux)
 
 component("linux") {
   output_name = "ui_base_ime_linux"
@@ -35,13 +34,6 @@ component("linux") {
 
   deps = [
     "//ui/base",
-
-    # TODO(crbug.com/40761214): Remove this on unifying lacros and linux desktop
-    # behavior again.
-    "//build:chromeos_buildflags",
+    "//ui/linux:linux_ui",
   ]
-
-  if (is_linux) {
-    deps += [ "//ui/linux:linux_ui" ]
-  }
 }

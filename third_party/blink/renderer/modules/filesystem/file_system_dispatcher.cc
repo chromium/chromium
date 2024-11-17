@@ -33,7 +33,7 @@ class FileSystemDispatcher::WriteListener
   void ResultsRetrieved(
       Vector<filesystem::mojom::blink::DirectoryEntryPtr> entries,
       bool has_more) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ErrorOccurred(base::File::Error error_code) override {
@@ -60,7 +60,7 @@ class FileSystemDispatcher::ReadDirectoryListener
       bool has_more) override {
     for (const auto& entry : entries) {
       callbacks_->DidReadDirectoryEntry(
-          FilePathToWebString(entry->name),
+          FilePathToWebString(entry->name.path()),
           entry->type == filesystem::mojom::blink::FsFileType::DIRECTORY);
     }
     callbacks_->DidReadDirectoryEntries(has_more);
@@ -70,9 +70,7 @@ class FileSystemDispatcher::ReadDirectoryListener
     callbacks_->DidFail(error_code);
   }
 
-  void DidWrite(int64_t byte_count, bool complete) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void DidWrite(int64_t byte_count, bool complete) override { NOTREACHED(); }
 
  private:
   std::unique_ptr<EntriesCallbacks> callbacks_;
@@ -531,7 +529,7 @@ void FileSystemDispatcher::DidReadDirectory(
   if (error_code == base::File::Error::FILE_OK) {
     for (const auto& entry : entries) {
       callbacks->DidReadDirectoryEntry(
-          FilePathToWebString(entry->name),
+          FilePathToWebString(entry->name.path()),
           entry->type == filesystem::mojom::blink::FsFileType::DIRECTORY);
     }
     callbacks->DidReadDirectoryEntries(false);

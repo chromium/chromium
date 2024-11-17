@@ -83,10 +83,6 @@ BASE_FEATURE(kForceSynthesizedRestoreSession,
              "ForceSynthesizedRestoreSession",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRemoveOldWebStateRestoration,
-             "RemoveOldWebStateRestoration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDetectDestroyedNavigationContexts,
              "DetectDestroyedNavigationContexts",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -117,6 +113,10 @@ BASE_FEATURE(kUserAgentBugFixVersion,
 BASE_FEATURE(kLogJavaScriptErrors,
              "LogJavaScriptErrors",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebKitHandlesMarketplaceKitLinks,
+             "WebKitHandlesMarketplaceKitLinks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace web

@@ -966,9 +966,7 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
       case cros::mojom::CaptureIntent::kVideoRecord:
         return ShouldUseBlobVideoSnapshot();
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown capture intent: " << capture_intent;
-        return false;
+        NOTREACHED() << "Unknown capture intent: " << capture_intent;
     }
   }();
   ConfigureStreams(require_photo, std::nullopt);
@@ -1009,8 +1007,8 @@ void CameraDeviceDelegate::ConfigureStreams(
         usage = cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unrecognized client type: " << static_cast<int>(param.first);
+        NOTREACHED() << "Unrecognized client type: "
+                     << static_cast<int>(param.first);
     }
     stream->id = static_cast<uint64_t>(stream_type);
     stream->stream_type = cros::mojom::Camera3StreamType::CAMERA3_STREAM_OUTPUT;
@@ -1098,11 +1096,8 @@ void CameraDeviceDelegate::ConfigureStreams(
     stream_config->session_parameters = cros::mojom::CameraMetadata::New();
     ConfigureSessionParameters(&stream_config->session_parameters);
     // TODO(b/336480993): Enable digital zoom in portrait mode.
-    // TODO(b/225112054): Remove the check for Chrome flag once the feature is
-    // enabled by default.
     bool request_digital_zoom =
         camera_app_device != nullptr &&
-        base::FeatureList::IsEnabled(ash::features::kCameraAppDigitalZoom) &&
         camera_app_device->GetCaptureIntent() !=
             cros::mojom::CaptureIntent::kPortraitCapture;
     if (request_digital_zoom) {
@@ -1205,8 +1200,7 @@ void CameraDeviceDelegate::ConstructDefaultRequestSettings(
                            OnConstructedDefaultPortraitModeRequestSettings,
                        GetWeakPtr()));
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "No default request settings for stream: " << stream_type;
+    NOTREACHED() << "No default request settings for stream: " << stream_type;
   }
 }
 
@@ -1419,9 +1413,8 @@ bool CameraDeviceDelegate::SetPointsOfInterest(
       case 270:
         return {1.0 - y, x};
       default:
-        NOTREACHED_IN_MIGRATION() << "Invalid orientation";
+        NOTREACHED() << "Invalid orientation";
     }
-    return {x, y};
   }();
 
   // TODO(shik): Respect to SCALER_CROP_REGION, which is unused now.

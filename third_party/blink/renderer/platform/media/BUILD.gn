@@ -23,6 +23,8 @@ component("media") {
     "cdm_result_promise_helper.h",
     "cdm_session_adapter.cc",
     "cdm_session_adapter.h",
+    "create_cdm_uma_helper.cc",
+    "create_cdm_uma_helper.h",
     "interval_map.h",
     "key_system_config_selector.cc",
     "multi_buffer.cc",
@@ -33,7 +35,6 @@ component("media") {
     "new_session_cdm_result_promise.h",
     "power_status_helper.cc",
     "power_status_helper.h",
-    "remote_playback_client_wrapper_impl.cc",
     "resource_fetch_context.h",
     "resource_multi_buffer_data_provider.cc",
     "resource_multi_buffer_data_provider.h",
@@ -56,8 +57,10 @@ component("media") {
     "web_source_buffer_impl.h",
   ]
 
-  configs +=
-      [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
+  configs += [
+    "//third_party/blink/renderer/platform:blink_platform_implementation",
+    "//third_party/blink/renderer:inside_blink",
+  ]
   public_deps = [
     "//base",
     "//media",
@@ -123,6 +126,7 @@ source_set("unit_tests") {
   # TODO(https://crbug.com/1198341): enable this config once the code is ported
   # to Blink code conventions.
   #configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
+  configs += [ "//third_party/blink/renderer:inside_blink" ]
   sources = [
     "cache_util_unittest.cc",
     "interval_map_unittest.cc",
@@ -172,9 +176,11 @@ source_set("test_support") {
   testonly = true
   configs += [
     "//third_party/blink/renderer:non_test_config",
+
     # TODO(https://crbug.com/1198341): enable this config once the code is
     # ported to Blink code conventions.
     #"//third_party/blink/renderer/platform:blink_platform_config",
+    "//third_party/blink/renderer:inside_blink",
   ]
   sources = [
     "testing/mock_resource_fetch_context.cc",

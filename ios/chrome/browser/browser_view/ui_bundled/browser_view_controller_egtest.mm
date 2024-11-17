@@ -37,7 +37,9 @@
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
   // Ensures that the first favicon in Most Visited row is the test URL.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
   std::map<GURL, std::string> responses;
   const GURL firstURL = web::test::HttpServer::MakeUrl("http://first");
   responses[firstURL] = "First window";

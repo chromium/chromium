@@ -76,11 +76,6 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   // Launches the app as a tab and returns the browser.
   Browser* LaunchBrowserForWebAppInTab(const webapps::AppId&);
 
-  // Simulates a page calling window.open on an URL and waits for the
-  // navigation.
-  content::WebContents* OpenWindow(content::WebContents* contents,
-                                   const GURL& url);
-
   // Simulates a page navigating itself to an URL and waits for the
   // navigation.
   [[nodiscard]] bool NavigateInRenderer(content::WebContents* contents,
@@ -114,6 +109,7 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
       content::BrowserContext* context) {}
 
   GURL GetInstallableAppURL();
+  GURL GetAppURLWithManifest(const std::string& manifest_url);
   static const char* GetInstallableAppName();
 
   // InProcessBrowserTest:

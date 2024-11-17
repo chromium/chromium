@@ -82,7 +82,6 @@ include_rules = [
   "+services/cert_verifier/public/cpp",
   "+services/cert_verifier/public/mojom",
   "+services/screen_ai/buildflags",
-  "+services/screen_ai/public/cpp",
   "+services/video_effects/public/cpp/buildflags.h",
 
   # In general, //content shouldn't depend on //device.
@@ -201,5 +200,14 @@ specific_include_rules = {
   ],
   "render_widget_host_view_aura.cc": [
     "+components/stylus_handwriting/win/features.h"
-  ]
+  ],
+  "web_contents_impl.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "stylus_handwriting_controller_win.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "stylus_handwriting_controller_win_browsertest.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
 }

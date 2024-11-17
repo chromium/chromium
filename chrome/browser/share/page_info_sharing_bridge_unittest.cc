@@ -15,6 +15,7 @@
 #include "components/translate/core/browser/mock_translate_client.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,6 +50,8 @@ class PageInfoSharingBridgeTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  // Ensure RenderFrameHostTester to be created and used by the tests.
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<signin::IdentityManager> identity_manager_;

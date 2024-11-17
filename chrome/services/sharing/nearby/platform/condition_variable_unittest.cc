@@ -19,8 +19,7 @@
 #include "chrome/services/sharing/nearby/platform/mutex.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class ConditionVariableTest : public testing::Test {
  protected:
@@ -122,5 +121,4 @@ TEST_F(ConditionVariableTest,
   EXPECT_TRUE(HasSuccessfullyRunWithAttemptId(attempt_id_3));
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

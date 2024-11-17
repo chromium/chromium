@@ -84,7 +84,7 @@ class QuickDeleteViewBinder {
             @NonNull View quickDeleteView, boolean isVisible) {
         TextViewWithClickableSpans searchHistoryTextView =
                 quickDeleteView.findViewById(R.id.search_history_disambiguation);
-        searchHistoryTextView.setVisibility((isVisible) ? VISIBLE : GONE);
+        searchHistoryTextView.setVisibility(isVisible ? VISIBLE : GONE);
     }
 
     private static void updateBrowsingHistorySubtitleVisibility(
@@ -93,7 +93,7 @@ class QuickDeleteViewBinder {
                 quickDeleteView.findViewById(R.id.quick_delete_history_row);
         TextView subtitle =
                 quickDeleteHistoryRow.findViewById(R.id.quick_delete_history_row_subtitle);
-        subtitle.setVisibility((isVisible) ? VISIBLE : GONE);
+        subtitle.setVisibility(isVisible ? VISIBLE : GONE);
     }
 
     private static void updateBrowsingHistoryRowIfPending(

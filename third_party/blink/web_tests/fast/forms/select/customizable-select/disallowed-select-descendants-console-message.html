@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:ansollan@microsoft.com">
+<link rel=help href="https://issues.chromium.org/issues/347890366">
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+
+<!--Should print one console message. -->
+<select>
+  <label>label</label>
+</select>
+
+<!--Should print two console messages. -->
+<select>
+  <input>
+  <input>
+</select>
+
+<!--Should print one console messages. -->
+<select>
+  <option>
+    <input>
+  </option>
+</select>
+
+<select id="delayed" style="display:none">
+  <input>
+  <option></option>
+</select>
+
+<script>
+  requestAnimationFrame(() => {
+    document.getElementById('delayed').style.display = '';
+    requestAnimationFrame(() => {
+        testRunner.notifyDone();
+    });
+  });
+</script>
+
+<script>
+testRunner.waitUntilDone();
+testRunner.dumpAsText();
+</script>

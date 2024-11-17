@@ -76,8 +76,9 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // CharacterBoundsUpdateEvent. The arguments to this method describe a
   // sequence of bounding boxes that are requested by
   // CharacterBoundsUpdateEvent.
-  void updateCharacterBounds(unsigned long range_start,
-                             HeapVector<Member<DOMRect>>& character_bounds);
+  void updateCharacterBounds(
+      uint32_t range_start,
+      const HeapVector<Member<DOMRect>>& character_bounds);
 
   // Updates to the text driven by the webpage/javascript are performed
   // by calling this API on the EditContext. It accepts a range (start and end

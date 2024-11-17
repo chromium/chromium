@@ -62,7 +62,7 @@ public class BrandingSecurityButtonAnimationDelegateUnitTest {
 
     @Before
     public void setup() {
-        mActivityScenario.getScenario().onActivity((activity -> mActivity = activity));
+        mActivityScenario.getScenario().onActivity(activity -> mActivity = activity);
 
         LinearLayout content = new LinearLayout(mActivity, null);
         content.setOrientation(LinearLayout.HORIZONTAL);
@@ -146,10 +146,10 @@ public class BrandingSecurityButtonAnimationDelegateUnitTest {
                 BrandingSecurityButtonAnimationDelegate.resizeToBitmapDrawable(
                         resources, drawable, width * 2, height * 2);
         Assert.assertEquals(
-                "Width of the resized drawable is different.", width * 2, d2.getIntrinsicWidth());
+                "Width of the resized drawable is different.", width * 2L, d2.getIntrinsicWidth());
         Assert.assertEquals(
                 "Height of the resized drawable is different.",
-                height * 2,
+                height * 2L,
                 d2.getIntrinsicHeight());
     }
 

@@ -32,6 +32,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -73,8 +74,6 @@ class ShelfTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
-
   raw_ptr<ShelfView, DanglingUntriaged> shelf_view_ = nullptr;
   raw_ptr<ShelfModel, DanglingUntriaged> shelf_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_;
@@ -138,7 +137,7 @@ TEST_F(ShelfTest, CheckHoverAfterMenu) {
   ASSERT_EQ(++button_count, test_api()->GetButtonCount());
   ShelfAppButton* button = test_api()->GetButton(index);
   button->AddState(ShelfAppButton::STATE_HOVERED);
-  button->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button->ShowContextMenu(gfx::Point(), ui::mojom::MenuSourceType::kMouse);
   EXPECT_FALSE(button->state() & ShelfAppButton::STATE_HOVERED);
 
   // Remove it.

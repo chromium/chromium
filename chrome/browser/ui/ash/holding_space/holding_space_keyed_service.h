@@ -20,12 +20,9 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 #include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
-#include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -51,8 +48,7 @@ class HoldingSpaceSuggestionsDelegate;
 // Browser context keyed service that:
 // *   Manages the temporary holding space per-profile data model.
 // *   Serves as an entry point to add holding space items from Chrome.
-class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
-                                 public KeyedService,
+class HoldingSpaceKeyedService : public KeyedService,
                                  public ProfileManagerObserver,
                                  public chromeos::PowerManagerClient::Observer {
  public:
@@ -64,16 +60,6 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
 
   // Registers profile preferences for holding space.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  // Binds the holding space service to the specified pending `receiver`.
-  void BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::HoldingSpaceService> receiver);
-
-  // crosapi::mojom::HoldingSpaceKeyedService:
-  // NOTE: No-op if the service has not been initialized.
-  // TODO(http://b/274477308): Remove one-off API.
-  void AddPrintedPdf(const base::FilePath& printed_pdf_path,
-                     bool from_incognito_profile) override;
 
   // Adds multiple pinned file items identified by the provided file system
   // URLs. NOTE: No-op if the service has not been initialized.
@@ -245,10 +231,6 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
 
   // The delegate, owned by `delegates_`, responsible for suggestions.
   raw_ptr<HoldingSpaceSuggestionsDelegate> suggestions_delegate_ = nullptr;
-
-  // This class supports any number of connections. This allows the client to
-  // have multiple, potentially thread-affine, remotes.
-  mojo::ReceiverSet<crosapi::mojom::HoldingSpaceService> receivers_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};

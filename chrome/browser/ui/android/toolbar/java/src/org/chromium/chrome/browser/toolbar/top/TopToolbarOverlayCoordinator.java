@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -40,6 +41,8 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     /** Business logic for this overlay. */
     private final TopToolbarOverlayMediator mMediator;
 
+    private final Context mContext;
+
     public TopToolbarOverlayCoordinator(
             Context context,
             LayoutManager layoutManager,
@@ -48,8 +51,13 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider,
+            Supplier<Integer> bottomToolbarControlsOffsetSupplier,
             int layoutsToShowOn,
             boolean isVisibilityManuallyControlled) {
+        // If BCIV is enabled, we always show the hairline on the composited
+        // toolbar, and let renderer+viz control the visibility during scrolls.
+        mContext = context;
+        boolean showHairline = ChromeFeatureList.sBrowserControlsInViz.isEnabled();
         mModel =
                 new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                         .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
@@ -62,6 +70,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                                 TopToolbarOverlayProperties.CONTENT_OFFSET,
                                 browserControlsStateProvider.getContentOffset())
                         .with(TopToolbarOverlayProperties.ANONYMIZE, false)
+                        .with(TopToolbarOverlayProperties.SHOW_SHADOW, showHairline)
                         .build();
         mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
         mChangeProcessor =
@@ -76,6 +85,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         tabSupplier,
                         browserControlsStateProvider,
                         topUiThemeColorProvider,
+                        bottomToolbarControlsOffsetSupplier,
                         layoutsToShowOn,
                         isVisibilityManuallyControlled);
     }
@@ -128,7 +138,9 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
 
     @Override
     public void onSizeChanged(
-            float width, float height, float visibleViewportOffsetY, int orientation) {}
+            float width, float height, float visibleViewportOffsetY, int orientation) {
+        mMediator.setViewportHeight(height * mContext.getResources().getDisplayMetrics().density);
+    }
 
     @Override
     public void getVirtualViews(List<VirtualView> views) {}

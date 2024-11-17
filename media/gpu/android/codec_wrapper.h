@@ -113,11 +113,6 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   // OutputReleasedCB will be called with a bool indicating if CodecWrapper is
   // currently draining, is drained, or has run out of output buffers.
   //
-  // If not null, then we will only release codec buffers without rendering
-  // on |release_task_runner|, posting if needed.  This does not change where
-  // we release them with rendering; that has to be done inline.  This helps
-  // us avoid a common case of hanging up the GPU main thread.
-  //
   // `coded_size_alignment` describes how to translate a CodecOutputBuffer's
   // visible size into its coded size. It's used to improve coded size guesses
   // when rendering the output buffer early isn't allowed. During guessing, the
@@ -127,7 +122,6 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   using OutputReleasedCB = base::RepeatingCallback<void(bool)>;
   CodecWrapper(CodecSurfacePair codec_surface_pair,
                OutputReleasedCB output_buffer_release_cb,
-               scoped_refptr<base::SequencedTaskRunner> release_task_runner,
                const gfx::Size& initial_expected_size,
                const gfx::ColorSpace& config_color_space,
                std::optional<gfx::Size> coded_size_alignment,

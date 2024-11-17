@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/search_engines/template_url_data_util.h"
 
 #include <string>
@@ -331,16 +326,13 @@ base::Value::Dict TemplateURLDataToDictionary(const TemplateURLData& data) {
 std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
     const TemplateURLPrepopulateData::PrepopulatedEngine& engine) {
   std::vector<std::string> search_intent_params;
-  if (engine.search_intent_params) {
-    for (size_t i = 0; i < engine.search_intent_params_size; ++i) {
-      search_intent_params.emplace_back(engine.search_intent_params[i]);
-    }
+  for (const auto* search_intent_param : engine.search_intent_params) {
+    search_intent_params.emplace_back(search_intent_param);
   }
 
   base::Value::List alternate_urls;
-  if (engine.alternate_urls) {
-    for (size_t i = 0; i < engine.alternate_urls_size; ++i)
-      alternate_urls.Append(std::string(engine.alternate_urls[i]));
+  for (const auto* alternate_url : engine.alternate_urls) {
+    alternate_urls.Append(std::string(alternate_url));
   }
 
   std::u16string image_search_branding_label =
@@ -366,8 +358,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       alternate_urls,
       ToStringView(engine.preconnect_to_search_url) == "ALLOWED",
       ToStringView(engine.prefetch_likely_navigations) == "ALLOWED", engine.id,
-      base::span<const TemplateURLData::RegulatoryExtension>(
-          engine.regulatory_extensions, engine.regulatory_extensions_size));
+      engine.regulatory_extensions);
 }
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(

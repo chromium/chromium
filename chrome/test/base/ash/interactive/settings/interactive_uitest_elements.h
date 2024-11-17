@@ -52,6 +52,9 @@ WebContentsInteractionTestUtil::DeepQuery AddConnectionsExpandButton();
 // The "Add Wi-Fi" row in the expansion of "Add connection".
 WebContentsInteractionTestUtil::DeepQuery AddWiFiRow();
 
+// The "Add Wi-Fi" icon in the expansion of "Add connection".
+WebContentsInteractionTestUtil::DeepQuery AddWifiIcon();
+
 // The "Add built-in VPN" row in the expansion of "Add connection".
 WebContentsInteractionTestUtil::DeepQuery AddBuiltInVpnRow();
 
@@ -148,6 +151,9 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton();
 // The "Create new APN" button in the action menu in APN subpage.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton();
 
+// The policy icon on the top of the APN subpage.
+WebContentsInteractionTestUtil::DeepQuery ApnSubpagePolicyIcon();
+
 // The "Show known APNs" button in the action menu in APN subpage.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageShowKnownApnsButton();
 
@@ -207,6 +213,9 @@ WebContentsInteractionTestUtil::DeepQuery CellularNetworkListItemPolicyIcon();
 
 // The cellular networks subpage pSIM networks list title.
 WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle();
+
+// The APN policy icon in cellular network details subpage.
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageApnPolicyIcon();
 
 // The auto connect toggle in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery
@@ -324,8 +333,20 @@ namespace wifi {
 // The network list under the WiFi subpage.
 WebContentsInteractionTestUtil::DeepQuery WifiNetworksList();
 
+// The network list div under the WiFi subpage.
+WebContentsInteractionTestUtil::DeepQuery WifiNetworksListDiv();
+
 // The WiFi toggle in WiFi subpage page.
 WebContentsInteractionTestUtil::DeepQuery WifiSubpageEnableToggle();
+
+// The wifi toggle on the top-level internet page.
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemToggle();
+
+// The wifi network state on the internet page.
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemNetworkState();
+
+// The wifi subpage arrow on the internet page.
+WebContentsInteractionTestUtil::DeepQuery WifiSummaryItemSubpageArrow();
 
 // The wifi "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery WifiSummaryItem();
@@ -405,6 +426,15 @@ WebContentsInteractionTestUtil::DeepQuery PasspointSubpageRemoveDialog();
 // The confirm button on the subscription removal dialog.
 WebContentsInteractionTestUtil::DeepQuery
 PasspointSubpageRemoveDialogConfirmButton();
+
+// The div element containing the network list on the WiFi sub page.
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageNetworkListDiv();
+
+// The "Searching for networks..." message on the WiFi sub page.
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageSearchForNetworks();
+
+// The "Searching for networks..." spinner on the WiFi sub page.
+WebContentsInteractionTestUtil::DeepQuery WiFiSubpageSearchForNetworksSpinner();
 
 }  // namespace wifi
 

@@ -44,7 +44,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
@@ -63,50 +63,11 @@ constexpr char kConversionErrorMessage[] =
 constexpr char kPermissionErrorMessage[] =
     "You do not have permission to access the preference '*'. "
     "Be sure to declare in your manifest what permissions you need.";
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-constexpr char kInvalidPrefPathErrorMessage[] =
-    "Invalid PrefPath '*' for getting extension pref with control.";
-constexpr char kPrimaryProfileOnlyErrorMessage[] =
-    "You may only access the preference '*' in the primary profile.";
-constexpr char kAshDoesNotSupportPreference[] =
-    "The browser preference is not supported.";
-#endif
 constexpr char kIncognitoKey[] = "incognito";
 constexpr char kScopeKey[] = "scope";
 constexpr char kIncognitoSpecific[] = "incognitoSpecific";
 constexpr char kLevelOfControl[] = "levelOfControl";
 constexpr char kValue[] = "value";
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Returns true if the get, set or clear requests for the preference associated
-// with `pref_path` should only be applied at browser level. Returns false if
-// the requests should be forwarded to Ash.
-// All preferences explicitly added to`crosapi::mojom::PrefPath` should be
-// handled by Ash. The only exception is the `crosapi::mojom::PrefPath::kProxy`
-// pref which, for secondary profiles only, is applied at browser scope.
-bool IsBrowserScopePrefOperation(crosapi::mojom::PrefPath pref_path,
-                                 Profile* profile) {
-  if (pref_path == crosapi::mojom::PrefPath::kUnknown) {
-    return true;
-  }
-  if (pref_path == crosapi::mojom::PrefPath::kProxy) {
-    if (!profile->IsMainProfile()) {
-      return true;
-    }
-    // TODO(acostinas,b/267719988) If the current version of Ash does not
-    // support syncing the proxy pref via the Prefs mojo service, the proxy pref
-    // can be set at browser scope only and it will be synced with Ash via the
-    // NetworkSettingsService mojo API.
-    static constexpr int kMinVersionProxyPref = 4;
-    const int version = chromeos::LacrosService::Get()
-                            ->GetInterfaceVersion<crosapi::mojom::Prefs>();
-    if (version < kMinVersionProxyPref) {
-      return true;
-    }
-  }
-  return false;
-}
-#endif
 
 bool StringToScope(const std::string& s, ChromeSettingScope& scope) {
   scope = extensions::api::types::ParseChromeSettingScope(s);
@@ -117,40 +78,8 @@ bool StringToScope(const std::string& s, ChromeSettingScope& scope) {
 
 PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
     : profile_(profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Versions of ash without this capability cannot create observers for prefs
-  // writing to the ash standalone browser prefstore.
-  constexpr char kExtensionControlledPrefObserversCapability[] =
-      "crbug/1334985";
-  bool ash_supports_crosapi_observers =
-      chromeos::BrowserParamsProxy::Get()->AshCapabilities().has_value() &&
-      base::Contains(
-          chromeos::BrowserParamsProxy::Get()->AshCapabilities().value(),
-          kExtensionControlledPrefObserversCapability);
-#endif
-
   registrar_.Init(profile_->GetPrefs());
   for (const auto& pref : PrefMapping::GetMappings()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::PrefPath pref_path =
-        PrefMapping::GetInstance()->GetPrefPathForPrefName(pref.browser_pref);
-    if (!IsBrowserScopePrefOperation(pref_path, profile) &&
-        ash_supports_crosapi_observers) {
-      // Extension-controlled pref with the real value to watch in ash.
-      // This base::Unretained() is safe because PreferenceEventRouter owns
-      // the corresponding observer.
-      extension_pref_observers_.push_back(std::make_unique<CrosapiPrefObserver>(
-          pref_path,
-          base::BindRepeating(&PreferenceEventRouter::OnAshPrefChanged,
-                              base::Unretained(this), pref_path,
-                              pref.extension_pref, pref.browser_pref)));
-      registrar_.Add(
-          pref.browser_pref,
-          base::BindRepeating(&PreferenceEventRouter::OnControlledPrefChanged,
-                              base::Unretained(this), registrar_.prefs()));
-      continue;
-    }
-#endif
     registrar_.Add(
         pref.browser_pref,
         base::BindRepeating(&PreferenceEventRouter::OnPrefChanged,
@@ -166,107 +95,6 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
 }
 
 PreferenceEventRouter::~PreferenceEventRouter() = default;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void PreferenceEventRouter::OnControlledPrefChanged(
-    PrefService* pref_service,
-    const std::string& browser_pref) {
-  // This pref has a corresponding value in ash. We should send the updated
-  // value of the pref to ash.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
-    // Without the service, we cannot update this pref in ash.
-    LOG(ERROR) << ErrorUtils::FormatErrorMessage(
-        "API unavailable to set pref * in ash.", browser_pref);
-    return;
-  }
-
-  crosapi::mojom::PrefPath pref_path =
-      PrefMapping::GetInstance()->GetPrefPathForPrefName(browser_pref);
-  // Should be a known pref path. Otherwise we would not have created this
-  // observer.
-  DCHECK(pref_path != crosapi::mojom::PrefPath::kUnknown);
-
-  const PrefService::Preference* pref =
-      pref_service->FindPreference(browser_pref);
-  CHECK(pref);
-  if (pref->IsExtensionControlled()) {
-    // The pref has been set in lacros by an extension.
-    // Transmit the value to ash to be stored in the standalone browser
-    // prefstore.
-    lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
-        pref_path, pref->GetValue()->Clone(), base::OnceClosure());
-  } else {
-    // The pref hasn't been set in lacros.
-    // Remove any value from the standalone browser prefstore in ash.
-    lacros_service->GetRemote<crosapi::mojom::Prefs>()
-        ->ClearExtensionControlledPref(pref_path, base::OnceClosure());
-  }
-}
-
-void PreferenceEventRouter::OnAshPrefChanged(crosapi::mojom::PrefPath pref_path,
-                                             const std::string& extension_pref,
-                                             const std::string& browser_pref,
-                                             base::Value value) {
-  // This pref should be read from ash.
-  // We can only get here via callback from ash. So there should be a
-  // LacrosService.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  DCHECK(lacros_service);
-
-  // It's not sufficient to have the new state of the pref - we also need
-  // information about what just set it. So call Ash again to get information
-  // about the control state.
-  lacros_service->GetRemote<crosapi::mojom::Prefs>()
-      ->GetExtensionPrefWithControl(
-          pref_path, base::BindOnce(&PreferenceEventRouter::OnAshGetSuccess,
-                                    weak_factory_.GetWeakPtr(), browser_pref));
-}
-
-void PreferenceEventRouter::OnAshGetSuccess(
-    const std::string& browser_pref,
-    std::optional<::base::Value> opt_value,
-    crosapi::mojom::PrefControlState control_state) {
-  // Note: crosapi::mojom::prefs::GetExtensionPrefWithControl could be called
-  // with an invalid pref path, and returns empty opt_value.
-  if (!opt_value.has_value()) {
-    LOG(ERROR) << ErrorUtils::FormatErrorMessage(kInvalidPrefPathErrorMessage,
-                                                 browser_pref);
-    return;
-  }
-
-  bool incognito = false;
-
-  std::string event_name;
-  APIPermissionID permission = APIPermissionID::kInvalid;
-  bool found_event = PrefMapping::GetInstance()->FindEventForBrowserPref(
-      browser_pref, &event_name, &permission);
-  DCHECK(found_event);
-
-  base::Value::List args;
-  PrefTransformerInterface* transformer =
-      PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
-
-  std::optional<base::Value> transformed_value =
-      transformer->BrowserToExtensionPref(opt_value.value(), incognito);
-  if (!transformed_value) {
-    LOG(ERROR) << ErrorUtils::FormatErrorMessage(kConversionErrorMessage,
-                                                 browser_pref);
-    return;
-  }
-
-  base::Value::Dict dict;
-  dict.Set(kValue, std::move(*transformed_value));
-  args.Append(std::move(dict));
-
-  events::HistogramValue histogram_value =
-      events::TYPES_CHROME_SETTING_ON_CHANGE;
-  extensions::preference_helpers::DispatchEventToExtensionsWithAshControlState(
-      profile_, histogram_value, event_name, std::move(args), permission,
-      incognito, browser_pref, control_state);
-}
-#endif
 
 void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
                                           const std::string& browser_pref) {
@@ -362,13 +190,6 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
     DCHECK(rv);
     EventRouter::Get(profile_)->RegisterObserver(this, event_name);
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On lacros, ensure the PreferenceEventRouter is always created to watch for
-  // and notify of any pref changes, even if there are no extension listeners.
-  // TODO(crbug.com/40228309): Abstract out lacros logic from the
-  // PreferenceEventRouter so we don't needlessly dispatch extension events.
-  EnsurePreferenceEventRouterCreated();
-#endif
   content_settings_store()->AddObserver(this);
 }
 
@@ -484,26 +305,6 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Check whether this is a lacros extension controlled pref.
-  cached_browser_pref_ = browser_pref;
-  crosapi::mojom::PrefPath pref_path =
-      PrefMapping::GetInstance()->GetPrefPathForPrefName(cached_browser_pref_);
-  if (!IsBrowserScopePrefOperation(pref_path, profile)) {
-    // This pref should be read from ash.
-    auto* lacros_service = chromeos::LacrosService::Get();
-    if (!lacros_service ||
-        !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
-      return RespondNow(Error("OS Service is unavailable."));
-    }
-    lacros_service->GetRemote<crosapi::mojom::Prefs>()
-        ->GetExtensionPrefWithControl(
-            pref_path,
-            base::BindOnce(&GetPreferenceFunction::OnLacrosGetSuccess, this));
-    return RespondLater();
-  }
-#endif
-
   PrefService* prefs =
       extensions::preference_helpers::GetProfilePrefService(profile, incognito);
 
@@ -549,47 +350,6 @@ void GetPreferenceFunction::ProduceGetResult(
     result->Set(kIncognitoSpecific, ep->HasIncognitoPrefValue(browser_pref));
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void GetPreferenceFunction::OnLacrosGetSuccess(
-    std::optional<::base::Value> opt_value,
-    crosapi::mojom::PrefControlState control_state) {
-  if (!browser_context()) {
-    return;
-  }
-
-  if (!opt_value) {
-    Respond(Error(kAshDoesNotSupportPreference));
-    return;
-  }
-
-  // Get read/write permissions and pref name again.
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-
-  std::string pref_key = args()[0].GetString();
-  const base::Value& details = args()[1];
-
-  bool incognito = false;
-  if (std::optional<bool> result = details.GetDict().FindBool(kIncognitoKey)) {
-    incognito = *result;
-  }
-
-  ::base::Value* pref_value = &opt_value.value();
-
-  std::string level_of_control;
-  level_of_control =
-      extensions::preference_helpers::GetLevelOfControlWithAshControlState(
-          control_state, profile, extension_id(), cached_browser_pref_,
-          incognito);
-
-  base::Value::Dict result;
-
-  ProduceGetResult(&result, pref_value, level_of_control, cached_browser_pref_,
-                   incognito);
-
-  Respond(WithArguments(std::move(result)));
-}
-#endif
 
 SetPreferenceFunction::~SetPreferenceFunction() = default;
 
@@ -644,26 +404,6 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   if (!extension()->permissions_data()->HasAPIPermission(write_permission))
     return RespondNow(Error(kPermissionErrorMessage, pref_key));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If the pref is ash-controlled, check that the service is present.
-  // If it isn't, don't allow the pref to be set.
-  crosapi::mojom::PrefPath pref_path =
-      PrefMapping::GetInstance()->GetPrefPathForPrefName(browser_pref);
-  chromeos::LacrosService* lacros_service;
-  if (!IsBrowserScopePrefOperation(pref_path, profile)) {
-    if (!profile->IsMainProfile()) {
-      return RespondNow(Error(kPrimaryProfileOnlyErrorMessage, pref_key));
-    }
-    // This pref should be set in ash.
-    // Check that the service exists so we can set it.
-    lacros_service = chromeos::LacrosService::Get();
-    if (!lacros_service ||
-        !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
-      return RespondNow(Error("OS Service is unavailable."));
-    }
-  }
-#endif
-
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
   const PrefService::Preference* pref =
       prefs->pref_service()->FindPreference(browser_pref);
@@ -717,25 +457,9 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
 
   prefs_helper->SetExtensionControlledPref(extension_id(), browser_pref, scope,
                                            browser_pref_value->Clone());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!IsBrowserScopePrefOperation(pref_path, profile) &&
-      prefs_helper->DoesExtensionControlPref(extension_id(), browser_pref,
-                                             nullptr)) {
-    lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
-        pref_path, std::move(*browser_pref_value),
-        base::BindOnce(&SetPreferenceFunction::OnLacrosSetSuccess, this));
-    return RespondLater();
-  }
-#endif
 
   return RespondNow(NoArguments());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SetPreferenceFunction::OnLacrosSetSuccess() {
-  Respond(NoArguments());
-}
-#endif
 
 ClearPreferenceFunction::~ClearPreferenceFunction() = default;
 
@@ -776,28 +500,6 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
 
   auto* prefs_helper = ExtensionPrefsHelper::Get(browser_context());
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If the pref is ash-controlled, check that the service is present.
-  // If it isn't, don't allow the pref to be cleared.
-  crosapi::mojom::PrefPath pref_path =
-      PrefMapping::GetInstance()->GetPrefPathForPrefName(browser_pref);
-  chromeos::LacrosService* lacros_service;
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (!IsBrowserScopePrefOperation(pref_path, profile)) {
-    if (!profile->IsMainProfile()) {
-      return RespondNow(Error(kPrimaryProfileOnlyErrorMessage, pref_key));
-    }
-    // This pref should be cleared in ash.
-    lacros_service = chromeos::LacrosService::Get();
-    if (!lacros_service ||
-        !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
-      return RespondNow(Error("OS Service is unavailable."));
-    }
-  }
-  bool did_just_control_pref = prefs_helper->DoesExtensionControlPref(
-      extension_id(), browser_pref, nullptr);
-#endif
-
   prefs_helper->RemoveExtensionControlledPref(extension_id(), browser_pref,
                                               scope);
 
@@ -811,41 +513,7 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
     prefs_helper->RemoveExtensionControlledPref(
         extension_id(), prefs::kSafeBrowsingEnhanced, scope);
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!IsBrowserScopePrefOperation(pref_path, profile) &&
-      did_just_control_pref) {
-    // This is an ash pref and we need to update ash because the extension that
-    // just cleared the pref used to control it. Now, either another extension
-    // of lower precedence controls the pref (in which case we update the pref
-    // to that value), or no other extension has set the pref (in which case
-    // we can clear the value set by extensions in ash).
-    PrefService* pref_service =
-        extensions::preference_helpers::GetProfilePrefService(profile,
-                                                              incognito);
-
-    const PrefService::Preference* pref =
-        pref_service->FindPreference(browser_pref);
-    CHECK(pref);
-    if (pref->IsExtensionControlled()) {
-      lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
-          pref_path, pref->GetValue()->Clone(),
-          base::BindOnce(&ClearPreferenceFunction::OnLacrosClearSuccess, this));
-      return RespondLater();
-    }
-    // No extension in lacros is claiming this pref.
-    lacros_service->GetRemote<crosapi::mojom::Prefs>()
-        ->ClearExtensionControlledPref(
-            pref_path,
-            base::BindOnce(&ClearPreferenceFunction::OnLacrosClearSuccess,
-                           this));
-    return RespondLater();
-  }
-#endif
   return RespondNow(NoArguments());
 }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ClearPreferenceFunction::OnLacrosClearSuccess() {
-  Respond(NoArguments());
-}
-#endif
+
 }  // namespace extensions

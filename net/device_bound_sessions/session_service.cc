@@ -11,18 +11,28 @@
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_service_impl.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
+#include "net/url_request/url_request_context.h"
 
 namespace net::device_bound_sessions {
 
 std::unique_ptr<SessionService> SessionService::Create(
     const URLRequestContext* request_context) {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   unexportable_keys::UnexportableKeyService* service =
       UnexportableKeyServiceFactory::GetInstance()->GetShared();
   if (!service) {
     return nullptr;
   }
 
-  return std::make_unique<SessionServiceImpl>(*service, request_context);
+  SessionStore* session_store = request_context->device_bound_session_store();
+  auto session_service = std::make_unique<SessionServiceImpl>(
+      *service, request_context, session_store);
+  // Loads saved sessions if `session_store` is not null.
+  session_service->LoadSessionsAsync();
+  return session_service;
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace net::device_bound_sessions

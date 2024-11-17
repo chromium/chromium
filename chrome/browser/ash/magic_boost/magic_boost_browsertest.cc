@@ -6,7 +6,6 @@
 #include <tuple>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/system/magic_boost/magic_boost_constants.h"
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
@@ -146,9 +145,7 @@ class MagicBoostBrowserTest
         content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                         "getTextfieldBound();");
     ASSERT_TRUE(result.error.empty());
-    auto value = result.ExtractList();
-    ASSERT_TRUE(value.is_list());
-    const base::Value::List bounds_as_list = std::move(value).TakeList();
+    const base::Value::List bounds_as_list = result.ExtractList();
     ASSERT_EQ(bounds_as_list.size(), 4u);
     const double left = bounds_as_list[0].GetDouble();
     const double top = bounds_as_list[1].GetDouble();
@@ -282,8 +279,6 @@ class MagicBoostBrowserTest
   }
 
   base::test::ScopedFeatureList feature_list_;
-  base::AutoReset<bool> ignore_mahi_secret_key_ =
-      switches::SetIgnoreMahiSecretKeyForTest();
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   net::EmbeddedTestServer https_server_;
 };

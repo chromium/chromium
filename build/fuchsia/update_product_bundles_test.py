@@ -103,6 +103,7 @@ class TestUpdateProductBundles(unittest.TestCase):
                          'workstation-eng.chromebook-x64'))
       ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_product_bundles.running_unattended', return_value=True)
   # Disallow reading sdk_override.
   @mock.patch('os.path.isfile', return_value=False)
@@ -140,6 +141,7 @@ class TestUpdateProductBundles(unittest.TestCase):
         ])
     ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='2.2.2')
@@ -155,6 +157,7 @@ class TestUpdateProductBundles(unittest.TestCase):
       update_product_bundles.main()
     self.assertFalse(self._ffx_mock.called)
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='0.0')
@@ -188,6 +191,7 @@ class TestUpdateProductBundles(unittest.TestCase):
         ])
     ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_sdk.GetSDKOverrideGCSPath',
               return_value='gs://my-bucket/sdk')
   @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
@@ -220,6 +224,7 @@ class TestUpdateProductBundles(unittest.TestCase):
         ])
     ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='1.1.1')
@@ -236,6 +241,7 @@ class TestUpdateProductBundles(unittest.TestCase):
       update_product_bundles.main()
     self.assertFalse(self._ffx_mock.called)
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='0.0')
   @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
@@ -270,6 +276,7 @@ class TestUpdateProductBundles(unittest.TestCase):
         ])
     ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_sdk.GetSDKOverrideGCSPath',
               return_value='gs://my-bucket/sdk')
   @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')

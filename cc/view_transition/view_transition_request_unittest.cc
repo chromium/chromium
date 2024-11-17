@@ -13,14 +13,17 @@ namespace cc {
 
 TEST(ViewTransitionRequestTest, PrepareRequest) {
   bool called = false;
-  auto callback = base::BindLambdaForTesting([&called]() { called = true; });
+  auto callback = base::BindLambdaForTesting(
+      [&called](const viz::ViewTransitionElementResourceRects&) {
+        called = true;
+      });
 
   auto request = ViewTransitionRequest::CreateCapture(
       blink::ViewTransitionToken(),
       /*maybe_cross_frame_sink=*/false, {}, std::move(callback));
 
   EXPECT_FALSE(called);
-  request->TakeFinishedCallback().Run();
+  request->TakeFinishedCallback().Run({});
   EXPECT_TRUE(called);
   EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 

@@ -8,6 +8,7 @@ blink_modules_sources("shared_storage") {
   visibility = [
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/modules/exported",
+    "//third_party/blink/renderer/modules/locks",
   ]
 
   sources = [
@@ -15,8 +16,6 @@ blink_modules_sources("shared_storage") {
     "private_aggregation.h",
     "shared_storage.cc",
     "shared_storage.h",
-    "shared_storage_blink_mojom_traits.cc",
-    "shared_storage_blink_mojom_traits.h",
     "shared_storage_operation_definition.cc",
     "shared_storage_operation_definition.h",
     "shared_storage_window_supplement.cc",
@@ -27,6 +26,8 @@ blink_modules_sources("shared_storage") {
     "shared_storage_worklet_global_scope.h",
     "shared_storage_worklet_messaging_proxy.cc",
     "shared_storage_worklet_messaging_proxy.h",
+    "shared_storage_worklet_navigator.cc",
+    "shared_storage_worklet_navigator.h",
     "shared_storage_worklet_thread.cc",
     "shared_storage_worklet_thread.h",
     "util.cc",

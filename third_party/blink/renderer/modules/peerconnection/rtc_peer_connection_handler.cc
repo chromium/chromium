@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/speed_limit_uma_listener.h"
@@ -264,7 +265,7 @@ std::set<RTCPeerConnectionHandler*>* GetPeerConnectionHandlers() {
 // Counts the number of senders that have |stream_id| as an associated stream.
 size_t GetLocalStreamUsageCount(
     const Vector<std::unique_ptr<blink::RTCRtpSenderImpl>>& rtp_senders,
-    const std::string stream_id) {
+    const std::string& stream_id) {
   size_t usage_count = 0;
   for (const auto& sender : rtp_senders) {
     for (const auto& sender_stream_id : sender->state().stream_ids()) {
@@ -581,8 +582,7 @@ class RTCPeerConnectionHandler::Observer
     DCHECK(native_peer_connection_);
     std::string sdp;
     if (!candidate->ToString(&sdp)) {
-      NOTREACHED_IN_MIGRATION() << "OnIceCandidate: Could not get SDP string.";
-      return;
+      NOTREACHED() << "OnIceCandidate: Could not get SDP string.";
     }
     // The generated candidate may have been added to the pending or current
     // local description, take a snapshot and surface them to the main thread.
@@ -817,11 +817,13 @@ bool RTCPeerConnectionHandler::Initialize(
   configuration_.crypto_options = webrtc::CryptoOptions{};
   configuration_.crypto_options->srtp.enable_gcm_crypto_suites = true;
   configuration_.crypto_options->srtp.enable_encrypted_rtp_header_extensions =
-      blink::Platform::Current()->IsWebRtcSrtpEncryptedHeadersEnabled();
+      base::FeatureList::IsEnabled(kWebRtcEncryptedRtpHeaderExtensions);
   configuration_.enable_implicit_rollback = true;
 
   // Apply 40 ms worth of bursting. See webrtc::TaskQueuePacedSender.
   configuration_.pacer_burst_interval = webrtc::TimeDelta::Millis(40);
+
+  configuration_.set_stats_timestamp_with_environment_clock(true);
 
   peer_connection_observer_ =
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
@@ -2094,8 +2096,7 @@ wtf_size_t RTCPeerConnectionHandler::GetTransceiverIndex(
     if (platform_transceiver.Id() == rtp_transceivers_[i]->Id())
       return i;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0u;
+  NOTREACHED();
 }
 
 std::unique_ptr<blink::RTCRtpTransceiverImpl>

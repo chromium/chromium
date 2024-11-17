@@ -90,6 +90,16 @@ class DocumentAssociatedData : public base::SupportsUserData {
     pending_did_finish_load_url_for_prerendering_.reset();
   }
 
+  // Indicates whether `RenderFrameHostImpl::DidStopLoading` was called for this
+  // document while it's prerendering. This is used to defer and dispatch
+  // `WebContentsObserver::DidStopLoading` notification on prerender activation.
+  bool pending_did_stop_loading_for_prerendering() const {
+    return pending_did_stop_loading_for_prerendering_;
+  }
+  void set_pending_did_stop_loading_for_prerendering() {
+    pending_did_stop_loading_for_prerendering_ = true;
+  }
+
   // Reporting API:
   //
   // Contains the reporting source token for this document, which will be
@@ -164,6 +174,7 @@ class DocumentAssociatedData : public base::SupportsUserData {
   bool dom_content_loaded_ = false;
   bool is_discarded_ = false;
   std::optional<GURL> pending_did_finish_load_url_for_prerendering_;
+  bool pending_did_stop_loading_for_prerendering_ = false;
   std::vector<raw_ptr<internal::DocumentServiceBase, VectorExperimental>>
       services_;
   scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;

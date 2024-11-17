@@ -871,7 +871,7 @@ void SearchBoxViewBase::SetShowAssistantButton(bool show) {
 }
 
 void SearchBoxViewBase::SetShowSunfishButton(bool show) {
-  DCHECK(features::IsSunfishFeatureEnabled() && sunfish_button_);
+  DCHECK(sunfish_button_);
   show_sunfish_button_ = show;
   sunfish_button_->SetVisible(show);
   UpdateButtonsVisibility();

@@ -115,9 +115,9 @@ class PasswordControllerJsTest : public PlatformTest {
  public:
   PasswordControllerJsTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -225,7 +225,7 @@ class PasswordControllerJsTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 };
 
@@ -414,7 +414,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndSingleForm) {
           .Set("name_attribute", "login_form")
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
-          .Set("frame_id", GetMainWebFrame()->GetFrameId());
+          .Set("host_frame", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
@@ -467,7 +467,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
             .Set("name_attribute", "login_form1")
             .Set("id_attribute", "")
             .Set("renderer_id", "1")
-            .Set("frame_id", GetMainWebFrame()->GetFrameId());
+            .Set("host_frame", GetMainWebFrame()->GetFrameId());
 
     base::Value::Dict expected_username_field =
         ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
@@ -494,7 +494,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
             .Set("name_attribute", "login_form2")
             .Set("id_attribute", "")
             .Set("renderer_id", "4")
-            .Set("frame_id", GetMainWebFrame()->GetFrameId());
+            .Set("host_frame", GetMainWebFrame()->GetFrameId());
     base::Value::Dict expected_username_field =
         ParsedField(/*renderer_id=*/"5", /*contole_type=*/"text",
                     /*identifier=*/"username2", /*value=*/"",
@@ -538,7 +538,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_DirectJsCall) {
           .Set("name_attribute", "login_form")
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
-          .Set("frame_id", GetMainWebFrame()->GetFrameId())
+          .Set("host_frame", GetMainWebFrame()->GetFrameId())
           .Set("fields", base::Value::List());
 
   base::Value::Dict expected_username_field =
@@ -585,7 +585,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_FormActionIsNotSet) {
                            .Set("name_attribute", "login_form")
                            .Set("id_attribute", "")
                            .Set("renderer_id", "1")
-                           .Set("frame_id", GetMainWebFrame()->GetFrameId());
+                           .Set("host_frame", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
@@ -629,7 +629,7 @@ TEST_F(PasswordControllerJsTest,
           .Set("name_attribute", "login_form")
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
-          .Set("frame_id", GetMainWebFrame()->GetFrameId());
+          .Set("host_frame", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
@@ -671,7 +671,7 @@ TEST_F(PasswordControllerJsTest,
           .Set("name_attribute", "login_form")
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
-          .Set("frame_id", GetMainWebFrame()->GetFrameId());
+          .Set("host_frame", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
@@ -765,7 +765,7 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
                            .Set("name_attribute", "login_form")
                            .Set("id_attribute", "login_form")
                            .Set("renderer_id", "1")
-                           .Set("frame_id", GetMainWebFrame()->GetFrameId());
+                           .Set("host_frame", GetMainWebFrame()->GetFrameId());
   base::Value::Dict expected_username_field = ParsedField(
       /*renderer_id=*/"2", /*contole_type=*/"text",
       /*identifier=*/"username", /*value=*/"user1",
@@ -1359,15 +1359,16 @@ TEST_F(PasswordControllerJsTest, ExtractFormOutsideTheFormTag) {
 
   base::Value::Dict& results_content = results->GetDict();
 
-  // Verify that there is the "frame_id" key in the returned `results`.
-  const std::string* results_frame_id = results_content.FindString("frame_id");
-  ASSERT_TRUE(results_frame_id);
-  ASSERT_THAT(autofill::DeserializeJavaScriptFrameId(*results_frame_id),
+  // Verify that there is the "host_frame" key in the returned `results`.
+  const std::string* results_host_frame =
+      results_content.FindString("host_frame");
+  ASSERT_TRUE(results_host_frame);
+  ASSERT_THAT(autofill::DeserializeJavaScriptFrameId(*results_host_frame),
               IsTrue());
 
   // Remove the key as it was already verified to make the expected results and
-  // the actual results comparable, since the frame_id is randomly generated.
-  results_content.Remove("frame_id");
+  // the actual results comparable, since the host_frame is randomly generated.
+  results_content.Remove("host_frame");
 
   EXPECT_EQ(expected_form, *results);
 }

@@ -90,8 +90,7 @@ bool AudioFileReader::OpenDemuxer() {
     return false;
 
   // Future versions of ffmpeg may copy the allow list from the format context.
-  if (base::FeatureList::IsEnabled(kFFmpegAllowLists) &&
-      !codec_context_->codec_whitelist) {
+  if (!codec_context_->codec_whitelist) {
     // Note: FFmpeg will try to free this string, so we must duplicate it.
     codec_context_->codec_whitelist =
         av_strdup(FFmpegGlue::GetAllowedAudioDecoders());
@@ -335,9 +334,8 @@ bool AudioFileReader::OnNewFrame(
             reinterpret_cast<const int32_t*>(frame->data[0]), frames_read);
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported bytes per sample encountered: " << bytes_per_sample;
-        audio_bus->ZeroFrames(frames_read);
+        NOTREACHED() << "Unsupported bytes per sample encountered: "
+                     << bytes_per_sample;
     }
   }
 

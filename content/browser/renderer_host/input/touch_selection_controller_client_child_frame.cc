@@ -13,11 +13,11 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 
 namespace content {
 
@@ -95,7 +95,8 @@ void TouchSelectionControllerClientChildFrame::ShowTouchSelectionContextMenu(
     const gfx::Point& location) {
   // |location| should be in root-view coordinates, and RenderWidgetHostImpl
   // will do the conversion to renderer coordinates.
-  rwhv_->host()->ShowContextMenuAtPoint(location, ui::MENU_SOURCE_TOUCH_HANDLE);
+  rwhv_->host()->ShowContextMenuAtPoint(
+      location, ui::mojom::MenuSourceType::kTouchHandle);
 }
 
 // Since an active touch selection in a child frame can have its screen position
@@ -119,12 +120,11 @@ gfx::Point TouchSelectionControllerClientChildFrame::ConvertFromRoot(
 }
 
 bool TouchSelectionControllerClientChildFrame::SupportsAnimation() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientChildFrame::SetNeedsAnimate() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientChildFrame::MoveCaret(
@@ -152,19 +152,18 @@ void TouchSelectionControllerClientChildFrame::SelectBetweenCoordinates(
 
 void TouchSelectionControllerClientChildFrame::OnSelectionEvent(
     ui::SelectionEventType event) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientChildFrame::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>
 TouchSelectionControllerClientChildFrame::CreateDrawable() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
@@ -236,8 +235,7 @@ void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
           /*should_show_context_menu=*/false);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -250,7 +248,8 @@ void TouchSelectionControllerClientChildFrame::RunContextMenu() {
   anchor_point.Offset(-origin.x(), -origin.y());
   RenderWidgetHostImpl* host = rwhv_->host();
   host->GetRenderInputRouter()->ShowContextMenuAtPoint(
-      gfx::ToRoundedPoint(anchor_point), ui::MENU_SOURCE_TOUCH_EDIT_MENU);
+      gfx::ToRoundedPoint(anchor_point),
+      ui::mojom::MenuSourceType::kTouchEditMenu);
 
   // Hide selection handles after getting rect-between-bounds from touch
   // selection controller; otherwise, rect would be empty and the above

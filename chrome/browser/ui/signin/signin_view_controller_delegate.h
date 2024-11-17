@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
-struct AccountInfo;
 class Browser;
 struct CoreAccountId;
 enum class SyncConfirmationStyle;
@@ -76,10 +75,13 @@ class SigninViewControllerDelegate {
   // display the local profile creation version of the page.
   // If |show_profile_switch_iph| is true, shows a profile switch IPH after the
   // user completes the profile customization.
+  // If |show_supervised_user_iph| is true, shows to supervised users the
+  // Supervised User Profile IPH at the end of the profile customization.
   static SigninViewControllerDelegate* CreateProfileCustomizationDelegate(
       Browser* browser,
       bool is_local_profile_creation,
-      bool show_profile_switch_iph = false);
+      bool show_profile_switch_iph = false,
+      bool show_supervised_user_iph = false);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -89,12 +91,8 @@ class SigninViewControllerDelegate {
   // should delete itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateManagedUserNoticeDelegate(
       Browser* browser,
-      const AccountInfo& account_info,
-      bool is_oidc_account,
-      bool force_new_profile,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback);
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          create_param);
 #endif
 
   void AddObserver(Observer* observer);

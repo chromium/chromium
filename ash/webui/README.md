@@ -12,11 +12,4 @@ Each subdirectory should be its own separate "module", and have its own
 BUILD.gn file. See this directory's [BUILD.gn file][1] for tips on adding
 your own subdirectory.
 
-This directory is in //ash because it runs in the "ash-chrome" binary when
-Lacros is running. Most of its subdirectories used to live in
-//chromeos/components. See the [Lacros documentation][2] or the Lacros
-[directory migration design][3].
-
 [1]: /ash/webui/BUILD.gn
-[2]: /docs/lacros.md
-[3]: https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE/edit#heading=h.5aq0kntd3afh

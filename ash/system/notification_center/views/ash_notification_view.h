@@ -297,7 +297,7 @@ class ASH_EXPORT AshNotificationView
 
   // Called when the fade out animation for `view` has ended. This function
   // resets the views's opacity to 1.0f and makes it invisible.
-  void OnFadeOutAnimationEnded(views::View* view);
+  void OnFadeOutAnimationEnded(int view_id);
 
   // Called when the grouped animation for this view has ended, or has been
   // aborted.
@@ -311,7 +311,7 @@ class ASH_EXPORT AshNotificationView
                                std::string parent_id);
 
   // A helper wrapping `OnFadeOutAnimationEnded` for `view` as a closure.
-  base::OnceClosure OnFadeOutAnimationEndedClosure(views::View* view);
+  base::OnceClosure OnFadeOutAnimationEndedClosure(int view_id);
 
   // A helper for grouped animations ending/aborting.
   base::OnceClosure OnGroupedAnimationEndedClosure(

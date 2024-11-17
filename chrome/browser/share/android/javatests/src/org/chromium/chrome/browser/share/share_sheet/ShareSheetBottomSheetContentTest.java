@@ -101,7 +101,7 @@ public final class ShareSheetBottomSheetContentTest {
                         .setLinkToTextSuccessful(true)
                         .build();
         // Pretend the feature engagement feature is already initialized. Otherwise
-        // UserEducationHelper#requestShowIPH() calls get dropped during test.
+        // UserEducationHelper#requestShowIph() calls get dropped during test.
         doAnswer(
                         invocation -> {
                             invocation.<Callback<Boolean>>getArgument(0).onResult(true);
@@ -391,7 +391,7 @@ public final class ShareSheetBottomSheetContentTest {
                 shareSheetBottomSheetContent.getContentView().findViewById(R.id.link_toggle_view);
         assertEquals(View.VISIBLE, toggleView.getVisibility());
         verify(mFeatureEngagementTracker)
-                .shouldTriggerHelpUI(FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE);
     }
 
     @Test

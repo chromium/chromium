@@ -49,7 +49,7 @@ const char* EncoderStatusCodeToString(const EncoderStatus& error_status) {
     case EncoderStatus::Codes::kEncoderAccelerationSupportMissing:
       return "No hardware encoder is available.";
     case EncoderStatus::Codes::kOk:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -290,7 +290,11 @@ impl<T> Consumer<T> {
             )
         });
         unsafe { buf.set_len((num_bytes / elem_size) as usize) }
-        if r != MojoResult::Okay { Err(r) } else { Ok(buf) }
+        if r != MojoResult::Okay {
+            Err(r)
+        } else {
+            Ok(buf)
+        }
     }
 
     /// Begin two-phase read. Returns a ReadDataBuffer to perform read and

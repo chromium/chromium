@@ -44,8 +44,7 @@ chrome::mojom::SelectFileDialogType EnumTraits<
     case ui::SelectFileDialog::Type::SELECT_OPEN_MULTI_FILE:
       return chrome::mojom::SelectFileDialogType::kOpenMultiFile;
   }
-  NOTREACHED_IN_MIGRATION();
-  return chrome::mojom::SelectFileDialogType::kNone;
+  NOTREACHED();
 }
 
 // static
@@ -76,8 +75,7 @@ bool EnumTraits<chrome::mojom::SelectFileDialogType,
       *output = ui::SelectFileDialog::Type::SELECT_OPEN_MULTI_FILE;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -92,8 +90,7 @@ EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::ToMojom(
     case CertificateInfo::Type::CERTIFICATE_IN_CATALOG:
       return chrome::mojom::CertificateType::kCertificateInCatalog;
   }
-  NOTREACHED_IN_MIGRATION();
-  return chrome::mojom::CertificateType::kNoCertificate;
+  NOTREACHED();
 }
 
 // static
@@ -129,8 +126,7 @@ bool EnumTraits<chrome::mojom::ShortcutOperation,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -156,8 +152,7 @@ bool EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -326,20 +321,6 @@ bool StructTraits<chrome::mojom::TpmIdentifierDataView,
     if (tpm_specific_version.has_value()) {
       output->set_tpm_specific_version(std::move(tpm_specific_version.value()));
     }
-  }
-
-  // If the hashes are 0, they have not been set and wont be reported
-  if (input.manufacturer_version_hash() != 0u) {
-    output->set_manufacturer_version_hash(input.manufacturer_version_hash());
-  }
-
-  if (input.manufacturer_version_info_hash() != 0u) {
-    output->set_manufacturer_version_info_hash(
-        input.manufacturer_version_info_hash());
-  }
-
-  if (input.tpm_specific_version_hash() != 0u) {
-    output->set_tpm_specific_version_hash(input.tpm_specific_version_hash());
   }
 
   return true;

@@ -345,7 +345,7 @@ public class WrappingLayoutTest {
         }
     }
 
-    private class ViewExpectation {
+    private static class ViewExpectation {
         private int mExpectedLeft;
         private int mExpectedTop;
         private int mExpectedWidth;

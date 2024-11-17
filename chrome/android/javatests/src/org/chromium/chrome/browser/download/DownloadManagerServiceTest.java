@@ -337,41 +337,6 @@ public class DownloadManagerServiceTest {
     @Test
     @MediumTest
     @Feature({"Download"})
-    public void testDownloadFailedIsCalled() {
-        MockDownloadNotifier notifier = new MockDownloadNotifier();
-        createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        ThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> DownloadManagerService.setDownloadManagerService(mService));
-        // Check that if an interrupted download cannot be resumed, it will trigger a download
-        // failure.
-        DownloadInfo failure =
-                DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
-                        .setIsResumable(false)
-                        .build();
-        notifier.expect(MethodID.DOWNLOAD_FAILED, failure);
-        mService.onDownloadInterrupted(failure, false);
-        notifier.waitTillExpectedCallsComplete();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Download"})
-    public void testDownloadPausedIsCalled() {
-        MockDownloadNotifier notifier = new MockDownloadNotifier();
-        createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        DownloadManagerService.disableNetworkListenerForTest();
-        DownloadInfo interrupted =
-                DownloadInfo.Builder.fromDownloadInfo(getDownloadInfo())
-                        .setIsResumable(true)
-                        .build();
-        notifier.expect(MethodID.DOWNLOAD_INTERRUPTED, interrupted);
-        mService.onDownloadInterrupted(interrupted, true);
-        notifier.waitTillExpectedCallsComplete();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Download"})
     public void testMultipleDownloadProgress() {
         MockDownloadNotifier notifier = new MockDownloadNotifier();
         createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);

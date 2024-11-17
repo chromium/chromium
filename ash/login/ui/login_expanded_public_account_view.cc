@@ -39,6 +39,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -47,11 +48,14 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_targeter.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace ash {
 
@@ -87,7 +91,6 @@ constexpr int kAdvancedViewButtonHeightDp = 16;
 constexpr int kJellyAdvancedViewButtonHeightDp = 20;
 constexpr int kSpacingBetweenSelectionTitleAndButtonDp = 4;
 
-constexpr int kNonEmptyWidth = 1;
 constexpr int kNonEmptyHeight = 1;
 
 constexpr char kMonitoringWarningClassName[] = "MonitoringWarning";
@@ -142,6 +145,48 @@ class LoginExpandedPublicAccountEventHandler : public ui::EventHandler {
 
   raw_ptr<LoginExpandedPublicAccountView> view_;
 };
+
+// Places the submit button in the bottom right corner of the host view with
+// `kPaddingDp` padding from the corner.
+class SubmitButtonContainer : public views::BoxLayoutView,
+                              public views::ViewTargeterDelegate {
+  METADATA_HEADER(SubmitButtonContainer, views::BoxLayoutView)
+
+ public:
+  SubmitButtonContainer() {
+    SetMainAxisAlignment(views::LayoutAlignment::kEnd);
+    SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
+    SetInsideBorderInsets(gfx::Insets::TLBR(0, 0, kPaddingDp, kPaddingDp));
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+  }
+  SubmitButtonContainer(const SubmitButtonContainer&) = delete;
+  SubmitButtonContainer& operator=(const SubmitButtonContainer&) = delete;
+  ~SubmitButtonContainer() override = default;
+
+ private:
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const View* target,
+                         const gfx::Rect& rect) const override {
+    DCHECK_EQ(this, target);
+    // Only receive mouse/touch input if the cursor's position intersects the
+    // `submit_button_` (assumed to be a direct child of
+    // `SubmitButtonContainer`). Without this logic, the `SubmitButtonContainer`
+    // receives all mouse/touch input events and prevents the rest of the
+    // buttons/links in `LoginExpandedPublicAccountView`'s contents  from being
+    // clickable/touchable.
+    for (const auto& child : children()) {
+      const gfx::Rect child_bounds_in_parent_coordinates =
+          child->ConvertRectToParent(child->GetContentsBounds());
+      if (rect.Intersects(child_bounds_in_parent_coordinates)) {
+        return true;
+      }
+    }
+    return false;
+  }
+};
+
+BEGIN_METADATA(SubmitButtonContainer)
+END_METADATA
 
 }  // namespace
 
@@ -344,6 +389,34 @@ class MonitoringWarningView : public NonAccessibleView {
 };
 
 BEGIN_METADATA(MonitoringWarningView)
+END_METADATA
+
+// Implements the left part of the expanded public session view.
+class LeftPaneView : public NonAccessibleView {
+  METADATA_HEADER(LeftPaneView, NonAccessibleView)
+
+ public:
+  LeftPaneView() {
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(), 24));
+  }
+  LeftPaneView(const LeftPaneView&) = delete;
+  LeftPaneView& operator=(const LeftPaneView&) = delete;
+  ~LeftPaneView() override = default;
+
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    if (available_size.is_fully_bounded() &&
+        available_size.width().value() >= available_size.height().value()) {
+      return gfx::Size{kLandscapeLeftPaneWidthDp,
+                       available_size.height().value() - 2 * kPaddingDp};
+    } else {
+      return View::CalculatePreferredSize(available_size);
+    }
+  }
+};
+
+BEGIN_METADATA(LeftPaneView)
 END_METADATA
 
 // Implements the right part of the expanded public session view.
@@ -759,7 +832,8 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   }
 
   SetPreferredSize(GetPreferredSizeLandscape());
-  layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  SetUseDefaultFillLayout(true);
+  box_layout_view_ = AddChildView(std::make_unique<views::BoxLayoutView>());
 
   user_view_ =
       new LoginUserView(LoginDisplayStyle::kExtraSmall, false /*show_dropdown*/,
@@ -767,24 +841,17 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   user_view_->SetForceOpaque(true);
   user_view_->SetTapEnabled(false);
 
-  left_pane_ = new NonAccessibleView();
-  AddChildView(left_pane_.get());
-  left_pane_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
+  left_pane_ = box_layout_view_->AddChildView(std::make_unique<LeftPaneView>());
   left_pane_->AddChildView(user_view_.get());
 
   const bool enable_warning = Shell::Get()->local_state()->GetBoolean(
       prefs::kManagedGuestSessionPrivacyWarningsEnabled);
   if (enable_warning) {
-    views::View* padding =
-        left_pane_->AddChildView(std::make_unique<NonAccessibleView>());
-    padding->SetPreferredSize(gfx::Size{kNonEmptyWidth, 24});
     monitoring_warning_view_ =
         left_pane_->AddChildView(std::make_unique<MonitoringWarningView>());
   }
 
-  separator_ = AddChildView(std::make_unique<views::View>());
+  separator_ = box_layout_view_->AddChildView(std::make_unique<views::View>());
   ui::ColorId separator_color_id =
       chromeos::features::IsJellyrollEnabled()
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator)
@@ -795,20 +862,21 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   right_pane_ = new RightPaneView(
       base::BindRepeating(&LoginExpandedPublicAccountView::ShowWarningDialog,
                           base::Unretained(this)));
-  AddChildView(right_pane_.get());
+  box_layout_view_->AddChildView(right_pane_.get());
 
-  submit_button_ = AddChildView(std::make_unique<ArrowButtonView>(
-      base::BindRepeating(&RightPaneView::Login, base::Unretained(right_pane_)),
-      kArrowButtonSizeDp));
+  auto* const submit_button_container =
+      AddChildView(std::make_unique<SubmitButtonContainer>());
+  submit_button_ =
+      submit_button_container->AddChildView(std::make_unique<ArrowButtonView>(
+          base::BindRepeating(&RightPaneView::Login,
+                              base::Unretained(right_pane_)),
+          kArrowButtonSizeDp));
   submit_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_PUBLIC_ACCOUNT_LOG_IN_BUTTON_ACCESSIBLE_NAME));
   if (chromeos::features::IsJellyrollEnabled()) {
     submit_button_->SetBackgroundColorId(
         cros_tokens::kCrosSysSystemPrimaryContainer);
   }
-  // `submit_button_` has absolute position and is laid out in our `Layout()`
-  // override.
-  submit_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 
 LoginExpandedPublicAccountView::~LoginExpandedPublicAccountView() = default;
@@ -916,17 +984,6 @@ void LoginExpandedPublicAccountView::OnBoundsChanged(
   }
 }
 
-void LoginExpandedPublicAccountView::Layout(PassKey) {
-  LayoutSuperclass<View>(this);
-
-  submit_button_->SizeToPreferredSize();
-  const int submit_button_x =
-      size().width() - kPaddingDp - submit_button_->size().width();
-  const int submit_button_y =
-      size().height() - kPaddingDp - submit_button_->size().height();
-  submit_button_->SetPosition(gfx::Point{submit_button_x, submit_button_y});
-}
-
 void LoginExpandedPublicAccountView::OnKeyEvent(ui::KeyEvent* event) {
   if (!GetVisible() || event->type() != ui::EventType::kKeyPressed) {
     return;
@@ -943,10 +1000,10 @@ void LoginExpandedPublicAccountView::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void LoginExpandedPublicAccountView::UseLandscapeLayout() {
-  layout_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  box_layout_view_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  box_layout_view_->SetBetweenChildSpacing(kSeparatorMarginDp);
+  box_layout_view_->SetInsideBorderInsets(gfx::Insets());
 
-  left_pane_->SetPreferredSize(
-      gfx::Size{kLandscapeLeftPaneWidthDp, size().height() - 2 * kPaddingDp});
   left_pane_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kPaddingDp, kPaddingDp, kPaddingDp, 0));
@@ -956,9 +1013,6 @@ void LoginExpandedPublicAccountView::UseLandscapeLayout() {
       gfx::Size{kSeparatorThicknessDp, kNonEmptyHeight});
   separator_->SetProperty(views::kCrossAxisAlignmentKey,
                           views::LayoutAlignment::kStretch);
-  separator_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, kSeparatorMarginDp, 0, kSeparatorMarginDp));
 
   right_pane_->SetProperty(
       views::kMarginsKey,
@@ -966,18 +1020,12 @@ void LoginExpandedPublicAccountView::UseLandscapeLayout() {
 }
 
 void LoginExpandedPublicAccountView::UsePortraitLayout() {
-  layout_->SetOrientation(views::BoxLayout::Orientation::kVertical);
-
-  left_pane_->SetPreferredSize(std::nullopt);
-  left_pane_->SetProperty(views::kMarginsKey,
-                          gfx::Insets::TLBR(kPaddingDp, kPaddingDp,
-                                            kPortraitPaneSpacing, kPaddingDp));
-
+  box_layout_view_->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  box_layout_view_->SetBetweenChildSpacing(kPortraitPaneSpacing);
+  box_layout_view_->SetInsideBorderInsets(gfx::Insets(kPaddingDp));
+  left_pane_->ClearProperty(views::kMarginsKey);
+  right_pane_->ClearProperty(views::kMarginsKey);
   separator_->SetVisible(false);
-
-  right_pane_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, kPaddingDp, kPaddingDp, kPaddingDp));
 }
 
 BEGIN_METADATA(LoginExpandedPublicAccountView)

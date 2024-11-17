@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -36,8 +38,12 @@ public class HubToolbarViewBinder {
             view.setButtonLookupConsumer(model.get(PANE_BUTTON_LOOKUP_CALLBACK));
         } else if (key == SEARCH_BOX_VISIBLE) {
             view.setSearchBoxVisible(model.get(SEARCH_BOX_VISIBLE));
-        } else if (key == SEARCH_BOX_LISTENER) {
-            view.setSearchBoxListener(model.get(SEARCH_BOX_LISTENER));
+        } else if (key == SEARCH_LOUPE_VISIBLE) {
+            view.setSearchLoupeVisible(model.get(SEARCH_LOUPE_VISIBLE));
+        } else if (key == SEARCH_LISTENER) {
+            view.setSearchListener(model.get(SEARCH_LISTENER));
+        } else if (key == IS_INCOGNITO) {
+            view.updateIncognitoElements(model.get(IS_INCOGNITO));
         }
     }
 }

@@ -6,10 +6,25 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_UI_H_
 
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace content {
 class WebUI;
 }  // namespace content
+
+class SigninErrorUI;
+
+class SigninErrorUIConfig : public content::DefaultWebUIConfig<SigninErrorUI> {
+ public:
+  SigninErrorUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISigninErrorHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 class SigninErrorUI : public SigninWebDialogUI {
  public:

@@ -21,7 +21,7 @@ import shard_util
 import test_runner_errors
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
-from xcode_log_parser import XcodeLogParser
+from xcode_log_parser import XcodeLogParser, Xcode16LogParser
 import xcode_util
 
 # if the current directory is in scripts, then we need to add plugin
@@ -221,8 +221,11 @@ class LaunchCommand(object):
                   (attempt, ' '.join(cmd_list)))
       output = self.launch_attempt(cmd_list)
 
-      result = XcodeLogParser.collect_test_results(outdir_attempt, output,
-                                                   clones > 1)
+      if xcode_util.using_xcode_16_or_higher():
+        result = Xcode16LogParser.collect_test_results(outdir_attempt, output)
+      else:
+        result = XcodeLogParser.collect_test_results(outdir_attempt, output,
+                                                     clones > 1)
 
       tests_selected_at_runtime = _tests_decided_at_runtime(
           self.egtests_app.test_app_path)

@@ -85,8 +85,6 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
       if not os.path.exists(self.host_app_path):
         raise test_runner.AppNotFoundError(self.host_app_path)
 
-    self.use_trusted_cert = True
-
     self.test_attempt_count = {}
 
     replay_path = os.path.abspath(replay_path)

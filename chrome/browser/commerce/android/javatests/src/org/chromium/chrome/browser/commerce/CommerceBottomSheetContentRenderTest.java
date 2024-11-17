@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.commerce;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+
 import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_SHOPPING;
 
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -30,7 +35,7 @@ import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -38,12 +43,16 @@ import java.io.IOException;
 /** Render Tests for the View build by the CommerceBottomSheetContent component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class CommerceBottomSheetContentRenderTest extends BlankUiTestActivityTestCase {
+public class CommerceBottomSheetContentRenderTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus().setBugComponent(UI_BROWSER_SHOPPING).build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock BottomSheetController mBottomSheetController;
 
@@ -63,9 +72,15 @@ public class CommerceBottomSheetContentRenderTest extends BlankUiTestActivityTes
                 .build();
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    private BlankUiTestActivity getActivity() {
+        return mActivityTestRule.getActivity();
+    }
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.launchActivity(null);
+
+        doNothing().when(mBottomSheetController).addObserver(any());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -79,6 +94,7 @@ public class CommerceBottomSheetContentRenderTest extends BlankUiTestActivityTes
                     mCoordinator =
                             new CommerceBottomSheetContentCoordinator(
                                     getActivity(), mBottomSheetController);
+
                     mContentView = mCoordinator.getContentViewForTesting();
                     mRecyclerView = mCoordinator.getRecyclerViewForTesting();
                     mModelList = mCoordinator.getModelListForTesting();

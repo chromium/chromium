@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/organization/trigger.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -41,12 +42,17 @@ class TabOrganizationTriggerObserver : public BrowserListObserver,
 
  private:
   Browser* BrowserForTabStripModel(TabStripModel* tab_strip_model) const;
+  void EvaluateTrigger(base::WeakPtr<Browser> browser);
 
   std::unique_ptr<TabOrganizationTrigger> trigger_logic_;
   base::RepeatingCallback<void(const Browser*)> on_trigger_;
   raw_ptr<content::BrowserContext> browser_context_;
   std::unordered_map<TabStripModel*, raw_ptr<Browser>>
       tab_strip_model_to_browser_map_;
+  // Whether trigger evaluation is scheduled. Used to debounce
+  // TabStripModelObserver events.
+  bool pending_eval_ = false;
+  base::WeakPtrFactory<TabOrganizationTriggerObserver> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_OBSERVER_H_

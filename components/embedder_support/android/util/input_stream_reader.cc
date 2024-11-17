@@ -14,7 +14,7 @@ InputStreamReader::InputStreamReader(InputStream* stream) : stream_(stream) {
   DCHECK(stream);
 }
 
-InputStreamReader::~InputStreamReader() {}
+InputStreamReader::~InputStreamReader() = default;
 
 int InputStreamReader::Seek(const net::HttpByteRange& byte_range) {
   int content_size = 0;

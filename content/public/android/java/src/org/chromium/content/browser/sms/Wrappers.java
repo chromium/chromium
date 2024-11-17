@@ -9,10 +9,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Handler;
-
-import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
 import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
@@ -107,7 +104,6 @@ class Wrappers {
         }
 
         @Override
-        @RequiresApi(Build.VERSION_CODES.O)
         public Intent registerReceiver(
                 BroadcastReceiver receiver,
                 IntentFilter filter,
@@ -119,7 +115,6 @@ class Wrappers {
         }
 
         @Override
-        @RequiresApi(Build.VERSION_CODES.O)
         public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, int flags) {
             throw new RuntimeException(); // Not implemented.
         }

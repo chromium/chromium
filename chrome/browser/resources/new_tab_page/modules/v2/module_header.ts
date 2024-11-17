@@ -22,6 +22,8 @@ export interface MenuItem {
 export interface ModuleHeaderElement {
   $: {
     actionMenu: CrActionMenuElement,
+    menuButton: HTMLElement,
+    title: HTMLElement,
   };
 }
 
@@ -47,13 +49,9 @@ export class ModuleHeaderElement extends CrLitElement {
     };
   }
 
-  headerText: string;
+  headerText: string|null = null;
   menuItemGroups: MenuItem[][] = [];
   moreActionsText: string;
-
-  showAt(e: Event) {
-    this.$.actionMenu.showAt(e.target as HTMLElement);
-  }
 
   protected onButtonClick_(e: Event) {
     const action = (e.currentTarget as HTMLElement).dataset['action'];
@@ -70,9 +68,7 @@ export class ModuleHeaderElement extends CrLitElement {
   }
 
   protected onMenuButtonClick_(e: Event) {
-    e.stopPropagation();
-    this.dispatchEvent(
-        new Event('menu-button-click', {bubbles: true, composed: true}));
+    this.$.actionMenu.showAt(e.target as HTMLElement);
   }
 
   protected showDivider_(index: number): boolean {

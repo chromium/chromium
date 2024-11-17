@@ -18,14 +18,14 @@ namespace {
 
 class WebAppManifestSectionTableTest : public testing::Test {
  public:
-  WebAppManifestSectionTableTest() {}
+  WebAppManifestSectionTableTest() = default;
 
   WebAppManifestSectionTableTest(const WebAppManifestSectionTableTest&) =
       delete;
   WebAppManifestSectionTableTest& operator=(
       const WebAppManifestSectionTableTest&) = delete;
 
-  ~WebAppManifestSectionTableTest() override {}
+  ~WebAppManifestSectionTableTest() override = default;
 
  protected:
   void SetUp() override {

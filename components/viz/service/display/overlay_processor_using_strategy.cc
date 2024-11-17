@@ -1025,7 +1025,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
         break;
       default:
         // Unsupported strategy type.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

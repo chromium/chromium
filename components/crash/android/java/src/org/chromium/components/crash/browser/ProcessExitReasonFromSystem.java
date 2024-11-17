@@ -99,16 +99,17 @@ public class ProcessExitReasonFromSystem {
 
     /**
      * Records the given |systemReason| (given by #getExitReason) to UMA with the given |umaName|.
+     *
      * @see #getExitReason
      */
     public static void recordAsEnumHistogram(String umaName, int systemReason) {
-        Integer exitReason = convertApplicationExitInfoToExitReason(systemReason);
+        Integer exitReason = convertToExitReason(systemReason);
         if (exitReason != null) {
             RecordHistogram.recordEnumeratedHistogram(umaName, exitReason, ExitReason.NUM_ENTRIES);
         }
     }
 
-    public static @Nullable Integer convertApplicationExitInfoToExitReason(int systemReason) {
+    public static @Nullable Integer convertToExitReason(int systemReason) {
         @ExitReason Integer reason = null;
         switch (systemReason) {
             case ApplicationExitInfo.REASON_ANR:
@@ -165,4 +166,3 @@ public class ProcessExitReasonFromSystem {
         sActivityManager = am;
     }
 }
-;

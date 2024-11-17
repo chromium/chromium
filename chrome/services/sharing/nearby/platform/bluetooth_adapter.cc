@@ -8,8 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/cross_device/nearby/nearby_features.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 BluetoothAdapter::BluetoothAdapter(
     const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter)
@@ -115,5 +114,4 @@ BluetoothAdapter::UniqueId BluetoothAdapter::GetUniqueId() const {
   return 0;
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

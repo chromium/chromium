@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -46,6 +47,7 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
@@ -381,7 +383,7 @@ class SamlTestBase : public OobeBaseTest {
       cryptohome_client_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
-
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 
@@ -1524,10 +1526,13 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_NoSAML) {
 // Verifies that the offline login time limit does not affect a user who
 // authenticated without SAML.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, NoSAML) {
+  const auto account_id = AccountId::FromUserEmail(kNonSAMLUserEmail);
+  cryptohome_mixin_.ApplyAuthConfig(
+      account_id, test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+
   // Verify that offline login is allowed.
-  LoginScreenTestApi::SubmitPassword(
-      AccountId::FromUserEmail(kNonSAMLUserEmail), "password",
-      true /* check_if_submittable */);
+  LoginScreenTestApi::SubmitPassword(account_id, "password",
+                                     true /* check_if_submittable */);
   test::WaitForPrimaryUserSessionStart();
 }
 
@@ -1543,10 +1548,14 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_SAMLNoLimit) {
 // Verifies that when no offline login time limit is set, a user who
 // authenticated with SAML is allowed to log in offline.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLNoLimit) {
+  const auto account_id =
+      AccountId::FromUserEmail(saml_test_users::kFirstUserCorpExampleComEmail);
+  cryptohome_mixin_.ApplyAuthConfig(
+      account_id, test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+
   // Verify that offline login is allowed.
-  LoginScreenTestApi::SubmitPassword(
-      AccountId::FromUserEmail(saml_test_users::kFirstUserCorpExampleComEmail),
-      "password", true /* check_if_submittable */);
+  LoginScreenTestApi::SubmitPassword(account_id, "password",
+                                     true /* check_if_submittable */);
   test::WaitForPrimaryUserSessionStart();
 }
 
@@ -1621,6 +1630,10 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_PRE_TransferCookiesAffiliated) {
 // if the user belongs to the domain that the device is enrolled into. Also
 // verifies that GAIA cookies are not transferred.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_TransferCookiesAffiliated) {
+  cryptohome_mixin_.ApplyAuthConfig(
+      AccountId::FromUserEmail(saml_test_users::kFirstUserCorpExampleComEmail),
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+
   fake_saml_idp()->SetCookieValue(kSAMLIdPCookieValue2);
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   ShowGAIALoginForm();
@@ -1638,6 +1651,10 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_TransferCookiesAffiliated) {
 // belongs to the domain that the device is enrolled into. Also verifies that
 // GAIA cookies are not transferred.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TransferCookiesAffiliated) {
+  cryptohome_mixin_.ApplyAuthConfig(
+      AccountId::FromUserEmail(saml_test_users::kFirstUserCorpExampleComEmail),
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+
   fake_saml_idp()->SetCookieValue(kSAMLIdPCookieValue2);
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   ShowGAIALoginForm();
@@ -1669,6 +1686,10 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_TransferCookiesUnaffiliated) {
 // does not belong to the domain that the device is enrolled into. Also verifies
 // that GAIA cookies are not transferred.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TransferCookiesUnaffiliated) {
+  cryptohome_mixin_.ApplyAuthConfig(
+      AccountId::FromUserEmail(saml_test_users::kFifthUserExampleTestEmail),
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+
   fake_saml_idp()->SetCookieValue(kSAMLIdPCookieValue2);
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   ShowGAIALoginForm();
@@ -1779,6 +1800,11 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_SamlToGaiaChange) {
 // Verifies that when SAML user changes IdP to GAIA we detect it correctly and
 // update corresponding flags in the local state and in user session.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SamlToGaiaChange) {
+  const auto account_id = AccountId::FromUserEmailGaiaId(
+      saml_test_users::kFirstUserCorpExampleComEmail, kFirstSAMLUserGaiaId);
+  cryptohome_mixin_.ApplyAuthConfig(
+      account_id, test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+
   // Change user IdP to GAIA.
   fake_gaia_.fake_gaia()->RemoveSamlIdpForUser(
       saml_test_users::kFirstUserCorpExampleComEmail);
@@ -1793,8 +1819,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SamlToGaiaChange) {
   test::WaitForPrimaryUserSessionStart();
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  EXPECT_FALSE(known_user.IsUsingSAML(AccountId::FromUserEmailGaiaId(
-      saml_test_users::kFirstUserCorpExampleComEmail, kFirstSAMLUserGaiaId)));
+  EXPECT_FALSE(known_user.IsUsingSAML(account_id));
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
   ASSERT_TRUE(user);

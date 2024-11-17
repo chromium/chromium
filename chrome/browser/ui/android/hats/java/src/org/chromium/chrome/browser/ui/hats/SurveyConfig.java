@@ -26,6 +26,7 @@ import java.util.Map;
 @JNINamespace("hats")
 public class SurveyConfig {
 
+    private static boolean sForceUsingTestingConfig;
     private static SurveyConfig sConfigForTesting;
 
     /** Unique key associate with the config. */
@@ -95,7 +96,9 @@ public class SurveyConfig {
     @Nullable
     public static SurveyConfig get(String trigger, String suppliedTriggerId) {
         SurveyConfig config;
-        if (sConfigForTesting != null && sConfigForTesting.mTrigger.equals(trigger)) {
+        if (sForceUsingTestingConfig) {
+            config = sConfigForTesting;
+        } else if (sConfigForTesting != null && sConfigForTesting.mTrigger.equals(trigger)) {
             config = sConfigForTesting;
         } else {
             config = Holder.getInstance().getSurveyConfig(trigger);
@@ -133,6 +136,11 @@ public class SurveyConfig {
     static void setSurveyConfigForTesting(SurveyConfig config) {
         sConfigForTesting = config;
         ResettersForTesting.register(() -> sConfigForTesting = null);
+    }
+
+    static void setSurveyConfigForceUsingTestingConfig(boolean shouldForce) {
+        sForceUsingTestingConfig = shouldForce;
+        ResettersForTesting.register(() -> sForceUsingTestingConfig = false);
     }
 
     /** Clear all the initialized configs. */

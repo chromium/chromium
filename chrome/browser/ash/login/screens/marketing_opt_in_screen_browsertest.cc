@@ -96,15 +96,10 @@ const RegionToCodeMap kExtendedCountries[]{
 const RegionToCodeMap kDoubleOptInCountries[]{
     {"Germany", "Europe/Berlin", "de", false, false, false}};
 
-// Unknown country.
-const RegionToCodeMap kUnknownCountry[]{
-    {"Unknown", "unknown", "", false, true}};
-
 // Base class for simple tests on the marketing opt-in screen.
 class MarketingOptInScreenTest : public OobeBaseTest,
                                  public LocalStateMixin::Delegate {
  public:
-  MarketingOptInScreenTest();
   ~MarketingOptInScreenTest() override = default;
 
   // OobeBaseTest:
@@ -182,13 +177,6 @@ class MarketingOptInScreenTestWithRequest : public MarketingOptInScreenTest {
               &MarketingOptInScreenTestWithRequest::HandleBackendRequest,
               base::Unretained(this)))};
 };
-
-MarketingOptInScreenTest::MarketingOptInScreenTest() {
-  feature_list_.InitWithFeatures(
-      {::features::kOobeMarketingDoubleOptInCountriesSupported,
-       ::features::kOobeMarketingAdditionalCountriesSupported},
-      {});
-}
 
 void MarketingOptInScreenTest::SetUpOnMainThread() {
   ShellTestApi().SetTabletModeEnabledForTest(true);
@@ -549,52 +537,6 @@ INSTANTIATE_TEST_SUITE_P(MarketingOptInDoubleOptInCountries,
                          testing::ValuesIn(kDoubleOptInCountries),
                          RegionAsParameterInterface::ParamInfoToString);
 
-// Disables the extended list of countries and the double opt-in countries.
-class MarketingDisabledExtraCountries : public MarketingOptInScreenTest,
-                                        public RegionAsParameterInterface {
- public:
-  MarketingDisabledExtraCountries() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        {}, {::features::kOobeMarketingDoubleOptInCountriesSupported,
-             ::features::kOobeMarketingAdditionalCountriesSupported});
-  }
-
-  ~MarketingDisabledExtraCountries() = default;
-
-  void SetUpLocalState() override { SetUpLocalStateRegion(); }
-};
-
-IN_PROC_BROWSER_TEST_P(MarketingDisabledExtraCountries, OptInNotVisible) {
-  const RegionToCodeMap param = GetParam();
-  ShowMarketingOptInScreen();
-  OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
-  ExpectNoOptInOption();
-  TapOnGetStartedAndWaitForScreenExit();
-
-  ExpectGeolocationMetric(/*resolved=*/!param.is_unknown_country);
-}
-
-// Tests that countries from the extended list
-// cannot opt-in when the feature is disabled.
-INSTANTIATE_TEST_SUITE_P(MarketingOptInExtendedCountries,
-                         MarketingDisabledExtraCountries,
-                         testing::ValuesIn(kExtendedCountries),
-                         RegionAsParameterInterface::ParamInfoToString);
-
-// Tests that double opt-in countries cannot opt-in
-// when the feature is disabled.
-INSTANTIATE_TEST_SUITE_P(MarketingOptInDoubleOptInCountries,
-                         MarketingDisabledExtraCountries,
-                         testing::ValuesIn(kDoubleOptInCountries),
-                         RegionAsParameterInterface::ParamInfoToString);
-
-// Tests that unknown countries cannot opt-in.
-INSTANTIATE_TEST_SUITE_P(MarketingOptInUnknownCountries,
-                         MarketingDisabledExtraCountries,
-                         testing::ValuesIn(kUnknownCountry),
-                         RegionAsParameterInterface::ParamInfoToString);
-
 class MarketingOptInScreenTestChildUser : public MarketingOptInScreenTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -648,8 +590,6 @@ class MarketingOptInScreenTestGameDevice : public MarketingOptInScreenTest {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
         {
-            ::features::kOobeMarketingDoubleOptInCountriesSupported,
-            ::features::kOobeMarketingAdditionalCountriesSupported,
             chromeos::features::kCloudGamingDevice,
         },
         {});

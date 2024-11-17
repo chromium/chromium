@@ -90,7 +90,7 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // Update size of popup and paint. If there is insufficient height to draw the
   // popup, it hides and thus deletes |this| and returns false. (virtual for
   // testing).
-  virtual bool DoUpdateBoundsAndRedrawPopup();
+  [[nodiscard]] virtual bool DoUpdateBoundsAndRedrawPopup();
 
   // Returns the optimal bounds to place the popup with `preferred_size` and
   // places an arrow on the popup border to point towards `element_bounds`

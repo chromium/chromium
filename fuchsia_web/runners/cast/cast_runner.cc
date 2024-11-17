@@ -241,6 +241,11 @@ void CastRunner::Start(
   }
 }
 
+void CastRunner::handle_unknown_method(uint64_t ordinal,
+                                       bool method_has_response) {
+  LOG(ERROR) << "Unknown method called on CastRunner. Ordinal: " << ordinal;
+}
+
 void CastRunner::DeletePersistentData(DeletePersistentDataCallback callback) {
   if (data_reset_in_progress_) {
     // Repeated requests to DeletePersistentData are not supported.

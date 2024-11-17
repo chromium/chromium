@@ -17,12 +17,11 @@ component("lottie") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//cc/paint",
     "//ui/gfx",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//ui/base",
       "//ui/color",

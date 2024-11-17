@@ -26,7 +26,7 @@ import './pin_settings.js';
 // </if>
 import './print_preview_vars.css.js';
 import './scaling_settings.js';
-import '../strings.m.js';
+import '/strings.m.js';
 // <if expr="not is_chromeos">
 import './link_container.js';
 

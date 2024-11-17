@@ -54,12 +54,6 @@ namespace printing {
 
 namespace {
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-// Print UX requirement for watermarking. Values are in pixels.
-constexpr int kWatermarkBlockWidth = 350;
-constexpr float kTextSize = 24.0f;
-#endif
-
 sk_sp<SkDocument> MakeDocument(
     const std::string& creator,
     const std::string& title,
@@ -79,32 +73,23 @@ sk_sp<SkDocument> MakeDocument(
       generate_document_outline, &stream);
 }
 
+}  // namespace
+
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-void DrawEnterpriseWatermark(SkCanvas* canvas, SkSize size) {
+void DrawEnterpriseWatermark(SkCanvas* canvas,
+                             SkSize size,
+                             const std::string& watermark_text) {
   if (!base::FeatureList::IsEnabled(
-          enterprise_watermark::features::kEnablePrintWatermark)) {
+          enterprise_watermark::features::kEnablePrintWatermark) ||
+      watermark_text.empty()) {
     return;
   }
 
-  // TODO(b/356446812): For now, use this hard-coded string to facilitate
-  // implementing UI tests. We must update the PrintCompositor mojo interface in
-  // order to pass the watermark string here from the browser process.
-  std::string text = "Private! Confidential!\n2024-05-24\nexample@gmail.com";
-  enterprise_watermark::DrawWatermark(canvas, size, text, kWatermarkBlockWidth,
-                                      kTextSize);
+  enterprise_watermark::DrawWatermark(canvas, size, watermark_text,
+                                      PrintCompositorImpl::kWatermarkBlockWidth,
+                                      PrintCompositorImpl::kWatermarkTextSize);
 }
 #endif
-
-void DrawPage(SkDocument* doc, const SkDocumentPage& page) {
-  SkCanvas* canvas = doc->beginPage(page.fSize.width(), page.fSize.height());
-  canvas->drawPicture(page.fPicture);
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-  DrawEnterpriseWatermark(canvas, page.fSize);
-#endif
-  doc->endPage();
-}
-
-}  // namespace
 
 PrintCompositorImpl::PrintCompositorImpl(
     mojo::PendingReceiver<mojom::PrintCompositor> receiver,
@@ -447,12 +432,12 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
 
   for (const auto& page : pages) {
     TRACE_EVENT0("print", "PrintCompositorImpl::CompositePages draw page");
-    DrawPage(doc.get(), page);
+    DrawPage(doc.get(), page, watermark_text_);
 
     if (doc_info_) {
       // Optionally draw this page into the full document in `doc_info_` as
       // well.
-      DrawPage(doc_info_->doc.get(), page);
+      DrawPage(doc_info_->doc.get(), page, watermark_text_);
       doc_info_->pages_written++;
     }
   }
@@ -502,6 +487,17 @@ PrintCompositorImpl::GetPictureDeserializationContext(
     subframes[content_id] = frame_info->content;
   }
   return subframes;
+}
+
+void PrintCompositorImpl::DrawPage(SkDocument* doc,
+                                   const SkDocumentPage& page,
+                                   const std::string& watermark_text) {
+  SkCanvas* canvas = doc->beginPage(page.fSize.width(), page.fSize.height());
+  canvas->drawPicture(page.fPicture);
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  DrawEnterpriseWatermark(canvas, page.fSize, watermark_text);
+#endif
+  doc->endPage();
 }
 
 void PrintCompositorImpl::FulfillRequest(
@@ -577,6 +573,10 @@ void PrintCompositorImpl::SetGenerateDocumentOutline(
 
 void PrintCompositorImpl::SetTitle(const std::string& title) {
   title_ = title;
+}
+
+void PrintCompositorImpl::SetWatermarkText(const std::string& watermark_text) {
+  watermark_text_ = watermark_text;
 }
 
 }  // namespace printing

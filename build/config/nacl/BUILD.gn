@@ -37,8 +37,8 @@ config("nacl_warnings") {
     # with initialized definitions later on.  (The alternative would be
     # many, many more forward declarations of everything used in that
     # const variable's initializer before the definition.)  The Windows
-    # compiler is too stupid to notice that there is an initializer later
-    # in the file, and warns about the forward declaration.
+    # compiler doesn't see that there is an initializer later in the file,
+    # and warns about the forward declaration.
     cflags = [ "/wd4132" ]
   }
 }

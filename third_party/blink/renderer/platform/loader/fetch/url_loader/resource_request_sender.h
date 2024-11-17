@@ -243,6 +243,11 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   // when the response has finished, or when the request is canceled.
   std::unique_ptr<PendingRequestInfo> request_info_;
 
+  // Set to true when an operation integral to resource loading latency is
+  // delayed waiting on a response from the code cache.
+  bool latency_critical_operation_deferred_ = false;
+  bool used_code_cache_fetcher_ = false;
+
   scoped_refptr<base::SequencedTaskRunner> loading_task_runner_;
 
   // `pending_tasks_` are queued while waiting for the response from the

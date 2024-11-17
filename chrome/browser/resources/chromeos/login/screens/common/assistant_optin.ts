@@ -6,14 +6,13 @@
  * @fileoverview Oobe Assistant OptIn Flow screen implementation.
  */
 
-import '../../assistant_optin/assistant_optin_flow.js';
+import '/assistant_optin/assistant_optin_flow.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeUiState} from '../../components/display_manager_types.js';
 // TODO(b/320439437) Migrate AssistantOptInFlow to ts
-// import {AssistantOptInFlow} from
-// '../../assistant_optin/assistant_optin_flow.js'
+// import {AssistantOptInFlow} from '/assistant_optin/assistant_optin_flow.js'
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';

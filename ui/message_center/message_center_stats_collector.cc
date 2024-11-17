@@ -20,7 +20,7 @@
 
 namespace message_center {
 
-MessageCenterStatsCollector::NotificationStats::NotificationStats() {}
+MessageCenterStatsCollector::NotificationStats::NotificationStats() = default;
 
 MessageCenterStatsCollector::NotificationStats::NotificationStats(
     const std::string& id)
@@ -30,7 +30,7 @@ MessageCenterStatsCollector::NotificationStats::NotificationStats(
   }
 }
 
-MessageCenterStatsCollector::NotificationStats::~NotificationStats() {}
+MessageCenterStatsCollector::NotificationStats::~NotificationStats() = default;
 
 void MessageCenterStatsCollector::NotificationStats::CollectAction(
     NotificationActionType type) {

@@ -10,14 +10,14 @@ function createPushMessageData(data)
 test(function() {
     const textContents = 'Hello, world!';
 
-    var runTest = pushEvent => {
+    const runTest = pushEvent => {
         assert_not_equals(pushEvent.data, null);
         assert_equals(pushEvent.data.text(), textContents);
     };
 
     // JavaScript strings are UTF-16, whereas binary data for push message data will be
     // encoded as UTF-8. Convert accordingly.
-    var bufferView = new TextEncoder('utf-8').encode(textContents);
+    const bufferView = new TextEncoder('utf-8').encode(textContents);
 
     runTest(new PushEvent('PushEvent', { data: bufferView }));
     runTest(new PushEvent('PushEvent', { data: bufferView.buffer }));
@@ -34,17 +34,17 @@ test(function() {
     const binaryContents = [1, 2, 3];
     const textContents = 'FOOBAR';
 
-    var pushMessageDataBinary = createPushMessageData(new Uint8Array(binaryContents)),
-        pushMessageDataString = createPushMessageData(textContents);
+    const pushMessageDataBinary = createPushMessageData(new Uint8Array(binaryContents));
+    const pushMessageDataString = createPushMessageData(textContents);
 
-    var binaryBuffer = pushMessageDataBinary.arrayBuffer(),
-        binaryBufferView = new Uint8Array(binaryBuffer);
+    const binaryBuffer = pushMessageDataBinary.arrayBuffer();
+    const binaryBufferView = new Uint8Array(binaryBuffer);
 
     assert_equals(binaryBuffer.byteLength, binaryContents.length);
     assert_array_equals(binaryBufferView, binaryContents);
 
-    var stringBuffer = pushMessageDataString.arrayBuffer(),
-        stringBufferView = new Int8Array(stringBuffer);
+    const stringBuffer = pushMessageDataString.arrayBuffer();
+    const stringBufferView = new Int8Array(stringBuffer);
 
     assert_equals(stringBufferView.length, textContents.length);
     assert_equals(stringBufferView[0], 70 /* F */);
@@ -55,10 +55,10 @@ test(function() {
 async_test(function(test) {
     const textContents = 'Hello, world!';
 
-    var pushMessageData = createPushMessageData(textContents);
+    const pushMessageData = createPushMessageData(textContents);
 
-    var blob = pushMessageData.blob(),
-        reader = new FileReader();
+    const blob = pushMessageData.blob();
+    const reader = new FileReader();
 
     assert_equals(blob.size, textContents.length);
     assert_equals(blob.type, '');
@@ -72,19 +72,41 @@ async_test(function(test) {
 
 }, 'PushMessageData handling of Blob content.')
 
-test(function() {
-    var pushMessageDataArray = createPushMessageData('[5, 6, 7]'),
-        pushMessageDataObject = createPushMessageData('{ "foo": { "bar": 42 } }'),
-        pushMessageDataString = createPushMessageData('"foobar"');
+test(function () {
+    const binaryContents = [1, 2, 3];
+    const textContents = 'FOOBAR';
 
-    var array = pushMessageDataArray.json();
+    const pushMessageDataBinary = createPushMessageData(new Uint8Array(binaryContents));
+    const pushMessageDataString = createPushMessageData(textContents);
+
+    const binaryBuffer = pushMessageDataBinary.bytes();
+
+    assert_equals(binaryBuffer.byteLength, binaryContents.length);
+    assert_equals(binaryBuffer.length, binaryContents.length);
+    assert_array_equals(binaryBuffer, binaryContents);
+
+    const stringBuffer = pushMessageDataString.bytes();
+
+    assert_equals(stringBuffer.byteLength, textContents.length);
+    assert_equals(stringBuffer.length, textContents.length);
+    assert_equals(stringBuffer[0], 70 /* F */);
+    assert_equals(stringBuffer[3], 66 /* B */);
+
+}, 'PushMessageData handling of Uint8Array (bytes()) content.');
+
+test(function() {
+    const pushMessageDataArray = createPushMessageData('[5, 6, 7]');
+    const pushMessageDataObject = createPushMessageData('{ "foo": { "bar": 42 } }');
+    const pushMessageDataString = createPushMessageData('"foobar"');
+
+    const array = pushMessageDataArray.json();
     assert_equals(array.length, 3);
     assert_equals(array[1], 6);
 
-    var object = pushMessageDataObject.json();
+    const object = pushMessageDataObject.json();
     assert_equals(object.foo.bar, 42);
 
-    var string = pushMessageDataString.json();
+    const string = pushMessageDataString.json();
     assert_equals(string, 'foobar');
 
 }, 'PushMessageData handling of valid JSON content.');
@@ -103,8 +125,8 @@ test(function() {
 }, 'PushMessageData should not be constructable.');
 
 test(function() {
-    var s = "e\u0328"; // 'e' + COMBINING OGONEK
-    var data = createPushMessageData(s);
+    const s = "e\u0328"; // 'e' + COMBINING OGONEK
+    const data = createPushMessageData(s);
     assert_equals(data.text(), s, 'String should not be NFC-normalized.');
 
 }, 'PushEventInit data is not normalized');

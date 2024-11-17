@@ -333,7 +333,7 @@ void AutoResumptionHandler::ResumePendingDownloads() {
 }
 
 int AutoResumptionHandler::MaybeResumeDownloads(
-    std::map<std::string, DownloadItem*> downloads) {
+    std::map<std::string, raw_ptr<DownloadItem, CtnExperimental>> downloads) {
   int resumed = 0;
   for (const auto& pair : downloads) {
     DownloadItem* download = pair.second;
@@ -378,7 +378,7 @@ bool AutoResumptionHandler::IsAutoResumableDownload(
              IsInterruptedDownloadAutoResumable(
                  item, config_->auto_resumption_size_limit);
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return false;

@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -63,9 +62,6 @@ class OptionTextObserver : public MutationObserver::Delegate {
     init->setCharacterData(true);
     init->setChildList(true);
     init->setSubtree(true);
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-      init->setAttributes(true);
-    }
     observer_->observe(option_, init, ASSERT_NO_EXCEPTION);
   }
 
@@ -133,10 +129,6 @@ void HTMLOptionElement::Trace(Visitor* visitor) const {
 
 FocusableState HTMLOptionElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
-  if (is_descendant_of_select_list_) {
-    return IsDisabledFormControl() ? FocusableState::kNotFocusable
-                                   : FocusableState::kFocusable;
-  }
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList()) {
     if (select->IsAppearanceBasePicker()) {
@@ -227,10 +219,9 @@ void HTMLOptionElement::ParseAttribute(
   if (name == html_names::kValueAttr) {
     if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
-    } else if (is_descendant_of_select_list_) [[unlikely]] {
-      if (HTMLSelectListElement* select_list = OwnerSelectList()) {
-        select_list->OptionElementValueChanged(*this);
-      }
+    }
+    if (HTMLSelectElement* select = OwnerSelectElement()) {
+      select->SetNeedsValidityCheck();
     }
   } else if (name == html_names::kDisabledAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull()) {
@@ -276,8 +267,6 @@ void HTMLOptionElement::SetSelected(bool selected) {
 
   if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionSelectionStateChanged(this, selected);
-  } else if (HTMLSelectListElement* select_list = OwnerSelectList()) {
-    select_list->OptionSelectionStateChanged(this, selected);
   }
 }
 
@@ -359,9 +348,6 @@ void HTMLOptionElement::DidChangeTextContent() {
   if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionElementChildrenChanged(*this);
   }
-  if (HTMLSelectListElement* select_list = OwnerSelectList()) {
-    select_list->OptionElementChildrenChanged(*this);
-  }
   UpdateLabel();
 }
 
@@ -378,6 +364,11 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
     // rather than doing a tree traversal here every time OwnerSelectElement is
     // called, which may be a lot.
     for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+      if (IsA<HTMLOptionElement>(ancestor)) {
+        // Don't associate nested <option>s with <select>s. This matches the
+        // traversals in OptionList and HTMLOptionElement::InsertedInto.
+        return nullptr;
+      }
       if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
         return select;
       }
@@ -391,18 +382,6 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
     }
     if (IsA<HTMLOptGroupElement>(*parentNode())) {
       return DynamicTo<HTMLSelectElement>(parentNode()->parentNode());
-    }
-  }
-  return nullptr;
-}
-
-HTMLSelectListElement* HTMLOptionElement::OwnerSelectList() const {
-  if (!RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
-    return nullptr;
-  }
-  for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
-    if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
-      return selectlist;
     }
   }
   return nullptr;
@@ -473,11 +452,6 @@ void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 }
 
 void HTMLOptionElement::UpdateLabel() {
-  // For <selectlist> the label should not replace descendants for the visual
-  // in order to allow to render arbitrary content.
-  if (is_descendant_of_select_list_) {
-    return;
-  }
   // For appearance:base-select <select> we also need to render all children. We
   // only check UsesMenuList and not computed style because we don't want to
   // change DOM content based on computed style and because appearance:auto/none
@@ -528,9 +502,13 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
   // OptionInserted. Otherwise, if this option is being inserted into a <select>
   // ancestor, then we must call OptionInserted on it.
   bool passed_insertion_point = false;
-  for (Node* ancestor = parentNode(); ancestor;
-       ancestor = ancestor->parentNode()) {
-    if (ancestor == insertion_point) {
+  for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+    if (IsA<HTMLOptionElement>(ancestor)) {
+      // Don't call OptionInserted() on nested <option>s. This matches the
+      // traversals in OptionList and OwnerSelectElement.
+      break;
+    }
+    if (&ancestor == &insertion_point) {
       passed_insertion_point = true;
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
@@ -587,19 +565,22 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
     return;
   }
 
-  for (Node* ancestor = parentNode(); ancestor;
-       ancestor = ancestor->parentNode()) {
+  for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
     // If this option is still associated with a <select> inside the detached
     // subtree, then we should not call OptionRemoved() because we don't call
     // OptionInserted() in the corresponding attachment case. Also, APIs like
     // select.options should still work when the <select> is detached.
-    if (IsA<HTMLSelectElement>(ancestor)) {
+    // Nested options should not be associated with selects.
+    if (IsA<HTMLSelectElement>(ancestor) || IsA<HTMLOptionElement>(ancestor)) {
       return;
     }
   }
 
-  for (Node* ancestor = &insertion_point; ancestor;
-       ancestor = ancestor->parentNode()) {
+  for (Node& ancestor : NodeTraversal::InclusiveAncestorsOf(insertion_point)) {
+    if (IsA<HTMLOptionElement>(ancestor)) {
+      // Nested options should not be associated with selects.
+      return;
+    }
     if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
       SetTextOnlyRendering(true);
       select->OptionRemoved(*this);
@@ -613,10 +594,6 @@ void HTMLOptionElement::SetTextOnlyRendering(bool text_only) {
     return;
   }
 
-  if (is_descendant_of_select_list_) {
-    return;
-  }
-
 #if DCHECK_IS_ON()
   {
     // Double-check to make sure that we are setting the correct state according
@@ -627,6 +604,13 @@ void HTMLOptionElement::SetTextOnlyRendering(bool text_only) {
     DCHECK_EQ(select && select->UsesMenuList(), !text_only);
   }
 #endif
+
+  // If the label attribute is present, then we should be rendering that
+  // instead, even in appearance:base-select mode:
+  // https://github.com/openui/open-ui/issues/1115
+  if (!FastGetAttribute(html_names::kLabelAttr).empty()) {
+    text_only = true;
+  }
 
   if (auto* first_child = GetShadowRoot()->firstChild()) {
     bool currently_text_only = first_child->getNodeType() == kTextNode;
@@ -649,39 +633,6 @@ void HTMLOptionElement::SetTextOnlyRendering(bool text_only) {
   }
 }
 
-void HTMLOptionElement::OptionInsertedIntoSelectListElement() {
-  CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-  CHECK(!is_descendant_of_select_list_);
-
-  ShadowRoot* root = UserAgentShadowRoot();
-  DCHECK(root);
-
-  is_descendant_of_select_list_ = true;
-  // TODO(crbug.com/1196022) Refine the content that an option can render.
-  // Enable the option element to render arbitrary content.
-  root->RemoveChildren();
-  Document& document = GetDocument();
-  auto* default_slot = MakeGarbageCollected<HTMLSlotElement>(document);
-  root->AppendChild(default_slot);
-}
-
-void HTMLOptionElement::OptionRemovedFromSelectListElement() {
-  CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-
-  if (!is_descendant_of_select_list_) {
-    // See the comments in HTMLOptionElement::RemovedFrom which explain when
-    // this can happen.
-    return;
-  }
-
-  ShadowRoot* root = UserAgentShadowRoot();
-  DCHECK(root);
-
-  is_descendant_of_select_list_ = false;
-  root->RemoveChildren();
-  UpdateLabel();
-}
-
 bool HTMLOptionElement::SpatialNavigationFocused() const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (!select || !select->IsFocused())
@@ -695,6 +646,11 @@ bool HTMLOptionElement::IsDisplayNone() const {
 }
 
 void HTMLOptionElement::DefaultEventHandler(Event& event) {
+  DefaultEventHandlerInternal(event);
+  HTMLElement::DefaultEventHandler(event);
+}
+
+void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   auto* select = OwnerSelectElement();
   if (select && !select->IsAppearanceBasePicker()) {
     // We only want to apply mouse/keyboard behavior for appearance:base-select
@@ -712,7 +668,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         (event.type() == event_type_names::kMousedown && mouse_event &&
          mouse_event->button() ==
              static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
-      SetSelected(true);
+      select->SelectOptionByPopup(this);
       select->HidePopup();
       event.SetDefaultHandled();
       return;
@@ -737,9 +693,9 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         }
         if (previous_option) {
           previous_option->Focus(FocusParams(FocusTrigger::kUserGesture));
-          event.SetDefaultHandled();
-          return;
         }
+        event.SetDefaultHandled();
+        return;
       } else if (key == keywords::kArrowDown && select) {
         OptionListIterator option_list = select->GetOptionList().begin();
         while (*option_list && *option_list != this) {
@@ -751,12 +707,12 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
           auto* next_option = *option_list;
           if (next_option) {
             next_option->Focus(FocusParams(FocusTrigger::kUserGesture));
-            event.SetDefaultHandled();
-            return;
           }
+          event.SetDefaultHandled();
+          return;
         }
       } else if ((key == " " || key == keywords::kCapitalEnter) && select) {
-        SetSelected(true);
+        select->SelectOptionByPopup(this);
         select->HidePopup();
         event.SetDefaultHandled();
         return;
@@ -765,11 +721,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
 
     if (key == keywords::kTab &&
         !(keyboard_event->GetModifiers() & tab_ignore_modifiers)) {
-      if (auto* selectlist = OwnerSelectList()) {
-        selectlist->CloseListbox();
-        event.SetDefaultHandled();
-        return;
-      } else if (select) {
+      if (select) {
         // TODO(http://crbug.com/1511354): Consider focusing something in this
         // case. https://github.com/openui/open-ui/issues/1016
         select->HidePopup();
@@ -778,8 +730,17 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
       }
     }
   }
+}
 
-  HTMLElement::DefaultEventHandler(event);
+void HTMLOptionElement::FinishParsingChildren() {
+  HTMLElement::FinishParsingChildren();
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && Selected()) {
+    auto* select = OwnerSelectElement();
+    if (select && select->UsesMenuList() && !select->IsMultiple()) {
+      CHECK_EQ(this, select->SelectedOption());
+      select->UpdateAllSelectedcontents();
+    }
+  }
 }
 
 }  // namespace blink

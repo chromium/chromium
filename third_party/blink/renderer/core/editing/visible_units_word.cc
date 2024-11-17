@@ -365,8 +365,7 @@ PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree& word_start,
     }
     middle -= length;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PositionInFlatTree(nullptr, 0);
+  NOTREACHED();
 }
 
 Position MiddleOfWordPosition(const Position& word_start,

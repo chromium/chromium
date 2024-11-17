@@ -14,9 +14,9 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 // </if>
 import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/js/action_link.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -770,10 +770,25 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     if (!this.data) {
       return true;
     }
-    if (this.data && this.data.fileExternallyRemoved) {
+    if (this.data.fileExternallyRemoved) {
       return false;
     }
-    return this.completelyOnDisk_;
+    switch (this.data.state) {
+      case State.kComplete:
+      case State.kInProgress:
+        return true;
+      case State.kCancelled:
+      case State.kInterrupted:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeIsDangerous_(): boolean {

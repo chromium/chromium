@@ -88,6 +88,8 @@ viz::VizMainImpl::ExternalDependencies CreateVizMainDependencies() {
     deps.power_monitor_source =
         std::make_unique<base::PowerMonitorDeviceSource>();
   }
+
+#if BUILDFLAG(IS_ANDROID)
   if (GetContentClient()->gpu()) {
     deps.sync_point_manager = GetContentClient()->gpu()->GetSyncPointManager();
     deps.shared_image_manager =
@@ -96,6 +98,8 @@ viz::VizMainImpl::ExternalDependencies CreateVizMainDependencies() {
     deps.viz_compositor_thread_runner =
         GetContentClient()->gpu()->GetVizCompositorThreadRunner();
   }
+#endif
+
   auto* process = ChildProcess::current();
   deps.shutdown_event = process->GetShutDownEvent();
   deps.io_thread_task_runner = process->io_task_runner();

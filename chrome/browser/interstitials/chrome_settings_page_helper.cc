@@ -8,7 +8,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/safe_browsing/android/safe_browsing_settings_launcher_android.h"
+#include "chrome/browser/safe_browsing/android/safe_browsing_settings_navigation_android.h"
 #include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
 #else
 #include "chrome/browser/ui/browser_finder.h"

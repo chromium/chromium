@@ -56,11 +56,17 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
           /*planned_max_preloading_type=*/std::nullopt,
           /*triggering_primary_page_source_id=*/ukm::kInvalidSourceId);
 
+  std::optional<content::PreloadingHoldbackStatus> holdback_status_override;
+  if (chrome::android::kCCTNavigationalPrefetchHoldback.Get()) {
+    holdback_status_override = content::PreloadingHoldbackStatus::kHoldback;
+  }
+
   // TODO(crbug.com/40288091): Specify appropriate referrer value that comes
   // from CCT.
   GetWebContents().StartPrefetch(prefetch_url, use_prefetch_proxy,
                                  blink::mojom::Referrer(), referring_origin,
-                                 preloading_attempt->GetWeakPtr());
+                                 preloading_attempt->GetWeakPtr(),
+                                 holdback_status_override);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

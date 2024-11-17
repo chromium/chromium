@@ -52,7 +52,7 @@ public class IncognitoReauthPromoMessageService extends MessageService
     private final @NonNull IncognitoReauthManager mIncognitoReauthManager;
 
     /** This is the data type that this MessageService is serving to its Observer. */
-    class IncognitoReauthMessageData implements MessageData {
+    static class IncognitoReauthMessageData implements MessageData {
         private final MessageCardView.ReviewActionProvider mReviewActionProvider;
         private final MessageCardView.DismissActionProvider mDismissActionProvider;
 

@@ -4,7 +4,6 @@ include_rules = [
   "+google_apis",
   "+mojo/core/embedder",
   "+net",
-  "+remoting/client",
   "+remoting/codec",
   "+remoting/host",
   "+remoting/protocol",

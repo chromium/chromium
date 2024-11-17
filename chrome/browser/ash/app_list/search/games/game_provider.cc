@@ -68,12 +68,6 @@ void LogUpdateStatus(apps::DiscoveryError status) {
 }
 
 bool EnabledByPolicy(Profile* profile) {
-  bool enabled_override = base::GetFieldTrialParamByFeatureAsBool(
-      search_features::kLauncherGameSearch, "enabled_override",
-      /*default_value=*/false);
-  if (enabled_override)
-    return true;
-
   bool suggested_content_enabled =
       profile->GetPrefs()->GetBoolean(ash::prefs::kSuggestedContentEnabled);
   return suggested_content_enabled;
@@ -165,15 +159,17 @@ void GameProvider::UpdateIndex() {
 void GameProvider::OnIndexUpdated(const GameIndex& index,
                                   apps::DiscoveryError error) {
   LogUpdateStatus(error);
-  if (!index.empty())
+  if (!index.empty()) {
     game_index_ = index;
+  }
 }
 
 void GameProvider::OnIndexUpdatedBySubscription(const GameIndex& index) {
   // TODO(crbug.com/40218201): Add tests to check that this is called when the
   // app discovery service notifies its subscribers.
-  if (!index.empty())
+  if (!index.empty()) {
     game_index_ = index;
+  }
 }
 
 void GameProvider::Start(const std::u16string& query) {

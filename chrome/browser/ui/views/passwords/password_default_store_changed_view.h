@@ -7,10 +7,13 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/default_store_changed_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // A view informing the user that their setting for a default password store was
 // changed, offering a link to the password manager settings page.
 class PasswordDefaultStoreChangedView : public PasswordBubbleViewBase {
+  METADATA_HEADER(PasswordDefaultStoreChangedView, PasswordBubbleViewBase)
+
  public:
   PasswordDefaultStoreChangedView(content::WebContents* web_contents,
                                   views::View* anchor_view);

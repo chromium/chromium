@@ -18,8 +18,8 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
+
 namespace {
 
 using testing::_;
@@ -349,5 +349,4 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, MultipleWindows) {
   }));
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

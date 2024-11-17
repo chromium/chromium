@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -35,6 +36,7 @@ class PlusAddressCreationControllerAndroid
 
   // PlusAddressCreationController implementation:
   void OfferCreation(const url::Origin& main_frame_origin,
+                     bool is_manual_fallback,
                      PlusAddressCallback callback) override;
   void TryAgainToReservePlusAddress() override;
   void OnRefreshClicked() override;
@@ -73,6 +75,9 @@ class PlusAddressCreationControllerAndroid
   // Returns whether the onboarding screen with the notice should be shown.
   bool ShouldShowNotice() const;
 
+  // Shows an applicable user perception survey.
+  void TriggerUserPerceptionSurvey(hats::SurveyType survey_type);
+
   PlusAddressService* GetPlusAddressService();
   PlusAddressSettingService* GetPlusAddressSettingService();
 
@@ -80,6 +85,7 @@ class PlusAddressCreationControllerAndroid
 
   std::unique_ptr<PlusAddressCreationViewAndroid> view_;
   url::Origin relevant_origin_;
+  bool is_manual_fallback_ = false;
   PlusAddressCallback callback_;
   bool suppress_ui_for_testing_ = false;
   // This is set by OnPlusAddressReserved and cleared when it's confirmed or

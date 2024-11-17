@@ -12,6 +12,7 @@
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 
 namespace subresource_filter {
 
@@ -19,7 +20,7 @@ PageLoadStatistics::PageLoadStatistics(const mojom::ActivationState& state,
                                        std::string_view uma_filter_tag)
     : activation_state_(state), uma_filter_tag_(uma_filter_tag) {}
 
-PageLoadStatistics::~PageLoadStatistics() {}
+PageLoadStatistics::~PageLoadStatistics() = default;
 
 void PageLoadStatistics::OnDocumentLoadStatistics(
     const mojom::DocumentLoadStatistics& statistics) {
@@ -72,14 +73,10 @@ void PageLoadStatistics::OnDidFinishLoad() {
                       ".PageLoad.SubresourceEvaluation.TotalCPUDuration"}),
         aggregated_document_statistics_.evaluation_total_cpu_duration,
         base::Microseconds(1), base::Seconds(10), 50);
-  } else {
-    CHECK(aggregated_document_statistics_.evaluation_total_wall_duration
-              .is_zero(),
-          base::NotFatalUntil::M132);
-    CHECK(
-        aggregated_document_statistics_.evaluation_total_cpu_duration.is_zero(),
-        base::NotFatalUntil::M132);
   }
+  // Theoretically, we should be able to add an else case that CHECK()s that the
+  // evaluation durations are zero. However, this causes crashes as the renderer
+  // and browser appear to sometimes get out of sync. See crbug.com/372883698.
 }
 
 }  // namespace subresource_filter

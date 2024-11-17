@@ -11,7 +11,7 @@
 // certificate chains.
 class SSLCertReporter {
  public:
-  virtual ~SSLCertReporter() {}
+  virtual ~SSLCertReporter() = default;
 
   // Sends a serialized certificate report to the report collection
   // endpoint.

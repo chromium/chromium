@@ -4,4 +4,4 @@
 # official Blink launch process.
 per-file components_locale_settings_*.xtb=file://third_party/blink/API_OWNERS
 
-per-file search_engine_descriptions_strings_*.xtb=file://components/search_engines/search_engine_choice/OWNERS
+per-file search_engine_descriptions_strings_*.xtb=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS

@@ -1,0 +1,139 @@
+<style>
+.banner-section {
+  background-color: var(--promotion-banner-background);
+  padding: 24px;
+}
+
+.banner-section-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 24px;
+}
+
+.banner-actions-container {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.promotion-main-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.promotion-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blue-pill-button{
+  background-color: var(--promotion-pill-button-color);
+  width: 202px;
+  height: 20px;
+  padding: 8px 0px 8px 0px;
+  text-align: center;
+  line-height: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  color: var(--promotion-pill-text-color);
+  border-radius: 50px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.blue-pill-button:hover {
+  background: color-mix(in srgb,
+    var(--promotion-pill-button-color-hover),
+    var(--promotion-pill-button-color));
+}
+
+.banner-title {
+  color: var(--promotion-banner-title-color);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.banner-description {
+  color: var(--promotion-banner-description-color);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.promotion-icon-container {
+  display: flex;
+  align-items: center;
+}
+
+#close-icon-container {
+  -webkit-mask-image: url(chrome://resources/images/promotion_policy_banner_close.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 20px;
+  background-color: #5F6368;
+  height: 20px;
+  width: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #close-icon-container {
+    background-color: #F1F3F4;
+  }
+}
+
+.dismiss-button {
+  height: 20px;
+  width: 20px;
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+  padding-inline: 0;
+  padding-block: 0;
+}
+
+ /* Remove the icon with smaller width devices for promotion banner */
+@media only screen and (max-width: 530px) {
+  .promotion-icon-container {
+    display: none;
+  }
+}
+</style>
+
+<if expr="not is_android and not is_ios">
+<section id="promotion-banner-section-main" class="banner-section">
+  <div id="promotion-banner-section" class="banner-section-container">
+    <div id="promotion-icon" class="promotion-icon-container" aria-hidden="true">
+      <picture>
+        <source srcset="chrome://resources/images/dark/promotion_banner_dark.svg"
+            media="(prefers-color-scheme: dark)">
+        <img src="chrome://resources/images/promotion_banner_light.svg">
+      </picture>
+    </div>
+    <div id="banner-actions" class="banner-actions-container">
+      <div id="promotion-main-text" class="promotion-main-text-container">
+        <div id="promotion-text" class="promotion-text-container">
+          <div id="promotion-banner-title" class="banner-title">
+            $i18n{promotionBannerTitle}
+          </div>
+          <div id="promotion-banner-description" class="banner-description">
+            $i18n{promotionBannerDesc}
+          </div>
+        </div>
+          <a id="promotion-redirect-button" class="blue-pill-button" target="_blank"
+              href="https://admin.google.com?utm_source=chrome_policy_promotion">
+            $i18n{promotionBannerBtn}
+          </a>
+      </div>
+      <button id="promotion-dismiss-button" class="dismiss-button" tabindex="0">
+        <div id="close-icon-container"></div>
+      </button>
+    </div>
+  </div>
+</section>
+</if>

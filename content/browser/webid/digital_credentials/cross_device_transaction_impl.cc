@@ -84,14 +84,14 @@ TransactionImpl::TransactionImpl(
     return;
   }
 
-  v1_discovery_ = std::make_unique<device::FidoCableDiscovery>(
+  auto v1_discovery = std::make_unique<device::FidoCableDiscovery>(
       std::vector<device::CableDiscoveryData>());
   auto v2_discovery = std::make_unique<device::cablev2::Discovery>(
       // This request type argument is unused. It only applies to the payload
       // sent for state-assisted transactions, but those aren't supported for
       // digital credentials.
       device::FidoRequestType::kGetAssertion, network_context_factory,
-      qr_generator_key, v1_discovery_->GetV2AdvertStream(),
+      qr_generator_key, v1_discovery->GetV2AdvertStream(),
       /*contact_device_stream=*/nullptr,
       std::vector<device::CableDiscoveryData>(),
       /*pairing_callback=*/std::nullopt,
@@ -100,7 +100,8 @@ TransactionImpl::TransactionImpl(
                           weak_ptr_factory_.GetWeakPtr()),
       /*must_support_ctap=*/false);
   dispatcher_ = std::make_unique<RequestDispatcher>(
-      std::move(v2_discovery), origin_, std::move(request_),
+      std::move(v1_discovery), std::move(v2_discovery), origin_,
+      std::move(request_),
       base::BindOnce(&TransactionImpl::OnHaveResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 

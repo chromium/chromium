@@ -1808,9 +1808,9 @@ void SharedStorageDatabase::LogInitHistograms() {
     return;
   }
 
-  int64_t file_size = 0L;
-  if (base::GetFileSize(db_path_, &file_size)) {
-    int64_t file_size_kb = file_size / 1024;
+  std::optional<int64_t> file_size = base::GetFileSize(db_path_);
+  if (file_size.has_value()) {
+    int64_t file_size_kb = file_size.value() / 1024;
     base::UmaHistogramCounts10M(
         "Storage.SharedStorage.Database.FileBacked.FileSize.KB", file_size_kb);
 

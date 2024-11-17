@@ -139,7 +139,7 @@ bool LayoutView::HitTest(const HitTestLocation& location,
   // Note that if an iframe has its render pipeline throttled, it will not
   // update layout here, and it will also not propagate the hit test into the
   // iframe's inner document.
-  if (!GetFrameView()->UpdateLifecycleToPrePaintClean(
+  if (!GetFrameView()->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kHitTest))
     return false;
 
@@ -303,13 +303,6 @@ bool LayoutView::ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
     }
   }
   return false;
-}
-
-PhysicalRect LayoutView::LocalVisualRectIgnoringVisibility() const {
-  NOT_DESTROYED();
-  PhysicalRect rect = VisualOverflowRect();
-  rect.Unite(PhysicalRect(rect.offset, ViewRect().size));
-  return rect;
 }
 
 void LayoutView::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,

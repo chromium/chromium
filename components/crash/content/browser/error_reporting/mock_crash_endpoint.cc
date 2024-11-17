@@ -31,15 +31,11 @@ class MockCrashEndpoint::Client : public crash_reporter::CrashReporterClient {
         FROM_HERE, base::BlockingType::MAY_BLOCK);
     return owner_->consented_;
   }
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-  void GetProductNameAndVersion(std::string* product_name,
-                                std::string* version,
-                                std::string* channel) override {
-    *product_name = "Chrome_ChromeOS";
-    *version = "1.2.3.4";
-    *channel = "Stable";
+  void GetProductInfo(ProductInfo* product_info) override {
+    product_info->product_name = "Chrome_ChromeOS";
+    product_info->version = "1.2.3.4";
+    product_info->channel = "Stable";
   }
-#endif
  private:
   raw_ptr<MockCrashEndpoint> owner_;
 };

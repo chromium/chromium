@@ -141,7 +141,6 @@ export enum ViewName {
   REVIEW = 'view-review',
   SETTINGS = 'view-settings',
   SPLASH = 'view-splash',
-  SUPER_RES_INTRO_DIALOG = 'view-super-res-intro-dialog',
   VIDEO_RESOLUTION_SETTINGS = 'view-video-resolution-settings',
   WARNING = 'view-warning',
 }
@@ -551,7 +550,6 @@ export enum LocalStorageKey {
   SAVE_METADATA = 'saveMetadata',
   SHOW_ALL_RESOLUTIONS = 'showAllResolutions',
   SHOW_METADATA = 'showMetadata',
-  SUPER_RES_DIALOG_SHOWN = 'superResDialogShown',
   TOGGLE_MIC = 'toggleMic',
 }
 

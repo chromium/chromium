@@ -47,7 +47,9 @@ class TabClusterUIClient : public TabStripModelObserver {
   raw_ptr<ash::TabClusterUIController> controller_;
   BrowserTabStripTracker browser_tab_strip_tracker_;
   // A map from web contents to tab items.
-  std::map<content::WebContents*, ash::TabClusterUIItem*> contents_item_map_;
+  std::map<content::WebContents*,
+           raw_ptr<ash::TabClusterUIItem, CtnExperimental>>
+      contents_item_map_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_WM_TAB_CLUSTER_UI_CLIENT_H_

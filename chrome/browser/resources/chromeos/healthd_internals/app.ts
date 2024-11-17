@@ -7,6 +7,7 @@ import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/ash/common/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
@@ -44,6 +45,7 @@ export interface HealthdInternalsAppElement {
     cpuUsageChart: HealthdInternalsGenericChartElement,
     memoryChart: HealthdInternalsGenericChartElement,
     thermalChart: HealthdInternalsGenericChartElement,
+    zramChart: HealthdInternalsGenericChartElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
     appContainer: HTMLElement,
     sidebar: HTMLElement,
@@ -86,6 +88,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
           cpuUsage: this.$.cpuUsageChart,
           memory: this.$.memoryChart,
           thermal: this.$.thermalChart,
+          zram: this.$.zramChart
         });
 
     this.$.settingsDialog.addEventListener('ui-update-interval-updated', () => {
@@ -143,6 +146,11 @@ export class HealthdInternalsAppElement extends PolymerElement {
               path: PagePath.THERMAL,
               obj: this.$.thermalChart,
             },
+            {
+              name: 'Zram Chart',
+              path: PagePath.ZRAM,
+              obj: this.$.zramChart,
+            },
           ];
 
           // `currentPath` will be set when chrome://healthd-internals is open.
@@ -189,7 +197,10 @@ export class HealthdInternalsAppElement extends PolymerElement {
     this.$.memoryChart.initCanvasDrawer(['KiB', 'MiB', 'GiB'], 1024);
 
     this.$.thermalChart.setupChartHeader('Thermal');
-    this.$.thermalChart.initCanvasDrawer(['C'], 1);
+    this.$.thermalChart.initCanvasDrawer(['°C'], 1);
+
+    this.$.zramChart.setupChartHeader('Zram');
+    this.$.zramChart.initCanvasDrawer(['B', 'KiB', 'MiB', 'GiB'], 1024);
   }
 
   // Handle path changes caused by popstate events (back/forward navigation).

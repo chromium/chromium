@@ -41,7 +41,7 @@ RequestQueue::RequestQueue(std::unique_ptr<RequestQueueStore> store)
   Initialize();
 }
 
-RequestQueue::~RequestQueue() {}
+RequestQueue::~RequestQueue() = default;
 
 void RequestQueue::OnTaskQueueIsIdle() {}
 

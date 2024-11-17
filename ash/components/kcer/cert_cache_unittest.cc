@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/kcer/kcer.h"
+#include "base/containers/span.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "net/test/test_data_directory.h"
@@ -57,8 +58,7 @@ TEST(KcerCertCacheTest, OneCert) {
 
   scoped_refptr<net::X509Certificate> cert_1 = builder_1->GetX509Certificate();
 
-  std::vector<scoped_refptr<const Cert>> certs({kcer_cert_0});
-  CertCache cache(certs);
+  CertCache cache(base::span_from_ref(kcer_cert_0));
 
   EXPECT_EQ(cache.FindCert(AsSpan(cert_0)), kcer_cert_0);
   EXPECT_EQ(cache.FindCert(AsSpan(cert_1)), nullptr);
@@ -93,11 +93,9 @@ TEST(KcerCertCacheTest, MultipleCerts) {
       MakeKcerCert(builder_3->GetX509Certificate());
 
   // Add a lot of duplicates in different order to exercise the comparator.
-  std::vector<scoped_refptr<const Cert>> certs(
-      {kcer_cert_0, kcer_cert_1, kcer_cert_2, kcer_cert_3, kcer_cert_3,
-       kcer_cert_2, kcer_cert_1, kcer_cert_0, kcer_cert_0, kcer_cert_2,
-       kcer_cert_3, kcer_cert_1});
-  CertCache cache(certs);
+  CertCache cache({kcer_cert_0, kcer_cert_1, kcer_cert_2, kcer_cert_3,
+                   kcer_cert_3, kcer_cert_2, kcer_cert_1, kcer_cert_0,
+                   kcer_cert_0, kcer_cert_2, kcer_cert_3, kcer_cert_1});
 
   EXPECT_EQ(cache.FindCert(AsSpan(cert_0)), kcer_cert_0);
   EXPECT_EQ(cache.FindCert(AsSpan(cert_1)), kcer_cert_1);

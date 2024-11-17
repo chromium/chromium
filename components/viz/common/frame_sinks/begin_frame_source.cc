@@ -192,8 +192,7 @@ bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void BeginFrameSource::AsProtozeroInto(
@@ -599,7 +598,7 @@ BeginFrameArgs ExternalBeginFrameSource::GetMissedBeginFrameArgs(
   return missed_args;
 }
 
-base::TimeDelta ExternalBeginFrameSource::GetMaximumRefreshFrameInterval() {
+base::TimeDelta ExternalBeginFrameSource::GetMinimumFrameInterval() {
   return BeginFrameArgs::DefaultInterval();
 }
 

@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -173,51 +175,52 @@ static void JNI_PrivacySandboxBridge_PromptActionOccurred(
       static_cast<PrivacySandboxService::SurfaceType>(surface_type));
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsFirstPartySetsDataAccessEnabled(
+static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)
-      ->IsFirstPartySetsDataAccessEnabled();
+      ->IsRelatedWebsiteSetsDataAccessEnabled();
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsFirstPartySetsDataAccessManaged(
+static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessManaged(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)
-      ->IsFirstPartySetsDataAccessManaged();
+      ->IsRelatedWebsiteSetsDataAccessManaged();
 }
 
-static void JNI_PrivacySandboxBridge_SetFirstPartySetsDataAccessEnabled(
+static void JNI_PrivacySandboxBridge_SetRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jboolean enabled) {
-  GetPrivacySandboxService(j_profile)->SetFirstPartySetsDataAccessEnabled(
+  GetPrivacySandboxService(j_profile)->SetRelatedWebsiteSetsDataAccessEnabled(
       enabled);
 }
 
 static ScopedJavaLocalRef<jstring>
-JNI_PrivacySandboxBridge_GetFirstPartySetOwner(
+JNI_PrivacySandboxBridge_GetRelatedWebsiteSetOwner(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& memberOrigin) {
-  auto fpsOwner = GetPrivacySandboxService(j_profile)->GetFirstPartySetOwner(
-      GURL(base::android::ConvertJavaStringToUTF8(env, memberOrigin)));
+  auto rwsOwner =
+      GetPrivacySandboxService(j_profile)->GetRelatedWebsiteSetOwner(
+          GURL(base::android::ConvertJavaStringToUTF8(env, memberOrigin)));
 
-  if (!fpsOwner.has_value()) {
+  if (!rwsOwner.has_value()) {
     return nullptr;
   }
 
-  return ConvertUTF8ToJavaString(env, fpsOwner->GetURL().host());
+  return ConvertUTF8ToJavaString(env, rwsOwner->GetURL().host());
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedFirstPartySet(
+static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& origin) {
   auto schemefulSite = net::SchemefulSite(
       GURL(base::android::ConvertJavaStringToUTF8(env, origin)));
 
-  return GetPrivacySandboxService(j_profile)->IsPartOfManagedFirstPartySet(
+  return GetPrivacySandboxService(j_profile)->IsPartOfManagedRelatedWebsiteSet(
       schemefulSite);
 }
 
@@ -241,12 +244,22 @@ static void JNI_PrivacySandboxBridge_RecordActivityType(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jint activity_type) {
-  GetPrivacySandboxService(j_profile)->RecordActivityType(
-      static_cast<PrivacySandboxService::PrivacySandboxStorageActivityType>(
-          activity_type));
+  privacy_sandbox::PrivacySandboxActivityTypesService*
+      privacy_sandbox_activity_types_service =
+          PrivacySandboxActivityTypesFactory::GetForProfile(
+              Profile::FromJavaObject(j_profile));
+  if (!privacy_sandbox_activity_types_service) {
+    return;
+  }
+  privacy_sandbox_activity_types_service->RecordActivityType(
+      static_cast<privacy_sandbox::PrivacySandboxActivityTypesService::
+                      PrivacySandboxStorageActivityType>(activity_type));
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsConsentCountry(JNIEnv* env) {
-  PrivacySandboxCountriesImpl instance;
-  return instance.IsConsentCountry();
+static jboolean
+JNI_PrivacySandboxBridge_PrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile) {
+  return GetPrivacySandboxService(j_profile)
+      ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
 }

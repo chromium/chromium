@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
 
 namespace content {
 
@@ -73,10 +74,16 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
 
   input::RenderInputRouter* GetRenderInputRouter() override;
 
+  void RejectPointerLockOrUnlockIfNecessary(
+      blink::mojom::PointerLockResult result) override;
+
+  bool pointer_lock_rejected() const { return pointer_lock_rejected_; }
+
  protected:
   void NotifyNewContentRenderingTimeoutForTesting() override;
 
-  bool new_content_rendering_timeout_fired_;
+  bool new_content_rendering_timeout_fired_ = false;
+  bool pointer_lock_rejected_ = false;
 
  private:
   MockRenderWidgetHost(

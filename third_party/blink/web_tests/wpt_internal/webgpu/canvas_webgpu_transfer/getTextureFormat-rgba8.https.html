@@ -1,32 +1,20 @@
 <!DOCTYPE html>
-<html>
-<head>
 <title>Canvas2D WebGPU Transfer: getTextureFormat-rgba8</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="./webgpu-helpers.js"></script>
-</head>
+<script src="./canvas-test.js"></script>
 
 <h1>Canvas2D WebGPU Transfer: getTextureFormat-rgba8</h1>
-
 <p>getTextureFormat() returns RGBA8 or BGRA8 for a typical context</p>
-
-<canvas id="c" width="50" height="50"></canvas>
 
 <script>
 
-promise_test(() => {
-    return with_webgpu((adapter, adapterInfo, device) => {
-      test_getTextureFormat_rgba8(device, document.getElementById('c'));
-    });
-  }, 'getTextureFormat() returns RGBA8 or BGRA8 for a typical context'
-);
+runCanvasTestsInWorker();
 
-promise_test(() => {
-    return with_webgpu((adapter, adapterInfo, device) => {
-      test_getTextureFormat_rgba8(device, new OffscreenCanvas(50, 50));
-    });
-  }, 'getTextureFormat() returns RGBA8 or BGRA8 for an offscreen context'
-);
+/** getTextureFormat() should return RGBA8 or BGRA8 for a typical context. */
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+  assert_regexp_match(ctx.getTextureFormat(), /^rgba8unorm$|^bgra8unorm$/);
+}, 'getTextureFormat() returns RGBA8 or BGRA8 for a typical context');
 
 </script>

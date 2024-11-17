@@ -123,13 +123,13 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"  // nogncheck
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -241,6 +241,7 @@ apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
     case WebAppManagement::kWebAppStore:
     case WebAppManagement::kOneDriveIntegration:
     case WebAppManagement::kIwaUserInstalled:
+    case WebAppManagement::kUserInstalled:
       return apps::InstallReason::kUser;
     case WebAppManagement::kSync:
       return apps::InstallReason::kSync;
@@ -284,6 +285,7 @@ apps::InstallSource GetInstallSource(
     case webapps::WebappInstallSource::PROFILE_MENU:
     case webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI:
     case webapps::WebappInstallSource::OOBE_APP_RECOMMENDATIONS:
+    case webapps::WebappInstallSource::WEB_INSTALL:
       return apps::InstallSource::kBrowser;
     case webapps::WebappInstallSource::ARC:
       return apps::InstallSource::kPlayStore;
@@ -298,8 +300,7 @@ apps::InstallSource GetInstallSource(
     case webapps::WebappInstallSource::WEBAPK_RESTORE:
       return apps::InstallSource::kSync;
     case webapps::WebappInstallSource::COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return apps::InstallSource::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -718,7 +719,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
       provider_->registrar_unsafe().GetAppDescription(web_app->app_id());
   if (web_app->isolation_data().has_value()) {
     // Show the version of Isolated Web App in ChromeOS Settings
-    app->version = web_app->isolation_data()->version.GetString();
+    app->version = web_app->isolation_data()->version().GetString();
   }
 
   app->additional_search_terms = web_app->additional_search_terms();
@@ -1368,6 +1369,15 @@ void WebAppPublisherHelper::OnWebAppInstalled(const webapps::AppId& app_id) {
     app->icon_key->update_version = true;
     delegate_->PublishWebApp(std::move(app));
   }
+
+// Todo(b:372661290): Extract custom link preference handling into a new post
+// web app install hook.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ChromeOsWebAppExperiments::ShouldAddLinkPreference(app_id, profile_)) {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+    proxy->SetSupportedLinksPreference(app_id);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(
@@ -1901,10 +1911,7 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
     case ApiApprovalState::kDisallowed:
       // We shouldn't have gotten this far (i.e. "open with" should not have
       // been selectable) if file handling was already disallowed for the app.
-      NOTREACHED_IN_MIGRATION();
-      std::move(launch_callback)
-          .Run(/*allowed=*/false, /*remember_user_choice=*/false);
-      break;
+      NOTREACHED();
   }
 }
 

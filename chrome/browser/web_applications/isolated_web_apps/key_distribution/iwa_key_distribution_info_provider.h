@@ -21,13 +21,13 @@
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 
-class WebAppInternalsHandler;
-
 namespace base {
 class FilePath;
 }  // namespace base
 
 namespace web_app {
+
+class IwaInternalsHandler;
 
 // Enables the key distribution dev mode UI on chrome://web-app-internals.
 BASE_DECLARE_FEATURE(kIwaKeyDistributionDevMode);
@@ -91,7 +91,7 @@ class IwaKeyDistributionInfoProvider {
   // triggers an `OnComponentUpdateSuccess()` event. The usage of this function
   // is intentionally limited to chrome://web-app-internals.
   void RotateKeyForDevMode(
-      base::PassKey<WebAppInternalsHandler>,
+      base::PassKey<IwaInternalsHandler>,
       const std::string& web_bundle_id,
       const std::optional<std::vector<uint8_t>>& rotated_key);
 

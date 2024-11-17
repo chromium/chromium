@@ -10,7 +10,8 @@
  */
 async function enableDelegations() {
   try {
-    let registration = await navigator.serviceWorker.getRegistration('app.js');
+    const registration =
+        await navigator.serviceWorker.getRegistration('app.js');
     await navigator.serviceWorker.ready;
     if (!registration.paymentManager) {
       return 'PaymentManager API not found.';

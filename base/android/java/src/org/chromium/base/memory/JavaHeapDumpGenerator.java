@@ -20,7 +20,7 @@ public final class JavaHeapDumpGenerator {
 
     /**
      * Generates an hprof file at the given filePath.
-     * @param filePath
+     *
      * @return whether or not the hprof file was properly generated.
      */
     @CalledByNative

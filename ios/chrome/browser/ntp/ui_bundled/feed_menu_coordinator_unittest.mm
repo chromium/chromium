@@ -45,15 +45,13 @@ struct ExpectedAction {
 class FeedMenuCoordinatorTest : public PlatformTest {
  protected:
   FeedMenuCoordinatorTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(test_cbs_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(test_cbs_builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     base_view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
@@ -74,7 +72,7 @@ class FeedMenuCoordinatorTest : public PlatformTest {
 
   // Enables or disables the feed in prefs.
   void SetFeedEnabled(bool enabled) {
-    PrefService* prefs = browser_state_->GetPrefs();
+    PrefService* prefs = profile_->GetPrefs();
     prefs->SetBoolean(feed::prefs::kArticlesListVisible, enabled);
   }
 
@@ -86,7 +84,7 @@ class FeedMenuCoordinatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     auth_service->SignIn(identity,
                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
@@ -105,7 +103,7 @@ class FeedMenuCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   base::test::ScopedFeatureList scoped_feature_list_;
   ScopedKeyWindow scoped_key_window_;

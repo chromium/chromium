@@ -39,6 +39,10 @@ enum class LensInputSelectionPresentationStyle {
 // The completion block to be run on the main thread.
 @property(nonatomic, strong, readonly) ProceduralBlock presentationCompletion;
 
+// If set to YES, an IPH bubble will be presented on the NTP that points to the
+// Lens icon in the NTP fakebox, if Lens is dismissed by the user.
+@property(nonatomic, assign) BOOL presentNTPLensIconBubbleOnDismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_OPEN_LENS_INPUT_SELECTION_COMMAND_H_

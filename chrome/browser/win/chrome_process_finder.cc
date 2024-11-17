@@ -34,8 +34,6 @@ uint32_t g_timeout_in_milliseconds = 20 * 1000;
 
 }  // namespace
 
-namespace chrome {
-
 HWND FindRunningChromeWindow(const base::FilePath& user_data_dir) {
   TRACE_EVENT0("startup", "FindRunningChromeWindow");
   return base::win::MessageWindow::FindWindow(user_data_dir.value());
@@ -51,14 +49,14 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
     TRACE_EVENT0(
         "startup",
         "AttemptToNotifyRunningChrome:GetWindowThreadProcessId failed");
-    return NOTIFY_FAILED;
+    return NotifyChromeResult::NOTIFY_FAILED;
   }
 
   base::FilePath cur_dir;
   if (!base::GetCurrentDirectory(&cur_dir)) {
     TRACE_EVENT_INSTANT(
         "startup", "AttemptToNotifyRunningChrome:GetCurrentDirectory failed");
-    return NOTIFY_FAILED;
+    return NotifyChromeResult::NOTIFY_FAILED;
   }
   base::CommandLine new_command_line(*base::CommandLine::ForCurrentProcess());
   // If this process was launched from a shortcut, add the shortcut path to
@@ -90,7 +88,8 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
     if (::SendMessageTimeout(remote_window, WM_COPYDATA, NULL,
                              reinterpret_cast<LPARAM>(&cds), SMTO_ABORTIFHUNG,
                              g_timeout_in_milliseconds, &result)) {
-      return result ? NOTIFY_SUCCESS : NOTIFY_FAILED;
+      return result ? NotifyChromeResult::NOTIFY_SUCCESS
+                    : NotifyChromeResult::NOTIFY_FAILED;
     }
   }
 
@@ -104,20 +103,20 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
   if (!timed_out) {
     TRACE_EVENT_INSTANT("startup",
                         "AttemptToNotifyRunningChrome:Error SendFailed");
-    return NOTIFY_FAILED;
+    return NotifyChromeResult::NOTIFY_FAILED;
   }
 
   // It is possible that the process owning this window may have died by now.
   if (!::IsWindow(remote_window)) {
     TRACE_EVENT_INSTANT("startup",
                         "AttemptToNotifyRunningChrome:Error RemoteDied");
-    return NOTIFY_FAILED;
+    return NotifyChromeResult::NOTIFY_FAILED;
   }
 
   // If the window couldn't be notified but still exists, assume it is hung.
   TRACE_EVENT_INSTANT("startup",
                       "AttemptToNotifyRunningChrome:Error RemoteHung");
-  return NOTIFY_WINDOW_HUNG;
+  return NotifyChromeResult::NOTIFY_WINDOW_HUNG;
 }
 
 base::TimeDelta SetNotificationTimeoutForTesting(base::TimeDelta new_timeout) {
@@ -126,5 +125,3 @@ base::TimeDelta SetNotificationTimeoutForTesting(base::TimeDelta new_timeout) {
       base::checked_cast<uint32_t>(new_timeout.InMilliseconds());
   return old_timeout;
 }
-
-}  // namespace chrome

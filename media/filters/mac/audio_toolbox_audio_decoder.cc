@@ -22,6 +22,7 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_discard_helper.h"
 #include "media/base/channel_layout.h"
+#include "media/base/limiting_audio_queue.h"
 #include "media/base/limits.h"
 #include "media/base/mac/channel_layout_util_mac.h"
 #include "media/base/media_log.h"
@@ -91,8 +92,7 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
 AudioConverterRef
 AudioToolboxAudioDecoder::ScopedAudioConverterRefTraits::Retain(
     AudioConverterRef converter) {
-  NOTREACHED_IN_MIGRATION() << "Only compatible with ASSUME policy";
-  return converter;
+  NOTREACHED() << "Only compatible with ASSUME policy";
 }
 
 // static
@@ -185,6 +185,10 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       output_buffer_list_.get(), nullptr);
 
   if (result == kNoMoreDataError && !num_frames) {
+    if (buffer->end_of_stream()) {
+      limiter_queue_->Flush();
+    }
+
     std::move(decode_cb_bound).Run(OkStatus());
     return;
   }
@@ -197,17 +201,10 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  auto output_buffer =
-      AudioBuffer::CopyFrom(channel_layout_, sample_rate_, buffer->timestamp(),
-                            output_bus_.get(), pool_);
-
-  if (num_frames != static_cast<UInt32>(output_bus_->frames()))
-    output_buffer->TrimEnd(output_bus_->frames() - num_frames);
-  if (discard_helper_->ProcessBuffers(buffer->time_info(),
-                                      output_buffer.get())) {
-    base::BindPostTaskToCurrentDefault(output_cb_)
-        .Run(std::move(output_buffer));
-  }
+  limiter_queue_->Push(
+      *output_bus_, num_frames, buffer->timestamp(),
+      base::BindOnce(&AudioToolboxAudioDecoder::OnOutputReady,
+                     base::Unretained(this), buffer->time_info()));
 
   std::move(decode_cb_bound).Run(OkStatus());
 }
@@ -219,6 +216,7 @@ void AudioToolboxAudioDecoder::Reset(base::OnceClosure reset_cb) {
   OSSTATUS_DLOG_IF(WARNING, result != noErr, result)
       << "AudioConverterReset() failed";
   discard_helper_->Reset(discard_helper_->decoder_delay());
+  limiter_queue_->Clear();
   base::BindPostTaskToCurrentDefault(std::move(reset_cb)).Run();
 }
 
@@ -271,8 +269,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
       break;
 #endif
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported codec: " << config.codec();
-      return false;
+      NOTREACHED() << "Unsupported codec: " << config.codec();
   }
 
   // Output is float planar.
@@ -404,6 +401,10 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
   output_bus_ = AudioBus::Create(input_format.mChannelsPerFrame,
                                  input_format.mFramesPerPacket);
 
+  limiter_queue_ = std::make_unique<LimitingAudioQueue>(
+      channel_layout_, config.samples_per_second(),
+      input_format.mChannelsPerFrame, input_format.mFramesPerPacket);
+
   // AudioBufferList is a strange variable length structure that by default only
   // includes one buffer slot, so we need to construct our own multichannel one.
   //
@@ -414,6 +415,15 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
       calloc(1, sizeof(AudioBufferList) +
                     output_bus_->channels() * sizeof(AudioBuffer))));
   return true;
+}
+
+void AudioToolboxAudioDecoder::OnOutputReady(
+    DecoderBuffer::TimeInfo time_info,
+    scoped_refptr<AudioBuffer> output_buffer) {
+  if (discard_helper_->ProcessBuffers(time_info, output_buffer.get())) {
+    base::BindPostTaskToCurrentDefault(output_cb_)
+        .Run(std::move(output_buffer));
+  }
 }
 
 }  // namespace media

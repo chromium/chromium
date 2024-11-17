@@ -135,3 +135,12 @@ AutoPictureInPictureTabStripObserverHelper::GetCurrentTabStripModel() const {
   }
   return browser->tab_strip_model();
 }
+
+content::WebContents*
+AutoPictureInPictureTabStripObserverHelper::GetActiveWebContents() const {
+  if (!observed_tab_strip_model_) {
+    return nullptr;
+  }
+
+  return observed_tab_strip_model_->GetActiveWebContents();
+}

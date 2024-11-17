@@ -67,9 +67,6 @@ class OmniboxPopupView {
   // Popup equivalent of GetAccessibleNodeData, used only by a unit test.
   virtual void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) = 0;
 
-  // Called by owning view to get accessibility data.
-  virtual void AddPopupAccessibleNodeData(ui::AXNodeData* node_data) = 0;
-
   // Returns result view button text. This is currently only needed by a single
   // unit test and it would be better to eliminate it than to increase usage.
   virtual std::u16string GetAccessibleButtonTextForResult(size_t line) = 0;

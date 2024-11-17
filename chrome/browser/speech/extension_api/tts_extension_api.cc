@@ -28,7 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -88,8 +88,7 @@ const char* TtsEventTypeToString(content::TtsEventType event_type) {
     case content::TTS_EVENT_RESUME:
       return constants::kEventTypeResume;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return constants::kEventTypeError;
+      NOTREACHED();
   }
 }
 
@@ -115,8 +114,7 @@ content::TtsEventType TtsEventTypeFromString(const std::string& str) {
   if (str == constants::kEventTypeResume)
     return content::TTS_EVENT_RESUME;
 
-  NOTREACHED_IN_MIGRATION();
-  return content::TTS_EVENT_ERROR;
+  NOTREACHED();
 }
 
 namespace extensions {
@@ -421,6 +419,7 @@ TtsAPI::TtsAPI(content::BrowserContext* context) {
   registry.RegisterFunction<ExtensionTtsEngineUpdateVoicesFunction>();
   registry.RegisterFunction<ExtensionTtsEngineSendTtsEventFunction>();
   registry.RegisterFunction<ExtensionTtsEngineSendTtsAudioFunction>();
+  registry.RegisterFunction<ExtensionTtsEngineUpdateLanguageFunction>();
   registry.RegisterFunction<TtsGetVoicesFunction>();
   registry.RegisterFunction<TtsIsSpeakingFunction>();
   registry.RegisterFunction<TtsSpeakFunction>();
@@ -430,7 +429,7 @@ TtsAPI::TtsAPI(content::BrowserContext* context) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ensure we're observing newly added engines for the given context.
-  TtsEngineExtensionObserverChromeOS::GetInstance(
+  TtsEngineExtensionObserverChromeOSFactory::GetForProfile(
       Profile::FromBrowserContext(context));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

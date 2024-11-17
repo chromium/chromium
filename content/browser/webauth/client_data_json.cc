@@ -2,33 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/webauth/client_data_json.h"
 
 #include <string_view>
 
 #include "base/base64url.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "content/browser/webauth/common_utils.h"
 #include "content/public/common/content_features.h"
 
 namespace content {
 namespace {
-
-std::string Base64UrlEncode(const base::span<const uint8_t> input) {
-  std::string ret;
-  base::Base64UrlEncode(
-      std::string_view(reinterpret_cast<const char*>(input.data()),
-                       input.size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &ret);
-  return ret;
-}
 
 // ToJSONString encodes |in| as a JSON string, using the specific escaping rules
 // required by https://github.com/w3c/webauthn/pull/1375.
@@ -37,7 +25,7 @@ std::string ToJSONString(std::string_view in) {
   ret.reserve(in.size() + 2);
   ret.push_back('"');
 
-  const char* const in_bytes = in.data();
+  base::span<const char> in_bytes = base::span(in);
   const size_t length = in.size();
   size_t offset = 0;
 
@@ -45,7 +33,8 @@ std::string ToJSONString(std::string_view in) {
     const size_t prior_offset = offset;
     // Input strings must be valid UTF-8.
     base_icu::UChar32 codepoint;
-    CHECK(base::ReadUnicodeCharacter(in_bytes, length, &offset, &codepoint));
+    CHECK(base::ReadUnicodeCharacter(in_bytes.data(), length, &offset,
+                                     &codepoint));
     // offset is updated by |ReadUnicodeCharacter| to index the last byte of the
     // codepoint. Increment it to index the first byte of the next codepoint for
     // the subsequent iteration.
@@ -53,7 +42,7 @@ std::string ToJSONString(std::string_view in) {
 
     if (codepoint == 0x20 || codepoint == 0x21 ||
         (codepoint >= 0x23 && codepoint <= 0x5b) || codepoint >= 0x5d) {
-      ret.append(&in_bytes[prior_offset], &in_bytes[offset]);
+      ret.append(&in_bytes[prior_offset], offset - prior_offset);
     } else if (codepoint == 0x22) {
       ret.append("\\\"");
     } else if (codepoint == 0x5c) {
@@ -102,7 +91,7 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
   }
 
   ret.append(R"(,"challenge":)");
-  ret.append(ToJSONString(Base64UrlEncode(params.challenge)));
+  ret.append(ToJSONString(Base64UrlEncodeChallenge(params.challenge)));
 
   ret.append(R"(,"origin":)");
   ret.append(ToJSONString(params.origin.Serialize()));

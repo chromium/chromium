@@ -49,8 +49,7 @@ std::ostream& operator<<(std::ostream& out, const ValidationError& value) {
       out << "kInfoFileInvalid";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return out;
 }
@@ -66,15 +65,13 @@ base::File::Error ValidationErrorToFileError(ValidationError error) {
     case ValidationError::kInfoFileInvalid:
       return base::File::FILE_ERROR_INVALID_OPERATION;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::File::FILE_ERROR_FAILED;
+      NOTREACHED();
   }
 }
 
-TrashInfoValidator::TrashInfoValidator(Profile* profile,
-                                       const base::FilePath& base_path) {
+TrashInfoValidator::TrashInfoValidator(Profile* profile) {
   enabled_trash_locations_ =
-      trash::GenerateEnabledTrashLocationsForProfile(profile, base_path);
+      trash::GenerateEnabledTrashLocationsForProfile(profile);
 
   parser_ = std::make_unique<ash::trash_service::TrashInfoParser>();
 }

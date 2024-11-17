@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/apps_section.h"
 
+#include <array>
+
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -58,8 +61,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetAppsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAppsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_APPS,
        mojom::kAppsSectionPath,
        mojom::SearchResultIcon::kAppsGrid,
@@ -74,82 +77,72 @@ const std::vector<SearchConcept>& GetAppsSearchConcepts() {
        {.subpage = mojom::Subpage::kAppManagement},
        {IDS_OS_SETTINGS_TAG_APPS_MANAGEMENT_ALT1, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAppNotificationsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAppNotificationsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_APP_NOTIFICATIONS,
        mojom::kAppNotificationsSubpagePath,
-       ash::features::IsOsSettingsRevampWayfindingEnabled()
-           ? mojom::SearchResultIcon::kNotifications
-           : mojom::SearchResultIcon::kAppsGrid,
+       mojom::SearchResultIcon::kNotifications,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kAppNotifications}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAppNotificationsManagerSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAppNotificationsManagerSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_APP_NOTIFICATIONS_MANAGER,
        mojom::kAppNotificationsManagerSubpagePath,
-       ash::features::IsOsSettingsRevampWayfindingEnabled()
-           ? mojom::SearchResultIcon::kNotifications
-           : mojom::SearchResultIcon::kAppsGrid,
+       mojom::SearchResultIcon::kNotifications,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kAppNotificationsManager}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAppBadgingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetAppBadgingSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_APP_BADGING,
         mojom::kAppNotificationsSubpagePath,
-        ash::features::IsOsSettingsRevampWayfindingEnabled()
-            ? mojom::SearchResultIcon::kNotifications
-            : mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultIcon::kNotifications,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kAppBadgingOnOff}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetTurnOffAppNotificationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetTurnOffAppNotificationSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF,
         mojom::kAppNotificationsSubpagePath,
-        ash::features::IsOsSettingsRevampWayfindingEnabled()
-            ? mojom::SearchResultIcon::kNotifications
-            : mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultIcon::kNotifications,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kDoNotDisturbOnOff},
         {IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF_ALT1,
          SearchConcept::kAltTagEnd}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetTurnOnAppNotificationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetTurnOnAppNotificationSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_ON,
         mojom::kAppNotificationsSubpagePath,
-        ash::features::IsOsSettingsRevampWayfindingEnabled()
-            ? mojom::SearchResultIcon::kNotifications
-            : mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultIcon::kNotifications,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kDoNotDisturbOnOff},
         {IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_ON_ALT1,
          SearchConcept::kAltTagEnd}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAndroidPlayStoreSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAndroidPlayStoreSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PLAY_STORE,
        mojom::kGooglePlayStoreSubpagePath,
        mojom::SearchResultIcon::kGooglePlay,
@@ -164,11 +157,11 @@ const std::vector<SearchConcept>& GetAndroidPlayStoreSearchConcepts() {
        {.setting = mojom::Setting::kRemovePlayStore},
        {IDS_OS_SETTINGS_TAG_REMOVE_PLAY_STORE_ALT1, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAndroidSettingsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAndroidSettingsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ANDROID_SETTINGS_WITH_PLAY_STORE,
        mojom::kGooglePlayStoreSubpagePath,
        mojom::SearchResultIcon::kGooglePlay,
@@ -178,11 +171,11 @@ const std::vector<SearchConcept>& GetAndroidSettingsSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_ANDROID_SETTINGS_WITH_PLAY_STORE_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAndroidNoPlayStoreSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAndroidNoPlayStoreSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ANDROID_SETTINGS,
        mojom::kAppsSectionPath,
        mojom::SearchResultIcon::kAndroid,
@@ -191,11 +184,11 @@ const std::vector<SearchConcept>& GetAndroidNoPlayStoreSearchConcepts() {
        {.setting = mojom::Setting::kManageAndroidPreferences},
        {IDS_OS_SETTINGS_TAG_ANDROID_SETTINGS_ALT1, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAndroidPlayStoreDisabledSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAndroidPlayStoreDisabledSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ANDROID_TURN_ON_PLAY_STORE,
        mojom::kAppsSectionPath,
        mojom::SearchResultIcon::kAndroid,
@@ -205,27 +198,25 @@ const std::vector<SearchConcept>& GetAndroidPlayStoreDisabledSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_ANDROID_TURN_ON_PLAY_STORE_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetManageIsolatedWebAppsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetManageIsolatedWebAppsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_MANAGE_ISOLATED_WEB_APPS,
         mojom::kManageIsolatedWebAppsSubpagePath,
-        ash::features::IsOsSettingsRevampWayfindingEnabled()
-            ? mojom::SearchResultIcon::kNotifications
-            : mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultIcon::kNotifications,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSubpage,
         {.subpage = mojom::Subpage::kManageIsolatedWebApps}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetParentalControlsSearchConcepts() {
+base::span<const SearchConcept> GetParentalControlsSearchConcepts() {
   // Redirect search queries to the parental controls row in the Apps section
   // because the app parental controls page should only be accessed after the
   // user has entered their PIN, which is triggered from the settings row.
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_APPS_PARENTAL_CONTROLS,
         mojom::kAppsSectionPath,
         mojom::SearchResultIcon::kAppsParentalControls,
@@ -234,22 +225,20 @@ const std::vector<SearchConcept>& GetParentalControlsSearchConcepts() {
         {.setting = mojom::Setting::kAppParentalControls},
         {IDS_OS_SETTINGS_TAG_APPS_PARENTAL_CONTROLS_ALT1,
          SearchConcept::kAltTagEnd}}});
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetTurnOnIsolatedWebAppsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+base::span<const SearchConcept> GetTurnOnIsolatedWebAppsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_TURN_ON_ISOLATED_WEB_APPS,
         mojom::kManageIsolatedWebAppsSubpagePath,
-        ash::features::IsOsSettingsRevampWayfindingEnabled()
-            ? mojom::SearchResultIcon::kNotifications
-            : mojom::SearchResultIcon::kAppsGrid,
+        mojom::SearchResultIcon::kNotifications,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kEnableIsolatedWebAppsOnOff},
         {IDS_OS_SETTINGS_TAG_TURN_ON_ISOLATED_WEB_APPS_ALT1,
          SearchConcept::kAltTagEnd}}});
-  return *tags;
+  return tags;
 }
 
 void AddAppManagementStrings(content::WebUIDataSource* html_source) {
@@ -657,9 +646,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("androidAppsVisible", is_arc_allowed_);
   html_source->AddBoolean("isPlayStoreAvailable", arc::IsPlayStoreAvailable());
 
-  html_source->AddBoolean(
-      "showOsSettingsAppNotificationsRow",
-      base::FeatureList::IsEnabled(features::kOsSettingsAppNotificationsPage));
   html_source->AddBoolean("isArcVmEnabled", arc::IsArcVmEnabled());
 
   html_source->AddBoolean("showManageIsolatedWebAppsRow",
@@ -962,10 +948,6 @@ void AppsSection::UpdateAndroidSearchTags() {
 }
 
 void AppsSection::OnQuietModeChanged(bool in_quiet_mode) {
-  if (!features::IsAppNotificationsPageEnabled()) {
-    return;
-  }
-
   const bool kIsRevampEnabled =
       ash::features::IsOsSettingsRevampWayfindingEnabled();
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();

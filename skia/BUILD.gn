@@ -10,6 +10,7 @@ import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/rust/rust_static_library.gni")
 import("//gpu/vulkan/features.gni")
+import("//skia/skia.gni")
 import("//testing/test.gni")
 import("//third_party/skia/gn/shared_sources.gni")
 import("//third_party/skia/modules/skcms/skcms.gni")
@@ -59,8 +60,8 @@ rust_static_library("bridge_rust_side") {
   deps = [
     ":path_bridge",
     "//third_party/rust/font_types/v0_7:lib",
-    "//third_party/rust/read_fonts/v0_22:lib",
-    "//third_party/rust/skrifa/v0_22:lib",
+    "//third_party/rust/read_fonts/v0_23:lib",
+    "//third_party/rust/skrifa/v0_24:lib",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -176,9 +177,10 @@ config("skia_library_config") {
   if (use_blink && !use_system_freetype) {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION_IS_BUILD_VERSION" ]
   }
-  if (use_blink) {
+  if (use_blink && enable_freetype) {
     defines += [
       "SK_TYPEFACE_FACTORY_FREETYPE",
+      "SK_TYPEFACE_FACTORY_FONTATIONS",
       "SK_FONTMGR_FREETYPE_EMPTY_AVAILABLE",
     ]
   }
@@ -419,12 +421,14 @@ component("skia") {
   # Fontations is the backend we are migrating to. In preparation for rollout
   # default compile-in Fontations as well.
   if (use_blink) {
-    # See SK_TYPEFACE_FACTORY_FREETYPE
-    sources += skia_ports_freetype_sources
-    sources += skia_ports_fontmgr_custom_sources
+    # See SK_TYPEFACE_FACTORY_FREETYPE and SK_TYPEFACE_FACTORY_FONTATIONS
+    if (enable_freetype) {
+      sources += skia_ports_freetype_sources
+      sources += skia_ports_fontmgr_custom_sources
+      sources += skia_ports_fontmgr_empty_sources
+      public += skia_ports_fontmgr_empty_public
+    }
     sources += skia_ports_typeface_fontations_sources
-    sources += skia_ports_fontmgr_empty_sources
-    public += skia_ports_fontmgr_empty_public
 
     # Fontations Rust/C++ bridge interfaces.
     deps += [
@@ -721,6 +725,13 @@ skia_source_set("skia_core_and_effects") {
     # skia_core_and_effects rather than the other way around.
     public_deps = [ "//third_party/dawn/include/dawn:cpp_headers" ]
   }
+  if (use_blink) {
+    # Fontations Rust/C++ bridge interfaces, needed by SkTypeface.
+    deps += [
+      ":bridge_rust_side",
+      ":path_bridge",
+    ]
+  }
   visibility = [ ":skia" ]
 }
 
@@ -887,7 +898,7 @@ source_set("skcms") {
 # these source sets are considered unknown and skipped by gn check.
 if (skia_support_gpu) {
   skia_source_set("skia_graphite_public") {
-    public = skia_graphite_public
+    public = skia_graphite_public + skia_graphite_precompile_public
     if (skia_use_dawn) {
       public += skia_graphite_dawn_public
       public_deps = [
@@ -905,7 +916,7 @@ if (skia_support_gpu) {
   # If a source set contains only sources and no public files, then dependents can
   # include any file from sources.
   skia_source_set("skia_graphite_private") {
-    sources = skia_graphite_sources
+    sources = skia_graphite_sources + skia_graphite_precompile_sources
     if (skia_use_dawn) {
       sources += skia_graphite_dawn_sources
     }

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -85,6 +86,7 @@ ChromotingHost::ChromotingHost(
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
     const DesktopEnvironmentOptions& options,
+    const SessionPoliciesValidator& per_session_policies_validator,
     const LocalSessionPoliciesProvider* local_session_policies_provider)
     : desktop_environment_factory_(desktop_environment_factory),
       session_manager_(std::move(session_manager)),
@@ -94,7 +96,8 @@ ChromotingHost::ChromotingHost(
       status_monitor_(new HostStatusMonitor()),
       login_backoff_(&kDefaultBackoffPolicy),
       desktop_environment_options_(options),
-      local_session_policies_provider_(local_session_policies_provider) {
+      local_session_policies_provider_(local_session_policies_provider),
+      per_session_policies_validator_(per_session_policies_validator) {
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 }
 
@@ -249,6 +252,17 @@ void ChromotingHost::OnSessionRouteChange(
   for (auto& observer : status_monitor_->observers()) {
     observer.OnClientRouteChange(session->client_jid(), channel_name, route);
   }
+}
+
+std::optional<ErrorCode> ChromotingHost::OnSessionPoliciesReceived(
+    const SessionPolicies& policies) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!per_session_policies_validator_) {
+    return std::nullopt;
+  }
+
+  return per_session_policies_validator_.Run(policies);
 }
 
 void ChromotingHost::BindSessionServices(

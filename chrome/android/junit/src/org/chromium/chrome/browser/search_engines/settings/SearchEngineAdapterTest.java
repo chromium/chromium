@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -50,7 +49,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class SearchEngineAdapterTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public final @Rule JniMocker mJniMocker = new JniMocker();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -63,7 +61,7 @@ public class SearchEngineAdapterTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNativeMock);
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNativeMock);
         mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
     }
 

@@ -12,26 +12,21 @@
 
 namespace dips {
 
-StatefulBounceCounter::StatefulBounceCounter(PassKey,
-                                             DIPSWebContentsObserver* dips_wco)
-    : dips_wco_(dips_wco) {
-  dips_wco_->AddObserver(this);
+StatefulBounceCounter::StatefulBounceCounter(PassKey, DIPSService* dips_service)
+    : dips_service_(dips_service) {
+  dips_service_->AddObserver(this);
 }
 
 StatefulBounceCounter::~StatefulBounceCounter() {
-  dips_wco_->RemoveObserver(this);
+  dips_service_->RemoveObserver(this);
 }
 
 /*static*/
-StatefulBounceCounter* StatefulBounceCounter::Get(
-    DIPSWebContentsObserver* dips_wco) {
-  if (void* data = dips_wco->GetUserData(&kUserDataKey)) {
-    return static_cast<StatefulBounceCounter*>(data);
-  }
-  auto counter = std::make_unique<StatefulBounceCounter>(PassKey(), dips_wco);
-  StatefulBounceCounter* p = counter.get();  // grab a pointer before moving it.
-  dips_wco->SetUserData(&kUserDataKey, std::move(counter));
-  return p;
+void StatefulBounceCounter::CreateFor(DIPSService* dips_service) {
+  CHECK(!dips_service->GetUserData(&kUserDataKey));
+  dips_service->SetUserData(
+      &kUserDataKey,
+      std::make_unique<StatefulBounceCounter>(PassKey(), dips_service));
 }
 
 void StatefulBounceCounter::OnStatefulBounce(

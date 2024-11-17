@@ -14,7 +14,7 @@ class ShillServiceInfo {
  public:
   // The `id` parameter is used when generating values for each of the different
   // shill service constants below.
-  explicit ShillServiceInfo(unsigned int id, const std::string service_type);
+  explicit ShillServiceInfo(unsigned int id, std::string service_type);
   ~ShillServiceInfo();
 
   const std::string& service_name() const { return service_name_; }

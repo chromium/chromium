@@ -27,8 +27,7 @@ std::string ToString(Namespace settings_namespace) {
     case INVALID:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace settings_namespace

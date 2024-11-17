@@ -12,17 +12,13 @@ function getPresetConfigHtml(this: TracingScenariosConfigElement) {
     return nothing;
   }
 
-  return html`
-    <h2>Local Scenarios</h2>
-    <div class="config-container">
-    ${this.presetConfig_.map((item, index) => html`
-      <div class="config-row">
-        <cr-checkbox ?checked="${item.selected}" data-index="${index}"
-            @checked-changed="${this.valueDidChange_}">
-          <div class="label">${item.scenarioName}</div>
-        </cr-checkbox>
-      </div>`)}
-    </div>`;
+  return this.presetConfig_.map((item, index) => html`
+    <div class="config-row">
+      <cr-checkbox ?checked="${item.selected}" data-index="${index}"
+          @checked-changed="${this.valueDidChange_}">
+        <div class="label">${item.scenarioName}</div>
+      </cr-checkbox>
+    </div>`);
   // clang-format on
 }
 
@@ -57,7 +53,17 @@ export function getHtml(this: TracingScenariosConfigElement) {
   </h3>
   ${this.isLoading_ ? html`<div class="spinner"></div>` : html`
   ${getFieldConfigHtml.bind(this)()}
-  ${getPresetConfigHtml.bind(this)()}
+  <h2>Local Scenarios</h2>
+  <div class="config-container">
+    ${getPresetConfigHtml.bind(this)()}
+    <cr-checkbox ?checked="${this.privacyFilterEnabled_}"
+        @checked-changed="${this.privacyFilterDidChange_}">
+      <div class="label">
+        Remove untyped and sensitive data like URLs from local scenarios (needs
+        restart to take effect).
+      </div>
+    </cr-checkbox>
+  </div>
   <div class="action-panel">
     <cr-button class="cancel-button" ?disabled="${!this.isEdited_}"
         @click="${this.onCancelClick_}">

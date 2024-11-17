@@ -10,6 +10,7 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/saved_tab_groups/favicon/ui/tab_group_favicons_grid.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
@@ -19,7 +20,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_cell.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_favicon_grid.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
@@ -371,51 +371,8 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
   cell.subtitleLabel.text = itemData.creationText;
   NSUInteger numberOfTabs = itemData.numberOfTabs;
   cell.faviconsGrid.numberOfTabs = numberOfTabs;
-  cell.faviconsGrid.favicon1 = nil;
-  cell.faviconsGrid.favicon2 = nil;
-  cell.faviconsGrid.favicon3 = nil;
-  cell.faviconsGrid.favicon4 = nil;
-  UIImage* fallbackImage = DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 16);
-  if (numberOfTabs >= 1) {
-    cell.faviconsGrid.favicon1 = fallbackImage;
-    [_itemDataSource fetchFaviconForItem:item
-                                   index:0
-                              completion:^(UIImage* favicon) {
-                                if ([cell.item isEqual:item] && favicon) {
-                                  cell.faviconsGrid.favicon1 = favicon;
-                                }
-                              }];
-  }
-  if (numberOfTabs >= 2) {
-    cell.faviconsGrid.favicon2 = fallbackImage;
-    [_itemDataSource fetchFaviconForItem:item
-                                   index:1
-                              completion:^(UIImage* favicon) {
-                                if ([cell.item isEqual:item] && favicon) {
-                                  cell.faviconsGrid.favicon2 = favicon;
-                                }
-                              }];
-  }
-  if (numberOfTabs >= 3) {
-    cell.faviconsGrid.favicon3 = fallbackImage;
-    [_itemDataSource fetchFaviconForItem:item
-                                   index:2
-                              completion:^(UIImage* favicon) {
-                                if ([cell.item isEqual:item] && favicon) {
-                                  cell.faviconsGrid.favicon3 = favicon;
-                                }
-                              }];
-  }
-  if (numberOfTabs == 4) {
-    cell.faviconsGrid.favicon4 = fallbackImage;
-    [_itemDataSource fetchFaviconForItem:item
-                                   index:3
-                              completion:^(UIImage* favicon) {
-                                if ([cell.item isEqual:item] && favicon) {
-                                  cell.faviconsGrid.favicon4 = favicon;
-                                }
-                              }];
-  }
+
+  [_itemDataSource fetchFaviconsForCell:cell];
 }
 
 // Returns a context menu configuration instance for the given cell in the tab

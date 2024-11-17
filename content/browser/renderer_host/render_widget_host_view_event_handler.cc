@@ -10,6 +10,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/switches.h"
 #include "components/viz/common/features.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
@@ -18,7 +19,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/text_input_manager.h"
-#include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -114,7 +114,7 @@ RenderWidgetHostViewEventHandler::RenderWidgetHostViewEventHandler(
     RenderWidgetHostImpl* host,
     RenderWidgetHostViewBase* host_view,
     Delegate* delegate)
-    : pinch_zoom_enabled_(content::IsPinchToZoomEnabled()),
+    : pinch_zoom_enabled_(input::switches::IsPinchToZoomEnabled()),
       host_(host),
       host_view_(host_view),
       delegate_(delegate),

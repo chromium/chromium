@@ -1,7 +1,7 @@
 {%- macro enum_def(enum_spec_parent, enum_parent, enum) -%}
 {# TODO: Less generic enum annotations would be nice. We do it this way because
-   the bindings generator is still too stupid to generate the right integral
-   constants directly. #}
+   the bindings generator can't generate the right integral constants
+   directly yet. #}
 {%- set enum_name = enum|lite_closure_type -%}
 
 {%  if generate_closure_exports -%}

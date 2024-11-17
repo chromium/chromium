@@ -73,8 +73,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
   if (!client_info || client_info->device_token != request_device_token) {
     device_management_response.add_error_detail(
         policy_storage()->error_detail());
-    return CreateHttpResponse(net::HTTP_GONE,
-                              device_management_response.SerializeAsString());
+    return CreateHttpResponse(net::HTTP_GONE, device_management_response);
   }
 
   em::DeviceManagementRequest device_management_request;
@@ -138,8 +137,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
     }
   }
 
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 bool RequestHandlerForPolicy::ProcessCloudPolicy(

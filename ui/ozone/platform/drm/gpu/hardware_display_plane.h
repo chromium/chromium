@@ -44,6 +44,8 @@ class HardwareDisplayPlane {
   // Adds trace records to |context|.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  std::ostream& DumpProperties(std::ostream& out) const;
+
   bool in_use() const { return in_use_; }
   void set_in_use(bool in_use) { in_use_ = in_use; }
 

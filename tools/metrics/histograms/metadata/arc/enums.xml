@@ -199,19 +199,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Not allowed"/>
 </enum>
 
-<enum name="ArcFeaturesParseResult">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kErrorParsingJson"/>
-  <int value="2" label="kInvalidFeatureList"/>
-  <int value="3" label="kInvalidUnavailableFeatureList"/>
-  <int value="4" label="kInvalidPropertiesList"/>
-  <int value="5" label="kMissingFingerprintProperty"/>
-  <int value="6" label="kMissingSdkProperty"/>
-  <int value="7" label="kMissingReleaseProperty"/>
-  <int value="8" label="kMissingAbiListProperty"/>
-  <int value="9" label="kMissingPlayStoreVersion"/>
-</enum>
-
 <enum name="ArcKeyMintError">
   <int value="0" label="Other unspecified error code"/>
   <int value="1" label="OK"/>
@@ -220,6 +207,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Invalid Arguement"/>
   <int value="5" label="Unsupported Algorithm"/>
   <int value="6" label="Unimplemented"/>
+  <int value="7" label="Unexpected Null Pointer"/>
 </enum>
 
 <enum name="ArcMainAccountHashMigrationStatus">
@@ -395,23 +383,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Provisioning failed"/>
   <int value="7" label="Android Management required"/>
   <int value="8" label="Busy"/>
-</enum>
-
-<enum name="ArcOptInNetworkErrorAction">
-  <summary>
-    Defines Arc optin dialog actions when a network-related provisioning error
-    occurs.
-  </summary>
-  <int value="0" label="Window closed"/>
-  <int value="1" label="Retry clicked"/>
-  <int value="2" label="SendFeedback clicked"/>
-  <int value="3" label="CheckNetwork clicked"/>
-  <int value="4" label="Network error shown">
-    This bucket encompasses all others and works as a total count for
-    network-related errors (instead of the histogram's total sample count which
-    doesn't reflect that information). This enum value was added on 2023 Dec 21
-    The data before this date is missing.
-  </int>
 </enum>
 
 <enum name="ArcOptInResult">
@@ -732,6 +703,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="The user has confirmed the migration"/>
   <int value="3" label="The migration has started"/>
   <int value="4" label="The migration has finished"/>
+</enum>
+
+<enum name="ArcVmRemovableMediaUnmountResult">
+  <summary>Defines the result of unmounting removable media on ARC.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed - mojo timeout"/>
+  <int value="2" label="Failed - ARC-side error"/>
+  <int value="3" label="Failed - mojo instance not found"/>
 </enum>
 
 <enum name="ArcWallpaperApi">

@@ -69,14 +69,13 @@ void DelegatingProvider::OnPageLoadStarted() {
 
 bool DelegatingProvider::HasIndependentMetrics() {
   // These are collected seperately for each provider.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void DelegatingProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile_proto) {
   // ProvideSystemProfileMetricsWithLogCreationTime() should be called instead.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DelegatingProvider::ProvideSystemProfileMetricsWithLogCreationTime(

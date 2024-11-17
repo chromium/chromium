@@ -38,7 +38,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeoutException;
@@ -198,7 +198,7 @@ public class SmartClipProviderTest implements Handler.Callback {
     }
 
     // Disable test on tablet since it fails consistently on M tablet. See https://crbug.com/853816
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Test
     @MediumTest
     @Feature({"SmartClip"})

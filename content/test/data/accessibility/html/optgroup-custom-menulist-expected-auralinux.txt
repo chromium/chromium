@@ -8,6 +8,9 @@
 ++++++++++[menu item] name='Bumblebee' enabled selectable posinset:3 setsize:7
 ++++++++++[menu item] name='Jazz' enabled selectable posinset:4 setsize:7
 ++++++++[panel] name='group 2' enabled
+++++++++++[static] name='group ' enabled
+++++++++++[static] enabled
+++++++++++++[static] name='2' enabled
 ++++++++++[menu item] name='Megatron' enabled selectable posinset:5 setsize:7
 ++++++++++[menu item] name='Starscream' enabled selectable posinset:6 setsize:7
 ++++++++++[menu item] name='Brawl' enabled selectable posinset:7 setsize:7

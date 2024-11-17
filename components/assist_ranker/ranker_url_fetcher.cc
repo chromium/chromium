@@ -25,7 +25,7 @@ const int kMaxRetry = 16;
 RankerURLFetcher::RankerURLFetcher()
     : state_(IDLE), retry_count_(0), max_retry_on_5xx_(0) {}
 
-RankerURLFetcher::~RankerURLFetcher() {}
+RankerURLFetcher::~RankerURLFetcher() = default;
 
 bool RankerURLFetcher::Request(
     const GURL& url,
@@ -34,8 +34,7 @@ bool RankerURLFetcher::Request(
   // This function is not supposed to be called if the previous operation is not
   // finished.
   if (state_ == REQUESTING) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   if (retry_count_ >= kMaxRetry)

@@ -26,6 +26,7 @@
 
 using testing::_;
 using testing::Eq;
+using testing::Gt;
 using testing::IsEmpty;
 using testing::StrEq;
 
@@ -111,8 +112,7 @@ class LoginLogoutTestHelper {
       case user_manager::UserType::kWebKioskApp:
         return CreateWebKioskAppProfile();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
   }
 
@@ -243,8 +243,7 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
   if (test_case.expected_session_type ==
       LoginLogoutSessionType::REGULAR_USER_SESSION) {
     EXPECT_TRUE(record.has_unaffiliated_user());
-    EXPECT_TRUE(record.unaffiliated_user().has_user_id());
-    EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
+    EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
   }
 }
 
@@ -307,8 +306,7 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
   if (test_case.expected_session_type ==
       LoginLogoutSessionType::REGULAR_USER_SESSION) {
     EXPECT_TRUE(record.has_unaffiliated_user());
-    EXPECT_TRUE(record.unaffiliated_user().has_user_id());
-    EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
+    EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
   }
 }
 
@@ -446,8 +444,7 @@ TEST_F(LoginFailureReporterTest, ReportUnaffiliatedLoginFailure_TpmError) {
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
   EXPECT_TRUE(record.has_unaffiliated_user());
-  EXPECT_TRUE(record.unaffiliated_user().has_user_id());
-  EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
+  EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
               Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
@@ -781,8 +778,7 @@ TEST_P(LoginFailureReporterTest,
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
   EXPECT_TRUE(record.has_unaffiliated_user());
-  EXPECT_TRUE(record.unaffiliated_user().has_user_id());
-  EXPECT_THAT(record.unaffiliated_user().user_id(), Not(IsEmpty()));
+  EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
               Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));

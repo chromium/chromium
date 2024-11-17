@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
@@ -64,7 +65,7 @@
   // Identity object that contains the user's account details.
   std::string _gaiaID;
   // Used to refresh Send Tab notifications enabled status in DeviceInfo.
-  syncer::DeviceInfoSyncService* _deviceInfoSyncService;
+  raw_ptr<syncer::DeviceInfoSyncService> _deviceInfoSyncService;
 }
 
 @synthesize priceTrackingItem = _priceTrackingItem;
@@ -377,8 +378,7 @@
     }
     default:
       // Not a switch.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -397,8 +397,7 @@
     case ItemIdentifierSendTab:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

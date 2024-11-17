@@ -23,7 +23,7 @@ ContentSettingsInfo::ContentSettingsInfo(
       incognito_behavior_(incognito_behavior),
       origin_restriction_(origin_restriction) {}
 
-ContentSettingsInfo::~ContentSettingsInfo() {}
+ContentSettingsInfo::~ContentSettingsInfo() = default;
 
 ContentSetting ContentSettingsInfo::GetInitialDefaultSetting() const {
   const base::Value& initial_default =

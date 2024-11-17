@@ -23,6 +23,36 @@ enum class ProtectionEligibility {
   kMaxValue = kEligible,
 };
 
+// An enumeration of the disposition of a request. These values are persisted to
+// logs. The values are in the order that the checks occur, so for example if
+// the request does not match the MDL and the feature is not enabled,
+// `kNotMatchingMdl` will be recorded.
+//
+// Entries should not be renumbered and numeric values should never be reused.
+enum class ProxyResolutionResult {
+  // The MDL is not populated, so an eligility decision could not be made.
+  kMdlNotPopulated = 0,
+  // The request did not match the MDL.
+  kNoMdlMatch = 1,
+  // The EnableIpProtectionProxy feature is not enabled.
+  kFeatureDisabled = 2,
+  // The IP Protection setting is disabled.
+  kSettingDisabled = 3,
+  // The proxy list is not available. This disposition does not imply that
+  // tokens were available. It is possible that the proxy list was not available
+  // AND tokens were not available.
+  kProxyListNotAvailable = 4,
+  // Tokens are not available because the one or both of the token caches was
+  // never filled.
+  kTokensNeverAvailable = 5,
+  // Tokens are not available for the current geo due to the cache being
+  // exhausted.
+  kTokensExhausted = 6,
+  // The request was resolved to use the IP Protection proxies.
+  kAttemptProxy = 7,
+  kMaxValue = kAttemptProxy,
+};
+
 // An enumeration of the result of an attempt to fetch a proxy list. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused.
@@ -53,6 +83,9 @@ enum class AuthTokenResultForGeo {
 //
 // More detail on the metrics produced here can be found in
 // `tools/metrics/histograms/metadata/network/histograms.xml`.
+//
+// Note that additional IP-Protection-related metrics are logged directly in
+// `net::UrlRequestHttpJob`, which cannot depend on this component.
 class IpProtectionTelemetry {
  public:
   virtual ~IpProtectionTelemetry() = default;
@@ -84,17 +117,8 @@ class IpProtectionTelemetry {
   // OnResolveProxy.
   virtual void EmptyTokenCache(ProxyLayer) = 0;
 
-  // An eligibility determination has been made for a request, in a call to
-  // `OnResolveProxy`.
-  virtual void RequestIsEligibleForProtection(ProtectionEligibility) = 0;
-
-  // An availability determination has been made for a request, in a call to
-  // `OnResolveProxy`. This only occurs when the request is eligible and IP
-  // Protection is enabled. Protection is considered available if both tokens
-  // and a proxy list are available.
-  virtual void ProtectionIsAvailableForRequest(
-      bool are_auth_tokens_available,
-      bool is_proxy_list_available) = 0;
+  // An `OnResolveProxy` call has completed with the given result.
+  virtual void ProxyResolution(ProxyResolutionResult) = 0;
 
   // Results of a call to GetAuthToken. `is_token_available` is true if a token
   // was returned; `enable_token_caching_by_geo` represents the feature status;
@@ -155,6 +179,14 @@ class IpProtectionTelemetry {
 
 // Get the singleton instance of this type. This will be implemented by each
 // subclass, with only one being built on any particular platform.
+//
+// TODO: https://crbug.com/352005196 - this mechanism basically relies on
+// dependency injection through the build system, which is awkward as it means
+// this module will not link on its own, opens the door to conflicting
+// definitions coming from separate branches of the build graph, and it also
+// makes it impossible to pass state. This should be made explicit through
+// proper dependency injection (i.e. having platform-specific code explicitly
+// pass an instance of `IpProtectionTelemetry` to code that needs it).
 IpProtectionTelemetry& Telemetry();
 
 }  // namespace ip_protection

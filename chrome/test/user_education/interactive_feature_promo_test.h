@@ -12,8 +12,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_internal.h"
-#include "components/user_education/common/feature_promo_result.h"
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 
 // API class that provides both base browser Kombucha functionality and
 // additional logic for testing User Education experiences.
@@ -80,21 +80,54 @@ class InteractiveFeaturePromoTestApi
 
   // --------------------------------------------------------------------------
   // IMPORTANT NOTE: the following methods only work for Views help bubbles.
-  // TODO(dfried): fix these so that they work for WebUI help bubbles as well.
+
+  struct WebUiHelpBubbleShown {};
+  using ShowPromoResult =
+      std::variant<WebUiHelpBubbleShown, user_education::FeaturePromoResult>;
 
   // Possibly tries to show the promo with `params`, which should produce the
-  // `expected_result`. If the result is success, checks that the help bubble is
-  // open and the correct promo is showing.
+  // `show_promo_result`. If `show_promo_result` is not `WebUiHelpBubbleShown`
+  // and the result is success, checks that a Views help bubble is open and the
+  // correct promo is showing. For WebUI bubbles, only checks that the correct
+  // promo is showing.
   //
   // When using a mock `FeatureEngagementTracker` the tracker will be set up to
   // handle the appropriate calls.
   [[nodiscard]] MultiStep MaybeShowPromo(
       user_education::FeaturePromoParams params,
-      user_education::FeaturePromoResult expected_result =
+      ShowPromoResult show_promo_result =
           user_education::FeaturePromoResult::Success());
 
-  // Waits for the given promo to be shown.
+  // Waits for the given Views promo bubble to be shown and verifies that the
+  // correct IPH is active.
+  //
+  // If this step is done `InAnyContext()` it will verify that the promo appears
+  // in at least one browser.
+  //
+  // IMPORTANT USAGE NOTE: if the browser the promo is shown from (by calling
+  // `MaybeShowFeaturePromo()` or using the `MaybeShowPromo()` action in this
+  // test API) is different from the window in which it actually appears, you
+  // MUST use `InAnyContext()` with this step, as otherwise it assumes that both
+  // are in the current/specified context - i.e. the same browser window.
+  // Failing to do so will cause either the check for the bubble or the step
+  // that verifies the correct promo is showing to fail.
+  //
+  // NOTE: the current context is potentially undefined after this step if it
+  // is run `InAnyContext()`; do not follow this step with `InSameContext()` in
+  // that case.
   [[nodiscard]] MultiStep WaitForPromo(const base::Feature& iph_feature);
+
+  // Checks that the promo `iph_feature` is active.
+  //
+  // If this step is done `InAnyContext()` it will verify that the promo is
+  // active in at least one browser (or if `active` is false, that it is not
+  // active in any browser.)
+  //
+  // NOTE: the current context is potentially undefined after this step if it
+  // is run `InAnyContext()`; do not follow this step with `InSameContext()` in
+  // that case.
+  [[nodiscard]] StepBuilder CheckPromoIsActive(const base::Feature& iph_feature,
+                                               bool active = true);
 
   // Ends the specified promo via the API, with reason `kAborted`.
   [[nodiscard]] MultiStep AbortPromo(const base::Feature& iph_feature,

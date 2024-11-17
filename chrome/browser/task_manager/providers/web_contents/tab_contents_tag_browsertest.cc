@@ -316,17 +316,14 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
   // Check that the task manager uses the specified favicon for the page.
   base::FilePath test_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
-  std::string favicon_string;
+  std::optional<std::vector<uint8_t>> favicon_data;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::ReadFileToString(
-        test_dir.AppendASCII("favicon").AppendASCII("icon.png"),
-        &favicon_string);
+    favicon_data = base::ReadFileToBytes(
+        test_dir.AppendASCII("favicon").AppendASCII("icon.png"));
   }
-  SkBitmap favicon_bitmap;
-  gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(favicon_string.data()),
-      favicon_string.length(), &favicon_bitmap);
+  SkBitmap favicon_bitmap = gfx::PNGCodec::Decode(favicon_data.value());
+  ASSERT_FALSE(favicon_bitmap.isNull());
   ASSERT_TRUE(
       gfx::test::AreBitmapsEqual(favicon_bitmap, *task->icon().bitmap()));
 

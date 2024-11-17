@@ -1235,8 +1235,22 @@ export class PrintPreviewModelElement extends PolymerElement {
       console.warn('Unable to parse state ' + e);
       return;  // use default values rather than updating.
     }
+
     if (savedSettings.version !== 2) {
       return;
+    }
+
+    if (savedSettings.customMargins) {
+      // Per crbug.com/40067498 and crbug.com/348806045, the C++ side expects
+      // the custom margins values to be integers, so round them here.
+      savedSettings.customMargins.marginTop =
+          Math.round(savedSettings.customMargins.marginTop);
+      savedSettings.customMargins.marginRight =
+          Math.round(savedSettings.customMargins.marginRight);
+      savedSettings.customMargins.marginBottom =
+          Math.round(savedSettings.customMargins.marginBottom);
+      savedSettings.customMargins.marginLeft =
+          Math.round(savedSettings.customMargins.marginLeft);
     }
 
     let recentDestinations = savedSettings.recentDestinations || [];

@@ -144,17 +144,23 @@ protocol::Response InspectorAnimationAgent::enable() {
   enabled_.Set(true);
   instrumenting_agents_->AddInspectorAnimationAgent(this);
 
+  if (inspected_frames_->Root()->IsProvisional()) {
+    // Running getAnimations on a document attached to a provisional frame can
+    // cause a crash: crbug.com/40670727
+    return protocol::Response::Success();
+  }
+
   Document* document = inspected_frames_->Root()->GetDocument();
   DocumentAnimations& document_animations = document->GetDocumentAnimations();
   HeapVector<Member<Animation>> animations =
       document_animations.getAnimations(document->GetTreeScope());
   for (Animation* animation : animations) {
     const String& animation_id = String::Number(animation->SequenceNumber());
-    blink::Animation::AnimationPlayState play_state =
+    V8AnimationPlayState::Enum play_state =
         animation->CalculateAnimationPlayState();
     bool is_play_state_running_or_finished =
-        play_state == blink::Animation::kRunning ||
-        play_state == blink::Animation::kFinished;
+        play_state == V8AnimationPlayState::Enum::kRunning ||
+        play_state == V8AnimationPlayState::Enum::kFinished;
     if (!is_play_state_running_or_finished ||
         cleared_animations_.Contains(animation_id) ||
         id_to_animation_.Contains(animation_id)) {
@@ -249,8 +255,8 @@ BuildObjectForAnimationEffect(KeyframeEffect* effect) {
           .setIterationStart(computed_timing->iterationStart())
           .setIterations(computed_timing->iterations())
           .setDuration(NormalizedDuration(computed_timing->duration()))
-          .setDirection(computed_timing->direction())
-          .setFill(computed_timing->fill())
+          .setDirection(computed_timing->direction().AsString())
+          .setFill(computed_timing->fill().AsString())
           .setEasing(easing)
           .build();
   if (effect->EffectTarget()) {
@@ -331,7 +337,9 @@ InspectorAnimationAgent::BuildObjectForAnimation(blink::Animation& animation) {
           .setId(id)
           .setName(AnimationDisplayName(animation))
           .setPausedState(animation.Paused())
-          .setPlayState(animation.PlayStateString())
+          .setPlayState(
+              V8AnimationPlayState(animation.CalculateAnimationPlayState())
+                  .AsString())
           .setPlaybackRate(animation.playbackRate())
           .setStartTime(NormalizedStartTime(animation))
           .setCurrentTime(current_time)
@@ -549,7 +557,7 @@ String InspectorAnimationAgent::CreateCSSId(blink::Animation& animation) {
       css_property_names.push_back(CSSPropertyName(property));
     css_property_names.push_back(css_transition->TransitionCSSPropertyName());
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   Element* element = effect->EffectTarget();
@@ -595,10 +603,10 @@ void InspectorAnimationAgent::NotifyAnimationUpdated(
     return;
   }
 
-  blink::Animation::AnimationPlayState play_state =
+  V8AnimationPlayState::Enum play_state =
       animation->CalculateAnimationPlayState();
-  if (play_state != blink::Animation::kRunning &&
-      play_state != blink::Animation::kFinished) {
+  if (play_state != V8AnimationPlayState::Enum::kRunning &&
+      play_state != V8AnimationPlayState::Enum::kFinished) {
     return;
   }
 
@@ -665,9 +673,9 @@ bool InspectorAnimationAgent::CompareAndUpdateKeyframesSnapshot(
 bool InspectorAnimationAgent::CompareAndUpdateInternalSnapshot(
     blink::Animation& animation,
     AnimationSnapshot* snapshot) {
-  blink::Animation::AnimationPlayState new_play_state =
-      animation.PendingInternal() ? blink::Animation::AnimationPlayState::kPending
-                          : animation.CalculateAnimationPlayState();
+  V8AnimationPlayState::Enum new_play_state =
+      animation.PendingInternal() ? V8AnimationPlayState::Enum::kPending
+                                  : animation.CalculateAnimationPlayState();
   bool should_notify_frontend = false;
   double start_time = NormalizedStartTime(animation);
   if (snapshot->start_time != start_time) {
@@ -760,11 +768,10 @@ void InspectorAnimationAgent::AnimationUpdated(blink::Animation* animation) {
   // to AnimationUpdated so, we create a snapshot and store the play state for
   // future comparisons.
   AnimationSnapshot* snapshot;
-  blink::Animation::AnimationPlayState new_play_state =
-      animation->PendingInternal() ? blink::Animation::AnimationPlayState::kPending
-                           : animation->CalculateAnimationPlayState();
-  blink::Animation::AnimationPlayState old_play_state =
-      blink::Animation::AnimationPlayState::kIdle;
+  V8AnimationPlayState::Enum new_play_state =
+      animation->PendingInternal() ? V8AnimationPlayState::Enum::kPending
+                                   : animation->CalculateAnimationPlayState();
+  V8AnimationPlayState::Enum old_play_state = V8AnimationPlayState::Enum::kIdle;
   if (id_to_animation_snapshot_.Contains(animation_id)) {
     snapshot = id_to_animation_snapshot_.at(animation_id);
     old_play_state = snapshot->play_state;
@@ -777,15 +784,15 @@ void InspectorAnimationAgent::AnimationUpdated(blink::Animation* animation) {
 
   // Do not record pending animations in `id_to_animation_` and do not notify
   // frontend.
-  if (new_play_state == blink::Animation::AnimationPlayState::kPending) {
+  if (new_play_state == V8AnimationPlayState::Enum::kPending) {
     return;
   }
 
   // Record newly starting animations only once.
   if (old_play_state != new_play_state) {
     switch (new_play_state) {
-      case blink::Animation::kRunning:
-      case blink::Animation::kFinished: {
+      case V8AnimationPlayState::Enum::kRunning:
+      case V8AnimationPlayState::Enum::kFinished: {
         if (id_to_animation_.Contains(animation_id)) {
           break;
         }
@@ -795,21 +802,18 @@ void InspectorAnimationAgent::AnimationUpdated(blink::Animation* animation) {
         GetFrontend()->animationStarted(BuildObjectForAnimation(*animation));
         break;
       }
-      case blink::Animation::kIdle:
-      case blink::Animation::kPaused:
+      case V8AnimationPlayState::Enum::kIdle:
+      case V8AnimationPlayState::Enum::kPaused:
         GetFrontend()->animationCanceled(animation_id);
         break;
-      case blink::Animation::kUnset:
-        // No-op for now.
-        break;
-      case blink::Animation::kPending:
-        NOTREACHED_IN_MIGRATION();
+      case V8AnimationPlayState::Enum::kPending:
+        NOTREACHED();
     }
   }
 
   // We only send animationUpdated events for running or finished animations.
-  if (new_play_state != blink::Animation::kRunning &&
-      new_play_state != blink::Animation::kFinished) {
+  if (new_play_state != V8AnimationPlayState::Enum::kRunning &&
+      new_play_state != V8AnimationPlayState::Enum::kFinished) {
     return;
   }
 

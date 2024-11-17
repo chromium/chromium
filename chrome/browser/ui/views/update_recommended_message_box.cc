@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
 
-#include "base/feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -44,9 +43,7 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-  SetTitle(base::FeatureList::IsEnabled(features::kUpdateTextOptions)
-               ? IDS_UPDATE_RECOMMENDED_DIALOG_TITLE_ALT
-               : IDS_UPDATE_RECOMMENDED_DIALOG_TITLE);
+  SetTitle(IDS_UPDATE_RECOMMENDED_DIALOG_TITLE_ALT);
 #else
   SetTitle(IDS_UPDATE_RECOMMENDED_DIALOG_TITLE);
 #endif
@@ -57,10 +54,7 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
   update_message = l10n_util::GetPluralStringFUTF16(
-      base::FeatureList::IsEnabled(features::kUpdateTextOptions)
-          ? IDS_UPDATE_RECOMMENDED_ALT
-          : IDS_UPDATE_RECOMMENDED,
-      BrowserList::GetIncognitoBrowserCount());
+      IDS_UPDATE_RECOMMENDED_ALT, BrowserList::GetIncognitoBrowserCount());
 #else
   update_message = l10n_util::GetPluralStringFUTF16(
       IDS_UPDATE_RECOMMENDED, BrowserList::GetIncognitoBrowserCount());

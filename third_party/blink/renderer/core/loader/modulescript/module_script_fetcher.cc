@@ -46,8 +46,7 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
 
   // <spec step="9">... response's type is "error" ...</spec>
   if (!resource || resource->ErrorOccurred() ||
-      resource->IntegrityDisposition() !=
-          ResourceIntegrityDisposition::kPassed) {
+      !resource->PassedIntegrityChecks()) {
     return false;
   }
 

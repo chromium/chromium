@@ -21,17 +21,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 namespace extensions {
-
-namespace platform_keys {
-
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-}  // namespace platform_keys
 
 class EnterprisePlatformKeysInternalGenerateKeyFunction
     : public ExtensionFunction {

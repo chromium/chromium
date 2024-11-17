@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
-import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -160,10 +159,6 @@ class UrlBarProperties {
     public static final WritableBooleanPropertyKey INCOGNITO_COLORS_ENABLED =
             new WritableBooleanPropertyKey();
 
-    /** The delegate that provides Window capabilities to the view. */
-    public static final WritableObjectPropertyKey<WindowDelegate> WINDOW_DELEGATE =
-            new WritableObjectPropertyKey<>();
-
     /** Specifies whether suggestions are showing below the URL bar. */
     public static final WritableBooleanPropertyKey HAS_URL_SUGGESTIONS =
             new WritableBooleanPropertyKey();
@@ -171,6 +166,13 @@ class UrlBarProperties {
     /** Specifies whether the text should be selected when the URL bar is focused. */
     public static final WritableBooleanPropertyKey SELECT_ALL_ON_FOCUS =
             new WritableBooleanPropertyKey();
+
+    /** Handler receiving long-click events for the url bar. */
+    public static final WritableObjectPropertyKey<View.OnLongClickListener> LONG_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    /** Specifies the resource ID for the url bar hint text. */
+    public static final WritableIntPropertyKey HINT_TEXT = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -187,10 +189,11 @@ class UrlBarProperties {
                 TYPING_STARTED_LISTENER,
                 KEY_DOWN_LISTENER,
                 INCOGNITO_COLORS_ENABLED,
-                WINDOW_DELEGATE,
                 HAS_URL_SUGGESTIONS,
                 TEXT_COLOR,
                 HINT_TEXT_COLOR,
-                SELECT_ALL_ON_FOCUS
+                SELECT_ALL_ON_FOCUS,
+                LONG_CLICK_LISTENER,
+                HINT_TEXT
             };
 }

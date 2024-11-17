@@ -58,11 +58,6 @@ class IsolatedWebAppUninstallBrowserTest
             IwaSourceBundleDevModeWithFileOp(src_bundle_path_,
                                              IwaSourceBundleDevFileOp::kMove));
         break;
-      case IwaSourceBundleModeAndFileOp::kDevModeReference:
-        src_source_ = IsolatedWebAppInstallSource::FromDevUi(
-            IwaSourceBundleDevModeWithFileOp(
-                src_bundle_path_, IwaSourceBundleDevFileOp::kReference));
-        break;
       case IwaSourceBundleModeAndFileOp::kProdModeCopy:
         src_source_ = IsolatedWebAppInstallSource::FromGraphicalInstaller(
             IwaSourceBundleProdModeWithFileOp(
@@ -169,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
                          EXPECT_EQ(location.path(), src_bundle_path_);
                        },
                        [&](const IwaStorageProxy& location) { FAIL(); }},
-      web_app_before->isolation_data()->location.variant());
+      web_app_before->isolation_data()->location().variant());
 
   // Uninstall the app and check that the copied to profile directory
   // file has been removed.
@@ -182,7 +177,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
   switch (mode_and_file_op_) {
     case IwaSourceBundleModeAndFileOp::kDevModeCopy:
     case IwaSourceBundleModeAndFileOp::kProdModeCopy:
-    case IwaSourceBundleModeAndFileOp::kDevModeReference:
       EXPECT_TRUE(base::PathExists(src_bundle_path_));
       break;
     case IwaSourceBundleModeAndFileOp::kDevModeMove:
@@ -199,11 +193,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
       EXPECT_FALSE(base::PathExists(path_to_iwa_in_profile.value()));
       EXPECT_FALSE(base::PathExists(path_to_iwa_in_profile.value().DirName()));
       break;
-    case IwaSourceBundleModeAndFileOp::kDevModeReference:
-      // Referenced bundles are not owned by Chrome and should not be
-      // removed.
-      EXPECT_TRUE(base::PathExists(src_bundle_path_));
-      break;
   }
 }
 
@@ -212,7 +201,6 @@ INSTANTIATE_TEST_SUITE_P(
     IsolatedWebAppUninstallBrowserTest,
     ::testing::Values(IwaSourceBundleModeAndFileOp::kDevModeCopy,
                       IwaSourceBundleModeAndFileOp::kDevModeMove,
-                      IwaSourceBundleModeAndFileOp::kDevModeReference,
                       IwaSourceBundleModeAndFileOp::kProdModeCopy,
                       IwaSourceBundleModeAndFileOp::kProdModeMove),
     [](::testing::TestParamInfo<IwaSourceBundleModeAndFileOp> info) {

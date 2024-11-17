@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -237,8 +238,7 @@ bool WebRtcEventLogHistoryFileWriter::Write(const std::string& str) {
   DCHECK(!str.empty());
   DCHECK_LE(str.length(), static_cast<size_t>(std::numeric_limits<int>::max()));
 
-  const int written = file_.WriteAtCurrentPos(str.c_str(), str.length());
-  if (written != static_cast<int>(str.length())) {
+  if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(str))) {
     LOG(WARNING) << "Writing to history file failed.";
     valid_ = false;
     return false;

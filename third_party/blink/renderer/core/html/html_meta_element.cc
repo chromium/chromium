@@ -428,8 +428,8 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
                             WebFeature::kInteractiveWidgetResizesVisual);
         } break;
         case ui::mojom::blink::VirtualKeyboardMode::kUnset: {
-          NOTREACHED_IN_MIGRATION();
-        } break;
+          NOTREACHED();
+        }
       }
     } else {
       description.virtual_keyboard_mode =
@@ -471,8 +471,7 @@ static mojom::ConsoleMessageLevel ViewportErrorMessageLevel(
       return mojom::ConsoleMessageLevel::kWarning;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return mojom::ConsoleMessageLevel::kError;
+  NOTREACHED();
 }
 
 void HTMLMetaElement::ReportViewportWarning(Document* document,

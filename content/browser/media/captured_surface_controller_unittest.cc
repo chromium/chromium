@@ -582,7 +582,7 @@ class CapturedSurfaceControllerInterfaceTestBase
             MakeCallbackExpectingResult(run_loop, expected_result));
         return;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  protected:

@@ -97,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, CreateAndRunTasks) {
       "WebApk.Sync.Restore.InstallResult.Fallback", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, NoManifestPage) {
+// TODO(https://crbug.com/370441986): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DISABLED_NoManifestPage) {
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   GURL test_url = embedded_test_server()->GetURL("/no_manifest_test_page.html");

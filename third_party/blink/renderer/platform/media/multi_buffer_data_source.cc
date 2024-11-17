@@ -19,7 +19,7 @@
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
-#include "url/gurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 namespace {
@@ -156,7 +156,7 @@ bool MultiBufferDataSource::media_has_played() const {
 
 bool MultiBufferDataSource::AssumeFullyBuffered() const {
   DCHECK(url_data_);
-  return !url_data_->url().SchemeIsHTTPOrHTTPS();
+  return !url_data_->url().ProtocolIsInHTTPFamily();
 }
 
 void MultiBufferDataSource::SetReader(
@@ -236,8 +236,8 @@ void MultiBufferDataSource::OnRedirected(
     StopLoader();
     return;
   }
-  if (url_data_->url().DeprecatedGetOriginAsURL() !=
-      new_destination->url().DeprecatedGetOriginAsURL()) {
+  if (!SecurityOrigin::AreSameOrigin(url_data_->url(),
+                                     new_destination->url())) {
     single_origin_ = false;
   }
   SetReader(nullptr);
@@ -267,6 +267,11 @@ void MultiBufferDataSource::OnRedirected(
           1, base::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
     }
   }
+
+  // The "redirect" may just be `reader_` being merged into an existing UrlData,
+  // in this case we need to ensure we report the buffered byte ranges from the
+  // existing UrlData instance.
+  UpdateProgress();
 
   if (redirect_cb_)
     redirect_cb_.Run();
@@ -405,7 +410,7 @@ int64_t MultiBufferDataSource::GetMemoryUsage() {
 }
 
 GURL MultiBufferDataSource::GetUrlAfterRedirects() const {
-  return url_data_->url();
+  return GURL(url_data_->url());
 }
 
 void MultiBufferDataSource::Read(int64_t position,

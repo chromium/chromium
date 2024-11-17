@@ -5,6 +5,7 @@
 #include "ash/wm/overview/birch/birch_bar_util.h"
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
@@ -12,6 +13,7 @@
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
@@ -37,6 +39,18 @@ std::unique_ptr<views::Button> CreateAddonButton(
   auto button = std::make_unique<PillButton>(
       std::move(callback), label, PillButton::Type::kSecondaryWithoutIcon);
   button->SetProperty(views::kMarginsKey, kAddonMargins);
+  return button;
+}
+
+std::unique_ptr<views::Button> CreateCoralAddonButton(
+    views::Button::PressedCallback callback,
+    const gfx::VectorIcon& button_icon) {
+  auto button = std::make_unique<IconButton>(
+      std::move(callback), IconButton::Type::kMediumProminent, &button_icon,
+      /*is_togglable=*/true, /*has_border=*/true);
+  button->SetProperty(views::kMarginsKey, kAddonMargins);
+  button->SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevated);
+  button->SetIconColor(cros_tokens::kCrosSysSecondary);
   return button;
 }
 
@@ -86,8 +100,7 @@ BirchSuggestionType CommandIdToSuggestionType(int command_id) {
     default:
       break;
   }
-  NOTREACHED_NORETURN() << "No matching suggestion type for command Id: "
-                        << command_id;
+  NOTREACHED() << "No matching suggestion type for command Id: " << command_id;
 }
 
 TabAppSelectionHost* GetVisibleTabAppSelectionHost() {

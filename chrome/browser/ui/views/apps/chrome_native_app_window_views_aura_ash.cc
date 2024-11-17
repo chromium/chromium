@@ -41,7 +41,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -50,6 +50,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -200,10 +201,9 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   // Some windows need to be placed in special containers, for example to make
   // them visible at the login or lock screen.
   std::optional<int> container_id;
-  if (create_params.is_ime_window)
+  if (create_params.is_ime_window) {
     container_id = ash::kShellWindowId_ImeWindowParentContainer;
-  else if (create_params.show_on_lock_screen)
-    container_id = ash::kShellWindowId_LockActionHandlerContainer;
+  }
 
   if (container_id.has_value()) {
     ash_util::SetupWidgetInitParamsForContainer(init_params, *container_id);
@@ -213,14 +213,6 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
       // changing focus). See https://crbug.com/935274 for more details.
       init_params->activatable = views::Widget::InitParams::Activatable::kNo;
     }
-  }
-
-  // Resizable lock screen apps will end up maximized by ash. Do it now to
-  // save back-and-forth communication with the window manager. Right now all
-  // lock screen apps either end up maximized (e.g. Keep) or are not resizable.
-  if (create_params.show_on_lock_screen && create_params.resizable) {
-    DCHECK_EQ(ui::mojom::WindowShowState::kDefault, init_params->show_state);
-    init_params->show_state = ui::mojom::WindowShowState::kMaximized;
   }
 
   const int32_t restore_window_id =
@@ -337,7 +329,7 @@ ui::ZOrderLevel ChromeNativeAppWindowViewsAuraAsh::GetZOrderLevel() const {
 void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& p,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   menu_model_ = CreateMultiUserContextMenu(GetNativeWindow());
   if (!menu_model_)
     return;
@@ -518,6 +510,10 @@ void ChromeNativeAppWindowViewsAuraAsh::OnExclusiveAccessUserInput() {
 content::WebContents*
 ChromeNativeAppWindowViewsAuraAsh::GetWebContentsForExclusiveAccess() {
   return web_view()->web_contents();
+}
+
+bool ChromeNativeAppWindowViewsAuraAsh::CanUserEnterFullscreen() const {
+  return true;
 }
 
 bool ChromeNativeAppWindowViewsAuraAsh::CanUserExitFullscreen() const {

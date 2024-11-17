@@ -175,6 +175,12 @@ message PageContext {
 
   // The offset of the focused element into the |inner_text|.
   uint64 inner_text_offset = 5;
+
+  // A base64 encoded PNG of the tab screenshot.
+  string tab_screenshot = 6;
+
+  // The base64 encoded PDF representation of the page.
+  string pdf_data = 7;
 }
 
 message FormData {
@@ -214,6 +220,14 @@ message FormFieldData {
 
   // The AX node ID of the form control for this field.
   int32 form_control_ax_node_id = 9;
+
+  // Whether the field is eligible for filling and importing. This flag does not
+  // take the value of the field into consideration.
+  bool is_eligible = 10;
+
+  // Uniquely identifies the DOM element that this field represents among the
+  // field DOM elements in the same frame.
+  string global_id = 11;
 }
 
 // Represents an option in a select field. See below for example.
@@ -264,6 +278,63 @@ message Tab {
 
   // The URL of the tab.
   string url = 3;
+
+  // The page context of the tab.
+  PageContext page_context = 4;
+}
+
+// The site engagement information for a single site.
+message SiteEngagementEntry {
+  // The URL of the site.
+  string url = 1;
+
+  // On a scale of 0 to 100, the relative score of engagement with the site.
+  float score = 2;
+}
+
+// The site engagement information for the user.
+message SiteEngagement {
+  // The site engagement information for the user.
+  repeated SiteEngagementEntry entries = 1;
+}
+
+// All the information collected from the browser along with the user input
+// (for features like Compose).
+message BrowserCollectedInformation {
+  // The page context of the page the model is acting on.
+  PageContext page_context = 1;
+
+  // Deprecated, but still sent by older clients. Use page_context instead.
+  string inner_text = 2;
+
+  // Deprecated, but still sent by older clients. Use page_context instead.
+  uint64 inner_text_offset = 3;
+
+  // Custom text that a prototyper can inject into prompts. If the browser
+  // collected information is not sufficient, an early stage prototype can
+  // build a string in Chrome/colab to be used in the prompt. This allows
+  // separation of prompt definition and call specific data.
+  repeated string custom_data = 4;
+
+  // The form to predict values for. It is expected for the values for each
+  // field to be empty.
+  FormData form_data = 5;
+
+  // The current entries in the user annotations database helpful for filling
+  // out this form.
+  repeated UserAnnotationsEntry entries = 6;
+
+  // The ungrouped tabs that are requested to be organized.
+  repeated Tab tabs = 7;
+
+  // The tab that was active at the time the user requested tab organization.
+  int64 active_tab_id = 8;
+
+  // All pre-existing tab groups.
+  repeated TabGroup pre_existing_tab_groups = 9;
+
+  // The site engagement information for the user.
+  SiteEngagement site_engagement = 10;
 }
 
 // Selection text affinity, part of the a11y snapshot.
@@ -707,7 +778,7 @@ enum AXRole {
 }
 
 // AX String attribute enum.
-// Next ID: 41
+// Next ID: 42
 enum AXStringAttribute {
   AX_SA_NONE = 0;
 
@@ -743,7 +814,7 @@ enum AXStringAttribute {
 
   AX_SA_IMAGEDATAURL = 16;
 
-  AX_SA_INNERHTML = 17;
+  AX_SA_MATHCONTENT = 17;
 
   AX_SA_INPUTTYPE = 18;
 
@@ -790,10 +861,12 @@ enum AXStringAttribute {
   AX_SA_ARIACELLCOLUMNINDEXTEXT = 39;
 
   AX_SA_ARIACELLROWINDEXTEXT = 40;
+
+  AX_SA_DATETIME = 41;
 }
 
 // AX Int attribute enum.
-// Next ID: 66
+// Next ID: 68
 enum AXIntAttribute {
   AX_IA_NONE = 0;
 
@@ -926,6 +999,10 @@ enum AXIntAttribute {
   AX_IA_ARIANOTIFICATIONINTERRUPTDEPRECATED = 64;
 
   AX_IA_ARIANOTIFICATIONPRIORITYDEPRECATED = 65;
+
+  AX_IA_DETAILSFROM = 66;
+
+  AX_IA_MAXLENGTH = 67;
 }
 
 // AX Float attribute enum.
@@ -1001,11 +1078,13 @@ enum AXBoolAttribute {
 }
 
 // AX IntList attribute enum.
-// Next ID: 29
+// Next ID: 30
 enum AXIntListAttribute {
   AX_ILA_NONE = 0;
 
   AX_ILA_INDIRECTCHILDIDS = 1;
+
+  AX_ILA_ACTIONSIDS = 29;
 
   AX_ILA_CONTROLSIDS = 2;
 
@@ -1074,7 +1153,8 @@ enum AXStringListAttribute {
   AX_SLA_ARIANOTIFICATIONIDS = 3;
 }
 
-// Matches FormControlType in mojo by one off for an unknown value.
+// Matches FormControlType in mojo, but off by one, because this list contains
+// an "UNSPECIFIED" value at 0.
 // https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/common/mojom/autofill_types.mojom;l=17;drc=105770df485ace262780d95126bb60b1a16ec340;bpv=1;bpt=1
 enum FormControlType {
   FORM_CONTROL_TYPE_UNSPECIFIED = 0;
@@ -1104,8 +1184,6 @@ enum FormControlType {
   FORM_CONTROL_TYPE_SELECT_ONE = 12;
 
   FORM_CONTROL_TYPE_SELECT_MULTIPLE = 13;
-
-  FORM_CONTROL_TYPE_SELECT_LIST = 14;
 
   FORM_CONTROL_TYPE_TEXT_AREA = 15;
 }

@@ -48,6 +48,8 @@ build_webui("build") {
     "oobe.html",
     "oobe_popup_overlay.css",
     "oobe_screen.css",
+
+    "screens/common/throbber.css",
   ]
 
   mojo_files_deps = [
@@ -136,8 +138,6 @@ build_webui("build") {
     "screens/login/arc_vm_data_migration.ts",
     "screens/login/checking_downloading_update.ts",
     "screens/login/encryption_migration.ts",
-    "screens/login/lacros_data_backward_migration.ts",
-    "screens/login/lacros_data_migration.ts",
     "screens/login/management_transition.ts",
     "screens/login/offline_login.ts",
     "screens/login/update_required_card.ts",
@@ -259,6 +259,9 @@ build_webui("build") {
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
   ]
+  if (is_chrome_branded) {
+    ts_definitions += [ "dummy.d.ts" ]
+  }
 
   ts_composite = true
 
@@ -272,10 +275,22 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_path_mappings =
-      [ "//oobe/gaia_auth_host/*|" +
+  ts_path_mappings = [
+    "/assistant_optin/*|" + rebase_path(
+            "${root_gen_dir}/chrome/browser/resources/chromeos/assistant_optin/assistant_optin_preprocessed/*",
+            target_gen_dir),
+    "//oobe/gaia_auth_host/*|" +
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
-                    target_gen_dir) ]
+                    target_gen_dir),
+  ]
+
+  if (is_chrome_branded) {
+    ts_path_mappings += [ "/sync-consent-icons.m.js|" +
+                          rebase_path("dummy.d.ts", target_gen_dir) ]
+  }
+
+  ts_extra_deps =
+      [ "//chrome/browser/resources/chromeos/assistant_optin:build_grd" ]
 
   webui_context_type = "trusted"
   extra_grdp_deps = [ "../supervision:build_oobe_grdp" ]

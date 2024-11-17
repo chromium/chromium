@@ -149,6 +149,7 @@ if (use_aura && !is_cast_audio_only && !is_fuchsia) {
       "//mojo/core/embedder",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/accessibility:test_support",
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/base:test_support",

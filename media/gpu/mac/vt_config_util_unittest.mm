@@ -53,10 +53,7 @@ bool GetBoolValue(CFDictionaryRef dict, CFStringRef key) {
 base::span<const uint8_t> GetDataValue(CFDictionaryRef dict, CFStringRef key) {
   CFDataRef data =
       base::apple::CFCastStrict<CFDataRef>(CFDictionaryGetValue(dict, key));
-  return data ? base::span<const uint8_t>(
-                    reinterpret_cast<const uint8_t*>(CFDataGetBytePtr(data)),
-                    base::checked_cast<size_t>(CFDataGetLength(data)))
-              : base::span<const uint8_t>();
+  return data ? base::apple::CFDataToSpan(data) : base::span<const uint8_t>();
 }
 
 base::span<const uint8_t> GetNestedDataValue(CFDictionaryRef dict,

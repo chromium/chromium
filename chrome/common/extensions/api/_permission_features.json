@@ -41,7 +41,7 @@
     "component_extensions_auto_granted": false,
     "extension_types": ["extension"],
     "location": "component",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "3CD7D4ABEB04E8C4D20552C60B8B20983DD10A2F"   // Embedded A11y Helper.
     ]
@@ -54,6 +54,12 @@
       "C50DC2AC31D826BC977032AF12DE4694CC8467DC",  // For unit testing ALP
       "AE27D69DBE571F4B1694F05C89B710C646792231",  // Published ADT.
       "5107DE9024C329EEA9C9A72D94C16723790C6422"   // Apps Developer Tool Dev.
+    ]
+  },
+  "aiLanguageModelOriginTrial": {
+    "channel": "stable",
+    "extension_types": [
+      "extension"
     ]
   },
   "autofillPrivate": {
@@ -91,18 +97,19 @@
   },
   "certificateProvider": [{
     "channel": "stable",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "extension_types": ["extension", "platform_app"]
   }, {
-    // https://crbug.com/1194693
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos"],
     "allowlist": [
-      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
-      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+      // https://crbug.com/1194693
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // DriveLock Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA",   // Beta DriveLock Smart Card Middleware
+      "5C825E850034490380BCB756D43ABB2CF537AA91"    // b/359290130
     ]
   }],
   "chromePrivate": {
@@ -117,7 +124,7 @@
   "chromeosInfoPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/293683
       "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/293683
@@ -243,7 +250,7 @@
   "documentScan": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "downloads": {
     "channel": "stable",
@@ -265,7 +272,7 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],
@@ -277,7 +284,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],
@@ -294,19 +301,14 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "session_types": ["kiosk"],
-    "allowlist": [
-      "E62CAB6E5341E96208DA8E0E6896770907FFA00C",  // http://b/303379761
-      "36139D0E820CE4B911D38D10D8C23448431D098B",  // http://b/303379761
-      "51DC616F82F8E8B3FA5185A83699F0E5CDACFF41"   // http://b/303379761
-    ],
     // TODO(b/307230150): Clean up API flag
     "feature_flag": "ApiEnterpriseKioskInput"
   },
   "enterprise.platformKeys": [{
     "channel": "stable",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "extension_types": ["extension", "platform_app", "legacy_packaged_app"],
     "location": "policy"
   },
@@ -328,7 +330,7 @@
   },
   {
     "channel": "stable",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "extension_types": ["extension"],
     "allowlist": [
       "A4CC6F00ACF41015AF38F1D5C98E97C2B8B3B320",  // http://crbug.com/1483151
@@ -381,7 +383,7 @@
   "fileBrowserHandler": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "fileManagerPrivate": {
     "channel": "stable",
@@ -396,11 +398,11 @@
   "fileSystemProvider": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/673004
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004
@@ -428,7 +430,7 @@
   "sharedStoragePrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "6F9E349A0561C78A0D3F41496FE521C5151C7F71", // gnubbyd app stable
       "C06709A259378015404ED20F75C7D08547E0F10B", // gnubbyd app dev
@@ -506,7 +508,7 @@
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["extension"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "6A4A0389E8D47118E96E6221B0B7221CA3715801",  // Apitest extension
       "EC8EA268128FECE14CEC68B90686D87755D87083",  // Assessment Assistant
@@ -522,12 +524,12 @@
     "dependencies": ["behavior:imprivata_extension"],
     "extension_types": ["extension", "login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "extension_types": ["extension", "login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
@@ -538,7 +540,7 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "ECD28F2B60BDB3B4E566D6C60BD88BE0774044C1"  // b/314208017
     ]
@@ -548,12 +550,12 @@
     "dependencies": ["behavior:imprivata_extension"],
     "extension_types": ["extension", "login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "canary",
     "extension_types": ["extension", "login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-session test extension
@@ -562,7 +564,7 @@
     "channel": "stable",
     "extension_types": ["extension", "login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "93B7178E8C275515C38D4F43D9DF4648F0EA9B03" // Identity Card Connector
     ]
@@ -585,7 +587,7 @@
   "loginState": [{
     "channel": "stable",
     "extension_types": ["extension"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "component_extensions_auto_granted": false,
@@ -597,8 +599,9 @@
       "EC3DE21E048B67319893889529354DFBFA96FD23",   // https://crbug.com/1233881
       "A19608AC34215B127FF9D7C006D67F5C8ED8146D",   // https://crbug.com/1233881
       // https://crbug.com/1194693
-      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
-      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // DriveLock Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA",   // Beta DriveLock Smart Card Middleware
+      "5C825E850034490380BCB756D43ABB2CF537AA91"    // b/359290130
     ]
   }, {
     "channel": "stable",
@@ -608,7 +611,7 @@
   }, {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "EC3DE21E048B67319893889529354DFBFA96FD23",  // https://crbug.com/1233881
       "A19608AC34215B127FF9D7C006D67F5C8ED8146D"   // https://crbug.com/1233881
@@ -628,7 +631,7 @@
       "81986D4F846CEDDDB962643FA501D1780DD441BB",  // http://crbug.com/891460
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/891460
     ],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "management": [
     {
@@ -717,22 +720,23 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   }, {
-    // https://crbug.com/1194693
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos"],
     "allowlist": [
-      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
-      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+      // https://crbug.com/1194693
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // DriveLock Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA",   // Beta DriveLock Smart Card Middleware
+      "5C825E850034490380BCB756D43ABB2CF537AA91"    // b/359290130
     ]
   }],
   "echoPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "pageCapture": {
     "channel": "stable",
@@ -753,7 +757,7 @@
   "platformKeys": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],
@@ -766,7 +770,7 @@
   },
   "printing": {
     "channel": "stable",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "extension_types": [
       "extension",
       "platform_app"
@@ -774,7 +778,7 @@
   },
   "printingMetrics": {
     "channel": "stable",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "extension_types": ["extension"],
     "location": "policy"
   },
@@ -913,7 +917,7 @@
   },
   "smartCardProviderPrivate": {
     "channel": "dev",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "extension_types": ["extension", "platform_app"],
     "allowlist": [
       "EC3DE21E048B67319893889529354DFBFA96FD23"   // Smart Card Connector
@@ -932,15 +936,16 @@
     "channel": "stable",
     "extension_types": ["extension", "login_screen_extension", "platform_app"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "extension_types": ["extension", "login_screen_extension", "platform_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "EC3DE21E048B67319893889529354DFBFA96FD23", // Smart Card Connector
-      "6B748A5C005F21B7CBCF4170C2F883E435DEB511", // CSSI Smart Card Middleware
-      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"  // Beta CSSI Smart Card Middleware
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511", // DriveLock Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA", // Beta DriveLock Smart Card Middleware
+      "5C825E850034490380BCB756D43ABB2CF537AA91"  // b/359290130
     ]
   }],
   "systemPrivate": {
@@ -1013,7 +1018,7 @@
   "wallpaper": {
     "channel": "stable",
     "extension_types": ["platform_app", "extension"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "webAuthenticationProxy": {
     "channel": "stable",
@@ -1089,7 +1094,7 @@
   "wmDesksPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos","lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       // Extension id hash for API test.
       "74801F84D31D23D08BEA48AB82C6A6120EDB4D45",

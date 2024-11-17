@@ -213,8 +213,7 @@ TEST_F(BrowserAccessibilityMacTest, BasicAttributeTest) {
 TEST_F(BrowserAccessibilityMacTest, RetainedDetachedObjectsReturnNil) {
   // Get the first child. Hold it in a precise lifetime variable. This simulates
   // what the system might do with an accessibility object.
-  BrowserAccessibilityCocoa* __attribute__((objc_precise_lifetime))
-  retainedFirstChild =
+  NS_VALID_UNTIL_END_OF_SCOPE BrowserAccessibilityCocoa* retainedFirstChild =
       [accessibility_ accessibilityHitTest:NSMakePoint(50, 50)];
   EXPECT_NSEQ(@"Child1", retainedFirstChild.accessibilityLabel);
 
@@ -544,6 +543,224 @@ TEST_F(BrowserAccessibilityMacTest, TableColumnsAndDescendants) {
   // This triggers computation of the extra Mac table cells. 2 rows, 2 extra
   // columns, and 1 extra column header. This used to crash.
   ASSERT_EQ(root->PlatformChildCount(), 5U);
+}
+
+// Non-header cells should not support AXSortDirection, even if there's a sort
+// direction in the AXNodeData.
+TEST_F(BrowserAccessibilityMacTest, AXSortDirectionUnsupportedOnCell) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kCell;
+  root_.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(ax::mojom::SortDirection::kAscending));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kCell);
+  EXPECT_FALSE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_FALSE([cell sortDirection]);
+}
+
+// A row header whose AXNodeData lacks a sort order should not support
+// AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest,
+       AXSortDirectionUnspecifiedUnsupportedOnRowHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kRowHeader;
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kRowHeader);
+  EXPECT_FALSE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_FALSE([cell sortDirection]);
+}
+
+// A column header whose AXNodeData lacks a sort order should not support
+// AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest,
+       AXSortDirectionUnspecifiedUnsupportedOnColumnHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kColumnHeader;
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kColumnHeader);
+  EXPECT_FALSE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_FALSE([cell sortDirection]);
+}
+
+// A row header whose AXNodeData contains an "unsorted" sort order should not
+// support AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest,
+       AXSortDirectionUnsortedUnsupportedOnRowHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kRowHeader;
+  root_.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(ax::mojom::SortDirection::kUnsorted));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kRowHeader);
+  EXPECT_FALSE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_FALSE([cell sortDirection]);
+}
+
+// A column header whose AXNodeData contains an "unsorted" sort order should not
+// support AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest,
+       AXSortDirectionUnsortedUnsupportedOnColumnHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kColumnHeader;
+  root_.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(ax::mojom::SortDirection::kUnsorted));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kColumnHeader);
+  EXPECT_FALSE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_FALSE([cell sortDirection]);
+}
+
+// A row header whose AXNodeData contains an "ascending" sort order should
+// support AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest,
+       AXSortDirectionAscendingSupportedOnRowHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kRowHeader;
+  root_.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(ax::mojom::SortDirection::kAscending));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kRowHeader);
+  EXPECT_TRUE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_NSEQ([cell sortDirection], NSAccessibilityAscendingSortDirectionValue);
+}
+
+// A column header whose AXNodeData contains an "ascending" sort order should
+// support AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest,
+       AXSortDirectionAscendingSupportedOnColumnHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kColumnHeader;
+  root_.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(ax::mojom::SortDirection::kAscending));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kColumnHeader);
+  EXPECT_TRUE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_NSEQ([cell sortDirection], NSAccessibilityAscendingSortDirectionValue);
+}
+
+// A row header whose AXNodeData contains a "descending" sort order should
+// support AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest,
+       AXSortDirectionDescendingSupportedOnRowHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kRowHeader;
+  root_.AddIntAttribute(
+      ax::mojom::IntAttribute::kSortDirection,
+      static_cast<int>(ax::mojom::SortDirection::kDescending));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kRowHeader);
+  EXPECT_TRUE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_NSEQ([cell sortDirection],
+              NSAccessibilityDescendingSortDirectionValue);
+}
+
+// A column header whose AXNodeData contains a "descending" sort order should
+// support AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest,
+       AXSortDirectionDescendingSupportedOnColumnHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kColumnHeader;
+  root_.AddIntAttribute(
+      ax::mojom::IntAttribute::kSortDirection,
+      static_cast<int>(ax::mojom::SortDirection::kDescending));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kColumnHeader);
+  EXPECT_TRUE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_NSEQ([cell sortDirection],
+              NSAccessibilityDescendingSortDirectionValue);
+}
+
+// A row header whose AXNodeData contains an "other" sort order should support
+// AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest, AXSortDirectionOtherSupportedOnRowHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kRowHeader;
+  root_.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(ax::mojom::SortDirection::kOther));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kRowHeader);
+  EXPECT_TRUE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_NSEQ([cell sortDirection], NSAccessibilityUnknownSortDirectionValue);
+}
+
+// A column header whose AXNodeData contains an "other" sort order should
+// support AXSortDirection.
+TEST_F(BrowserAccessibilityMacTest,
+       AXSortDirectionOtherSupportedOnColumnHeader) {
+  root_ = AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kColumnHeader;
+  root_.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(ax::mojom::SortDirection::kOther));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), node_id_delegate_, nullptr);
+  BrowserAccessibilityCocoa* cell =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  EXPECT_NSEQ([cell role], NSAccessibilityCellRole);
+  EXPECT_EQ([cell internalRole], ax::mojom::Role::kColumnHeader);
+  EXPECT_TRUE([[cell internalAccessibilityAttributeNames]
+      containsObject:NSAccessibilitySortDirectionAttribute]);
+  EXPECT_NSEQ([cell sortDirection], NSAccessibilityUnknownSortDirectionValue);
 }
 
 }  // namespace ui

@@ -110,10 +110,15 @@ async function initCameraDirectory(): Promise<DirectoryAccessEntry> {
  * Initializes file systems. This function should be called only once in the
  * beginning of the app.
  */
-export async function initialize(): Promise<void> {
-  if (isLocalDev()) {
-    // TODO(pihsun): Add expert mode option for developer to point the camera
-    // folder to a local folder.
+export async function initialize(shouldHandleIntentResult: boolean):
+    Promise<void> {
+  if (shouldHandleIntentResult || isLocalDev()) {
+    // If shouldHandleIntentResult is true, CCA is launched in a system dialog,
+    // and the camera folder isn't accessible via launchQueue. We use OPFS as a
+    // temporary storage for the ongoing video in this case.
+    //
+    // TODO(pihsun): For local dev, add expert mode option for developer to
+    // point the camera folder to a local folder.
     const root = await navigator.storage.getDirectory();
     cameraDir = await getMaybeLazyDirectory(
         new DirectoryAccessEntryImpl(root), 'Camera');
@@ -172,7 +177,7 @@ export async function getEntries(): Promise<FileAccessEntry[]> {
         !hasDocumentPrefix(entry)) {
       return false;
     }
-    return entry.name.match(/_(\d{8})_(\d{6})(?: \((\d+)\))?/);
+    return /_(\d{8})_(\d{6})(?: \((\d+)\))?/.exec(entry.name);
   });
 }
 

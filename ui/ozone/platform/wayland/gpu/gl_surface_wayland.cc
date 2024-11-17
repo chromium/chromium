@@ -78,6 +78,13 @@ EGLConfig GLSurfaceWayland::GetConfig() {
   return config_;
 }
 
+// TODO(crbug.com/368634141): Revisit and double-check the direct root surface
+// state setter calls in the functions below, where a cached and ceiled scale
+// factor is used. Ideally surface information should be set using the standard
+// WaylandFrameManager::ApplySurfaceConfigure flow, i.e: whose entry point is
+// WaylandBufferManager::CommitOverlays. Which is done in GbmSurfacelessWayland,
+// for example.
+
 gfx::SwapResult GLSurfaceWayland::SwapBuffers(PresentationCallback callback,
                                               gfx::FrameData data) {
   OnSequencePoint(data.seq);

@@ -10,6 +10,7 @@
 
 #include "autofill_address_util.h"
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
@@ -72,8 +73,7 @@ std::vector<AutofillAddressUIComponent> GetAddressComponents(
                                 ui_language_code, components_language_code);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 AutofillAddressUIComponent::LengthHint ConvertLengthHint(
@@ -91,12 +91,8 @@ AutofillAddressUIComponent::LengthHint ConvertLengthHint(
 std::vector<AutofillAddressUIComponent> ConvertAddressUiComponents(
     const std::vector<AddressUiComponent>& addressinput_components,
     const AutofillCountry& country) {
-  std::vector<AutofillAddressUIComponent> components;
-  components.reserve(addressinput_components.size());
-
-  base::ranges::transform(
-      addressinput_components, std::back_inserter(components),
-      [&country](const AddressUiComponent& component) {
+  return base::ToVector(
+      addressinput_components, [&country](const AddressUiComponent& component) {
         // The component's field property may not be initialized if the
         // component is literal, so it should not be used to avoid
         // memory sanitizer's errors (`use-of-uninitialized-value`).
@@ -105,7 +101,7 @@ std::vector<AutofillAddressUIComponent> ConvertAddressUiComponents(
               .literal = component.literal,
           };
         }
-        autofill::FieldType field = i18n::TypeForField(component.field);
+        FieldType field = i18n::TypeForField(component.field);
         return AutofillAddressUIComponent{
             .field = field,
             .name = component.name,
@@ -114,8 +110,6 @@ std::vector<AutofillAddressUIComponent> ConvertAddressUiComponents(
             .is_required = country.IsAddressFieldRequired(field),
         };
       });
-
-  return components;
 }
 
 void ExtendAddressComponents(

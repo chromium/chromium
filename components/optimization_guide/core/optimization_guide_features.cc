@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
-#include "build/build_config.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -141,7 +140,11 @@ BASE_FEATURE(kOptimizationGuideModelExecution,
 // Whether to use the on device model service in optimization guide.
 BASE_FEATURE(kOptimizationGuideOnDeviceModel,
              "OptimizationGuideOnDeviceModel",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Whether to allow on device model evaluation for Compose. This has no effect
 // if OptimizationGuideOnDeviceModel is off.
@@ -170,10 +173,25 @@ BASE_FEATURE(kOnDeviceModelValidation,
              "OnDeviceModelValidation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether the on-device model enables support_multiple_sessions
-BASE_FEATURE(kOnDeviceModelSupportMultipleSessions,
-             "OnDeviceModelSupportMultipleSessions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Whether performance class should be fetched each startup or just after a
+// version update.
+BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
+             "OnDeviceModelFetchPerformanceClassEveryStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Enable the "Synapse" refreshed AI settings page.
+BASE_FEATURE(kAiSettingsPageRefresh,
+             "AiSettingsPageRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kShowAiSettingsForTesting{
+    &kAiSettingsPageRefresh, "show_ai_settings_for_testing", false};
+#endif
+
+const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
+    &kOptimizationGuideOnDeviceModel,
+    "compatible_on_device_performance_classes", "5,6"};
 
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.
@@ -194,9 +212,7 @@ bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts() {
 
 size_t MaxResultsForSRPFetch() {
   static int max_urls = GetFieldTrialParamByFeatureAsInt(
-      kOptimizationGuideFetchingForSRP, "max_urls_for_srp_fetch",
-      // Default to match overall max.
-      MaxUrlsForOptimizationGuideServiceHintsFetch());
+      kOptimizationGuideFetchingForSRP, "max_urls_for_srp_fetch", 10);
   return max_urls;
 }
 
@@ -608,10 +624,6 @@ base::TimeDelta GetOnDeviceModelIdleTimeout() {
   return kOnDeviceModelServiceIdleTimeout.Get();
 }
 
-bool GetOnDeviceModelSupportMultipleSessions() {
-  return base::FeatureList::IsEnabled(kOnDeviceModelSupportMultipleSessions);
-}
-
 base::TimeDelta GetOnDeviceModelExecutionValidationStartupDelay() {
   static const base::FeatureParam<base::TimeDelta>
       kOnDeviceModelExecutionValidationStartupDelay{
@@ -656,11 +668,33 @@ int GetOnDeviceModelMaxTokensForOutput() {
   return kOnDeviceModelMaxTokensForOutput.Get();
 }
 
+uint32_t GetOnDeviceModelMaxTokens() {
+  return static_cast<uint32_t>(GetOnDeviceModelMaxTokensForContext() +
+                               GetOnDeviceModelMaxTokensForExecute() +
+                               GetOnDeviceModelMaxTokensForOutput());
+}
+
 int GetOnDeviceModelCrashCountBeforeDisable() {
   static const base::FeatureParam<int> kOnDeviceModelDisableCrashCount{
       &kOptimizationGuideOnDeviceModel, "on_device_model_disable_crash_count",
       3};
   return kOnDeviceModelDisableCrashCount.Get();
+}
+
+base::TimeDelta GetOnDeviceModelMaxCrashBackoffTime() {
+  static const base::FeatureParam<base::TimeDelta>
+      kOnDeviceModelMaxCrashBackoffTime{
+          &kOptimizationGuideOnDeviceModel,
+          "on_device_model_max_crash_backoff_time", base::Hours(1)};
+  return kOnDeviceModelMaxCrashBackoffTime.Get();
+}
+
+base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime() {
+  static const base::FeatureParam<base::TimeDelta>
+      kOnDeviceModelCrashBackoffBaseTime{
+          &kOptimizationGuideOnDeviceModel,
+          "on_device_model_crash_backoff_base_time", base::Minutes(1)};
+  return kOnDeviceModelCrashBackoffBaseTime.Get();
 }
 
 int GetOnDeviceModelTimeoutCountBeforeDisable() {
@@ -670,10 +704,26 @@ int GetOnDeviceModelTimeoutCountBeforeDisable() {
   return kOnDeviceModelDisableTimeoutCount.Get();
 }
 
+base::TimeDelta GetOnDeviceModelMaxTimeoutBackoffTime() {
+  static const base::FeatureParam<base::TimeDelta>
+      kOnDeviceModelMaxTimeoutBackoffTime{
+          &kOptimizationGuideOnDeviceModel,
+          "on_device_model_max_timeout_backoff_time", base::Hours(1)};
+  return kOnDeviceModelMaxTimeoutBackoffTime.Get();
+}
+
+base::TimeDelta GetOnDeviceModelTimeoutBackoffBaseTime() {
+  static const base::FeatureParam<base::TimeDelta>
+      kOnDeviceModelTimeoutBackoffBaseTime{
+          &kOptimizationGuideOnDeviceModel,
+          "on_device_model_timeout_backoff_base_time", base::Minutes(1)};
+  return kOnDeviceModelTimeoutBackoffBaseTime.Get();
+}
+
 base::TimeDelta GetOnDeviceStartupMetricDelay() {
   static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
       &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
-      base::Minutes(2)};
+      base::Minutes(3)};
   return kOnDeviceStartupMetricDelay.Get();
 }
 
@@ -691,24 +741,6 @@ bool GetOnDeviceFallbackToServerOnDisconnect() {
           &kOptimizationGuideOnDeviceModel,
           "on_device_fallback_to_server_on_disconnect", true};
   return kOnDeviceModelFallbackToServerOnDisconnect.Get();
-}
-
-bool IsPerformanceClassCompatibleWithOnDeviceModel(
-    OnDeviceModelPerformanceClass performance_class) {
-  std::string perf_classes_string = base::GetFieldTrialParamValueByFeature(
-      kOptimizationGuideOnDeviceModel,
-      "compatible_on_device_performance_classes");
-  if (perf_classes_string.empty()) {
-    perf_classes_string = "3,4,5,6";
-  }
-  if (perf_classes_string == "*") {
-    return true;
-  }
-  std::vector<std::string_view> perf_classes_list = base::SplitStringPiece(
-      perf_classes_string, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
-  return base::Contains(perf_classes_list,
-                        base::ToString(static_cast<int>(performance_class)));
 }
 
 bool CanLaunchOnDeviceModelService() {
@@ -753,7 +785,7 @@ bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
 bool GetOnDeviceModelRetractUnsafeContent() {
   static const base::FeatureParam<bool>
       kOnDeviceModelShouldRetractUnsafeContent{
-          &kTextSafetyClassifier, "on_device_retract_unsafe_content", false};
+          &kTextSafetyClassifier, "on_device_retract_unsafe_content", true};
   return kOnDeviceModelShouldRetractUnsafeContent.Get();
 }
 

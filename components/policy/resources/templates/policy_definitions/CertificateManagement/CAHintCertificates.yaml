@@ -18,11 +18,9 @@ schema:
   items:
     type: string
   type: array
-future_on:
-- chrome.linux
-- chrome.mac
-- chrome.win
-- android
-- chrome_os
+supported_on:
+- chrome_os:132-
+- chrome.*:132-
+- android:132-
 tags: []
 type: list

@@ -76,7 +76,8 @@
           "builder": "android-12-x64-dbg",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-12-x64-dbg-tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

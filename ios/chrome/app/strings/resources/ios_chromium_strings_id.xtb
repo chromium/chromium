@@ -12,8 +12,10 @@
 <translation id="1260702988262336471">Buka menu Chromium</translation>
 <translation id="12739128458173458">Untuk mengirim tab ini ke perangkat lain, login ke Chromium di kedua perangkat.</translation>
 <translation id="1361748954329991663">Versi Chromium sudah usang. Jika tidak tersedia update di <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mungkin saja perangkat Anda tidak lagi mendukung versi baru Chromium.</translation>
+<translation id="1383876407941801731">Telusuri</translation>
 <translation id="1423007117030725713">Mulai penelusuran di tab Chromium baru.</translation>
 <translation id="1431818719585918472">Izinkan Chromium mengunci tab Samaran Anda.</translation>
+<translation id="1451665391191990528">Sembunyikan tab Samaran yang terbuka saat Anda menutup Chromium</translation>
 <translation id="146407871188825689">Gunakan Chromium di iPad secara Default</translation>
 <translation id="1471084500615228555">Hapus data penjelajahan di Chromium</translation>
 <translation id="1472013873724362412">Akun Anda tidak berfungsi di Chromium. Harap hubungi administrator domain atau gunakan Akun Google biasa untuk masuk.</translation>
@@ -49,6 +51,7 @@
 <translation id="2195025571279539885">Ingin Chromium menawarkan untuk menerjemahkan halaman berbahasa <ph name="LANGUAGE_NAME" /> dari situs ini saat Anda mengunjunginya lagi?</translation>
 <translation id="22313767259766852">Alamat ini disimpan ke Chromium untuk saat ini. Untuk menggunakannya di berbagai produk Google, simpan di Akun Google Anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Artinya, Chromium akan selalu meminta situs desktop.</translation>
+<translation id="2270466829363945454">Belanja</translation>
 <translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="231828342043114302">Untuk menerima konten yang dipersonalisasi berdasarkan minat Anda, login ke Chromium.</translation>
 <translation id="2326738825692478496">Beberapa data Chromium Anda belum disimpan di Akun Google Anda.
@@ -63,7 +66,7 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="2459183986985456602">Membuka tab terbaru saya di Chromium.</translation>
 <translation id="2476409803017965813">Anda dapat memperbarui pilihan kapan saja di setelan Chromium.</translation>
 <translation id="2478931088402984578">Pilih <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
-<translation id="2512597191798760956">Tekan dan tahan ikon Chromium, lalu klik "Edit layar utama"</translation>
+<translation id="2512597191798760956">Tekan lama ikon Chromium, lalu klik "Edit layar utama"</translation>
 <translation id="2517624234762908348">Sinkronkan data Chromium Anda</translation>
 <translation id="2592940277904433508">Terus gunakan Chromium</translation>
 <translation id="2607609479243848905">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
@@ -107,6 +110,7 @@ Coba tunggu beberapa menit sebelum beralih akun. Jika Anda beralih akun sekarang
 <translation id="377649297473651452">Tampilan Isi Otomatis Chromium diperluas</translation>
 <translation id="3780779443901618967">Memperingatkan Anda tentang situs berbahaya, bahkan situs yang tidak diketahui Google sebelumnya, dengan menganalisis lebih banyak data dari situs dibandingkan perlindungan standar. Anda dapat memilih untuk melewati peringatan Chromium.</translation>
 <translation id="3805899903892079518">Chromium tidak memiliki akses ke foto atau video Anda. Izinkan akses di iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3816686541346279443">Chromium akan menawarkan penyimpanan sandi Anda.</translation>
 <translation id="3827545470516145620">Anda mendapatkan perlindungan keamanan standar di perangkat ini</translation>
 <translation id="3833326979834193417">Chromium otomatis menjalankan Pemeriksaan Keamanan setiap hari untuk membuat Anda tetap aman dari pelanggaran data, situs yang tidak aman, dan lainnya. Anda dapat menemukan informasi selengkapnya tentang Pemeriksaan Keamanan di Setelan.</translation>
 <translation id="3855938650519180865">Yang Baru di Chromium</translation>
@@ -129,6 +133,7 @@ Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan 
 <translation id="4432744876818348753">Login untuk mengoptimalkan penggunaan Chromium.</translation>
 <translation id="4445228361214254027">Organisasi Anda menonaktifkan kemampuan untuk menggunakan dan menyimpan data Chromium di Akun Google Anda. Bookmark, sandi, dan data baru lainnya hanya akan disimpan ke perangkat ini.</translation>
 <translation id="4498832288620833153">Menambahkan URL yang diinput ke daftar bacaan Anda di Chromium.</translation>
+<translation id="4508268628669724828">Periksa kembali halaman ini untuk mendapatkan tips bermanfaat lainnya guna mengoptimalkan penggunaan Chromium.</translation>
 <translation id="452436063477828504">Pastikan Anda selalu dapat menggunakan data Chromium di Akun Google Anda</translation>
 <translation id="4527452566931097835">Setel Chromium sebagai default?</translation>
 <translation id="4555020257205549924">Saat fitur ini diaktifkan, Chromium akan menawarkan untuk menerjemahkan halaman yang ditulis dalam bahasa lain menggunakan Google Terjemahan. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -177,6 +182,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="5571094606370987472">Membuka Tab Terbaru Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Buka tab terbaru saya di Chromium</translation>
+<translation id="5671188105328420281">Tips untuk Chromium</translation>
 <translation id="5688047395118852662">Kartu ini menampilkan saran tentang cara memaksimalkan penggunaan Chromium.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat memeriksa sandi Anda</translation>
 <translation id="584550191241316896">Login ke Chromium</translation>
@@ -218,6 +224,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="6752854822223394465">Organisasi Anda sedang menyiapkan Chromium ...</translation>
 <translation id="6794054469102824109">Membuka Game Dino Chromium.</translation>
 <translation id="6820823224820483452">Chromium tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
+<translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6852419005633611413">Akses Chromium lebih cepat dari dok layar utama Anda</translation>
 <translation id="6852799557929001644">Akses sandi Chromium dan data lainnya di berbagai aplikasi lain pada perangkat ini.</translation>
 <translation id="6887138405044152640">Untuk mengirim tab ini ke perangkat lain, login ke Chromium di perangkat tersebut.</translation>

@@ -6,18 +6,13 @@ package org.chromium.chrome.browser.browserservices.ui.controller.webapps;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
-import javax.inject.Inject;
-
 /** Provides homescreen-shortcut specific behaviour for the {@link CurrentPageVerifier}. */
-@ActivityScope
 public class AddToHomescreenVerifier extends WebappVerifier {
     private final WebappExtras mWebappExtras;
 
-    @Inject
     public AddToHomescreenVerifier(BrowserServicesIntentDataProvider intentDataProvider) {
         mWebappExtras = intentDataProvider.getWebappExtras();
         assert mWebappExtras != null;

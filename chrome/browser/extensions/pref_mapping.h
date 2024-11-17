@@ -14,10 +14,6 @@
 #include "build/build_config.h"
 #include "extensions/common/permissions/api_permission.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace extensions {
 
 class PrefTransformerInterface;
@@ -66,14 +62,6 @@ class PrefMapping {
   void RegisterPrefTransformer(
       const std::string& browser_pref,
       std::unique_ptr<PrefTransformerInterface> transformer);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Given a pref name for an extension-controlled pref where the underlying
-  // pref is controlled by ash, returns the PrefPath used by the crosapi to set
-  // the pref in ash, or nullptr if no pref exists.
-  crosapi::mojom::PrefPath GetPrefPathForPrefName(
-      const std::string& pref_name) const;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   friend struct base::DefaultSingletonTraits<PrefMapping>;

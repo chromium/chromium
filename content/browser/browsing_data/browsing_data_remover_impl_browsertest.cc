@@ -61,6 +61,8 @@ namespace {
 const char kHstsPath[] = "/hsts";
 const char kHttpAuthPath[] = "/http_auth";
 const char kHstsResponseBody[] = "HSTS set";
+// Use a.test because 127.0.0.1/localhost cannot use HSTS.
+const char kHstsHostname[] = "a.test";
 
 std::unique_ptr<net::test_server::HttpResponse> HandleHstsRequest(
     const net::test_server::HttpRequest& request) {
@@ -106,9 +108,8 @@ class BrowsingDataRemoverImplBrowserTest
  public:
   BrowsingDataRemoverImplBrowserTest()
       : ssl_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
-    // Use localhost instead of 127.0.0.1, as HSTS isn't allowed on IPs.
-    ssl_server_.SetSSLConfig(
-        net::test_server::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+    // HSTS tests must run on non-localhost, while other tests use localhost.
+    ssl_server_.SetCertHostnames({kHstsHostname, "localhost"});
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.RegisterRequestHandler(base::BindRepeating(&HandleHstsRequest));
     ssl_server_.RegisterRequestHandler(
@@ -119,6 +120,7 @@ class BrowsingDataRemoverImplBrowserTest
   void SetUpOnMainThread() override {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
+    host_resolver()->AddRule(kHstsHostname, "127.0.0.1");
   }
 
   void RemoveAndWait(uint64_t remove_mask) {
@@ -150,7 +152,7 @@ class BrowsingDataRemoverImplBrowserTest
   void IssueRequestThatSetsHsts() {
     std::unique_ptr<network::ResourceRequest> request =
         std::make_unique<network::ResourceRequest>();
-    request->url = ssl_server_.GetURL("localhost", kHstsPath);
+    request->url = ssl_server_.GetURL(kHstsHostname, kHstsPath);
 
     SimpleURLLoaderTestHelper loader_helper;
     std::unique_ptr<network::SimpleURLLoader> loader =
@@ -171,7 +173,7 @@ class BrowsingDataRemoverImplBrowserTest
   // over HTTPS, so HSTS is enabled. If it fails, the request was send using
   // HTTP instead, so HSTS is not enabled for the domain.
   bool IsHstsSet() {
-    GURL url = ssl_server_.GetURL("localhost", "/echo");
+    GURL url = ssl_server_.GetURL(kHstsHostname, "/echo");
     GURL::Replacements replacements;
     replacements.SetSchemeStr("http");
     url = url.ReplaceComponents(replacements);
@@ -221,9 +223,8 @@ class BrowsingDataRemoverImplBrowserTest
     bool login_requested = false;
     ShellContentBrowserClient::Get()->set_login_request_callback(
         base::BindLambdaForTesting(
-            [&](bool is_primary_main_frame /* unused */) {
-              login_requested = true;
-            }));
+            [&](bool is_primary_main_frame_navigation /* unused */,
+                bool is_navigation /* unused */) { login_requested = true; }));
 
     GURL url = ssl_server_.GetURL(kHttpAuthPath);
     bool navigation_suceeded = NavigateToURL(shell(), url);
@@ -390,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
   // matches the BFCached document's origin.
   filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain("localhost");
+  filter->AddRegisterableDomain(ssl_server().base_url().host());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
                           std::move(filter));
 
@@ -440,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(
   // matches the BFCached document's origin.
   auto filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain("localhost");
+  filter->AddRegisterableDomain(ssl_server().base_url().host());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
                           std::move(filter));
 
@@ -467,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(
   // matches the BFCached document's origin.
   auto filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain("localhost");
+  filter->AddRegisterableDomain(ssl_server().base_url().host());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
                           std::move(filter));
 

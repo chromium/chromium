@@ -121,8 +121,7 @@ user_manager::UserImage::ImageFormat ChooseImageFormatFromCodec(
       // image format of the bytes representation is unknown.
       return user_manager::UserImage::FORMAT_UNKNOWN;
   }
-  NOTREACHED_IN_MIGRATION();
-  return user_manager::UserImage::FORMAT_UNKNOWN;
+  NOTREACHED();
 }
 
 // Handles the decoded image returned from ImageDecoder through the
@@ -296,10 +295,10 @@ void OnAnimationDecoded(
         FROM_HERE,
         base::BindOnce(
             [](const SkBitmap& bitmap) {
-              auto encoded = base::MakeRefCounted<base::RefCountedBytes>();
-              if (!gfx::PNGCodec::EncodeBGRASkBitmap(
-                      bitmap, /*discard_transparency=*/false,
-                      &encoded->as_vector())) {
+              std::optional<std::vector<uint8_t>> encoded =
+                  gfx::PNGCodec::EncodeBGRASkBitmap(
+                      bitmap, /*discard_transparency=*/false);
+              if (!encoded) {
                 return std::make_unique<user_manager::UserImage>();
               }
 
@@ -307,7 +306,10 @@ void OnAnimationDecoded(
               image_skia.MakeThreadSafe();
 
               auto user_image = std::make_unique<user_manager::UserImage>(
-                  image_skia, encoded, user_manager::UserImage::FORMAT_PNG);
+                  image_skia,
+                  base::MakeRefCounted<base::RefCountedBytes>(
+                      std::move(encoded).value()),
+                  user_manager::UserImage::FORMAT_PNG);
               user_image->MarkAsSafe();
 
               return user_image;

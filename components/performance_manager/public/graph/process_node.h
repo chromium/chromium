@@ -133,6 +133,10 @@ class ProcessNode : public TypedNode<ProcessNode> {
   // kilobytes.
   virtual uint64_t GetResidentSetKb() const = 0;
 
+  // Returns the most recently measured size of private swap, in kilobytes. Will
+  // only be non-zero on Linux, ChromeOS, and Android.
+  virtual uint64_t GetPrivateSwapKb() const = 0;
+
   // Returns the render process id (equivalent to RenderProcessHost::GetID()),
   // or ChildProcessHost::kInvalidUniqueID if this is not a renderer.
   virtual RenderProcessHostId GetRenderProcessHostId() const = 0;

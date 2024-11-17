@@ -9,21 +9,19 @@
 
 @class CommandDispatcher;
 
-// A scene agent that monitors the state of the app and dispatches a command
+// A scene agent that monitors the state of the profile and dispatches a command
 // that it's a valid time to show a promo. Promos are shown when the UI is
 // available (i.e. the app & scene state allow it).
 //
 // The UI is considered available when the following conditions are met:
 //
-// (1) the app initialization is over (the stage InitStageFinal is reached),
-// (2) the scene is in the foreground,
-// (3) there is no UI blocker,
-// (4) the app isn't shutting down,
-// (5) there are no launch intents.
+// (1) the profile initialization is over (the stage ProfileInitStage::kFinal is
+// reached), (2) the scene is in the foreground, (3) there is no UI blocker, (4)
+// the app isn't shutting down, (5) there are no launch intents.
 //
 // There are 3 events that can trigger a promo:
 //
-// (1) reaching the InitStageFinal init stage,
+// (1) reaching the ProfileInitStage::kFinal init stage,
 // (2) the scene becomes active in the foreground,
 // (3) the UI blocker is removed, and
 // (4) forced externally

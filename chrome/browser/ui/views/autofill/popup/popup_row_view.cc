@@ -147,7 +147,7 @@ std::u16string GetSuggestionA11yString(const Suggestion& suggestion,
 // suggestion in it, therefore the icon is always visible in this case.
 bool CanUpdateOpenSubPopupIconVisibilityOnHover(const Suggestion& suggestion) {
   CHECK(suggestion.children.size() > 0);
-  return suggestion.is_acceptable &&
+  return suggestion.IsAcceptable() &&
          GetFillingProductFromSuggestionType(suggestion.type) ==
              FillingProduct::kAddress &&
          base::FeatureList::IsEnabled(
@@ -206,7 +206,7 @@ PopupRowView::PopupRowView(
           controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()),
       suggestion_is_acceptable_(
           controller && line_number < controller->GetLineCount() &&
-          controller->GetSuggestionAt(line_number).is_acceptable),
+          controller->GetSuggestionAt(line_number).IsAcceptable()),
       highlight_on_select_(
           controller && line_number < controller->GetLineCount() &&
           controller->GetSuggestionAt(line_number).highlight_on_select) {
@@ -238,15 +238,12 @@ PopupRowView::PopupRowView(
                   view->mouse_observed_outside_item_bounds_ ||
                   view->should_ignore_mouse_observed_outside_item_bounds_check_;
               if (can_select_suggestion) {
-                view->selection_delegate_->SetSelectedCell(
-                    PopupViewViews::CellIndex{view->line_number_, type},
-                    PopupCellSelectionSource::kMouse);
+                view->OnCellSelected(type, PopupCellSelectionSource::kMouse);
               }
             },
             this, type),
         /*exit_callback=*/base::BindRepeating(
-            &SelectionDelegate::SetSelectedCell,
-            base::Unretained(&selection_delegate), std::nullopt,
+            &PopupRowView::OnCellSelected, base::Unretained(this), std::nullopt,
             PopupCellSelectionSource::kMouse));
     // Setting this handler on the cell view removes its original event handler
     // (i.e. overridden methods like OnMouse*). Make sure the root view doesn't
@@ -266,7 +263,7 @@ PopupRowView::PopupRowView(
   content_view_->GetViewAccessibility().SetName(
       GetSuggestionA11yString(suggestion,
                               /*add_call_to_action_if_expandable=*/
-                              suggestion.is_acceptable),
+                              suggestion.IsAcceptable()),
       ax::mojom::NameFrom::kAttribute);
   auto [position, set_size] = ComputePositionInSet(controller_, line_number);
   content_view_->GetViewAccessibility().SetPosInSet(position);
@@ -386,9 +383,7 @@ void PopupRowView::OnViewFocused(views::View* view) {
   // Focus may come not only from the keyboard (e.g. from devices used for
   // a11y), but for selection purposes these non-mouse sources are similar
   // enough to treat them equally as a keyboard.
-  selection_delegate_->SetSelectedCell(
-      PopupViewViews::CellIndex{line_number_, type},
-      PopupCellSelectionSource::kKeyboard);
+  OnCellSelected(type, PopupCellSelectionSource::kKeyboard);
 }
 
 void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
@@ -409,14 +404,20 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
 
   if ((new_cell == CellType::kControl && expand_child_suggestions_view_) ||
       (new_cell == CellType::kContent && !suggestion_is_acceptable_)) {
+    // TODO(crbug.com/370695550): `SetIsSelected()` must go after
+    // `NotifyAXSelection()` as the latter calls `SetPopupFocusOverride()`  that
+    // is required for a11y focus working on a non-activatable popup.  Consider
+    // moving `SetIsSelected()` into `NotifyAXSelection()` (and rename it) to
+    // hide this API complexity from clients.
     GetA11ySelectionDelegate().NotifyAXSelection(*this);
+    GetViewAccessibility().SetIsSelected(true);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else if (new_cell == CellType::kContent) {
     controller_->SelectSuggestion(line_number_);
     content_view_->UpdateStyle(/*selected=*/highlight_on_select_);
-    content_view_->GetViewAccessibility().SetIsSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
+    content_view_->GetViewAccessibility().SetIsSelected(true);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else {
@@ -424,6 +425,9 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     // selecting a control cell when none exists) or the cell was reset
     // explicitly with `std::nullopt`.
     selected_cell_ = std::nullopt;
+
+    GetViewAccessibility().SetIsSelected(false);
+    content_view_->GetViewAccessibility().SetIsSelected(false);
   }
 
   UpdateUI();
@@ -476,7 +480,15 @@ bool PopupRowView::HandleKeyPressEvent(
 
 bool PopupRowView::IsSelectable() const {
   return controller_ && line_number_ < controller_->GetLineCount() &&
-         !controller_->GetSuggestionAt(line_number_).apply_deactivated_style;
+         !controller_->GetSuggestionAt(line_number_).HasDeactivatedStyle();
+}
+
+void PopupRowView::OnCellSelected(std::optional<CellType> type,
+                                  PopupCellSelectionSource source) {
+  selection_delegate_->SetSelectedCell(
+      type ? std::make_optional(PopupViewViews::CellIndex{line_number_, *type})
+           : std::nullopt,
+      source);
 }
 
 void PopupRowView::UpdateUI() {

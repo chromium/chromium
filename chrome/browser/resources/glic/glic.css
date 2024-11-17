@@ -1,0 +1,19 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+html, body {
+  margin: 0;
+  height: 100%
+}
+
+body {
+  overflow: hidden;
+}
+
+#guest-frame {
+  display: block;
+  width: 400px;
+  height: 400px;
+  border: 0;
+}

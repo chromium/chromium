@@ -384,9 +384,14 @@ void UdpPacketSocket::OnSendCompleted(int result) {
 
   // Don't need to worry about partial sends because this is a datagram socket.
   send_queue_size_ -= send_queue_.front().data->size();
-  SignalSentPacket(this, rtc::SentPacket(send_queue_.front().options.packet_id,
-                                         rtc::TimeMillis()));
+
+  // Speculative fix for the intermittent crashes we've seen in this method.
+  // TODO: joedow - Rewrite this comment if popping from the queue before
+  // signaling packet sent does indeed solve the intermittent crashes.
+  const rtc::SentPacket sent_packet(send_queue_.front().options.packet_id,
+                                    rtc::TimeMillis());
   send_queue_.pop_front();
+  SignalSentPacket(this, sent_packet);
   if (run_from_callback) {
     DoSend();
   }

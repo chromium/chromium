@@ -18,6 +18,7 @@
 // intervening calls to Delete or Take, or the calls will fail.
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 
 namespace base {
@@ -53,7 +54,7 @@ class BASE_EXPORT ScopedTempDir {
 
   // Returns the path to the created directory. Call one of the
   // CreateUniqueTempDir* methods before getting the path.
-  const FilePath& GetPath() const;
+  const FilePath& GetPath() const LIFETIME_BOUND;
 
   // Returns true if path_ is non-empty and exists.
   bool IsValid() const;

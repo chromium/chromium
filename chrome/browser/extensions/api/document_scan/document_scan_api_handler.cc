@@ -16,6 +16,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 #include "chrome/browser/extensions/api/document_scan/scanner_discovery_runner.h"
 #include "chrome/browser/extensions/api/document_scan/start_scan_runner.h"
@@ -23,20 +26,10 @@
 #include "chrome/common/extensions/api/document_scan.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/extension.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/document_scan_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "extensions/common/extension_id.h"
-#endif
 
 namespace extensions {
 
@@ -62,21 +55,12 @@ constexpr char kScannerImageMimeTypePng[] = "image/png";
 constexpr char kPngImageDataUrlPrefix[] = "data:image/png;base64,";
 
 crosapi::mojom::DocumentScan* GetDocumentScanInterface() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // CrosapiManager is not always initialized in tests.
   if (!crosapi::CrosapiManager::IsInitialized()) {
     CHECK_IS_TEST();
     return nullptr;
   }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->document_scan_ash();
-#else
-  auto* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<crosapi::mojom::DocumentScan>()) {
-    LOG(ERROR) << "DocumentScan service not available";
-    return nullptr;
-  }
-  return service->GetRemote<crosapi::mojom::DocumentScan>().get();
-#endif
 }
 
 }  // namespace
@@ -123,12 +107,6 @@ DocumentScanAPIHandler* DocumentScanAPIHandler::Get(
     content::BrowserContext* browser_context) {
   return BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::Get(
       browser_context);
-}
-
-// static
-void DocumentScanAPIHandler::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kDocumentScanAPITrustedExtensions);
 }
 
 void DocumentScanAPIHandler::ExtensionCleanup(const ExtensionId& id) {

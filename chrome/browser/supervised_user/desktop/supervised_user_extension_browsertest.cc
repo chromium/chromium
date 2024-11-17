@@ -102,6 +102,9 @@ class SupervisionExtensionTestBase
       disabled_features.push_back(
           supervised_user::
               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+      disabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
 #else
     // For ChromeOS, the parental controls should always apply to extensions
     // and this case should not be reached. See the instantiation of the test suite.
@@ -212,6 +215,7 @@ class SupervisionExtensionTestBase
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
+      embedded_test_server(),
       {.sign_in_mode = GetMixinSigninMode()}};
 };
 
@@ -583,11 +587,6 @@ class SupervisedUserSkipParentalApprovalModeReleaseTest
   }
 
  private:
-  supervised_user::SupervisionMixin supervision_mixin_{
-      mixin_host_,
-      this,
-      {.sign_in_mode = GetMixinSigninMode()}};
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

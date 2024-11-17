@@ -925,11 +925,11 @@ static bool FastParseColorInternal(Color& color,
                                    unsigned length,
                                    bool quirks_mode) {
   if (length >= 4 && characters[0] == '#') {
-    return Color::ParseHexColor(characters + 1, length - 1, color);
+    return Color::ParseHexColor(base::span(characters + 1, length - 1), color);
   }
 
   if (quirks_mode && (length == 3 || length == 6)) {
-    if (Color::ParseHexColor(characters, length, color)) {
+    if (Color::ParseHexColor(base::span(characters, length), color)) {
       return true;
     }
   }
@@ -1032,8 +1032,7 @@ static bool FastParseColorInternal(Color& color,
         hue *= 360.0;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
 
     // Deal with wraparound so that we end up in [0, 360],
@@ -1116,11 +1115,11 @@ static ParseColorResult ParseColor(CSSPropertyID property_id,
   CSSValueID value_id = CssValueKeywordID(string);
   if ((value_id == CSSValueID::kAccentcolor ||
        value_id == CSSValueID::kAccentcolortext) &&
-      !RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+      !RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled()) {
     return ParseColorResult::kFailure;
   }
   if (StyleColor::IsColorKeyword(value_id)) {
-    if (!isValueAllowedInMode(value_id, parser_mode)) {
+    if (!IsValueAllowedInMode(value_id, parser_mode)) {
       return ParseColorResult::kFailure;
     }
     out_color_keyword = value_id;
@@ -1155,7 +1154,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     CSSValueID value_id,
     CSSParserMode parser_mode) {
   if (!IsValidCSSValueID(value_id) ||
-      !isValueAllowedInMode(value_id, parser_mode)) {
+      !IsValueAllowedInMode(value_id, parser_mode)) {
     return false;
   }
 
@@ -1196,6 +1195,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kStatic;
     case CSSPropertyID::kCaptionSide:
       return value_id == CSSValueID::kTop || value_id == CSSValueID::kBottom;
+    case CSSPropertyID::kCaretAnimation:
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kManual;
     case CSSPropertyID::kClear:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kLeft ||
              value_id == CSSValueID::kRight || value_id == CSSValueID::kBoth ||
@@ -1340,6 +1341,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kBefore;
     case CSSPropertyID::kScrollBehavior:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kSmooth;
+    case CSSPropertyID::kScrollStartTarget:
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
     case CSSPropertyID::kShapeRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kOptimizespeed ||
@@ -1419,9 +1422,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kVisibility:
       return value_id == CSSValueID::kVisible ||
              value_id == CSSValueID::kHidden ||
-             value_id == CSSValueID::kCollapse ||
-             (RuntimeEnabledFeatures::CSSVisibilityInertEnabled() &&
-              value_id == CSSValueID::kInert);
+             value_id == CSSValueID::kCollapse;
     case CSSPropertyID::kAppRegion:
       return (value_id >= CSSValueID::kDrag &&
               value_id <= CSSValueID::kNoDrag) ||
@@ -1682,9 +1683,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kTrimStart ||
              value_id == CSSValueID::kTrimEnd ||
              value_id == CSSValueID::kTrimBoth;
+    case CSSPropertyID::kInteractivity:
+      DCHECK(RuntimeEnabledFeatures::CSSInertEnabled());
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kInert;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1706,6 +1709,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kBoxSizing,
     CSSPropertyID::kBufferedRendering,
     CSSPropertyID::kCaptionSide,
+    CSSPropertyID::kCaretAnimation,
     CSSPropertyID::kClear,
     CSSPropertyID::kClipRule,
     CSSPropertyID::kColorInterpolation,
@@ -1818,6 +1822,8 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kOriginTrialTestProperty,
     CSSPropertyID::kOverlay,
     CSSPropertyID::kTextBoxTrim,
+    CSSPropertyID::kScrollStartTarget,
+    CSSPropertyID::kInteractivity,
 }};
 
 bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {

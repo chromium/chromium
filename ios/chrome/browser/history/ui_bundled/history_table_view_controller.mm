@@ -64,6 +64,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/strings/grit/ui_strings.h"
@@ -71,11 +72,8 @@
 using history::BrowsingHistoryService;
 
 namespace {
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeHistoryEntry = kItemTypeEnumZero,
-  ItemTypeEntriesStatus,
-  ItemTypeEntriesStatusWithLink,
-  ItemTypeActivityIndicator,
+enum ItemType : NSInteger {
+  kItemTypeHistoryEntry = kItemTypeEnumZero,
 };
 // The default UIButton font size used by UIKit.
 const CGFloat kButtonDefaultFontSize = 15.0;
@@ -227,8 +225,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     [self updateToolbarButtonsWithAnimation:YES];
   } else {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    // Only navigate and record metrics if a ItemTypeHistoryEntry was selected.
-    if (item.type == ItemTypeHistoryEntry) {
+    // Only navigate and record metrics if a kItemTypeHistoryEntry was selected.
+    if (item.type == kItemTypeHistoryEntry) {
       if (self.searchInProgress) {
         // Set the searchController active property to NO or the SearchBar will
         // cause the navigation controller to linger for a second  when
@@ -367,7 +365,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                                    queryResultsInfo
                         continuationClosure:
                             (base::OnceClosure)continuationClosure {
-  self.loading = NO;
   [super historyQueryWasCompletedWithResults:results
                             queryResultsInfo:queryResultsInfo
                          continuationClosure:std::move(continuationClosure)];
@@ -383,8 +380,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (void)historyWasDeleted {
   // If history has been deleted, reload history filtering for the current
   // results. This only observes local changes to history, i.e. removing
-  // history via the clear browsing data page.
-  [super historyWasDeleted];
+  // history via delete browsing data.
+  self.filterQueryResult = YES;
   [self showHistoryMatchingQuery:nil];
 }
 
@@ -446,7 +443,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // Dismisses this ViewController.
 - (void)dismissHistory {
   base::RecordAction(base::UserMetricsAction("MobileHistoryClose"));
-  [self.delegate dismissViewController:self withCompletion:nil];
+  [self.delegate dismissViewController:self];
 }
 
 - (NSArray<UIBarButtonItem*>*)toolbarButtons {
@@ -542,7 +539,10 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     }
     id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:NO];
+    [quickDeleteHandler
+        showQuickDeleteAndCanPerformTabsClosureAnimation:
+            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+            self.canPerformTabsClosureAnimation];
     return;
   }
 

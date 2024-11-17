@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -168,6 +170,16 @@ class PasswordGenerationInteractiveTest
         ->ForwardKeyboardEvent(event);
   }
 
+  void NavigateToAndAcceptSuggestedPassword() {
+    SendKeyToPopup(ui::VKEY_DOWN);
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kPasswordGenerationSoftNudge)) {
+      // With the feature enabled, cancel button is the first focusable element.
+      SendKeyToPopup(ui::VKEY_DOWN);
+    }
+    SendKeyToPopup(ui::VKEY_RETURN);
+  }
+
   bool GenerationPopupShowing() {
     return observer_.popup_showing() &&
            observer_.state() ==
@@ -208,6 +220,17 @@ class PasswordGenerationInteractiveTest
 // tabs to allow waiting for an Autofill popup to open.
 class PasswordGenerationAutofillPopupInteractiveTest
     : public PasswordGenerationInteractiveTest {
+ public:
+  PasswordGenerationAutofillPopupInteractiveTest() {
+    // TODO(crbug.com/41492898): This class contains one test
+    // (HidesGenerationPopupWhenShowingPasswordSuggestionsWithGeneration)
+    // checking that the autofill popup with suggestions should be displayed
+    // (and generation popup hidden) on field focus. Make sure it works with the
+    // nudge popup as well.
+    scoped_feature_list_.InitAndDisableFeature(
+        password_manager::features::kPasswordGenerationSoftNudge);
+  }
+
  protected:
   ObservingAutofillClient& autofill_client() {
     return *autofill_client_injector_[WebContents()];
@@ -216,6 +239,7 @@ class PasswordGenerationAutofillPopupInteractiveTest
  private:
   autofill::TestAutofillClientInjector<ObservingAutofillClient>
       autofill_client_injector_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -223,8 +247,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   FocusPasswordField();
   WaitForGenerationPopupShowing();
   base::HistogramTester histogram_tester;
-  SendKeyToPopup(ui::VKEY_DOWN);
-  SendKeyToPopup(ui::VKEY_RETURN);
+  NavigateToAndAcceptSuggestedPassword();
 
   // Selecting the password should fill the field and move focus to the
   // submit button.
@@ -252,8 +275,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
                        PopupShownAutomaticallyAndPasswordErased) {
   FocusPasswordField();
   WaitForGenerationPopupShowing();
-  SendKeyToPopup(ui::VKEY_DOWN);
-  SendKeyToPopup(ui::VKEY_RETURN);
+  NavigateToAndAcceptSuggestedPassword();
 
   // Wait until the password is filled.
   WaitForNonEmptyFieldValue("password_field");
@@ -287,8 +309,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       autofill::ContentAutofillClient::FromWebContents(WebContents()));
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
   EXPECT_TRUE(GenerationPopupShowing());
-  SendKeyToPopup(ui::VKEY_DOWN);
-  SendKeyToPopup(ui::VKEY_RETURN);
+  NavigateToAndAcceptSuggestedPassword();
 
   // Wait until the password is filled.
   WaitForNonEmptyFieldValue("password_field");
@@ -442,8 +463,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 
   FocusPasswordField();
   WaitForGenerationPopupShowing();
-  SendKeyToPopup(ui::VKEY_DOWN);
-  SendKeyToPopup(ui::VKEY_RETURN);
+  NavigateToAndAcceptSuggestedPassword();
 
   // Change username.
   FocusUsernameField();

@@ -23,8 +23,11 @@ const char kExceptionMessagePermissionDenied[] =
 const char kExceptionMessageGenericError[] = "Other generic failures occurred.";
 const char kExceptionMessageFiltered[] =
     "The execution yielded a bad response.";
+const char kExceptionMessageOutputLanguageFiltered[] =
+    "The model attempted to output text in an untested language, and was "
+    "prevented from doing so.";
 const char kExceptionMessageDisabled[] = "The response was disabled.";
-const char kExceptionMessageCancelled[] = "The request was canceled.";
+const char kExceptionMessageCancelled[] = "The request was cancelled.";
 const char kExceptionMessageSessionDestroyed[] =
     "The model execution session has been destroyed.";
 const char kExceptionMessageRequestAborted[] = "The request has been aborted.";
@@ -36,8 +39,9 @@ const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
-const char kExceptionMessageSystemPromptAndInitialPromptsExist[] =
-    "The systemPrompt and initialPrompts should not present at the same time.";
+const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[] =
+    "The system prompt should not be defined in both systemPrompt and "
+    "initialPrompts.";
 const char kExceptionMessageSystemPromptIsNotTheFirst[] =
     "The prompt with 'system' role must be placed at the first entry of "
     "initialPrompts.";
@@ -58,7 +62,9 @@ void ThrowAbortedException(ExceptionState& exception_state) {
 }
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver) {
-  resolver->Reject(CreateInternalErrorException());
+  if (resolver) {
+    resolver->Reject(CreateInternalErrorException());
+  }
 }
 
 DOMException* CreateInternalErrorException() {
@@ -106,8 +112,9 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
       base::debug::DumpWithoutCrashing();
       return CreateUnknown("kErrorNonRetryableError");
     case ModelStreamingResponseStatus::kErrorUnsupportedLanguage:
-      base::debug::DumpWithoutCrashing();
-      return CreateUnknown("kErrorUnsupportedLanguage");
+      return DOMException::Create(
+          kExceptionMessageOutputLanguageFiltered,
+          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError));
     case ModelStreamingResponseStatus::kErrorFiltered:
       return DOMException::Create(
           kExceptionMessageFiltered,
@@ -115,7 +122,7 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
     case ModelStreamingResponseStatus::kErrorDisabled:
       return DOMException::Create(
           kExceptionMessageDisabled,
-          DOMException::GetErrorName(DOMExceptionCode::kNotReadableError));
+          DOMException::GetErrorName(DOMExceptionCode::kAbortError));
     case ModelStreamingResponseStatus::kErrorCancelled:
       return DOMException::Create(
           kExceptionMessageCancelled,
@@ -126,7 +133,7 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
     case ModelStreamingResponseStatus::kOngoing:
     case ModelStreamingResponseStatus::kComplete:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -174,7 +181,7 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
     case mojom::blink::ModelAvailabilityCheckResult::kAfterDownload:
     case mojom::blink::ModelAvailabilityCheckResult::
         kNoModelAdaptationNotAvailable:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   NOTREACHED();
 }

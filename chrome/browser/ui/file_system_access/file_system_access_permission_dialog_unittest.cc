@@ -25,8 +25,9 @@ using FileSystemAccessPermissionDialogTest = testing::Test;
 class TestFileSystemAccessPermissionDialog {
  public:
   std::unique_ptr<ui::TestDialogModelHost> CreateDialogModelHost() {
-    RequestData request(RequestType::kNewPermission, kTestOrigin,
-                        {{kTestPath, HandleType::kFile, AccessType::kRead}});
+    RequestData request(
+        RequestType::kNewPermission, kTestOrigin,
+        {{kTestPathInfo, HandleType::kFile, AccessType::kRead}});
     return std::make_unique<ui::TestDialogModelHost>(
         CreateFileSystemAccessPermissionDialogForTesting(
             request, base::BindLambdaForTesting(
@@ -44,8 +45,8 @@ class TestFileSystemAccessPermissionDialog {
  protected:
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://example.com"));
-  const base::FilePath kTestPath =
-      base::FilePath(FILE_PATH_LITERAL("/foo/bar.txt"));
+  const content::PathInfo kTestPathInfo =
+      content::PathInfo(FILE_PATH_LITERAL("/foo/bar.txt"));
 
   std::optional<permissions::PermissionAction> result_ = std::nullopt;
 };

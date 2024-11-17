@@ -106,34 +106,24 @@ public class TabStateFlatBufferTest {
         List<File> flatBufferFiles = new ArrayList<>();
         List<File> legacyHandWrittenFiles = new ArrayList<>();
         for (int tabId = 0; tabId < 4; tabId++) {
-            legacyHandWrittenFiles.add(
-                    getLegacyTestFile(
-                            tabId,
-                            /** isEncrypted = */
-                            tabId % 2 == 0));
-            flatBufferFiles.add(
-                    getTestFile(
-                            tabId,
-                            /** isEncrypted = */
-                            tabId % 2 == 0));
+            legacyHandWrittenFiles.add(getLegacyTestFile(tabId, /* isEncrypted= */ tabId % 2 == 0));
+            flatBufferFiles.add(getTestFile(tabId, /* isEncrypted= */ tabId % 2 == 0));
         }
 
         for (int tabId = 0; tabId < 4; tabId++) {
             TabState tabState =
                     getTestTabState(
-                            /** isIncognito */
+                            /* isIncognito */
                             tabId % 2 == 0);
             TabStateFileManager.saveStateInternal(
                     legacyHandWrittenFiles.get(tabId),
                     tabState,
-                    /** encrypted = */
-                    tabId % 2 == 0,
+                    /* encrypted= */ tabId % 2 == 0,
                     sCipherFactory);
             TabStateFileManager.saveStateInternal(
                     flatBufferFiles.get(tabId),
                     tabState,
-                    /** encrypted = */
-                    tabId % 2 == 0,
+                    /* encrypted= */ tabId % 2 == 0,
                     sCipherFactory);
         }
         for (File file :
@@ -247,6 +237,7 @@ public class TabStateFlatBufferTest {
         state.userAgent = UserAgentType.DESKTOP;
         state.lastNavigationCommittedTimestampMillis = 42L;
         state.timestampMillis = 41L;
+        state.tabHasSensitiveContent = true;
         state.isIncognito = isIncognito;
         String url = sTestServer.getURL(TEST_URL);
         Tab tab = sActivityTestRule.loadUrlInNewTab(url);
@@ -288,6 +279,7 @@ public class TabStateFlatBufferTest {
                 actual.lastNavigationCommittedTimestampMillis);
         Assert.assertEquals(expected.timestampMillis, actual.timestampMillis);
         Assert.assertEquals(expected.themeColor, actual.themeColor);
+        Assert.assertEquals(expected.tabHasSensitiveContent, actual.tabHasSensitiveContent);
         ByteBufferTestUtils.verifyByteBuffer(
                 expected.contentsState.buffer(), actual.contentsState.buffer());
         Assert.assertTrue(

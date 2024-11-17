@@ -339,6 +339,15 @@ void OpenXrRenderLoop::StartRuntimeFinish(
         device::mojom::XRPresentationTransportMethod::SUBMIT_AS_MAILBOX_HOLDER;
   }
 
+  if (graphics_binding_->IsWebGPUSession() &&
+      !graphics_binding_->IsUsingSharedImages()) {
+    // WebGPU sessions must use shared images. If not fail session creation.
+    TRACE_EVENT_INSTANT0("xr", "Failed to start WebGPU-compatible runtime",
+                         TRACE_EVENT_SCOPE_THREAD);
+    MaybeRejectSessionCallback();
+    return;
+  }
+
   // Only set boolean options that we need. Default is false, and we should be
   // able to safely ignore ones that our implementation doesn't care about.
   transport_options->wait_for_transfer_notification = true;

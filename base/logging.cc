@@ -126,6 +126,10 @@ typedef FILE* FileHandle;
 #include "base/fuchsia/scoped_fx_logger.h"
 #endif
 
+#if !BUILDFLAG(IS_NACL)
+#include "base/logging/rust_logger.rs.h"
+#endif
+
 namespace logging {
 
 namespace {
@@ -421,29 +425,6 @@ void CloseLogFileUnlocked() {
     g_logging_destination &= ~LOG_TO_FILE;
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-inline FuchsiaLogSeverity LogSeverityToFuchsiaLogSeverity(
-    LogSeverity severity) {
-  switch (severity) {
-    case LOGGING_INFO:
-      return FUCHSIA_LOG_INFO;
-    case LOGGING_WARNING:
-      return FUCHSIA_LOG_WARNING;
-    case LOGGING_ERROR:
-      return FUCHSIA_LOG_ERROR;
-    case LOGGING_FATAL:
-      // Don't use FX_LOG_FATAL, otherwise fx_logger_log() will abort().
-      return FUCHSIA_LOG_ERROR;
-  }
-  if (severity > -3) {
-    // LOGGING_VERBOSE levels 1 and 2.
-    return FUCHSIA_LOG_DEBUG;
-  }
-  // LOGGING_VERBOSE levels 3 and higher, or incorrect levels.
-  return FUCHSIA_LOG_TRACE;
-}
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
 void WriteToFd(int fd, const char* data, size_t length) {
   size_t bytes_written = 0;
   long rv;
@@ -543,6 +524,11 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   if (g_logging_destination & LOG_TO_SYSTEM_DEBUG_LOG) {
     GetScopedFxLogger() = base::ScopedFxLogger::CreateForProcess();
   }
+#endif
+
+#if !BUILDFLAG(IS_NACL)
+  // Connects Rust logging with the //base logging functionality.
+  internal::init_rust_log_crate();
 #endif
 
   // Ignore file options unless logging to file is set.
@@ -652,11 +638,11 @@ namespace {
                                 const char* buf_start,
                                 const char* prefix_end,
                                 const char* buf_end) {
-  // This simulates a CHECK(false) at file:line instead of here. This is used
+  // This simulates a NOTREACHED() at file:line instead of here. This is used
   // instead of base::ImmediateCrash() to give better error messages locally
   // (printed stack for one).
   LogMessageFatal(file, line, LOGGING_FATAL).stream()
-      << "Check failed: false. " << prefix_end;
+      << "NOTREACHED hit. " << prefix_end;
 }
 
 }  // namespace
@@ -804,7 +790,7 @@ void LogMessage::Flush() {
     // CF-635.21/CFUtilities.c also_do_stderr(). This would result in logging to
     // both stderr and os_log even in tests, where it's undesirable to log to
     // the system log at all.
-    const bool log_to_system = []() {
+    const bool log_to_system = [] {
       struct stat stderr_stat;
       if (fstat(fileno(stderr), &stderr_stat) == -1) {
         return true;
@@ -908,7 +894,7 @@ void LogMessage::Flush() {
     const auto message = std::string_view(str_newline).substr(message_start_);
     GetScopedFxLogger().LogMessage(file_, static_cast<uint32_t>(line_),
                                    message.substr(0, message.size() - 1),
-                                   LogSeverityToFuchsiaLogSeverity(severity_));
+                                   severity_);
 #endif  // BUILDFLAG(IS_FUCHSIA)
   }
 

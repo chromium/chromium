@@ -17,6 +17,7 @@ static_library("android") {
     "//base:base",
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser/autofill",
+    "//components/facilitated_payments/core/ui_utils",
     "//content/public/browser:browser",
     "//ui/android:android",
   ]
@@ -24,15 +25,13 @@ static_library("android") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "facilitated_payments_bottom_sheet_bridge_unittest.cc",
-    "facilitated_payments_controller_unittest.cc",
-  ]
+  sources = [ "facilitated_payments_controller_unittest.cc" ]
 
   deps = [
     ":android",
     "//base",
     "//chrome/test:test_support",
+    "//components/facilitated_payments/core/ui_utils",
     "//content/public/browser:browser",
     "//testing/gtest",
     "//ui/android:android",
@@ -56,6 +55,13 @@ android_library("public_java") {
     "//chrome/browser/profiles/android:java",
     "//components/autofill/android:payments_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+
+  srcjar_deps = [ ":facilitated_payments_enums" ]
+}
+
+java_cpp_enum("facilitated_payments_enums") {
+  sources = [ "//components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h" ]
 }

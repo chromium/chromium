@@ -64,7 +64,8 @@
           "builder": "Win10 FYI x64 Release XR Perf (NVIDIA)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Win10 FYI x64 Release XR Perf (NVIDIA)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

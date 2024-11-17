@@ -41,7 +41,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     private Runnable mOnDismissed;
     private SnackbarManager.SnackbarController mSnackbarController;
     private TabObserver mStartupTabObserver;
-    private Callback<Long> mVisibleContentCallback;
 
     private @State int mState;
     private boolean mFirstMeaningfulPaintHappened;
@@ -213,8 +212,8 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
     /**
      * Triggered via {@link PageLoadMetrics.Observer} when First Meaningful Paint happens.
+     *
      * @param webContents the webContents that triggered the event.
-     * @return Whether the event was handled for the provided webContents.
      */
     public void onWebContentsFirstMeaningfulPaint(WebContents webContents) {
         // If there is no observer or tab this will never handle the event so it should be

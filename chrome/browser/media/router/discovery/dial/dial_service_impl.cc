@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -14,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -97,23 +99,16 @@ const uint16_t kDialRequestPort = 1900;
 const char kDialSearchType[] = "urn:dial-multiscreen-org:service:dial:1";
 
 // SSDP headers parsed from the response.
-const char kSsdpLocationHeader[] = "LOCATION";
-const char kSsdpCacheControlHeader[] = "CACHE-CONTROL";
-const char kSsdpConfigIdHeader[] = "CONFIGID.UPNP.ORG";
-const char kSsdpUsnHeader[] = "USN";
-constexpr char kSsdpMaxAgeDirective[] = "max-age";
+constexpr std::string_view kSsdpLocationHeader = "LOCATION";
+constexpr std::string_view kSsdpCacheControlHeader = "CACHE-CONTROL";
+constexpr std::string_view kSsdpConfigIdHeader = "CONFIGID.UPNP.ORG";
+constexpr std::string_view kSsdpUsnHeader = "USN";
+constexpr std::string_view kSsdpMaxAgeDirective = "max-age";
 constexpr int kSsdpMaxMaxAge = 3600;
 constexpr int kSsdpMaxConfigId = (2 << 24) - 1;
 
 // The receive buffer size, in bytes.
 const int kDialRecvBufferSize = 1500;
-
-// Gets a specific header from |headers| and puts it in |value|.
-bool GetHeader(HttpResponseHeaders* headers,
-               const char* name,
-               std::string* value) {
-  return headers->EnumerateHeader(nullptr, std::string(name), value);
-}
 
 // Returns the request string.
 std::string BuildRequest() {
@@ -342,7 +337,7 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
   device->set_response_time(response_time);
 
   size_t headers_end =
-      HttpUtil::LocateEndOfHeaders(response.c_str(), response.size());
+      HttpUtil::LocateEndOfHeaders(base::as_byte_span(response));
   if (headers_end == 0 || headers_end == std::string::npos) {
     return false;
   }
@@ -350,32 +345,33 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
       std::string_view(response.c_str(), headers_end));
   auto headers = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
 
-  std::string device_url_str;
-  if (!GetHeader(headers.get(), kSsdpLocationHeader, &device_url_str) ||
-      device_url_str.empty()) {
+  std::optional<std::string_view> device_url_str =
+      headers->EnumerateHeader(/*iter=*/nullptr, kSsdpLocationHeader);
+  if (!device_url_str || device_url_str->empty()) {
     return false;
   }
 
-  GURL device_url(device_url_str);
+  GURL device_url(*device_url_str);
   if (device->IsValidUrl(device_url)) {
     device->set_device_description_url(device_url);
   } else {
     return false;
   }
 
-  std::string device_id;
-  if (!GetHeader(headers.get(), kSsdpUsnHeader, &device_id) ||
-      device_id.empty()) {
+  std::optional<std::string_view> device_id =
+      headers->EnumerateHeader(/*iter=*/nullptr, kSsdpUsnHeader);
+  if (!device_id || device_id->empty()) {
     return false;
   }
-  device->set_device_id(device_id);
+  device->set_device_id(*device_id);
 
-  std::string cache_control;
-  if (GetHeader(headers.get(), kSsdpCacheControlHeader, &cache_control) &&
-      !cache_control.empty()) {
-    std::vector<std::string> cache_control_directives = base::SplitString(
-        cache_control, "=", base::WhitespaceHandling::TRIM_WHITESPACE,
-        base::SplitResult::SPLIT_WANT_NONEMPTY);
+  std::optional<std::string_view> cache_control =
+      headers->EnumerateHeader(/*iter=*/nullptr, kSsdpCacheControlHeader);
+  if (cache_control && !cache_control->empty()) {
+    std::vector<std::string_view> cache_control_directives =
+        base::SplitStringPiece(*cache_control, "=",
+                               base::WhitespaceHandling::TRIM_WHITESPACE,
+                               base::SplitResult::SPLIT_WANT_NONEMPTY);
     if (cache_control_directives.size() == 2 &&
         base::EqualsCaseInsensitiveASCII(cache_control_directives[0],
                                          kSsdpMaxAgeDirective)) {
@@ -387,11 +383,12 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
     }
   }
 
-  std::string config_id;
+  std::optional<std::string_view> config_id =
+      headers->EnumerateHeader(/*iter=*/nullptr, kSsdpConfigIdHeader);
   int config_id_int;
-  if (GetHeader(headers.get(), kSsdpConfigIdHeader, &config_id) &&
-      !config_id.empty() && base::StringToInt(config_id, &config_id_int) &&
-      config_id_int > 0 && config_id_int <= kSsdpMaxConfigId) {
+  if (config_id && !config_id->empty() &&
+      base::StringToInt(*config_id, &config_id_int) && config_id_int > 0 &&
+      config_id_int <= kSsdpMaxConfigId) {
     device->set_config_id(config_id_int);
   }
   return true;

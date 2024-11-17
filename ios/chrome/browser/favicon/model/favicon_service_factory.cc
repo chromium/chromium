@@ -27,13 +27,6 @@ std::unique_ptr<KeyedService> BuildFaviconService(web::BrowserState* context) {
 namespace ios {
 
 // static
-favicon::FaviconService* FaviconServiceFactory::GetForBrowserState(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  return GetForProfile(profile, access_type);
-}
-
-// static
 favicon::FaviconService* FaviconServiceFactory::GetForProfile(
     ProfileIOS* profile,
     ServiceAccessType access_type) {
@@ -47,8 +40,7 @@ favicon::FaviconService* FaviconServiceFactory::GetForProfile(
   }
 
   // ProfileIOS is OffTheRecord without access.
-  NOTREACHED_IN_MIGRATION() << "ProfileIOS is OffTheRecord";
-  return nullptr;
+  NOTREACHED() << "ProfileIOS is OffTheRecord";
 }
 
 // static

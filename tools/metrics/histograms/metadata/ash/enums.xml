@@ -520,11 +520,21 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
              screenshot"/>
 </enum>
 
-<enum name="ContainerAppPage">
-  <int value="0" label="Congratulations"/>
-  <int value="1" label="Offer"/>
-  <int value="2" label="Terms &amp; Conditions"/>
-  <int value="3" label="Debug"/>
+<enum name="ContentTransferAuthenticationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Transient Failure"/>
+  <int value="2" label="Persistent Failure"/>
+</enum>
+
+<enum name="ContentTransferFlowState">
+  <int value="0" label="Welcome screen"/>
+  <int value="1" label="Takeout screen"/>
+  <int value="2" label="Transfer complete"/>
+  <int value="3" label="Error screen"/>
+</enum>
+
+<enum name="ContentTransferShowNudgeFailureReason">
+  <int value="0" label="App icon unavailable"/>
 </enum>
 
 <enum name="ContextualGoogleIntegrationStatus">
@@ -1272,6 +1282,13 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1" label="Feature pod"/>
 </enum>
 
+<enum name="GeminiAppPage">
+  <int value="0" label="Congratulations"/>
+  <int value="1" label="Offer"/>
+  <int value="2" label="Terms &amp; Conditions"/>
+  <int value="3" label="Debug"/>
+</enum>
+
 <enum name="GlanceableStudentAssignmentList">
   <int value="0" label="Assigned"/>
   <int value="1" label="NoDueDate"/>
@@ -1325,18 +1342,36 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="11" label="Policy forced, only Lacros browser"/>
 </enum>
 
-<enum name="LacrosMigrationStatus">
-  <int value="0" label="Lacros not enabled"/>
-  <int value="1" label="Uncompleted"/>
-  <int value="2" label="Skipped for new user">
-    Migration was skipped but marked as completed because new users don't
-    require migration.
-  </int>
-  <int value="3" label="Completed via copy"/>
-  <int value="4" label="Completed via move"/>
-  <int value="5" label="Reached its retry limit">
-    Migration failed or skipped more than the number of attempts allowed.
-  </int>
+<enum name="LobsterState">
+  <int value="0" label="Shown Opportunity"/>
+  <int value="1" label="Blocked"/>
+  <int value="2" label="Right Click Trigger Impression"/>
+  <int value="3" label="Right Click Trigger Fired"/>
+  <int value="4" label="Right Click Trigger Needs Consent"/>
+  <int value="5" label="Picker Trigger Impression"/>
+  <int value="6" label="Picker Trigger Fired"/>
+  <int value="7" label="Picker Trigger Needs Consent"/>
+  <int value="8" label="Consent Screen Impression"/>
+  <int value="9" label="Consent Accepted"/>
+  <int value="10" label="Consent Rejected"/>
+  <int value="11" label="Query Page Impression"/>
+  <int value="12" label="Request Initial Candidates"/>
+  <int value="13" label="Request Initial Candidates Success"/>
+  <int value="14" label="Request Initial Candidates Error"/>
+  <int value="15" label="Initial Candidates Impression"/>
+  <int value="16" label="Request More Candidates"/>
+  <int value="17" label="Request More Candidates Success"/>
+  <int value="18" label="Request More Candidates Error"/>
+  <int value="19" label="More Candidates Appended"/>
+  <int value="20" label="Candidate Download"/>
+  <int value="21" label="Candidate Download Success"/>
+  <int value="22" label="Candidate Download Error"/>
+  <int value="23" label="Commit As Download"/>
+  <int value="24" label="Commit As Download Success"/>
+  <int value="25" label="Commit As Download Error"/>
+  <int value="26" label="Commit As Insert"/>
+  <int value="27" label="Commit As Insert Success"/>
+  <int value="28" label="Commit As Insert Error"/>
 </enum>
 
 <enum name="LockScreenUserClickTarget">
@@ -1547,6 +1582,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="35" label="Birch Privacy Nudge"/>
   <int value="36" label="Video Conference Tray Sidetone Not Supported"/>
   <int value="37" label="Video Conference Tray Sidetone Enabled"/>
+  <int value="38" label="Content Transfer App Enabled"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
@@ -1623,6 +1659,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="22" label="Exiting overview due to window deactivation"/>
   <int value="23" label="Window restored from previous session"/>
   <int value="24" label="After user login, close dialog for full restore"/>
+  <int value="25" label="Window restored from a coral group"/>
 </enum>
 
 <enum name="OverviewStartAction">
@@ -1943,6 +1980,46 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="6" label="Invalid JSON format"/>
 </enum>
 
+<!-- LINT.IfChange(ScannerFeatureUserState) -->
+
+<enum name="ScannerFeatureUserState">
+  <int value="0" label="Consent disclaimer accepted"/>
+  <int value="1" label="Consent disclaimer rejected"/>
+  <int value="2" label="Sunfish screen entered via shortcut"/>
+  <int value="3"
+      label="Sunfish screen: initial screen capture sent to scanner server"/>
+  <int value="4" label="Screen capture mode: Scanner button shown"/>
+  <int value="5"
+      label="Screen capture mode: initial screen capture sent to scanner
+             server"/>
+  <int value="6" label="No actions detected"/>
+  <int value="7" label="New calendar event action detected"/>
+  <int value="8" label="New calendar event action finished successfully"/>
+  <int value="9" label="New calendar event action population failed"/>
+  <int value="10" label="New contact action detected"/>
+  <int value="11" label="New contact action finished successfully"/>
+  <int value="12" label="New contact action population failed"/>
+  <int value="13" label="New Google Sheet action detected"/>
+  <int value="14" label="New Google Sheet action finished successfully"/>
+  <int value="15" label="New Google Sheet action population failed"/>
+  <int value="16" label="New Google Doc action detected"/>
+  <int value="17" label="New Google Doc action finished successfully"/>
+  <int value="18" label="New Google Doc action population failed"/>
+  <int value="19" label="Copy to clipboard action detected"/>
+  <int value="20" label="Copy to clipboard action finished successfully"/>
+  <int value="21" label="Copy to clipboard action population failed"/>
+  <int value="22"
+      label="New calendar event populated action failed on execution"/>
+  <int value="23" label="New contact populated action failed on execution"/>
+  <int value="24"
+      label="New Google Sheet populated action failed on execution"/>
+  <int value="25" label="New Google Doc populated action failed on execution"/>
+  <int value="26"
+      label="Copy to clipboard populated action failed on execution"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->
+
 <enum name="ScreenRotationAcceleratorAction">
   <int value="0" label="CancelledDialog"/>
   <int value="1" label="AcceptedDialog"/>
@@ -1975,6 +2052,30 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="kSamplePrompts"/>
 </enum>
 
+<enum name="SeaPenSamplePromptId">
+  <int value="0" label="chrome spheres"/>
+  <int value="1" label="galaxy with spaceship"/>
+  <int value="2" label="cat riding unicorn"/>
+  <int value="3" label="animated flowers"/>
+  <int value="4" label="lily in rain"/>
+  <int value="5" label="colorful treehouse"/>
+  <int value="6" label="dalmation"/>
+  <int value="7" label="delorean"/>
+  <int value="8" label="black motorcycle"/>
+  <int value="9" label="spaceship over city"/>
+  <int value="10" label="cat on windowsill"/>
+  <int value="11" label="bioluminescent beach"/>
+  <int value="12" label="black sand dunes"/>
+  <int value="13" label="tree made of stars"/>
+  <int value="14" label="moon over lake"/>
+  <int value="15" label="marble arch"/>
+  <int value="16" label="steampunk spaceship"/>
+  <int value="17" label="white tiger"/>
+  <int value="18" label="anime path overlooking ocean"/>
+  <int value="19" label="papaver rhea stems"/>
+  <int value="20" label="meteor shower"/>
+</enum>
+
 <enum name="SeaPenTemplateId">
 <!-- Defined in ash/webui/common/mojom/sea_pen_generated.mojom -->
 
@@ -2003,12 +2104,23 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1000" label="VcBackgroundFreeform"/>
 </enum>
 
-<enum name="SeaPenWallpaperManagerMigrationStatus">
-  <int value="0" label="kNotStarted"/>
-  <int value="1" label="kCrashed"/>
-  <int value="2" label="kFailed"/>
-  <int value="3" label="kSuccess"/>
+<!-- LINT.IfChange(SearchResultsPanelEntryType) -->
+
+<enum name="SearchResultsPanelEntryType">
+  <int value="0" label="Sunfish session region selection"/>
+  <int value="1" label="Default session search action button"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/capture_mode/capture_mode_metrics.h:SearchResultsPanelEntryType) -->
+
+<!-- LINT.IfChange(SessionLockEvent) -->
+
+<enum name="SessionLockEvent">
+  <int value="0" label="Lock"/>
+  <int value="1" label="Unlock"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/session/session_controller_impl.cc:SessionLockEvent) -->
 
 <enum name="SetWallpaperResult">
   <int value="0" label="Success"/>
@@ -2114,6 +2226,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="Shutdown confirmation bubbble dismissed by clicking ouside"/>
 </enum>
 
+<enum name="SimpleGeolocationClientId">
+  <int value="0" label="kGeolocationController"/>
+  <int value="1" label="kWizardController"/>
+  <int value="2" label="kTimezoneResolver"/>
+  <int value="3" label="kForTesting"/>
+</enum>
+
 <enum name="SnapGroupExitPoint">
   <int value="0" label="Drag window out"/>
   <int value="1" label="[Deprecated] Window state change"/>
@@ -2136,6 +2255,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="18" label="Snap to replace"/>
   <int value="19" label="Visible on all desks"/>
   <int value="20" label="Select a window in Snap Group in partial Overview"/>
+  <int value="21" label="Move a window in Snap Group to new coral desk"/>
 </enum>
 
 <enum name="SpeechRecognitionEndState">
@@ -2240,6 +2360,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="48" label="Video Conference Speak On Mute Opt In Confirmation"/>
   <int value="50" label="Game Dashboard Disabled In Tablet Mode"/>
   <int value="51" label="Informed Restore Onboarding Turn On Ask Every Time"/>
+  <int value="53" label="Enter OnTask locked mode (deprecated)"/>
+  <int value="54" label="OnTask session end (deprecated)"/>
+  <int value="55" label="OnTask URL blocked"/>
+  <int value="56" label="Copy Image To Clipboard Action"/>
+  <int value="57" label="Capture Mode Text Copied"/>
+  <int value="58" label="Coral Saved Groups Limit Max"/>
 </enum>
 
 <enum name="TogglePickerAction">
@@ -2306,6 +2432,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1659755048" label="Illustrations"/>
   <int value="1668389814" label="Art"/>
   <int value="1804492839" label="Colors"/>
+  <int value="1894207420" label="Celebrate Teachers"/>
   <int value="1894705443" label="Leisure"/>
   <int value="1914850019" label="Heritage"/>
   <int value="2026958207" label="LGBTQ Artists"/>
@@ -2334,10 +2461,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-2088281608" label="Heritage - 331011041221112"/>
   <int value="-2079643564" label="Heritage - 18441528924770609236"/>
   <int value="-2075846537" label="Composition - 18446099444287215735"/>
+  <int value="-2065021174" label="Celebrate Teachers - 18438794366352508682"/>
   <int value="-2052639994" label="Landscapes - 3406001502368518"/>
   <int value="-2036802440" label="Heritage - 18444825093169798264"/>
   <int value="-2034367398" label="Landscapes - 8363308608259162"/>
   <int value="-2028697222" label="Made by Canvas - 18438928296354023802"/>
+  <int value="-2016928969" label="Celebrate Teachers - 7198698178616119"/>
   <int value="-2010890067" label="Cityscapes - 18441361086107369645"/>
   <int value="-1990378534" label="Cityscapes - 18439845065751608282"/>
   <int value="-1986859411" label="Cityscapes - 18438879874934566509"/>
@@ -2398,6 +2527,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-1379111552" label="Heritage - 6939063748423040"/>
   <int value="-1349646083" label="LGBTQ Artists - 18440020408432199933"/>
   <int value="-1346329828" label="Collage - 302823912809244"/>
+  <int value="-1337616588" label="Celebrate Teachers - 18438579107614005044"/>
   <int value="-1326684804" label="Native American Artists - 4449022151255420"/>
   <int value="-1315221908" label="Cityscapes - 18438039904557157996"/>
   <int value="-1308168417" label="Solid Colors - 737212648320799"/>
@@ -2405,6 +2535,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-1279122115" label="Art - 18440001776934593853"/>
   <int value="-1277363172" label="Landscapes - 266677537012764"/>
   <int value="-1274675052" label="Art - 2851414628237460"/>
+  <int value="-1249118785" label="Celebrate Teachers - 18442775496909125055"/>
   <int value="-1215416857" label="Element - 18445289040653465063"/>
   <int value="-1206721847" label="Made by Canvas - 18440189784905409225"/>
   <int value="-1201999266" label="Heritage - 8821217378890334"/>
@@ -2495,6 +2626,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="-250481953" label="Heritage - 18442925297777111775"/>
   <int value="-242251369" label="Solid Colors - 2175301908924823"/>
   <int value="-217934385" label="Togetherness - 6948539607455183"/>
+  <int value="-215366558" label="Celebrate Teachers- 18442830069797340258"/>
   <int value="-213086089" label="Art - 18439421351825281143"/>
   <int value="-207369157" label="Art - 2140169111325755"/>
   <int value="-186691484" label="Leisure - 4590813046591588"/>
@@ -2553,6 +2685,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="238075985" label="Art - 402666306977873"/>
   <int value="268022519" label="Cityscapes - 18444150008220070647"/>
   <int value="284261456" label="Art - 18439588894701878352"/>
+  <int value="285942448" label="Celebrate Teachers - 18443487354913759920"/>
   <int value="306978074" label="Native American Artists - 8682195091463450"/>
   <int value="336158740" label="Togetherness - 734508463251476"/>
   <int value="337078580" label="Landscapes - 18439369005314042164"/>
@@ -2593,6 +2726,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="732594745" label="Collage - 6982402080145977"/>
   <int value="738877507" label="Leisure - 2226962756689987"/>
   <int value="741269277" label="LGBTQ Artists - 459480637562653"/>
+  <int value="756526586" label="Celebrate Teachers - 3483764694429178"/>
   <int value="766726480" label="Leisure - 18440296559765836112"/>
   <int value="791271562" label="Floral - 565819782846602"/>
   <int value="810052365" label="Landscapes - 1422584172800781"/>
@@ -2675,6 +2809,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1567507477" label="Art - 2184344624841749"/>
   <int value="1573305199" label="Collage - 18445466155008572271"/>
   <int value="1581350106" label="Imaginary - 3113861460884698"/>
+  <int value="1587474939" label="Celebrate Teachers - 4585892788236795"/>
   <int value="1593019616" label="Heritage - 18440281880393911520"/>
   <int value="1596391393" label="Solid Colors - 7592202400628705"/>
   <int value="1602775350" label="Dessert Time - 18438498829025700150"/>
@@ -2682,6 +2817,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1617144873" label="Imaginary - 3194353478773801"/>
   <int value="1622071983" label="Cityscapes - 18446448263754078895"/>
   <int value="1632606350" label="Cityscapes - 1743436232235150"/>
+  <int value="1638204057" label="Celebrate Teachers - 18443702319379186329"/>
   <int value="1639315119" label="Cityscapes - 18446053255629108911"/>
   <int value="1650555304" label="Cityscapes - 8018267505523112"/>
   <int value="1679563589" label="Colors - 3148839772756805"/>

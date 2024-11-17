@@ -1,0 +1,65 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/clang/clang.gni")
+import("//build/config/python.gni")
+import("//testing/test.gni")
+
+# Use the following import to find other suffixes as needed. The suffixes start
+# with _android. Since there are only two targets here, prefer to duplicate for
+# now instead of using a variable for better searchability.
+# import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
+
+python_library("generate_profile_py") {
+  testonly = true
+  pydeps_file = "//tools/pgo/generate_profile.pydeps"
+  data = [ "//.vpython3" ]
+}
+
+if (enable_chrome_android_internal) {
+  template("generate_profile_test") {
+    script_test(target_name) {
+      script = "//tools/pgo/generate_profile.py"
+
+      # Stream logcat from device (doesn't seem to fully work yet).
+      enable_android_wrapper = true
+
+      args = [
+        # Assume that we are running this script from the output directory.
+        "--builddir",
+        ".",
+        "--android-browser",
+        invoker.browser_name,
+      ]
+
+      deps = [ ":generate_profile_py" ]
+
+      data_deps = [
+        # From performance_test_suite_template_base:
+        "//chrome/test:telemetry_perf_tests${invoker.suffix}",
+
+        # From performance_test_suite_template_android:
+        "//components:components_perftests",
+        "//testing:run_perf_test",
+        "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
+      ]
+
+      # This avoids generate_profile.py attempting to download it on demand.
+      data = [ "${clang_base_path}/bin/llvm-profdata" ]
+    }
+  }
+
+  generate_profile_test("generate_profile_android_clank_trichrome_bundle") {
+    browser_name = "android-trichrome-bundle"
+    suffix = "_android_clank_trichrome_bundle"
+  }
+
+  if (android_64bit_target_cpu) {
+    generate_profile_test(
+        "generate_profile_android_clank_trichrome_chrome_google_64_32_bundle") {
+      browser_name = "android-trichrome-chrome-google-64-32-bundle"
+      suffix = "_android_clank_trichrome_chrome_google_64_32_bundle"
+    }
+  }
+}

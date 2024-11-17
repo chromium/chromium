@@ -49,12 +49,12 @@ std::unique_ptr<webapps::WebappIcon> BuildTestWebApkIcon(
 // Builds WebApk proto and blocks till done.
 class BuildProtoRunner {
  public:
-  BuildProtoRunner() {}
+  BuildProtoRunner() = default;
 
   BuildProtoRunner(const BuildProtoRunner&) = delete;
   BuildProtoRunner& operator=(const BuildProtoRunner&) = delete;
 
-  ~BuildProtoRunner() {}
+  ~BuildProtoRunner() = default;
 
   void BuildSync(
       const GURL& best_primary_icon_url,
@@ -173,7 +173,7 @@ class WebApkProtoBuilderTest : public ::testing::Test {
   WebApkProtoBuilderTest(const WebApkProtoBuilderTest&) = delete;
   WebApkProtoBuilderTest& operator=(const WebApkProtoBuilderTest&) = delete;
 
-  ~WebApkProtoBuilderTest() override {}
+  ~WebApkProtoBuilderTest() override = default;
 
   void SetUp() override {
     test_server_.AddDefaultHandlers(base::FilePath(kTestDataDir));

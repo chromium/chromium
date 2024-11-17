@@ -35,8 +35,10 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -257,7 +259,7 @@ Tab::Tab(TabSlotController* controller)
                           base::Unretained(controller_))));
   close_button_->SetHasInkDropActionOnClick(true);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   showing_close_button_ = !controller_->IsLockedForOnTask();
   close_button_->SetVisible(showing_close_button_);
 #endif
@@ -277,6 +279,12 @@ Tab::Tab(TabSlotController* controller)
   SetProperty(views::kElementIdentifierKey, kTabElementId);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
+  root_name_changed_subscription_ =
+      GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&Tab::OnAXNameChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
+  UpdateAccessibleName();
 }
 
 Tab::~Tab() {
@@ -706,14 +714,49 @@ std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
   return std::u16string();
 }
 
-void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+// This function updates the accessible name for the tab whenever any of the
+// parameters that influence the accessible name change. It ultimately calls
+// BrowserView::GetAccessibleTabLabel to get the updated accessible name.
+//
+// Note: If any new parameters are added or existing ones are removed that
+// affect the accessible name, ensure that the corresponding logic in
+// BrowserView::GetAccessibleTabLabel is updated accordingly to maintain
+// consistency.
+void Tab::UpdateAccessibleName() {
   std::u16string name = controller_->GetAccessibleTabName(this);
   if (!name.empty()) {
-    node_data->SetNameChecked(name);
+    GetViewAccessibility().SetName(name);
   } else {
     // Under some conditions, |GetAccessibleTabName| returns an empty string.
-    node_data->SetNameExplicitlyEmpty();
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
+
+  if (group().has_value()) {
+    auto* tab_group = controller_->GetTabGroup(group().value());
+    if (tab_group && tab_group->ListTabs().length() > 0) {
+      // Since tab group naming can be based on the name of the first tab in the
+      // group, update the tab group name if this tab is the first in the group.
+      std::optional<int> tab_model_index = controller_->GetModelIndexOf(this);
+      std::optional<int> group_first_tab = tab_group->GetFirstTab();
+      if (tab_model_index.has_value() && group_first_tab.has_value() &&
+          tab_model_index.value() == group_first_tab.value()) {
+        tab_group->RunTabGroupVisualsChangedCallback();
+      }
+    }
+  }
+}
+
+void Tab::OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                          const std::optional<std::string>& name) {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
+}
+
+void Tab::SetGroup(std::optional<tab_groups::TabGroupId> group) {
+  TabSlotView::SetGroup(group);
+  UpdateAccessibleName();
 }
 
 gfx::Size Tab::CalculatePreferredSize(
@@ -887,6 +930,25 @@ bool Tab::HasThumbnail() const {
   return data().thumbnail && data().thumbnail->has_data();
 }
 
+// This function checks for the parameters that influence the accessible name
+// change. Note: If any new parameters are added or existing ones are removed
+// that affect the accessible name, ensure that the corresponding logic in
+// BrowserView::GetAccessibleTabLabel is updated accordingly to maintain
+// consistency.
+bool Tab::ShouldUpdateAccessibleName(TabRendererData& old_data,
+                                     TabRendererData& new_data) {
+  return ((old_data.network_state != new_data.network_state) ||
+          old_data.crashed_status != new_data.crashed_status ||
+          old_data.alert_state != new_data.alert_state ||
+          old_data.should_show_discard_status !=
+              new_data.should_show_discard_status ||
+          old_data.discarded_memory_savings_in_bytes !=
+              new_data.discarded_memory_savings_in_bytes ||
+          old_data.tab_resource_usage != new_data.tab_resource_usage ||
+          old_data.pinned != new_data.pinned ||
+          old_data.title != new_data.title);
+}
+
 void Tab::SetData(TabRendererData data) {
   DCHECK(GetWidget());
 
@@ -900,6 +962,9 @@ void Tab::SetData(TabRendererData data) {
   icon_->SetData(data_);
   icon_->SetCanPaintToLayer(controller_->CanPaintThrobberToLayer());
   UpdateTabIconNeedsAttentionBlocked();
+  if (ShouldUpdateAccessibleName(old, data_)) {
+    UpdateAccessibleName();
+  }
 
   std::u16string title = data_.title;
   if (title.empty() && !data_.should_render_empty_title) {
@@ -1068,14 +1133,14 @@ void Tab::UpdateIconVisibility() {
                                    : kMinimumContentsWidthForCloseButtons);
 
   if (IsActive()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Hide tab close button for OnTask if locked. Only applicable for non-web
     // browser scenarios.
     showing_close_button_ = !controller_->IsLockedForOnTask();
 #else
     // Close button is shown on active tabs regardless of the size.
     showing_close_button_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     available_width -= close_button_width;
 
     showing_alert_indicator_ =
@@ -1101,7 +1166,7 @@ void Tab::UpdateIconVisibility() {
     }
 
     showing_close_button_ =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         !controller_->IsLockedForOnTask() &&
 #endif
         large_enough_for_close_button;

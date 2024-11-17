@@ -120,7 +120,8 @@ BOOL isInProgressState(ParcelState state) {
     self.isAccessibilityElement = YES;
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-        UITraitUserInterfaceStyle.self, UITraitPreferredContentSizeCategory.self
+        UITraitUserInterfaceStyle.class,
+        UITraitPreferredContentSizeCategory.class
       ]);
       __weak __typeof(self) weakSelf = self;
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
@@ -278,11 +279,7 @@ BOOL isInProgressState(ParcelState state) {
 - (UIImage*)iconImageForParcelType:(ParcelType)parcelType {
 #if !BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   _useCarrierLogo = NO;
-  if (@available(iOS 16.0, *)) {
     return DefaultSymbolWithPointSize(kBoxTruckFillSymbol, kIconSize);
-  } else {
-    return DefaultSymbolWithPointSize(kShippingBoxFillSymbol, kIconSize);
-  }
 #else
   switch (parcelType) {
     case ParcelType::kUPS:
@@ -293,11 +290,7 @@ BOOL isInProgressState(ParcelState state) {
       return [UIImage imageNamed:kFedexCarrierImage];
     default:
       _useCarrierLogo = NO;
-      if (@available(iOS 16.0, *)) {
         return DefaultSymbolWithPointSize(kBoxTruckFillSymbol, kIconSize);
-      } else {
-        return DefaultSymbolWithPointSize(kShippingBoxFillSymbol, kIconSize);
-      }
   }
 #endif
 }

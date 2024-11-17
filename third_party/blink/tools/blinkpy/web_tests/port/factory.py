@@ -271,10 +271,10 @@ def add_results_options_group(parser: argparse.ArgumentParser,
     results_group.add_argument(
         '--build-directory',
         metavar='PATH',
-        default='out',
-        help=(
-            'Path to the directory where build files are kept, not including '
-            'configuration. In general this will be "out".'))
+        help=('Full path to the directory where build files are generated. '
+              'Likely similar to "out/some-dir-name/". If not specified, will '
+              'look for a dir under out/ of the same name as the value passed '
+              'to --target.'))
     results_group.add_argument(
         '--clobber-old-results',
         action='store_true',
@@ -830,13 +830,14 @@ def _update_configuration_and_target(host, options):
 
 def _read_configuration_from_gn(fs, options):
     """Returns the configuration to used based on args.gn, if possible."""
-    build_directory = getattr(options, 'build_directory', 'out')
-    target = options.target
+    build_directory = getattr(options, 'build_directory', None)
     finder = PathFinder(fs)
-    path = fs.join(finder.chromium_base(), build_directory, target, 'args.gn')
+    if not build_directory:
+        build_directory = fs.join(finder.chromium_base(), 'out',
+                                  options.target)
+    path = fs.join(build_directory, 'args.gn')
     if not fs.exists(path):
-        path = fs.join(finder.chromium_base(), build_directory, target,
-                       'toolchain.ninja')
+        path = fs.join(build_directory, 'toolchain.ninja')
         if not fs.exists(path):
             # This does not appear to be a GN-based build directory, so we don't know
             # how to interpret it.

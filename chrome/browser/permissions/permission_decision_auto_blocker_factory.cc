@@ -40,9 +40,10 @@ PermissionDecisionAutoBlockerFactory::PermissionDecisionAutoBlockerFactory()
 PermissionDecisionAutoBlockerFactory::~PermissionDecisionAutoBlockerFactory() =
     default;
 
-KeyedService* PermissionDecisionAutoBlockerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PermissionDecisionAutoBlockerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new permissions::PermissionDecisionAutoBlocker(
+  return std::make_unique<permissions::PermissionDecisionAutoBlocker>(
       HostContentSettingsMapFactory::GetForProfile(profile));
 }

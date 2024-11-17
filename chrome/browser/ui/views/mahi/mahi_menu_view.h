@@ -7,15 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
-#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
+#include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler_view.h"
+#include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-
-namespace ui {
-struct AXNodeData;
-}  // namespace ui
 
 namespace views {
 class FlexLayoutView;
@@ -38,7 +34,12 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
     kMediaApp,
   };
 
-  explicit MahiMenuView(Surface surface = Surface::kBrowser);
+  struct ButtonStatus {
+    SelectedTextState elucidation_eligiblity = SelectedTextState::kUnknown;
+  };
+
+  explicit MahiMenuView(ButtonStatus button_status,
+                        Surface surface = Surface::kBrowser);
   MahiMenuView(const MahiMenuView&) = delete;
   MahiMenuView& operator=(const MahiMenuView&) = delete;
   ~MahiMenuView() override;
@@ -47,6 +48,7 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   // given `anchor_view_bounds`.
   static views::UniqueWidgetPtr CreateWidget(
       const gfx::Rect& anchor_view_bounds,
+      const ButtonStatus& button_status,
       const Surface surface = Surface::kBrowser);
 
   // Returns the host widget's name.
@@ -54,7 +56,6 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
 
   // chromeos::editor_menu::PreTargetHandlerView:
   void RequestFocus() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Updates the bounds of the view according to the given `anchor_view_bounds`.
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
@@ -78,7 +79,7 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
 
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::LabelButton> summary_button_ = nullptr;
-  raw_ptr<views::LabelButton> outline_button_ = nullptr;
+  raw_ptr<views::LabelButton> elucidation_button_ = nullptr;
   raw_ptr<views::Textfield> textfield_ = nullptr;
   raw_ptr<views::ImageButton> submit_question_button_ = nullptr;
 

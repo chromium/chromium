@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "url/gurl.h"
@@ -17,6 +18,7 @@ class Profile;
 class SessionID;
 
 namespace ash::boca {
+class BocaWindowObserver;
 
 // `OnTaskSystemWebAppManager` implementation that is essentially a thin wrapper
 // around SWA window management APIs, specifically launch, close, and window
@@ -33,14 +35,29 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   SessionID GetActiveSystemWebAppWindowID() override;
   void SetPinStateForSystemWebAppWindow(bool pinned,
                                         SessionID window_id) override;
-  void SetWindowTrackerForSystemWebAppWindow(SessionID window_id) override;
-  void CreateBackgroundTabWithUrl(
+  void SetWindowTrackerForSystemWebAppWindow(
+      SessionID window_id,
+      const std::vector<BocaWindowObserver*> observers) override;
+  SessionID CreateBackgroundTabWithUrl(
       SessionID window_id,
       GURL url,
-      OnTaskBlocklist::RestrictionLevel restriction_level) override;
+      ::boca::LockedNavigationOptions::NavigationType restriction_level)
+      override;
+  void RemoveTabsWithTabIds(
+      SessionID window_id,
+      const std::set<SessionID>& tab_ids_to_remove) override;
+  void PrepareSystemWebAppWindowForOnTask(SessionID window_id) override;
+  SessionID GetActiveTabID() override;
+  void SwitchToTab(SessionID tab_id) override;
+
+  void SetWindowTrackerForTesting(LockedSessionWindowTracker* window_tracker);
 
  private:
+  LockedSessionWindowTracker* GetWindowTracker();
+
   raw_ptr<Profile> profile_;
+
+  raw_ptr<LockedSessionWindowTracker> window_tracker_for_testing_;
 
   base::WeakPtrFactory<OnTaskSystemWebAppManagerImpl> weak_ptr_factory_{this};
 };

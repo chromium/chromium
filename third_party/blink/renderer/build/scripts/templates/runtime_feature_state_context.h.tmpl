@@ -21,7 +21,7 @@ namespace blink {
 // final value that browser and renderer processes can use.
 //
 // Specifically, this class allows for read/write access from the browser
-// process prior to a page's nagivation committing. Post navigation commit this
+// process prior to a page's navigation committing. Post navigation commit this
 // class is changed to a RuntimeFeatureStateReadContext which is not mutable
 // from the browser process but may receive updates from a renderer process for
 // features which allow overrides from origin trials.

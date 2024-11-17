@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+namespace payments::facilitated {
+
 class PaymentLinkValidator {
  public:
   PaymentLinkValidator();
@@ -16,10 +18,14 @@ class PaymentLinkValidator {
   PaymentLinkValidator(const PaymentLinkValidator&) = delete;
   PaymentLinkValidator& operator=(const PaymentLinkValidator&) = delete;
 
-  bool IsValid(const std::string_view url) const;
+  // This validation method uses std::string::find(), which is safe to use in
+  // the browser process on untrusted data.
+  bool IsValid(std::string_view url) const;
 
  private:
   const std::vector<std::string> valid_prefixes_;
 };
+
+}  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_UTIL_PAYMENT_LINK_VALIDATOR_H_

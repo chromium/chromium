@@ -149,22 +149,32 @@ CREATE PERFETTO VIEW _cpu_power_thread_and_toplevel_slice AS
   WHERE s.depth = 0   -- Top-level slices only.
   ORDER BY ts ASC;
 
--- A table holding the slices that executed within the scheduler
--- slice that ran on a CPU immediately after power-up.
---
--- @column  ts        Timestamp of the resulting slice
--- @column dur        Duration of the slice.
--- @column cpu        The CPU the sched slice ran on.
--- @column utid       Unique thread id for the slice.
--- @column sched_id   'id' field from the sched_slice table.
--- @column type       From the sched_slice table, always 'sched_slice'.
--- @column end_state  The ending state for the sched_slice
--- @column priority   The kernel thread priority
--- @column slice_id   Id of the top-level slice for this (sched) slice.
-CREATE VIRTUAL TABLE chrome_cpu_power_post_powerup_slice
+CREATE VIRTUAL TABLE _chrome_cpu_power_post_powerup_slice_sj
 USING
   SPAN_JOIN(chrome_cpu_power_first_sched_slice_after_powerup PARTITIONED utid,
             _cpu_power_thread_and_toplevel_slice PARTITIONED utid);
+
+-- A table holding the slices that executed within the scheduler
+-- slice that ran on a CPU immediately after power-up.
+CREATE PERFETTO TABLE chrome_cpu_power_post_powerup_slice(
+-- Timestamp of the resulting slice
+ts INT,
+-- Duration of the slice.
+dur INT,
+-- The CPU the sched slice ran on.
+cpu INT,
+-- Unique thread id for the slice.
+utid INT,
+-- 'id' field from the sched_slice table.
+sched_id INT,
+-- Id of the top-level slice for this (sched) slice.
+slice_id INT,
+-- Previous power state.
+previous_power_state LONG,
+-- Id of the powerup.
+powerup_id INT
+) AS
+SELECT * FROM _chrome_cpu_power_post_powerup_slice_sj;
 
 -- The first top-level slice that ran after a CPU power-up.
 CREATE PERFETTO VIEW chrome_cpu_power_first_toplevel_slice_after_powerup(

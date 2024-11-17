@@ -9,7 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace sync_bookmarks {
 class BookmarkSyncService;
@@ -21,10 +22,6 @@ namespace ios {
 class AccountBookmarkSyncServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static sync_bookmarks::BookmarkSyncService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static sync_bookmarks::BookmarkSyncService* GetForProfile(
       ProfileIOS* profile);
   static AccountBookmarkSyncServiceFactory* GetInstance();

@@ -87,8 +87,7 @@ char* SeatbeltExtension::IssueToken(SeatbeltExtension::Type type,
       return sandbox_extension_issue_file(APP_SANDBOX_READ_WRITE,
                                           resource.c_str(), 0);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

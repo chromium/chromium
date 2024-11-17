@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -39,8 +40,8 @@ class OverviewGridTest : public AshTestBase {
  public:
   OverviewGridTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
+        /*enabled_features=*/{chromeos::features::
+                                  kOverviewSessionInitOptimizations},
         /*disabled_features=*/{features::kForestFeature});
   }
 
@@ -391,13 +392,7 @@ TEST_F(OverviewGridTest, DoesNotRecordDelayedDeskBarPresentationMetric) {
 
 class OverviewGridForestTest : public OverviewTestBase {
  public:
-  OverviewGridForestTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOsSettingsRevampWayfinding,
-                              features::kForestFeature,
-                              features::kDeskBarWindowOcclusionOptimization},
-        /*disabled_features=*/{});
-  }
+  OverviewGridForestTest() = default;
   OverviewGridForestTest(const OverviewGridForestTest&) = delete;
   OverviewGridForestTest& operator=(const OverviewGridForestTest&) = delete;
   ~OverviewGridForestTest() override = default;
@@ -446,7 +441,8 @@ class OverviewGridForestTest : public OverviewTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kOverviewSessionInitOptimizations};
 };
 
 // Tests that with only one window, we always animate.

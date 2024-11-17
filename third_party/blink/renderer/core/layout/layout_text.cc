@@ -205,7 +205,7 @@ void LayoutText::StyleWillChange(StyleDifference diff,
 
   if (const ComputedStyle* current_style = Style()) {
     // Process accessibility for style changes that affect text.
-    if (current_style->UsedVisibility() != new_style.UsedVisibility() ||
+    if (current_style->Visibility() != new_style.Visibility() ||
         current_style->IsInert() != new_style.IsInert()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         cache->StyleChanged(this, /*visibility_or_inertness_changed*/ true);
@@ -413,8 +413,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
             results.push_back(TextBoxInfo{rect, *box_start, box_length});
             continue;
           }
-          NOTREACHED_IN_MIGRATION();
-          continue;
+          NOTREACHED();
         }
         // Handle CSS generated content, e.g. ::before/::after
         const OffsetMappingUnit* const mapping_unit =
@@ -718,9 +717,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
   return CreatePositionWithAffinity(0);
 }
 
-PhysicalRect LayoutText::LocalCaretRect(
-    int caret_offset,
-    LayoutUnit* extra_width_to_end_of_line) const {
+PhysicalRect LayoutText::LocalCaretRect(int caret_offset) const {
   NOT_DESTROYED();
   return PhysicalRect();
 }
@@ -1091,11 +1088,6 @@ PhysicalRect LayoutText::VisualOverflowRect() const {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
   return FragmentItem::LocalVisualRectFor(*this);
-}
-
-PhysicalRect LayoutText::LocalVisualRectIgnoringVisibility() const {
-  NOT_DESTROYED();
-  return UnionRect(VisualOverflowRect(), LocalSelectionVisualRect());
 }
 
 PhysicalRect LayoutText::LocalSelectionVisualRect() const {
@@ -1479,8 +1471,9 @@ void LayoutText::RecalcVisualOverflow() {
   // |RecalcVisualOverflow| for each layer, and the containing |LayoutObject|
   // should recalculate its |FragmentItem|s without traversing descendant
   // |LayoutObject|s.
-  if (IsInline() && IsInLayoutNGInlineFormattingContext())
-    NOTREACHED_IN_MIGRATION();
+  if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
+    NOTREACHED();
+  }
 
   LayoutObject::RecalcVisualOverflow();
 }

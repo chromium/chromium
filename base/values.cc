@@ -170,7 +170,7 @@ Value::Value(Type type) {
       return;
   }
 
-  CHECK(false);
+  NOTREACHED();
 }
 
 Value::Value(bool value) : data_(value) {}
@@ -293,11 +293,8 @@ double Value::GetDouble() const {
   if (is_double()) {
     return absl::get<DoubleStorage>(data_);
   }
-  if (is_int()) {
-    return GetInt();
-  }
-  CHECK(false);
-  return 0.0;
+  CHECK(is_int());
+  return GetInt();
 }
 
 const std::string& Value::GetString() const {
@@ -415,7 +412,19 @@ Value::Dict::iterator Value::Dict::erase(const_iterator pos) {
 }
 
 Value::Dict Value::Dict::Clone() const {
-  return Dict(storage_);
+  std::vector<std::pair<std::string, std::unique_ptr<Value>>> storage;
+  storage.reserve(storage_.size());
+
+  for (const auto& [key, value] : storage_) {
+    storage.emplace_back(key, std::make_unique<Value>(value->Clone()));
+  }
+
+  Dict result;
+  // `storage` is already sorted and unique by construction, which allows us to
+  // avoid an additional O(n log n) step.
+  result.storage_ = flat_map<std::string, std::unique_ptr<Value>>(
+      sorted_unique, std::move(storage));
+  return result;
 }
 
 void Value::Dict::Merge(Dict dict) {
@@ -926,14 +935,6 @@ void Value::Dict::WriteIntoTrace(perfetto::TracedValue context) const {
   }
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
-
-Value::Dict::Dict(
-    const flat_map<std::string, std::unique_ptr<Value>>& storage) {
-  storage_.reserve(storage.size());
-  for (const auto& [key, value] : storage) {
-    Set(key, value->Clone());
-  }
-}
 
 bool operator==(const Value::Dict& lhs, const Value::Dict& rhs) {
   auto deref_2nd = [](const auto& p) { return std::tie(p.first, *p.second); };

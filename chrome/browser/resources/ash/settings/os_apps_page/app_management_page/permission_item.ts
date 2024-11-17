@@ -7,10 +7,11 @@ import '../../os_privacy_page/privacy_hub_allow_sensor_access_dialog.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {App, InstallReason, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App, Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {InstallReason, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -20,7 +21,7 @@ import {MediaDevicesProxy} from '../../common/media_devices_proxy.js';
 
 import {getTemplate} from './permission_item.html.js';
 import {PrivacyHubMixin} from './privacy_hub_mixin.js';
-import {AppManagementToggleRowElement} from './toggle_row.js';
+import type {AppManagementToggleRowElement} from './toggle_row.js';
 import {getPermissionDescriptionString, isSensorAvailable} from './util.js';
 
 const AppManagementPermissionItemElementBase =

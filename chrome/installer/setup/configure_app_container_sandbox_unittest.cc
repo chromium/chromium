@@ -4,6 +4,9 @@
 
 #include "chrome/installer/setup/configure_app_container_sandbox.h"
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/test_file_util.h"
@@ -30,8 +33,7 @@ TEST(ConfigureAppContainerSandboxTest, ConfigureAppContainerSandbox) {
   ASSERT_TRUE(base::CreateWithDacl(path, kBaseDirDacl, true));
   EXPECT_EQ(kBaseDirDacl, base::GetFileDacl(path));
 
-  ASSERT_TRUE(ConfigureAppContainerSandbox(
-      std::array<const base::FilePath*, 1>{&path}));
+  ASSERT_TRUE(ConfigureAppContainerSandbox(base::span_from_ref(&path)));
   EXPECT_EQ(kConfiguredDirDacl, base::GetFileDacl(path));
 }
 
@@ -46,8 +48,7 @@ TEST(ConfigureAppContainerSandboxTest,
   base::FilePath pathB = temp_dir.GetPath().Append(L"dirB");
   ASSERT_TRUE(base::CreateWithDacl(pathB, kBaseDirDacl, true));
 
-  ASSERT_TRUE(ConfigureAppContainerSandbox(
-      std::array<const base::FilePath*, 2>{&pathA, &pathB}));
+  ASSERT_TRUE(ConfigureAppContainerSandbox({&pathA, &pathB}));
   EXPECT_EQ(kConfiguredDirDacl, base::GetFileDacl(pathA));
   EXPECT_EQ(kConfiguredDirDacl, base::GetFileDacl(pathB));
 }

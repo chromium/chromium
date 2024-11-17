@@ -81,7 +81,8 @@
           "builder": "Dawn Win10 x64 ASAN Release (Intel)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-try-win10-x64-intel-asan/targets"
     }
   },
   "$build/reclient": {

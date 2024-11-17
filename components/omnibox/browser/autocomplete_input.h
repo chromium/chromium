@@ -172,20 +172,20 @@ class AutocompleteInput {
     return current_page_classification_;
   }
 
-  // The Suggest or Search request source. Determines the client= and source= or
-  // sourceid= in the Suggest and Search request URLs respectively.
+  // The Suggest or Search request source. Determines the client= (for Suggest
+  // request URLs) and source= or sourceid= (for Search request URLs).
   SearchTermsData::RequestSource request_source() const {
     switch (current_page_classification()) {
+      // Lens Overlay searchboxes don't rely on TemplateURL replacement and set
+      // `client=` in //components/omnibox/browser/remote_suggestions_service.cc
+      // and `source=` in //c/b/u/lens/lens_overlay_url_builder.cc.
       case metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
-        return SearchTermsData::RequestSource::CONTEXTUAL_SEARCHBOX;
       case metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX:
-        return SearchTermsData::RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
       case metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
-        return SearchTermsData::RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
+        return SearchTermsData::RequestSource::LENS_OVERLAY;
       default:
-        break;
+        return SearchTermsData::RequestSource::SEARCHBOX;
     }
-    return SearchTermsData::RequestSource::SEARCHBOX;
   }
 
   // The type of input supplied.
@@ -283,15 +283,15 @@ class AutocompleteInput {
     return terms_prefixed_by_http_or_https_;
   }
 
-  const std::optional<lens::proto::LensOverlayInteractionResponse>&
-  lens_overlay_interaction_response() const {
-    return lens_overlay_interaction_response_;
+  const std::optional<lens::proto::LensOverlaySuggestInputs>&
+  lens_overlay_suggest_inputs() const {
+    return lens_overlay_suggest_inputs_;
   }
 
-  void set_lens_overlay_interaction_response(
-      const lens::proto::LensOverlayInteractionResponse&
-          lens_overlay_interaction_response) {
-    lens_overlay_interaction_response_ = lens_overlay_interaction_response;
+  void set_lens_overlay_suggest_inputs(
+      const lens::proto::LensOverlaySuggestInputs&
+          lens_overlay_suggest_inputs) {
+    lens_overlay_suggest_inputs_ = lens_overlay_suggest_inputs;
   }
 
   // Resets all internal variables to the null-constructed state.
@@ -353,10 +353,10 @@ class AutocompleteInput {
   metrics::OmniboxFocusType focus_type_ =
       metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   std::vector<std::u16string> terms_prefixed_by_http_or_https_;
-  // The lens overlay interaction response to be sent as a query parameter in
+  // The lens overlay suggest inputs to be sent as query parameters in
   // the suggest requests.
-  std::optional<lens::proto::LensOverlayInteractionResponse>
-      lens_overlay_interaction_response_;
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+      lens_overlay_suggest_inputs_;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;

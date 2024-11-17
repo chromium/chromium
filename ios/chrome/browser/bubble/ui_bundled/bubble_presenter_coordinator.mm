@@ -136,34 +136,6 @@
       [_presenter presentParcelTrackingTipBubble];
       break;
     }
-    case InProductHelpType::kShareButton: {
-      [_presenter
-          presentShareButtonHelpBubbleWithDeviceSwitcherResultDispatcher:
-              deviceSwitcherResultDispatcher];
-      break;
-    }
-    case InProductHelpType::kTabGridToolbarItem: {
-      id<ToolbarCommands> toolbarHandler =
-          HandlerForProtocol(commandDispatcher, ToolbarCommands);
-      [_presenter presentTabGridToolbarItemTipWithToolbarHandler:toolbarHandler
-                                  deviceSwitcherResultDispatcher:
-                                      deviceSwitcherResultDispatcher];
-      break;
-    }
-    case InProductHelpType::kNewTabToolbarItem: {
-      id<ToolbarCommands> toolbarHandler =
-          HandlerForProtocol(commandDispatcher, ToolbarCommands);
-      id<TabStripCommands> tabStripHandler =
-          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-              ? HandlerForProtocol(commandDispatcher, TabStripCommands)
-              : nil;
-      [_presenter
-          presentNewTabToolbarItemTipWithHandlerForToolbar:toolbarHandler
-                                               forTabStrip:tabStripHandler
-                            deviceSwitcherResultDispatcher:
-                                deviceSwitcherResultDispatcher];
-      break;
-    }
     case InProductHelpType::kPullToRefresh: {
       [_presenter
           presentPullToRefreshGestureInProductHelpWithDeviceSwitcherResultDispatcher:

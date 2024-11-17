@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField value='your-file-name.pdf Edit' actionsIds=button actions=setValue
+++++++++staticText name='your-file-name.pdf '
+++++++++++inlineTextBox name='your-file-name.pdf '
+++++++++genericContainer
+++++++++++button name='Edit'
+++++++++++++staticText name='Edit'
+++++++++++++++inlineTextBox name='Edit'

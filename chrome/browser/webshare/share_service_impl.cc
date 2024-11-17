@@ -282,16 +282,27 @@ void ShareServiceImpl::OnSafeBrowsingResultReceived(
          blink::mojom::ShareError result) { std::move(callback).Run(result); },
       std::move(sharing_service_operation), std::move(callback)));
 #elif BUILDFLAG(IS_WIN)
+  // Drop fullscreen mode so the Share UI can be easily clicked away from,
+  // without clicking back into the web contents
+  base::ScopedClosureRunner fullscreen_block =
+      web_contents->ForSecurityDropFullscreen(
+          /*display_id=*/display::kInvalidDisplayId);
+
   auto share_operation = std::make_unique<webshare::ShareOperation>(
-      title, text, share_url, std::move(files), web_contents);
+      title, text, share_url, web_contents);
   auto* const share_operation_ptr = share_operation.get();
-  share_operation_ptr->Run(base::BindOnce(
-      [](std::unique_ptr<webshare::ShareOperation> share_operation,
-         ShareCallback callback,
-         blink::mojom::ShareError result) { std::move(callback).Run(result); },
-      std::move(share_operation), std::move(callback)));
+  share_operation_ptr->Run(
+      std::move(files),
+      base::BindOnce(
+          [](std::unique_ptr<webshare::ShareOperation> share_operation,
+             base::ScopedClosureRunner fullscreen_block, ShareCallback callback,
+             blink::mojom::ShareError result) {
+            fullscreen_block.RunAndReset();
+            std::move(callback).Run(result);
+          },
+          std::move(share_operation), std::move(fullscreen_block),
+          std::move(callback)));
 #else
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(blink::mojom::ShareError::INTERNAL_ERROR);
+  NOTREACHED();
 #endif
 }

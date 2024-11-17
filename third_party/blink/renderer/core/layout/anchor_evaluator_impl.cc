@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -147,15 +148,16 @@ namespace {
 
 bool IsScopedByElement(const ScopedCSSName* lookup_name,
                        const Element& element) {
-  const ScopedCSSNameList* scoped_names =
+  const StyleAnchorScope& anchor_scope =
       element.ComputedStyleRef().AnchorScope();
-  if (!scoped_names) {
+  if (anchor_scope.IsNone()) {
     return false;
   }
-  if (scoped_names->GetNames().empty()) {
-    // An empty list represents anchor-scope:all.
-    return true;
+  if (anchor_scope.IsAll()) {
+    return anchor_scope.AllTreeScope() == lookup_name->GetTreeScope();
   }
+  const ScopedCSSNameList* scoped_names = anchor_scope.Names();
+  CHECK(scoped_names);
   for (const Member<const ScopedCSSName>& scoped_name :
        scoped_names->GetNames()) {
     if (*scoped_name == *lookup_name) {
@@ -177,15 +179,13 @@ bool InSameAnchorScope(const AnchorKey& key,
   }
   auto anchor_scope_ancestor =
       [name](const LayoutObject& layout_object) -> const Element* {
-    const Element* element = To<Element>(layout_object.GetNode());
-    CHECK(element);
-    while ((element = LayoutTreeBuilderTraversal::ParentElement(*element)) !=
-           nullptr) {
+    for (const Element* element = To<Element>(layout_object.GetNode()); element;
+         element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
       if (IsScopedByElement(*name, *element)) {
-        break;
+        return element;
       }
     }
-    return element;
+    return nullptr;
   };
   return anchor_scope_ancestor(query_object) ==
          anchor_scope_ancestor(anchor_object);
@@ -393,8 +393,7 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
     case CSSAnchorValue::kSelfEnd:
       // These logical values should have been converted to corresponding
       // physical values in `PhysicalAnchorValueFromLogicalOrAuto`.
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 
   // The |value| is for the "start" side of insets. For the "end" side of
@@ -436,8 +435,7 @@ LayoutUnit LogicalAnchorQuery::EvaluateSize(
     case CSSAnchorSizeValue::kImplicit:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 const LogicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
@@ -525,18 +523,19 @@ bool AnchorEvaluatorImpl::AllowAnchorSize() const {
   switch (GetMode()) {
     case Mode::kWidth:
     case Mode::kHeight:
-      return true;
-    case Mode::kNone:
     case Mode::kLeft:
     case Mode::kRight:
     case Mode::kTop:
     case Mode::kBottom:
+      return true;
+    case Mode::kNone:
       return false;
   }
 }
 
 bool AnchorEvaluatorImpl::IsYAxis() const {
-  return GetMode() == Mode::kTop || GetMode() == Mode::kBottom;
+  return GetMode() == Mode::kTop || GetMode() == Mode::kBottom ||
+         GetMode() == Mode::kHeight;
 }
 
 bool AnchorEvaluatorImpl::IsRightOrBottom() const {
@@ -572,6 +571,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
   if (!anchor_reference) {
     return std::nullopt;
   }
+
+  UpdateAccessibilityAnchor(anchor_reference->layout_object);
 
   if (anchor_reference->display_locks) {
     for (auto& display_lock : *anchor_reference->display_locks) {
@@ -612,10 +613,10 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
   }
 
   if (anchor_size_value == CSSAnchorSizeValue::kImplicit) {
-    if (GetMode() == Mode::kWidth) {
-      anchor_size_value = CSSAnchorSizeValue::kWidth;
-    } else {
+    if (IsYAxis()) {
       anchor_size_value = CSSAnchorSizeValue::kHeight;
+    } else {
+      anchor_size_value = CSSAnchorSizeValue::kWidth;
     }
   }
   const LogicalAnchorReference* anchor_reference =
@@ -623,6 +624,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
   if (!anchor_reference) {
     return std::nullopt;
   }
+
+  UpdateAccessibilityAnchor(anchor_reference->layout_object);
 
   if (anchor_reference->display_locks) {
     for (auto& display_lock : *anchor_reference->display_locks) {
@@ -634,6 +637,31 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
   return AnchorQuery()->EvaluateSize(*anchor_reference, anchor_size_value,
                                      container_converter_.GetWritingMode(),
                                      self_writing_direction_.GetWritingMode());
+}
+
+void AnchorEvaluatorImpl::UpdateAccessibilityAnchor(
+    const LayoutObject* anchor) const {
+  if (!anchor->GetDocument().ExistingAXObjectCache()) {
+    return;
+  }
+
+  Element* anchor_element = To<Element>(anchor->GetNode());
+  if (accessibility_anchor_ && accessibility_anchor_ != anchor_element) {
+    has_multiple_accessibility_anchors_ = true;
+  }
+  accessibility_anchor_ = anchor_element;
+}
+
+Element* AnchorEvaluatorImpl::AccessibilityAnchor() const {
+  if (has_multiple_accessibility_anchors_) {
+    return nullptr;
+  }
+  return accessibility_anchor_;
+}
+
+void AnchorEvaluatorImpl::ClearAccessibilityAnchor() {
+  accessibility_anchor_ = nullptr;
+  has_multiple_accessibility_anchors_ = false;
 }
 
 std::optional<PhysicalOffset> AnchorEvaluatorImpl::ComputeAnchorCenterOffsets(

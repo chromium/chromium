@@ -148,12 +148,10 @@ public class MenuItem extends FrameLayout {
 
         mPlayButton = (ImageView) findViewById(R.id.play_button);
         mPlayButton.setContentDescription(
-                context.getResources().getString(R.string.readaloud_play) + " " + mLabel);
+                context.getString(R.string.readaloud_play) + " " + mLabel);
         mPlayButtonSpinner = (ProgressBar) findViewById(R.id.spinner);
         mPlayButtonSpinner.setContentDescription(
-                context.getResources().getString(R.string.readaloud_playback_loading)
-                        + " "
-                        + mLabel);
+                context.getString(R.string.readaloud_playback_loading) + " " + mLabel);
     }
 
     private void onLayoutInflated(LinearLayout layout) {
@@ -231,13 +229,13 @@ public class MenuItem extends FrameLayout {
     void setPlayButtonStopped() {
         mPlayButton.setImageResource(R.drawable.mini_play_button);
         mPlayButton.setContentDescription(
-                getContext().getResources().getString(R.string.readaloud_play) + " " + mLabel);
+                getContext().getString(R.string.readaloud_play) + " " + mLabel);
     }
 
     void setPlayButtonPlaying() {
         mPlayButton.setImageResource(R.drawable.mini_pause_button);
         mPlayButton.setContentDescription(
-                getContext().getResources().getString(R.string.readaloud_pause) + " " + mLabel);
+                getContext().getString(R.string.readaloud_pause) + " " + mLabel);
     }
 
     void setSecondLine(String text) {

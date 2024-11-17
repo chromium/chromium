@@ -5,10 +5,9 @@
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -31,14 +30,8 @@ export class PasspointRemoveDialogElement extends
     return {};
   }
 
-  private isPasspointSettingsEnabled_: boolean;
-
   constructor() {
     super();
-
-    this.isPasspointSettingsEnabled_ =
-        loadTimeData.valueExists('isPasspointSettingsEnabled') &&
-        loadTimeData.getBoolean('isPasspointSettingsEnabled');
   }
 
   open(): void {
@@ -69,38 +62,6 @@ export class PasspointRemoveDialogElement extends
   private onConfirmClick_(): void {
     const event = new CustomEvent('confirm', {bubbles: true, composed: true});
     this.dispatchEvent(event);
-  }
-
-  private getDialogTitle_(): string {
-    if (this.isPasspointSettingsEnabled_) {
-      return this.i18n('networkSectionPasspointGoToSubscriptionTitle');
-    }
-    return this.i18n('networkSectionPasspointRemovalTitle');
-  }
-
-  private hasDescription_(): boolean {
-    return !this.isPasspointSettingsEnabled_;
-  }
-
-  private getDialogInformation_(): string {
-    if (this.isPasspointSettingsEnabled_) {
-      return this.i18n('networkSectionPasspointGoToSubscriptionInformation');
-    }
-    return this.i18n('networkSectionPasspointRemovalInformation');
-  }
-
-  private getConfirmButtonLabel_(): string {
-    if (this.isPasspointSettingsEnabled_) {
-      return this.i18n('networkSectionPasspointGoToSubscriptionButtonLabel');
-    }
-    return this.i18n('confirm');
-  }
-
-  private getConfirmButtonA11yLabel_(): string {
-    if (this.isPasspointSettingsEnabled_) {
-      return this.i18n('passpointRemoveGoToSubscriptionButtonA11yLabel');
-    }
-    return this.i18n('passpointRemoveConfirmA11yLabel');
   }
 }
 

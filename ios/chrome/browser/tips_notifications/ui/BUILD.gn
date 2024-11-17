@@ -11,8 +11,8 @@ source_set("shared") {
   ]
   deps = [
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/instruction_view",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/promo_style:utils",
     "//ios/chrome/common/ui/util",

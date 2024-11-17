@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
+#include "base/types/optional_ref.h"
 #include "base/version.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
@@ -76,7 +77,7 @@ class NET_EXPORT GlobalFirstPartySets {
   // Computes the First-Party Set metadata related to the given request context.
   FirstPartySetMetadata ComputeMetadata(
       const SchemefulSite& site,
-      const SchemefulSite* top_frame_site,
+      base::optional_ref<const SchemefulSite> top_frame_site,
       const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Modifies this instance such that it will respect the given

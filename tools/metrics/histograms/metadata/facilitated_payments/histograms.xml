@@ -56,6 +56,23 @@ reviewer.
   </token>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.PixCodeCopied" enum="Boolean"
+    expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    A Pix specific histogram. Emits true when a likely Pix code is copied to the
+    clipboard on an allowlisted merchant website. A likely Pix code contains
+    substring &quot;0014br.gov.bcb.pix&quot;, but this is logged before the code
+    validation, which could thereafter fail and not trigger a PIX FOP selector
+    UI. [Trigger] User copies a likely Pix code to the clipboard. [Frequency]
+    Logged once per Pix payflow. Pix payflow is triggered at most once per page
+    load.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.SettingsPage.Shown" enum="BooleanShown"
     expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
@@ -106,7 +123,24 @@ reviewer.
 </histogram>
 
 <histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.Latency"
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.FopSelector.UserAction"
+    enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for {FacilitatedPaymentsType} transactions on
+    Chrome, this histogram logs user actions on the {FacilitatedPaymentsType}
+    FOP selector. [Frequency] Logged once per {FacilitatedPaymentsType} payflow.
+    {FacilitatedPaymentsType} payflow is triggered at most once per page load.
+    [Trigger] User interacts with the {FacilitatedPaymentsType} FOP selector.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.{Result}.Latency"
     units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
@@ -115,59 +149,47 @@ reviewer.
   <summary>
     Latency for the call to fetch the client token. The client token is fetched
     from the platform specific payment library in preparation for facilitating
-    the payment using Google Pay. [Frequency] Logged at most once per page load.
+    the payment using Google Pay. {Result} is the token fetch result.
+    [Frequency] Logged at most once per {FacilitatedPaymentsType} payflow.
     [Trigger] Page is loaded and the main frame contains a valid payment code
     for {FacilitatedPaymentsType}.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.Result"
-    enum="Boolean" expires_after="2025-07-01">
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Attempt"
+    enum="BooleanAttempted" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Result of whether the call to fetch the client token was successful or not.
-    The client token is fetched from the platform specific payment library in
-    preparation for facilitating the payment using Google Pay. [Frequency]
-    Logged at most once per page load. [Trigger] Page is loaded and the main
-    frame contains a valid payment code for {FacilitatedPaymentsType}.
+    Logs true when a request is sent to the Initiate Payment backend endpoint.
+    It should never log a false case. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} flow. [Trigger] User selects a payment instrument
+    from the list of options shown in the {FacilitatedPaymentsType} UI.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
 
 <histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Latency"
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.{Result}.Latency"
     units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Latency for the InitiatePayment backend endpoint. [Frequency] Logged at most
-    once per page load. [Trigger] User selects a payment instrument from the
-    list of options shown in the {FacilitatedPaymentsType} UI.
+    Logs the latency for the InitiatePayment backend endpoint and breaks it down
+    by the result. The result is {Result}. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} payflow. [Trigger] User selects a payment
+    instrument from the list of options shown in the {FacilitatedPaymentsType}
+    UI.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
-</histogram>
-
-<histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Result"
-    enum="Boolean" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Logs whether the call to the InititaePayment backend endpoint was successful
-    or not. [Frequency] Logged at most once per page load. [Trigger] User
-    selects a payment instrument from the list of options shown in the
-    {FacilitatedPaymentsType} UI.
-  </summary>
-  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram
@@ -205,7 +227,7 @@ reviewer.
 </histogram>
 
 <histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.Latency"
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.{Result}.Latency"
     units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
@@ -213,29 +235,14 @@ reviewer.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Latency for the call to check whether the FacilitatedPayments API client is
-    available or not. The API client's availability is checked to determine
-    whether Chrome can offer to facilitate the payment using Google Pay.
-    [Frequency] Logged at most once per page load. [Trigger] Page is loaded and
-    the main frame contains a valid payment code for {FacilitatedPaymentsType}.
+    available or not. The result is {Result}. The API client's availability is
+    checked to determine whether Chrome can offer to facilitate the payment
+    using Google Pay. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} payflow. [Trigger] Page is loaded and the main
+    frame contains a valid payment code for {FacilitatedPaymentsType}.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
-</histogram>
-
-<histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.Result"
-    enum="Boolean" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Result of whether the FacilitatedPayments API client is available or not.
-    The API client's availability is checked to determine whether Chrome can
-    offer to facilitate the payment using Google Pay. [Frequency] Logged at most
-    once per page load. [Trigger] Page is loaded and the main frame contains a
-    valid payment code for {FacilitatedPaymentsType}.
-  </summary>
-  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram
@@ -257,6 +264,21 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.PayflowExitedReason"
+    enum="FacilitatedPayments.PayFlowExitedReason" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for facilitated payments, this histogram logs
+    the reasons why the payflow was exited. [Trigger] Payflow was exited early.
+    [Frequency] Logged at most once per payflow.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.PaymentNotOfferedReason"
     enum="FacilitatedPayments.PaymentNotOfferedReason"
     expires_after="2025-07-01">
@@ -265,11 +287,12 @@ reviewer.
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    On a webpage that is eligible for facilitated payments, this histogram logs
-    the reasons for the payment option not being offered to the user.
-    [Frequency] Logged at most once per page load. [Trigger] Page is loaded and
-    accoridng to the renderer the main frame contains a valid payment code for
-    {FacilitatedPaymentsType}.
+    (Obsolete histogram. To be removed after new PayflowExited metrics
+    implementation is finished.) On a webpage that is eligible for facilitated
+    payments, this histogram logs the reasons for the payment option not being
+    offered to the user. [Frequency] Logged at most once per page load.
+    [Trigger] Page is loaded and accoridng to the renderer the main frame
+    contains a valid payment code for {FacilitatedPaymentsType}.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
@@ -282,10 +305,12 @@ reviewer.
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    On a webpage that is eligible for facilitated payments, this histogram logs
-    the overall outcome of the transaction once the FOP selector is shown to the
-    user. [Frequency] Logged at most once per page load. [Trigger] FOP selector
-    is shown to the user and user takes action on it.
+    (Obsolete histogram. Replaced by PayflowExitedReason histogram. Will be
+    removed when new PayflowExitedReason histogram is finished.) On a webpage
+    that is eligible for facilitated payments, this histogram logs the overall
+    outcome of the transaction once the FOP selector is shown to the user.
+    [Frequency] Logged at most once per page load. [Trigger] FOP selector is
+    shown to the user and user takes action on it.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
@@ -298,10 +323,12 @@ reviewer.
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    On a webpage that is eligible for facilitated payments, this histogram logs
-    the latency of an overall transaction from the time the FOP selector is
-    shown to the user to the time the transaction is completed with the result
-    as {TransactionResult}. [Frequency] Logged at most once per page load.
+    (Obsolete histogram. Replaced by latency histograms for specific actions.
+    Will be removed when related histograms are finished.) On a webpage that is
+    eligible for facilitated payments, this histogram logs the latency of an
+    overall transaction from the time the FOP selector is shown to the user to
+    the time the transaction is completed with the result as
+    {TransactionResult}. [Frequency] Logged at most once per page load.
     [Trigger] FOP selector is shown to the user and user takes action on it.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
@@ -310,6 +337,25 @@ reviewer.
     <variant name="Failed" summary="Failed transaction"/>
     <variant name="Success" summary="Successful transaction"/>
   </token>
+</histogram>
+
+<histogram name="FacilitatedPayments.{FacilitatedPaymentsType}.UiShown"
+    enum="FacilitatedPayments.UiScreen" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for facilitated payments, this histogram logs
+    the UI screens being shown to the user. [Frequency] Each enum value is
+    logged at most once per {FacilitatedPaymentsType} payflow.
+    {FacilitatedPaymentsType} payflow is triggered at most once per page load.
+    [Trigger] The {FacilitatedPaymentsType} payflow could be triggered on pages
+    that have loaded, and the main frame contains a valid payment code for
+    {FacilitatedPaymentsType}. The screens are shown during the payflow based on
+    internal logic.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
 
 </histograms>

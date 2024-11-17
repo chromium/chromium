@@ -41,7 +41,8 @@
           "builder": "Site Isolation Android",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Site Isolation Android/targets"
     }
   },
   "$build/reclient": {

@@ -20,10 +20,10 @@
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_service.h"
 #import "components/sync/protocol/gaia_password_reuse.pb.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class GURL;
 class PrefService;
+class ProfileIOS;
 class SafeBrowsingService;
 
 namespace history {
@@ -177,7 +177,7 @@ class ChromePasswordProtectionService
 
   bool IsPrimaryAccountSignedIn() const override;
 
-  bool IsAccountGmail(const std::string& username) const override;
+  bool IsAccountConsumer(const std::string& username) const override;
 
   bool IsInExcludedCountry() override;
 

@@ -250,9 +250,8 @@ storage::AsyncFileUtil* MediaFileSystemBackend::GetAsyncFileUtil(
       return device_media_async_file_util_.get();
 #endif
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 storage::WatcherManager* MediaFileSystemBackend::GetWatcherManager(
@@ -275,9 +274,8 @@ MediaFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
       }
       return media_copy_or_move_file_validator_factory_.get();
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 std::unique_ptr<storage::FileSystemOperation>

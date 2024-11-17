@@ -21,6 +21,7 @@ export enum FreeformTab {
 export type SeaPenImageId = number;
 
 export interface SeaPenSamplePrompt {
+  id: number;
   prompt: string;
   preview: Url;
 }

@@ -17,13 +17,13 @@ message LocalTabGroupData {
   // Useful for determining subsequent sign-in / sign-out behavior.
   optional bool created_before_syncing_tab_groups = 2;
 
-  // Flag to indicate if this group should be closed and deleted from local
-  // storage when the associated browser window becomes available.
-  // This is used for specific cases where groups need to be cleaned up
-  // on the client-side (e.g. sign-out or group deletion message received
-  // while the associated browser window wasn't available).
-  optional bool close_and_delete_on_next_restore = 3;
+  reserved 3;
+  reserved "close_and_delete_on_next_restore";
 
   // Timestamp of last explicit user interaction with the tab group.
   optional int64 last_user_interaction_time_windows_epoch_micros = 4;
+
+  // Indicates whether a tab is pending sanitization. This field is only
+  // applicable to tabs, instead of tab groups.
+  optional bool is_tab_pending_sanitization = 5;
 }

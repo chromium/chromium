@@ -44,8 +44,10 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
     views::View* container =
         widget_.SetContentsView(std::make_unique<views::View>());
 
-    progress_view_ = new MediaControlsProgressView(base::BindRepeating(
-        &MediaControlsProgressViewTest::SeekTo, base::Unretained(this)));
+    progress_view_ =
+        std::make_unique<MediaControlsProgressView>(base::BindRepeating(
+            &MediaControlsProgressViewTest::SeekTo, base::Unretained(this)));
+
     container->AddChildView(progress_view_.get());
 
     widget_.Show();
@@ -53,14 +55,14 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
 
   void TearDown() override {
     widget_.Close();
+    progress_view_.reset();
     ViewsTestBase::TearDown();
   }
 
   MOCK_METHOD1(SeekTo, void(double));
 
  protected:
-  raw_ptr<MediaControlsProgressView, DanglingUntriaged> progress_view_ =
-      nullptr;
+  std::unique_ptr<MediaControlsProgressView> progress_view_;
 
  private:
   views::Widget widget_;

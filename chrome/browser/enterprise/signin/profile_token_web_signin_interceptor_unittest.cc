@@ -46,8 +46,9 @@ class MockDelegate : public ProfileTokenWebSigninInterceptor::Delegate {
               ShowOidcInterceptionDialog,
               (content::WebContents*,
                const WebSigninInterceptor::Delegate::BubbleParameters&,
-               signin::SigninChoiceWithConfirmationCallback,
-               base::OnceClosure),
+               signin::SigninChoiceWithConfirmAndRetryCallback,
+               base::OnceClosure,
+               base::RepeatingClosure),
               (override));
   MOCK_METHOD(void,
               ShowFirstRunExperienceInNewProfile,

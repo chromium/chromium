@@ -626,3 +626,41 @@ TEST_F(ActionFactoryTest, CloseTabGroup) {
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
 }
+
+// Tests that the manage tab group action has the right title and image.
+TEST_F(ActionFactoryTest, ManageTabGroup) {
+  feature_list_.InitWithFeatures(
+      {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  ActionFactory* factory =
+      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
+
+  UIImage* expectedImage =
+      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP);
+
+  UIAction* action = [factory actionToManageTabGroupWithBlock:^{
+  }];
+
+  EXPECT_NSEQ(expectedTitle, action.title);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the share tab group action has the right title and image.
+TEST_F(ActionFactoryTest, ShareTabGroup) {
+  feature_list_.InitWithFeatures(
+      {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  ActionFactory* factory =
+      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
+
+  UIImage* expectedImage =
+      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP);
+
+  UIAction* action = [factory actionToShareTabGroupWithBlock:^{
+  }];
+
+  EXPECT_NSEQ(expectedTitle, action.title);
+  EXPECT_EQ(expectedImage, action.image);
+}

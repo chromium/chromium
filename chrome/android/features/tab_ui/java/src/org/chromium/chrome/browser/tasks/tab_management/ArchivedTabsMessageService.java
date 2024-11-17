@@ -4,21 +4,26 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.CLICK_HANDLER;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
+import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.WIDTH;
 
-import android.content.Context;
+import android.app.Activity;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -33,10 +38,12 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -75,9 +82,9 @@ public class ArchivedTabsMessageService extends MessageService
                     mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
 
                     mCustomCardView =
-                            LayoutInflater.from(mContext)
+                            LayoutInflater.from(mActivity)
                                     .inflate(R.layout.archived_tabs_message_card_view, null);
-                    if (mShowTwoStepIPH) {
+                    if (mShowTwoStepIph) {
                         mCustomCardView.addOnAttachStateChangeListener(
                                 new OnAttachStateChangeListener() {
                                     @Override
@@ -94,12 +101,6 @@ public class ArchivedTabsMessageService extends MessageService
                                 });
                     }
                     mEndIconView = mCustomCardView.findViewById(R.id.end_image);
-                    mCustomCardModel =
-                            new PropertyModel.Builder(ArchivedTabsCardViewProperties.ALL_KEYS)
-                                    .with(
-                                            CLICK_HANDLER,
-                                            ArchivedTabsMessageService.this::openArchivedTabsDialog)
-                                    .build();
                     PropertyModelChangeProcessor.create(
                             mCustomCardModel, mCustomCardView, ArchivedTabsCardViewBinder::bind);
                 }
@@ -124,7 +125,10 @@ public class ArchivedTabsMessageService extends MessageService
                 }
             };
 
-    private final @NonNull Context mContext;
+    private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver =
+            this::maybeResizeCard;
+
+    private final @NonNull Activity mActivity;
     private final @NonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final @NonNull TabContentManager mTabContentManager;
@@ -136,7 +140,8 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull Tracker mTracker;
     private final @NonNull Runnable mAppendMessageRunnable;
-    private final @NonNull Supplier<TabListCoordinator> mTabListCoordinatorSupplier;
+    private final @NonNull ObservableSupplier<TabListCoordinator> mTabListCoordinatorSupplier;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
@@ -146,10 +151,10 @@ public class ArchivedTabsMessageService extends MessageService
     private PropertyModel mCustomCardModel;
     private boolean mMessageSentToQueue;
     private OnTabSelectingListener mOnTabSelectingListener;
-    private boolean mShowTwoStepIPH;
+    private boolean mShowTwoStepIph;
 
     ArchivedTabsMessageService(
-            @NonNull Context context,
+            @NonNull Activity activity,
             @NonNull ArchivedTabModelOrchestrator archivedTabModelOrchestrator,
             @NonNull BrowserControlsStateProvider browserControlStateProvider,
             @NonNull TabContentManager tabContentManager,
@@ -161,9 +166,10 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Tracker tracker,
             @NonNull Runnable appendMessageRunnable,
-            @NonNull Supplier<TabListCoordinator> tabListCoordinatorSupplier) {
+            @NonNull ObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
-        mContext = context;
+        mActivity = activity;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mBrowserControlsStateProvider = browserControlStateProvider;
         mTabContentManager = tabContentManager;
@@ -176,11 +182,24 @@ public class ArchivedTabsMessageService extends MessageService
         mTracker = tracker;
         mAppendMessageRunnable = appendMessageRunnable;
         mTabListCoordinatorSupplier = tabListCoordinatorSupplier;
+        mDesktopWindowStateManager = desktopWindowStateManager;
+        mTabListCoordinatorSupplier.addObserver(
+                (tabListCoordinator) -> {
+                    if (tabListCoordinator == null) return;
+                    tabListCoordinator.addTabListItemSizeChangedObserver(
+                            mTabListItemSizeChangedObserver);
+                });
+        mCustomCardModel =
+                new PropertyModel.Builder(ArchivedTabsCardViewProperties.ALL_KEYS)
+                        .with(
+                                CLICK_HANDLER,
+                                ArchivedTabsMessageService.this::openArchivedTabsDialog)
+                        .build();
         // Capture this value immediately before it expires when the IPH is dismissed, which will
         // happen regardless of user behavior. The TabArchiveSettings tracks whether the main IPH
         // was followed. When that's true, the archived tabs message should be highlighted as part
         // of the 2-step IPH.
-        mShowTwoStepIPH = TabArchiveSettings.getIphShownThisSession();
+        mShowTwoStepIph = TabArchiveSettings.getIphShownThisSession();
 
         if (mArchivedTabModelOrchestrator.isTabModelInitialized()) {
             mArchivedTabModelOrchestratorObserver.onTabModelCreated(
@@ -200,13 +219,23 @@ public class ArchivedTabsMessageService extends MessageService
         if (mArchivedTabsDialogCoordinator != null) {
             mArchivedTabsDialogCoordinator.destroy();
         }
+
+        if (mTabListCoordinatorSupplier.hasValue()) {
+            mTabListCoordinatorSupplier
+                    .get()
+                    .removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
+        }
+
+        if (mArchivedTabModel != null) {
+            mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
+        }
     }
 
     // CustomMessageCardViewProvider implementation.
 
     @Override
     public int getMessageType() {
-        return MessageService.MessageType.ARCHIVED_TABS_MESSAGE;
+        return MessageType.ARCHIVED_TABS_MESSAGE;
     }
 
     @Override
@@ -234,8 +263,8 @@ public class ArchivedTabsMessageService extends MessageService
     @Override
     public void onAppendedMessage() {
         // When the two-step IPH is active, highlight the end icon.
-        if (mShowTwoStepIPH) {
-            mShowTwoStepIPH = false;
+        if (mShowTwoStepIph) {
+            mShowTwoStepIph = false;
             // Reset this manually, in case the IPH wasn't dismissed for some reason.
             TabArchiveSettings.setIphShownThisSession(false);
             // Scrolling the recycler view only works when posted.
@@ -296,7 +325,7 @@ public class ArchivedTabsMessageService extends MessageService
     private void createArchivedTabsDialogCoordinator() {
         mArchivedTabsDialogCoordinator =
                 new ArchivedTabsDialogCoordinator(
-                        mContext,
+                        mActivity,
                         mArchivedTabModelOrchestrator,
                         mBrowserControlsStateProvider,
                         mTabContentManager,
@@ -307,13 +336,18 @@ public class ArchivedTabsMessageService extends MessageService
                         mRegularTabCreator,
                         mBackPressManager,
                         mTabArchiveSettings,
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        mDesktopWindowStateManager);
     }
 
     private void updateModelProperties() {
         mCustomCardModel.set(NUMBER_OF_ARCHIVED_TABS, mArchivedTabModel.getCount());
         mCustomCardModel.set(
                 ARCHIVE_TIME_DELTA_DAYS, mTabArchiveSettings.getArchiveTimeDeltaDays());
+    }
+
+    private void maybeResizeCard(int spanCount, Size cardSize) {
+        mCustomCardModel.set(WIDTH, spanCount == 4 ? cardSize.getWidth() * 2 : MATCH_PARENT);
     }
 
     // Testing methods.

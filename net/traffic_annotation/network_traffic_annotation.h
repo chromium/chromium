@@ -58,10 +58,7 @@ struct NetworkTrafficAnnotationTag {
     return unique_id_hash_code == other.unique_id_hash_code;
   }
 
-  static NetworkTrafficAnnotationTag NotReached() {
-    NOTREACHED_IN_MIGRATION();
-    return net::NetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_UNINITIALIZED);
-  }
+  static NetworkTrafficAnnotationTag NotReached() { NOTREACHED(); }
 
   // These functions are wrappers around the (private) constructor, so we can
   // easily find the constructor's call-sites with a script.

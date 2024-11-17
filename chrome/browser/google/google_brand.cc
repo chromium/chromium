@@ -147,7 +147,9 @@ bool IsEnterprise(const std::string& brand) {
   }
   const char* const kEnterpriseBrands[] = {
       "GCE", "GCF", "GCG", "GCH",  // CBE brands codes.
-      "GCC", "GCK", "GCL", "GCM"   // CBE+CBCM brand codes.
+      "GCO", "GCP", "GCQ", "GCS",
+      "GCC", "GCK", "GCL", "GCM",  // CBE+CBCM brand codes.
+      "GCT", "GCU", "GCV", "GCW",
   };
   return brand == "GGRV" ||
          base::ranges::any_of(kEnterpriseBrands, [&brand](const char* br) {

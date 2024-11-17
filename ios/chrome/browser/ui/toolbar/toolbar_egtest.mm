@@ -45,7 +45,8 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 
   GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
                      base::test::ios::kWaitForUIElementTimeout, condition),
-                 @"Suggestion not found.");
+                 @"Suggestion <%@> not found at %d-%d.", suggestion, section,
+                 row);
 }
 
 // Wait for an empty omnibox.
@@ -362,7 +363,9 @@ void WaitForEmpyOmnibox() {
 }
 
 // Tests typing in the omnibox.
-- (void)testToolbarOmniboxTyping {
+// TODO(crbug.com/365987488): Re-enable when the flakiness is understood and
+// addressed.
+- (void)FLAKY_testToolbarOmniboxTyping {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
 

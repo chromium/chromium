@@ -142,10 +142,7 @@ DiceSignedInProfileCreator::~DiceSignedInProfileCreator() = default;
 
 void DiceSignedInProfileCreator::OnNewProfileInitialized(Profile* new_profile) {
   if (!new_profile) {
-    NOTREACHED_IN_MIGRATION() << "Error creating new profile";
-    if (callback_)
-      std::move(callback_).Run(nullptr);
-    return;
+    NOTREACHED() << "Error creating new profile";
   }
 
   cookies_mover_ = std::make_unique<signin_util::CookiesMover>(

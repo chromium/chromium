@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "chrome/updater/util/win_util.h"
+#include "base/win/win_util.h"
 
 #include <windows.h>
 
@@ -28,9 +23,9 @@
 #include <vector>
 
 #include "base/base_paths_win.h"
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/alias.h"
@@ -66,16 +61,18 @@
 #include "base/win/scoped_process_information.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/startup_information.h"
-#include "base/win/win_util.h"
+#include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/windows_services/service_program/scoped_client_impersonation.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace updater {
@@ -225,6 +222,20 @@ std::optional<int> DaynumFromDWORD(DWORD value) {
   return daynum == -1 || (daynum >= 3000 && daynum <= 50000)
              ? std::make_optional(daynum)
              : std::nullopt;
+}
+
+std::optional<std::vector<std::wstring>> CommandLineToArgv(
+    const std::wstring& command_line) {
+  int num_args = 0;
+  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+      ::CommandLineToArgvW(&command_line[0], &num_args));
+  if (!argv || num_args < 1) {
+    LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
+    return std::nullopt;
+  }
+  // SAFETY: `num_args` describes the valid portion of `argv`.
+  return UNSAFE_BUFFERS(
+      std::vector<std::wstring>(argv.get(), argv.get() + num_args));
 }
 
 }  // namespace
@@ -428,19 +439,17 @@ HResultOr<bool> IsUserNonElevatedAdmin() {
 }
 
 HResultOr<bool> IsCOMCallerAdmin() {
-  HRESULT hr = ::CoImpersonateClient();
-  if (hr == RPC_E_CALL_COMPLETE) {
+  ScopedClientImpersonation impersonate_client;
+  if (!impersonate_client.is_valid()) {
     // RPC_E_CALL_COMPLETE indicates that the caller is in-proc.
+    if (impersonate_client.result() != RPC_E_CALL_COMPLETE) {
+      return base::unexpected(impersonate_client.result());
+    }
     return base::ok(::IsUserAnAdmin());
-  }
-
-  if (FAILED(hr)) {
-    return base::unexpected(hr);
   }
 
   HResultOr<ScopedKernelHANDLE> token = []() -> decltype(token) {
     ScopedKernelHANDLE token;
-    absl::Cleanup co_revert_to_self = [] { ::CoRevertToSelf(); };
     if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
                            ScopedKernelHANDLE::Receiver(token).get())) {
       HRESULT hr = HRESULTFromLastError();
@@ -581,27 +590,23 @@ HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
   // `base::CommandLine::FromString` because this `cmd_line` string can have a
   // parameter format that is different from what is expected of
   // `base::CommandLine` parameters.
-  std::wstring command_format = cmd_line;
-  int num_args = 0;
-  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-      ::CommandLineToArgvW(&command_format[0], &num_args));
-  if (!argv || num_args < 1) {
-    LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
+  std::optional<std::vector<std::wstring>> argv = CommandLineToArgv(cmd_line);
+  if (!argv) {
     return E_INVALIDARG;
   }
 
   return base::win::RunDeElevatedNoWait(
-      argv.get()[0],
+      argv->at(0),
       base::JoinString(
           [&]() -> std::vector<std::wstring> {
-            if (num_args <= 1) {
+            if (argv->size() <= 1) {
               return {};
             }
 
             std::vector<std::wstring> parameters;
             base::ranges::for_each(
-                argv.get() + 1, argv.get() + num_args,
-                [&](const auto& parameter) {
+                argv->begin() + 1, argv->end(),
+                [&](const std::wstring& parameter) {
                   parameters.push_back(
                       base::CommandLine::QuoteForCommandLineToArgvW(parameter));
                 });
@@ -638,7 +643,7 @@ HRESULT DisableCOMExceptionHandling() {
 
 std::wstring BuildMsiCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& msi_installer) {
   if (!msi_installer.MatchesExtension(L".msi")) {
     return std::wstring();
@@ -663,7 +668,7 @@ std::wstring BuildMsiCommandLine(
 
 std::wstring BuildExeCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& exe_installer) {
   if (!exe_installer.MatchesExtension(L".exe")) {
     return std::wstring();
@@ -752,21 +757,13 @@ bool CompareOSVersions(const OSVERSIONINFOEX& os_version, BYTE oper) {
 }
 
 bool EnableSecureDllLoading() {
-  static const auto set_default_dll_directories =
-      reinterpret_cast<decltype(&::SetDefaultDllDirectories)>(::GetProcAddress(
-          ::GetModuleHandle(L"kernel32.dll"), "SetDefaultDllDirectories"));
-
-  if (!set_default_dll_directories) {
-    return true;
-  }
-
 #if defined(COMPONENT_BUILD)
   const DWORD directory_flags = LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
 #else
   const DWORD directory_flags = LOAD_LIBRARY_SEARCH_SYSTEM32;
 #endif
 
-  return set_default_dll_directories(directory_flags);
+  return ::SetDefaultDllDirectories(directory_flags);
 }
 
 bool EnableProcessHeapMetadataProtection() {
@@ -832,7 +829,7 @@ bool IsShutdownEventSignaled(UpdaterScope scope) {
 }
 
 void StopProcessesUnderPath(const base::FilePath& path,
-                            const base::TimeDelta& wait_period) {
+                            base::TimeDelta wait_period) {
   // Filters processes running under `path_prefix`.
   class PathPrefixProcessFilter : public base::ProcessFilter {
    public:
@@ -879,9 +876,7 @@ void StopProcessesUnderPath(const base::FilePath& path,
 
 std::optional<base::CommandLine> CommandLineForLegacyFormat(
     const std::wstring& cmd_string) {
-  int num_args = 0;
-  base::win::ScopedLocalAllocTyped<wchar_t*> args(
-      ::CommandLineToArgvW(cmd_string.c_str(), &num_args));
+  std::optional<std::vector<std::wstring>> args = CommandLineToArgv(cmd_string);
   if (!args) {
     return std::nullopt;
   }
@@ -893,23 +888,24 @@ std::optional<base::CommandLine> CommandLineForLegacyFormat(
   };
 
   // First argument is the program.
-  base::CommandLine command_line(base::FilePath{args.get()[0]});
+  base::CommandLine command_line(base::FilePath{args->front()});
 
-  for (int i = 1; i < num_args; ++i) {
-    const std::wstring next_arg = i < num_args - 1 ? args.get()[i + 1] : L"";
+  for (size_t i = 1; i < args->size(); ++i) {
+    const std::wstring next_arg = i < args->size() - 1 ? args->at(i + 1) : L"";
 
-    if (is_switch(args.get()[i]) || is_switch(next_arg)) {
+    if (is_switch(args->at(i)) || is_switch(next_arg)) {
       // Won't parse Chromium-style command line.
       return std::nullopt;
     }
 
-    if (!is_legacy_switch(args.get()[i])) {
+    if (!is_legacy_switch(args->at(i))) {
       // This is a bare argument.
-      command_line.AppendArg(base::WideToASCII(args.get()[i]));
+      command_line.AppendArg(base::WideToASCII(args->at(i)));
       continue;
     }
 
-    const std::string switch_name = base::WideToASCII(&args.get()[i][1]);
+    std::string switch_name = base::WideToASCII(
+        std::wstring(args->at(i).begin() + 1, args->at(i).end()));
     if (switch_name.empty()) {
       VLOG(1) << "Empty switch in command line: [" << cmd_string << "]";
       return std::nullopt;
@@ -935,8 +931,9 @@ std::optional<base::CommandLine> CommandLineForLegacyFormat(
 
 std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
   base::FilePath app_data_dir;
-  if (!base::PathService::Get(IsSystemInstall(scope) ? base::DIR_PROGRAM_FILES
-                                                     : base::DIR_LOCAL_APP_DATA,
+  if (!base::PathService::Get(IsSystemInstall(scope)
+                                  ? base::DIR_PROGRAM_FILESX86
+                                  : base::DIR_LOCAL_APP_DATA,
                               &app_data_dir)) {
     LOG(ERROR) << "Can't retrieve app data directory.";
     return std::nullopt;
@@ -1092,19 +1089,6 @@ void LogClsidEntries(REFCLSID clsid) {
   }
 }
 
-std::optional<base::FilePath> GetInstallDirectoryX86(UpdaterScope scope) {
-  if (!IsSystemInstall(scope)) {
-    return GetInstallDirectory(scope);
-  }
-  base::FilePath install_dir;
-  if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86, &install_dir)) {
-    LOG(ERROR) << "Can't retrieve directory for DIR_PROGRAM_FILESX86.";
-    return std::nullopt;
-  }
-  return install_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
-}
-
 std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key) {
   base::FilePath system_path;
   if (!base::PathService::Get(base::DIR_SYSTEM, &system_path)) {
@@ -1155,91 +1139,95 @@ bool MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
-  for (base::win::RegistryKeyIterator it(root, CLIENTS_KEY, KEY_WOW64_32KEY);
-       it.Valid(); ++it) {
-    const std::wstring app_id = it.Name();
+  for (const auto& access_mask : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+    for (base::win::RegistryKeyIterator it(root, CLIENTS_KEY, access_mask);
+         it.Valid(); ++it) {
+      const std::wstring app_id = it.Name();
 
-    // Skip importing legacy updater.
-    if (base::EqualsCaseInsensitiveASCII(app_id, kLegacyGoogleUpdateAppID)) {
-      continue;
-    }
-
-    base::win::RegKey key;
-    if (key.Open(root, GetAppClientsKey(app_id).c_str(), Wow6432(KEY_READ)) !=
-        ERROR_SUCCESS) {
-      continue;
-    }
-
-    RegistrationRequest registration;
-    registration.app_id = base::SysWideToUTF8(app_id);
-    std::wstring pv;
-    if (key.ReadValue(kRegValuePV, &pv) != ERROR_SUCCESS) {
-      continue;
-    }
-
-    registration.version = base::Version(base::SysWideToUTF8(pv));
-    if (!registration.version.IsValid()) {
-      continue;
-    }
-
-    base::win::RegKey client_state_key;
-    if (client_state_key.Open(root, GetAppClientStateKey(app_id).c_str(),
-                              Wow6432(KEY_READ)) == ERROR_SUCCESS) {
-      std::wstring brand_code;
-      if (client_state_key.ReadValue(kRegValueBrandCode, &brand_code) ==
-          ERROR_SUCCESS) {
-        registration.brand_code = base::SysWideToUTF8(brand_code);
+      // Skip importing legacy updater.
+      if (base::EqualsCaseInsensitiveASCII(app_id, kLegacyGoogleUpdateAppID)) {
+        continue;
       }
 
-      std::wstring ap;
-      if (client_state_key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS) {
-        registration.ap = base::SysWideToUTF8(ap);
+      base::win::RegKey key;
+      if (key.Open(root, GetAppClientsKey(app_id).c_str(),
+                   KEY_READ | access_mask) != ERROR_SUCCESS) {
+        continue;
       }
 
-      DWORD date_last_activity = 0;
-      if (client_state_key.ReadValueDW(kRegValueDateOfLastActivity,
-                                       &date_last_activity) == ERROR_SUCCESS) {
-        registration.dla = DaynumFromDWORD(date_last_activity);
+      RegistrationRequest registration;
+      registration.app_id = base::SysWideToUTF8(app_id);
+      std::wstring pv;
+      if (key.ReadValue(kRegValuePV, &pv) != ERROR_SUCCESS) {
+        continue;
       }
 
-      DWORD date_last_rollcall = 0;
-      if (client_state_key.ReadValueDW(kRegValueDateOfLastRollcall,
-                                       &date_last_rollcall) == ERROR_SUCCESS) {
-        registration.dlrc = DaynumFromDWORD(date_last_rollcall);
+      registration.version = base::Version(base::SysWideToUTF8(pv));
+      if (!registration.version.IsValid()) {
+        continue;
       }
 
-      DWORD install_date = 0;
-      if (client_state_key.ReadValueDW(kRegValueDayOfInstall, &install_date) ==
-          ERROR_SUCCESS) {
-        registration.install_date = DaynumFromDWORD(install_date);
-      }
+      base::win::RegKey client_state_key;
+      if (client_state_key.Open(root, GetAppClientStateKey(app_id).c_str(),
+                                KEY_READ | access_mask) == ERROR_SUCCESS) {
+        std::wstring brand_code;
+        if (client_state_key.ReadValue(kRegValueBrandCode, &brand_code) ==
+            ERROR_SUCCESS) {
+          registration.brand_code = base::SysWideToUTF8(brand_code);
+        }
 
-      base::win::RegKey cohort_key;
-      if (cohort_key.Open(root, GetAppCohortKey(app_id).c_str(),
-                          Wow6432(KEY_READ)) == ERROR_SUCCESS) {
-        std::wstring cohort;
-        if (cohort_key.ReadValue(nullptr, &cohort) == ERROR_SUCCESS) {
-          registration.cohort = base::SysWideToUTF8(cohort);
+        std::wstring ap;
+        if (client_state_key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS) {
+          registration.ap = base::SysWideToUTF8(ap);
+        }
 
-          std::wstring cohort_name;
-          if (cohort_key.ReadValue(kRegValueCohortName, &cohort_name) ==
-              ERROR_SUCCESS) {
-            registration.cohort_name = base::SysWideToUTF8(cohort_name);
+        DWORD date_last_activity = 0;
+        if (client_state_key.ReadValueDW(kRegValueDateOfLastActivity,
+                                         &date_last_activity) ==
+            ERROR_SUCCESS) {
+          registration.dla = DaynumFromDWORD(date_last_activity);
+        }
+
+        DWORD date_last_rollcall = 0;
+        if (client_state_key.ReadValueDW(kRegValueDateOfLastRollcall,
+                                         &date_last_rollcall) ==
+            ERROR_SUCCESS) {
+          registration.dlrc = DaynumFromDWORD(date_last_rollcall);
+        }
+
+        DWORD install_date = 0;
+        if (client_state_key.ReadValueDW(kRegValueDayOfInstall,
+                                         &install_date) == ERROR_SUCCESS) {
+          registration.install_date = DaynumFromDWORD(install_date);
+        }
+
+        base::win::RegKey cohort_key;
+        if (cohort_key.Open(root, GetAppCohortKey(app_id).c_str(),
+                            Wow6432(KEY_READ)) == ERROR_SUCCESS) {
+          std::wstring cohort;
+          if (cohort_key.ReadValue(nullptr, &cohort) == ERROR_SUCCESS) {
+            registration.cohort = base::SysWideToUTF8(cohort);
+
+            std::wstring cohort_name;
+            if (cohort_key.ReadValue(kRegValueCohortName, &cohort_name) ==
+                ERROR_SUCCESS) {
+              registration.cohort_name = base::SysWideToUTF8(cohort_name);
+            }
+
+            std::wstring cohort_hint;
+            if (cohort_key.ReadValue(kRegValueCohortHint, &cohort_hint) ==
+                ERROR_SUCCESS) {
+              registration.cohort_hint = base::SysWideToUTF8(cohort_hint);
+            }
+            VLOG(2) << "Cohort values: " << registration.cohort << ", "
+                    << registration.cohort_name << ", "
+                    << registration.cohort_hint;
           }
-
-          std::wstring cohort_hint;
-          if (cohort_key.ReadValue(kRegValueCohortHint, &cohort_hint) ==
-              ERROR_SUCCESS) {
-            registration.cohort_hint = base::SysWideToUTF8(cohort_hint);
-          }
-          VLOG(2) << "Cohort values: " << registration.cohort << ", "
-                  << registration.cohort_name << ", "
-                  << registration.cohort_hint;
         }
       }
-    }
 
-    register_callback.Run(registration);
+      register_callback.Run(registration);
+    }
   }
 
   return true;
@@ -1303,8 +1291,10 @@ std::optional<DWORD> GetActiveSessionId() {
                              ScopedWtsSessionInfo::Receiver(session_info).get(),
                              &num_sessions)) {
     for (size_t i = 0; i < num_sessions; ++i) {
-      if (session_info.get()[i].State == WTSActive) {
-        return session_info.get()[i].SessionId;
+      // SAFETY: `num_sessions` describes the valid portion of `session_info`.
+      const WTS_SESSION_INFO& session = UNSAFE_BUFFERS(session_info.get()[i]);
+      if (session.State == WTSActive) {
+        return session.SessionId;
       }
     }
   }
@@ -1468,6 +1458,21 @@ std::optional<base::FilePath> GetUniqueTempFilePath(base::FilePath file) {
       {file.RemoveExtension().BaseName().value(),
        base::UTF8ToWide(base::Uuid::GenerateRandomV4().AsLowercaseString()),
        file.Extension()}));
+}
+
+std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
+    UpdaterScope scope) {
+  std::optional<base::FilePath> install_dir =
+      GetVersionedInstallDirectory(scope);
+  if (!install_dir) {
+    return std::nullopt;
+  }
+
+  return install_dir->AppendASCII(base::StrCat(
+      {base::FilePath::FromASCII(enterprise_companion::kExecutableName)
+           .RemoveExtension()
+           .MaybeAsASCII(),
+       kExecutableSuffix, ".exe"}));
 }
 
 }  // namespace updater

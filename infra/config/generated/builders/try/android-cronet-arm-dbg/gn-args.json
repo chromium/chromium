@@ -8,7 +8,6 @@
     "enable_base_tracing": false,
     "enable_reporting": true,
     "enable_resource_allowlist_generation": false,
-    "enable_rust": false,
     "enable_websockets": false,
     "include_transport_security_state_preload_list": false,
     "is_component_build": false,
@@ -22,6 +21,7 @@
     "use_hashed_jni_names": true,
     "use_partition_alloc": false,
     "use_platform_icu_alternatives": true,
+    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true,
     "use_thin_lto": false

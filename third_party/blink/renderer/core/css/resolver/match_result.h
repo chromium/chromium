@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -68,9 +69,16 @@ struct CORE_EXPORT MatchedProperties {
     // Try-tactics style come from <try-tactic>.
     // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
     bool is_try_tactics_style = false;
-    // 15 free bits after this, but since the MPC hashes this as raw bytes,
-    // we cannot have undefined padding.
+    // 15 free bits after this, but since the MPC hashes and compares
+    // this as raw bytes, we cannot have undefined padding.
     uint8_t padding = 0;
+
+    bool operator==(const Data& other) const {
+      return memcmp(this, &other, sizeof(*this)) == 0;
+    }
+    bool operator!=(const Data& other) const {
+      return memcmp(this, &other, sizeof(*this)) != 0;
+    }
   };
 
   MatchedProperties(CSSPropertyValueSet* properties_arg, const Data& data_arg)
@@ -81,8 +89,24 @@ struct CORE_EXPORT MatchedProperties {
   Member<CSSPropertyValueSet> properties;
   Data data_;
 };
-static_assert(sizeof(MatchedProperties) <= 12,
-              "MatchedProperties should not grow without thinking");
+
+struct SameSizeAsMatchedProperties {
+  Member<void*> properties;
+  uint8_t data_[8];
+};
+
+ASSERT_SIZE(MatchedProperties, SameSizeAsMatchedProperties);
+
+struct CORE_EXPORT MatchedPropertiesHash {
+  // The value of ComputeHash() of the corresponding CSSPropertyValueSet.
+  unsigned hash;
+
+  // It's unfortunate that we need to duplicate Data here just to have it be
+  // part of the hash, but we cannot easily move it out of MatchedProperties,
+  // since CachedMatchedProperties::CorrespondsTo() needs it (and the hashes
+  // are not stored in CachedMatchedProperties).
+  MatchedProperties::Data data;
+};
 
 }  // namespace blink
 
@@ -91,6 +115,7 @@ WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedProperties)
 namespace blink {
 
 using MatchedPropertiesVector = HeapVector<MatchedProperties, 64>;
+using MatchedPropertiesHashVector = HeapVector<MatchedPropertiesHash, 64>;
 
 class CORE_EXPORT MatchResult {
   STACK_ALLOCATED();
@@ -127,11 +152,11 @@ class CORE_EXPORT MatchResult {
   bool DependsOnStyleContainerQueries() const {
     return depends_on_style_container_queries_;
   }
-  void SetDependsOnStateContainerQueries() {
-    depends_on_state_container_queries_ = true;
+  void SetDependsOnScrollStateContainerQueries() {
+    depends_on_scroll_state_container_queries_ = true;
   }
-  bool DependsOnStateContainerQueries() const {
-    return depends_on_state_container_queries_;
+  bool DependsOnScrollStateContainerQueries() const {
+    return depends_on_scroll_state_container_queries_;
   }
   void SetFirstLineDependsOnSizeContainerQueries() {
     first_line_depends_on_size_container_queries_ = true;
@@ -197,6 +222,9 @@ class CORE_EXPORT MatchResult {
   const MatchedPropertiesVector& GetMatchedProperties() const {
     return matched_properties_;
   }
+  const MatchedPropertiesHashVector& GetMatchedPropertiesHash() const {
+    return matched_properties_hashes_;
+  }
 
   // Reset the MatchResult to its initial state, as if no MatchedProperties
   // objects were added.
@@ -216,12 +244,15 @@ class CORE_EXPORT MatchResult {
 
  private:
   MatchedPropertiesVector matched_properties_;
+  // Same size as matched_properties_; kept separate so that it is
+  // contiguous (so that we hash the hashes more easily).
+  MatchedPropertiesHashVector matched_properties_hashes_;
   HeapVector<Member<const TreeScope>, 4> tree_scopes_;
   HashSet<AtomicString> custom_highlight_names_;
   bool is_cacheable_{true};
   bool depends_on_size_container_queries_{false};
   bool depends_on_style_container_queries_{false};
-  bool depends_on_state_container_queries_{false};
+  bool depends_on_scroll_state_container_queries_{false};
   bool first_line_depends_on_size_container_queries_{false};
   bool depends_on_static_viewport_units_{false};
   bool depends_on_dynamic_viewport_units_{false};

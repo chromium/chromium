@@ -428,6 +428,41 @@ TEST_F(TabStripPageHandlerTest, MoveGroupAcrossWindows) {
   ASSERT_EQ(visual_data.color(), new_visual_data->color());
 }
 
+TEST_F(TabStripPageHandlerTest, NoopMoveGroupAcrossWindowsBreaksContiguity) {
+  AddTab(browser(), GURL("http://foo"));
+  AddTab(browser(), GURL("http://foo"));
+  browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  // Create a new window with the same profile, and add a group to it.
+  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
+  std::unique_ptr<Browser> new_browser =
+      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+  AddTab(new_browser.get(), GURL("http://foo"));
+  AddTab(new_browser.get(), GURL("http://foo"));
+  tab_groups::TabGroupId group_id =
+      new_browser.get()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  // Create some visual data to make sure it gets transferred.
+  const tab_groups::TabGroupVisualData visual_data(
+      u"My group", tab_groups::TabGroupColorId::kGreen);
+  new_browser.get()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group_id)
+      ->SetVisualData(visual_data);
+
+  web_ui()->ClearTrackedCalls();
+
+  int new_index = 1;
+  handler()->MoveGroup(group_id.ToString(), new_index);
+
+  ASSERT_EQ(2, new_browser.get()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+
+  // Close all tabs before destructing.
+  new_browser.get()->tab_strip_model()->CloseAllTabs();
+}
+
 TEST_F(TabStripPageHandlerTest, MoveGroupAcrossProfiles) {
   AddTab(browser(), GURL("http://foo"));
 
@@ -505,6 +540,30 @@ TEST_F(TabStripPageHandlerTest, MoveTabAcrossWindows) {
                      1);
 
   ASSERT_EQ(moved_contents, browser()->tab_strip_model()->GetWebContentsAt(1));
+
+  // Close all tabs before destructing.
+  new_browser.get()->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(TabStripPageHandlerTest, MoveTabAcrossWindowsInBetweenGroup) {
+  AddTab(browser(), GURL("http://foo"));
+  AddTab(browser(), GURL("http://foo"));
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
+  std::unique_ptr<Browser> new_browser =
+      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+  AddTab(new_browser.get(), GURL("http://foo"));
+  content::WebContents* moved_contents =
+      new_browser.get()->tab_strip_model()->GetWebContentsAt(0);
+
+  handler()->MoveTab(extensions::ExtensionTabUtil::GetTabId(
+                         new_browser->tab_strip_model()->GetWebContentsAt(0)),
+                     1);
+
+  ASSERT_EQ(moved_contents, browser()->tab_strip_model()->GetWebContentsAt(1));
+  ASSERT_EQ(group_id, browser()->tab_strip_model()->GetTabAtIndex(1)->group());
 
   // Close all tabs before destructing.
   new_browser.get()->tab_strip_model()->CloseAllTabs();

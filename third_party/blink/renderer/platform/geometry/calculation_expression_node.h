@@ -18,6 +18,7 @@ enum class CalculationOperator {
   kAdd,
   kSubtract,
   kMultiply,  // Division is converted to multiplication and use this value too.
+  kInvert,
   kMin,
   kMax,
   kClamp,
@@ -191,6 +192,7 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
     kWebkitMaxContent,
     kFitContent,
     kWebkitFitContent,
+    kStretch,
     kWebkitFillAvailable,
   };
 

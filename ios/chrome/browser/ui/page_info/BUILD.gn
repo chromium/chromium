@@ -8,6 +8,7 @@ source_set("page_info") {
     "page_info_about_this_site_info.h",
     "page_info_about_this_site_info.mm",
     "page_info_history_consumer.h",
+    "page_info_history_mutator.h",
     "page_info_presentation_commands.h",
     "page_info_security_view_controller.h",
     "page_info_security_view_controller.mm",
@@ -80,6 +81,7 @@ source_set("coordinator") {
   ]
   deps = [
     ":features",
+    ":last_visited_coordinator",
     ":page_info",
     "//base",
     "//components/content_settings/core/browser",
@@ -95,6 +97,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/history/ui_bundled:coordinator",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/page_info:model",
     "//ios/chrome/browser/permissions/ui_bundled",
@@ -123,6 +126,43 @@ source_set("coordinator") {
     "//ios/web/public/permissions",
     "//ios/web/public/security",
     "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("last_visited") {
+  sources = [
+    "page_info_last_visited_view_controller.h",
+    "page_info_last_visited_view_controller.mm",
+    "page_info_last_visited_view_controller_delegate.h",
+  ]
+  deps = [
+    ":features",
+    "//components/strings",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/history/ui_bundled:constants",
+    "//ios/chrome/browser/history/ui_bundled:ui",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+  public_deps = [ ":constants" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("last_visited_coordinator") {
+  sources = [
+    "page_info_last_visited_coordinator.h",
+    "page_info_last_visited_coordinator.mm",
+  ]
+  deps = [
+    ":features",
+    ":last_visited",
+    ":page_info",
+    "//ios/chrome/browser/history/ui_bundled:coordinator",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -159,12 +199,15 @@ source_set("eg2_tests") {
     "//components/optimization_guide/core:features",
     "//components/page_info/core",
     "//components/strings",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/history/ui_bundled:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
     "//ios/chrome/browser/permissions/ui_bundled:constants",
     "//ios/chrome/browser/permissions/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/ui/menu:menu_action_type",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/permissions",

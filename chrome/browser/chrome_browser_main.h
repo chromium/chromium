@@ -41,10 +41,6 @@ namespace content {
 class SyntheticTrialSyncer;
 }
 
-namespace tracing {
-class TraceEventSystemStatsMonitor;
-}
-
 class ChromeBrowserMainParts : public content::BrowserMainParts {
  public:
   ChromeBrowserMainParts(const ChromeBrowserMainParts&) = delete;
@@ -174,11 +170,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // Vector of additional ChromeBrowserMainExtraParts.
   // Parts are deleted in the inverse order they are added.
   std::vector<std::unique_ptr<ChromeBrowserMainExtraParts>> chrome_extra_parts_;
-
-  // The system stats monitor used by chrome://tracing. This doesn't do anything
-  // until tracing of the |system_stats| category is enabled.
-  std::unique_ptr<tracing::TraceEventSystemStatsMonitor>
-      trace_event_system_stats_monitor_;
 
   std::unique_ptr<content::SyntheticTrialSyncer> synthetic_trial_syncer_;
 

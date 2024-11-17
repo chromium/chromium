@@ -59,8 +59,6 @@ enum UnencodableHandling {
   kNoUnencodables,
 };
 
-typedef char UnencodableReplacementArray[32];
-
 enum class FlushBehavior {
   // More bytes are coming, don't flush the codec.
   kDoNotFlush = 0,
@@ -87,60 +85,32 @@ class WTF_EXPORT TextCodec {
     size_t bytes_written;
   };
 
-  String Decode(base::span<const uint8_t> bytes,
+  String Decode(base::span<const uint8_t> data,
                 FlushBehavior flush = FlushBehavior::kDoNotFlush) {
     bool ignored;
-    return Decode(bytes, flush, false, ignored);
-  }
-  String Decode(base::span<const uint8_t> bytes,
-                FlushBehavior flush_behavior,
-                bool stop_on_error,
-                bool& saw_error) {
-    auto chars = base::as_chars(bytes);
-    return Decode(chars.data(), base::checked_cast<wtf_size_t>(chars.size()),
-                  flush_behavior, stop_on_error, saw_error);
-  }
-  std::string Encode(base::span<const UChar> data,
-                     UnencodableHandling handling) {
-    return Encode(data.data(), base::checked_cast<wtf_size_t>(data.size()),
-                  handling);
-  }
-  std::string Encode(base::span<const LChar> data,
-                     UnencodableHandling handling) {
-    return Encode(data.data(), base::checked_cast<wtf_size_t>(data.size()),
-                  handling);
+    return Decode(data, flush, false, ignored);
   }
 
-  virtual String Decode(const char*,
-                        wtf_size_t length,
+  virtual String Decode(base::span<const uint8_t> data,
                         FlushBehavior,
                         bool stop_on_error,
                         bool& saw_error) = 0;
-  virtual std::string Encode(const UChar*,
-                             wtf_size_t length,
-                             UnencodableHandling) = 0;
-  virtual std::string Encode(const LChar*,
-                             wtf_size_t length,
-                             UnencodableHandling) = 0;
+  virtual std::string Encode(base::span<const UChar>, UnencodableHandling) = 0;
+  virtual std::string Encode(base::span<const LChar>, UnencodableHandling) = 0;
+
   // EncodeInto is meant only to encode UTF8 bytes into an unsigned char*
   // buffer; therefore this method is only usefully overridden by TextCodecUTF8.
   virtual EncodeIntoResult EncodeInto(base::span<const LChar>,
                                       base::span<uint8_t> destination) {
-    NOTREACHED_IN_MIGRATION();
-    return EncodeIntoResult{0, 0};
+    NOTREACHED();
   }
   virtual EncodeIntoResult EncodeInto(base::span<const UChar>,
                                       base::span<uint8_t> destination) {
-    NOTREACHED_IN_MIGRATION();
-    return EncodeIntoResult{0, 0};
+    NOTREACHED();
   }
 
-  // Fills a null-terminated string representation of the given
-  // unencodable character into the given replacement buffer.
-  // The length of the string (not including the null) will be returned.
-  static uint32_t GetUnencodableReplacement(unsigned code_point,
-                                            UnencodableHandling,
-                                            UnencodableReplacementArray);
+  static std::string GetUnencodableReplacement(UChar32 code_point,
+                                               UnencodableHandling);
 };
 
 typedef void (*EncodingNameRegistrar)(const char* alias, const char* name);

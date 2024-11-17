@@ -69,7 +69,7 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
         version_array.emplace_back(kU2fVersion);
         break;
       case ProtocolVersion::kUnknown:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   cbor::Value::MapValue device_info_map;

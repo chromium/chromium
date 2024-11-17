@@ -10,6 +10,8 @@ dictionary VideoFrameInit {
   [EnforceRange] unsigned long long duration;   // microseconds
   AlphaOption alpha = "keep";
   DOMRectInit visibleRect;
+  [RuntimeEnabled=WebCodecsOrientation] double rotation = 0;
+  [RuntimeEnabled=WebCodecsOrientation] boolean flip = false;
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
 };

@@ -26,6 +26,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//components/browser_ui/styles/android:java",
@@ -74,6 +75,7 @@ android_library("unit_device_javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
@@ -91,6 +93,7 @@ android_library("unit_device_javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
   ]
 }
 

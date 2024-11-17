@@ -36,7 +36,9 @@ class CONTENT_EXPORT DigitalIdentityProvider {
     kErrorNoCredential = 2,
     kErrorUserDeclined = 3,
     kErrorAborted = 4,
-    kMaxValue = kErrorAborted,
+    kErrorNoProviders = 5,
+    kErrorNoTransientUserActivation = 6,
+    kMaxValue = kErrorNoTransientUserActivation,
   };
 
   virtual ~DigitalIdentityProvider();

@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/login/ui/lock_screen.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
@@ -29,10 +30,12 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/components/growth/action_performer.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/campaigns_utils.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -60,7 +63,24 @@ Profile* GetProfile() {
 
 bool IsEligible() {
   Profile* profile = GetProfile();
-  CHECK(profile);
+
+  if (!profile) {
+    // Records metrics when profile is nullptr.
+    // TODO: b/367998596 - Change this to CHECK(profile).
+    // In the test ExtensionCrxInstallerTest.KioskOnlyTest, the call sequences
+    // are this:
+    // 1. CampaignsManagerSession::OnSessionStateChanged().
+    // 2. The IsEligible() returns true, the code continues.
+    // 3. Add a callback when the device owner is set: OnOwnershipDetermined().
+    // 4. In OnOwnershipDetermined(), load the campaigns.
+    // 5. When the campaigns are loaded, call MaybeTriggerRuntimeCampaigns().
+    // 6. Which calls IsEligible() again, and hits the CHECK(profile).
+    // The profile becames nullptr during steps 2-6.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNullptrProfile);
+    return false;
+  }
+
   // TODO(b/320789239): Enable for unicorn users.
   if (profile->GetProfilePolicyConnector()->IsManaged()) {
     // Only enabled for consumer session for now.
@@ -329,6 +349,13 @@ CampaignsManagerSession::CampaignsManagerSession() {
     session_manager_observation_.Observe(session_manager);
     OnSessionStateChanged();
   }
+
+  // Shell is not available in unit tests.
+  auto* power_manager_client = chromeos::PowerManagerClient::Get();
+  if (power_manager_client && ash::Shell::HasInstance()) {
+    shell_observer_.Observe(ash::Shell::Get());
+    power_manager_client_observer_.Observe(power_manager_client);
+  }
 }
 
 CampaignsManagerSession::~CampaignsManagerSession() {
@@ -362,6 +389,7 @@ void CampaignsManagerSession::OnSessionStateChanged() {
     return;
   }
 
+  RecordSessionUnlockEvent();
   SetCampaignManagerPrefService(GetProfile());
 
   ash::OwnerSettingsServiceAsh* service =
@@ -376,6 +404,23 @@ void CampaignsManagerSession::OnSessionStateChanged() {
     CAMPAIGNS_LOG(ERROR)
         << "Owner settings service unavailable for the profile.";
   }
+}
+
+void CampaignsManagerSession::OnShellDestroying() {
+  // Observe shell destroying as indicator of power manager destroying event if
+  // this happens before campaign manager session is destructed.
+  power_manager_client_observer_.Reset();
+  shell_observer_.Reset();
+}
+
+void CampaignsManagerSession::SuspendDone(base::TimeDelta sleep_duration) {
+  // Do not record event when the session is not active, such as lock screen.
+  if (session_manager::SessionManager::Get()->session_state() !=
+      session_manager::SessionState::ACTIVE) {
+    return;
+  }
+
+  RecordSessionUnlockEvent();
 }
 
 void CampaignsManagerSession::OnInstanceUpdate(
@@ -642,4 +687,11 @@ void CampaignsManagerSession::MaybeTriggerCampaignsWhenAppOpened() {
   }
 
   MaybeTriggerRuntimeCampaigns(growth::TriggerType::kAppOpened);
+}
+
+void CampaignsManagerSession::RecordSessionUnlockEvent() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  campaigns_manager->RecordEvent(growth::kGrowthCampaignsEventSessionUnlock);
 }

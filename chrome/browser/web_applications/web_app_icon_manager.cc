@@ -112,7 +112,7 @@ struct IconId {
 };
 
 struct IconSrcAndSize {
-  GURL src = GURL();
+  GURL src;
   SquareSizePx size_px = 0;
 };
 
@@ -248,9 +248,8 @@ TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
   }
 
   TypedResult<SkBitmap> result;
-
-  if (!gfx::PNGCodec::Decode(icon_data->data(), icon_data->size(),
-                             &result.value)) {
+  result.value = gfx::PNGCodec::Decode(*icon_data);
+  if (result.value.isNull()) {
     return {.error_log = {CreateError({"Could not decode icon data for file: ",
                                        icon_file.AsUTF8Unsafe()})}};
   }
@@ -299,10 +298,8 @@ TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
   }
 
   TypedResult<SkBitmap> result;
-
-  if (!gfx::PNGCodec::Decode(
-          reinterpret_cast<const unsigned char*>(icon_data.c_str()),
-          icon_data.size(), &result.value)) {
+  result.value = gfx::PNGCodec::Decode(base::as_byte_span(icon_data));
+  if (result.value.isNull()) {
     return {.error_log = {CreateError({"Could not decode icon data for file: ",
                                        icon_file.AsUTF8Unsafe()})}};
   }
@@ -330,9 +327,8 @@ TypedResult<SkBitmap> ReadHomeTabIconFromFileAndResizeBlocking(
   }
 
   TypedResult<SkBitmap> result;
-  if (!gfx::PNGCodec::Decode(
-          reinterpret_cast<const unsigned char*>(icon_data.c_str()),
-          icon_data.size(), &result.value)) {
+  result.value = gfx::PNGCodec::Decode(base::as_byte_span(icon_data));
+  if (result.value.isNull()) {
     return {.error_log = {CreateError({"Could not decode icon data for file: ",
                                        icon_file.AsUTF8Unsafe()})}};
   }
@@ -672,8 +668,8 @@ gfx::ImageSkia ConvertFaviconBitmapsToImageSkia(
       image_skia.AddRepresentation(
           gfx::ImageSkiaRep(bitmap_to_resize, largest_favicon_scale));
     } else {
-      image_skia.AddRepresentation(
-          gfx::ImageSkiaRep(bitmap, (float)size / gfx::kFaviconSize));
+      image_skia.AddRepresentation(gfx::ImageSkiaRep(
+          bitmap, static_cast<float>(size) / gfx::kFaviconSize));
     }
   }
 
@@ -929,15 +925,15 @@ class WriteIconsJob {
     base::FilePath icon_file =
         icons_dir.AppendASCII(base::StringPrintf("%i.png", bitmap.width()));
 
-    std::vector<unsigned char> image_data;
-    const bool discard_transparency = false;
-    if (!gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
-                                           &image_data)) {
+    std::optional<std::vector<uint8_t>> image_data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                          /*discard_transparency=*/false);
+    if (!image_data) {
       return {.error_log = {CreateError({"Could not encode icon data for file ",
                                          icon_file.AsUTF8Unsafe()})}};
     }
 
-    if (!utils_->WriteFile(icon_file, base::as_byte_span(image_data))) {
+    if (!utils_->WriteFile(icon_file, image_data.value())) {
       return {.error_log = {CreateError(
                   {"Could not write icon file: ", icon_file.AsUTF8Unsafe()})}};
     }
@@ -957,10 +953,10 @@ class WriteIconsJob {
 uint64_t AccumulateIconsSizeForApp(std::vector<base::FilePath> icon_paths) {
   uint64_t total_size = 0;
 
-  for (base::FilePath icon_path : icon_paths) {
-    int64_t file_size;
-    if (base::GetFileSize(std::move(icon_path), &file_size)) {
-      total_size += file_size;
+  for (const base::FilePath& icon_path : icon_paths) {
+    std::optional<int64_t> file_size = base::GetFileSize(icon_path);
+    if (file_size.has_value()) {
+      total_size += file_size.value();
     }
   }
   return total_size;

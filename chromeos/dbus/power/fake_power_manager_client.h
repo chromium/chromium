@@ -296,7 +296,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Deletes all timers, if any, associated with |tag|.
   void DeleteArcTimersInternal(const std::string& tag);
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   std::optional<bool> service_availability_ = true;
 

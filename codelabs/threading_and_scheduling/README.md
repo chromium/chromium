@@ -50,7 +50,7 @@ used to post the task — is always FIFO order.
 ## 03-randomized-task-queues
 
 (Requires DCHECKs to be enabled to build. Either set `is_debug = true` or
-`dcheck_always_enabled = true` in your gn args).
+`dcheck_always_on = true` in your gn args).
 
 This example is similar to the previous one, however we schedule two
 identical-priority `TaskQueue`s independently from each other using a

@@ -53,16 +53,16 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -108,7 +108,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 }
             };
 
-    private final Supplier<DesktopWindowStateProvider> mDesktopWindowStateProviderSupplier;
+    private final Supplier<DesktopWindowStateManager> mDesktopWindowStateManagerSupplier;
     private final MultiInstanceStateObserver mOnMultiInstanceStateChanged;
 
     MultiInstanceManagerApi31(
@@ -118,7 +118,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
-            Supplier<DesktopWindowStateProvider> desktopWindowStateProviderSupplier) {
+            Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
         super(
                 activity,
                 tabModelOrchestratorSupplier,
@@ -127,7 +127,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 menuOrKeyboardActionController);
         mMaxInstances = MultiWindowUtils.getMaxInstances();
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mDesktopWindowStateProviderSupplier = desktopWindowStateProviderSupplier;
+        mDesktopWindowStateManagerSupplier = desktopWindowStateManagerSupplier;
         mOnMultiInstanceStateChanged = this::onMultiInstanceStateChanged;
     }
 
@@ -149,14 +149,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                     info.size() < MultiWindowUtils.getMaxInstances(),
                     info);
 
-            if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProviderSupplier.get())) {
+            if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get())) {
                 RecordUserAction.record("MobileMenuWindowManager.InDesktopWindow");
             } else {
                 RecordUserAction.record("MobileMenuWindowManager");
             }
 
             AppHeaderUtils.recordDesktopWindowModeStateEnumHistogram(
-                    mDesktopWindowStateProviderSupplier.get(),
+                    mDesktopWindowStateManagerSupplier.get(),
                     "Android.MultiInstance.WindowManager.DesktopWindowModeState");
 
             Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
@@ -847,11 +847,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             //
             // TODO(crbug.com/40826734): This only works for windows with live activities. It is
             // non-trivial to add recent tab entries without an active {@link Tab} instance.
-            var filterProvider = selector.getTabModelFilterProvider();
             TabClosureParams params =
                     TabClosureParams.closeAllTabs().uponExit(true).hideTabGroups(true).build();
-            ((TabGroupModelFilter) filterProvider.getTabModelFilter(true)).closeTabs(params);
-            ((TabGroupModelFilter) filterProvider.getTabModelFilter(false)).closeTabs(params);
+            selector.getModel(true).getTabRemover().closeTabs(params, /* allowDialog= */ false);
+            selector.getModel(false).getTabRemover().closeTabs(params, /* allowDialog= */ false);
         }
         mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         Activity activity = getActivityById(instanceId);
@@ -1048,7 +1047,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (instanceId == INVALID_INSTANCE_ID) return false;
 
         return TabUiFeatureUtilities.isTabDragAsWindowEnabled()
-                || AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProviderSupplier.get());
+                || AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get());
     }
 
     /**
@@ -1093,7 +1092,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         assert selector != null;
 
         TabGroupModelFilter filter =
-                (TabGroupModelFilter) selector.getTabModelFilterProvider().getTabModelFilter(false);
+                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
 
         Profile profile = filter.getTabModel().getProfile();
         if (!TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;

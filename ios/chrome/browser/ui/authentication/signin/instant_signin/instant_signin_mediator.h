@@ -18,10 +18,6 @@ namespace signin_metrics {
 enum class AccessPoint;
 }  // namespace signin_metrics
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 @protocol InstantSigninMediatorDelegate <NSObject>
 
 // Called when the sign-in is over.
@@ -33,8 +29,7 @@ class SyncService;
 @interface InstantSigninMediator : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
-                        accessPoint:(signin_metrics::AccessPoint)accessPoint
+- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
 @property(nonatomic, weak) id<InstantSigninMediatorDelegate> delegate;

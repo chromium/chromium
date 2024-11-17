@@ -137,11 +137,9 @@ std::string GetClipboardText() {
 }
 
 SkBitmap GetClipboardImage() {
-  SkBitmap bitmap;
   std::vector<uint8_t> png_data =
       ui::clipboard_test_util::ReadPng(ui::Clipboard::GetForCurrentThread());
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
-  return bitmap;
+  return gfx::PNGCodec::Decode(png_data);
 }
 
 SkBitmap CreateTestSkBitmap() {
@@ -236,10 +234,10 @@ class NearbyNotificationManagerTest : public testing::Test {
       base::FilePath file_path = temp_dir_.GetPath().AppendASCII(name);
       SkBitmap image = CreateTestSkBitmap();
 
-      std::vector<unsigned char> png_data;
-      EXPECT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(
-          image, /*discard_transparency=*/true, &png_data));
-      base::WriteFile(file_path, png_data);
+      std::optional<std::vector<uint8_t>> png_data =
+          gfx::PNGCodec::EncodeBGRASkBitmap(image,
+                                            /*discard_transparency=*/true);
+      base::WriteFile(file_path, png_data.value());
 
       FileAttachment attachment(file_path);
       share_target.file_attachments.push_back(std::move(attachment));

@@ -25,10 +25,10 @@ void EnqueueLaunchParamsInWebContents(content::WebContents* web_contents,
   launch_params.app_id = extension.id();
   launch_params.target_url = url;
   launch_params.paths = paths;
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents);
-  web_app::WebAppTabHelper::FromWebContents(web_contents)
-      ->EnsureLaunchQueue()
-      .Enqueue(launch_params);
+  auto* helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
+  if (helper) {
+    helper->EnsureLaunchQueue().Enqueue(launch_params);
+  }
 }
 
 }  // namespace extensions

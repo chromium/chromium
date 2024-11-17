@@ -216,6 +216,14 @@ bool BoundSessionCookieControllerImpl::ShouldPauseThrottlingRequests() const {
          kNumberOfErrorsToIgnoreForBackoff;
 }
 
+bound_session_credentials::RotationDebugInfo
+BoundSessionCookieControllerImpl::TakeDebugInfo() {
+  bound_session_credentials::RotationDebugInfo return_info;
+  // Leave `debug_info_` in a specified empty state.
+  return_info.Swap(&debug_info_);
+  return return_info;
+}
+
 void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
     const std::string& cookie_name,
     base::Time expiration_time) {
@@ -346,7 +354,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
   // Persistent errors result in session termination.
   // Transient errors have no impact on future requests.
   if (BoundSessionRefreshCookieFetcher::IsPersistentError(result)) {
-    delegate_->OnPersistentErrorEncountered(this);
+    delegate_->OnPersistentErrorEncountered(this, result);
     // `this` should be deleted.
   }
 }

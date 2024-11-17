@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -47,7 +48,7 @@ FormSuggestion* SuggestionForSingleUsernameForm() {
               displayDescription:nil
                             icon:nil
                             type:autofill::SuggestionType::kAutocompleteEntry
-               backendIdentifier:nil
+                         payload:autofill::Suggestion::Payload()
                   requiresReauth:NO
       acceptanceA11yAnnouncement:nil
                         metadata:{.is_single_username_form = true}];
@@ -115,13 +116,13 @@ NSString* PrimaryActionLabelForUsernameFill() {
          displayDescription:nil
                        icon:nil
                        type:autofill::SuggestionType::kAutocompleteEntry
-          backendIdentifier:nil
+                    payload:autofill::Suggestion::Payload()
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
                                    type:autofill::SuggestionType::kAddressEntry
-                      backendIdentifier:nil
+                                payload:autofill::Suggestion::Payload()
                          requiresReauth:NO]
   ];
   return [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]
@@ -195,14 +196,14 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
   PasswordSuggestionBottomSheetMediatorTest()
       : test_web_state_(std::make_unique<web::FakeWebState>()),
-        chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {
+        profile_(TestProfileIOS::Builder().Build()) {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
   }
 
   void SetUp() override {
     test_web_state_->SetCurrentURL(URL());
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::FaviconServiceFactory::GetInstance(),
                               ios::FaviconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -218,10 +219,12 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
-    chrome_browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     consumer_ =
         OCMProtocolMock(@protocol(PasswordSuggestionBottomSheetConsumer));
+    presenter_ = OCMStrictProtocolMock(
+        @protocol(PasswordSuggestionBottomSheetPresenter));
 
     params_.form_name = "form";
     params_.field_identifier = "field_id";
@@ -249,14 +252,13 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
     mediator_ = [[PasswordSuggestionBottomSheetMediator alloc]
           initWithWebStateList:web_state_list_.get()
-                 faviconLoader:IOSChromeFaviconLoaderFactory::
-                                   GetForBrowserState(
-                                       chrome_browser_state_.get())
+                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                   profile_.get())
                    prefService:prefs_.get()
                         params:params_
                   reauthModule:nil
@@ -264,7 +266,8 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
           profilePasswordStore:store_
           accountPasswordStore:nullptr
         sharedURLLoaderFactory:nullptr
-             engagementTracker:nil];
+             engagementTracker:nil
+                     presenter:nil];
   }
 
   // Creates the bottom sheet mediator with custom suggestions `providers`.
@@ -287,29 +290,20 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
   std::unique_ptr<web::FakeWebState> test_web_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   scoped_refptr<password_manager::TestPasswordStore> store_;
   id consumer_;
   NSArray<id<FormSuggestionProvider>>* suggestion_providers_;
   autofill::FormActivityParams params_;
   PasswordSuggestionBottomSheetMediator* mediator_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  id presenter_;
 };
 
 // Tests PasswordSuggestionBottomSheetMediator can be initialized.
 TEST_F(PasswordSuggestionBottomSheetMediatorTest, Init) {
   CreateMediator();
   EXPECT_TRUE(mediator_);
-}
-
-// Tests consumer when no suggestion is available.
-TEST_F(PasswordSuggestionBottomSheetMediatorTest, NoSuggestion) {
-  CreateMediator();
-  ASSERT_TRUE(mediator_);
-
-  OCMExpect([consumer_ dismiss]);
-  [mediator_ setConsumer:consumer_];
-  EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 // Tests consumer when suggestions are available.
@@ -352,19 +346,19 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
 
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 0);
-  [mediator_ dismiss];
+  [mediator_ onDismissWithoutAnyPasswordAction];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 1);
-  [mediator_ dismiss];
+  [mediator_ onDismissWithoutAnyPasswordAction];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 2);
-  [mediator_ dismiss];
+  [mediator_ onDismissWithoutAnyPasswordAction];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 3);
 
   // Expect failure after 3 times.
 #if defined(GTEST_HAS_DEATH_TEST)
-  EXPECT_DEATH([mediator_ dismiss],
+  EXPECT_DEATH([mediator_ onDismissWithoutAnyPasswordAction],
                "Failed when dismiss count is incremented higher than the "
                "expected value.");
 #endif  // defined(GTEST_HAS_DEATH_TEST)
@@ -390,7 +384,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+                  payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
   std::optional<password_manager::CredentialUIEntry> credential =
       [mediator_ getCredentialForFormSuggestion:suggestion];
@@ -417,7 +411,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+                  payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
   std::optional<password_manager::CredentialUIEntry> credential =
       [mediator_ getCredentialForFormSuggestion:suggestion];
@@ -434,7 +428,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
   ASSERT_TRUE(mediator_);
   [mediator_ setConsumer:consumer_];
 
-  OCMExpect([consumer_ dismiss]);
+  OCMExpect([presenter_ endPresentation]);
   web_state_list_.reset();
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

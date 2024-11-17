@@ -146,7 +146,10 @@ enum class ExtendedStartCrdSessionResultCode {
   // and the client.
   kFailureNoCommonAuthMethod = 31,
 
-  kMaxValue = kFailureNoCommonAuthMethod
+  // Failure because the session policies have changed.
+  kFailureSessionPoliciesChanged = 32,
+
+  kMaxValue = kFailureSessionPoliciesChanged
 };
 
 // Translates the error code.

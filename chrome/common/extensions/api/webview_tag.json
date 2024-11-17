@@ -6,11 +6,6 @@
   {
     "namespace": "webviewTag",
     "description": "Use the <code>webview</code> tag to actively load live content from the web over the network and embed it in your Chrome App. Your app can control the appearance of the <code>webview</code> and interact with the web content, initiate navigations in an embedded web page, react to error events that happen within it, and more (see <a href=\"#usage\">Usage</a>).",
-    "documentation_options": {
-      "title": "<webview> Tag",
-      "namespace": "<webview>",
-      "documented_in": "tags/webview"
-    },
     "types": [
       {
         "id": "ClearDataOptions",

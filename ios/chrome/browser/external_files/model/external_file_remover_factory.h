@@ -9,18 +9,15 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class ExternalFileRemover;
+class ProfileIOS;
 
 // Singleton that owns all `ExternalFileRemover` and associates them with
 // profiles. Listens for the `ProfileIOS`'s destruction notification and
 // cleans up the associated `ExternalFileRemover`.
 class ExternalFileRemoverFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ExternalFileRemover* GetForBrowserState(ProfileIOS* profile);
-
   static ExternalFileRemover* GetForProfile(ProfileIOS* profile);
   static ExternalFileRemoverFactory* GetInstance();
 

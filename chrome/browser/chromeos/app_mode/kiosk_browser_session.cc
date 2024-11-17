@@ -8,6 +8,7 @@
 #include <signal.h>
 
 #include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -250,6 +251,12 @@ void KioskBrowserSession::InitForWebKiosk(
   metrics_service_->RecordKioskSessionWebStarted();
 }
 
+void KioskBrowserSession::InitForIwaKiosk(
+    const std::optional<std::string>& app_name) {
+  CreateBrowserWindowHandler(app_name);
+  metrics_service_->RecordKioskSessionIwaStarted();
+}
+
 void KioskBrowserSession::SetOnHandleBrowserCallbackForTesting(
     base::RepeatingCallback<void(bool is_closing)> callback) {
   on_handle_browser_callback_ = std::move(callback);
@@ -301,10 +308,13 @@ void KioskBrowserSession::OnAppWindowAdded(AppWindow* app_window) {
 
 void KioskBrowserSession::OnGuestAdded(
     content::WebContents* guest_web_contents) {
-  CHECK(extensions::WebViewGuest::FromWebContents(guest_web_contents));
-
   // Bail if the session is shutting down.
   if (is_shutting_down()) {
+    return;
+  }
+
+  // Bail if the guest is not a WebViewGuest.
+  if (!extensions::WebViewGuest::FromWebContents(guest_web_contents)) {
     return;
   }
 

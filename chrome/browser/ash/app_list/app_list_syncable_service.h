@@ -158,7 +158,8 @@ class AppListSyncableService : public syncer::SyncableService,
   static std::unique_ptr<base::ScopedClosureRunner>
   SetScopedModelUpdaterFactoryForTest(ModelUpdaterFactoryCallback callback);
 
-  using SyncItemMap = std::map<std::string, std::unique_ptr<SyncItem>>;
+  using SyncItemMap =
+      std::map<std::string, std::unique_ptr<SyncItem>, std::less<>>;
 
   // Populates the model when |profile|'s extension system is ready.
   explicit AppListSyncableService(Profile* profile);

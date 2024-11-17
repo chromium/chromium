@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 
 #include "base/values.h"
-#include "chrome/common/accessibility/read_anything.mojom.h"
-#include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/common/read_anything/read_anything.mojom.h"
+#include "chrome/common/read_anything/read_anything_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -70,7 +70,7 @@ void RegisterReadAnythingProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterBooleanPref(
-      prefs::kAccessibilityReadAnythingImagesEnabled, true,
+      prefs::kAccessibilityReadAnythingImagesEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 

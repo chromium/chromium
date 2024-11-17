@@ -111,7 +111,7 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
   raw_ptr<Delegate> delegate_;
 
   // Unowned pointer to the active tool / group.
-  std::map<PaletteGroup, PaletteTool*> active_tools_;
+  std::map<PaletteGroup, raw_ptr<PaletteTool, CtnExperimental>> active_tools_;
 
   // Owned list of all tools.
   std::vector<std::unique_ptr<PaletteTool>> tools_;

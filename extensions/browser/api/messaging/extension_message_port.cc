@@ -714,8 +714,7 @@ bool ExtensionMessagePort::IsServiceWorkerActivity(
       return is_for_onetime_channel() || should_have_strong_keepalive();
     default:
       // Extension message port should not check for other activity types.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

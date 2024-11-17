@@ -30,7 +30,7 @@ std::unique_ptr<Nigori> NigoriFromMojo(
                                    mojo_nigori_key.encryption_key.end());
   const std::string mac_key(mojo_nigori_key.mac_key.begin(),
                             mojo_nigori_key.mac_key.end());
-  // |user_key| is deprecated, it's safe to pass empty string.
+  // `user_key` is deprecated, it's safe to pass empty string.
   return Nigori::CreateByImport(
       /*user_key=*/std::string(), encryption_key, mac_key);
 }

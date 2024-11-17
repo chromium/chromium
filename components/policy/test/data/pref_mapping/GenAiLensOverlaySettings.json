@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GenAiLensOverlaySettings": 0
+        },
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiLensOverlaySettings": 1
+        },
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiLensOverlaySettings": 2
+        },
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

@@ -435,8 +435,9 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
       const LayerTreeViewDelegateChangeTest&) = delete;
 
   void SwapDelegate() {
-    layer_tree_view_.ReattachTo(&new_layer_tree_view_delegate_,
-                                dummy_page_scheduler_->CreateWidgetScheduler());
+    layer_tree_view_.ClearPreviousDelegateAndReattachIfNeeded(
+        &new_layer_tree_view_delegate_,
+        dummy_page_scheduler_->CreateWidgetScheduler());
   }
 
  protected:

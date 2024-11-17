@@ -37,8 +37,7 @@ TEST(Base64Test, Encode) {
     EXPECT_EQ(out_vec, test.expected_out);
 
     String out_str = Base64Encode(in);
-    EXPECT_EQ(out_str,
-              String(test.expected_out.data(), test.expected_out.size()));
+    EXPECT_EQ(out_str, String(test.expected_out));
   }
 }
 

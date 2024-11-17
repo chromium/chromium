@@ -66,17 +66,14 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void SetUp() override {
     identity_ = [FakeSystemIdentity fakeIdentity1];
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(builder).Build();
-    // Set up the test browser and attach the browser agents.
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
   }
 
   void TearDown() override {
@@ -104,10 +101,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         OCMStrictProtocolMock(@protocol(AccountSettingsPresenter));
     mediator_ = [[SigninPromoViewMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                          GetForBrowserState(
-                                              chrome_browser_state_.get())
+                                          GetForProfile(profile_.get())
                           authService:GetAuthenticationService()
-                          prefService:chrome_browser_state_.get()->GetPrefs()
+                          prefService:profile_.get()->GetPrefs()
                           syncService:GetSyncService()
                           accessPoint:access_point
                       signinPresenter:signin_presenter_
@@ -128,17 +124,16 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     scoped_refptr<PrefRegistrySyncable> registry(new PrefRegistrySyncable);
     std::unique_ptr<PrefServiceSyncable> prefs =
         factory.CreateSyncable(registry.get());
-    RegisterBrowserStatePrefs(registry.get());
+    RegisterProfilePrefs(registry.get());
     return prefs;
   }
 
   AuthenticationService* GetAuthenticationService() {
-    return AuthenticationServiceFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   syncer::SyncService* GetSyncService() {
-    return SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get());
+    return SyncServiceFactory::GetForProfile(profile_.get());
   }
 
   // Creates the default identity and adds it into the ChromeIdentityService.
@@ -193,8 +188,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
       case SigninPromoViewStyleStandard:
         title = GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
         break;
-      case SigninPromoViewStyleCompactHorizontal:
-      case SigninPromoViewStyleCompactVertical:
+      case SigninPromoViewStyleCompact:
         title = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
         break;
       case SigninPromoViewStyleOnlyButton:
@@ -213,8 +207,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([close_button_ setHidden:YES]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
-    if (style == SigninPromoViewStyleCompactVertical ||
-        style == SigninPromoViewStyleCompactHorizontal) {
+    if (style == SigninPromoViewStyleCompact) {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
       UIImage* logo = [UIImage imageNamed:kChromeSigninPromoLogoImage];
 #else
@@ -252,8 +245,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
         break;
       }
-      case SigninPromoViewStyleCompactHorizontal:
-      case SigninPromoViewStyleCompactVertical: {
+      case SigninPromoViewStyleCompact: {
         OCMExpect([signin_promo_view_
             configurePrimaryButtonWithTitle:
                 GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)]);
@@ -284,8 +276,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     switch (style) {
       case SigninPromoViewStyleStandard:
-      case SigninPromoViewStyleCompactHorizontal:
-      case SigninPromoViewStyleCompactVertical:
+      case SigninPromoViewStyleCompact:
         EXPECT_NE(nil, image_view_profile_image_);
         break;
       case SigninPromoViewStyleOnlyButton:
@@ -404,7 +395,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Task environment.
   WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
   // Mediator used for the tests.
   SigninPromoViewMediator* mediator_;
@@ -457,15 +448,6 @@ TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithColdAndWarm) {
 }
 
 // Tests the sign-in promo with and without account when the promo style is
-// compact horizontal.
-TEST_F(SigninPromoViewMediatorTest,
-       ConfigureCompactHorizontalSigninPromoViewWithColdAndWarm) {
-  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithNoAccounts(SigninPromoViewStyleCompactHorizontal);
-  TestSigninPromoWithAccount(SigninPromoViewStyleCompactHorizontal);
-}
-
-// Tests the sign-in promo with and without account when the promo style is
 // SigninPromoViewStyleOnlyButton.
 TEST_F(SigninPromoViewMediatorTest,
        ConfigureOnlyButtonSigninPromoViewWithColdAndWarm) {
@@ -477,10 +459,10 @@ TEST_F(SigninPromoViewMediatorTest,
 // Tests the sign-in promo with and without account when the promo style is
 // compact vertical.
 TEST_F(SigninPromoViewMediatorTest,
-       ConfigureCompactVerticalSigninPromoViewWithColdAndWarm) {
+       ConfigureCompactSigninPromoViewWithColdAndWarm) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithNoAccounts(SigninPromoViewStyleCompactVertical);
-  TestSigninPromoWithAccount(SigninPromoViewStyleCompactVertical);
+  TestSigninPromoWithNoAccounts(SigninPromoViewStyleCompact);
+  TestSigninPromoWithAccount(SigninPromoViewStyleCompact);
 }
 
 // Tests the scenario with the sign-in promo with accounts on the device, and
@@ -536,12 +518,12 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   EXPECT_TRUE(mediator_.showSpinner);
   EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
             mediator_.signinPromoViewState);
-  EXPECT_NE(nil, command.callback);
+  EXPECT_NE(nil, command.completion);
   // Stop sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
-  command.callback(SigninCoordinatorResultSuccess, nil);
+  command.completion(SigninCoordinatorResultSuccess, nil);
   EXPECT_FALSE(mediator_.showSpinner);
   EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
             mediator_.signinPromoViewState);
@@ -572,7 +554,7 @@ TEST_F(SigninPromoViewMediatorTest,
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
-  command.callback(SigninCoordinatorResultSuccess, nil);
+  command.completion(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that no update notification is sent by the mediator to its consumer,
@@ -606,17 +588,16 @@ TEST_F(SigninPromoViewMediatorTest,
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
-  command.callback(SigninCoordinatorResultSuccess, nil);
+  command.completion(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that promos aren't shown if browser sign-in is disabled by policy
 TEST_F(SigninPromoViewMediatorTest,
        ShouldNotDisplaySigninPromoViewIfDisabledByPolicy) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.SetPrefService(CreatePrefService());
-  std::unique_ptr<TestChromeBrowserState> browser_state =
-      std::move(builder).Build();
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
   EXPECT_FALSE([SigninPromoViewMediator
@@ -625,7 +606,7 @@ TEST_F(SigninPromoViewMediatorTest,
                                 signinPromoAction:SigninPromoAction::
                                                       kInstantSignin
                             authenticationService:GetAuthenticationService()
-                                      prefService:browser_state->GetPrefs()]);
+                                      prefService:profile->GetPrefs()]);
 }
 
 // Tests that the default identity is the primary account, when the user is
@@ -686,7 +667,7 @@ TEST_F(SigninPromoViewMediatorTest,
   EXPECT_EQ(weak_mediator, nil);
   // Finish the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
-  command.callback(SigninCoordinatorResultSuccess, nil);
+  command.completion(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that the sign-in promo view being removed, and tests the consumer is
@@ -713,7 +694,7 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
   EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
   // Finish the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
-  command.callback(SigninCoordinatorResultSuccess, nil);
+  command.completion(SigninCoordinatorResultSuccess, nil);
   // Set mediator_ to nil to avoid the TearDown doesn't call
   // -[mediator_ disconnect] again.
   mediator_ = nil;
@@ -765,26 +746,25 @@ TEST_F(SigninPromoViewMediatorTest,
 TEST_F(SigninPromoViewMediatorTest,
        ShouldNotDisplaySigninPromoViewIfAlreadySeen) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.SetPrefService(CreatePrefService());
-  std::unique_ptr<TestChromeBrowserState> browser_state =
-      std::move(builder).Build();
-  browser_state->GetPrefs()->SetBoolean(
-      prefs::kIosBookmarkSettingsPromoAlreadySeen, true);
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  profile->GetPrefs()->SetBoolean(prefs::kIosBookmarkSettingsPromoAlreadySeen,
+                                  true);
   EXPECT_FALSE([SigninPromoViewMediator
       shouldDisplaySigninPromoViewWithAccessPoint:
           signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
                                 signinPromoAction:SigninPromoAction::
                                                       kReviewAccountSettings
                             authenticationService:GetAuthenticationService()
-                                      prefService:browser_state->GetPrefs()]);
+                                      prefService:profile->GetPrefs()]);
   EXPECT_TRUE([SigninPromoViewMediator
       shouldDisplaySigninPromoViewWithAccessPoint:
           signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
                                 signinPromoAction:SigninPromoAction::
                                                       kInstantSignin
                             authenticationService:GetAuthenticationService()
-                                      prefService:browser_state->GetPrefs()]);
+                                      prefService:profile->GetPrefs()]);
 }
 
 }  // namespace

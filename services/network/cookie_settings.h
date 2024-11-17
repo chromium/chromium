@@ -5,7 +5,6 @@
 #ifndef SERVICES_NETWORK_COOKIE_SETTINGS_H_
 #define SERVICES_NETWORK_COOKIE_SETTINGS_H_
 
-#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -57,10 +56,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   void set_block_third_party_cookies(bool block_third_party_cookies) {
     block_third_party_cookies_ = block_third_party_cookies;
-  }
-
-  bool are_third_party_cookies_blocked() const {
-    return block_third_party_cookies_;
   }
 
   void set_secure_origin_cookies_allowed_schemes(
@@ -121,7 +116,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   net::NetworkDelegate::PrivacySetting IsPrivacyModeEnabled(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const std::optional<url::Origin>& top_frame_origin,
+      base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const;
 
   // Returns true and maybe update `cookie_inclusion_status` to include reason
@@ -131,7 +126,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const net::CanonicalCookie& cookie,
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const std::optional<url::Origin>& top_frame_origin,
+      base::optional_ref<const url::Origin> top_frame_origin,
       const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieSettingOverrides overrides,
       net::CookieInclusionStatus* cookie_inclusion_status) const;
@@ -146,7 +141,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool AnnotateAndMoveUserBlockedCookies(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const url::Origin* top_frame_origin,
+      base::optional_ref<const url::Origin> top_frame_origin,
       const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
@@ -166,6 +161,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool IsStorageAccessHeadersEnabled(
       const GURL& url,
       base::optional_ref<const url::Origin> top_frame_origin) const;
+
+  bool ShouldAlwaysAllowCookiesForTesting(const GURL& url,
+                                          const GURL& first_party_url) const;
 
  private:
   // content_settings::CookieSettingsBase:
@@ -206,7 +204,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   CookieSettingWithMetadata GetCookieSettingWithMetadata(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const url::Origin* top_frame_origin,
+      base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const;
 
   // Forwards to FirstPartyURL in most cases, except when the top-level
@@ -215,13 +213,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // SameSite=None cookies on those pages.
   static GURL FirstPartyURLForMetadata(
       const net::SiteForCookies& site_for_cookies,
-      const url::Origin* top_frame_origin);
+      base::optional_ref<const url::Origin> top_frame_origin);
 
   // Adds exclusion reasons, warnings, etc. as appropriate to `out_status` for
   // the given cookie in the given context.
   void AugmentInclusionStatus(
       const net::CanonicalCookie& cookie,
-      const url::Origin* top_frame_origin,
+      base::optional_ref<const url::Origin> top_frame_origin,
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
       const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieInclusionStatus& out_status) const;

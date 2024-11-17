@@ -64,7 +64,7 @@ void PingManagerImpl::OnFeatureStatusChanged() {
 
 void PingManagerImpl::OnPingResponseReceived() {
   is_waiting_for_response_ = false;
-  ping_timeout_timer_.AbandonAndStop();
+  ping_timeout_timer_.Stop();
   base::UmaHistogramBoolean("PhoneHub.PhoneAvailabilityCheck.Result", true);
   base::UmaHistogramTimes("PhoneHub.PhoneAvailabilityCheck.Latency",
                           base::TimeTicks::Now() - ping_sent_timestamp_);
@@ -95,7 +95,7 @@ void PingManagerImpl::Reset() {
   is_waiting_for_response_ = false;
 
   if (IsPingTimeoutTimerRunning()) {
-    ping_timeout_timer_.AbandonAndStop();
+    ping_timeout_timer_.Stop();
   }
 }
 

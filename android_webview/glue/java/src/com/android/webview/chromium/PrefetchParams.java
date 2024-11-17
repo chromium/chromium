@@ -4,8 +4,11 @@
 
 package com.android.webview.chromium;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.AwNoVarySearchData;
+import org.chromium.android_webview.AwPrefetchParameters;
 import org.chromium.android_webview.common.Lifetime;
 
 import java.util.Map;
@@ -14,11 +17,27 @@ import java.util.Map;
 @Lifetime.Temporary
 public class PrefetchParams {
     public final @Nullable Map<String, String> additionalHeaders;
-    public final @Nullable String noVarySearchHint;
+    public final @Nullable NoVarySearchData expectedNoVarySearch;
+    public final boolean isJavascriptEnabled;
 
     public PrefetchParams(
-            @Nullable Map<String, String> additionalHeaders, @Nullable String noVarySearchHint) {
+            @Nullable Map<String, String> additionalHeaders,
+            @Nullable NoVarySearchData expectedNoVarySearch,
+            boolean isJavascriptEnabled) {
         this.additionalHeaders = additionalHeaders;
-        this.noVarySearchHint = noVarySearchHint;
+        this.expectedNoVarySearch = expectedNoVarySearch;
+        this.isJavascriptEnabled = isJavascriptEnabled;
+    }
+
+    @NonNull
+    public AwPrefetchParameters toAwPrefetchParams() {
+        final AwNoVarySearchData expectedNoVarySearch;
+        if (this.expectedNoVarySearch == null) {
+            expectedNoVarySearch = null;
+        } else {
+            expectedNoVarySearch = this.expectedNoVarySearch.toAwNoVarySearchData();
+        }
+        return new AwPrefetchParameters(
+                this.additionalHeaders, expectedNoVarySearch, this.isJavascriptEnabled);
     }
 }

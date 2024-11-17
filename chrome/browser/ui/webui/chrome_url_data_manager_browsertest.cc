@@ -187,7 +187,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
  public:
   ChromeURLDataManagerWebUITrustedTypesTest() {
     std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(history_clusters::kSidePanelJourneys);
     enabled_features.push_back(features::kSupportTool);
     enabled_features.push_back(ntp_features::kCustomizeChromeWallpaperSearch);
     enabled_features.push_back(
@@ -394,7 +393,6 @@ static constexpr const char* const kChromeUrls[] = {
     // quickly navigating away cause DCHECK failure.
     // "chrome://sync-confirmation",
     "chrome://sync-internals",
-    "chrome://syncfs-internals",
     "chrome://system",
     "chrome://tab-search.top-chrome",
     // TODO(crbug.com/40137562): Navigating to chrome://tab-strip and quickly
@@ -452,6 +450,8 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://cloud-upload",
 
     "chrome://connectivity-diagnostics",
+    "chrome://connectors-internals",
+    "chrome://crashes",
     "chrome://crostini-installer",
     "chrome://crostini-upgrader",
     "chrome://cryptohome",
@@ -503,17 +503,13 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://profile-customization/?debug",
     "chrome://signin-email-confirmation",
 #endif
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    "chrome://connectors-internals",
-    "chrome://crashes",
-#endif
 #if !BUILDFLAG(IS_MAC)
     "chrome://sandbox",
 #endif  // !BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_NACL)
     "chrome://nacl",
 #endif
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC)
     // TODO(crbug.com/40772380): this test is flaky on mac.
     "chrome://bluetooth-internals",
 #endif

@@ -22,7 +22,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
@@ -30,7 +29,6 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerDelegate.ListenerServiceImpl;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -40,6 +38,7 @@ import org.chromium.components.browser_ui.media.MediaNotificationListener;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.services.media_session.MediaMetadata;
 
@@ -60,14 +59,11 @@ public class MediaNotificationTestBase {
     MediaNotificationListener mListener;
     ForegroundServiceUtils mMockForegroundServiceUtils;
     NotificationUmaTracker mMockUmaTracker;
-
     MediaNotificationInfo.Builder mMediaNotificationInfoBuilder;
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     protected MediaNotificationTestTabHolder createMediaNotificationTestTabHolder(
             int tabId, String url, String title) {
-        return new MediaNotificationTestTabHolder(tabId, url, title, mocker);
+        return new MediaNotificationTestTabHolder(tabId, url, title);
     }
 
     static class MockMediaNotificationController extends MediaNotificationController {
@@ -164,6 +160,14 @@ public class MediaNotificationTestBase {
                         })
                 .when(mMockContext)
                 .startService(any(Intent.class));
+
+        MockMediaNotificationController.PendingIntentInitializer mockPendingIntentInitializer =
+                mock(MockMediaNotificationController.PendingIntentInitializer.class);
+        doNothing().when(mockPendingIntentInitializer).schedulePendingIntentConstructionIfNeeded();
+        doNothing().when(mockPendingIntentInitializer).scheduleIdleTask();
+        getController().mPendingIntentInitializer = mockPendingIntentInitializer;
+
+        getController().mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
 
         mMockForegroundServiceUtils = mock(ForegroundServiceUtils.class);
         ForegroundServiceUtils.setInstanceForTesting(mMockForegroundServiceUtils);

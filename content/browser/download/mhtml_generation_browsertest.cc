@@ -62,7 +62,9 @@ using testing::Contains;
 using testing::EndsWith;
 using testing::HasSubstr;
 using testing::IsEmpty;
+using testing::IsSupersetOf;
 using testing::Not;
+using testing::Pointee;
 
 namespace content {
 
@@ -78,16 +80,35 @@ const char kGetPageInfoScript[] = R"js(
   const styleKeys = ['font-family', 'line-height', 'display'];
   function elementStyles(el) {
     const styles = window.getComputedStyle(el);
-    return Object.fromEntries(styleKeys.map(name => [name, styles[name]]));
+    const result = Object.fromEntries(styleKeys
+        .map(name => [name, styles[name]])
+        .filter(v=>v[1]));
+    // add background-image, but only the file name because the full path will
+    // change in the saved page.
+    let m = styles.backgroundImage.match(/url\((.*)\)/);
+    if (m) {
+      const url = m[1];
+      const parts = url.split('/');
+      result['backgroundImageFile'] = parts[parts.length-1];
+    }
+    return result;
   }
   function isVisible(el) {
     const styles = window.getComputedStyle(el);
     return styles.display !== 'none';
   }
+  function sorted(a) {
+    const result = Array.from(a);
+    result.sort()
+    return result;
+  }
 
   return {
     title: document.title,
     innerText: document.body.innerText,
+    fonts: sorted(Array.from(document.fonts)
+                    .map(f=>`${f.family}: ${document.fonts.check("12px "
+                              + f.family) ? "loaded" : "not_loaded"}`)),
     // loaded state of visible image elements.
     images: Array.from(document.querySelectorAll('img'))
         .filter(isVisible)
@@ -157,8 +178,7 @@ struct CompareResult {
 // A dummy WebContentsDelegate which tracks the results of a find operation.
 class FindTrackingDelegate : public WebContentsDelegate {
  public:
-  explicit FindTrackingDelegate(const std::string& search)
-      : search_(search), matches_(-1) {}
+  explicit FindTrackingDelegate(const std::string& search) : search_(search) {}
 
   FindTrackingDelegate(const FindTrackingDelegate&) = delete;
   FindTrackingDelegate& operator=(const FindTrackingDelegate&) = delete;
@@ -197,7 +217,7 @@ class FindTrackingDelegate : public WebContentsDelegate {
 
  private:
   std::string search_;
-  int matches_;
+  int matches_ = -1;
   base::RunLoop run_loop_;
 };
 
@@ -374,7 +394,6 @@ class RespondAndDisconnectMockWriter
   ~RespondAndDisconnectMockWriter() override = default;
 };
 
-
 class MHTMLGenerationTest : public ContentBrowserTest,
                             public testing::WithParamInterface<bool> {
  public:
@@ -406,9 +425,14 @@ class MHTMLGenerationTest : public ContentBrowserTest,
     return GenerateMHTML(params, url);
   }
 
-  MHTMLFileInfo GenerateMHTML(MHTMLGenerationParams& params, const GURL& url) {
+  MHTMLFileInfo GenerateMHTML(const MHTMLGenerationParams& params,
+                              const GURL& url) {
     EXPECT_TRUE(NavigateToURL(shell(), url));
     return GenerateMHTMLForCurrentPage(params);
+  }
+
+  MHTMLFileInfo GenerateMHTML(const GURL& url) {
+    return GenerateMHTML(DefaultGenerationParams(), url);
   }
 
   // Loads the generated MHTML file to check if it is well formed.
@@ -431,7 +455,12 @@ class MHTMLGenerationTest : public ContentBrowserTest,
     return result.value.Clone();
   }
 
-  MHTMLFileInfo GenerateMHTMLForCurrentPage(MHTMLGenerationParams& params) {
+  MHTMLFileInfo GenerateMHTMLForCurrentPage() {
+    return GenerateMHTMLForCurrentPage(DefaultGenerationParams());
+  }
+
+  MHTMLFileInfo GenerateMHTMLForCurrentPage(
+      const MHTMLGenerationParams& params) {
     base::RunLoop run_loop;
     histogram_tester_ = std::make_unique<base::HistogramTester>();
 
@@ -479,14 +508,21 @@ class MHTMLGenerationTest : public ContentBrowserTest,
 
   int64_t ReadFileSizeFromDisk(base::FilePath path) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    int64_t file_size;
-    if (!base::GetFileSize(path, &file_size)) return -1;
-    return file_size;
+    std::optional<int64_t> file_size = base::GetFileSize(path);
+    if (!file_size.has_value()) {
+      return -1;
+    }
+    return file_size.value();
+  }
+
+  CompareResult TestOriginalVsSavedPage(const GURL& url,
+                                        const CompareOptions& options = {}) {
+    return TestOriginalVsSavedPage(url, DefaultGenerationParams(), options);
   }
 
   CompareResult TestOriginalVsSavedPage(const GURL& url,
                                         MHTMLGenerationParams params,
-                                        CompareOptions& options) {
+                                        const CompareOptions& options = {}) {
     CompareResult result;
     // Navigate to the test page and verify if test expectations
     // are met (this is mostly a sanity check - a failure to meet
@@ -587,6 +623,11 @@ class MHTMLGenerationTest : public ContentBrowserTest,
   // test.
   void DisableWellformednessCheck() { well_formedness_check_ = false; }
 
+  MHTMLGenerationParams DefaultGenerationParams() const {
+    return MHTMLGenerationParams(
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test.mht")));
+  }
+
   bool has_mhtml_callback_run() const { return has_mhtml_callback_run_; }
   int64_t file_size() const { return file_size_; }
   std::optional<std::string> file_digest() const { return file_digest_; }
@@ -630,11 +671,8 @@ class MHTMLGenerationImprovedTest : public MHTMLGenerationTest {
 // test is to ensure we were successful in creating the MHTML data from the
 // renderer.
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTML) {
-  base::FilePath path(temp_dir_.GetPath());
-  path = path.Append(FILE_PATH_LITERAL("test.mht"));
-
   MHTMLFileInfo info =
-      GenerateMHTML(path, embedded_test_server()->GetURL("/simple_page.html"));
+      GenerateMHTML(embedded_test_server()->GetURL("/simple_page.html"));
 
   // Make sure the actual generated file has some contents.
   EXPECT_THAT(info.content(),
@@ -695,8 +733,7 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest,
   OverrideInterface(mock_writer.get());
   DisableWellformednessCheck();
 
-  MHTMLGenerationParams params(path);
-  GenerateMHTMLForCurrentPage(params);
+  GenerateMHTMLForCurrentPage();
 
   // Verify the file has some contents written to it.
   EXPECT_GT(ReadFileSizeFromDisk(path), 100);
@@ -723,11 +760,8 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, MAYBE_InvalidPath) {
 // not contain the 'binary' Content-Transfer-Encoding header, and generates
 // base64 encoding for the image part.
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateNonBinaryMHTMLWithImage) {
-  base::FilePath path(temp_dir_.GetPath());
-  path = path.Append(FILE_PATH_LITERAL("test_binary.mht"));
-
   GURL url(embedded_test_server()->GetURL("/page_with_image.html"));
-  MHTMLFileInfo info = GenerateMHTML(path, url);
+  MHTMLFileInfo info = GenerateMHTML(url);
 
   EXPECT_THAT(info.content(), HasSubstr("Content-Transfer-Encoding: base64"));
   EXPECT_THAT(info.content(),
@@ -741,11 +775,8 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateNonBinaryMHTMLWithImage) {
 // Content-Transfer-Encoding header, and does not contain any base64 encoded
 // parts.
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateBinaryMHTMLWithImage) {
-  base::FilePath path(temp_dir_.GetPath());
-  path = path.Append(FILE_PATH_LITERAL("test_binary.mht"));
-
   GURL url(embedded_test_server()->GetURL("/page_with_image.html"));
-  MHTMLGenerationParams params(path);
+  MHTMLGenerationParams params = DefaultGenerationParams();
   params.use_binary_encoding = true;
 
   MHTMLFileInfo info = GenerateMHTML(params, url);
@@ -759,13 +790,10 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateBinaryMHTMLWithImage) {
 }
 
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLIgnoreNoStore) {
-  base::FilePath path(temp_dir_.GetPath());
-  path = path.Append(FILE_PATH_LITERAL("test.mht"));
-
   GURL url(embedded_test_server()->GetURL("/nostore.html"));
 
   // Generate MHTML without specifying the FailForNoStoreMainFrame policy.
-  MHTMLFileInfo info = GenerateMHTML(path, url);
+  MHTMLFileInfo info = GenerateMHTML(url);
 
   // Make sure the contents of the body are present.
   EXPECT_THAT(info.content(), HasSubstr("test body"));
@@ -786,10 +814,6 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLIgnoreNoStore) {
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest,
                        MAYBE_ViewedMHTMLContainsNoStoreContent) {
   // Generate MHTML.
-  base::FilePath path(temp_dir_.GetPath());
-  path = path.Append(FILE_PATH_LITERAL("test.mht"));
-  MHTMLGenerationParams params(path);
-
   CompareOptions options;
   options.expected_number_of_frames = 2;
   // We should see both frames.
@@ -798,7 +822,7 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest,
       "Cache-Control: no-store test body",
   };
   TestOriginalVsSavedPage(
-      embedded_test_server()->GetURL("/page_with_nostore_iframe.html"), params,
+      embedded_test_server()->GetURL("/page_with_nostore_iframe.html"),
       options);
 }
 
@@ -831,8 +855,8 @@ class MHTMLGenerationSitePerProcessTest : public MHTMLGenerationTest {
 
 // Test for crbug.com/538766.
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationSitePerProcessTest, GenerateMHTML) {
-  base::FilePath path(temp_dir_.GetPath());
-  path = path.Append(FILE_PATH_LITERAL("test.mht"));
+  base::FilePath path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test.mht"));
 
   GURL url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_one_frame.html"));
@@ -857,7 +881,7 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, RemovePopupOverlay) {
 
   GURL url(embedded_test_server()->GetURL("/popup.html"));
 
-  MHTMLGenerationParams params(path);
+  MHTMLGenerationParams params = DefaultGenerationParams();
   params.remove_popup_overlay = true;
 
   MHTMLFileInfo info = GenerateMHTML(params, url);
@@ -903,15 +927,11 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLWithExtraData) {
 }
 
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLWithMultipleFrames) {
-  base::FilePath path(temp_dir_.GetPath());
-  path = path.Append(FILE_PATH_LITERAL("test.mht"));
-
-  MHTMLGenerationParams params(path);
   CompareOptions options;
   options.expected_number_of_frames = 11;
   CompareResult result = TestOriginalVsSavedPage(
       embedded_test_server()->GetURL("/page_with_multiple_iframes.html"),
-      params, options);
+      options);
 
   EXPECT_EQ(result.original_info, result.saved_info);
 
@@ -926,44 +946,41 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLWithMultipleFrames) {
 }
 
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, CustomElement) {
-  MHTMLGenerationParams params(
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test.mht")));
-
   CompareOptions options;
   options.expected_number_of_frames = 1;
-  options.expected_substrings = {
-      // If this isn't show, the custom element is either not created, or
-      // not defined through customElements.define.
-      "Inside Custom Element",
-  };
+  options.expected_substrings =
+      {
+          // If this isn't show, the custom element is either not created, or
+          // not defined through customElements.define.
+          "Inside an Autonomous Custom Element",
+          "This is a defined built-in custom element",
+          "This is an undefined built-in custom element",
+      },
   options.forbidden_substrings = {
       "Hidden with adopted stylesheet on shadowRoot",
-      // TODO(crbug.com/363289333): Fix and uncomment.
-      // "Hidden because undefined-test-element is not defined.",
+      "Hidden because undefined-test-element is not defined.",
       "Hidden with adopted stylesheet on document",
       "Hidden with stylesheet on shadowRoot",
   };
   CompareResult result = TestOriginalVsSavedPage(
       embedded_test_server()->GetURL("/mhtml/custom_element_defined.html"),
-      params, options);
+      options);
   EXPECT_EQ(result.original_info, result.saved_info);
 }
 
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, CustomElementInFrame) {
-  MHTMLGenerationParams params(
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test.mht")));
-
   // Note this has all the same string assertions from
   // `GenerateMHTMLWithCustomElement`.
   CompareOptions options;
   options.expected_number_of_frames = 2;
   options.expected_substrings = {
-      "Inside Custom Element",
+      "Inside an Autonomous Custom Element",
+      "This is a defined built-in custom element",
+      "This is an undefined built-in custom element",
   };
   options.forbidden_substrings = {
       "Hidden with adopted stylesheet on shadowRoot",
-      // TODO(crbug.com/363289333): Fix and uncomment.
-      // "Hidden because undefined-test-element is not defined.",
+      "Hidden because undefined-test-element is not defined.",
       "Hidden with adopted stylesheet on document",
       "Hidden with stylesheet on shadowRoot",
 
@@ -974,21 +991,37 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, CustomElementInFrame) {
   CompareResult result = TestOriginalVsSavedPage(
       embedded_test_server()->GetURL(
           "/mhtml/custom_element_defined_in_frame.html"),
-      params, options);
+      options);
   EXPECT_EQ(result.original_info, result.saved_info);
 }
 
 IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, Styles) {
-  MHTMLGenerationParams params(
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test.mht")));
-
   CompareOptions options;
   options.expected_number_of_frames = 1;
-  options.expected_substrings = {"hidden1", "hidden4"};
+  options.expected_substrings = {"hidden1", "hidden4",
+                                 "This should show if inline CSS is escaped."};
   options.forbidden_substrings = {"hidden2", "hidden3"};
   CompareResult result = TestOriginalVsSavedPage(
-      embedded_test_server()->GetURL("/mhtml/styles.html"), params, options);
+      embedded_test_server()->GetURL("/mhtml/styles.html"), options);
   EXPECT_EQ(result.original_info, result.saved_info);
+}
+
+IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, Fonts) {
+  CompareResult result = TestOriginalVsSavedPage(
+      embedded_test_server()->GetURL("/mhtml/fonts.html"));
+  EXPECT_THAT(result.saved_info.GetDict().FindList("fonts"),
+              Pointee(IsSupersetOf({"ahem: loaded", "notexist: not_loaded"})));
+  EXPECT_EQ(result.original_info, result.saved_info);
+}
+
+IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, Elements) {
+  CompareResult result = TestOriginalVsSavedPage(
+      embedded_test_server()->GetURL("/mhtml/elements.html"), {});
+
+  EXPECT_EQ(result.original_info, result.saved_info);
+  EXPECT_THAT(result.file.ContentLocations(),
+              AllOf(Contains(EndsWith("/image-inline.png?img")),
+                    Contains(EndsWith("/image-inline.png?svg"))));
 }
 
 // We instantiate the MHTML Generation Tests both using and not using the

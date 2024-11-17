@@ -70,8 +70,7 @@ struct EnumTraits<ui::mojom::EventMomentumPhase, ui::EventMomentumPhase> {
       case ui::EventMomentumPhase::BLOCKED:
         return ui::mojom::EventMomentumPhase::BLOCKED;
     }
-    NOTREACHED_IN_MIGRATION();
-    return ui::mojom::EventMomentumPhase::NONE;
+    NOTREACHED();
   }
 
   static bool FromMojom(ui::mojom::EventMomentumPhase input,
@@ -96,8 +95,7 @@ struct EnumTraits<ui::mojom::EventMomentumPhase, ui::EventMomentumPhase> {
         *out = ui::EventMomentumPhase::BLOCKED;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -136,8 +134,7 @@ struct EnumTraits<ui::mojom::ScrollEventPhase, ui::ScrollEventPhase> {
       case ui::ScrollEventPhase::kEnd:
         return ui::mojom::ScrollEventPhase::kEnd;
     }
-    NOTREACHED_IN_MIGRATION();
-    return ui::mojom::ScrollEventPhase::kNone;
+    NOTREACHED();
   }
 
   static bool FromMojom(ui::mojom::ScrollEventPhase input,
@@ -156,8 +153,7 @@ struct EnumTraits<ui::mojom::ScrollEventPhase, ui::ScrollEventPhase> {
         *out = ui::ScrollEventPhase::kEnd;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -172,8 +168,7 @@ struct EnumTraits<ui::mojom::GestureDeviceType, ui::GestureDeviceType> {
       case ui::GestureDeviceType::DEVICE_TOUCHSCREEN:
         return ui::mojom::GestureDeviceType::DEVICE_TOUCHSCREEN;
     }
-    NOTREACHED_IN_MIGRATION();
-    return ui::mojom::GestureDeviceType::DEVICE_UNKNOWN;
+    NOTREACHED();
   }
 
   static bool FromMojom(ui::mojom::GestureDeviceType input,
@@ -189,8 +184,7 @@ struct EnumTraits<ui::mojom::GestureDeviceType, ui::GestureDeviceType> {
         *out = ui::GestureDeviceType::DEVICE_TOUCHSCREEN;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

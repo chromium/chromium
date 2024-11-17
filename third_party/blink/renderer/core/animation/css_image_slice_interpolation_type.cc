@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/animation/css_image_slice_interpolation_type.h"
 
 #include <memory>
@@ -68,7 +63,7 @@ struct SliceTypes {
   bool operator!=(const SliceTypes& other) const { return !(*this == other); }
 
   // If a side is not a number then it is a percentage.
-  bool is_number[kSideIndexCount];
+  std::array<bool, kSideIndexCount> is_number;
   bool fill;
 };
 
@@ -147,7 +142,7 @@ class InheritedSliceTypesChecker
 
 InterpolationValue ConvertImageSlice(const ImageSlice& slice, double zoom) {
   auto* list = MakeGarbageCollected<InterpolableList>(kSideIndexCount);
-  const Length* sides[kSideIndexCount] = {};
+  std::array<const Length*, kSideIndexCount> sides{};
   sides[kSideTop] = &slice.slices.Top();
   sides[kSideRight] = &slice.slices.Right();
   sides[kSideBottom] = &slice.slices.Bottom();
@@ -220,7 +215,7 @@ InterpolationValue CSSImageSliceInterpolationType::MaybeConvertValue(
   const cssvalue::CSSBorderImageSliceValue& slice =
       To<cssvalue::CSSBorderImageSliceValue>(value);
   auto* list = MakeGarbageCollected<InterpolableList>(kSideIndexCount);
-  const CSSValue* sides[kSideIndexCount];
+  std::array<const CSSValue*, kSideIndexCount> sides;
   sides[kSideTop] = slice.Slices().Top();
   sides[kSideRight] = slice.Slices().Right();
   sides[kSideBottom] = slice.Slices().Bottom();

@@ -16,7 +16,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Wrapper that allows passing a Profile reference around in the Java layer. */
 public class Profile implements BrowserContextHandle {
-    private final @Nullable OTRProfileID mOtrProfileId;
+    private final @Nullable OtrProfileId mOtrProfileId;
 
     /** Pointer to the Native-side Profile. */
     private long mNativeProfile;
@@ -24,7 +24,7 @@ public class Profile implements BrowserContextHandle {
     private boolean mDestroyNotified;
 
     @CalledByNative
-    private Profile(long nativeProfile, @Nullable OTRProfileID otrProfileId) {
+    private Profile(long nativeProfile, @Nullable OtrProfileId otrProfileId) {
         mNativeProfile = nativeProfile;
         mOtrProfileId = otrProfileId;
     }
@@ -57,7 +57,7 @@ public class Profile implements BrowserContextHandle {
         assert profile != null;
 
         if (!profile.isOffTheRecord()) return BrowserProfileType.REGULAR;
-        if (profile.isPrimaryOTRProfile()) return BrowserProfileType.INCOGNITO;
+        if (profile.isPrimaryOtrProfile()) return BrowserProfileType.INCOGNITO;
         return BrowserProfileType.OTHER_OFF_THE_RECORD_PROFILE;
     }
 
@@ -71,15 +71,15 @@ public class Profile implements BrowserContextHandle {
     }
 
     /**
-     * Returns the OffTheRecord profile with given OTRProfileiD. If the profile does not exist and
+     * Returns the OffTheRecord profile with given OtrProfileiD. If the profile does not exist and
      * createIfNeeded is true, a new profile is created, otherwise returns null.
      *
-     * @param profileID {@link OTRProfileID} object.
+     * @param profileId {@link OtrProfileId} object.
      * @param createIfNeeded Boolean indicating the profile should be created if doesn't exist.
      */
-    public Profile getOffTheRecordProfile(OTRProfileID profileID, boolean createIfNeeded) {
-        assert profileID != null;
-        return ProfileJni.get().getOffTheRecordProfile(mNativeProfile, profileID, createIfNeeded);
+    public Profile getOffTheRecordProfile(OtrProfileId profileId, boolean createIfNeeded) {
+        assert profileId != null;
+        return ProfileJni.get().getOffTheRecordProfile(mNativeProfile, profileId, createIfNeeded);
     }
 
     /**
@@ -88,35 +88,35 @@ public class Profile implements BrowserContextHandle {
      *
      * @param createIfNeeded Boolean indicating the profile should be created if doesn't exist.
      */
-    public Profile getPrimaryOTRProfile(boolean createIfNeeded) {
-        return ProfileJni.get().getPrimaryOTRProfile(mNativeProfile, createIfNeeded);
+    public Profile getPrimaryOtrProfile(boolean createIfNeeded) {
+        return ProfileJni.get().getPrimaryOtrProfile(mNativeProfile, createIfNeeded);
     }
 
     /**
      * Returns the OffTheRecord profile id for OffTheRecord profiles, and null for regular profiles.
      */
-    public @Nullable OTRProfileID getOTRProfileID() {
+    public @Nullable OtrProfileId getOtrProfileId() {
         return mOtrProfileId;
     }
 
     /**
-     * Returns if OffTheRecord profile with given OTRProfileID exists.
+     * Returns if OffTheRecord profile with given OtrProfileId exists.
      *
-     * @param profileID {@link OTRProfileID} object.
+     * @param profileId {@link OtrProfileId} object.
      */
-    public boolean hasOffTheRecordProfile(OTRProfileID profileID) {
-        assert profileID != null;
-        return ProfileJni.get().hasOffTheRecordProfile(mNativeProfile, profileID);
+    public boolean hasOffTheRecordProfile(OtrProfileId profileId) {
+        assert profileId != null;
+        return ProfileJni.get().hasOffTheRecordProfile(mNativeProfile, profileId);
     }
 
     /** Returns if primary OffTheRecord profile exists. */
-    public boolean hasPrimaryOTRProfile() {
-        return ProfileJni.get().hasPrimaryOTRProfile(mNativeProfile);
+    public boolean hasPrimaryOtrProfile() {
+        return ProfileJni.get().hasPrimaryOtrProfile(mNativeProfile);
     }
 
     /** Returns if the profile is a primary OTR Profile. */
-    public boolean isPrimaryOTRProfile() {
-        return mOtrProfileId != null && mOtrProfileId.isPrimaryOTRId();
+    public boolean isPrimaryOtrProfile() {
+        return mOtrProfileId != null && mOtrProfileId.isPrimaryOtrId();
     }
 
     /**
@@ -129,8 +129,8 @@ public class Profile implements BrowserContextHandle {
      * usage, reach out to incognito/OWNERS.
      */
     public boolean isIncognitoBranded() {
-        boolean isIncognitoCCT = mOtrProfileId != null && mOtrProfileId.isIncognitoCCId();
-        return isPrimaryOTRProfile() || isIncognitoCCT;
+        boolean isIncognitoCct = mOtrProfileId != null && mOtrProfileId.isIncognitoCCId();
+        return isPrimaryOtrProfile() || isIncognitoCct;
     }
 
     /**
@@ -229,13 +229,13 @@ public class Profile implements BrowserContextHandle {
 
         boolean isInitialProfile(long ptr);
 
-        Profile getOffTheRecordProfile(long ptr, OTRProfileID otrProfileID, boolean createIfNeeded);
+        Profile getOffTheRecordProfile(long ptr, OtrProfileId otrProfileId, boolean createIfNeeded);
 
-        Profile getPrimaryOTRProfile(long ptr, boolean createIfNeeded);
+        Profile getPrimaryOtrProfile(long ptr, boolean createIfNeeded);
 
-        boolean hasOffTheRecordProfile(long ptr, OTRProfileID otrProfileID);
+        boolean hasOffTheRecordProfile(long ptr, OtrProfileId otrProfileId);
 
-        boolean hasPrimaryOTRProfile(long ptr);
+        boolean hasPrimaryOtrProfile(long ptr);
 
         boolean isChild(long ptr);
 

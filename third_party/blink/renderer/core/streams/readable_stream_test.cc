@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_get_reader_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_readablestreambyobreader_readablestreamdefaultreader.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
@@ -105,8 +106,7 @@ readAll(stream);
       // Allow Promises to resolve.
       scope.PerformMicrotaskCheckpoint();
     }
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
   test::TaskEnvironment task_environment_;
 };
@@ -131,8 +131,7 @@ class TestTransferringOptimizer final
     explicit Source(ScriptState* script_state)
         : UnderlyingSourceBase(script_state) {}
 
-    ScriptPromiseUntyped Start(ScriptState* script_state,
-                               ExceptionState&) override {
+    ScriptPromise<IDLUndefined> Start(ScriptState* script_state) override {
       Controller()->Enqueue(V8String(script_state->GetIsolate(), "foo"));
       Controller()->Enqueue(V8String(script_state->GetIsolate(), ", bar"));
       Controller()->Close();
@@ -628,15 +627,14 @@ class TestUnderlyingByteSource : public UnderlyingByteSourceBase {
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
-  virtual void CancelVoid(v8::Local<v8::Value>, ExceptionState&) {}
+  virtual void CancelVoid() {}
 
-  ScriptPromise<IDLUndefined> Cancel(ExceptionState& exception_state) override {
-    return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
+  ScriptPromise<IDLUndefined> Cancel() override {
+    return Cancel(v8::Undefined(script_state_->GetIsolate()));
   }
 
-  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
-                                     ExceptionState& exception_state) override {
-    CancelVoid(reason, exception_state);
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value>) override {
+    CancelVoid();
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
@@ -659,10 +657,9 @@ class MockUnderlyingByteSource : public UnderlyingByteSourceBase {
   MOCK_METHOD2(Pull,
                ScriptPromise<IDLUndefined>(ReadableByteStreamController*,
                                            ExceptionState&));
-  MOCK_METHOD1(Cancel, ScriptPromise<IDLUndefined>(ExceptionState&));
-  MOCK_METHOD2(Cancel,
-               ScriptPromise<IDLUndefined>(v8::Local<v8::Value> reason,
-                                           ExceptionState&));
+  MOCK_METHOD0(Cancel, ScriptPromise<IDLUndefined>());
+  MOCK_METHOD1(Cancel,
+               ScriptPromise<IDLUndefined>(v8::Local<v8::Value> reason));
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
 
@@ -711,7 +708,7 @@ TEST_F(ReadableByteStreamTest, CancelIsCalled) {
   scope.PerformMicrotaskCheckpoint();
   CopyStreamToGlobal(scope);
 
-  EXPECT_CALL(*mock, Cancel(_, _))
+  EXPECT_CALL(*mock, Cancel(_))
       .WillOnce(
           Return(ByMove(ToResolvedUndefinedPromise(scope.GetScriptState()))));
 
@@ -785,9 +782,9 @@ TEST_F(ReadableByteStreamTest, ThrowFromCancel) {
     explicit ThrowFromCancelUnderlyingByteSource(ScriptState* script_state)
         : TestUnderlyingByteSource(script_state) {}
 
-    void CancelVoid(v8::Local<v8::Value>,
-                    ExceptionState& exception_state) override {
-      exception_state.ThrowTypeError(kMessage);
+    void CancelVoid() override {
+      V8ThrowException::ThrowTypeError(GetScriptState()->GetIsolate(),
+                                       kMessage);
     }
   };
 

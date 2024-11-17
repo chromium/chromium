@@ -30,11 +30,17 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
   bool should_intercept =
       event.target() == this && (is_click || is_enter_or_space);
   if (should_intercept) {
+    GetDocument().SetFocusedElement(this,
+                                    FocusParams(SelectionBehaviorOnFocus::kNone,
+                                                mojom::blink::FocusType::kNone,
+                                                /*capabilities=*/nullptr));
     if (scroll_marker_group_) {
       if (GetPseudoId() == kPseudoIdScrollNextButton) {
-        scroll_marker_group_->ActivateNextScrollMarker();
+        scroll_marker_group_->ActivateNextScrollMarker(
+            /*focus=*/false);
       } else {
-        scroll_marker_group_->ActivatePrevScrollMarker();
+        scroll_marker_group_->ActivatePrevScrollMarker(
+            /*focus=*/false);
       }
     }
     event.SetDefaultHandled();

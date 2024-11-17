@@ -16,6 +16,9 @@ const CGFloat kImageViewSize = 20.0;
 
 // Padding used between leading image view and label.
 const CGFloat kLeadingImageViewPadding = 20.0;
+
+// Size of activity indicator replacing image view when active.
+const CGFloat kIndicatorSize = 16.0;
 }  // namespace
 
 @interface PlusAddressSuggestionLabelCell () {
@@ -24,6 +27,9 @@ const CGFloat kLeadingImageViewPadding = 20.0;
 
   // Image view for the leading image.
   UIImageView* _leadingImageView;
+
+  // Activity Indicator view. Either the `_leadingImageView` is shown or this.
+  UIActivityIndicatorView* _activityIndicatorView;
 }
 
 @end
@@ -47,6 +53,15 @@ const CGFloat kLeadingImageViewPadding = 20.0;
     _leadingImageView.contentMode = UIViewContentModeCenter;
     [contentView addSubview:_leadingImageView];
 
+    // `_activityIndicatorView` attributes
+    CGRect indicatorFrame = CGRectMake(0, 0, kIndicatorSize, kIndicatorSize);
+    _activityIndicatorView =
+        [[UIActivityIndicatorView alloc] initWithFrame:indicatorFrame];
+    _activityIndicatorView.activityIndicatorViewStyle =
+        UIActivityIndicatorViewStyleMedium;
+    _activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [contentView addSubview:_activityIndicatorView];
+
     // Text attributes.
     // `_textLabel` attributes.
     _textLabel = [[UILabel alloc] init];
@@ -64,6 +79,10 @@ const CGFloat kLeadingImageViewPadding = 20.0;
                             action:@selector(trailingButtonTapped:)
                   forControlEvents:UIControlEventTouchUpInside];
     [contentView addSubview:_trailingButtonView];
+
+    // Center indicator over `_leadingImageView`.
+    AddSameCenterXConstraint(self, _leadingImageView, _activityIndicatorView);
+    AddSameCenterYConstraint(self, _leadingImageView, _activityIndicatorView);
 
     // Constraints.
     [NSLayoutConstraint activateConstraints:@[
@@ -115,6 +134,19 @@ const CGFloat kLeadingImageViewPadding = 20.0;
 - (void)setLeadingIconImage:(UIImage*)image withTintColor:(UIColor*)tintColor {
   _leadingImageView.image = image;
   _leadingImageView.tintColor = tintColor;
+  [_leadingImageView setHidden:image ? NO : YES];
+}
+
+- (void)showActivityIndicator {
+  [_activityIndicatorView startAnimating];
+  [_activityIndicatorView setHidden:NO];
+  [_leadingImageView setHidden:YES];
+}
+
+- (void)hideActivityIndicator {
+  [_activityIndicatorView stopAnimating];
+  [_activityIndicatorView setHidden:YES];
+  [_leadingImageView setHidden:NO];
 }
 
 #pragma mark - UITableViewCell
@@ -128,7 +160,9 @@ const CGFloat kLeadingImageViewPadding = 20.0;
                  withTintColor:nil
        accessibilityIdentifier:nil];
   [self setLeadingIconImage:nil withTintColor:nil];
+  [_leadingImageView setHidden:YES];
   _trailingButtonView.hidden = YES;
+  [self hideActivityIndicator];
 }
 
 #pragma mark - Private

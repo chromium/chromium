@@ -286,8 +286,7 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
           video_frame->stride(VideoFrame::Plane::kUV);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // The frame duration given to the VPX codecs affects a number of important
@@ -349,9 +348,8 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
     encoded_frame->rtp_timestamp =
         ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);
     encoded_frame->reference_time = reference_time;
-    encoded_frame->data.assign(
-        static_cast<const uint8_t*>(pkt->data.frame.buf),
-        static_cast<const uint8_t*>(pkt->data.frame.buf) + pkt->data.frame.sz);
+    encoded_frame->data = base::HeapArray<uint8_t>::CopiedFrom(base::span(
+        static_cast<const uint8_t*>(pkt->data.frame.buf), pkt->data.frame.sz));
     break;  // Done, since all data is provided in one CX_FRAME_PKT packet.
   }
   if (encoded_frame->data.empty()) {
@@ -457,7 +455,7 @@ void VpxEncoder::UpdateRates(uint32_t new_bitrate) {
 
   // Update encoder context.
   if (vpx_codec_enc_config_set(&encoder_, &config_)) {
-    NOTREACHED_IN_MIGRATION() << "Invalid return value";
+    NOTREACHED() << "Invalid return value";
   }
 
   VLOG(1) << "VPX new rc_target_bitrate: " << new_bitrate_kbit << " kbps";

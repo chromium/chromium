@@ -51,7 +51,7 @@ class CORE_EXPORT DragImage {
   static std::unique_ptr<DragImage> Create(
       Image*,
       RespectImageOrientationEnum = kRespectImageOrientation,
-      InterpolationQuality = kInterpolationDefault,
+      InterpolationQuality = GetDefaultInterpolationQuality(),
       float opacity = 1,
       gfx::Vector2dF image_scale = gfx::Vector2dF(1, 1));
 

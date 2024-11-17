@@ -96,8 +96,8 @@
 #endif
 
 #if defined(USE_AURA)
+#include "components/input/events_helper.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
-#include "content/common/input/events_helper.h"
 #include "ui/aura/test/test_screen.h"
 #include "ui/events/event.h"
 #endif
@@ -438,6 +438,11 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   bool IsFullscreen() override { return is_fullscreen_; }
 
   void set_is_fullscreen(bool enabled) { is_fullscreen_ = enabled; }
+
+  MOCK_METHOD(bool,
+              IsWaitingForPointerLockPrompt,
+              (RenderWidgetHostImpl * host),
+              (override));
 
  protected:
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
@@ -2180,6 +2185,39 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
       url::Origin(), drag_operation, SkBitmap(), gfx::Vector2d(), gfx::Rect(),
       blink::mojom::DragEventSourceInfo::New());
   EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 1);
+}
+
+// Hiding the RenderWidgetHostImpl instance via a call to WasHidden should
+// not reject a pending pointer lock, if the operation is waiting for the
+// user to make a selection on the permission prompt.
+TEST_F(RenderWidgetHostTest,
+       WasHiddenDoesNotRejectPointerLockIfWaitingForPrompt) {
+  // Set up the mock delegate to return true for
+  // IsWaitingForPointerLockPrompt().
+  EXPECT_CALL(*delegate_, IsWaitingForPointerLockPrompt(
+                              static_cast<RenderWidgetHostImpl*>(host_.get())))
+      .WillOnce(Return(true));
+
+  // Hide the RenderWidgetHostImpl instance.
+  host_->WasHidden();
+
+  EXPECT_FALSE(host_->pointer_lock_rejected());
+}
+
+// Hiding the RenderWidgetHostImpl instance via a call to WasHidden should
+// reject a pending pointer lock, if the operation is not waiting for the
+// user to make a selection on the permission prompt.
+TEST_F(RenderWidgetHostTest, WasHiddenRejectsPointerLockIfNotWaitingForPrompt) {
+  // Set up the mock delegate to return false for
+  // IsWaitingForPointerLockPrompt().
+  EXPECT_CALL(*delegate_, IsWaitingForPointerLockPrompt(
+                              static_cast<RenderWidgetHostImpl*>(host_.get())))
+      .WillOnce(Return(false));
+
+  // Hide the RenderWidgetHostImpl instance.
+  host_->WasHidden();
+
+  EXPECT_TRUE(host_->pointer_lock_rejected());
 }
 
 class RenderWidgetHostInitialSizeTest : public RenderWidgetHostTest {

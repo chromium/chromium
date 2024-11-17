@@ -40,11 +40,9 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
     private boolean mCookieControlsVisible;
     private boolean mProtectionsOn;
     private List<TrackingProtectionFeature> mFeatures;
-    private boolean mIsEnforced;
     private long mExpiration;
-    private boolean mShouldDisplaySiteBreakageString;
     private Website mWebsite;
-    private boolean mBlockAll3PC;
+    private boolean mBlockAll3pc;
     private boolean mIsIncognito;
     private boolean mFixedExpirationForTesting;
 
@@ -54,16 +52,13 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
             PageInfoControllerDelegate delegate) {
         super(delegate);
 
-        mBlockAll3PC = delegate.allThirdPartyCookiesBlockedTrackingProtection();
+        mBlockAll3pc = delegate.allThirdPartyCookiesBlockedTrackingProtection();
         mIsIncognito = delegate.isIncognito();
 
         mMainController = mainController;
         mRowView = rowView;
         mFullUrl = mainController.getURL().getSpec();
-        mTitle =
-                mRowView.getContext()
-                        .getResources()
-                        .getString(R.string.page_info_tracking_protection_title);
+        mTitle = mRowView.getContext().getString(R.string.page_info_tracking_protection_title);
         mBridge = delegate.createCookieControlsBridge(this);
 
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
@@ -73,7 +68,6 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
-        mShouldDisplaySiteBreakageString = false;
         updateRowViewSubtitle();
     }
 
@@ -109,7 +103,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
         params.disableCookieDeletion = isDeletionDisabled();
         params.hostName = mMainController.getURL().getHost();
-        params.blockAll3PC = mBlockAll3PC;
+        params.blockAll3pc = mBlockAll3pc;
         params.isIncognito = mIsIncognito;
         params.fixedExpirationForTesting = mFixedExpirationForTesting;
         mSubPage.setParams(params);
@@ -136,11 +130,11 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         if (mSubPage != null) {
             mSubPage.setStorageUsage(mWebsite.getTotalUsage());
 
-            boolean isRWSInfoShown =
-                    mSubPage.maybeShowRWSInfo(
-                            mWebsite.getRWSCookieInfo(), mWebsite.getAddress().getOrigin());
+            boolean isRwsInfoShown =
+                    mSubPage.maybeShowRwsInfo(
+                            mWebsite.getRwsCookieInfo(), mWebsite.getAddress().getOrigin());
             RecordHistogram.recordBooleanHistogram(
-                    "Security.PageInfo.Cookies.HasFPSInfo", isRWSInfoShown);
+                    "Security.PageInfo.Cookies.HasFPSInfo", isRwsInfoShown);
         }
     }
 
@@ -203,7 +197,6 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
 
     @Override
     public void onHighlightCookieControl(boolean shouldHighlight) {
-        mShouldDisplaySiteBreakageString = shouldHighlight;
         updateRowViewSubtitle();
     }
 
@@ -222,7 +215,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         mRowView.updateSubtitle(
                 mRowView.getContext()
                         .getString(
-                                mBlockAll3PC
+                                mBlockAll3pc
                                         ? R.string.page_info_cookies_subtitle_blocked
                                         : R.string
                                                 .page_info_tracking_protection_subtitle_cookies_limited));

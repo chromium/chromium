@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">ಡೆವಲಪರ್ UI ಮಾಡ್ಯುಲ್‌ (dev_ui) ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿಲ್ಲದಿರುವುದರಿಂದ ಪುಟ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ಸಿಸ್ಟಂ</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">ಟ್ಯಾಬ್</translation>
 <translation id="5613020302032141669">ಎಡ ಬಾಣದ ಗುರುತು</translation>
 <translation id="5633029987065897167">ಖಾಲಿ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ನಿಮಿ}one{# ನಿಮಿಷಗಳು}other{# ನಿಮಿಷಗಳು}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">ಪೇಜ್ ಡೌನ್</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">ಟ್ಯಾಬ್</translation>
 <translation id="8259556432390118667">ಹೆಕ್ಸ್ ಬಣ್ಣ ಮೌಲ್ಯ</translation>
 <translation id="8328145009876646418">ಎಡ ಬದಿ</translation>
 <translation id="8331626408530291785">ಮೇಲೆ ಸ್ಕ್ರೋಲ್ ಮಾಡು</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 ಸೆಕೆಂಡ್}one{# ಸೆಕೆಂಡುಗಳು}other{# ಸೆಕೆಂಡುಗಳು}}</translation>
 <translation id="9059834730836941392">ಕುಗ್ಗಿಸುವ ನೋಟಿಫಿಕೇಶನ್</translation>
 <translation id="9170848237812810038">&amp;ರದ್ದುಮಾಡು</translation>
+<translation id="9195990613383871904">ನಾಳೆ</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">ಹೋಮ್</translation>
 <translation id="944069440740578670">ಓದದಿರುವ ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 ಸೆಕೆಂಡ್ ಹಿಂದೆ}one{# ಸೆಕೆಂಡ್‌ಗಳ ಹಿಂದೆ}other{# ಸೆಕೆಂಡ್‌ಗಳ ಹಿಂದೆ}}</translation>

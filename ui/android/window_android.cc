@@ -129,15 +129,13 @@ void WindowAndroid::AttachCompositor(WindowAndroidCompositor* compositor) {
     DetachCompositor();
 
   compositor_ = compositor;
-  for (WindowAndroidObserver& observer : observer_list_)
-    observer.OnAttachCompositor();
+  observer_list_.Notify(&WindowAndroidObserver::OnAttachCompositor);
 
   compositor_->SetVSyncPaused(vsync_paused_);
 }
 
 void WindowAndroid::DetachCompositor() {
-  for (WindowAndroidObserver& observer : observer_list_)
-    observer.OnDetachCompositor();
+  observer_list_.Notify(&WindowAndroidObserver::OnDetachCompositor);
   observer_list_.Clear();
   compositor_ = nullptr;
 }
@@ -185,27 +183,24 @@ void WindowAndroid::SetNeedsAnimate() {
 }
 
 void WindowAndroid::Animate(base::TimeTicks begin_frame_time) {
-  for (WindowAndroidObserver& observer : observer_list_)
-    observer.OnAnimate(begin_frame_time);
+  observer_list_.Notify(&WindowAndroidObserver::OnAnimate, begin_frame_time);
 }
 
 void WindowAndroid::OnVisibilityChanged(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj,
                                         bool visible) {
-  for (WindowAndroidObserver& observer : observer_list_)
-    observer.OnRootWindowVisibilityChanged(visible);
+  observer_list_.Notify(&WindowAndroidObserver::OnRootWindowVisibilityChanged,
+                        visible);
 }
 
 void WindowAndroid::OnActivityStopped(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj) {
-  for (WindowAndroidObserver& observer : observer_list_)
-    observer.OnActivityStopped();
+  observer_list_.Notify(&WindowAndroidObserver::OnActivityStopped);
 }
 
 void WindowAndroid::OnActivityStarted(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj) {
-  for (WindowAndroidObserver& observer : observer_list_)
-    observer.OnActivityStarted();
+  observer_list_.Notify(&WindowAndroidObserver::OnActivityStarted);
 }
 
 void WindowAndroid::SetVSyncPaused(JNIEnv* env,
@@ -249,9 +244,8 @@ void WindowAndroid::SendUnfoldLatencyBeginTimestamp(JNIEnv* env,
                                                     jlong begin_time) {
   base::TimeTicks begin_timestamp =
       base::TimeTicks::FromUptimeMillis(begin_time);
-  for (WindowAndroidObserver& observer : observer_list_) {
-    observer.OnUnfoldStarted(begin_timestamp);
-  }
+  observer_list_.Notify(&WindowAndroidObserver::OnUnfoldStarted,
+                        begin_timestamp);
 }
 
 ProgressBarConfig WindowAndroid::GetProgressBarConfig() {
@@ -281,6 +275,13 @@ ModalDialogManagerBridge* WindowAndroid::GetModalDialogManagerBridge() {
   return reinterpret_cast<ModalDialogManagerBridge*>(
       Java_WindowAndroid_getNativeModalDialogManagerBridge(env,
                                                            GetJavaObject()));
+}
+
+void WindowAndroid::SetModalDialogManagerForTesting(
+    base::android::ScopedJavaLocalRef<jobject> java_modal_dialog_manager) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ui::Java_WindowAndroid_setModalDialogManagerForTesting(
+      env, GetJavaObject(), java_modal_dialog_manager);
 }
 
 void WindowAndroid::SetWideColorEnabled(bool enabled) {

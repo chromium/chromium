@@ -58,13 +58,13 @@ import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
-import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SearchUtils;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference.SiteAddedCallback;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
@@ -111,12 +111,12 @@ import java.util.Set;
  */
 @UsedByReflection("site_settings_preferences.xml")
 public class SingleCategorySettings extends BaseSiteSettingsFragment
-        implements SettingsPage,
+        implements EmbeddableSettingsPage,
                 OnPreferenceChangeListener,
                 OnPreferenceClickListener,
                 SiteAddedCallback,
                 OnPreferenceTreeClickListener,
-                FragmentSettingsLauncher,
+                FragmentSettingsNavigation,
                 TriStateCookieSettingsPreference.OnCookiesDetailsRequested,
                 CustomDividerFragment,
                 WebsitePreference.OnStorageAccessWebsiteDetailsRequested {
@@ -138,11 +138,11 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     public static final String EXTRA_TITLE = "title";
     public static final String POLICY = "policy";
 
-    private SettingsLauncher mSettingsLauncher;
+    private SettingsNavigation mSettingsNavigation;
 
     @Override
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
+    public void setSettingsNavigation(SettingsNavigation settingsNavigation) {
+        mSettingsNavigation = settingsNavigation;
     }
 
     /**
@@ -171,8 +171,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private boolean mIsInitialRun = true;
     // The number of sites that are on the Allowed list.
     private int mAllowedSiteCount;
-    // The websites that are currently displayed to the user.
-    private List<WebsitePreference> mWebsites;
     // Whether tri-state ContentSetting is required.
     private @GlobalToggleLayout int mGlobalToggleLayout = GlobalToggleLayout.BINARY_TOGGLE;
     // The "notifications_quiet_ui" preference to allow hiding/showing it.
@@ -188,16 +186,12 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
-    private static final String TP_LEARN_MORE_URL =
-            "https://support.google.com/chrome/?p=tracking_protection";
-
     @Override
     public void onCookiesDetailsRequested(@CookieControlsMode int cookieSettingsState) {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(RWSCookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
+        fragmentArgs.putInt(RwsCookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
 
-        mSettingsLauncher.launchSettingsActivity(
-                getActivity(), RWSCookieSettings.class, fragmentArgs);
+        mSettingsNavigation.startSettings(getActivity(), RwsCookieSettings.class, fragmentArgs);
     }
 
     @Override
@@ -208,7 +202,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         fragmentArgs.putBoolean(
                 StorageAccessSubpageSettings.EXTRA_ALLOWED, !isOnBlockList(website));
 
-        mSettingsLauncher.launchSettingsActivity(
+        mSettingsNavigation.startSettings(
                 getActivity(), StorageAccessSubpageSettings.class, fragmentArgs);
     }
 
@@ -259,7 +253,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             // This method may be called after the activity has been destroyed.
             // In that case, bail out.
             if (getActivity() == null) return;
-            mWebsites = null;
 
             resetList();
 
@@ -751,76 +744,58 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         prefService.setInteger(COOKIE_CONTROLS_MODE, mode);
     }
 
-    private String getAddExceptionDialogMessage() {
+    private boolean isCategoryEnabled() {
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
-        int resource = 0;
+        return WebsitePreferenceBridge.isCategoryEnabled(
+                browserContextHandle, mCategory.getContentSettingsType());
+    }
+
+    private int getAddExceptionDialogMessageResourceId() {
         switch (mCategory.getType()) {
             case SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS:
-                resource = R.string.website_settings_add_site_description_automatic_downloads;
-                break;
+                return isCategoryEnabled()
+                        ? 0
+                        : R.string.website_settings_add_site_description_automatic_downloads;
             case SiteSettingsCategory.Type.BACKGROUND_SYNC:
-                resource = R.string.website_settings_add_site_description_background_sync;
-                break;
+                return isCategoryEnabled()
+                        ? 0
+                        : R.string.website_settings_add_site_description_background_sync;
             case SiteSettingsCategory.Type.JAVASCRIPT:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle, ContentSettingsType.JAVASCRIPT)
-                                ? R.string.website_settings_add_site_description_javascript_block
-                                : R.string.website_settings_add_site_description_javascript_allow;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_javascript_block
+                        : R.string.website_settings_add_site_description_javascript_allow;
             case SiteSettingsCategory.Type.SOUND:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle, ContentSettingsType.SOUND)
-                                ? R.string.website_settings_add_site_description_sound_block
-                                : R.string.website_settings_add_site_description_sound_allow;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_sound_block
+                        : R.string.website_settings_add_site_description_sound_allow;
             case SiteSettingsCategory.Type.SITE_DATA:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle, ContentSettingsType.COOKIES)
-                                ? R.string
-                                        .website_settings_site_data_page_add_block_exception_description
-                                : R.string
-                                        .website_settings_site_data_page_add_allow_exception_description;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_site_data_page_add_block_exception_description
+                        : R.string.website_settings_site_data_page_add_allow_exception_description;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
-                resource =
-                        getCookieControlsMode() == CookieControlsMode.OFF
-                                ? R.string
-                                        .website_settings_third_party_cookies_page_add_block_exception_description
-                                : R.string
-                                        .website_settings_third_party_cookies_page_add_allow_exception_description;
-                break;
+                return (getCookieControlsMode() == CookieControlsMode.OFF)
+                        ? 0
+                        : R.string
+                                .website_settings_third_party_cookies_page_add_allow_exception_description;
             case SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT:
-                assert WebsitePreferenceBridge.isCategoryEnabled(
-                        browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT);
-                resource = R.string.website_settings_add_site_description_auto_dark_block;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_auto_dark_block
+                        : 0;
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle,
-                                        ContentSettingsType.FEDERATED_IDENTITY_API)
-                                ? R.string
-                                        .website_settings_add_site_description_federated_identity_block
-                                : R.string
-                                        .website_settings_add_site_description_federated_identity_allow;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_federated_identity_block
+                        : R.string.website_settings_add_site_description_federated_identity_allow;
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
-                resource =
-                        WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle,
-                                        ContentSettingsType.REQUEST_DESKTOP_SITE)
-                                ? R.string
-                                        .website_settings_blocked_group_heading_request_desktop_site
-                                : R.string
-                                        .website_settings_allowed_group_heading_request_desktop_site;
-                break;
+                return isCategoryEnabled()
+                        ? R.string.website_settings_blocked_group_heading_request_desktop_site
+                        : R.string.website_settings_allowed_group_heading_request_desktop_site;
+            case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
+                return isCategoryEnabled()
+                        ? R.string.website_settings_add_site_description_javascript_optimizer_block
+                        : R.string.website_settings_add_site_description_javascript_optimizer_allow;
         }
-        assert resource > 0;
-        return getString(resource);
+        return 0;
     }
 
     // OnPreferenceClickListener:
@@ -865,8 +840,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
             case GlobalToggleLayout.BINARY_TOGGLE:
                 setting =
-                        (WebsitePreferenceBridge.isCategoryEnabled(
-                                        browserContextHandle, mCategory.getContentSettingsType()))
+                        WebsitePreferenceBridge.isCategoryEnabled(
+                                        browserContextHandle, mCategory.getContentSettingsType())
                                 ? ContentSettingValues.BLOCK
                                 : ContentSettingValues.ALLOW;
                 break;
@@ -910,9 +885,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         configureGlobalToggles();
 
-        BrowserContextHandle browserContextHandle =
-                getSiteSettingsDelegate().getBrowserContextHandle();
-        @ContentSettingsType.EnumType int type = mCategory.getContentSettingsType();
         boolean allowSpecifyingExceptions = false;
 
         switch (mCategory.getType()) {
@@ -921,12 +893,15 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case SiteSettingsCategory.Type.SITE_DATA:
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
+            case SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER:
                 allowSpecifyingExceptions = true;
                 break;
             case SiteSettingsCategory.Type.BACKGROUND_SYNC:
             case SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS:
-                allowSpecifyingExceptions =
-                        !WebsitePreferenceBridge.isCategoryEnabled(browserContextHandle, type);
+                allowSpecifyingExceptions = !isCategoryEnabled();
+                break;
+            case SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT:
+                allowSpecifyingExceptions = isCategoryEnabled();
                 break;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
                 allowSpecifyingExceptions = getCookieControlsMode() != CookieControlsMode.OFF;
@@ -934,13 +909,16 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             default:
                 break;
         }
+
+        int exceptionDialogMessageResourceId = getAddExceptionDialogMessageResourceId();
+        assert allowSpecifyingExceptions == (exceptionDialogMessageResourceId != 0);
         if (allowSpecifyingExceptions) {
             getPreferenceScreen()
                     .addPreference(
                             new AddExceptionPreference(
                                     getStyledContext(),
                                     ADD_EXCEPTION_KEY,
-                                    getAddExceptionDialogMessage(),
+                                    getString(exceptionDialogMessageResourceId),
                                     mCategory,
                                     this));
         }
@@ -1043,7 +1021,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             if (!mManagedListExpanded) managedGroup.removeAll();
         }
 
-        mWebsites = websites;
         updateBlockedHeader(blocked);
         updateAllowedHeader(mAllowedSiteCount, !isBlocked());
         updateManagedHeader(managed);
@@ -1187,6 +1164,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             infoText.setSummary(R.string.website_settings_third_party_cookies_page_description);
         } else if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
             infoText.setSummary(getStorageAccessSummary());
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER) {
+            infoText.setSummary(
+                    R.string.website_settings_category_javascript_optimizer_page_description);
         } else {
             screen.removePreference(infoText);
         }
@@ -1217,7 +1197,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (mCategory.getType() == SiteSettingsCategory.Type.DEVICE_LOCATION) {
             if (getSiteSettingsDelegate().isPermissionDedicatedCpssSettingAndroidFeatureEnabled()) {
                 mLocationTriStatePref.initialize(
-                        (UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle())));
+                        UserPrefs.get(getSiteSettingsDelegate().getBrowserContextHandle()));
                 updateLocationSecondaryControls();
             } else {
                 screen.removePreference(mLocationTriStatePref);
@@ -1359,10 +1339,12 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         params.cookieControlsMode = getCookieControlsMode();
         params.cookieControlsModeEnforced = mCategory.isManaged();
         params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
-        params.isPrivacySandboxFirstPartySetsUIEnabled =
-                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled();
+        params.isPrivacySandboxFirstPartySetsUiEnabled =
+                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled();
         params.isRelatedWebsiteSetsDataAccessEnabled =
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled();
+        params.isAlwaysBlock3pcsIncognitoEnabled =
+                getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled();
         triStateCookieToggle.setState(params);
     }
 
@@ -1644,7 +1626,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         };
     }
 
-    private void onOffboardingCardCloseClick(View button) {
+    private void onOffboardingCardCloseClick() {
         mCardPreference.setVisible(false);
     }
 

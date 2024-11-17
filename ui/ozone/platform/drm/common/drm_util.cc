@@ -1018,8 +1018,7 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
     case gfx::BufferFormat::P010:
       return DRM_FORMAT_P010;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -1039,8 +1038,7 @@ uint64_t GetEnumValueForName(const DrmWrapper& drm,
       return res->enums[i].value;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool IsTileMode(const gfx::Size mode_size, const TileProperty& tile_property) {
@@ -1080,8 +1078,7 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
                                        base::TRIM_TRAILING);
 
   const std::string prefix("mst:");
-  if (!base::StartsWith(path_string_piece, prefix,
-                        base::CompareCase::SENSITIVE)) {
+  if (!path_string_piece.starts_with(prefix)) {
     LOG(ERROR) << "Invalid PATH string prefix. Does not contain '" << prefix
                << "'. Input: '" << path_str << "'";
     return {};
@@ -1196,8 +1193,7 @@ std::string GetEnumNameForProperty(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::optional<std::string> GetDrmDriverNameFromFd(int fd) {

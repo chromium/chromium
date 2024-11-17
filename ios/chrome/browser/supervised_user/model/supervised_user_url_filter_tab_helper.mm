@@ -71,22 +71,22 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state()->GetBrowserState());
 
-  // SupervisedUserService is not created for the off-the-record browser state.
-  if (chrome_browser_state->IsOffTheRecord()) {
+  // SupervisedUserService is not created for the off-the-record profile.
+  if (profile->IsOffTheRecord()) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
 
-  if (!supervised_user::IsSubjectToParentalControls(chrome_browser_state)) {
+  if (!supervised_user::IsSubjectToParentalControls(profile)) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
 
   supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(chrome_browser_state);
+      SupervisedUserServiceFactory::GetForProfile(profile);
 
   // Set up the callback taking filtering results, and perform URL filtering.
   GURL request_url = net::GURLWithNSURL(request.URL);

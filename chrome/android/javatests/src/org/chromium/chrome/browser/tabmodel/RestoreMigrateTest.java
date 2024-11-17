@@ -142,11 +142,7 @@ public class RestoreMigrateTest {
                 });
     }
 
-    /**
-     * Test that normal migration of state files works.
-     *
-     * @throws IOException
-     */
+    /** Test that normal migration of state files works. */
     @Test
     @SuppressWarnings("unused")
     @SmallTest
@@ -204,11 +200,7 @@ public class RestoreMigrateTest {
         Assert.assertFalse("Could still find old tab 3 file", tab3.exists());
     }
 
-    /**
-     * Test that migration skips if it already has files in the new folder.
-     *
-     * @throws IOException
-     */
+    /** Test that migration skips if it already has files in the new folder. */
     @Test
     @SuppressWarnings("unused")
     @SmallTest
@@ -263,11 +255,7 @@ public class RestoreMigrateTest {
         Assert.assertFalse("Could find new tab 3 file", newTab3.exists());
     }
 
-    /**
-     * Test that the state file migration skips unrelated files.
-     *
-     * @throws IOException
-     */
+    /** Test that the state file migration skips unrelated files. */
     @Test
     @SuppressWarnings("unused")
     @SmallTest
@@ -306,11 +294,7 @@ public class RestoreMigrateTest {
         Assert.assertFalse("Could find new other file", newOtherFile.exists());
     }
 
-    /**
-     * Tests that the max id returned is the max of all of the tab models.
-     *
-     * @throws IOException
-     */
+    /** Tests that the max id returned is the max of all of the tab models. */
     @Test
     @SmallTest
     @Feature({"TabPersistentStore"})
@@ -340,8 +324,6 @@ public class RestoreMigrateTest {
      * Tests that each model loads the subset of tabs it is responsible for. In this case, just
      * check that the model has the expected number of tabs to load. Since each model is loading a
      * different number of tabs we can tell if they are each attempting to load their specific set.
-     *
-     * @throws IOException
      */
     @Test
     @SmallTest

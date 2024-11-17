@@ -60,7 +60,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
@@ -76,7 +75,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridgeJni;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -169,7 +167,6 @@ public class LocationBarMediatorTest {
     private static int sGeoHeaderStopCount;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Rule public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock private LocationBarLayout mLocationBarLayout;
@@ -185,7 +182,6 @@ public class LocationBarMediatorTest {
     @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
     @Mock private UrlBarCoordinator mUrlCoordinator;
     @Mock private StatusCoordinator mStatusCoordinator;
-    @Mock private PrivacyPreferencesManager mPrivacyPreferencesManager;
     @Mock private OmniboxPrerender.Natives mPrerenderJni;
     @Mock private TextView mView;
     @Mock private KeyEvent mKeyEvent;
@@ -234,10 +230,10 @@ public class LocationBarMediatorTest {
         doReturn(mRootView).when(mLocationBarLayout).getRootView();
         doReturn(mRootView).when(mLocationBarTablet).getRootView();
         doReturn(new WeakReference<Activity>(null)).when(mWindowAndroid).getActivity();
-        mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
-        mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
-        mJniMocker.mock(PreloadPagesSettingsBridgeJni.TEST_HOOKS, mPreloadPagesSettingsJni);
-        mJniMocker.mock(ResourceRequestBodyJni.TEST_HOOKS, mResourceRequestBodyJni);
+        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
+        OmniboxPrerenderJni.setInstanceForTesting(mPrerenderJni);
+        PreloadPagesSettingsBridgeJni.setInstanceForTesting(mPreloadPagesSettingsJni);
+        ResourceRequestBodyJni.setInstanceForTesting(mResourceRequestBodyJni);
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -252,7 +248,6 @@ public class LocationBarMediatorTest {
                         mLocationBarDataProvider,
                         mUiOverrides,
                         mProfileSupplier,
-                        mPrivacyPreferencesManager,
                         mOverrideUrlLoadingDelegate,
                         mLocaleManager,
                         templateUrlServiceSupplier,
@@ -275,7 +270,6 @@ public class LocationBarMediatorTest {
                         mLocationBarDataProvider,
                         mUiOverrides,
                         mProfileSupplier,
-                        mPrivacyPreferencesManager,
                         mOverrideUrlLoadingDelegate,
                         mLocaleManager,
                         templateUrlServiceSupplier,
@@ -959,7 +953,6 @@ public class LocationBarMediatorTest {
                         mLocationBarDataProvider,
                         mUiOverrides,
                         mProfileSupplier,
-                        mPrivacyPreferencesManager,
                         mOverrideUrlLoadingDelegate,
                         mLocaleManager,
                         templateUrlServiceSupplier,
@@ -1288,6 +1281,17 @@ public class LocationBarMediatorTest {
 
         verify(mLocationBarTablet).setMicButtonVisibility(false);
         verify(mLocationBarTablet).setBookmarkButtonVisibility(false);
+        verify(mLocationBarTablet).setSaveOfflineButtonVisibility(false, true);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
+    public void testSaveOfflineButtonVisibility_hideSaveOfflineButton() {
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        mTabletMediator.onFinishNativeInitialization();
+        Mockito.reset(mLocationBarTablet);
+        mTabletMediator.updateButtonVisibility();
+
         verify(mLocationBarTablet).setSaveOfflineButtonVisibility(false, true);
     }
 

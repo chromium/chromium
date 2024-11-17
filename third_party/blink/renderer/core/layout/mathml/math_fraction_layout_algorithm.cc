@@ -143,7 +143,7 @@ void MathFractionLayoutAlgorithm::GatherChildren(BlockNode* numerator,
       continue;
     }
 
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   DCHECK(*numerator);

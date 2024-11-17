@@ -41,10 +41,6 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
@@ -52,11 +48,9 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
       profile, chrome::kChromeUIComponentsHost);
 
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
-  source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate parse-html-subset;");
+      "trusted-types lit-html-desktop;");
+  source->EnableReplaceI18nInJS();
 
   static constexpr webui::LocalizedString kStrings[] = {
     {"componentsTitle", IDS_COMPONENTS_TITLE},
@@ -79,10 +73,6 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-                      chromeos::BrowserParamsProxy::Get()->SessionType() ==
-                              crosapi::mojom::SessionType::kPublicSession ||
-                          profile->IsGuestSession()
 #else
       profile->IsOffTheRecord()
 #endif

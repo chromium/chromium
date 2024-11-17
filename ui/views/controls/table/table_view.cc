@@ -28,6 +28,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -191,6 +192,14 @@ TableView::TableView() : weak_factory_(this) {
         return v->HasFocus() && !v->header_row_is_active_;
       }));
   GetViewAccessibility().SetRole(ax::mojom::Role::kListGrid);
+  GetViewAccessibility().SetName(
+      std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  GetViewAccessibility().SetReadOnly(true);
+  GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kActivate);
+  GetViewAccessibility().SetTableRowCount(static_cast<int32_t>(GetRowCount()));
+  GetViewAccessibility().SetTableColumnCount(
+      static_cast<int32_t>(visible_columns_.size()));
 }
 
 TableView::TableView(ui::TableModel* model,
@@ -260,6 +269,9 @@ void TableView::SetModel(ui::TableModel* model) {
   } else {
     ClearVirtualAccessibilityChildren();
   }
+  // When the model changes, the rows have probably changed, so update the
+  // focus ring.
+  UpdateFocusRings();
 }
 
 void TableView::SetColumns(const std::vector<ui::TableColumn>& columns) {
@@ -270,6 +282,9 @@ void TableView::SetColumns(const std::vector<ui::TableColumn>& columns) {
     visible_column.column = column;
     visible_columns_.push_back(visible_column);
   }
+
+  GetViewAccessibility().SetTableColumnCount(
+      static_cast<int32_t>(visible_columns_.size()));
 }
 
 void TableView::SetTableType(TableType table_type) {
@@ -358,6 +373,9 @@ void TableView::SetColumnVisibility(int id, bool is_visible) {
                 ? std::nullopt
                 : std::make_optional(visible_columns_.size() - 1));
     }
+
+    GetViewAccessibility().SetTableColumnCount(
+        static_cast<int32_t>(visible_columns_.size()));
   }
 
   UpdateVisibleColumnSizes();
@@ -741,20 +759,6 @@ std::u16string TableView::GetTooltipText(const gfx::Point& p) const {
   return model_->GetText(model_row, visible_columns_[column.value()].column.id);
 }
 
-void TableView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // ID, class name and relative bounds are added by ViewAccessibility for all
-  // non-virtual views, so we don't need to add them here.
-  node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
-  node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kActivate);
-  // Subclasses should overwrite the name with the control's associated label.
-  node_data->SetNameExplicitlyEmpty();
-
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kTableRowCount,
-                             static_cast<int32_t>(GetRowCount()));
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kTableColumnCount,
-                             static_cast<int32_t>(visible_columns_.size()));
-}
-
 bool TableView::HandleAccessibleAction(const ui::AXActionData& action_data) {
   const size_t row_count = GetRowCount();
   if (!row_count)
@@ -827,7 +831,7 @@ bool TableView::HandleAccessibleAction(const ui::AXActionData& action_data) {
 
     case ax::mojom::Action::kShowContextMenu:
       ShowContextMenu(GetBoundsInScreen().CenterPoint(),
-                      ui::MENU_SOURCE_KEYBOARD);
+                      ui::mojom::MenuSourceType::kKeyboard);
       break;
 
     default:
@@ -845,6 +849,7 @@ void TableView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void TableView::OnModelChanged() {
   selection_model_.Clear();
+  GetViewAccessibility().SetTableRowCount(static_cast<int32_t>(GetRowCount()));
   RebuildVirtualAccessibilityChildren();
   PreferredSizeChanged();
 }
@@ -940,6 +945,7 @@ void TableView::OnItemsRemoved(size_t start, size_t length) {
   for (size_t i = start; !virtual_children.empty() && i < start + length; i++)
     virtual_children[virtual_children.size() - 1]->RemoveFromParentView();
 
+  GetViewAccessibility().SetTableRowCount(static_cast<int32_t>(GetRowCount()));
   UpdateVirtualAccessibilityChildrenBounds();
   PreferredSizeChanged();
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
@@ -1146,6 +1152,7 @@ void TableView::SortItemsAndUpdateMapping(bool schedule_paint) {
     model_->ClearCollator();
   }
 
+  GetViewAccessibility().SetTableRowCount(static_cast<int32_t>(GetRowCount()));
   UpdateVirtualAccessibilityChildrenBounds();
 
   if (schedule_paint)
@@ -1237,7 +1244,7 @@ void TableView::UpdateVisibleColumnSizes() {
 
   std::vector<int> sizes = views::CalculateTableColumnSizes(
       layout_width_, first_column_padding, header_->font_list(), font_list_,
-      std::max(cell_margin, header_->GetHorizontalPadding()) * 2,
+      std::max(cell_margin, header_->GetCellHorizontalPadding()) * 2,
       header_->GetSortIndicatorWidth(), columns, model_);
   DCHECK_EQ(visible_columns_.size(), sizes.size());
   int x = 0;
@@ -1569,7 +1576,11 @@ void TableView::RebuildVirtualAccessibilityChildren() {
   for (size_t index = 0; index < GetRowCount(); ++index) {
     GetViewAccessibility().AddVirtualChildView(
         CreateRowAccessibilityView(index));
-    UpdateAccessibleNameForIndex(/* start */ index, /* length */ 1);
+
+    // Don't update accessible name for the indices here since
+    // SortItemsAndUpdateMapping will do this subsequently. Updating these early
+    // will cause ViewToModel() to hit a DCHECK, since the mapping is not
+    // updated yet.
   }
 
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);

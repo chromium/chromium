@@ -18,6 +18,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/attribution_src_request_status.h"
 #include "components/attribution_reporting/data_host.mojom-blink.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
@@ -65,6 +66,8 @@ namespace blink {
 
 namespace {
 
+using ::attribution_reporting::AttributionSrcRequestStatus;
+
 using ::network::mojom::AttributionReportingEligibility;
 using ::network::mojom::AttributionSupport;
 
@@ -75,7 +78,9 @@ using blink::url_test_helpers::ToKURL;
 const char kAttributionReportingSupport[] = "Attribution-Reporting-Support";
 
 const char kAttributionSrcRequestStatusMetric[] =
-    "Conversions.AttributionSrcRequestStatus";
+    "Conversions.AttributionSrcRequestStatus.All";
+const char kAttributionSrcNavigationRequestStatusMetric[] =
+    "Conversions.AttributionSrcRequestStatus.Navigation";
 
 const char kUrl[] = "https://example1.com/foo.html";
 
@@ -166,14 +171,12 @@ class MockDataHost : public attribution_reporting::mojom::blink::DataHost {
   }
 
   void OsSourceDataAvailable(
-      attribution_reporting::SuitableOrigin reporting_origin,
       std::vector<attribution_reporting::OsRegistrationItem> registration_items,
       bool was_fetched_via_serivce_worker) override {
     os_sources_.emplace_back(std::move(registration_items));
   }
 
   void OsTriggerDataAvailable(
-      attribution_reporting::SuitableOrigin reporting_origin,
       std::vector<attribution_reporting::OsRegistrationItem> registration_items,
       bool was_fetched_via_serivce_worker) override {
     os_triggers_.emplace_back(std::move(registration_items));
@@ -181,8 +184,8 @@ class MockDataHost : public attribution_reporting::mojom::blink::DataHost {
 
   void ReportRegistrationHeaderError(
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::RegistrationHeaderError& error) override {
-    header_errors_.push_back(error);
+      attribution_reporting::RegistrationHeaderError error) override {
+    header_errors_.emplace_back(std::move(error));
   }
 
   Vector<attribution_reporting::SourceRegistration> source_data_;
@@ -1141,6 +1144,123 @@ TEST_F(AttributionSrcLoaderTest,
 
   mock_data_host->Flush();
   EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
+}
+
+const char kSuccessUrl[] = "https://example1.com/success.html";
+const char kErrorUrl[] = "https://example1.com/error.html";
+const char kRedirectSuccessUrl[] = "https://example1.com/redirect-success.html";
+const char kRedirectErrorUrl[] = "https://example1.com/redirect-error.html";
+
+void SetUpMockedURLs() {
+  RegisterMockedURLLoad(ToKURL(kSuccessUrl),
+                        test::CoreTestDataPath("foo.html"));
+  RegisterMockedErrorURLLoad(ToKURL(kErrorUrl));
+
+  KURL redirect_success_url = ToKURL(kRedirectSuccessUrl);
+  ResourceResponse redirect_success_response(redirect_success_url);
+  redirect_success_response.SetHttpStatusCode(301);
+  redirect_success_response.AddHttpHeaderField(http_names::kLocation,
+                                               AtomicString(kSuccessUrl));
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+      redirect_success_url, test::CoreTestDataPath("foo.html"),
+      WrappedResourceResponse(std::move(redirect_success_response)));
+
+  KURL redirect_error_url = ToKURL(kRedirectErrorUrl);
+  ResourceResponse redirect_error_response(redirect_error_url);
+  redirect_error_response.SetHttpStatusCode(301);
+  redirect_error_response.AddHttpHeaderField(http_names::kLocation,
+                                             AtomicString(kErrorUrl));
+  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+      redirect_error_url, test::CoreTestDataPath("foo.html"),
+      WrappedResourceResponse(std::move(redirect_error_response)));
+}
+
+void CleanUpMockedURLs() {
+  url_test_helpers::RegisterMockedURLUnregister(ToKURL(kSuccessUrl));
+  url_test_helpers::RegisterMockedURLUnregister(ToKURL(kErrorUrl));
+  url_test_helpers::RegisterMockedURLUnregister(ToKURL(kRedirectSuccessUrl));
+  url_test_helpers::RegisterMockedURLUnregister(ToKURL(kRedirectErrorUrl));
+}
+
+const struct {
+  const char* url;
+  std::vector<base::Bucket> expected;
+} kAttributionSrcRequestTestCases[] = {
+    {
+        kSuccessUrl,
+        {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+         base::Bucket(AttributionSrcRequestStatus::kReceived, 1)},
+    },
+    {
+        kErrorUrl,
+        {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+         base::Bucket(AttributionSrcRequestStatus::kFailed, 1)},
+    },
+    {
+        kRedirectSuccessUrl,
+        {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+         base::Bucket(AttributionSrcRequestStatus::kRedirected, 1),
+         base::Bucket(AttributionSrcRequestStatus::kReceivedAfterRedirected,
+                      1)},
+    },
+    {
+        kRedirectErrorUrl,
+        {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+         base::Bucket(AttributionSrcRequestStatus::kRedirected, 1),
+         base::Bucket(AttributionSrcRequestStatus::kFailedAfterRedirected, 1)},
+    },
+};
+
+TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatus_NonNavigation) {
+  SetUpMockedURLs();
+
+  for (const auto& test_case : kAttributionSrcRequestTestCases) {
+    SCOPED_TRACE(test_case.url);
+
+    base::HistogramTester histograms;
+
+    attribution_src_loader_->Register(AtomicString(test_case.url),
+                                      /*element=*/nullptr,
+                                      network::mojom::ReferrerPolicy::kDefault);
+
+    url_test_helpers::ServeAsynchronousRequests();
+
+    EXPECT_THAT(histograms.GetAllSamples(kAttributionSrcRequestStatusMetric),
+                base::BucketsAreArray(test_case.expected));
+
+    histograms.ExpectTotalCount(kAttributionSrcNavigationRequestStatusMetric,
+                                0);
+  }
+
+  CleanUpMockedURLs();
+}
+
+TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatus_Navigation) {
+  SetUpMockedURLs();
+
+  for (const auto& test_case : kAttributionSrcRequestTestCases) {
+    SCOPED_TRACE(test_case.url);
+
+    base::HistogramTester histograms;
+
+    std::ignore = attribution_src_loader_->RegisterNavigation(
+        /*navigation_url=*/KURL(),
+        /*attribution_src=*/AtomicString(test_case.url),
+        /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()),
+        /*has_transient_user_activation=*/true,
+        network::mojom::ReferrerPolicy::kDefault);
+
+    url_test_helpers::ServeAsynchronousRequests();
+
+    EXPECT_THAT(histograms.GetAllSamples(kAttributionSrcRequestStatusMetric),
+                base::BucketsAreArray(test_case.expected));
+
+    EXPECT_THAT(
+        histograms.GetAllSamples(kAttributionSrcNavigationRequestStatusMetric),
+        base::BucketsAreArray(test_case.expected));
+  }
+
+  CleanUpMockedURLs();
 }
 
 }  // namespace

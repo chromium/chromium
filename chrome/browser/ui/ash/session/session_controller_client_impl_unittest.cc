@@ -10,14 +10,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -32,7 +29,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -247,18 +243,6 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
       AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
-
-  {
-    // It should be disabled if Lacros is enabled.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
-                                  {});
-    base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-    EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LACROS_ENABLED,
-              SessionControllerClientImpl::GetAddUserSessionPolicy());
-  }
 
   user_profile->GetPrefs()->SetString(
       user_manager::prefs::kMultiProfileUserBehaviorPref,

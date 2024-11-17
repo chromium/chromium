@@ -58,9 +58,7 @@ public class AppLaunchDrawBlocker {
      */
     private boolean mBlockDrawForInitialTab;
 
-    private boolean mBlockDrawForOverviewPage;
     private boolean mBlockDrawForIncognitoRestore;
-    private long mTimeStartedBlockingDrawForInitialTab;
     private long mTimeStartedBlockingDrawForIncognitoRestore;
 
     /**
@@ -131,21 +129,16 @@ public class AppLaunchDrawBlocker {
     }
 
     /** Should be called when the initial tab is available. */
-    public void onActiveTabAvailable(boolean isTabNtp) {
+    public void onActiveTabAvailable() {
         mBlockDrawForInitialTab = false;
-    }
-
-    /** Should be called when the overview page is available. */
-    public void onOverviewPageAvailable() {
-        mBlockDrawForOverviewPage = false;
     }
 
     /**
      * A method that is passed as a {@link Runnable} to {@link
      * IncognitoRestoreAppLaunchDrawBlocker}.
      *
-     * This gets fired when all the conditions needed to unblock the draw from the Incognito restore
-     * are fired.
+     * <p>This gets fired when all the conditions needed to unblock the draw from the Incognito
+     * restore are fired.
      */
     @VisibleForTesting
     public void onIncognitoRestoreUnblockConditionsFired() {
@@ -205,7 +198,6 @@ public class AppLaunchDrawBlocker {
                 isNtpUrl,
                 IncognitoTabLauncher.didCreateIntent(mIntentSupplier.get()),
                 shouldBlockWithoutIntent)) {
-            mTimeStartedBlockingDrawForInitialTab = SystemClock.elapsedRealtime();
             mBlockDrawForInitialTab = true;
             ViewDrawBlocker.blockViewDrawUntilReady(
                     mViewSupplier.get(), () -> !mBlockDrawForInitialTab);

@@ -800,7 +800,7 @@ base::FilePath CacheStorageManager::ConstructBucketPath(
           profile_path, bucket_locator,
           storage::QuotaClientType::kBackgroundFetch);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -59,7 +59,9 @@ scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(const char* dir,
 }
 
 unsigned HashBitmap(const SkBitmap& bitmap) {
-  return StringHasher::HashMemory(bitmap.getPixels(), bitmap.computeByteSize());
+  return StringHasher::HashMemory(
+      {static_cast<const uint8_t*>(bitmap.getPixels()),
+       bitmap.computeByteSize()});
 }
 
 void CreateDecodingBaseline(DecoderCreator create_decoder,
@@ -116,6 +118,7 @@ void TestByteByByteDecode(DecoderCreator create_decoder,
       // only then both frames could be completely decoded.
       ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(i);
       if (frame && frame->GetStatus() == ImageFrame::kFrameComplete) {
+        EXPECT_EQ(baseline_hashes[i], HashBitmap(frame->Bitmap()));
         ++frames_decoded;
       }
     }

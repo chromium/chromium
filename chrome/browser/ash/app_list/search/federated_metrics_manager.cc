@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chromeos/ash/services/federated/public/cpp/federated_example_util.h"
 #include "chromeos/ash/services/federated/public/mojom/example.mojom.h"
@@ -59,8 +58,7 @@ ExamplePtr CreateExamplePtr(const std::string& query,
 }
 
 bool AreFeatureFlagsEnabled() {
-  return ash::features::IsFederatedServiceEnabled() &&
-         search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
+  return ash::features::IsFederatedServiceEnabled();
 }
 
 }  // namespace

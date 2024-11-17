@@ -95,12 +95,6 @@ export const SECTION_EXPECTATIONS: SectionData[] = [
     availableForGuest: true,
   },
   {
-    name: 'kDateAndTime',
-    availableBeforeRevamp: true,
-    availableAfterRevamp: false,
-    availableForGuest: true,
-  },
-  {
     name: 'kLanguagesAndInput',
     availableBeforeRevamp: true,
     availableAfterRevamp: false,
@@ -123,12 +117,6 @@ export const SECTION_EXPECTATIONS: SectionData[] = [
     availableBeforeRevamp: true,
     availableAfterRevamp: false,
     availableForGuest: true,
-  },
-  {
-    name: 'kReset',
-    availableBeforeRevamp: true,
-    availableAfterRevamp: false,
-    availableForGuest: false,
   },
   {
     name: 'kAboutChromeOs',

@@ -207,7 +207,6 @@ public class TabResumptionModuleMediator {
                 TabResumptionModuleMetricsUtils.recordModuleNotShownReason(
                         ModuleNotShownReason.NO_SUGGESTIONS);
             } else {
-                assert isModuleShowConfigFinalized(moduleShowConfig);
                 TabResumptionModuleMetricsUtils.recordModuleShowConfig(moduleShowConfig.intValue());
             }
         }

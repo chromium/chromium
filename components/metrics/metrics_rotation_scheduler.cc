@@ -19,7 +19,7 @@ MetricsRotationScheduler::MetricsRotationScheduler(
       waiting_for_init_task_complete_(false),
       upload_interval_callback_(upload_interval_callback) {}
 
-MetricsRotationScheduler::~MetricsRotationScheduler() {}
+MetricsRotationScheduler::~MetricsRotationScheduler() = default;
 
 void MetricsRotationScheduler::InitTaskComplete() {
   DCHECK(!init_task_complete_);

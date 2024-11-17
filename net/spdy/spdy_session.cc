@@ -66,8 +66,8 @@
 #include "net/spdy/spdy_stream.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_frame_builder.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -175,6 +175,16 @@ bool IsSpdySettingAtDefaultInitialValue(spdy::SpdySettingsId setting_id,
 
 void LogSpdyAcceptChForOriginHistogram(bool value) {
   base::UmaHistogramBoolean("Net.SpdySession.AcceptChForOrigin", value);
+}
+
+void LogSessionCreationInitiatorToHistogram(
+    MultiplexedSessionCreationInitiator session_creation,
+    bool is_used) {
+  std::string histogram_name =
+      base::StrCat({"Net.SpdySession.GoogleSearch.SessionCreationInitiator",
+                    is_used ? ".Used" : ".Unused"});
+
+  base::UmaHistogramEnumeration(histogram_name, session_creation);
 }
 
 base::Value::Dict NetLogSpdyHeadersSentParams(
@@ -451,10 +461,9 @@ SpdyProtocolErrorDetails MapFramerErrorToProtocolError(
       return SPDY_ERROR_STOP_PROCESSING;
 
     case http2::Http2DecoderAdapter::LAST_ERROR:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<SpdyProtocolErrorDetails>(-1);
+  NOTREACHED();
 }
 
 Error MapFramerErrorToNetError(
@@ -506,10 +515,9 @@ Error MapFramerErrorToNetError(
     case http2::Http2DecoderAdapter::SPDY_OVERSIZED_PAYLOAD:
       return ERR_HTTP2_FRAME_SIZE_ERROR;
     case http2::Http2DecoderAdapter::LAST_ERROR:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return ERR_HTTP2_PROTOCOL_ERROR;
+  NOTREACHED();
 }
 
 SpdyProtocolErrorDetails MapRstStreamStatusToProtocolError(
@@ -544,8 +552,7 @@ SpdyProtocolErrorDetails MapRstStreamStatusToProtocolError(
     case spdy::ERROR_CODE_HTTP_1_1_REQUIRED:
       return STATUS_CODE_HTTP_1_1_REQUIRED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<SpdyProtocolErrorDetails>(-1);
+  NOTREACHED();
 }
 
 spdy::SpdyErrorCode MapNetErrorToGoAwayStatus(Error err) {
@@ -788,7 +795,8 @@ SpdySession::SpdySession(
     bool enable_priority_update,
     TimeFunc time_func,
     NetworkQualityEstimator* network_quality_estimator,
-    NetLog* net_log)
+    NetLog* net_log,
+    MultiplexedSessionCreationInitiator session_creation_initiator)
     : spdy_session_key_(spdy_session_key),
       http_server_properties_(http_server_properties),
       transport_security_state_(transport_security_state),
@@ -823,7 +831,8 @@ SpdySession::SpdySession(
           base::Seconds(kDefaultConnectionAtRiskOfLossSeconds)),
       hung_interval_(base::Seconds(kHungIntervalSeconds)),
       time_func_(time_func),
-      network_quality_estimator_(network_quality_estimator) {
+      network_quality_estimator_(network_quality_estimator),
+      session_creation_initiator_(session_creation_initiator) {
   net_log_.BeginEvent(NetLogEventType::HTTP2_SESSION, [&] {
     return NetLogSpdySessionParams(host_port_proxy_pair());
   });
@@ -1098,8 +1107,7 @@ std::unique_ptr<SpdyBuffer> SpdySession::CreateDataBuffer(
   CHECK_EQ(stream->stream_id(), stream_id);
 
   if (len < 0) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   *effective_len = std::min(len, kMaxSpdyFrameChunkSize);
@@ -1222,8 +1230,7 @@ void SpdySession::CloseActiveStream(spdy::SpdyStreamId stream_id, int status) {
 
   auto it = active_streams_.find(stream_id);
   if (it == active_streams_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   CloseActiveStreamIterator(it, status);
@@ -1235,8 +1242,7 @@ void SpdySession::CloseCreatedStream(const base::WeakPtr<SpdyStream>& stream,
 
   auto it = created_streams_.find(stream.get());
   if (it == created_streams_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   CloseCreatedStreamIterator(it, status);
@@ -1249,8 +1255,7 @@ void SpdySession::ResetStream(spdy::SpdyStreamId stream_id,
 
   auto it = active_streams_.find(stream_id);
   if (it == active_streams_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   ResetStreamIterator(it, error, description);
@@ -1846,8 +1851,7 @@ int SpdySession::DoReadLoop(ReadState expected_read_state, int result) {
         result = DoReadComplete(result);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "read_state_: " << read_state_;
-        break;
+        NOTREACHED() << "read_state_: " << read_state_;
     }
 
     if (availability_state_ == STATE_DRAINING)
@@ -1987,8 +1991,7 @@ int SpdySession::DoWriteLoop(WriteState expected_write_state, int result) {
         break;
       case WRITE_STATE_IDLE:
       default:
-        NOTREACHED_IN_MIGRATION() << "write_state_: " << write_state_;
-        break;
+        NOTREACHED() << "write_state_: " << write_state_;
     }
 
     if (write_state_ == WRITE_STATE_IDLE) {
@@ -2046,8 +2049,7 @@ int SpdySession::DoWrite() {
 
     in_flight_write_ = producer->ProduceBuffer();
     if (!in_flight_write_) {
-      NOTREACHED_IN_MIGRATION();
-      return ERR_UNEXPECTED;
+      NOTREACHED();
     }
     in_flight_write_frame_type_ = frame_type;
     in_flight_write_frame_size_ = in_flight_write_->GetRemainingSize();
@@ -2515,6 +2517,10 @@ void SpdySession::RecordHistograms() {
                               streams_abandoned_count_, 1, 300, 50);
   UMA_HISTOGRAM_BOOLEAN("Net.SpdySession.ServerSupportsWebSocket",
                         support_websocket_);
+  if (IsGoogleHostWithAlpnH3(spdy_session_key_.host_port_pair().host())) {
+    LogSessionCreationInitiatorToHistogram(session_creation_initiator_,
+                                           streams_initiated_count_ > 0);
+  }
 }
 
 void SpdySession::RecordProtocolErrorHistogram(

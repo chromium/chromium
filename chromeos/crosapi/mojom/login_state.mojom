@@ -4,7 +4,7 @@
 
 module crosapi.mojom;
 
-[Stable, Extensible]
+[Extensible]
 enum SessionState {
   [Default] kUnknown = 0,
   kInOobeScreen,
@@ -14,7 +14,6 @@ enum SessionState {
   [MinVersion=1] kInRmaScreen,
 };
 
-[Stable]
 union GetSessionStateResult {
   // Implies failure.
   string error_message;
@@ -24,14 +23,14 @@ union GetSessionStateResult {
 };
 
 // Interface for observers of session state changes.
-[Stable, Uuid="01078da6-3eaf-46fe-af13-30dde5f24b55"]
+[Uuid="01078da6-3eaf-46fe-af13-30dde5f24b55"]
 interface SessionStateChangedEventObserver {
   // Called when the mapped session state changes.
   OnSessionStateChanged@0(SessionState session_state);
 };
 
 // This API allows Lacros to query the current login state.
-[Stable, Uuid="3bb04a21-64f1-46b6-9f6e-f71fc950a9dc"]
+[Uuid="3bb04a21-64f1-46b6-9f6e-f71fc950a9dc"]
 interface LoginState {
   // Adds an observer for session state changes.
   AddObserver@0(pending_remote<SessionStateChangedEventObserver> observer);

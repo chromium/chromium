@@ -64,7 +64,7 @@ class AutocompleteTest : public InProcessBrowserTest {
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(ContentAutofillDriver* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
 
     TestAutofillManagerWaiter& text_field_change_waiter() {
       return text_field_change_waiter_;
@@ -191,16 +191,16 @@ class AutocompleteTest : public InProcessBrowserTest {
   std::vector<Suggestion> GetAutocompleteSuggestions(
       const std::string& input_name,
       const std::string& prefix) {
-    base::MockCallback<SingleFieldFormFiller::OnSuggestionsReturnedCallback>
-        callback;
+    base::MockCallback<SingleFieldFillRouter::OnSuggestionsReturnedCallback>
+        mock_callback;
     std::vector<Suggestion> suggestions;
-    EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
+    EXPECT_CALL(mock_callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback callback =
+        mock_callback.Get();
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
-        /*form_structure=*/nullptr,
         test::CreateTestFormField(/*label=*/"", input_name, prefix,
                                   FormControlType::kInputText),
-        /*autofill_field=*/nullptr, autofill_manager()->client(),
-        callback.Get()));
+        autofill_manager()->client(), callback));
 
     // Make sure the DB task gets executed.
     WaitForPendingDBTasks(*GetWebDataService());

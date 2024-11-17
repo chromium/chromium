@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Зареждането на страницата не бе успешно, защото модулът за ПИ за програмисти (dev_ui) не е инсталиран</translation>
 <translation id="5574202486608032840">Система <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Стрелка наляво</translation>
 <translation id="5633029987065897167">Празно</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}other{# мин}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Страница надолу</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Табулатор</translation>
 <translation id="8259556432390118667">Шестнадесетична стойност за цвета</translation>
 <translation id="8328145009876646418">Ляв край</translation>
 <translation id="8331626408530291785">Превъртане нагоре</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек}other{# сек}}</translation>
 <translation id="9059834730836941392">Свиване на известието</translation>
 <translation id="9170848237812810038">&amp;Отмяна</translation>
+<translation id="9195990613383871904">Утре</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Начална страница</translation>
 <translation id="944069440740578670">Непрочетени известия</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{Преди 1 секунда}other{Преди # секунди}}</translation>

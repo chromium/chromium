@@ -41,6 +41,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
+#include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -528,7 +529,7 @@ LabeledSliderView* AudioDetailedView::CreateLabeledSliderView(
     if (device.active) {
       views::AsViewClass<QuickSettingsSlider>(
           views::AsViewClass<UnifiedVolumeView>(slider.get())->slider())
-          ->set_is_toggleable_volume_slider(true);
+          ->SetIsToggleableVolumeSlider(true);
     }
   }
 
@@ -734,22 +735,26 @@ void AudioDetailedView::UpdateScrollableList() {
       }
     }
 
-    // Adds the input style transfer toggle.
-    if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
-        audio_handler->IsStyleTransferSupportedForDevice(device.id)) {
-      style_transfer_view_ = container->AddChildView(
-          AudioDetailedView::CreateStyleTransferToggleRow(device));
-
-      AddSeparatorIfNotLast(container, device);
-    }
-
-    // Adds the input noise cancellation toggle.
-    if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
-        audio_handler->IsNoiseCancellationSupportedForDevice(device.id)) {
-      noise_cancellation_view_ = container->AddChildView(
-          AudioDetailedView::CreateNoiseCancellationToggleRow(device));
-
-      AddSeparatorIfNotLast(container, device);
+    // Adds the input audio effect toggle.
+    if (audio_handler->GetPrimaryActiveInputNode() == device.id) {
+      switch (audio_handler->GetVoiceIsolationUIAppearance().toggle_type) {
+        case cras::AudioEffectType::EFFECT_TYPE_STYLE_TRANSFER: {
+          style_transfer_view_ = container->AddChildView(
+              AudioDetailedView::CreateStyleTransferToggleRow(device));
+          AddSeparatorIfNotLast(container, device);
+          break;
+        }
+        case cras::AudioEffectType::EFFECT_TYPE_NOISE_CANCELLATION:
+        case cras::AudioEffectType::EFFECT_TYPE_BEAMFORMING: {
+          noise_cancellation_view_ = container->AddChildView(
+              AudioDetailedView::CreateNoiseCancellationToggleRow(device));
+          AddSeparatorIfNotLast(container, device);
+          break;
+        }
+        default: {
+          break;
+        }
+      }
     }
 
     // Adds a warning message if NBS is selected.

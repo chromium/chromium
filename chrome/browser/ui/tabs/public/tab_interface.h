@@ -9,10 +9,16 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "components/tab_groups/tab_group_id.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace views {
+class WidgetDelegate;
+class Widget;
+}  // namespace views
 
 class BrowserWindowInterface;
 
@@ -60,6 +66,9 @@ class TabInterface {
   // WebContents.
   virtual content::WebContents* GetContents() const = 0;
 
+  // Closes the tab.
+  virtual void Close() = 0;
+
   // Register for this callback to detect changes to GetContents(). The first
   // WebContents is the contents that will be discarded. The second WebContents
   // is the new contents. The tab is guaranteed to be in the background.
@@ -100,6 +109,27 @@ class TabInterface {
   virtual base::CallbackListSubscription RegisterWillDetach(
       WillDetach callback) = 0;
 
+  // Register for this callback to detect when a tab has been inserted into a
+  // window's tab strip. Registered callbacks will fire for all tab strip
+  // insertion events, including when the tab is first created and added to the
+  // tab strip if a callback has been registered early enough in the tab's
+  // lifecycle.
+  using DidInsertCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterDidInsert(
+      DidInsertCallback callback) = 0;
+
+  // Register for this callback to detect when the pinned state changes.
+  using PinnedStateChangedCallback =
+      base::RepeatingCallback<void(TabInterface*, bool new_pinned_state)>;
+  virtual base::CallbackListSubscription RegisterPinnedStateChanged(
+      PinnedStateChangedCallback callback) = 0;
+
+  // Register for this callback to detect when the group changes.
+  using GroupChangedCallback = base::RepeatingCallback<
+      void(TabInterface*, std::optional<tab_groups::TabGroupId> new_group)>;
+  virtual base::CallbackListSubscription RegisterGroupChanged(
+      GroupChangedCallback callback) = 0;
+
   // Features that want to show tab-modal UI are mutually exclusive. Before
   // showing a modal UI first check `CanShowModal`. Then call ShowModal() and
   // keep `ScopedTabModal` alive to prevent other features from showing
@@ -111,10 +141,21 @@ class TabInterface {
   // never changes.
   virtual bool IsInNormalWindow() const = 0;
 
-  // Always valid in practice. Tabs briefly do not have a BrowserWindowInterface
-  // when they are detached from one window and moved to another. That is an
-  // implementation detail of tab dragging that should not be exposed to
-  // consumers of this interface.
+  // Always valid in production code. Exceptions are:
+  //  (1) Tabs briefly do not have a BrowserWindowInterface when they are
+  //  detached from one window and moved to another. That is an implementation
+  //  detail of tab dragging and should not affect code outside of the tab-strip
+  //  implementation.
+  //  (2) Some tab-related unit tests create a TabInterface but do not create
+  //  TabFeatures, BrowserWindowInterface or BrowserWindowFeatures. Most code
+  //  that accesses this method should typically be scoped to TabFeatures or
+  //  BrowserWindowFeatures, but some code (e.g. tab_helpers) are currently
+  //  created in these unit tests. The proper solution is to convert these
+  //  tab_helpers to TabFeatures, which is tracked in
+  //  https://crbug.com/369319589.
+  // This is a long winded way of saying: if you are using this code from
+  // TabFeatures or BrowserWindowFeatures, you can safely assume that this is
+  // always non-nullptr.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 
   // Returns the feature controllers scoped to this tab.
@@ -129,8 +170,18 @@ class TabInterface {
   //   that is conceptually a TabFeature and needs access to other TabFeatures.
   virtual tabs::TabFeatures* GetTabFeatures() = 0;
 
+  virtual std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
+      views::WidgetDelegate* delegate) = 0;
+
+  // Return true if the tab is pinned in its tabstrip, or false otherwise.
+  virtual bool IsPinned() const = 0;
+
+  // Returns the id of the tab group this tab belongs to, or nullopt if the tab
+  // is not grouped.
+  virtual std::optional<tab_groups::TabGroupId> GetGroup() const = 0;
+
   // An identifier that is guaranteed to be unique.
-  virtual uint32_t GetTabHandle() = 0;
+  virtual uint32_t GetTabHandle() const = 0;
 };
 
 }  // namespace tabs

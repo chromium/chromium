@@ -12,11 +12,12 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class GURL;
 class LensOverlayController;
 class LensOverlaySidePanelWebView;
+class SidePanelEntryScope;
 
 enum class SidePanelEntryHideReason;
 
@@ -113,7 +114,8 @@ class LensOverlaySidePanelCoordinator
   // Called to get the URL for the "open in new tab" button.
   GURL GetOpenInNewTabUrl();
 
-  std::unique_ptr<views::View> CreateLensOverlayResultsView();
+  std::unique_ptr<views::View> CreateLensOverlayResultsView(
+      SidePanelEntryScope& scope);
 
   // Returns the more info callback for creating the side panel entry.
   base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>

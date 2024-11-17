@@ -12,6 +12,116 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 
 namespace autofill {
+
+namespace {
+
+std::string_view ConvertAcceptabilityToPrintableString(
+  Suggestion::Acceptability acceptability) {
+  switch (acceptability) {
+    case Suggestion::Acceptability::kAcceptable:
+      return "kAcceptable";
+    case Suggestion::Acceptability::kUnacceptable:
+      return "kUnacceptable";
+    case Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle:
+      return "kUnacceptableWithDeactivatedStyle";
+  }
+  NOTREACHED();
+}
+
+std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
+  switch (icon) {
+    case Suggestion::Icon::kAccount:
+      return "kAccount";
+    case Suggestion::Icon::kClear:
+      return "kClear";
+    case Suggestion::Icon::kCreate:
+      return "kCreate";
+    case Suggestion::Icon::kCode:
+      return "kCode";
+    case Suggestion::Icon::kDelete:
+      return "kDelete";
+    case Suggestion::Icon::kDevice:
+      return "kDevice";
+    case Suggestion::Icon::kEdit:
+      return "kEdit";
+    case Suggestion::Icon::kEmail:
+      return "kEmail";
+    case Suggestion::Icon::kEmpty:
+      return "kEmpty";
+    case Suggestion::Icon::kError:
+      return "kError";
+    case Suggestion::Icon::kGlobe:
+      return "kGlobe";
+    case Suggestion::Icon::kGoogle:
+      return "kGoogle";
+    case Suggestion::Icon::kGoogleMonochrome:
+      return "kGoogleMonochrome";
+    case Suggestion::Icon::kGooglePasswordManager:
+      return "kGooglePasswordManager";
+    case Suggestion::Icon::kGooglePay:
+      return "kGooglePay";
+    case Suggestion::Icon::kGooglePayDark:
+      return "kGooglePayDark";
+    case Suggestion::Icon::kHttpWarning:
+      return "kHttpWarning";
+    case Suggestion::Icon::kHttpsInvalid:
+      return "kHttpsInvalid";
+    case Suggestion::Icon::kKey:
+      return "kKey";
+    case Suggestion::Icon::kLocation:
+      return "kLocation";
+    case Suggestion::Icon::kMagic:
+      return "kMagic";
+    case Suggestion::Icon::kOfferTag:
+      return "kOfferTag";
+    case Suggestion::Icon::kPenSpark:
+      return "kPenSpark";
+    case Suggestion::Icon::kScanCreditCard:
+      return "kScanCreditCard";
+    case Suggestion::Icon::kSettings:
+      return "kSettings";
+    case Suggestion::Icon::kAutofillPredictionImprovements:
+      return "kAutofillPredictionImprovements";
+    case Suggestion::Icon::kSettingsAndroid:
+      return "kSettingsAndroid";
+    case Suggestion::Icon::kUndo:
+      return "kUndo";
+    case Suggestion::Icon::kCardGeneric:
+      return "kCardGeneric";
+    case Suggestion::Icon::kCardAmericanExpress:
+      return "kCardAmericanExpress";
+    case Suggestion::Icon::kCardDiners:
+      return "kCardDiners";
+    case Suggestion::Icon::kCardDiscover:
+      return "kCardDiscover";
+    case Suggestion::Icon::kCardElo:
+      return "kCardElo";
+    case Suggestion::Icon::kCardJCB:
+      return "kCardJCB";
+    case Suggestion::Icon::kCardMasterCard:
+      return "kCardMasterCard";
+    case Suggestion::Icon::kCardMir:
+      return "kCardMir";
+    case Suggestion::Icon::kCardTroy:
+      return "kCardTroy";
+    case Suggestion::Icon::kCardUnionPay:
+      return "kCardUnionPay";
+    case Suggestion::Icon::kCardVerve:
+      return "kCardVerve";
+    case Suggestion::Icon::kCardVisa:
+      return "kCardVisa";
+    case Suggestion::Icon::kIban:
+      return "kIban";
+    case Suggestion::Icon::kPlusAddress:
+      return "kPlusAddress";
+    case Suggestion::Icon::kNoIcon:
+      return "kNoIcon";
+  }
+  NOTREACHED();
+}
+
+} // namespace
+
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails() = default;
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
     std::u16string_view username,
@@ -28,7 +138,7 @@ Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
     const PasswordSuggestionDetails&) = default;
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
-    PasswordSuggestionDetails&) = default;
+    PasswordSuggestionDetails&&) = default;
 Suggestion::PasswordSuggestionDetails&
 Suggestion::PasswordSuggestionDetails::operator=(
     const PasswordSuggestionDetails&) = default;
@@ -85,11 +195,37 @@ Suggestion::PredictionImprovementsPayload::operator=(
 Suggestion::PredictionImprovementsPayload::~PredictionImprovementsPayload() =
     default;
 
+Suggestion::AutofillProfilePayload::AutofillProfilePayload() = default;
+Suggestion::AutofillProfilePayload::AutofillProfilePayload(Guid guid)
+    : AutofillProfilePayload(std::move(guid), u"") {}
+Suggestion::AutofillProfilePayload::AutofillProfilePayload(
+    Guid guid,
+    std::u16string email_override)
+    : guid(std::move(guid)), email_override(std::move(email_override)) {}
+
+Suggestion::AutofillProfilePayload::AutofillProfilePayload(
+    const AutofillProfilePayload&) = default;
+
+Suggestion::AutofillProfilePayload::AutofillProfilePayload(
+    AutofillProfilePayload&&) = default;
+
+Suggestion::AutofillProfilePayload&
+Suggestion::AutofillProfilePayload::operator=(const AutofillProfilePayload&) =
+    default;
+
+Suggestion::AutofillProfilePayload&
+Suggestion::AutofillProfilePayload::operator=(AutofillProfilePayload&&) =
+    default;
+
+Suggestion::AutofillProfilePayload::~AutofillProfilePayload() = default;
+
 Suggestion::PaymentsPayload::PaymentsPayload() = default;
 
 Suggestion::PaymentsPayload::PaymentsPayload(
+    std::u16string main_text_content_description,
     bool should_display_terms_available)
-    : should_display_terms_available(should_display_terms_available) {}
+    : main_text_content_description(main_text_content_description),
+      should_display_terms_available(should_display_terms_available) {}
 
 Suggestion::PaymentsPayload::PaymentsPayload(const PaymentsPayload&) = default;
 
@@ -103,6 +239,22 @@ Suggestion::PaymentsPayload& Suggestion::PaymentsPayload::operator=(
 
 Suggestion::PaymentsPayload::~PaymentsPayload() = default;
 
+Suggestion::IPHMetadata::IPHMetadata() = default;
+
+Suggestion::IPHMetadata::IPHMetadata(const base::Feature* feature,
+                                     std::vector<std::u16string> iph_params)
+    : feature(feature), iph_params(std::move(iph_params)) {}
+
+Suggestion::IPHMetadata::IPHMetadata(const IPHMetadata& other) = default;
+Suggestion::IPHMetadata::IPHMetadata(IPHMetadata&& other) = default;
+
+Suggestion::IPHMetadata& Suggestion::IPHMetadata::operator=(
+    const IPHMetadata& other) = default;
+Suggestion::IPHMetadata& Suggestion::IPHMetadata::operator=(
+    IPHMetadata&& other) = default;
+
+Suggestion::IPHMetadata::~IPHMetadata() = default;
+
 Suggestion::Text::Text() = default;
 
 Suggestion::Text::Text(std::u16string value,
@@ -111,7 +263,7 @@ Suggestion::Text::Text(std::u16string value,
     : value(value), is_primary(is_primary), should_truncate(should_truncate) {}
 
 Suggestion::Text::Text(const Text& other) = default;
-Suggestion::Text::Text(Text& other) = default;
+Suggestion::Text::Text(Text&& other) = default;
 
 Suggestion::Text& Suggestion::Text::operator=(const Text& other) = default;
 Suggestion::Text& Suggestion::Text::operator=(Text&& other) = default;
@@ -169,92 +321,24 @@ Suggestion& Suggestion::operator=(Suggestion&& other) = default;
 
 Suggestion::~Suggestion() = default;
 
-std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
-  switch (icon) {
-    case Suggestion::Icon::kAccount:
-      return "kAccount";
-    case Suggestion::Icon::kClear:
-      return "kClear";
-    case Suggestion::Icon::kCreate:
-      return "kCreate";
-    case Suggestion::Icon::kCode:
-      return "kCode";
-    case Suggestion::Icon::kDelete:
-      return "kDelete";
-    case Suggestion::Icon::kDevice:
-      return "kDevice";
-    case Suggestion::Icon::kEdit:
-      return "kEdit";
-    case Suggestion::Icon::kEmail:
-      return "kEmail";
-    case Suggestion::Icon::kEmpty:
-      return "kEmpty";
-    case Suggestion::Icon::kError:
-      return "kError";
-    case Suggestion::Icon::kGlobe:
-      return "kGlobe";
-    case Suggestion::Icon::kGoogle:
-      return "kGoogle";
-    case Suggestion::Icon::kGoogleMonochrome:
-      return "kGoogleMonochrome";
-    case Suggestion::Icon::kGooglePasswordManager:
-      return "kGooglePasswordManager";
-    case Suggestion::Icon::kGooglePay:
-      return "kGooglePay";
-    case Suggestion::Icon::kGooglePayDark:
-      return "kGooglePayDark";
-    case Suggestion::Icon::kHttpWarning:
-      return "kHttpWarning";
-    case Suggestion::Icon::kHttpsInvalid:
-      return "kHttpsInvalid";
-    case Suggestion::Icon::kKey:
-      return "kKey";
-    case Suggestion::Icon::kLocation:
-      return "kLocation";
-    case Suggestion::Icon::kMagic:
-      return "kMagic";
-    case Suggestion::Icon::kOfferTag:
-      return "kOfferTag";
-    case Suggestion::Icon::kPenSpark:
-      return "kPenSpark";
-    case Suggestion::Icon::kScanCreditCard:
-      return "kScanCreditCard";
-    case Suggestion::Icon::kSettings:
-      return "kSettings";
-    case Suggestion::Icon::kSettingsAndroid:
-      return "kSettingsAndroid";
-    case Suggestion::Icon::kUndo:
-      return "kUndo";
-    case Suggestion::Icon::kCardGeneric:
-      return "kCardGeneric";
-    case Suggestion::Icon::kCardAmericanExpress:
-      return "kCardAmericanExpress";
-    case Suggestion::Icon::kCardDiners:
-      return "kCardDiners";
-    case Suggestion::Icon::kCardDiscover:
-      return "kCardDiscover";
-    case Suggestion::Icon::kCardElo:
-      return "kCardElo";
-    case Suggestion::Icon::kCardJCB:
-      return "kCardJCB";
-    case Suggestion::Icon::kCardMasterCard:
-      return "kCardMasterCard";
-    case Suggestion::Icon::kCardMir:
-      return "kCardMir";
-    case Suggestion::Icon::kCardTroy:
-      return "kCardTroy";
-    case Suggestion::Icon::kCardUnionPay:
-      return "kCardUnionPay";
-    case Suggestion::Icon::kCardVerve:
-      return "kCardVerve";
-    case Suggestion::Icon::kCardVisa:
-      return "kCardVisa";
-    case Suggestion::Icon::kIban:
-      return "kIban";
-    case Suggestion::Icon::kPlusAddress:
-      return "kPlusAddress";
-    case Suggestion::Icon::kNoIcon:
-      return "kNoIcon";
+bool Suggestion::IsAcceptable() const {
+  switch (acceptability) {
+    case Acceptability::kAcceptable:
+      return true;
+    case Acceptability::kUnacceptable:
+    case Acceptability::kUnacceptableWithDeactivatedStyle:
+      return false;
+  }
+  NOTREACHED();
+}
+
+bool Suggestion::HasDeactivatedStyle() const {
+  switch (acceptability) {
+    case Acceptability::kAcceptable:
+    case Acceptability::kUnacceptable:
+      return false;
+    case Acceptability::kUnacceptableWithDeactivatedStyle:
+      return true;
   }
   NOTREACHED();
 }
@@ -267,8 +351,9 @@ void PrintTo(const Suggestion& suggestion, std::ostream* os) {
       << ", minor_text:\"" << suggestion.minor_text.value << "\""
       << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")
       << ", additional_label: \"" << suggestion.additional_label << "\""
-      << ", apply_deactivated_style: \"" << suggestion.apply_deactivated_style
-      << "\"" << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
+      << ", acceptability: \""
+      << ConvertAcceptabilityToPrintableString(suggestion.acceptability) << "\""
+      << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
       << ", trailing_icon:"
       << ConvertIconToPrintableString(suggestion.trailing_icon) << ")";
 }

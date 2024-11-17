@@ -18,13 +18,15 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -44,9 +46,12 @@ public class EdgeToEdgeControllerFactory {
      * @param windowAndroid The current {@link WindowAndroid} to allow drawing under System Bars.
      * @param tabObservableSupplier Supplies an {@Link Observer} that is notified whenever the Tab
      *     changes.
+     * @param edgeToEdgeStateProvider Provides the edge-to-edge state and allows for requests to
+     *     draw edge-to-edge.
      * @param browserControlsStateProvider Provides the state of the BrowserControls so we can tell
      *     if the Toolbar is changing.
-     * @param layoutManager The {@link LayoutManager} for checking the active layout type.
+     * @param layoutManagerSupplier The supplier of {@link LayoutManager} for checking the active
+     *     layout type.
      * @return An EdgeToEdgeController to control drawing under System Bars, or {@code null} if this
      *     version of Android does not support the APIs needed.
      */
@@ -54,8 +59,9 @@ public class EdgeToEdgeControllerFactory {
             Activity activity,
             WindowAndroid windowAndroid,
             @NonNull ObservableSupplier<Tab> tabObservableSupplier,
+            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider,
             BrowserControlsStateProvider browserControlsStateProvider,
-            LayoutManager layoutManager,
+            ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         assert isSupportedConfiguration(activity);
@@ -64,8 +70,9 @@ public class EdgeToEdgeControllerFactory {
                 windowAndroid,
                 tabObservableSupplier,
                 null,
+                edgeToEdgeStateProvider,
                 browserControlsStateProvider,
-                layoutManager,
+                layoutManagerSupplier,
                 fullscreenManager);
     }
 
@@ -76,6 +83,7 @@ public class EdgeToEdgeControllerFactory {
      * @param keyboardVisibilityDelegate A {@link KeyboardVisibilityDelegate} for watching keyboard
      *     visibility events.
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
+     * @param requestRenderRunnable Runnable that requests a re-render of the scene overlay.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
      * @param navigationBarColorProvider The {@link NavigationBarColorProvider} for observing the
@@ -84,10 +92,11 @@ public class EdgeToEdgeControllerFactory {
      *     browser controls heights.
      * @param fullscreenManager The {@link FullscreenManager} for provide the fullscreen state.
      */
-    public static Destroyable createBottomChin(
+    public static SystemBarColorHelper createBottomChin(
             View androidView,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             LayoutManager layoutManager,
+            @NonNull Runnable requestRenderRunnable,
             EdgeToEdgeController edgeToEdgeController,
             NavigationBarColorProvider navigationBarColorProvider,
             BottomControlsStacker bottomControlsStacker,
@@ -97,6 +106,7 @@ public class EdgeToEdgeControllerFactory {
                 androidView,
                 keyboardVisibilityDelegate,
                 layoutManager,
+                requestRenderRunnable,
                 edgeToEdgeController,
                 navigationBarColorProvider,
                 bottomControlsStacker,
@@ -138,10 +148,12 @@ public class EdgeToEdgeControllerFactory {
     public static boolean isSupportedConfiguration(Activity activity) {
         // Make sure we test SDK version before checking the Feature so Field Trials only collect
         // from qualifying devices.
-        if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.R) return false;
+        if (!EdgeToEdgeFieldTrial.getInstance().isEnabledForManufacturerVersion()) return false;
 
         // The root view's window insets is needed to determine if we are in gesture nav mode.
-        if (activity.getWindow().getDecorView().getRootWindowInsets() == null) {
+        if (activity == null
+                || activity.getWindow() == null
+                || activity.getWindow().getDecorView().getRootWindowInsets() == null) {
             return false;
         }
 

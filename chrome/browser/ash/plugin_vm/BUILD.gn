@@ -164,6 +164,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",

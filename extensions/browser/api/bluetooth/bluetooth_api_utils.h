@@ -10,7 +10,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "extensions/common/api/bluetooth.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #endif
 
@@ -27,7 +27,7 @@ void BluetoothDeviceToApiDevice(
 void PopulateAdapterState(const device::BluetoothAdapter& adapter,
                           AdapterState* out);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 device::BluetoothFilterType ToBluetoothDeviceFilterType(FilterType type);
 #endif
 

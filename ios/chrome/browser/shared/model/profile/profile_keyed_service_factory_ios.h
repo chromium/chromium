@@ -8,8 +8,9 @@
 #include "base/compiler_specific.h"
 #include "base/traits_bag.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
+
+class ProfileIOS;
 
 // ProfileKeyedServiceFactoryIOS provides a ProfileIOS-specific interface for
 // KeyedServiceFactory under //ios/chrome/browser.

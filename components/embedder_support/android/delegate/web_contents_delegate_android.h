@@ -110,7 +110,6 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,
-      const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) override;
   int GetTopControlsHeight() override;
   int GetTopControlsMinHeight() override;
@@ -133,6 +132,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   void DidBackForwardTransitionAnimationChange() override;
   content::BackForwardTransitionAnimationManager::FallbackUXConfig
   GetBackForwardTransitionFallbackUXConfig() override;
+  void ContentsZoomChange(bool zoom_in) override;
 
  protected:
   base::android::ScopedJavaLocalRef<jobject> GetJavaDelegate(JNIEnv* env) const;

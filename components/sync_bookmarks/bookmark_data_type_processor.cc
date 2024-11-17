@@ -681,7 +681,10 @@ void BookmarkDataTypeProcessor::HasUnsyncedData(
 void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(bookmark_model_);
+
   base::Value::List all_nodes;
+
   // Create a permanent folder since sync server no longer create root folders,
   // and USS won't migrate root folders from directory, we create root folders.
 
@@ -706,7 +709,7 @@ void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
     }
   }
 
-  std::move(callback).Run(syncer::BOOKMARKS, std::move(all_nodes));
+  std::move(callback).Run(std::move(all_nodes));
 }
 
 void BookmarkDataTypeProcessor::AppendNodeAndChildrenForDebugging(

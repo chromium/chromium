@@ -7,7 +7,8 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace affiliations {
 class AffiliationService;
@@ -18,10 +19,6 @@ class IOSChromeAffiliationServiceFactory
  public:
   static IOSChromeAffiliationServiceFactory* GetInstance();
   static affiliations::AffiliationService* GetForProfile(ProfileIOS* profile);
-
-  // Deprecated: use GetForProfile(...)
-  static affiliations::AffiliationService* GetForBrowserState(
-      ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<IOSChromeAffiliationServiceFactory>;

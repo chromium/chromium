@@ -1,0 +1,28 @@
+Nested @starting-style (mutliple levels)
+Dumping matched rules: 
+*div* {    regular
+    padding: 10px; @[4:10-4:24]
+    transition: background-color 1s ease; @[5:10-5:47]
+    display: inline-block; @[6:10-6:32]
+    padding-top: 10px; @[undefined-undefined]
+    padding-right: 10px; @[undefined-undefined]
+    padding-bottom: 10px; @[undefined-undefined]
+    padding-left: 10px; @[undefined-undefined]
+    transition-behavior: normal; @[undefined-undefined]
+    transition-duration: 1s; @[undefined-undefined]
+    transition-timing-function: ease; @[undefined-undefined]
+    transition-delay: 0s; @[undefined-undefined]
+    transition-property: background-color; @[undefined-undefined]
+    display: inline-block; @[undefined-undefined]
+}
+@starting-style
+     {    regular
+        background-color: yellow; @[9:14-9:39]
+        background-color: yellow; @[undefined-undefined]
+    }
+Dumping inherited rules: 
+*body* {    regular
+}
+*html* {    regular
+}
+

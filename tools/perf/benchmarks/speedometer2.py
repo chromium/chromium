@@ -208,7 +208,7 @@ class Speedometer2MinorMS(Speedometer2):
     options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
 
 
-@benchmark.Info(emails=['agarwaltushar@google.com', 'wnwen@google.com'],
+@benchmark.Info(emails=['rasikan@google.com', 'wnwen@google.com'],
                 component='Blink>JavaScript',
                 documentation_url='https://browserbench.org/Speedometer2.1')
 class Speedometer2Predictable(Speedometer2):

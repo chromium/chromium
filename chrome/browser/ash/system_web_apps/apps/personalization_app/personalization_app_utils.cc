@@ -102,6 +102,7 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
   switch (user->GetType()) {
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return false;
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
@@ -181,6 +182,7 @@ bool IsAllowedToInstallSeaPen(Profile* profile) {
   switch (user->GetType()) {
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
     case user_manager::UserType::kChild:
     // Demo mode retail devices are type kPublicAccount and may have been
     // handled earlier in this function. But not all kPublicAccount users are in
@@ -250,7 +252,7 @@ bool IsEligibleForSeaPenTextInput(Profile* profile) {
          CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
 }
 
-GURL GetJpegDataUrl(const std::string_view encoded_jpg_data) {
+GURL GetJpegDataUrl(std::string_view encoded_jpg_data) {
   return GURL(base::StrCat(
       {"data:image/jpeg;base64,", base::Base64Encode(encoded_jpg_data)}));
 }

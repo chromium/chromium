@@ -133,7 +133,7 @@ TEST_F(MediaFoundationRendererIntegrationTest,
 
   // FFMpegDemuxer will verify if video codec is supported internally, add HEVC
   // profile here to let demuxer initialization successfully.
-  media::UpdateDefaultSupportedVideoProfiles(
+  media::UpdateDefaultDecoderSupportedVideoProfiles(
       {media::VideoCodecProfile::HEVCPROFILE_MAIN});
 
   ASSERT_EQ(PIPELINE_OK, Start("bear-3840x2160-hevc.mp4", kUnreliableDuration));

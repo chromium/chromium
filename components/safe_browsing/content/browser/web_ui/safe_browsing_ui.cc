@@ -855,11 +855,6 @@ base::Value::Dict SerializeChromeUserPopulation(
                         population.number_of_loaded_profiles());
   }
 
-  if (population.has_number_of_open_profiles()) {
-    population_dict.Set("number_of_open_profiles",
-                        population.number_of_open_profiles());
-  }
-
   base::Value::List page_load_tokens;
   for (const ChromeUserPopulation::PageLoadToken& token :
        population.page_load_tokens()) {
@@ -2241,7 +2236,7 @@ SafeBrowsingUI::SafeBrowsingUI(
       "trusted-types static-types;");
 }
 
-SafeBrowsingUI::~SafeBrowsingUI() {}
+SafeBrowsingUI::~SafeBrowsingUI() = default;
 
 SafeBrowsingUIHandler::SafeBrowsingUIHandler(
     content::BrowserContext* context,
@@ -3122,7 +3117,7 @@ void SafeBrowsingUIHandler::SetWebUIForTesting(content::WebUI* web_ui) {
   set_web_ui(web_ui);
 }
 
-CrSBLogMessage::CrSBLogMessage() {}
+CrSBLogMessage::CrSBLogMessage() = default;
 
 CrSBLogMessage::~CrSBLogMessage() {
   WebUIInfoSingleton::GetInstance()->LogMessage(stream_.str());

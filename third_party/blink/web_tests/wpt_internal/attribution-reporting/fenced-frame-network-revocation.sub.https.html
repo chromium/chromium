@@ -93,7 +93,6 @@ attribution_reporting_promise_test(async t => {
   if (param_fencedframe == "trigger") {
     registerAttributionSrcByImg(createRedirectChain([
       {
-        cookie: 'foo=bar;Secure;HttpOnly;Path=/',
         reportingOrigin,
         source: source
       },
@@ -113,7 +112,6 @@ attribution_reporting_promise_test(async t => {
     await nextValueFromServer(ready_key);
     registerAttributionSrcByImg(createRedirectChain([
       {
-        cookie: 'foo=bar;Secure;HttpOnly;Path=/',
         reportingOrigin,
         trigger: trigger
       },

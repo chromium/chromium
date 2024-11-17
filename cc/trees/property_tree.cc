@@ -1519,11 +1519,9 @@ bool ScrollTree::ShouldRealizeScrollsOnMain(const ScrollNode& node) const {
 }
 
 uint32_t ScrollTree::GetMainThreadRepaintReasons(const ScrollNode& node) const {
-  // kPopupNoThreadedInput is not a repaint reason so should be excluded.
-  uint32_t reasons = node.main_thread_scrolling_reasons &
-                     ~MainThreadScrollingReason::kPopupNoThreadedInput;
+  uint32_t reasons = node.main_thread_repaint_reasons;
   if (!MainThreadScrollingReason::AreRepaintReasons(reasons)) {
-    SCOPED_CRASH_KEY_NUMBER("Bug349709014", "reasons", reasons);
+    SCOPED_CRASH_KEY_NUMBER("NotRepaint", "reasons", reasons);
     NOTREACHED();
   }
   return reasons;
@@ -1940,8 +1938,9 @@ bool ScrollTree::SetScrollOffset(ElementId id,
   }
 
   if (property_trees()->is_active()) {
-    DCHECK(GetSyncedScrollOffset(id));
-    return GetSyncedScrollOffset(id)->SetCurrent(scroll_offset);
+    if (auto* synced_scroll_offset = GetSyncedScrollOffset(id)) {
+      return synced_scroll_offset->SetCurrent(scroll_offset);
+    }
   }
 
   return false;
@@ -1950,6 +1949,10 @@ bool ScrollTree::SetScrollOffset(ElementId id,
 void ScrollTree::SetScrollingContentsCullRect(ElementId id,
                                               const gfx::Rect& cull_rect) {
   scrolling_contents_cull_rects_[id] = cull_rect;
+}
+
+void ScrollTree::ClearScrollingContentsCullRect(ElementId id) {
+  scrolling_contents_cull_rects_.erase(id);
 }
 
 const gfx::Rect* ScrollTree::ScrollingContentsCullRect(ElementId id) const {

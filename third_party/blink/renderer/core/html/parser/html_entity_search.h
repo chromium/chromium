@@ -26,12 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ENTITY_SEARCH_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ENTITY_SEARCH_H_
 
+#include "base/containers/span.h"
+#include "third_party/blink/renderer/core/html/parser/html_entity_table.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
-
-struct HTMLEntityTableEntry;
 
 class HTMLEntitySearch {
   STACK_ALLOCATED();
@@ -41,7 +41,7 @@ class HTMLEntitySearch {
 
   void Advance(UChar);
 
-  bool IsEntityPrefix() const { return !!first_; }
+  bool IsEntityPrefix() const { return !range_.empty(); }
   uint16_t CurrentLength() const { return current_length_; }
 
   const HTMLEntityTableEntry* MostRecentMatch() const {
@@ -49,26 +49,12 @@ class HTMLEntitySearch {
   }
 
  private:
-  enum CompareResult {
-    kBefore,
-    kPrefix,
-    kAfter,
-  };
+  void Fail() { range_ = {}; }
 
-  CompareResult Compare(const HTMLEntityTableEntry*, UChar) const;
-  const HTMLEntityTableEntry* FindFirst(UChar) const;
-  const HTMLEntityTableEntry* FindLast(UChar) const;
+  uint16_t current_length_ = 0;
 
-  void Fail() {
-    first_ = nullptr;
-    last_ = nullptr;
-  }
-
-  uint16_t current_length_;
-
-  const HTMLEntityTableEntry* most_recent_match_;
-  const HTMLEntityTableEntry* first_;
-  const HTMLEntityTableEntry* last_;
+  const HTMLEntityTableEntry* most_recent_match_ = nullptr;
+  base::span<const HTMLEntityTableEntry> range_;
 };
 
 }  // namespace blink

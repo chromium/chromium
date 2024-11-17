@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.io.IOException;
@@ -54,11 +55,8 @@ import java.io.IOException;
 /** Tests for Incognito reauth view layout in Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID,
-    ChromeFeatureList.INCOGNITO_SCREENSHOT
-})
-@DisableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
+@EnableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
+@DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherIncognitoReauthViewTest {
     @Rule
@@ -69,7 +67,7 @@ public class TabSwitcherIncognitoReauthViewTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.PRIVACY_INCOGNITO)
-                    .setRevision(3)
+                    .setRevision(4)
                     .build();
 
     @Before

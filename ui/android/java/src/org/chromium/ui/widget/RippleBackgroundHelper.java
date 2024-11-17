@@ -11,8 +11,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.util.StateSet;
 import android.view.View;
 
@@ -280,11 +278,6 @@ public class RippleBackgroundHelper {
         if (color == mBackgroundColorList) return;
 
         mBackgroundColorList = color;
-        // This works around an issue before Android O where the drawable is drawn in the wrong
-        // default state.
-        if (VERSION.SDK_INT < VERSION_CODES.O) {
-            mBackgroundLayerDrawable.setDrawable(/* index= */ 0, mBackgroundGradient);
-        }
         mBackgroundGradient.setColor(color);
     }
 
@@ -296,11 +289,6 @@ public class RippleBackgroundHelper {
         if (color == mStateLayerColorList) return;
 
         mStateLayerColorList = color;
-        // This works around an issue before Android O where the drawable is drawn in the wrong
-        // default state.
-        if (VERSION.SDK_INT < VERSION_CODES.O) {
-            mBackgroundLayerDrawable.setDrawable(/* index= */ 1, mStateLayerGradient);
-        }
         mStateLayerGradient.setColor(color);
     }
 

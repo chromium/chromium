@@ -87,6 +87,7 @@ constexpr char kDesk[] = "desk";
 constexpr char kDeskType[] = "desk_type";
 constexpr char kDeskTypeTemplate[] = "TEMPLATE";
 constexpr char kDeskTypeSaveAndRecall[] = "SAVE_AND_RECALL";
+constexpr char kDeskTypeCoral[] = "CORAL";
 constexpr char kDeskTypeFloatingWorkspace[] = "FLOATING_WORKSPACE";
 constexpr char kDeskTypeUnknown[] = "UNKNOWN";
 constexpr char kDisplayId[] = "display_id";
@@ -154,7 +155,8 @@ constexpr char kZIndex[] = "z_index";
 
 // Valid value sets.
 constexpr auto kValidDeskTypes = base::MakeFixedFlatSet<std::string_view>(
-    {kDeskTypeTemplate, kDeskTypeSaveAndRecall, kDeskTypeFloatingWorkspace});
+    {kDeskTypeTemplate, kDeskTypeSaveAndRecall, kDeskTypeCoral,
+     kDeskTypeFloatingWorkspace});
 constexpr auto kValidLaunchContainers =
     base::MakeFixedFlatSet<std::string_view>(
         {kLaunchContainerWindow, kLaunchContainerPanelDeprecated,
@@ -287,8 +289,7 @@ GroupColor ConvertGroupColorStringToGroupColor(const std::string& group_color) {
   } else if (group_color == tab_groups::kTabGroupColorUnknown) {
     return GroupColor::kGrey;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return GroupColor::kGrey;
+    NOTREACHED();
   }
 }
 
@@ -1018,6 +1019,8 @@ std::string SerializeDeskTypeAsString(ash::DeskTemplateType desk_type) {
       return kDeskTypeTemplate;
     case ash::DeskTemplateType::kSaveAndRecall:
       return kDeskTypeSaveAndRecall;
+    case ash::DeskTemplateType::kCoral:
+      return kDeskTypeCoral;
     case ash::DeskTemplateType::kFloatingWorkspace:
       return kDeskTypeFloatingWorkspace;
     case ash::DeskTemplateType::kUnknown:
@@ -1033,14 +1036,19 @@ bool IsValidDeskTemplateType(const std::string& desk_template_type) {
 // SaveAndRecall. Fix by crash / signal some error instead.
 ash::DeskTemplateType GetDeskTypeFromString(const std::string& desk_type) {
   DCHECK(IsValidDeskTemplateType(desk_type));
-  if (desk_type == kDeskTypeTemplate)
+  if (desk_type == kDeskTypeTemplate) {
     return ash::DeskTemplateType::kTemplate;
-  else if (desk_type == kDeskTypeFloatingWorkspace)
+  }
+  if (desk_type == kDeskTypeFloatingWorkspace) {
     return ash::DeskTemplateType::kFloatingWorkspace;
-  else if (desk_type == kDeskTypeSaveAndRecall)
+  }
+  if (desk_type == kDeskTypeSaveAndRecall) {
     return ash::DeskTemplateType::kSaveAndRecall;
-  else
-    return ash::DeskTemplateType::kUnknown;
+  }
+  if (desk_type == kDeskTypeCoral) {
+    return ash::DeskTemplateType::kCoral;
+  }
+  return ash::DeskTemplateType::kUnknown;
 }
 
 // Convert from apps::LaunchContainer to sync proto LaunchContainer.
@@ -1268,8 +1276,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::APP_NOT_SET:
       // This should never happen. `APP_NOT_SET` corresponds to empty `app_id`.
       // This method will early return when `app_id` is empty.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow:
       if (app.app().browser_app_window().has_active_tab_index()) {
         app_launch_info->browser_extra_info.active_tab_index =
@@ -1463,8 +1470,7 @@ SyncTabGroupColor SyncTabColorFromTabGroupColorId(
     case TabGroupColor::kOrange:
       return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE;
     case TabGroupColor::kNumEntries:
-      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a supported color enum.";
-      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY;
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
   };
 }
 
@@ -1731,9 +1737,7 @@ bool FillApp(const std::string& app_id,
       } else {
         // Chrome app running in Lacros should have
         // AppType::kStandaloneBrowserChromeApp and never reach here.
-        NOTREACHED_IN_MIGRATION();
-        // Ignore this app type.
-        return false;
+        NOTREACHED();
       }
 
       break;
@@ -1926,6 +1930,7 @@ void FillDeskType(const DeskTemplate* desk_template,
           SyncDeskType::WorkspaceDeskSpecifics_DeskType_FLOATING_WORKSPACE);
       return;
     // Do nothing if type is unknown.
+    case DeskTemplateType::kCoral:
     case DeskTemplateType::kUnknown:
       return;
   }
@@ -2104,8 +2109,7 @@ std::string ConvertTabGroupColorIdToString(GroupColor color) {
     case GroupColor::kOrange:
       return tab_groups::kTabGroupColorOrange;
     case GroupColor::kNumEntries:
-      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a supported color enum.";
-      return tab_groups::kTabGroupColorGrey;
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
   }
 }
 

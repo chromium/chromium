@@ -65,7 +65,9 @@ std::unique_ptr<WindowTreeHost> WindowTreeHost::Create(
 WindowTreeHostPlatform::WindowTreeHostPlatform(
     ui::PlatformWindowInitProperties properties,
     std::unique_ptr<Window> window)
-    : WindowTreeHost(std::move(window)) {
+    : WindowTreeHost(std::move(window)),
+      widget_(gfx::kNullAcceleratedWidget),
+      current_cursor_(ui::mojom::CursorType::kNull) {
   size_in_pixels_ = properties.bounds.size();
   CreateCompositor(false, false, properties.enable_compositing_based_throttling,
                    properties.compositor_memory_limit_mb);
@@ -184,6 +186,18 @@ WindowTreeHostPlatform::GetKeyboardLayoutMap() {
 #endif
 }
 
+void WindowTreeHostPlatform::OnVideoCaptureLockCreated() {
+  if (platform_window_) {
+    platform_window_->SetVideoCapture();
+  }
+}
+
+void WindowTreeHostPlatform::OnVideoCaptureLockDestroyed() {
+  if (platform_window_) {
+    platform_window_->ReleaseVideoCapture();
+  }
+}
+
 void WindowTreeHostPlatform::SetCursorNative(gfx::NativeCursor cursor) {
   if (cursor == current_cursor_)
     return;
@@ -237,20 +251,14 @@ void WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
   g_platform_window_factory_delegate_for_testing = delegate;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::string WindowTreeHostPlatform::GetUniqueId() const {
-  return platform_window()->GetWindowUniqueId();
-}
-#endif
-
 void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   // It's possible this function may be called recursively. Only notify
   // observers on initial entry. This way observers can safely assume that
   // OnHostDidProcessBoundsChange() is called when all bounds changes have
   // completed.
   if (++on_bounds_changed_recursion_depth_ == 1) {
-    for (WindowTreeHostObserver& observer : observers())
-      observer.OnHostWillProcessBoundsChange(this);
+    observers().Notify(&WindowTreeHostObserver::OnHostWillProcessBoundsChange,
+                       this);
   }
 
   const auto preferred_scale =
@@ -275,8 +283,8 @@ void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   }
   DCHECK_GT(on_bounds_changed_recursion_depth_, 0);
   if (--on_bounds_changed_recursion_depth_ == 0) {
-    for (WindowTreeHostObserver& observer : observers())
-      observer.OnHostDidProcessBoundsChange(this);
+    observers().Notify(&WindowTreeHostObserver::OnHostDidProcessBoundsChange,
+                       this);
   }
 }
 
@@ -358,14 +366,6 @@ void WindowTreeHostPlatform::OnOcclusionStateChanged(
 int64_t WindowTreeHostPlatform::OnStateUpdate(
     const PlatformWindowDelegate::State& old,
     const PlatformWindowDelegate::State& latest) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Notify the fullscreen type change before the window state change to reflect
-  // the immersive status at OnWindowStateChanged.
-  if (old.fullscreen_type != latest.fullscreen_type) {
-    OnFullscreenTypeChanged(old.fullscreen_type, latest.fullscreen_type);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   if (old.window_state != latest.window_state) {
     OnWindowStateChanged(old.window_state, latest.window_state);
   }
@@ -409,17 +409,6 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
   compositor()->SetLocalSurfaceIdFromParent(window()->GetLocalSurfaceId());
 
   return window()->GetLocalSurfaceId().parent_sequence_number();
-}
-
-void WindowTreeHostPlatform::SetFrameRateThrottleEnabled(bool enabled) {
-  if (enabled)
-    HostFrameRateThrottler::GetInstance().AddHost(this);
-  else
-    HostFrameRateThrottler::GetInstance().RemoveHost(this);
-}
-
-void WindowTreeHostPlatform::DisableNativeWindowOcclusion() {
-  SetNativeWindowOcclusionEnabled(false);
 }
 
 }  // namespace aura

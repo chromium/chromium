@@ -175,9 +175,12 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiEmoji) {
   EXPECT_TRUE(glyph_from_font_with_vs16);
   EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
 
-  hb_codepoint_t glyph_from_font_without_vs =
-      GetGlyphForEmojiVSFromFontWithBaseCharOnly(character, variation_selector);
-  EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
+  if (!RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
+    hb_codepoint_t glyph_from_font_without_vs =
+        GetGlyphForEmojiVSFromFontWithBaseCharOnly(character,
+                                                   variation_selector);
+    EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
+  }
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiText) {
@@ -198,9 +201,12 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiText) {
       GetGlyphForEmojiVSFromFontWithVS16(character, variation_selector);
   EXPECT_EQ(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
 
-  hb_codepoint_t glyph_from_font_without_vs =
-      GetGlyphForEmojiVSFromFontWithBaseCharOnly(character, variation_selector);
-  EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
+  if (!RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
+    hb_codepoint_t glyph_from_font_without_vs =
+        GetGlyphForEmojiVSFromFontWithBaseCharOnly(character,
+                                                   variation_selector);
+    EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
+  }
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
@@ -221,9 +227,12 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVariantEmojiUnicode) {
   EXPECT_TRUE(glyph_from_font_with_vs16);
   EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
 
-  hb_codepoint_t glyph_from_font_without_vs =
-      GetGlyphForEmojiVSFromFontWithBaseCharOnly(character, variation_selector);
-  EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
+  if (!RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
+    hb_codepoint_t glyph_from_font_without_vs =
+        GetGlyphForEmojiVSFromFontWithBaseCharOnly(character,
+                                                   variation_selector);
+    EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
+  }
 }
 
 TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVSOverrideVariantEmoji) {
@@ -244,9 +253,12 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVSOverrideVariantEmoji) {
       GetGlyphForEmojiVSFromFontWithVS16(character, variation_selector);
   EXPECT_EQ(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
 
-  hb_codepoint_t glyph_from_font_without_vs =
-      GetGlyphForEmojiVSFromFontWithBaseCharOnly(character, variation_selector);
-  EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
+  if (!RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
+    hb_codepoint_t glyph_from_font_without_vs =
+        GetGlyphForEmojiVSFromFontWithBaseCharOnly(character,
+                                                   variation_selector);
+    EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
+  }
 }
 
 // Test emoji variation selectors support in system fallback. We are only
@@ -259,7 +271,6 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestSystemFallbackEmojiVS) {
       true);
 
   HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
-  HarfBuzzFace::SetIsSystemFallbackStage(true);
 
   UChar32 character = kShakingFaceEmoji;
 

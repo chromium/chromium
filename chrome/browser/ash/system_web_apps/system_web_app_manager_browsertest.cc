@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+
 #include <string>
 #include <tuple>
 #include <utility>
@@ -39,7 +41,6 @@
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
@@ -89,6 +90,7 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/test/event_generator.h"
@@ -177,7 +179,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
 
   // URL has been added to be within scope for the SWA.
-  GURL in_scope_for_swa_page("http://example.com/in-scope");
+  GURL in_scope_for_swa_page("https://example.com/in-scope");
   content::NavigateToURLBlockUntilNavigationsComplete(
       app_browser->tab_strip_model()->GetActiveWebContents(),
       in_scope_for_swa_page, 1);
@@ -709,12 +711,6 @@ class SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
     LaunchFromFileSystemProvider_ReadFiles) {
-  // TODO(b/287166490): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287166490.";
-  }
-
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
@@ -761,12 +757,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
     LaunchFromFileSystemProvider_WriteFileFails) {
-  // TODO(b/287166490): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287166490.";
-  }
-
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
@@ -791,12 +781,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
     LaunchFromFileSystemProvider_DeleteFileFails) {
-  // TODO(b/287166490): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287166490.";
-  }
-
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
@@ -1286,10 +1270,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
   WaitForTestSystemAppInstall();
   auto app_id = GetManager().GetAppIdForSystemApp(GetAppType()).value();
 
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents.get());
-  auto& tab_helper =
-      *web_app::WebAppTabHelper::FromWebContents(web_contents.get());
+  std::unique_ptr<content::WebContents> web_contents_owned =
+      CreateTestWebContents();
+  content::WebContents* web_contents = web_contents_owned.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents_owned),
+                                                  /*foreground=*/true);
+  auto& tab_helper = *web_app::WebAppTabHelper::FromWebContents(web_contents);
 
   // Simulate when first navigating into app's launch url.
   {
@@ -1298,7 +1284,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(app_id, *web_app::WebAppTabHelper::GetAppId(web_contents.get()));
+    ASSERT_EQ(app_id, *web_app::WebAppTabHelper::GetAppId(web_contents));
   }
 
   // Simulate loading app's embedded child-frame that has origin trials.
@@ -1325,10 +1311,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
   WaitForTestSystemAppInstall();
   auto app_id = GetManager().GetAppIdForSystemApp(GetAppType()).value();
 
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents.get());
-  auto& tab_helper =
-      *web_app::WebAppTabHelper::FromWebContents(web_contents.get());
+  std::unique_ptr<content::WebContents> web_contents_owned =
+      CreateTestWebContents();
+  content::WebContents* web_contents = web_contents_owned.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents_owned),
+                                                  /*foreground=*/true);
+  auto& tab_helper = *web_app::WebAppTabHelper::FromWebContents(web_contents);
 
   // Simulate when first navigating into app's launch url.
   {
@@ -1337,7 +1325,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(app_id, *web_app::WebAppTabHelper::GetAppId(web_contents.get()));
+    ASSERT_EQ(app_id, *web_app::WebAppTabHelper::GetAppId(web_contents));
   }
 
   // Simulate same-document navigation.
@@ -1361,10 +1349,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
   WaitForTestSystemAppInstall();
   auto app_id = GetManager().GetAppIdForSystemApp(GetAppType()).value();
 
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents.get());
-  auto& tab_helper =
-      *web_app::WebAppTabHelper::FromWebContents(web_contents.get());
+  std::unique_ptr<content::WebContents> web_contents_owned =
+      CreateTestWebContents();
+  content::WebContents* web_contents = web_contents_owned.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents_owned),
+                                                  /*foreground=*/true);
+  auto& tab_helper = *web_app::WebAppTabHelper::FromWebContents(web_contents);
 
   // Simulate when first navigating into app's launch url.
   {
@@ -1373,7 +1363,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(app_id, *web_app::WebAppTabHelper::GetAppId(web_contents.get()));
+    ASSERT_EQ(app_id, *web_app::WebAppTabHelper::GetAppId(web_contents));
   }
 
   // Simulate navigating to a different site without origin trials.
@@ -1383,7 +1373,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials).Times(0);
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(nullptr, web_app::WebAppTabHelper::GetAppId(web_contents.get()));
+    ASSERT_EQ(nullptr, web_app::WebAppTabHelper::GetAppId(web_contents));
   }
 
   // Simulate navigating back to a SWA with origin trials.
@@ -1393,7 +1383,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(app_id, *web_app::WebAppTabHelper::GetAppId(web_contents.get()));
+    ASSERT_EQ(app_id, *web_app::WebAppTabHelper::GetAppId(web_contents));
   }
 
   // Simulate navigating the main frame to a url embedded by SWA. This url has
@@ -1405,7 +1395,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials).Times(0);
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(nullptr, web_app::WebAppTabHelper::GetAppId(web_contents.get()));
+    ASSERT_EQ(nullptr, web_app::WebAppTabHelper::GetAppId(web_contents));
   }
 }
 
@@ -1653,7 +1643,7 @@ class SystemWebAppManagerContextMenuBrowserTest
     params.link_text = std::u16string();
     params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
     params.page_url = web_contents->GetVisibleURL();
-    params.source_type = ui::MENU_SOURCE_NONE;
+    params.source_type = ui::mojom::MenuSourceType::kNone;
     auto menu = std::make_unique<TestRenderViewContextMenu>(
         *web_contents->GetPrimaryMainFrame(), params);
     menu->Init();
@@ -1789,7 +1779,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSingleWindowTest, WindowReuse) {
 
   // Third launch reuses the window despite different URL.
   apps::AppLaunchParams params = LaunchParamsForApp(GetAppType());
-  params.override_url = GURL("http://example.com/in-scope");
+  params.override_url = GURL("https://example.com/in-scope");
   EXPECT_EQ(web_contents, LaunchAppWithoutWaiting(std::move(params)));
 }
 

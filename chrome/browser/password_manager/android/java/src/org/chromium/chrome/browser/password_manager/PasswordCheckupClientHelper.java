@@ -121,4 +121,34 @@ public interface PasswordCheckupClientHelper {
             String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {}
+
+    /**
+     * Asynchronously returns the number of weak credentials for the provided account.
+     *
+     * @param referrer the place that requested number of weak credentials.
+     * @param accountName the account name that is syncing passwords. If no value was provided local
+     *     account will be used.
+     * @param successCallback callback called with the number of weak passwords.
+     * @param failureCallback callback called if encountered an error.
+     */
+    default void getWeakCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {}
+
+    /**
+     * Asynchronously returns the number of reused credentials for the provided account.
+     *
+     * @param referrer the place that requested number of reused credentials.
+     * @param accountName the account name that is syncing passwords. If no value was provided local
+     *     account will be used.
+     * @param successCallback callback called with the number of reused passwords.
+     * @param failureCallback callback called if encountered an error.
+     */
+    default void getReusedCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {}
 }

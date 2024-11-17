@@ -8,20 +8,20 @@
 #include <stdint.h>
 
 #include <optional>
-#include <set>
 #include <string>
 
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
+
+namespace ui {
+struct AXTreeData;
+}
 
 namespace blink {
 
@@ -34,13 +34,13 @@ class MODULES_EXPORT BlinkAXTreeSource
   // Pass truncate_inline_textboxes_ if inline textboxes should be removed
   // from the serialized tree, even if they are already available in the cache.
   explicit BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache,
-                             bool truncate_inline_textboxes);
+                             bool is_snapshot);
   ~BlinkAXTreeSource() override;
 
   static BlinkAXTreeSource* Create(AXObjectCacheImpl& ax_object_cache,
-                                   bool truncate_inline_textboxes = false) {
+                                   bool is_snapshot = false) {
     return MakeGarbageCollected<BlinkAXTreeSource>(ax_object_cache,
-                                                   truncate_inline_textboxes);
+                                                   is_snapshot);
   }
 
   // AXTreeSource implementation.
@@ -81,6 +81,11 @@ class MODULES_EXPORT BlinkAXTreeSource
 
   const AXObject* GetFocusedObject() const;
 
+  // Truncate inline text boxes in snapshots, as they are just extra noise for
+  // consumers of the entire tree (e.g. AXTreeSnapshotter). This avoids passing
+  // the inline text boxes, even if a previous AXContext had built them.
+  bool ShouldTruncateInlineTextBoxes() const { return is_snapshot_; }
+
   // Whether we should highlight annotation results visually on the page
   // for debugging.
   bool image_annotation_debugging_ = false;
@@ -98,7 +103,7 @@ class MODULES_EXPORT BlinkAXTreeSource
   // how to turn on automatic image labels is provided only once.
   mutable std::optional<int32_t> first_unlabeled_image_id_ = std::nullopt;
 
-  const bool truncate_inline_textboxes_;
+  const bool is_snapshot_;
 };
 
 }  // namespace blink

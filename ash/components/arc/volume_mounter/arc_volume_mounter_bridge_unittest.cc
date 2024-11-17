@@ -14,17 +14,21 @@
 #include "ash/components/arc/test/fake_volume_mounter_instance.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/components/disks/disks_prefs.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -92,6 +96,7 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
     ash::UpstartClient::InitializeFake();
     ash::disks::DiskMountManager::InitializeForTesting(
         new ash::disks::FakeDiskMountManager());
+    chromeos::PowerManagerClient::InitializeFake();
 
     bridge_ = std::make_unique<ArcVolumeMounterBridge>(
         &context_, arc_service_manager_.arc_bridge_service());
@@ -122,6 +127,7 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
   void TearDown() override {
     base::SysInfo::ResetChromeOSVersionInfoForTest();
     bridge_.reset();
+    chromeos::PowerManagerClient::Shutdown();
     ash::disks::DiskMountManager::Shutdown();
     ash::UpstartClient::Shutdown();
   }
@@ -535,9 +541,9 @@ TEST_F(ArcVolumeMounterBridgeTest,
       [](const std::string& job_name, const std::vector<std::string>& env) {
         if (job_name == kArcVmMediaSharingServicesJobName) {
           return ash::FakeUpstartClient::StartJobResult(
-              false /* success */, ash::UpstartClient::kAlreadyStartedError);
+              /*success=*/false, ash::UpstartClient::kAlreadyStartedError);
         }
-        return ash::FakeUpstartClient::StartJobResult(false /* success */);
+        return ash::FakeUpstartClient::StartJobResult(/*success=*/false);
       }));
 
   // SetUpExternalStorageMountPoints still succeeds.
@@ -562,10 +568,10 @@ TEST_F(ArcVolumeMounterBridgeTest,
   // When called with invalid MediaProvider UID, SetUpExternalStorageMountPoints
   // returns false in the callback.
   base::test::TestFuture<bool> future1, future2;
-  bridge()->SetUpExternalStorageMountPoints(20000 /* media_provider_uid */,
+  bridge()->SetUpExternalStorageMountPoints(/*media_provider_uid=*/20000,
                                             future1.GetCallback());
   EXPECT_FALSE(future1.Get());
-  bridge()->SetUpExternalStorageMountPoints(9999 /* media_provider_uid */,
+  bridge()->SetUpExternalStorageMountPoints(/*media_provider_uid=*/9999,
                                             future2.GetCallback());
   EXPECT_FALSE(future2.Get());
 
@@ -599,6 +605,195 @@ TEST_F(ArcVolumeMounterBridgeTest,
   bridge()->RequestAllMountPoints();
   task_environment()->RunUntilIdle();
   EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
+}
+
+// Tests that DropArcCaches() can be called serially multiple times and calls
+// back the correct callback.
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Sequential) {
+  bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
+
+  base::test::TestFuture<bool> future1, future2;
+
+  // Schedule one DropArcCaches request.
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED1"),
+      future1.GetCallback());
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC finishes the first request successfully.
+  volume_mounter_instance()->RunCallback(/*success=*/true);
+
+  // The callback has run with true and the timer is stopped.
+  EXPECT_TRUE(future1.Get());
+  EXPECT_FALSE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // Schedule another DropArcCaches request.
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED2"),
+      future2.GetCallback());
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC finishes the second request unsuccessfully.
+  volume_mounter_instance()->RunCallback(/*success=*/false);
+
+  // The callback has run with false and the timer is stopped.
+  EXPECT_FALSE(future2.Get());
+  EXPECT_FALSE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+}
+
+// Tests that DropArcCaches() can be called concurrently multiple times and
+// calls back the correct callback.
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Concurrent) {
+  bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
+
+  base::test::TestFuture<bool> future1, future2;
+
+  // Schedule multiple DropArcCaches requests.
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED1"),
+      future1.GetCallback());
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED2"),
+      future2.GetCallback());
+
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC finishes the first request successfully.
+  volume_mounter_instance()->RunCallback(/*success=*/true);
+
+  // The first callback has run with true, but the second one hasn't run yet.
+  EXPECT_TRUE(future1.Get());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC finishes the second request unsuccessfully.
+  volume_mounter_instance()->RunCallback(/*success=*/false);
+
+  // The second callback has run with false.
+  EXPECT_FALSE(future2.Get());
+  EXPECT_FALSE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+}
+
+// Tests the scenario where PrepareForRemovableMediaUnmount mojo call times out.
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Timeout) {
+  bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
+
+  base::test::TestFuture<bool> future;
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED"),
+      future.GetCallback());
+
+  // The timer is fired before ARC replies.
+  bridge()->GetUnmountTimerForTesting()->FireNow();
+  volume_mounter_instance()->RunCallback(/*success=*/true);
+
+  // The callback has run with false due to timeout.
+  EXPECT_FALSE(future.Get());
+}
+
+// Tests the scenario when the device is going to sleep.
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Suspend) {
+  bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
+
+  base::test::TestFuture<bool> future1, future2, future3, future4, future5;
+
+  // Device is about to suspend.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent::IDLE);
+
+  // Schedule multiple DropArcCaches requests.
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED1"),
+      future1.GetCallback());
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED2"),
+      future2.GetCallback());
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED3"),
+      future3.GetCallback());
+
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC finishes the first request successfully.
+  volume_mounter_instance()->RunCallback(/*success=*/true);
+
+  // The first callback has run with true, but the other ones haven't run yet.
+  EXPECT_TRUE(future1.Get());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_FALSE(future3.IsReady());
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC unmounted all the removable media and dropped caches.
+  bridge()->OnReadyToSuspend(/*success=*/true);
+
+  // The second and the third callback have run with true.
+  EXPECT_TRUE(future2.Get());
+  EXPECT_TRUE(future3.Get());
+  EXPECT_FALSE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // Further requests will be called back immediately with true.
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED4"),
+      future4.GetCallback());
+  EXPECT_TRUE(future4.Get());
+  EXPECT_FALSE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // Device wakes up.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
+
+  // ARC calls back for the second DropArcCaches request (from before the
+  // suspension) after the device wakes up. Ensure that this doesn't fail.
+  volume_mounter_instance()->RunCallback(/*success=*/true);
+
+  // New requests after the device wakes up will make mojo calls to ARC.
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED5"),
+      future5.GetCallback());
+  EXPECT_FALSE(future5.IsReady());
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+  volume_mounter_instance()->RunCallback(/*success=*/true);
+  EXPECT_TRUE(future5.Get());
+}
+
+// Tests the scenario when the device suspension is canceled before ARC calls
+// OnReadyToSuspend.
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_SuspendCanceled) {
+  bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
+
+  base::test::TestFuture<bool> future1, future2;
+
+  // Device is about to suspend.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent::IDLE);
+
+  // Schedule DropArcCaches request.
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED1"),
+      future1.GetCallback());
+
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+  EXPECT_FALSE(future1.IsReady());
+
+  // Suspension is canceled before ARC calls OnReadyToSuspend.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
+  bridge()->OnReadyToSuspend(/*success=*/true);
+
+  // The first callback has run with true.
+  EXPECT_TRUE(future1.Get());
+  EXPECT_FALSE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+
+  // ARC calls back for the first DropArcCaches request (from before the
+  // suspension) after the device wakes up. Ensure that this doesn't fail.
+  volume_mounter_instance()->RunCallback(/*success=*/true);
+
+  // New requests after the device wakes up will make mojo calls to ARC.
+  bridge()->DropArcCaches(
+      ash::CrosDisksClient::GetRemovableDiskMountPoint().Append("UNTITLED2"),
+      future2.GetCallback());
+  EXPECT_TRUE(bridge()->GetUnmountTimerForTesting()->IsRunning());
+  EXPECT_FALSE(future2.IsReady());
+  volume_mounter_instance()->RunCallback(/*success=*/true);
+  EXPECT_TRUE(future2.Get());
 }
 
 }  // namespace

@@ -62,7 +62,8 @@ class HttpAuthCoordinator {
       content::BrowserContext* browser_context,
       const net::AuthChallengeInfo& auth_info,
       const content::GlobalRequestID& request_id,
-      bool is_request_for_primary_main_frame,
+      bool is_request_for_primary_main_frame_navigation,
+      bool is_request_for_navigation,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
@@ -88,7 +89,8 @@ class HttpAuthCoordinator {
          content::WebContents* web_contents,
          const net::AuthChallengeInfo& auth_info,
          const content::GlobalRequestID& request_id,
-         bool is_request_for_primary_main_frame,
+         bool is_request_for_primary_main_frame_navigation,
+         bool is_request_for_navigation,
          const GURL& url,
          scoped_refptr<net::HttpResponseHeaders> response_headers,
          content::LoginDelegate::LoginAuthRequiredCallback
@@ -131,7 +133,8 @@ class HttpAuthCoordinator {
     base::WeakPtr<content::WebContents> web_contents_;
     const net::AuthChallengeInfo auth_info_;
     const content::GlobalRequestID request_id_;
-    const bool is_request_for_primary_main_frame_;
+    const bool is_request_for_primary_main_frame_navigation_;
+    const bool is_request_for_navigation_;
     const GURL url_;
     const scoped_refptr<net::HttpResponseHeaders> response_headers_;
 

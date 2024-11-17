@@ -441,11 +441,6 @@ class TabStripViewController: UIViewController,
   }
 
   // MARK: - Public
-
-  @objc func setNewTabButtonOnTabStripIPHHighlighted(_ iphHighlighted: Bool) {
-    newTabButton.IPHHighlighted = iphHighlighted
-  }
-
   // MARK: - TabStripGroupCellDelegate
 
   func collapseOrExpandTapped(for cell: TabStripGroupCell?) {

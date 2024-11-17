@@ -25,7 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/new_tab_page_resources.h"
+#include "chrome/grit/new_tab_page_untrusted_resources.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/common/url_constants.h"
@@ -111,17 +111,12 @@ void UntrustedSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(profile_);
-  URLBlocklistState blocklist_state = service->GetURLBlocklistState(url);
-  if (blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST) {
-    LOG(WARNING) << "URL is blocked by a policy.";
+  GURL url_param = GURL(url.query());
+  if (url_param.is_valid() && IsURLBlockedByPolicy(url_param)) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
     return;
   }
-
   const std::string path = url.has_path() ? url.path().substr(1) : "";
-  GURL url_param = GURL(url.query());
   if (path == "one-google-bar" && one_google_bar_service_) {
     std::string query_params;
     net::GetValueForKeyInQuery(url, "paramsencoded", &query_params);
@@ -286,14 +281,13 @@ void UntrustedSource::ServeBackgroundImage(
     const std::string& position_y,
     const std::string& scrim_display,
     content::URLDataSource::GotDataCallback callback) {
-  if (!url.is_valid() || !(url.SchemeIs(url::kHttpsScheme) ||
-                           url.SchemeIs(content::kChromeUIUntrustedScheme))) {
+  if (!IsURLAllowed(url)) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
     return;
   }
   ui::TemplateReplacements replacements;
   replacements["url"] = url.spec();
-  if (url_2x.is_valid()) {
+  if (IsURLAllowed(url_2x)) {
     replacements["backgroundUrl"] =
         base::StringPrintf("image-set(url(%s) 1x, url(%s) 2x)",
                            url.spec().c_str(), url_2x.spec().c_str());
@@ -310,4 +304,26 @@ void UntrustedSource::ServeBackgroundImage(
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(FormatTemplate(
           IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_HTML, replacements)));
+}
+
+bool UntrustedSource::IsURLAllowed(const GURL& url) {
+  if (!url.is_valid() ||
+      !(url.SchemeIs(url::kHttpsScheme) ||
+        url.SchemeIs(content::kChromeUIUntrustedScheme)) ||
+      IsURLBlockedByPolicy(url)) {
+    LOG(WARNING) << "URL is not allowed.";
+    return false;
+  }
+  return true;
+}
+
+bool UntrustedSource::IsURLBlockedByPolicy(const GURL& url) {
+  PolicyBlocklistService* service =
+      PolicyBlocklistFactory::GetForBrowserContext(profile_);
+  URLBlocklistState blocklist_state = service->GetURLBlocklistState(url);
+  if (blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST) {
+    LOG(WARNING) << "URL is blocked by a policy.";
+    return true;
+  }
+  return false;
 }

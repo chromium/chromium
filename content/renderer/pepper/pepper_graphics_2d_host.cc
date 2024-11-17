@@ -20,9 +20,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/gpu/context_provider.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_sizes.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "content/public/renderer/render_thread.h"
@@ -74,11 +72,6 @@ namespace content {
 namespace {
 
 const int64_t kOffscreenCallbackDelayMs = 1000 / 30;  // 30 fps
-
-// Convert SharedBitmap to SharedImage for pepper.
-BASE_FEATURE(kPepperSharedBitmapToSharedImage,
-             "PepperSharedBitmapToSharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Converts a rect inside an image of the given dimensions. The rect may be
 // NULL to indicate it should be the entire image. If the rect is outside of
@@ -357,7 +350,6 @@ bool PepperGraphics2DHost::BindToInstance(
   }
 
   cached_bitmap_ = nullptr;
-  cached_bitmap_registration_ = cc::SharedBitmapIdRegistration();
   composited_output_modified_ = true;
 
   bound_instance_ = new_instance;
@@ -443,7 +435,6 @@ gfx::Size PepperGraphics2DHost::Size() const {
 
 void PepperGraphics2DHost::ClearCache() {
   cached_bitmap_ = nullptr;
-  cached_bitmap_registration_ = cc::SharedBitmapIdRegistration();
 }
 
 int32_t PepperGraphics2DHost::OnHostMsgPaintImageData(
@@ -596,7 +587,6 @@ int32_t PepperGraphics2DHost::OnHostMsgReadImageData(
 
 void PepperGraphics2DHost::ReleaseSoftwareCallback(
     scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
-    cc::SharedBitmapIdRegistration registration,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
     const gpu::SyncToken& sync_token,
@@ -607,12 +597,10 @@ void PepperGraphics2DHost::ReleaseSoftwareCallback(
   // need_flush_ack_ set).
   if (need_flush_ack_ && bound_instance_) {
     cached_bitmap_ = std::move(bitmap);
-    cached_bitmap_registration_ = std::move(registration);
     cached_bitmap_shared_image_ = std::move(shared_image);
     cached_bitmap_shared_image_interface_ = std::move(shared_image_interface);
   } else {
     cached_bitmap_ = nullptr;
-    cached_bitmap_registration_ = cc::SharedBitmapIdRegistration();
     cached_bitmap_shared_image_ = nullptr;
     cached_bitmap_shared_image_interface_ = nullptr;
   }
@@ -639,7 +627,6 @@ void PepperGraphics2DHost::ReleaseTextureCallback(
 }
 
 bool PepperGraphics2DHost::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* transferable_resource,
     viz::ReleaseCallback* release_callback) {
   // Reuse the |main_thread_context_| if it is not lost. If it is lost, we can't
@@ -769,102 +756,59 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
 
   gfx::Size pixel_image_size(image_data_->width(), image_data_->height());
   scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap;
-  cc::SharedBitmapIdRegistration registration;
   scoped_refptr<gpu::ClientSharedImage> shared_image;
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface =
       RenderThreadImpl::current()->GetRenderThreadSharedImageInterface();
 
-  if (base::FeatureList::IsEnabled(kPepperSharedBitmapToSharedImage)) {
-    if (cached_bitmap_) {
-      // |shared_image_interface| changes after the gpu channel is lost.
-      // Reuse the shared bitmap only when sii remains the same.
-      if (cached_bitmap_->size() == pixel_image_size &&
-          shared_image_interface == cached_bitmap_shared_image_interface_) {
-        shared_bitmap = std::move(cached_bitmap_);
-        shared_image = std::move(cached_bitmap_shared_image_);
-      } else {
-        cached_bitmap_ = nullptr;
-        cached_bitmap_shared_image_ = nullptr;
-        cached_bitmap_shared_image_interface_ = nullptr;
-      }
+  if (cached_bitmap_) {
+    // |shared_image_interface| changes after the gpu channel is lost.
+    // Reuse the shared bitmap only when sii remains the same.
+    if (cached_bitmap_->size() == pixel_image_size &&
+        shared_image_interface == cached_bitmap_shared_image_interface_) {
+      shared_bitmap = std::move(cached_bitmap_);
+      shared_image = std::move(cached_bitmap_shared_image_);
+    } else {
+      cached_bitmap_ = nullptr;
+      cached_bitmap_shared_image_ = nullptr;
+      cached_bitmap_shared_image_interface_ = nullptr;
     }
+  }
 
     // Without shared_image_interface, we won't be able to prepare the resources
     // for the compositor. Will retry next time.
-    if (!shared_image_interface) {
-      return false;
-    }
-
-    if (!shared_bitmap) {
-      auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-          {viz::SinglePlaneFormat::kBGRA_8888, pixel_image_size,
-           gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
-           "PepperGraphics2DSharedBitmap"});
-
-      shared_bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-          viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
-          std::move(shared_image_mapping.mapping), pixel_image_size,
-          viz::SinglePlaneFormat::kBGRA_8888);
-      shared_image = std::move(shared_image_mapping.shared_image);
-    }
-
-    gpu::SyncToken sync_token = shared_image_interface->GenVerifiedSyncToken();
-    *transferable_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-        shared_image, sync_token, pixel_image_size,
-        viz::SinglePlaneFormat::kBGRA_8888,
-        viz::TransferableResource::ResourceSource::kPepperGraphics2D);
-
-    void* src = image_data_->Map();
-    memcpy(shared_bitmap->memory(), src,
-           viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-               pixel_image_size, viz::SinglePlaneFormat::kBGRA_8888));
-    image_data_->Unmap();
-
-    *release_callback =
-        base::BindOnce(&PepperGraphics2DHost::ReleaseSoftwareCallback,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(shared_bitmap),
-                       cc::SharedBitmapIdRegistration(),
-                       std::move(shared_image), shared_image_interface);
-  } else {
-    if (cached_bitmap_) {
-      if (cached_bitmap_->size() == pixel_image_size) {
-        shared_bitmap = std::move(cached_bitmap_);
-        registration = std::move(cached_bitmap_registration_);
-      } else {
-        cached_bitmap_ = nullptr;
-        cached_bitmap_registration_ = cc::SharedBitmapIdRegistration();
-      }
-    }
-
-    if (!shared_bitmap) {
-      viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-      base::MappedReadOnlyRegion shm =
-          viz::bitmap_allocation::AllocateSharedBitmap(
-              pixel_image_size, viz::SinglePlaneFormat::kRGBA_8888);
-      shared_bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-          id, std::move(shm.region), std::move(shm.mapping), pixel_image_size,
-          viz::SinglePlaneFormat::kRGBA_8888);
-      registration =
-          bitmap_registrar->RegisterSharedBitmapId(id, shared_bitmap);
-    }
-    void* src = image_data_->Map();
-    memcpy(shared_bitmap->memory(), src,
-           viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-               pixel_image_size, viz::SinglePlaneFormat::kRGBA_8888));
-    image_data_->Unmap();
-
-    *transferable_resource =
-        viz::TransferableResource::MakeSoftwareSharedBitmap(
-            shared_bitmap->id(), gpu::SyncToken(), pixel_image_size,
-            viz::SinglePlaneFormat::kRGBA_8888,
-            viz::TransferableResource::ResourceSource::kPepperGraphics2D);
-
-    *release_callback =
-        base::BindOnce(&PepperGraphics2DHost::ReleaseSoftwareCallback,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(shared_bitmap),
-                       std::move(registration), /*shared_image=*/nullptr,
-                       /*shared_image_interface=*/nullptr);
+  if (!shared_image_interface) {
+    return false;
   }
+
+  if (!shared_bitmap) {
+    auto shared_image_mapping = shared_image_interface->CreateSharedImage(
+        {viz::SinglePlaneFormat::kBGRA_8888, pixel_image_size,
+         gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+         "PepperGraphics2DSharedBitmap"});
+
+    shared_bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
+        viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
+        std::move(shared_image_mapping.mapping), pixel_image_size,
+        viz::SinglePlaneFormat::kBGRA_8888);
+    shared_image = std::move(shared_image_mapping.shared_image);
+  }
+
+  gpu::SyncToken sync_token = shared_image_interface->GenVerifiedSyncToken();
+  *transferable_resource = viz::TransferableResource::MakeSoftwareSharedImage(
+      shared_image, sync_token, pixel_image_size,
+      viz::SinglePlaneFormat::kBGRA_8888,
+      viz::TransferableResource::ResourceSource::kPepperGraphics2D);
+
+  void* src = image_data_->Map();
+  memcpy(shared_bitmap->memory(), src,
+         viz::ResourceSizes::CheckedSizeInBytes<size_t>(
+             pixel_image_size, viz::SinglePlaneFormat::kBGRA_8888));
+  image_data_->Unmap();
+
+  *release_callback =
+      base::BindOnce(&PepperGraphics2DHost::ReleaseSoftwareCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(shared_bitmap),
+                     std::move(shared_image), shared_image_interface);
 
   composited_output_modified_ = false;
 

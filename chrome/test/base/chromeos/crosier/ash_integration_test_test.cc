@@ -17,9 +17,6 @@ IN_PROC_BROWSER_TEST_F(AshIntegrationTestTest, Basics) {
   // Verify that installing system apps doesn't crash or flake.
   InstallSystemApps();
 
-  // Verify that the Wayland server starts and doesn't crash or flake.
-  WaitForAshFullyStarted();
-
   // Verify an active user exists.
   ASSERT_TRUE(GetActiveUserProfile());
 

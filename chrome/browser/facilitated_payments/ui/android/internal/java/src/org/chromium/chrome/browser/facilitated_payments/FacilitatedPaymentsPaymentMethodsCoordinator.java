@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.UI_EVENT_LISTENER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
 
@@ -16,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -51,8 +53,13 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
-    public boolean showSheet(List<BankAccount> bankAccounts) {
-        return mMediator.showSheet(bankAccounts);
+    public void showSheet(List<BankAccount> bankAccounts) {
+        mMediator.showSheet(bankAccounts);
+    }
+
+    @Override
+    public void showSheetForEwallet(List<Ewallet> eWallets) {
+        mMediator.showSheetForEwallet(eWallets);
     }
 
     @Override
@@ -92,6 +99,7 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
                 .with(VISIBLE_STATE, HIDDEN)
                 .with(SCREEN, UNINITIALIZED)
                 .with(DISMISS_HANDLER, mediator::onDismissed)
+                .with(UI_EVENT_LISTENER, mediator::onUiEvent)
                 .build();
     }
 

@@ -35,14 +35,14 @@ public class AutofillManagerWrapper {
             "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
 
     /** The observer of suggestion window. */
-    public static interface InputUIObserver {
-        void onInputUIShown();
+    public static interface InputUiObserver {
+        void onInputUiShown();
     }
 
-    private static class AutofillInputUIMonitor extends AutofillManager.AutofillCallback {
+    private static class AutofillInputUiMonitor extends AutofillManager.AutofillCallback {
         private WeakReference<AutofillManagerWrapper> mManager;
 
-        public AutofillInputUIMonitor(AutofillManagerWrapper manager) {
+        public AutofillInputUiMonitor(AutofillManagerWrapper manager) {
             mManager = new WeakReference<AutofillManagerWrapper>(manager);
         }
 
@@ -50,19 +50,19 @@ public class AutofillManagerWrapper {
         public void onAutofillEvent(View view, int virtualId, int event) {
             AutofillManagerWrapper manager = mManager.get();
             if (manager == null) return;
-            manager.mIsAutofillInputUIShowing = (event == EVENT_INPUT_SHOWN);
-            if (event == EVENT_INPUT_SHOWN) manager.notifyInputUIChange();
+            manager.mIsAutofillInputUiShowing = (event == EVENT_INPUT_SHOWN);
+            if (event == EVENT_INPUT_SHOWN) manager.notifyInputUiChange();
         }
     }
 
     private static boolean sIsLoggable;
     private final String mPackageName;
     private AutofillManager mAutofillManager;
-    private boolean mIsAutofillInputUIShowing;
-    private AutofillInputUIMonitor mMonitor;
+    private boolean mIsAutofillInputUiShowing;
+    private AutofillInputUiMonitor mMonitor;
     private boolean mDestroyed;
     private boolean mDisabled;
-    private ArrayList<WeakReference<InputUIObserver>> mInputUIObservers;
+    private ArrayList<WeakReference<InputUiObserver>> mInputUiObservers;
     // Indicates if AwG is the current Android autofill service.
     private final boolean mIsAwGCurrentAutofillService;
 
@@ -104,7 +104,7 @@ public class AutofillManagerWrapper {
             mPackageName = "";
             mIsAwGCurrentAutofillService = false;
         }
-        mMonitor = new AutofillInputUIMonitor(this);
+        mMonitor = new AutofillInputUiMonitor(this);
         mAutofillManager.registerCallback(mMonitor);
     }
 
@@ -183,10 +183,10 @@ public class AutofillManagerWrapper {
         mAutofillManager.requestAutofill(parent, virtualId, absBounds);
     }
 
-    public boolean isAutofillInputUIShowing() {
+    public boolean isAutofillInputUiShowing() {
         if (mDisabled || checkAndWarnIfDestroyed()) return false;
-        if (isLoggable()) log("isAutofillInputUIShowing: " + mIsAutofillInputUIShowing);
-        return mIsAutofillInputUIShowing;
+        if (isLoggable()) log("isAutofillInputUiShowing: " + mIsAutofillInputUiShowing);
+        return mIsAutofillInputUiShowing;
     }
 
     public void destroy() {
@@ -229,18 +229,18 @@ public class AutofillManagerWrapper {
         return mDestroyed;
     }
 
-    public void addInputUIObserver(InputUIObserver observer) {
+    public void addInputUiObserver(InputUiObserver observer) {
         if (observer == null) return;
-        if (mInputUIObservers == null) {
-            mInputUIObservers = new ArrayList<WeakReference<InputUIObserver>>();
+        if (mInputUiObservers == null) {
+            mInputUiObservers = new ArrayList<WeakReference<InputUiObserver>>();
         }
-        mInputUIObservers.add(new WeakReference<InputUIObserver>(observer));
+        mInputUiObservers.add(new WeakReference<InputUiObserver>(observer));
     }
 
     @VisibleForTesting
-    public void notifyInputUIChange() {
-        for (InputUIObserver observer : CollectionUtil.strengthen(mInputUIObservers)) {
-            observer.onInputUIShown();
+    public void notifyInputUiChange() {
+        for (InputUiObserver observer : CollectionUtil.strengthen(mInputUiObservers)) {
+            observer.onInputUiShown();
         }
     }
 

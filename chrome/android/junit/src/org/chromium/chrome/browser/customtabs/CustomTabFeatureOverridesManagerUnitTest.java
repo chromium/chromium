@@ -44,17 +44,19 @@ public class CustomTabFeatureOverridesManagerUnitTest {
             new HashSet<>(Arrays.asList("ThisFeature", "ThatFeature"));
 
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock public BaseCustomTabActivity mActivity;
 
     @Before
     public void setUp() {
         CustomTabFeatureOverridesManager.setAllowedFeaturesForTesting(ALLOWED_FEATURES);
+        when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
     }
 
     @Test
     public void testOverrideEnabled() {
         var list = new ArrayList<>(List.of("ThisFeature", "ThatFeature"));
         setUpIntentWithFeatures(list, null);
-        var manager = new CustomTabFeatureOverridesManager(mIntentDataProvider);
+        var manager = new CustomTabFeatureOverridesManager(mActivity);
 
         assertTrue(manager.isFeatureEnabled("ThisFeature"));
         assertTrue(manager.isFeatureEnabled("ThatFeature"));
@@ -64,7 +66,7 @@ public class CustomTabFeatureOverridesManagerUnitTest {
     public void testOverrideDisabled() {
         var list = new ArrayList<>(List.of("ThisFeature", "ThatFeature"));
         setUpIntentWithFeatures(null, list);
-        var manager = new CustomTabFeatureOverridesManager(mIntentDataProvider);
+        var manager = new CustomTabFeatureOverridesManager(mActivity);
 
         assertFalse(manager.isFeatureEnabled("ThisFeature"));
         assertFalse(manager.isFeatureEnabled("ThatFeature"));
@@ -75,7 +77,7 @@ public class CustomTabFeatureOverridesManagerUnitTest {
         var enableList = new ArrayList<>(List.of("ThisFeature"));
         var disableList = new ArrayList<>(List.of("ThatFeature"));
         setUpIntentWithFeatures(enableList, disableList);
-        var manager = new CustomTabFeatureOverridesManager(mIntentDataProvider);
+        var manager = new CustomTabFeatureOverridesManager(mActivity);
 
         assertTrue(manager.isFeatureEnabled("ThisFeature"));
         assertFalse(manager.isFeatureEnabled("ThatFeature"));
@@ -85,7 +87,7 @@ public class CustomTabFeatureOverridesManagerUnitTest {
     public void testNotOverridden() {
         var list = new ArrayList<>(List.of("ThisFeature"));
         setUpIntentWithFeatures(list, null);
-        var manager = new CustomTabFeatureOverridesManager(mIntentDataProvider);
+        var manager = new CustomTabFeatureOverridesManager(mActivity);
 
         assertNull(manager.isFeatureEnabled("ThatFeature"));
     }
@@ -94,7 +96,7 @@ public class CustomTabFeatureOverridesManagerUnitTest {
     public void testOverrideNotAllowed() {
         var list = new ArrayList<>(List.of("OtherFeature"));
         setUpIntentWithFeatures(list, null);
-        var manager = new CustomTabFeatureOverridesManager(mIntentDataProvider);
+        var manager = new CustomTabFeatureOverridesManager(mActivity);
 
         assertNull(manager.isFeatureEnabled("OtherFeature"));
     }
@@ -104,7 +106,7 @@ public class CustomTabFeatureOverridesManagerUnitTest {
         var enableList = new ArrayList<>(List.of("ThatFeature"));
         var disableList = new ArrayList<>(List.of("ThatFeature"));
         setUpIntentWithFeatures(enableList, disableList);
-        var manager = new CustomTabFeatureOverridesManager(mIntentDataProvider);
+        var manager = new CustomTabFeatureOverridesManager(mActivity);
 
         assertNull(manager.isFeatureEnabled("ThatFeature"));
     }
@@ -115,7 +117,7 @@ public class CustomTabFeatureOverridesManagerUnitTest {
         var disableList = new ArrayList<>(List.of("ThatFeature"));
         setUpIntentWithFeatures(enableList, disableList);
         when(mIntentDataProvider.isTrustedIntent()).thenReturn(false);
-        var manager = new CustomTabFeatureOverridesManager(mIntentDataProvider);
+        var manager = new CustomTabFeatureOverridesManager(mActivity);
 
         assertNull(manager.isFeatureEnabled("ThisFeature"));
         assertNull(manager.isFeatureEnabled("ThatFeature"));

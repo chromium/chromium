@@ -39,6 +39,12 @@ bool IsShoppingListEligible(AccountChecker* account_checker) {
   return true;
 }
 
+bool IsSubscriptionsApiEnabled(AccountChecker* account_checker) {
+  return IsRegionLockedFeatureEnabled(
+      kSubscriptionsApi, kSubscriptionsApiRegionLaunched,
+      account_checker->GetCountry(), account_checker->GetLocale());
+}
+
 bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs) {
   // 0 is fully enabled, 1 is enabled without logging, 2 is totally disabled.
   return prefs->GetInteger(optimization_guide::prefs::

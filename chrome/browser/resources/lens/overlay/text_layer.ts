@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assert} from '//resources/js/assert.js';
 import {skColorToHexColor, skColorToRgba} from '//resources/js/color_utils.js';
@@ -20,9 +20,9 @@ import {findWordsInRegion} from './find_words_in_region.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
-import {UserAction} from './lens.mojom-webui.js';
+import {SemanticEvent, UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
-import {recordLensOverlayInteraction} from './metrics_utils.js';
+import {recordLensOverlayInteraction, recordLensOverlaySemanticEvent} from './metrics_utils.js';
 import type {CursorData, SelectedRegionContextMenuData, SelectedTextContextMenuData} from './selection_overlay.js';
 import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
@@ -33,9 +33,9 @@ import type {TranslateState} from './translate_button.js';
 import {toPercent} from './values_converter.js';
 
 // Lowest font size that translate text can be rendered at in pixels.
-const MIN_FONT_SIZE = 1;
+const MIN_FONT_SIZE = 3;
 // Largest font size that translate text can be rendered at in pixels.
-const MAX_FONT_SIZE = 100;
+const MAX_FONT_SIZE = 150;
 // Highest font size where the opacity of the background should be 100%.
 const FONT_SIZE_OPAQUE_BOUND = 10;
 // Lowest font size where the opacity of the background should be transparent
@@ -277,9 +277,11 @@ export class TextLayerElement extends PolymerElement {
     this.eventTracker_.add(
         document, 'translate-mode-state-changed',
         (e: CustomEvent<TranslateState>) => {
-          this.unselectWords();
           this.shouldRenderTranslateWords = e.detail.translateModeEnabled;
           this.currentTranslateLanguage = e.detail.targetLanguage;
+          if (e.detail.shouldUnselectWords) {
+            this.unselectWords();
+          }
         });
 
     // Set up listener to listen to events from C++.
@@ -301,6 +303,11 @@ export class TextLayerElement extends PolymerElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+
+    // If there was rendered text, log a text gleam render end event.
+    if (this.renderedWords?.length > 0) {
+      recordLensOverlaySemanticEvent(SemanticEvent.kTextGleamsViewEnd);
+    }
 
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
@@ -402,11 +409,10 @@ export class TextLayerElement extends PolymerElement {
     this.selectionStartIndex = wordIndex;
     this.selectionEndIndex = wordIndex;
     this.isSelectingText = true;
-    this.dispatchTextHighlightState();
     return true;
   }
 
-  handleRightClick(event: PointerEvent) {
+  handleRightClick(event: PointerEvent): boolean {
     // If the user right-clicks a highlighted word, restore the selected text
     // context menu.
     const translatedWordIndex =
@@ -421,7 +427,9 @@ export class TextLayerElement extends PolymerElement {
         bubbles: true,
         composed: true,
       }));
+      return true;
     }
+    return false;
   }
 
   handleGestureDrag(event: GestureEvent) {
@@ -438,6 +446,9 @@ export class TextLayerElement extends PolymerElement {
       return;
     }
 
+    if (this.selectionStartIndex === undefined) {
+      this.selectionStartIndex = words.indexOf(hit);
+    }
     this.selectionEndIndex = words.indexOf(hit);
   }
 
@@ -449,8 +460,8 @@ export class TextLayerElement extends PolymerElement {
     // Return early if we are not in translate mode or there are no rendered
     // translate words.
     if (!this.shouldRenderTranslateWords ||
-        !(this.renderedTranslateLines.length > 0) ||
-        !(this.renderedTranslateWords.length > 0)) {
+        !(this.renderedTranslateLines?.length > 0) ||
+        !(this.renderedTranslateWords?.length > 0)) {
       return;
     }
 
@@ -482,9 +493,9 @@ export class TextLayerElement extends PolymerElement {
       const normalizedCenterX = centerX / this.selectionOverlayRect.width;
       const normalizedCenterY = centerY / this.selectionOverlayRect.height;
       const normalizedWidth =
-          boundingRect.width / this.selectionOverlayRect.width;
+          wordSpanElement.offsetWidth / this.selectionOverlayRect.width;
       const normalizedHeight =
-          boundingRect.height / this.selectionOverlayRect.height;
+          wordSpanElement.offsetHeight / this.selectionOverlayRect.height;
       assert(translatedLine.line.geometry);
       const rotation = translatedLine.line.geometry.boundingBox.rotation;
 
@@ -527,7 +538,8 @@ export class TextLayerElement extends PolymerElement {
 
     // On selection complete, send the selected text to C++.
     this.browserProxy.handler.issueTextSelectionRequest(
-        highlightedText, this.selectionStartIndex, this.selectionEndIndex);
+        highlightedText.replaceAll('\r\n', ' '), this.selectionStartIndex,
+        this.selectionEndIndex, this.shouldRenderTranslateWords);
     recordLensOverlayInteraction(
         INVOCATION_SOURCE,
         this.shouldRenderTranslateWords ? UserAction.kTranslateTextSelection :
@@ -565,7 +577,7 @@ export class TextLayerElement extends PolymerElement {
         }));
 
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
-        this.getHighlightedText(), this.contentLanguage,
+        this.getHighlightedText().replaceAll('\r\n', ' '), this.contentLanguage,
         this.selectionStartIndex, this.selectionEndIndex);
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kTranslateText);
   }
@@ -581,13 +593,11 @@ export class TextLayerElement extends PolymerElement {
         'hide-selected-text-context-menu', {bubbles: true, composed: true}));
     this.dispatchEvent(new CustomEvent(
         'hide-selected-region-context-menu', {bubbles: true, composed: true}));
-    this.dispatchTextHighlightState();
   }
 
   private selectWords(selectionStartIndex: number, selectionEndIndex: number) {
     this.selectionStartIndex = selectionStartIndex;
     this.selectionEndIndex = selectionEndIndex;
-    this.dispatchTextHighlightState();
   }
 
   private onTextReceived(text: Text) {
@@ -600,6 +610,11 @@ export class TextLayerElement extends PolymerElement {
     this.contentLanguage = text.contentLanguage ?? '';
     let lineNumber = 0;
     let paragraphNumber = 0;
+
+    // If there was already text, log a text gleam render end event.
+    if (this.renderedWords?.length > 0) {
+      recordLensOverlaySemanticEvent(SemanticEvent.kTextGleamsViewEnd);
+    }
 
     // Reset all old translation text.
     let detectedWordIndex = 0;
@@ -692,6 +707,10 @@ export class TextLayerElement extends PolymerElement {
     // Need to set this.renderedWords to a new array instead of
     // this.renderedWords.push() to ensure the dom-repeat updates.
     this.renderedWords = receivedWords;
+    // If there is text, log a text gleam render start event.
+    if (this.renderedWords.length > 0) {
+      recordLensOverlaySemanticEvent(SemanticEvent.kTextGleamsViewStart);
+    }
     assert(this.lineNumbers.length === this.renderedWords.length);
     assert(this.paragraphNumbers.length === this.renderedWords.length);
 
@@ -766,6 +785,7 @@ export class TextLayerElement extends PolymerElement {
       text += getTextSeparator(word);
     }
 
+    const fontFamily = loadTimeData.getString('fontfamilyMd');
     let low = MIN_FONT_SIZE;
     let high = MAX_FONT_SIZE;
     // Use binary search to find optimal font size.
@@ -773,12 +793,12 @@ export class TextLayerElement extends PolymerElement {
       const mid = Math.floor((low + high) / 2);
       // The font families here should cover what is default used by the text in
       // the HTML.
-      this.context.font = `${mid}px Roboto, "Cantarell", Arial, sans-serif`;
+      this.context.font = `${mid}px ${fontFamily}`;
       const textMetrics = this.context.measureText(text);
 
       // Check if the text fits within the container
-      const textHeight = textMetrics.actualBoundingBoxAscent +
-          textMetrics.actualBoundingBoxDescent;
+      const textHeight = textMetrics.fontBoundingBoxAscent +
+          textMetrics.fontBoundingBoxDescent;
       if (textMetrics.width >= lineWidth || textHeight >= lineHeight) {
         high = mid - 1;
       } else {
@@ -943,10 +963,21 @@ export class TextLayerElement extends PolymerElement {
     const selectedWords = this.shouldRenderTranslateWords ?
         this.renderedTranslateWords.slice(startIndex, endIndex + 1) :
         this.renderedWords.slice(startIndex, endIndex + 1);
+    const selectedParagraphNumbers = this.shouldRenderTranslateWords ?
+        this.translatedParagraphNumbers.slice(startIndex, endIndex + 1) :
+        this.paragraphNumbers.slice(startIndex, endIndex + 1);
     return selectedWords
         .map((word, index) => {
-          return word.plainText +
-              (index < selectedWords.length - 1 ? getTextSeparator(word) : '');
+          let separator = '';
+          if (index < selectedWords.length - 1) {
+            if (selectedParagraphNumbers[index] !==
+                selectedParagraphNumbers[index + 1]) {
+              separator = '\r\n';
+            } else {
+              separator = getTextSeparator(word);
+            }
+          }
+          return word.plainText + separator;
         })
         .join('');
   }
@@ -1027,12 +1058,15 @@ export class TextLayerElement extends PolymerElement {
                                                    .paragraphIndex])}`,
       `justify-content: ${this.getLineAlignment(translatedLineData.alignment)}`,
       `font-size: ${lineFontSizePixels}px`,
-      `width: ${toPercent(lineBoundingBox.box.width)}`,
-      `height: ${toPercent(lineBoundingBox.box.height)}`,
-      `top: ${
-          toPercent(lineBoundingBox.box.y - (lineBoundingBox.box.height / 2))}`,
-      `left: ${
-          toPercent(lineBoundingBox.box.x - (lineBoundingBox.box.width / 2))}`,
+      `width: calc(${toPercent(lineBoundingBox.box.width)} + 4px)`,
+      `height: calc(${toPercent(lineBoundingBox.box.height)} + 2px)`,
+      `top: calc(${
+          toPercent(
+              lineBoundingBox.box.y -
+              (lineBoundingBox.box.height / 2))} - 1px)`,
+      `left: calc(${
+          toPercent(
+              lineBoundingBox.box.x - (lineBoundingBox.box.width / 2))} - 2px)`,
       `text-shadow: ${
           this.getOutlineStyleForLine(translatedLine, lineFontSizePixels)}`,
       `transform: rotate(${lineBoundingBox.rotation}rad)`,
@@ -1062,9 +1096,15 @@ export class TextLayerElement extends PolymerElement {
       return '';
     }
 
+    // Get screenshot aspect ratio to get correct paddings for image data.
+    const paragraph =
+        this.renderedTranslateParagraphs[translatedLineData.paragraphIndex];
+    const screenshotAspectRatio =
+        paragraph.resizedBitmapSize.width / paragraph.resizedBitmapSize.height;
+
     // Both background image padding values are relative to the line height.
-    const horizontalPadding =
-        backgroundImageData.horizontalPadding * lineBoundingBox.box.height;
+    const horizontalPadding = backgroundImageData.horizontalPadding *
+        lineBoundingBox.box.height / screenshotAspectRatio;
     const verticalPadding =
         backgroundImageData.verticalPadding * lineBoundingBox.box.height;
 
@@ -1246,17 +1286,6 @@ export class TextLayerElement extends PolymerElement {
     }
 
     return parseInt(wordIndexString) ?? null;
-  }
-
-  private dispatchTextHighlightState() {
-    this.dispatchEvent(new CustomEvent('text-selection-state-changed', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        highlightingText:
-            this.selectionStartIndex !== -1 && this.selectionEndIndex !== -1,
-      },
-    }));
   }
 
   private getTranslateLanguageDirection(translatedParagraph:

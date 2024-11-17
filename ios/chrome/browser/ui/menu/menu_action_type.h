@@ -72,7 +72,11 @@ enum class MenuActionType {
   SelectDriveIdentity = 59,
   AddDriveAccount = 60,
   ManageInNewTab = 61,
-  kMaxValue = ManageInNewTab
+  RecentActivityInSharedTabGroup = 62,
+  AIPrototyping = 63,
+  ManageSharedTabGroup = 64,
+  ShareLocalTabGroup = 65,
+  kMaxValue = ShareLocalTabGroup,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
 

@@ -14,12 +14,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scheduler_post_task_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
@@ -36,65 +34,20 @@
 
 namespace blink {
 
-namespace {
-
-void GenericTaskData(perfetto::TracedDictionary& dict,
-                     ExecutionContext* context,
-                     const uint64_t task_id) {
-  dict.Add("taskId", task_id);
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    if (auto* frame = window->GetFrame()) {
-      dict.Add("frame", IdentifiersFactory::FrameId(frame));
-    }
-  }
-}
-
-void SchedulePostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
-                                            ExecutionContext* execution_context,
-                                            const uint64_t task_id,
-                                            const String& priority,
-                                            const double delay) {
-  auto dict = std::move(trace_context).WriteDictionary();
-  GenericTaskData(dict, execution_context, task_id);
-  dict.Add("priority", priority);
-  dict.Add("delay", delay);
-  SetCallStack(execution_context->GetIsolate(), dict);
-}
-
-void RunPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
-                                       ExecutionContext* execution_context,
-                                       const uint64_t task_id,
-                                       const String& priority,
-                                       const double delay) {
-  auto dict = std::move(trace_context).WriteDictionary();
-  GenericTaskData(dict, execution_context, task_id);
-  dict.Add("priority", priority);
-  dict.Add("delay", delay);
-}
-
-void AbortPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
-                                         ExecutionContext* execution_context,
-                                         uint64_t task_id) {
-  auto dict = std::move(trace_context).WriteDictionary();
-  GenericTaskData(dict, execution_context, task_id);
-  SetCallStack(execution_context->GetIsolate(), dict);
-}
-
-}  // namespace
-
 DOMTask::DOMTask(ScriptPromiseResolver<IDLAny>* resolver,
                  V8SchedulerPostTaskCallback* callback,
                  AbortSignal* abort_source,
                  DOMTaskSignal* priority_source,
                  DOMScheduler::DOMTaskQueue* task_queue,
-                 base::TimeDelta delay)
+                 base::TimeDelta delay,
+                 uint64_t task_id_for_tracing)
     : callback_(callback),
       resolver_(resolver),
       abort_source_(abort_source),
       priority_source_(priority_source),
       task_queue_(task_queue),
       delay_(delay),
-      task_id_for_tracing_(NextIdForTracing()) {
+      task_id_for_tracing_(task_id_for_tracing) {
   CHECK(task_queue_);
   CHECK(callback_);
 
@@ -120,9 +73,8 @@ DOMTask::DOMTask(ScriptPromiseResolver<IDLAny>* resolver,
 
   auto* context = ExecutionContext::From(script_state);
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-      "SchedulePostTaskCallback", SchedulePostTaskCallbackTraceEventData,
-      context, task_id_for_tracing_,
-      WebSchedulingPriorityToString(task_queue_->GetPriority()),
+      "SchedulePostTaskCallback", inspector_scheduler_schedule_event::Data,
+      context, task_id_for_tracing_, task_queue_->GetPriority(),
       delay_.InMillisecondsF());
   async_task_context_.Schedule(context, "postTask");
 }
@@ -181,9 +133,8 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context);
   DEVTOOLS_TIMELINE_TRACE_EVENT(
-      "RunPostTaskCallback", RunPostTaskCallbackTraceEventData, context,
-      task_id_for_tracing_,
-      WebSchedulingPriorityToString(task_queue_->GetPriority()),
+      "RunPostTaskCallback", inspector_scheduler_run_event::Data, context,
+      task_id_for_tracing_, task_queue_->GetPriority(),
       delay_.InMillisecondsF());
   probe::AsyncTask async_task(context, &async_task_context_);
 
@@ -240,7 +191,7 @@ void DOMTask::OnAbort() {
   auto* context = ExecutionContext::From(resolver_script_state);
   DCHECK(context);
   DEVTOOLS_TIMELINE_TRACE_EVENT("AbortPostTaskCallback",
-                                AbortPostTaskCallbackTraceEventData, context,
+                                inspector_scheduler_abort_event::Data, context,
                                 task_id_for_tracing_);
 
   // TODO(crbug.com/1293949): Add an error message.

@@ -22,6 +22,7 @@
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/test/event_generator.h"
@@ -37,8 +38,8 @@ class SnapGroupPixelTest : public AshTestBase {
  public:
   SnapGroupPixelTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSnapGroup, features::kForestFeature,
-         features::kSavedDeskUiRevamp},
+        {features::kForestFeature, features::kSavedDeskUiRevamp,
+         chromeos::features::kOverviewSessionInitOptimizations},
         {});
   }
   SnapGroupPixelTest(const SnapGroupPixelTest&) = delete;
@@ -190,13 +191,13 @@ TEST_F(SnapGroupPixelTest, WindowCycleView) {
   // Verify the visuals with secondary-snapped window gets focused.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_secondary_focused",
-      /*revision_number=*/0, window_cycle_widget));
+      /*revision_number=*/1, window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
   event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_primary_focused",
-      /*revision_number=*/0, window_cycle_widget));
+      /*revision_number=*/1, window_cycle_widget));
 
   // Verify the visuals after one of the windows in the group got destroyed
   // while stepping.
@@ -212,7 +213,7 @@ TEST_F(SnapGroupPixelTest, WindowCycleView) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_window_destruction",
-      /*revision_number=*/0, updated_window_cycle_widget));
+      /*revision_number=*/1, updated_window_cycle_widget));
 }
 
 // -----------------------------------------------------------------------------
@@ -323,13 +324,13 @@ TEST_F(SnapGroupPixelTest, WindowCycleViewInPortrait) {
   // Verify the visuals with secondary-snapped window gets focused.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_secondary_focused_in_portrait",
-      /*revision_number=*/0, window_cycle_widget));
+      /*revision_number=*/1, window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
   event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_primary_focused_in_portrait",
-      /*revision_number=*/0, window_cycle_widget));
+      /*revision_number=*/1, window_cycle_widget));
 }
 
 }  // namespace ash

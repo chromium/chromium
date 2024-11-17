@@ -1610,9 +1610,11 @@ void HostResolverManagerTest::FlushCacheOnIPAddressChangeTest(bool is_async) {
 // Test that IP address changes flush the cache but initial DNS config reads
 // do not.
 TEST_F(HostResolverManagerTest, FlushCacheOnIPAddressChangeAsync) {
+  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
   FlushCacheOnIPAddressChangeTest(true);
 }
 TEST_F(HostResolverManagerTest, FlushCacheOnIPAddressChangeSync) {
+  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
   FlushCacheOnIPAddressChangeTest(false);
 }
 
@@ -4778,9 +4780,9 @@ TEST_F(HostResolverManagerDnsTest, LocalhostLookup) {
 TEST_F(HostResolverManagerDnsTest, LocalhostLookupWithHosts) {
   DnsHosts hosts;
   hosts[DnsHostsKey("localhost", ADDRESS_FAMILY_IPV4)] =
-      IPAddress({192, 168, 1, 1});
+      IPAddress(base::span<const uint8_t>({192, 168, 1, 1}));
   hosts[DnsHostsKey("foo.localhost", ADDRESS_FAMILY_IPV4)] =
-      IPAddress({192, 168, 1, 2});
+      IPAddress(base::span<const uint8_t>({192, 168, 1, 2}));
 
   DnsConfig config = CreateValidDnsConfig();
   config.hosts = hosts;

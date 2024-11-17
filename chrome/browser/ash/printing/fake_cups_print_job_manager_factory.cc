@@ -12,8 +12,9 @@ namespace ash {
 // the fake_cups_print_job_manager.cc file.
 
 // static
-CupsPrintJobManager* CupsPrintJobManager::CreateInstance(Profile* profile) {
-  return new FakeCupsPrintJobManager(profile);
+std::unique_ptr<CupsPrintJobManager> CupsPrintJobManager::CreateInstance(
+    Profile* profile) {
+  return std::make_unique<FakeCupsPrintJobManager>(profile);
 }
 
 }  // namespace ash

@@ -15,7 +15,8 @@ class WebState;
 
 namespace autofill {
 
-class FormUtilJavaScriptFeature;
+class AutofillRendererIDJavaScriptFeature;
+class RemoteFrameRegistrationJavaScriptFeature;
 
 // Registers listeners that are used to handle forms, enabling autofill and the
 // replacement method to dismiss the keyboard needed because of the Autofill
@@ -57,7 +58,9 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   // TODO(crbug.com/359538514): Remove test constructor once isolated world for
   // Autofill is launched.
   FormHandlersJavaScriptFeature(
-      FormUtilJavaScriptFeature* form_util_java_script_feature);
+      AutofillRendererIDJavaScriptFeature* renderer_id_feature,
+      RemoteFrameRegistrationJavaScriptFeature*
+          remote_frame_registration_java_script_feature);
 };
 
 }  // namespace autofill

@@ -42,6 +42,8 @@ class AudioNodeOptions;
 class AudioParam;
 class DeferredTaskHandler;
 class ExceptionState;
+class V8ChannelCountMode;
+class V8ChannelInterpretation;
 
 // An AudioNode is the basic building block for handling audio within an
 // BaseAudioContext.  It may be an audio source, an intermediate processing
@@ -99,10 +101,11 @@ class MODULES_EXPORT AudioNode : public EventTarget,
   unsigned numberOfOutputs() const;
   unsigned channelCount() const;
   void setChannelCount(unsigned, ExceptionState&);
-  String channelCountMode() const;
-  void setChannelCountMode(const String&, ExceptionState&);
-  String channelInterpretation() const;
-  void setChannelInterpretation(const String&, ExceptionState&);
+  V8ChannelCountMode channelCountMode() const;
+  void setChannelCountMode(const V8ChannelCountMode&, ExceptionState&);
+  V8ChannelInterpretation channelInterpretation() const;
+  void setChannelInterpretation(const V8ChannelInterpretation&,
+                                ExceptionState&);
 
   // EventTarget
   const AtomicString& InterfaceName() const final;

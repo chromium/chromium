@@ -226,7 +226,8 @@ std::unique_ptr<FFmpegDemuxerStream> FFmpegDemuxerStream::Create(
     // IsValidConfig internally and return a null scoped_ptr if not valid.
     if (!AVStreamToAudioDecoderConfig(stream, audio_config.get()) ||
         !audio_config->IsValidConfig() ||
-        !IsSupportedAudioType(AudioType::FromDecoderConfig(*audio_config))) {
+        !IsDecoderSupportedAudioType(
+            AudioType::FromDecoderConfig(*audio_config))) {
       MEDIA_LOG(DEBUG, media_log) << "Warning, FFmpegDemuxer failed to create "
                                      "a valid/supported audio decoder "
                                      "configuration from muxed stream, config:"
@@ -243,7 +244,8 @@ std::unique_ptr<FFmpegDemuxerStream> FFmpegDemuxerStream::Create(
     // IsValidConfig internally and return a null scoped_ptr if not valid.
     if (!AVStreamToVideoDecoderConfig(stream, video_config.get()) ||
         !video_config->IsValidConfig() ||
-        !IsSupportedVideoType(VideoType::FromDecoderConfig(*video_config))) {
+        !IsDecoderSupportedVideoType(
+            VideoType::FromDecoderConfig(*video_config))) {
       MEDIA_LOG(DEBUG, media_log) << "Warning, FFmpegDemuxer failed to create "
                                      "a valid/supported video decoder "
                                      "configuration from muxed stream, config:"
@@ -309,8 +311,7 @@ FFmpegDemuxerStream::FFmpegDemuxerStream(
       is_encrypted = video_config_->is_encrypted();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Calculate the duration.
@@ -339,6 +340,14 @@ FFmpegDemuxerStream::~FFmpegDemuxerStream() {
   DCHECK(!demuxer_);
   DCHECK(!read_cb_);
   DCHECK(buffer_queue_.IsEmpty());
+}
+
+base::span<const uint8_t> GetSideData(const AVPacket* packet) {
+  size_t side_data_size = 0;
+  uint8_t* side_data = av_packet_get_side_data(
+      packet, AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL, &side_data_size);
+
+  return base::span<const uint8_t>(side_data, side_data_size);
 }
 
 void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
@@ -380,7 +389,7 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   }
 
   if (!demuxer_ || end_of_stream_) {
-    NOTREACHED_IN_MIGRATION()
+    DUMP_WILL_BE_NOTREACHED()
         << "Attempted to enqueue packet on a stopped stream";
     return;
   }
@@ -407,21 +416,19 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
 
   scoped_refptr<DecoderBuffer> buffer;
 
-    size_t side_data_size = 0;
-    uint8_t* side_data = av_packet_get_side_data(
-        packet.get(), AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL, &side_data_size);
+  base::span<const uint8_t> side_data = GetSideData(packet.get());
 
-    std::unique_ptr<DecryptConfig> decrypt_config;
-    int data_offset = 0;
-    if ((type() == DemuxerStream::AUDIO && audio_config_->is_encrypted()) ||
-        (type() == DemuxerStream::VIDEO && video_config_->is_encrypted())) {
-      if (!WebMCreateDecryptConfig(
-              packet->data, packet->size,
-              reinterpret_cast<const uint8_t*>(encryption_key_id_.data()),
-              encryption_key_id_.size(), &decrypt_config, &data_offset)) {
-        MEDIA_LOG(ERROR, media_log_) << "Creation of DecryptConfig failed.";
-      }
+  std::unique_ptr<DecryptConfig> decrypt_config;
+  int data_offset = 0;
+  if ((type() == DemuxerStream::AUDIO && audio_config_->is_encrypted()) ||
+      (type() == DemuxerStream::VIDEO && video_config_->is_encrypted())) {
+    if (!WebMCreateDecryptConfig(
+            packet->data, packet->size,
+            reinterpret_cast<const uint8_t*>(encryption_key_id_.data()),
+            encryption_key_id_.size(), &decrypt_config, &data_offset)) {
+      MEDIA_LOG(ERROR, media_log_) << "Creation of DecryptConfig failed.";
     }
+  }
 
     // FFmpeg may return garbage packets for MP3 stream containers, so we need
     // to drop these to avoid decoder errors. The ffmpeg team maintains that
@@ -460,11 +467,11 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     // If a packet is returned by FFmpeg's av_parser_parse2() the packet will
     // reference inner memory of FFmpeg.  As such we should transfer the packet
     // into memory we control.
-    buffer =
-        DecoderBuffer::CopyFrom(AVPacketData(*packet).subspan(data_offset));
-    if (side_data_size > 0) {
-      buffer->WritableSideData().alpha_data.assign(side_data,
-                                                   side_data + side_data_size);
+    buffer = DecoderBuffer::CopyFrom(
+        AVPacketData(*packet).subspan(base::checked_cast<size_t>(data_offset)));
+    if (side_data.size() > 0) {
+      buffer->WritableSideData().alpha_data =
+          base::HeapArray<uint8_t>::CopiedFrom(side_data);
     }
 
     size_t skip_samples_size = 0;

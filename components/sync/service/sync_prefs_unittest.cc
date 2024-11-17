@@ -14,7 +14,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/saved_tab_groups/pref_names.h"
+#include "components/saved_tab_groups/public/pref_names.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -47,14 +47,13 @@ class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
-    // TODO(crbug.com/337034860): This is required due to a workaround in
-    // KeepAccountSettingsPrefsOnlyForUsers(); see TODO there.
+    // TODO(crbug.com/368409110): These prefs are required due to a workaround
+    // in KeepAccountSettingsPrefsOnlyForUsers(); see TODOs there.
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
-    // TODO(crbug.com/363927991): Similarly, necessary for a workaround in
-    // KeepAccountSettingsPrefsOnlyForUsers(); see TODO there.
     pref_service_.registry()->RegisterDictionaryPref(
         tab_groups::prefs::kLocallyClosedRemoteTabGroupIds,
         base::Value::Dict());
+
     // Pref is registered in signin internal `PrimaryAccountManager`.
     pref_service_.registry()->RegisterBooleanPref(
         ::prefs::kExplicitBrowserSignin, false);
@@ -202,9 +201,9 @@ TEST_F(SyncPrefsTest, CachedTrustedVaultAutoUpgradeExperimentGroupCorrupt) {
 class MockSyncPrefObserver : public SyncPrefObserver {
  public:
   MOCK_METHOD(void, OnSyncManagedPrefChange, (bool), (override));
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(void, OnSelectedTypesPrefChange, (), (override));
 };
 
@@ -226,7 +225,7 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsTest, FirstSetupCompletePrefChange) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   InSequence in_sequence;
@@ -245,9 +244,9 @@ TEST_F(SyncPrefsTest, FirstSetupCompletePrefChange) {
 
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsTest, SyncFeatureDisabledViaDashboard) {
   EXPECT_FALSE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
 
@@ -268,13 +267,13 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
                                   UserSelectableOsTypeSet());
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
-#endif
+#endif // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncPrefsTest, Basic) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   sync_prefs_->SetInitialSyncFeatureSetupComplete();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
@@ -462,7 +461,6 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
@@ -497,7 +495,6 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_IOS)
-                            kEnablePasswordsAccountStorageForNonSyncingUsers,
                             kSyncEnableContactInfoDataTypeInTransportMode,
                             kEnablePreferencesAccountStorage,
                             kSyncEnableExtensionsInTransportMode},
@@ -596,9 +593,6 @@ TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
 
 TEST_F(SyncPrefsTest,
        SetSelectedTypesForAccountInTransportModeWithPolicyRestrictedType) {
-  base::test::ScopedFeatureList features(
-      kEnablePasswordsAccountStorageForNonSyncingUsers);
-
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
@@ -658,7 +652,7 @@ TEST_F(SyncPrefsTest, KeepAccountSettingsPrefsOnlyForUsers) {
             default_selected_types);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncPrefsTest, IsSyncAllOsTypesEnabled) {
   EXPECT_TRUE(sync_prefs_->IsSyncAllOsTypesEnabled());
 
@@ -777,27 +771,7 @@ TEST_F(SyncPrefsTest, SetOsTypeDisabledByPolicy) {
   EXPECT_FALSE(sync_prefs_->IsOsTypeManagedByPolicy(
       UserSelectableOsType::kOsPreferences));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(SyncPrefsTest, ShouldSetAppsSyncEnabledByOsToFalseByDefault) {
-  EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
-}
-
-TEST_F(SyncPrefsTest, ShouldChangeAppsSyncEnabledByOsAndNotifyObservers) {
-  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
-  sync_prefs_->AddObserver(&mock_sync_pref_observer);
-
-  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
-  sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/true);
-  EXPECT_TRUE(sync_prefs_->IsAppsSyncEnabledByOs());
-
-  testing::Mock::VerifyAndClearExpectations(&mock_sync_pref_observer);
-  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
-  sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/false);
-  EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncPrefsTest, PassphrasePromptMutedProductVersion) {
   EXPECT_EQ(0, sync_prefs_->GetPassphrasePromptMutedProductVersion());
@@ -888,7 +862,6 @@ class SyncPrefsMigrationTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                               switches::kExplicitBrowserSigninUIOnDesktop,
 #endif
-                              kEnablePasswordsAccountStorageForNonSyncingUsers,
                               kSyncEnableContactInfoDataTypeInTransportMode,
                               kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});

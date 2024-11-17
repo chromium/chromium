@@ -23,6 +23,8 @@ component("geolocation") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   output_name = "geolocation_service"
 
+  deps = [ "//components/device_event_log" ]
+
   if (os_level_geolocation_permission_supported) {
     sources += [ "system_geolocation_source.h" ]
   }

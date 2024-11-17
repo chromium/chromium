@@ -10,22 +10,19 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/system_identity_util.h"
 
 namespace {
 
 std::string GetManagedBookmarksDomain(ProfileIOS* profile) {
-  AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  if (!auth_service) {
-    return std::string();
-  }
-
-  id<SystemIdentity> identity =
-      auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  id<SystemIdentity> identity = GetPrimarySystemIdentity(
+      signin::ConsentLevel::kSignin,
+      IdentityManagerFactory::GetForProfile(profile),
+      ChromeAccountManagerServiceFactory::GetForProfile(profile));
   if (!identity) {
     return std::string();
   }
@@ -47,12 +44,6 @@ std::unique_ptr<KeyedService> BuildManagedBookmarkModel(
 }
 
 }  // namespace
-
-// static
-bookmarks::ManagedBookmarkService*
-ManagedBookmarkServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
 
 // static
 bookmarks::ManagedBookmarkService* ManagedBookmarkServiceFactory::GetForProfile(

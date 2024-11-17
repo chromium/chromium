@@ -55,7 +55,7 @@ std::unique_ptr<PasswordForm> CreatePasswordForm(std::string url,
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     password_manager::IsAccountStore is_account_store,
-    web::BrowserState* browser_state) {
+    web::BrowserState* context) {
   auto store = base::MakeRefCounted<password_manager::TestPasswordStore>(
       is_account_store);
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
@@ -97,7 +97,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 class PasswordDetailsMediatorTest : public PlatformTest {
  protected:
   PasswordDetailsMediatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(&BuildPasswordStore,
@@ -115,11 +115,10 @@ class PasswordDetailsMediatorTest : public PlatformTest {
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     password_check_manager_ =
-        IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-            browser_state_.get());
+        IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
 
     consumer_ = [[FakePasswordDetailsConsumer alloc] init];
 
@@ -133,7 +132,7 @@ class PasswordDetailsMediatorTest : public PlatformTest {
     mediator_ = [[PasswordDetailsMediator alloc]
         initWithPasswords:GetAffiliatedGroupCredentials()
               displayName:display_name()
-             browserState:browser_state_.get()
+                  profile:profile_.get()
                   context:DetailsContext::kPasswordSettings
                  delegate:nil];
     mediator_.consumer = consumer_;
@@ -147,7 +146,7 @@ class PasswordDetailsMediatorTest : public PlatformTest {
 
   PasswordDetailsMediator* mediator() { return mediator_; }
 
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
 
   FakePasswordDetailsConsumer* consumer() { return consumer_; }
 
@@ -160,16 +159,16 @@ class PasswordDetailsMediatorTest : public PlatformTest {
   // Returns the profile password store.
   TestPasswordStore& GetTestProfileStore() {
     return *static_cast<TestPasswordStore*>(
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 
   // Returns the account password store.
   TestPasswordStore& GetTestAccountStore() {
     return *static_cast<TestPasswordStore*>(
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+        IOSChromeAccountPasswordStoreFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 
@@ -267,7 +266,7 @@ class PasswordDetailsMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list;
 
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
   FakePasswordDetailsConsumer* consumer_;
   PasswordDetailsMediator* mediator_;

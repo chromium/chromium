@@ -272,7 +272,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
           v4l2_frame_params.alt_frame_ts = ref_surface->GetReferenceID();
           break;
         default:
-          NOTREACHED_IN_MIGRATION() << "Invalid reference frame index";
+          NOTREACHED() << "Invalid reference frame index";
       }
     }
   }
@@ -324,8 +324,8 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   // Copy the frame data into the V4L2 buffer.
   if (!surface_handler_->SubmitSlice(
           dec_surface.get(),
-          dec_surface->secure_handle() ? nullptr : frame_hdr->data,
-          frame_hdr->frame_size)) {
+          dec_surface->secure_handle() ? nullptr : frame_hdr->data.data(),
+          frame_hdr->data.size())) {
     return DecodeStatus::kFail;
   }
 

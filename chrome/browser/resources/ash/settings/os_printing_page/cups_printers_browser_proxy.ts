@@ -9,7 +9,7 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {PrinterStatus} from './printer_status.js';
+import type {PrinterStatus} from './printer_status.js';
 
 /**
  * Note: |printerPPDPath| refers to a PPD retrieved from the user at the

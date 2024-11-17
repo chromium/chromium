@@ -1,0 +1,31 @@
+caption: Configure Class management tools
+default: disabled
+desc: |-
+  Setting the policy specifies whether users use class management tools for sending/receiving content, sending/receiving caption as students, teachers, or if class management tools is disabled for users.
+example_value: disabled
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Users are not able to use any of the class management features or be added to a class management session.
+  name: disabled
+  value: disabled
+- caption: Users will be able to join and be added to a class management session. Teachers will be able to send content to these users.
+  name: students
+  value: students
+- caption: Users will be able to connect and deploy content to students. This includes sending web content and making live captions/translations of the teacher’s voice available to the students.
+  name: teachers
+  value: teachers
+owners:
+- cros-edu-eng@google.com
+- aprilzhou@google.com
+schema:
+  enum:
+  - disabled
+  - student
+  - teacher
+  type: string
+supported_on:
+- chrome_os:132-
+tags: []
+type: string-enum

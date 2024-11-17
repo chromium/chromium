@@ -7,11 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
@@ -61,6 +63,13 @@ namespace {
 // Radius for the containers in the extensions menu.
 constexpr int kContainerBackgroundRadius = 12;
 
+// Index of the extension's request entry child view containing the icon in the
+// requests container.
+constexpr int kRequestEntryIconIndex = 0;
+// Index of the extension's request entry child view containing the label in the
+// requests container.
+constexpr int kRequestEntryLabelIndex = 1;
+
 // Updates the `toggle_button` text based on its state.
 std::u16string GetSiteSettingToggleText(bool is_on) {
   int label_id = is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
@@ -94,430 +103,30 @@ ExtensionMenuItemView* GetMenuItem(
 
 }  // namespace
 
-// View that contains a special message inside the extensions menu main page
-// depending on its state.
-class MessageSection : public views::BoxLayoutView {
+// Base class for a container inside the extensions menu.
+class SectionContainer : public views::BoxLayoutView {
  public:
-  // The type of view container in the message section. At most one of this is
-  // visible at all times.
-  enum class ContainerType {
-    // Container with a label.
-    kTextContainer,
-    // Container with labels and reload button.
-    kReloadContainer,
-    // Container with extensions requesting access.
-    kRequestsAccessContainer
-  };
+  SectionContainer() {
+    auto* layout_provider = ChromeLayoutProvider::Get();
+    const int vertical_margin = layout_provider->GetDistanceMetric(
+        DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
+    const int horizontal_margin = layout_provider->GetDistanceMetric(
+        DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE);
 
-  MessageSection(int vertical_margin,
-                 int horizontal_margin,
-                 int control_vertical_margin,
-                 base::RepeatingCallback<void()> reload_callback,
-                 base::RepeatingCallback<void(const extensions::ExtensionId&)>
-                     allow_callback,
-                 base::RepeatingCallback<void(const extensions::ExtensionId&)>
-                     dismiss_callback);
-  MessageSection(const MessageSection&) = delete;
-  const MessageSection& operator=(const MessageSection&) = delete;
-  ~MessageSection() override = default;
-
-  // Updates the views contents and visibility given `state` and
-  // `has_enterprise_extensions`.
-  void Update(ExtensionsMenuMainPageView::MessageSectionState state,
-              bool has_enterprise_extensions);
-
-  // Adds an entry in `extensions_container_` for the extension with `id`,
-  // `name` and `icon` at `index`. If the extension is already present, it
-  // updates the entry. Shows the sections if it's the first extension entry.
-  // Note that `state_` must be `kUserCustomizedAccess`.
-  void AddOrUpdateExtension(const extensions::ExtensionId& id,
-                            const std::u16string& name,
-                            const ui::ImageModel& icon,
-                            int index);
-
-  // Removes the entry corresponding to `id`, if existent. Hides the section if
-  // no extension entries are remaining. Note that `state_` must be
-  // `kUserCustomizedAccess`.
-  void RemoveExtension(const extensions::ExtensionId& id);
-
-  // Removes all extension entries.
-  void ClearExtensions();
-
-  ExtensionsMenuMainPageView::MessageSectionState state() const {
-    return state_;
+    SetOrientation(views::BoxLayout::Orientation::kVertical);
+    SetInsideBorderInsets(gfx::Insets::VH(vertical_margin, horizontal_margin));
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorExtensionsMenuContainerBackground, kContainerBackgroundRadius));
   }
-
-  // Accessors used by tests:
-  views::View* GetTextContainerForTesting() { return text_container_; }
-  views::View* GetReloadContainerForTesting() { return reload_container_; }
-  views::View* GetRequestsAccessContainerForTesting() {
-    return requests_access_container_;
-  }
-  std::vector<extensions::ExtensionId> GetExtensionsForTesting();
-  views::View* GetExtensionEntryForTesting(
-      const extensions::ExtensionId& extension_id);
-
- private:
-  static constexpr int kTextContainerTextIndex = 0;
-  static constexpr int kTextContainerTooltipIconIndex = 1;
-  static constexpr int kReloadContainerMainTextIndex = 0;
-  static constexpr int kExtensionItemsContainerIndex = 1;
-  static constexpr int kExtensionItemIconIndex = 0;
-  static constexpr int kExtensionItemLabelIndex = 1;
-
-  // Updates the visibility of the view based on `state_` and
-  // `extension_entries_`.
-  void UpdateVisibility();
-
-  // Updates the containers visibility and content given a `container_type`,
-  // `label_id` and `show_label_tooltip`. At most only one of the "containers"
-  // will be visible.
-  void UpdateContainer(ContainerType container_type,
-                       int label_id = -1,
-                       bool show_label_tooltip = false);
-
-  // The current state of the section.
-  ExtensionsMenuMainPageView::MessageSectionState state_;
-
-  // Text container.
-  raw_ptr<views::View> text_container_;
-
-  // Reload container.
-  raw_ptr<views::View> reload_container_;
-  // Callback for the reload button in `reload_container_`.
-  base::RepeatingCallback<void()> reload_callback_;
-
-  // Request access container
-  raw_ptr<views::View> requests_access_container_;
-  // A collection of all the extension entries in the request access container.
-  std::map<extensions::ExtensionId, views::View*> extension_entries_;
-
-  // Callback for the buttons in the extension entries.
-  base::RepeatingCallback<void(const extensions::ExtensionId&)> allow_callback_;
-  base::RepeatingCallback<void(const extensions::ExtensionId&)>
-      dismiss_callback_;
+  SectionContainer(const SectionContainer&) = delete;
+  const SectionContainer& operator=(const SectionContainer&) = delete;
+  ~SectionContainer() override = default;
 };
 
-BEGIN_VIEW_BUILDER(/* No Export */, MessageSection, views::BoxLayoutView)
+BEGIN_VIEW_BUILDER(/* No Export */, SectionContainer, views::BoxLayoutView)
 END_VIEW_BUILDER
 
-DEFINE_VIEW_BUILDER(/* No Export */, MessageSection)
-
-MessageSection::MessageSection(
-    int vertical_margin,
-    int horizontal_margin,
-    int control_vertical_margin,
-    base::RepeatingCallback<void()> reload_callback,
-    base::RepeatingCallback<void(const extensions::ExtensionId&)>
-        allow_callback,
-    base::RepeatingCallback<void(const extensions::ExtensionId&)>
-        dismiss_callback)
-    : reload_callback_(std::move(reload_callback)),
-      allow_callback_(std::move(allow_callback)),
-      dismiss_callback_(std::move(dismiss_callback)) {
-  auto* layout_provider = ChromeLayoutProvider::Get();
-
-  views::Builder<MessageSection>(this)
-      .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      .SetInsideBorderInsets(
-          gfx::Insets::VH(vertical_margin, horizontal_margin))
-      .SetBackground(views::CreateThemedRoundedRectBackground(
-          kColorExtensionsMenuContainerBackground, kContainerBackgroundRadius))
-      .AddChildren(
-          // Text container.
-          views::Builder<views::FlexLayoutView>()
-              .CopyAddressTo(&text_container_)
-              .SetVisible(false)
-              .SetOrientation(views::LayoutOrientation::kHorizontal)
-              .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-              .AddChildren(
-                  // Main text.
-                  views::Builder<views::Label>()
-                      .SetTextContext(
-                          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                      .SetTextStyle(views::style::STYLE_BODY_3)
-                      .SetEnabledColorId(kColorExtensionsMenuSecondaryText)
-                      .SetHorizontalAlignment(gfx::ALIGN_CENTER),
-                  // Enterprise info tooltip.
-                  views::Builder<views::TooltipIcon>(
-                      std::make_unique<
-                          views::TooltipIcon>(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_ENTERPRISE_TOOLTIP_ICON_TEXT)))
-                      .SetBubbleWidth(layout_provider->GetDistanceMetric(
-                          views::DISTANCE_BUBBLE_PREFERRED_WIDTH))
-                      .SetAnchorPointArrow(
-                          views::BubbleBorder::Arrow::TOP_LEFT)),
-          // Reload container.
-          views::Builder<views::BoxLayoutView>()
-              .CopyAddressTo(&reload_container_)
-              .SetVisible(false)
-              .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .SetCrossAxisAlignment(
-                  views::BoxLayout::CrossAxisAlignment::kCenter)
-              .AddChildren(
-                  // Main text.
-                  views::Builder<views::Label>()
-                      // Text will be set based on the `state_`.
-                      .SetTextContext(
-                          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                      .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
-                      .SetEnabledColorId(kColorExtensionsMenuText),
-                  // Description text.
-                  views::Builder<views::Label>()
-                      .SetText(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_DESCRIPTION_TEXT))
-                      .SetTextContext(
-                          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                      .SetTextStyle(views::style::STYLE_BODY_3)
-                      .SetEnabledColorId(kColorExtensionsMenuSecondaryText)
-                      .SetMultiLine(true),
-                  // Reload button.
-                  views::Builder<views::MdTextButton>()
-                      .SetCallback(base::BindRepeating(reload_callback_))
-                      .SetBgColorIdOverride(
-                          kColorExtensionsMenuContainerBackground)
-                      .SetProperty(
-                          views::kMarginsKey,
-                          gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
-                      .SetText(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TEXT))
-                      .SetTooltipText(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TOOLTIP))),
-          // Requests access container.
-          views::Builder<views::BoxLayoutView>()
-              .CopyAddressTo(&requests_access_container_)
-              .SetVisible(false)
-              .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .AddChildren(
-                  // Header.
-                  views::Builder<views::Label>()
-                      .SetText(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE))
-                      .SetTextContext(
-                          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                      .SetEnabledColorId(kColorExtensionsMenuText)
-                      .SetTextStyle(views::style::STYLE_BODY_2_EMPHASIS)
-                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
-                  // Empty container for the extensions requesting access.
-                  views::Builder<views::BoxLayoutView>().SetOrientation(
-                      views::BoxLayout::Orientation::kVertical)))
-      .BuildChildren();
-}
-
-void MessageSection::Update(
-    ExtensionsMenuMainPageView::MessageSectionState state,
-    bool has_enterprise_extensions) {
-  state_ = state;
-  ContainerType container_type;
-  int label_id;
-  bool show_label_tooltip;
-
-  switch (state_) {
-    case ExtensionsMenuMainPageView::MessageSectionState::kRestrictedAccess:
-      container_type = ContainerType::kTextContainer;
-      label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT;
-      show_label_tooltip = false;
-      break;
-    case ExtensionsMenuMainPageView::MessageSectionState::kPolicyBlockedAccess:
-      container_type = ContainerType::kTextContainer;
-      label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_POLICY_BLOCKED_ACCESS_TEXT;
-      // Tooltip can only be visible on this state, and if there are any
-      // enterprise extensions installed.
-      show_label_tooltip = has_enterprise_extensions;
-      break;
-    case ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess:
-      container_type = ContainerType::kRequestsAccessContainer;
-      // This state has a static label, thus we don't need to pass a label id.
-      label_id = -1;
-      show_label_tooltip = false;
-      break;
-    case ExtensionsMenuMainPageView::MessageSectionState::
-        kUserCustomizedAccessReload:
-      container_type = ContainerType::kReloadContainer;
-      label_id =
-          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_CUSTOMIZED_ACCESS_TEXT;
-      show_label_tooltip = false;
-      break;
-    case ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAccess:
-      container_type = ContainerType::kTextContainer;
-      label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT;
-      // Tooltip can only be visible on this state, and if there are any
-      // enterprise extensions installed.
-      show_label_tooltip = has_enterprise_extensions;
-      break;
-    case ExtensionsMenuMainPageView::MessageSectionState::
-        kUserBlockedAccessReload:
-      container_type = ContainerType::kReloadContainer;
-      label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT;
-      show_label_tooltip = false;
-      break;
-  }
-
-  UpdateContainer(container_type, label_id, show_label_tooltip);
-  UpdateVisibility();
-}
-
-void MessageSection::UpdateContainer(ContainerType container_type,
-                                     int label_id,
-                                     bool show_label_tooltip) {
-  switch (container_type) {
-    case ContainerType::kTextContainer:
-      DCHECK_NE(label_id, -1);
-      text_container_->SetVisible(true);
-      reload_container_->SetVisible(false);
-      requests_access_container_->SetVisible(false);
-      views::AsViewClass<views::Label>(
-          text_container_->children()[kTextContainerTextIndex])
-          ->SetText(l10n_util::GetStringUTF16(label_id));
-      text_container_->children()[kTextContainerTooltipIconIndex]->SetVisible(
-          show_label_tooltip);
-      ClearExtensions();
-      break;
-    case ContainerType::kReloadContainer:
-      DCHECK_NE(label_id, -1);
-      text_container_->SetVisible(false);
-      reload_container_->SetVisible(true);
-      requests_access_container_->SetVisible(false);
-      views::AsViewClass<views::Label>(
-          reload_container_->children()[kReloadContainerMainTextIndex])
-          ->SetText(l10n_util::GetStringUTF16(label_id));
-      break;
-    case ContainerType::kRequestsAccessContainer:
-      DCHECK_EQ(label_id, -1);
-      text_container_->SetVisible(false);
-      reload_container_->SetVisible(false);
-      requests_access_container_->SetVisible(!extension_entries_.empty());
-      break;
-  }
-}
-
-void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
-                                          const std::u16string& name,
-                                          const ui::ImageModel& icon,
-                                          int index) {
-  CHECK_EQ(
-      state_,
-      ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess);
-  auto extension_iter = extension_entries_.find(id);
-
-  if (extension_iter == extension_entries_.end()) {
-    // Add new extension entry.
-    auto* layout_provider = ChromeLayoutProvider::Get();
-    const int control_vertical_margin = layout_provider->GetDistanceMetric(
-        DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
-    const int related_control_horizontal_margin =
-        layout_provider->GetDistanceMetric(
-            DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
-
-    auto item =
-        views::Builder<views::FlexLayoutView>()
-            .SetOrientation(views::LayoutOrientation::kHorizontal)
-            .SetProperty(views::kMarginsKey,
-                         gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
-            .AddChildren(
-                views::Builder<views::ImageView>().SetImage(icon),
-                views::Builder<views::Label>()
-                    .SetText(name)
-                    .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
-                    .SetEnabledColorId(kColorExtensionsMenuText)
-                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                    .SetProperty(views::kFlexBehaviorKey,
-                                 views::FlexSpecification(
-                                     views::MinimumFlexSizeRule::kScaleToZero,
-                                     views::MaximumFlexSizeRule::kUnbounded)),
-                views::Builder<views::MdTextButton>()
-                    .SetCallback(base::BindRepeating(dismiss_callback_, id))
-                    .SetStyle(ui::ButtonStyle::kText)
-                    .SetBgColorIdOverride(
-                        kColorExtensionsMenuContainerBackground)
-                    .SetText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT))
-                    .SetTooltipText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TOOLTIP)),
-                views::Builder<views::MdTextButton>()
-                    .SetCallback(base::BindRepeating(allow_callback_, id))
-                    .SetStyle(ui::ButtonStyle::kText)
-                    .SetBgColorIdOverride(
-                        kColorExtensionsMenuContainerBackground)
-                    .SetText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT))
-                    .SetTooltipText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TOOLTIP))
-                    .SetProperty(
-                        views::kMarginsKey,
-                        gfx::Insets::TLBR(0, related_control_horizontal_margin,
-                                          0, 0)))
-            .Build();
-
-    extension_entries_.insert({id, item.get()});
-    requests_access_container_->children()[1]->AddChildViewAt(std::move(item),
-                                                              index);
-    requests_access_container_->SetVisible(!extension_entries_.empty());
-    UpdateVisibility();
-  } else {
-    // Update extension entry.
-    std::vector<raw_ptr<View, VectorExperimental>> extension_items =
-        extension_iter->second->children();
-    views::AsViewClass<views::ImageView>(
-        extension_items[kExtensionItemIconIndex])
-        ->SetImage(icon);
-    views::AsViewClass<views::Label>(extension_items[kExtensionItemLabelIndex])
-        ->SetText(name);
-    requests_access_container_->children()[kExtensionItemsContainerIndex]
-        ->ReorderChildView(extension_iter->second, index);
-  }
-}
-
-void MessageSection::RemoveExtension(const extensions::ExtensionId& id) {
-  CHECK_EQ(
-      state_,
-      ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess);
-  auto extension_iter = extension_entries_.find(id);
-  if (extension_iter == extension_entries_.end()) {
-    return;
-  }
-
-  requests_access_container_->children()[kExtensionItemsContainerIndex]
-      ->RemoveChildViewT(extension_iter->second);
-  extension_entries_.erase(extension_iter);
-
-  requests_access_container_->SetVisible(!extension_entries_.empty());
-  UpdateVisibility();
-}
-
-void MessageSection::ClearExtensions() {
-  requests_access_container_->children()[kExtensionItemsContainerIndex]
-      ->RemoveAllChildViews();
-  extension_entries_.clear();
-
-  requests_access_container_->SetVisible(false);
-  UpdateVisibility();
-}
-
-void MessageSection::UpdateVisibility() {
-  // Section is always visible unless state is "user customized access" and no
-  // extension is requesting site access.
-  bool is_visible = state_ == ExtensionsMenuMainPageView::MessageSectionState::
-                                  kUserCustomizedAccess
-                        ? !extension_entries_.empty()
-                        : true;
-  SetVisible(is_visible);
-}
-
-std::vector<extensions::ExtensionId> MessageSection::GetExtensionsForTesting() {
-  std::vector<extensions::ExtensionId> extensions;
-  extensions.reserve(extension_entries_.size());
-  for (auto entry : extension_entries_) {
-    extensions.push_back(entry.first);
-  }
-  return extensions;
-}
-
-views::View* MessageSection::GetExtensionEntryForTesting(
-    const extensions::ExtensionId& extension_id) {
-  auto iter = extension_entries_.find(extension_id);
-  return iter == extension_entries_.end() ? nullptr : iter->second;
-}
+DEFINE_VIEW_BUILDER(/* No Export */, SectionContainer)
 
 ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
     Browser* browser,
@@ -528,19 +137,13 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
   // TODO(crbug.com/40891805): Consider making the height dynamic.
   constexpr int kMaxExtensionButtonsHeightDp = 448;
   views::FlexSpecification stretch_specification =
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true)
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1);
 
   ChromeLayoutProvider* const chrome_layout_provider =
       ChromeLayoutProvider::Get();
-  const int container_vertical_margin =
-      chrome_layout_provider->GetDistanceMetric(
-          DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
-  const int container_horizontal_margin =
-      chrome_layout_provider->GetDistanceMetric(
-          DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE);
   const int control_vertical_spacing =
       chrome_layout_provider->GetDistanceMetric(
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
@@ -555,6 +158,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
       layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
 
   views::Builder<ExtensionsMenuMainPageView>(this)
+      .SetProperty(views::kElementIdentifierKey,
+                   kExtensionsMenuMainPageElementId)
       // Last item is a hover button, so we need to account for the extra
       // vertical spacing. We cannot add horizontal margins at this level
       // because some views need to expand the full length (e.g settings
@@ -587,32 +192,10 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           base::BindRepeating(
                               &ExtensionsMenuHandler::CloseBubble,
                               base::Unretained(menu_handler_))))),
-          // Site settings.
-          views::Builder<views::FlexLayoutView>()
-              .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(control_vertical_spacing,
-                                           dialog_insets.left()))
-              .AddChildren(
-                  views::Builder<views::Label>()
-                      .CopyAddressTo(&site_settings_label_)
-                      .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
-                      .SetEnabledColorId(kColorExtensionsMenuText)
-                      .SetProperty(views::kFlexBehaviorKey,
-                                   stretch_specification)
-                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
-                  views::Builder<views::ToggleButton>()
-                      .CopyAddressTo(&site_settings_toggle_)
-                      .SetCallback(base::BindRepeating(
-                          [](views::ToggleButton* toggle_button,
-                             base::RepeatingCallback<void(bool)> callback) {
-                            callback.Run(toggle_button->GetIsOn());
-                          },
-                          site_settings_toggle_,
-                          base::BindRepeating(
-                              &ExtensionsMenuHandler::
-                                  OnSiteSettingsToggleButtonPressed,
-                              base::Unretained(menu_handler))))),
+          CreateSiteSettingsBuilder(
+              /*margins=*/gfx::Insets::VH(control_vertical_spacing,
+                                          dialog_insets.left()),
+              stretch_specification, menu_handler),
           // Contents.
           views::Builder<views::ScrollView>()
               .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
@@ -630,37 +213,64 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                       .SetInsideBorderInsets(
                           gfx::Insets::VH(0, dialog_insets.left()))
                       .AddChildren(
-                          // Message section.
-                          views::Builder<MessageSection>(
-                              std::make_unique<MessageSection>(
-                                  container_vertical_margin,
-                                  container_horizontal_margin,
-                                  control_vertical_spacing,
-                                  base::BindRepeating(
-                                      &ExtensionsMenuHandler::
-                                          OnReloadPageButtonClicked,
-                                      base::Unretained(menu_handler_)),
-                                  base::BindRepeating(
-                                      &ExtensionsMenuHandler::
-                                          OnAllowExtensionClicked,
-                                      base::Unretained(menu_handler_)),
-                                  base::BindRepeating(
-                                      &ExtensionsMenuHandler::
-                                          OnDismissExtensionClicked,
-                                      base::Unretained(menu_handler_))))
-                              .CopyAddressTo(&message_section_),
+                          // Reload section.
+                          views::Builder<SectionContainer>()
+                              .CopyAddressTo(&reload_section_)
+                              .SetVisible(false)
+                              .SetCrossAxisAlignment(
+                                  views::BoxLayout::CrossAxisAlignment::kCenter)
+                              .AddChildren(
+                                  views::Builder<views::Label>()
+                                      .SetText(l10n_util::GetStringUTF16(
+                                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_DESCRIPTION_TEXT))
+                                      .SetTextContext(
+                                          ChromeTextContext::
+                                              CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                                      .SetTextStyle(views::style::STYLE_BODY_3)
+                                      .SetEnabledColorId(
+                                          kColorExtensionsMenuSecondaryText)
+                                      .SetMultiLine(true),
+                                  views::Builder<views::MdTextButton>()
+                                      .SetCallback(base::BindRepeating(
+                                          &ExtensionsMenuHandler::
+                                              OnReloadPageButtonClicked,
+                                          base::Unretained(menu_handler_)))
+                                      .SetBgColorIdOverride(
+                                          kColorExtensionsMenuContainerBackground)
+                                      .SetProperty(views::kMarginsKey,
+                                                   gfx::Insets::TLBR(
+                                                       control_vertical_spacing,
+                                                       0, 0, 0))
+                                      .SetText(l10n_util::GetStringUTF16(
+                                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TEXT))
+                                      .SetTooltipText(l10n_util::GetStringUTF16(
+                                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TOOLTIP))),
+                          // Extensions requests section.
+                          views::Builder<SectionContainer>()
+                              .CopyAddressTo(&requests_section_)
+                              .SetVisible(false)
+                              .AddChildren(
+                                  // Header.
+                                  views::Builder<views::Label>()
+                                      .SetText(l10n_util::GetStringUTF16(
+                                          IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE))
+                                      .SetTextContext(
+                                          ChromeTextContext::
+                                              CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                                      .SetEnabledColorId(
+                                          kColorExtensionsMenuText)
+                                      .SetTextStyle(
+                                          views::style::STYLE_BODY_2_EMPHASIS)
+                                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
+                                  // Empty container for the requests entries.
+                                  views::Builder<views::BoxLayoutView>()
+                                      .CopyAddressTo(&requests_entries_view_)
+                                      .SetOrientation(
+                                          views::BoxLayout::Orientation::
+                                              kVertical)),
                           // Menu items section.
-                          views::Builder<views::BoxLayoutView>()
+                          views::Builder<SectionContainer>()
                               .CopyAddressTo(&menu_items_)
-                              .SetOrientation(
-                                  views::BoxLayout::Orientation::kVertical)
-                              .SetInsideBorderInsets(
-                                  gfx::Insets::VH(container_vertical_margin,
-                                                  container_horizontal_margin))
-                              .SetBackground(
-                                  views::CreateThemedRoundedRectBackground(
-                                      kColorExtensionsMenuContainerBackground,
-                                      kContainerBackgroundRadius))
                               .SetProperty(
                                   views::kMarginsKey,
                                   gfx::Insets::TLBR(control_vertical_spacing, 0,
@@ -675,7 +285,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               l10n_util::GetStringUTF16(
                   IDS_EXTENSIONS_MENU_MAIN_PAGE_DISCOVER_EXTENSIONS))),
 #endif
-          // Settings button.
+          // Manage extensions button.
           views::Builder<HoverButton>(
               std::make_unique<HoverButton>(
                   base::BindRepeating(
@@ -688,7 +298,9 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                       browser_),
                   ui::ImageModel::FromVectorIcon(
                       vector_icons::kSettingsChromeRefreshIcon),
-                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS))))
+                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
+              .SetProperty(views::kElementIdentifierKey,
+                           kExtensionsMenuManageExtensionsElementId))
       .BuildChildren();
 
   // By default, the button's accessible description is set to the button's
@@ -707,6 +319,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
       gfx::Size(site_settings_toggle_->GetPreferredSize().width(),
                 site_settings_label_->GetLineHeight()));
 }
+
+ExtensionsMenuMainPageView::~ExtensionsMenuMainPageView() = default;
 
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     std::unique_ptr<ExtensionActionViewController> action_controller,
@@ -751,28 +365,28 @@ void ExtensionsMenuMainPageView::RemoveMenuItem(
 
 void ExtensionsMenuMainPageView::UpdateSiteSettings(
     const std::u16string& current_site,
-    bool is_site_settings_toggle_visible,
-    bool is_site_settings_toggle_on) {
-  // TODO(crbug.com/40879945): Text should be different when site is restricted,
-  // since site settings toggle cannot be selected. This means we no longer need
-  // MessageSectionState::kRestrictedAccess.
-  site_settings_label_->SetText(l10n_util::GetStringFUTF16(
-      IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL, current_site));
-  site_settings_toggle_->SetVisible(is_site_settings_toggle_visible);
-  site_settings_toggle_->SetIsOn(is_site_settings_toggle_on);
-  site_settings_toggle_->SetTooltipText(
-      GetSiteSettingToggleText(is_site_settings_toggle_on));
+    int label_id,
+    bool is_tooltip_visible,
+    bool is_toggle_visible,
+    bool is_toggle_on) {
+  site_settings_label_->SetText(
+      l10n_util::GetStringFUTF16(label_id, current_site));
+  site_settings_tooltip_->SetVisible(is_tooltip_visible);
+  site_settings_toggle_->SetVisible(is_toggle_visible);
+  site_settings_toggle_->SetIsOn(is_toggle_on);
+  site_settings_toggle_->SetTooltipText(GetSiteSettingToggleText(is_toggle_on));
 }
 
-void ExtensionsMenuMainPageView::UpdateMessageSection(
-    MessageSectionState state,
-    bool has_enterprise_extensions) {
-  message_section_->Update(state, has_enterprise_extensions);
+void ExtensionsMenuMainPageView::ShowReloadSection() {
+  reload_section_->SetVisible(true);
+  requests_section_->SetVisible(false);
+  SizeToPreferredSize();
 }
 
-ExtensionsMenuMainPageView::MessageSectionState
-ExtensionsMenuMainPageView::GetMessageSectionState() {
-  return message_section_->state();
+void ExtensionsMenuMainPageView::MaybeShowRequestsSection() {
+  reload_section_->SetVisible(false);
+  requests_section_->SetVisible(!requests_entries_.empty());
+  SizeToPreferredSize();
 }
 
 void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
@@ -780,17 +394,88 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
     const std::u16string& name,
     const ui::ImageModel& icon,
     int index) {
-  message_section_->AddOrUpdateExtension(id, name, icon, index);
+  // Update request entry if existent.
+  views::View* request_entry = GetExtensionRequestEntry(id);
+  if (request_entry) {
+    std::vector<raw_ptr<View, VectorExperimental>> extension_items =
+        request_entry->children();
+    views::AsViewClass<views::ImageView>(
+        extension_items[kRequestEntryIconIndex])
+        ->SetImage(icon);
+    views::AsViewClass<views::Label>(extension_items[kRequestEntryLabelIndex])
+        ->SetText(name);
+    requests_entries_view_->ReorderChildView(request_entry, index);
+  }
+
+  // Otherwise, add a new request entry.
+  auto* layout_provider = ChromeLayoutProvider::Get();
+  const int control_vertical_margin = layout_provider->GetDistanceMetric(
+      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
+  const int related_control_horizontal_margin =
+      layout_provider->GetDistanceMetric(
+          DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+
+  auto item =
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
+          .AddChildren(
+              views::Builder<views::ImageView>().SetImage(icon),
+              views::Builder<views::Label>()
+                  .SetText(name)
+                  .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
+                  .SetEnabledColorId(kColorExtensionsMenuText)
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kUnbounded)),
+              views::Builder<views::MdTextButton>()
+                  .SetCallback(base::BindRepeating(
+                      &ExtensionsMenuHandler::OnDismissExtensionClicked,
+                      base::Unretained(menu_handler_), id))
+                  .SetStyle(ui::ButtonStyle::kText)
+                  .SetBgColorIdOverride(kColorExtensionsMenuContainerBackground)
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT))
+                  .SetTooltipText(l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TOOLTIP)),
+              views::Builder<views::MdTextButton>()
+                  .SetCallback(base::BindRepeating(
+                      &ExtensionsMenuHandler::OnAllowExtensionClicked,
+                      base::Unretained(menu_handler_), id))
+                  .SetStyle(ui::ButtonStyle::kText)
+                  .SetBgColorIdOverride(kColorExtensionsMenuContainerBackground)
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT))
+                  .SetTooltipText(l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TOOLTIP))
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets::TLBR(
+                                   0, related_control_horizontal_margin, 0, 0)))
+          .Build();
+
+  requests_entries_.insert({id, item.get()});
+  requests_entries_view_->AddChildViewAt(std::move(item), index);
 }
 
 void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
     const extensions::ExtensionId& id) {
-  message_section_->RemoveExtension(id);
-  SizeToPreferredSize();
+  views::View* request_entry = GetExtensionRequestEntry(id);
+  if (!request_entry) {
+    return;
+  }
+
+  requests_entries_view_->RemoveChildViewT(request_entry);
+  requests_entries_.erase(id);
 }
 
 void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {
-  message_section_->ClearExtensions();
+  requests_entries_view_->RemoveAllChildViews();
+  requests_entries_.clear();
+
+  requests_section_->SetVisible(false);
   SizeToPreferredSize();
 }
 
@@ -805,36 +490,93 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
 
 const std::u16string&
 ExtensionsMenuMainPageView::GetSiteSettingLabelForTesting() const {
+  CHECK_IS_TEST();
   return site_settings_label_->GetText();
 }
 
-views::View* ExtensionsMenuMainPageView::GetTextContainerForTesting() {
-  return message_section_->GetTextContainerForTesting();  // IN-TEST
+const views::View* ExtensionsMenuMainPageView::site_settings_tooltip() const {
+  CHECK_IS_TEST();
+  return site_settings_tooltip_;
 }
 
-views::View* ExtensionsMenuMainPageView::GetReloadContainerForTesting() {
-  return message_section_->GetReloadContainerForTesting();  // IN-TEST
+const views::View* ExtensionsMenuMainPageView::reload_section() const {
+  CHECK_IS_TEST();
+  return reload_section_;
 }
 
-views::View*
-ExtensionsMenuMainPageView::GetRequestsAccessContainerForTesting() {
-  return message_section_->GetRequestsAccessContainerForTesting();  // IN-TEST
+const views::View* ExtensionsMenuMainPageView::requests_section() const {
+  CHECK_IS_TEST();
+  return requests_section_;
 }
 
 std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageView::GetExtensionsRequestingAccessForTesting() {
-  return message_section_->GetExtensionsForTesting();  // IN-TEST
+  CHECK_IS_TEST();
+  std::vector<extensions::ExtensionId> extensions;
+  extensions.reserve(requests_entries_.size());
+  for (auto entry : requests_entries_) {
+    extensions.push_back(entry.first);
+  }
+  return extensions;
 }
 
 views::View*
 ExtensionsMenuMainPageView::GetExtensionRequestingAccessEntryForTesting(
     const extensions::ExtensionId& extension_id) {
-  return message_section_->GetExtensionEntryForTesting(
-      extension_id);  // IN-TEST
+  CHECK_IS_TEST();
+  return GetExtensionRequestEntry(extension_id);
 }
 
 content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
+}
+
+views::View* ExtensionsMenuMainPageView::GetExtensionRequestEntry(
+    const extensions::ExtensionId& extension_id) const {
+  auto iter = requests_entries_.find(extension_id);
+  return iter == requests_entries_.end() ? nullptr : iter->second;
+}
+
+views::Builder<views::FlexLayoutView>
+ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
+    gfx::Insets margins,
+    views::FlexSpecification stretch_specification,
+    ExtensionsMenuHandler* menu_handler) {
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  int tooltip_bubble_width = layout_provider->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+
+  return views::Builder<views::FlexLayoutView>()
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetProperty(views::kMarginsKey, margins)
+      .AddChildren(
+          views::Builder<views::FlexLayoutView>()
+              .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+              .AddChildren(
+                  views::Builder<views::Label>()
+                      .CopyAddressTo(&site_settings_label_)
+                      .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
+                      .SetEnabledColorId(kColorExtensionsMenuText)
+                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
+                  views::Builder<views::TooltipIcon>(
+                      std::make_unique<
+                          views::TooltipIcon>(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_ENTERPRISE_TOOLTIP_ICON_TEXT)))
+                      .CopyAddressTo(&site_settings_tooltip_)
+                      .SetBubbleWidth(tooltip_bubble_width)
+                      .SetAnchorPointArrow(
+                          views::BubbleBorder::Arrow::TOP_RIGHT)),
+          views::Builder<views::ToggleButton>()
+              .CopyAddressTo(&site_settings_toggle_)
+              .SetCallback(base::BindRepeating(
+                  [](views::ToggleButton* toggle_button,
+                     base::RepeatingCallback<void(bool)> callback) {
+                    callback.Run(toggle_button->GetIsOn());
+                  },
+                  site_settings_toggle_,
+                  base::BindRepeating(
+                      &ExtensionsMenuHandler::OnSiteSettingsToggleButtonPressed,
+                      base::Unretained(menu_handler)))));
 }
 
 BEGIN_METADATA(ExtensionsMenuMainPageView)

@@ -1724,6 +1724,13 @@ void FeatureInfo::InitializeFeatures() {
       gfx::HasExtension(extensions, "GL_QCOM_render_shared_exponent")) {
     AddExtensionString("GL_QCOM_render_shared_exponent");
   }
+
+  if (is_passthrough_cmd_decoder_ &&
+      gfx::HasExtension(extensions, "GL_ANGLE_blob_cache")) {
+    if (base::FeatureList::IsEnabled(features::kANGLEPerContextBlobCache)) {
+      feature_flags_.angle_blob_cache = true;
+    }
+  }
 }
 
 void FeatureInfo::InitializeFloatAndHalfFloatFeatures(

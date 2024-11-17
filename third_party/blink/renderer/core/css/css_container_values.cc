@@ -11,13 +11,16 @@
 
 namespace blink {
 
-CSSContainerValues::CSSContainerValues(Document& document,
-                                       Element& container,
-                                       std::optional<double> width,
-                                       std::optional<double> height,
-                                       ContainerStuckPhysical stuck_horizontal,
-                                       ContainerStuckPhysical stuck_vertical,
-                                       ContainerSnappedFlags snapped)
+CSSContainerValues::CSSContainerValues(
+    Document& document,
+    Element& container,
+    std::optional<double> width,
+    std::optional<double> height,
+    ContainerStuckPhysical stuck_horizontal,
+    ContainerStuckPhysical stuck_vertical,
+    ContainerSnappedFlags snapped,
+    ContainerOverflowingFlags overflowing_horizontal,
+    ContainerOverflowingFlags overflowing_vertical)
     : MediaValuesDynamic(document.GetFrame()),
       element_(&container),
       width_(width),
@@ -26,12 +29,16 @@ CSSContainerValues::CSSContainerValues(Document& document,
       stuck_horizontal_(stuck_horizontal),
       stuck_vertical_(stuck_vertical),
       snapped_(snapped),
+      overflowing_horizontal_(overflowing_horizontal),
+      overflowing_vertical_(overflowing_vertical),
       font_sizes_(CSSToLengthConversionData::FontSizes(
           container.ComputedStyleRef().GetFontSizeStyle(),
           document.documentElement()->GetComputedStyle())),
       line_height_size_(CSSToLengthConversionData::LineHeightSize(
           container.ComputedStyleRef().GetFontSizeStyle(),
           document.documentElement()->GetComputedStyle())),
+      font_style_(container.GetComputedStyle()),
+      root_font_style_(document.documentElement()->GetComputedStyle()),
       container_sizes_(
           ContainerQueryEvaluator::ParentContainerCandidateElement(container)) {
 }
@@ -39,6 +46,8 @@ CSSContainerValues::CSSContainerValues(Document& document,
 void CSSContainerValues::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(container_sizes_);
+  visitor->Trace(font_style_);
+  visitor->Trace(root_font_style_);
   MediaValuesDynamic::Trace(visitor);
 }
 
@@ -119,11 +128,6 @@ ContainerStuckLogical PhysicalToLogicalLtrHorizontalTb(
 }  // namespace
 
 ContainerStuckLogical CSSContainerValues::StuckInline() const {
-  // TODO(crbug.com/1445189): The WritingDirection should be taken from the
-  // container's containing block, not the container. Otherwise the inset
-  // properties on the sticky positioned will not match the same inset features
-  // in container queries when writing-mode or direction changes on the sticky
-  // positioned itself.
   ContainerStuckPhysical physical =
       writing_direction_.IsHorizontal() ? StuckHorizontal() : StuckVertical();
   ContainerStuckLogical logical = PhysicalToLogicalLtrHorizontalTb(physical);
@@ -131,15 +135,26 @@ ContainerStuckLogical CSSContainerValues::StuckInline() const {
 }
 
 ContainerStuckLogical CSSContainerValues::StuckBlock() const {
-  // TODO(crbug.com/1445189): The WritingDirection should be taken from the
-  // container's containing block, not the container. Otherwise the inset
-  // properties on the sticky positioned will not match the same inset features
-  // in container queries when writing-mode or direction changes on the sticky
-  // positioned itself.
   ContainerStuckPhysical physical =
       writing_direction_.IsHorizontal() ? StuckVertical() : StuckHorizontal();
   ContainerStuckLogical logical = PhysicalToLogicalLtrHorizontalTb(physical);
   return writing_direction_.IsFlippedBlocks() ? Flip(logical) : logical;
+}
+
+ContainerOverflowingFlags CSSContainerValues::OverflowingInline() const {
+  ContainerOverflowingFlags overflowing_inline =
+      writing_direction_.IsHorizontal() ? OverflowingHorizontal()
+                                        : OverflowingVertical();
+  return writing_direction_.IsRtl() ? Flip(overflowing_inline)
+                                    : overflowing_inline;
+}
+
+ContainerOverflowingFlags CSSContainerValues::OverflowingBlock() const {
+  ContainerOverflowingFlags overflowing_block =
+      writing_direction_.IsHorizontal() ? OverflowingVertical()
+                                        : OverflowingHorizontal();
+  return writing_direction_.IsFlippedBlocks() ? Flip(overflowing_block)
+                                              : overflowing_block;
 }
 
 }  // namespace blink

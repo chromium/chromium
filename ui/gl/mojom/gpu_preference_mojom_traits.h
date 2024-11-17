@@ -24,8 +24,7 @@ struct EnumTraits<gl::mojom::GpuPreference, gl::GpuPreference> {
       case gl::GpuPreference::kHighPerformance:
         return gl::mojom::GpuPreference::kHighPerformance;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gl::mojom::GpuPreference::kDefault;
+    NOTREACHED();
   }
 
   static bool FromMojom(gl::mojom::GpuPreference input,
@@ -44,8 +43,7 @@ struct EnumTraits<gl::mojom::GpuPreference, gl::GpuPreference> {
         *out = gl::GpuPreference::kHighPerformance;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

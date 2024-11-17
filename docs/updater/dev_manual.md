@@ -9,8 +9,10 @@ including tips and tricks.
 ## Code Organization
 
 ## Bots & Lab
+
 >**_NOTE:_** Knowledge in this section may become out-of-date as LUCI evolves
 quickly.
+
 ### Builders / Testers
 There are two sets of configuration files for our builders/testers. One is
 for chromium-branded and locates in `src`. The other one is for chrome-branded
@@ -141,6 +143,27 @@ To update these copies of the updaters:
         script. The min version usually is different per-platform, since
         Chromium does not archive a version at every CL. After making these
         changes, 3pp will import the new versions within a few hours.
+    *   As an example, let us suppose that
+        [revision 1371769](https://crrev.com/1371769)
+        is the change that needs to be picked up for the checked-in version.
+        * Look up the chrome version by checking
+          [chromiumdash](https://chromiumdash.appspot.com/).
+        * It shows that version `132.0.6791.0` is the version `1371769` was
+          released with.
+        * Make sure the `updater` is shipping at a `version` higher than
+          `132.0.6791.0`
+          [here](https://versionhistory.googleapis.com/v1/chromium_updater/platforms/win/channels/canary/versions/all/releases?filter=endtime=none)
+          .
+        * Look up the chromium versions under
+          [commondatastorage](https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html)
+          , in the folders corresponding to `get_platform()` for each
+          `fetch.py`, for instance, the `Win`, `Win_x64`, and `Win_Arm64`
+          folders for the Windows `fetch.py` files, and look up a build with a
+          revision greater than `1371781`, corresponding to `r1371769`, and make
+          sure that the `updater.zip` file is present in those folders.
+        * Make changes to the `fetch.py` files based on the lookups, and send it
+          out for review.
+        * After the change lands, give it a few hours for the fetch to complete.
 3.  Update //DEPS to point to the new versions.
 
 ## Developing
@@ -268,6 +291,27 @@ Build outputs will land in the directory created by `gn gen` that you have been
 providing to assorted `gn`, `ninja`, and `autoninja` commands. `updater.zip`
 contains copies of the "final" outputs created by the build. `UpdaterSetup` is
 probably what you want for installing the updater you have built.
+
+## Signing
+
+GoogleUpdater signing doesn't take place on Chromium infra, but rather on
+proprietary Google infrastructure (go/o4signing). The build system packages all
+necessary ingredients for signing in updater.zip, which is uploaded by Chrome
+archive builders to the unsigned builds bucket in GCS. The zip contains both
+the artifacts to be signed and scripts to sign them. Signing infrastructure is
+triggered after each upload, ingests the files, injects the key material, signs,
+and then uploads the results to the signed builds bucket. More detail is
+available for Googlers at go/o4signing.
+
+On Windows, it's important to sign updater.exe, and then package that into
+UpdaterSetup.exe, and sign UpdaterSetup.exe. The signing scripts take an
+unsigned UpdaterSetup.exe, extract updater.exe, sign, reconstruct, and then
+sign the new UpdaterSetup.exe.
+
+On macOS, the GoogleUpdater.app bundle is signed directly, and then notarized
+(sent to Apple for countersigning). Notarization is "stapled" into the app
+bundle, and then the entire thing is packaged into a DMG, which in turn is
+signed, notarized, and stapled.
 
 ## Code Coverage
 Gerrit now down-votes the changes that do not have enough coverage. And it's

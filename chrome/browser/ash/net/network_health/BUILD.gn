@@ -24,4 +24,11 @@ static_library("network_health") {
     "//dbus",
     "//mojo/public/cpp/bindings",
   ]
+
+  data_deps = [ ":mojo_service_manager_policy" ]
+}
+
+copy("mojo_service_manager_policy") {
+  sources = [ "network_health_service_policy.json" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }

@@ -83,8 +83,7 @@ class CORE_EXPORT WritableStreamDefaultController final
   // May error the stream as a side-effect.
   static double GetChunkSize(ScriptState*,
                              WritableStreamDefaultController*,
-                             v8::Local<v8::Value> chunk,
-                             ExceptionState&);
+                             v8::Local<v8::Value> chunk);
 
   // https://streams.spec.whatwg.org/#writable-stream-default-controller-get-desired-size
   static double GetDesiredSize(const WritableStreamDefaultController*);

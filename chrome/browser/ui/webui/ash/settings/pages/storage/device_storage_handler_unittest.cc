@@ -159,16 +159,9 @@ class StorageHandlerTest : public testing::Test {
         file_manager::util::GetDownloadsMountPointName(profile_),
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         my_files_path));
-
-    auto instance = std::make_unique<MockNewWindowDelegate>();
-    auto primary = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_primary_ = primary.get();
-    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(instance), std::move(primary));
   }
 
   void TearDown() override {
-    new_window_provider_.reset();
     web_ui_.reset();
     total_disk_space_test_api_.reset();
     free_disk_space_test_api_.reset();
@@ -282,6 +275,8 @@ class StorageHandlerTest : public testing::Test {
     ASSERT_EQ(expected_size, stat.st_size);
   }
 
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
   raw_ptr<StorageHandler, DanglingUntriaged> handler_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   content::BrowserTaskEnvironment task_environment_;
@@ -296,14 +291,12 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<DriveOfflineSizeTestAPI> drive_offline_size_test_api_;
   std::unique_ptr<CrostiniSizeTestAPI> crostini_size_test_api_;
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
-      new_window_delegate_primary_;
   MockUserDataAuthClient userdataauth_;
 
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(StorageHandlerTest, RoundByteSize) {
@@ -710,7 +703,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
 }
 
 TEST_F(StorageHandlerTest, OpenBrowsingDataSettings) {
-  EXPECT_CALL(*new_window_delegate_primary_,
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(chrome::kChromeUISettingsURL)
                           .Resolve(chrome::kClearBrowserDataSubPage),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,

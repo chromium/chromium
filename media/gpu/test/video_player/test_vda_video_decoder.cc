@@ -105,9 +105,8 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DVLOGF(2) << "Use VdVideoDecodeAccelerator";
     vda_config.is_deferred_initialization_allowed = true;
     decoder_ = media::VdVideoDecodeAccelerator::Create(
-        base::BindRepeating(
-            &media::VideoDecoderPipeline::CreateForVDAAdapterForARC),
-        this, vda_config, base::SequencedTaskRunner::GetCurrentDefault());
+        base::BindRepeating(&media::VideoDecoderPipeline::CreateForARC), this,
+        vda_config, base::SequencedTaskRunner::GetCurrentDefault());
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   } else {
     DVLOGF(2) << "Use original VDA";
@@ -201,34 +200,29 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
 
   decoder_->AssignPictureBuffers(picture_buffers);
 
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // Create a video frame for each of the picture buffers and provide memory
   // handles to the video frame's data to the decoder.
   for (const PictureBuffer& picture_buffer : picture_buffers) {
-    scoped_refptr<VideoFrame> video_frame;
-
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-    video_frame = CreateGpuMemoryBufferVideoFrame(
+    scoped_refptr<VideoFrame> video_frame = CreateGpuMemoryBufferVideoFrame(
         format, dimensions, visible_rect, visible_rect.size(),
         base::TimeDelta(),
         linear_output_ ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
                        : gfx::BufferUsage::SCANOUT_VDA_WRITE);
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
     ASSERT_TRUE(video_frame) << "Failed to create video frame";
     video_frames_.emplace(picture_buffer.id(), video_frame);
-    gfx::GpuMemoryBufferHandle handle;
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-    handle = CreateGpuMemoryBufferHandle(video_frame.get());
-    DCHECK(!handle.is_null());
-#else
-    NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+    gfx::GpuMemoryBufferHandle handle =
+        CreateGpuMemoryBufferHandle(video_frame.get());
 
     ASSERT_TRUE(!handle.is_null()) << "Failed to create GPU memory handle";
     decoder_->ImportBufferForPicture(picture_buffer.id(), format,
                                      std::move(handle));
   }
+#else
+  FAIL();
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 }
 
 void TestVDAVideoDecoder::DismissPictureBuffer(int32_t picture_buffer_id) {

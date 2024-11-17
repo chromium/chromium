@@ -1184,7 +1184,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Make sure we fire DidFirstVisuallyNonEmptyPaint when restoring from bf-cache.
 // TODO(crbug.com/327195951): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_FiresDidFirstVisuallyNonEmptyPaintWhenRestoredFromCache \
   DISABLED_FiresDidFirstVisuallyNonEmptyPaintWhenRestoredFromCache
 #else
@@ -1219,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(observer.did_fire());
 }
 // TODO(crbug.com/330798156): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_SetsThemeColorWhenRestoredFromCache \
   DISABLED_SetsThemeColorWhenRestoredFromCache
 #else
@@ -2902,7 +2902,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
               kUnloadHandlerExistsInSubFrame);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // 2) Navigate to B.
@@ -3137,7 +3137,7 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
       BeforeUnloadBlockingDelegate& beforeunload_pauser,
       RenderFrameHostImpl* sub_rfh,
       const GURL& subframe_navigate_url,
-      const std::string_view iframe_id) {
+      std::string_view iframe_id) {
     ASSERT_TRUE(ExecJs(sub_rfh, R"(
       window.addEventListener('beforeunload', e =>
         e.returnValue='blocked'
@@ -3188,7 +3188,7 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
       const GURL& subframe_navigate_url,
       RenderFrameHostImplWrapper& sub_rfh,
       TestNavigationManager& subframe_navigation_manager,
-      const std::string_view iframe_id) {
+      std::string_view iframe_id) {
     FrameTreeNode* child_ftn =
         web_contents()->GetPrimaryFrameTree().root()->child_at(0);
     {

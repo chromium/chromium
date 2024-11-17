@@ -20,6 +20,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "components/grit/optimization_guide_internals_resources.h"
 #include "components/grit/optimization_guide_internals_resources_map.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -30,25 +31,28 @@
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals_page_handler_impl.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-// static
-OptimizationGuideInternalsUI*
-OptimizationGuideInternalsUI::MaybeCreateOptimizationGuideInternalsUI(
-    content::WebUI* web_ui,
-    SetupWebUIDataSourceCallback set_up_data_source_callback) {
-  return new OptimizationGuideInternalsUI(
-      web_ui, std::move(set_up_data_source_callback));
+bool OptimizationGuideInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return service != nullptr;
 }
 
 OptimizationGuideInternalsUI::OptimizationGuideInternalsUI(
-    content::WebUI* web_ui,
-    SetupWebUIDataSourceCallback set_up_data_source_callback)
+    content::WebUI* web_ui)
     : MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  std::move(set_up_data_source_callback)
-      .Run(base::make_span(kOptimizationGuideInternalsResources,
-                           kOptimizationGuideInternalsResourcesSize),
-           IDR_OPTIMIZATION_GUIDE_INTERNALS_OPTIMIZATION_GUIDE_INTERNALS_HTML);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost);
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kOptimizationGuideInternalsResources,
+                      kOptimizationGuideInternalsResourcesSize),
+      IDR_OPTIMIZATION_GUIDE_INTERNALS_OPTIMIZATION_GUIDE_INTERNALS_HTML);
 }
 
 OptimizationGuideInternalsUI::~OptimizationGuideInternalsUI() = default;
@@ -66,9 +70,7 @@ void OptimizationGuideInternalsUI::CreatePageHandler(
     mojo::PendingRemote<optimization_guide_internals::mojom::Page> page) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!service) {
-    return;
-  }
+  DCHECK(service);
   OptimizationGuideLogger* optimization_guide_logger =
       service->GetOptimizationGuideLogger();
   optimization_guide_internals_page_handler_ =
@@ -80,9 +82,6 @@ void OptimizationGuideInternalsUI::RequestDownloadedModelsInfo(
     RequestDownloadedModelsInfoCallback callback) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!service) {
-    return;
-  }
   optimization_guide::PredictionManager* prediction_manager =
       service->GetPredictionManager();
   std::vector<optimization_guide_internals::mojom::DownloadedModelInfoPtr>

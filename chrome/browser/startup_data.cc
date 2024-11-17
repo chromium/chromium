@@ -94,7 +94,7 @@ void StartupData::RecordCoreSystemProfile() {
   delegating_provider.ProvideSystemProfileMetricsWithLogCreationTime(
       base::TimeTicks(), &system_profile);
 
-  // TODO(crbug.com/40628379): Records information from other providers.
+  // TODO(crbug.com/374999988): Records information from other providers.
   metrics::GlobalPersistentSystemProfile::GetInstance()->SetSystemProfile(
       system_profile, /* complete */ false);
 }
@@ -217,7 +217,7 @@ void StartupData::CreateServicesInternal() {
   // The preference tracking and protection is not required on Android.
   DCHECK(!ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking);
 
-  prefs_ = CreatePrefService(
+  prefs_ = ::CreateProfilePrefService(
       pref_registry_, nullptr /* extension_pref_store */,
       profile_policy_connector_->policy_service(), browser_policy_connector,
       std::move(pref_validation_delegate), io_task_runner, key_.get(), path,

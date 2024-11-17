@@ -122,11 +122,11 @@
 #pragma mark - PlusAddressListNavigator
 
 - (void)openCreatePlusAddressSheet {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)openAllPlusAddressList {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)openManagePlusAddress {

@@ -36,8 +36,8 @@ LayoutGuideCenter* LayoutGuideCenterForBrowser(Browser* browser) {
     return SharedInstance();
   }
 
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  if (browserState && browserState->IsOffTheRecord()) {
+  ProfileIOS* profile = browser->GetProfile();
+  if (profile && profile->IsOffTheRecord()) {
     return layoutGuideSceneAgent.incognitoLayoutGuideCenter;
   } else {
     return layoutGuideSceneAgent.layoutGuideCenter;

@@ -87,6 +87,7 @@ def _to_java_test_health_dict(java_test_health: JavaTestHealth
             tests_count=java_test_health.tests_count,
             disabled_tests=java_test_health.disabled_tests,
             disable_if_tests=java_test_health.disable_if_tests,
+            tags=java_test_health.tags,
         ))
 
     return test_dict

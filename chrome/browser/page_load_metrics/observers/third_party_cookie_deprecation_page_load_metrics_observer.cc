@@ -144,7 +144,13 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
     const GURL& first_party_url,
     bool blocked_by_policy,
     ThirdPartyCookieAllowMechanism allow_mechanism) {
-  if (blocked_by_policy || !IsThirdParty(url, first_party_url)) {
+  if (!IsThirdParty(url, first_party_url)) {
+    return;
+  }
+  if (blocked_by_policy) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
+        blink::mojom::WebFeature::kThirdPartyCookieBlocked);
     return;
   }
 
@@ -173,16 +179,12 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
         .Record(ukm::UkmRecorder::Get());
   }
 
-  if (!is_blocked_by_experiment) {
-    return;
-  }
-
-  // Record the following blink feature usage cookie metrics when the 3PCD
-  // experiment is actual block third party cookies, which means tracking
-  // protection is onboard.
+  // Record the following blink feature usage cookie metrics.
   std::vector<blink::mojom::WebFeature> third_party_cookie_features;
-  third_party_cookie_features.push_back(
-      blink::mojom::WebFeature::kThirdPartyCookieAccessBlockByExperiment);
+  if (is_blocked_by_experiment) {
+    third_party_cookie_features.push_back(
+        blink::mojom::WebFeature::kThirdPartyCookieAccessBlockByExperiment);
+  }
 
   switch (allow_mechanism) {
     case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:

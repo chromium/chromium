@@ -103,6 +103,7 @@ WebXrVrRuntimelessBrowserTestSensorless::
 #if BUILDFLAG(ENABLE_OPENXR)
 WebXrVrOpenXrBrowserTestBase::WebXrVrOpenXrBrowserTestBase() {
   enable_features_.push_back(device::features::kOpenXR);
+  enable_features_.push_back(device::features::kWebXrHandInput);
 }
 
 WebXrVrOpenXrBrowserTestBase::~WebXrVrOpenXrBrowserTestBase() = default;

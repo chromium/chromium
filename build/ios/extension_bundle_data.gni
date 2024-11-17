@@ -28,8 +28,40 @@ template("extension_bundle_data") {
     _extension_dir = invoker.extension_dir
   }
 
-  forward_variables_from(invoker, [ "testonly" ])
-  bundle_data(target_name) {
+  if (defined(invoker.variants) && invoker.variants != []) {
+    _variants = []
+    foreach(_variant, invoker.variants) {
+      _variants += [
+        {
+          name = _variant.name
+        },
+      ]
+    }
+  } else {
+    _variants = []
+  }
+
+  _target_name = target_name
+  if (_variants != []) {
+    foreach(_variant, _variants) {
+      _extension_target =
+          get_label_info(invoker.extension_target, "label_no_toolchain") +
+          "_variants_${_variant.name}" + "(" +
+          get_label_info(invoker.extension_target, "toolchain") + ")"
+
+      bundle_data("${_target_name}_variants_${_variant.name}") {
+        forward_variables_from(invoker, [ "testonly" ])
+        public_deps = [ _extension_target ]
+        outputs =
+            [ "{{bundle_contents_dir}}/$_extension_dir/{{source_file_part}}" ]
+        sources = [ get_label_info(_extension_target, "root_out_dir") +
+                    "/variants/${_variant.name}/$_extension_name" ]
+      }
+    }
+  }
+
+  bundle_data(_target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
     public_deps = [ invoker.extension_target ]
     outputs = [ "{{bundle_contents_dir}}/$_extension_dir/{{source_file_part}}" ]
     sources = [ get_label_info(invoker.extension_target, "root_out_dir") +

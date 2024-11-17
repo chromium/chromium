@@ -105,10 +105,10 @@ InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
                                             *count_label);
     }
   }
-  int child_number =
-      std::min(informed_restore::kScreenshotIconRowMaxElements,
-               one_browser_window ? static_cast<int>(apps_infos[0].tab_count)
-                                  : elements_size);
+  int child_number = std::min(
+      informed_restore::kScreenshotIconRowMaxElements,
+      one_browser_window ? static_cast<int>(apps_infos[0].tab_infos.size())
+                         : elements_size);
   // Add the browser icon when there is only one browser window opened.
   if (one_browser_window) {
     child_number++;

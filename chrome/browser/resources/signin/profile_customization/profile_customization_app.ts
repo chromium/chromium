@@ -8,8 +8,8 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
-import './strings.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import '/strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -83,11 +83,11 @@ export class ProfileCustomizationAppElement extends
 
   protected isManaged_: boolean = false;
   protected profileName_: string = '';
-  protected pictureUrl_: string;
-  protected welcomeTitle_: string;
+  protected pictureUrl_: string = '';
+  protected welcomeTitle_: string = '';
   protected availableIcons_: AvatarIcon[] = [];
-  protected selectedAvatar_: AvatarIcon;
-  private confirmedAvatar_: AvatarIcon;
+  protected selectedAvatar_: AvatarIcon|null = null;
+  private confirmedAvatar_: AvatarIcon|null = null;
   protected isLocalProfileCreation_: boolean =
       loadTimeData.getBoolean('isLocalProfileCreation');
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
@@ -159,10 +159,10 @@ export class ProfileCustomizationAppElement extends
     // there is only one icon marked as selected.
     icons.forEach((icon, index) => {
       if (icon.selected) {
-        icons[index].selected = false;
-        this.confirmedAvatar_ = icons[index];
+        icons[index]!.selected = false;
+        this.confirmedAvatar_ = icons[index]!;
         if (!this.selectedAvatar_) {
-          this.selectedAvatar_ = icons[index];
+          this.selectedAvatar_ = icons[index]!;
         }
       }
     });
@@ -171,6 +171,7 @@ export class ProfileCustomizationAppElement extends
 
   protected onSelectAvatarConfirmClicked_() {
     assert(this.isLocalProfileCreation_);
+    assert(this.selectedAvatar_);
     this.profileCustomizationBrowserProxy_.setAvatarIcon(
         this.selectedAvatar_.index);
     this.confirmedAvatar_ = this.selectedAvatar_;

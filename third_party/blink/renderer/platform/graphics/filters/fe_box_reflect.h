@@ -18,8 +18,8 @@ class PLATFORM_EXPORT FEBoxReflect final : public FilterEffect {
   ~FEBoxReflect() final;
 
   // FilterEffect implementation
-  WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                          int indentation) const final;
+  StringBuilder& ExternalRepresentation(StringBuilder&,
+                                        wtf_size_t indent) const final;
 
  private:
   gfx::RectF MapEffect(const gfx::RectF&) const final;

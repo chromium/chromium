@@ -7,6 +7,8 @@
 #include <string_view>
 
 #include "base/files/file.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -31,6 +33,11 @@ constexpr const char kTestAlphaDataURI[] = "data:text/plain,alpha";
 constexpr const char kTestAlphaWSURI[] = "ws://example.com/alpha";
 constexpr const char kTestBetaURL[] = "http://example.com/beta";
 
+constexpr const char kSubresourceLoadEvaluationWallDurationHistogram[] =
+    "SubresourceFilter.SubresourceLoad.Evaluation.WallDuration";
+constexpr const char kSubresourceLoadEvaluationCPUDurationHistogram[] =
+    "SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration";
+
 constexpr const char kTestAlphaURLPathSuffix[] = "alpha";
 
 }  // namespace
@@ -39,7 +46,7 @@ constexpr const char kTestAlphaURLPathSuffix[] = "alpha";
 
 class DocumentSubresourceFilterTest : public ::testing::Test {
  public:
-  DocumentSubresourceFilterTest() {}
+  DocumentSubresourceFilterTest() = default;
 
   DocumentSubresourceFilterTest(const DocumentSubresourceFilterTest&) = delete;
   DocumentSubresourceFilterTest& operator=(
@@ -68,10 +75,12 @@ class DocumentSubresourceFilterTest : public ::testing::Test {
 };
 
 TEST_F(DocumentSubresourceFilterTest, DryRun) {
+  base::HistogramTester histogram_tester;
   mojom::ActivationState activation_state;
   activation_state.activation_level = kDryRun;
   activation_state.measure_performance = true;
-  DocumentSubresourceFilter filter(url::Origin(), activation_state, ruleset());
+  DocumentSubresourceFilter filter(url::Origin(), activation_state, ruleset(),
+                                   kSafeBrowsingRulesetConfig.uma_tag);
 
   EXPECT_EQ(LoadPolicy::WOULD_DISALLOW,
             filter.GetLoadPolicy(GURL(kTestAlphaURL), kImageType));
@@ -92,13 +101,18 @@ TEST_F(DocumentSubresourceFilterTest, DryRun) {
   EXPECT_EQ(5, statistics.num_loads_evaluated);
   EXPECT_EQ(3, statistics.num_loads_matching_rules);
   EXPECT_EQ(0, statistics.num_loads_disallowed);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationWallDurationHistogram, 5);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationCPUDurationHistogram, 5);
 }
 
 TEST_F(DocumentSubresourceFilterTest, MatchingRuleDryRun) {
   mojom::ActivationState activation_state;
   activation_state.activation_level = kDryRun;
   activation_state.measure_performance = false;
-  DocumentSubresourceFilter filter(url::Origin(), activation_state, ruleset());
+  DocumentSubresourceFilter filter(url::Origin(), activation_state, ruleset(),
+                                   kSafeBrowsingRulesetConfig.uma_tag);
 
   EXPECT_NE(nullptr,
             filter.FindMatchingUrlRule(GURL(kTestAlphaURL), kImageType));
@@ -115,12 +129,14 @@ TEST_F(DocumentSubresourceFilterTest, MatchingRuleDryRun) {
 }
 
 TEST_F(DocumentSubresourceFilterTest, Enabled) {
+  base::HistogramTester histogram_tester;
+
   auto test_impl = [this](bool measure_performance) {
     mojom::ActivationState activation_state;
     activation_state.activation_level = kEnabled;
     activation_state.measure_performance = measure_performance;
-    DocumentSubresourceFilter filter(url::Origin(), activation_state,
-                                     ruleset());
+    DocumentSubresourceFilter filter(url::Origin(), activation_state, ruleset(),
+                                     kSafeBrowsingRulesetConfig.uma_tag);
 
     EXPECT_EQ(LoadPolicy::DISALLOW,
               filter.GetLoadPolicy(GURL(kTestAlphaURL), kImageType));
@@ -151,14 +167,25 @@ TEST_F(DocumentSubresourceFilterTest, Enabled) {
   };
 
   test_impl(true /* measure_performance */);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationWallDurationHistogram, 5);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationCPUDurationHistogram, 5);
   test_impl(false /* measure_performance */);
+  // No more histograms should have been emitted since the last run since
+  // performance measurements are turned off.
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationWallDurationHistogram, 5);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationCPUDurationHistogram, 5);
 }
 
 TEST_F(DocumentSubresourceFilterTest, MatchingRuleEnabled) {
   mojom::ActivationState activation_state;
   activation_state.activation_level = kEnabled;
   activation_state.measure_performance = false;
-  DocumentSubresourceFilter filter(url::Origin(), activation_state, ruleset());
+  DocumentSubresourceFilter filter(url::Origin(), activation_state, ruleset(),
+                                   kSafeBrowsingRulesetConfig.uma_tag);
 
   EXPECT_NE(nullptr,
             filter.FindMatchingUrlRule(GURL(kTestAlphaURL), kImageType));

@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.test.util.browser.signin;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.hamcrest.Matcher;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -23,14 +27,12 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-
-import java.util.HashMap;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 /**
  * This test rule mocks AccountManagerFacade.
@@ -41,38 +43,8 @@ import java.util.HashMap;
  * <p>The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
-    // TODO(crbug.com/40234741): Migrate tests that don't need to create their own accounts to these
-    // constants.
-    public static final AccountInfo TEST_ACCOUNT_1 =
-            new AccountInfo.Builder(
-                            "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
-                    .fullName("Test1 Full")
-                    .givenName("Test1 Given")
-                    .accountImage(createAvatar())
-                    .build();
-
-    public static final AccountInfo TEST_ACCOUNT_2 =
-            new AccountInfo.Builder(
-                            "test2@gmail.com", FakeAccountManagerFacade.toGaiaId("test2@gmail.com"))
-                    .fullName("Test2 Full")
-                    .givenName("Test2 Given")
-                    .accountImage(createAvatar())
-                    .build();
-
-    public static final AccountInfo TEST_CHILD_ACCOUNT =
-            new AccountInfo.Builder(
-                            generateChildEmail(TEST_ACCOUNT_1.getEmail()),
-                            FakeAccountManagerFacade.toGaiaId(
-                                    generateChildEmail(TEST_ACCOUNT_1.getEmail())))
-                    .fullName("Test1 Full")
-                    .givenName("Test1 Given")
-                    .accountImage(createAvatar())
-                    .accountCapabilities(
-                            new AccountCapabilitiesBuilder()
-                                    .setIsSubjectToParentalControls(true)
-                                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
-                                    .build())
-                    .build();
+    // TODO(crbug.com/372670018) Move remaining test accounts to {@link
+    // org.chromium.components.signin.test.util.TestAccounts}.
 
     public static final AccountInfo TEST_NON_GMAIL_ACCOUNT =
             new AccountInfo.Builder(
@@ -85,7 +57,8 @@ public class AccountManagerTestRule implements TestRule {
 
     public static final AccountInfo TEST_ACCOUNT_NO_NAME =
             new AccountInfo.Builder(
-                            "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
+                            "test.noname@gmail.com",
+                            FakeAccountManagerFacade.toGaiaId("test.noname@gmail.com"))
                     .build();
 
     public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
@@ -144,7 +117,14 @@ public class AccountManagerTestRule implements TestRule {
                     .accountCapabilities(MINOR_MODE_NOT_REQUIRED)
                     .build();
 
-    public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = TEST_ACCOUNT_1;
+    public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = TestAccounts.ACCOUNT1;
+
+    // The matcher for the add account button in the fake add account activity.
+    public static final Matcher<View> ADD_ACCOUNT_BUTTON_MATCHER =
+            withId(FakeAccountManagerFacade.AddAccountActivityStub.OK_BUTTON_ID);
+    // The matcher for the cancel button in the fake add account activity.
+    public static final Matcher<View> CANCEL_ADD_ACCOUNT_BUTTON_MATCHER =
+            withId(FakeAccountManagerFacade.AddAccountActivityStub.CANCEL_BUTTON_ID);
 
     // TODO(crbug.com/40890215): Use TEST_ACCOUNT_1 instead.
     @Deprecated public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
@@ -215,46 +195,15 @@ public class AccountManagerTestRule implements TestRule {
      */
     @Deprecated
     public AccountInfo addAccount(String accountName) {
-        return addAccount(accountName, new AccountCapabilities(new HashMap<>()));
-    }
-
-    /**
-     * Adds an account of the given accountName and capabilities to the fake AccountManagerFacade.
-     *
-     * @return The CoreAccountInfo for the account added.
-     */
-    @Deprecated
-    public AccountInfo addAccount(String accountName, @NonNull AccountCapabilities capabilities) {
         final String baseName = accountName.split("@", 2)[0];
-        return addAccount(
-                accountName, baseName + ".full", baseName + ".given", createAvatar(), capabilities);
-    }
-
-    /**
-     * Adds an account of the given email and name to the fake AccountManagerFacade.
-     *
-     * @return The CoreAccountInfo for the account added.
-     */
-    @Deprecated
-    public AccountInfo addAccount(String email, String baseName) {
-        return addAccount(
-                email,
-                baseName + ".full",
-                baseName + ".given",
-                createAvatar(),
-                new AccountCapabilities(new HashMap<>()));
-    }
-
-    /**
-     * Adds an account of the given accountName and capabilities to the fake AccountManagerFacade.
-     *
-     * @return The CoreAccountInfo for the account added.
-     */
-    @Deprecated
-    public AccountInfo addAccount(
-            String accountName, String baseName, @NonNull AccountCapabilities capabilities) {
-        return addAccount(
-                accountName, baseName + ".full", baseName + ".given", createAvatar(), capabilities);
+        AccountInfo accountInfo =
+                new AccountInfo.Builder(accountName, FakeAccountManagerFacade.toGaiaId(accountName))
+                        .fullName(baseName + ".full")
+                        .givenName(baseName + ".given")
+                        .accountImage(createAvatar())
+                        .build();
+        addAccount(accountInfo);
+        return accountInfo;
     }
 
     /**
@@ -264,31 +213,12 @@ public class AccountManagerTestRule implements TestRule {
     @Deprecated
     public AccountInfo addAccount(
             String email, String fullName, String givenName, @Nullable Bitmap avatar) {
-        return addAccount(
-                email, fullName, givenName, avatar, new AccountCapabilities(new HashMap<>()));
-    }
-
-    /**
-     * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to {@link
-     * FakeAccountInfoService}.
-     */
-    @Deprecated
-    public AccountInfo addAccount(
-            String email,
-            String fullName,
-            String givenName,
-            @Nullable Bitmap avatar,
-            @NonNull AccountCapabilities capabilities) {
-        String gaiaId = FakeAccountManagerFacade.toGaiaId(email);
         AccountInfo accountInfo =
-                new AccountInfo(
-                        new CoreAccountId(gaiaId),
-                        email,
-                        gaiaId,
-                        fullName,
-                        givenName,
-                        avatar,
-                        capabilities);
+                new AccountInfo.Builder(email, FakeAccountManagerFacade.toGaiaId(email))
+                        .fullName(fullName)
+                        .givenName(givenName)
+                        .accountImage(avatar)
+                        .build();
         addAccount(accountInfo);
         return accountInfo;
     }
@@ -304,28 +234,31 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Sets the result for the next add account flow.
+     * Initializes the next add account flow with a given account to add.
      *
-     * @param result The activity result to return when the intent is launched
-     * @param newAccountName The account name to return when the intent is launched
+     * @param newAccountName The account name to return when the add account flow finishes.
      */
-    public void setResultForNextAddAccountFlow(int result, @Nullable String newAccountName) {
-        setResultForNextAddAccountFlow(result, newAccountName, false);
+    public void setAddAccountFlowResult(@Nullable String newAccountName) {
+        setAddAccountFlowResult(newAccountName, false);
     }
 
     /**
-     * Sets the result for the next add account flow.
+     * Initializes the next add account flow with a given account to add. Should be called before
+     * the add account flow starts.
      *
-     * @param result The activity result to return when the intent is launched
-     * @param newAccountName The account name to return when the intent is launched
+     * @param newAccountName The account name to return when the add account flow finishes.
      * @param isMinorModeEnabled The account be subject to minor mode restrictions
      */
-    public void setResultForNextAddAccountFlow(
-            int result, @Nullable String newAccountName, boolean isMinorModeEnabled) {
+    public void setAddAccountFlowResult(
+            @Nullable String newAccountName, boolean isMinorModeEnabled) {
         // TODO(crbug.com/343872217) To be replaced with a single method that takes {@link
         // AccountInfo}
-        mFakeAccountManagerFacade.setResultForNextAddAccountFlow(
-                result, newAccountName, isMinorModeEnabled);
+        mFakeAccountManagerFacade.setAddAccountFlowResult(newAccountName, isMinorModeEnabled);
+    }
+
+    /** Makes the add account intent creation fail. */
+    public void forceAddAccountIntentCreationFailure() {
+        mFakeAccountManagerFacade.forceAddAccountIntentCreationFailure();
     }
 
     /** Removes an account with the given {@link CoreAccountId}. */
@@ -339,24 +272,21 @@ public class AccountManagerTestRule implements TestRule {
         return mFakeAccountManagerFacade.blockGetCoreAccountInfos(populateCache);
     }
 
-    /** Converts an account email to its corresponding CoreAccountInfo object. */
-    public CoreAccountInfo toCoreAccountInfo(String accountEmail) {
-        String accountGaiaId = FakeAccountManagerFacade.toGaiaId(accountEmail);
-        return CoreAccountInfo.createFromEmailAndGaiaId(accountEmail, accountGaiaId);
-    }
-
     /**
-     * Creates an email used to identify child accounts in tests.
-     * A child-specific prefix will be appended to the base name so that the created account
-     * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
-     * {@link FakeAccountManagerFacade}.
+     * Creates an email used to identify child accounts in tests. A child-specific prefix will be
+     * appended to the base name so that the created account will be considered as {@link
+     * ChildAccountStatus#REGULAR_CHILD} in {@link FakeAccountManagerFacade}.
      */
     public static String generateChildEmail(String baseName) {
         return FakeAccountManagerFacade.generateChildEmail(baseName);
     }
 
-    /** Returns an avatar image created from test resource. */
-    protected static Bitmap createAvatar() {
+    /**
+     * Returns an avatar image created from test resource.
+     *
+     * <p>TODO(crbug.com/372670018): Remove this after migrating the rest of test accounts.
+     */
+    private static Bitmap createAvatar() {
         Drawable drawable =
                 AppCompatResources.getDrawable(
                         ContextUtils.getApplicationContext(), R.drawable.test_profile_picture);

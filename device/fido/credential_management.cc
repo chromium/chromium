@@ -5,6 +5,7 @@
 #include "device/fido/credential_management.h"
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "device/fido/fido_constants.h"
@@ -34,8 +35,8 @@ CredentialManagementRequest CredentialManagementRequest::ForGetCredsMetadata(
       version, CredentialManagementSubCommand::kGetCredsMetadata,
       /*params=*/std::nullopt);
   std::tie(request.pin_protocol, request.pin_auth) =
-      token.PinAuth({{static_cast<uint8_t>(
-          CredentialManagementSubCommand::kGetCredsMetadata)}});
+      token.PinAuth(base::span_from_ref(static_cast<uint8_t>(
+          CredentialManagementSubCommand::kGetCredsMetadata)));
   return request;
 }
 
@@ -47,8 +48,8 @@ CredentialManagementRequest CredentialManagementRequest::ForEnumerateRPsBegin(
       version, CredentialManagementSubCommand::kEnumerateRPsBegin,
       /*params=*/std::nullopt);
   std::tie(request.pin_protocol, request.pin_auth) =
-      token.PinAuth({{static_cast<uint8_t>(
-          CredentialManagementSubCommand::kEnumerateRPsBegin)}});
+      token.PinAuth(base::span_from_ref(static_cast<uint8_t>(
+          CredentialManagementSubCommand::kEnumerateRPsBegin)));
   return request;
 }
 

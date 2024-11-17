@@ -85,6 +85,11 @@ TEST(ToStringTest, ScopedEnum) {
   EXPECT_EQ(ToString(NonStreamableTestEnum::kLocation), "1");
 }
 
+TEST(ToStringTest, WideChars) {
+  EXPECT_EQ(ToString(u'a'), "97");
+  EXPECT_EQ(ToString(L'a'), "97");
+}
+
 TEST(ToStringTest, IoManip) {
   // I/O manipulators should have their expected effect, not be printed as
   // function pointers.

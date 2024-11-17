@@ -37,7 +37,7 @@ class GpuServiceTest : public testing::Test {
   GpuServiceTest(const GpuServiceTest&) = delete;
   GpuServiceTest& operator=(const GpuServiceTest&) = delete;
 
-  ~GpuServiceTest() override {}
+  ~GpuServiceTest() override = default;
 
   GpuServiceImpl* gpu_service() { return gpu_service_.get(); }
 
@@ -122,8 +122,7 @@ TEST_F(GpuServiceTest, LoseAllContexts) {
   gpu_service()->InitializeWithHost(
       std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
       gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()),
-      /*sync_point_manager=*/nullptr, /*shared_image_manager=*/nullptr,
-      /*shutdown_event=*/nullptr);
+      mojom::GpuServiceCreationParams::New());
   gpu_service_remote.FlushForTesting();
 
   gpu_service()->MaybeExitOnContextLost(
@@ -141,8 +140,7 @@ TEST_F(GpuServiceTest, VisibilityCallbackCalled) {
   gpu_service()->InitializeWithHost(
       std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
       gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()),
-      /*sync_point_manager=*/nullptr, /*shared_image_manager=*/nullptr,
-      /*shutdown_event=*/nullptr);
+      mojom::GpuServiceCreationParams::New());
   gpu_service_remote.FlushForTesting();
 
   gpu_service()->SetVisibilityChangedCallback(base::BindRepeating(

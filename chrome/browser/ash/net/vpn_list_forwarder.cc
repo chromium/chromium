@@ -8,8 +8,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -97,10 +95,6 @@ VpnListForwarder::~VpnListForwarder() {
     extension_registry_->RemoveObserver(this);
   if (arc_vpn_provider_manager_)
     arc_vpn_provider_manager_->RemoveObserver(this);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->vpn_extension_observer_ash()
-      ->SetDelegate(nullptr);
 }
 
 void VpnListForwarder::OnArcVpnProvidersRefreshed(
@@ -152,30 +146,6 @@ void VpnListForwarder::OnShutdown(extensions::ExtensionRegistry* registry) {
   extension_registry_ = nullptr;
 }
 
-void VpnListForwarder::OnLacrosVpnExtensionLoaded(
-    const std::string& extension_id,
-    const std::string& extension_name) {
-  auto vpn_provider = VpnProvider::New(
-      /*type=*/VpnType::kExtension,
-      /*provider_id=*/extension_id,
-      /*provider_name=*/extension_name,
-      /*app_id=*/extension_id,
-      /*last_launch_time=*/base::Time());
-  lacros_vpn_providers_[extension_id] = std::move(vpn_provider);
-  SetVpnProviders();
-}
-
-void VpnListForwarder::OnLacrosVpnExtensionUnloaded(
-    const std::string& extension_id) {
-  lacros_vpn_providers_.erase(extension_id);
-  SetVpnProviders();
-}
-
-void VpnListForwarder::OnLacrosVpnExtensionObserverDisconnected() {
-  lacros_vpn_providers_.clear();
-  SetVpnProviders();
-}
-
 void VpnListForwarder::ActiveUserChanged(user_manager::User* active_user) {
   DCHECK_EQ(user_manager::UserManager::Get()->GetPrimaryUser(), active_user);
   active_user->AddProfileCreatedObserver(
@@ -186,14 +156,10 @@ void VpnListForwarder::ActiveUserChanged(user_manager::User* active_user) {
 
 void VpnListForwarder::SetVpnProviders() {
   std::vector<VpnProviderPtr> config_providers;
-  config_providers.reserve(vpn_providers_.size() +
-                           lacros_vpn_providers_.size());
+  config_providers.reserve(vpn_providers_.size());
 
   for (const auto& [id, vpn_provider] : vpn_providers_) {
     config_providers.push_back(vpn_provider->Clone());
-  }
-  for (const auto& [id, lacros_vpn_provider] : lacros_vpn_providers_) {
-    config_providers.push_back(lacros_vpn_provider->Clone());
   }
 
   (*cros_network_config_)->SetVpnProviders(std::move(config_providers));
@@ -202,7 +168,6 @@ void VpnListForwarder::SetVpnProviders() {
 void VpnListForwarder::AttachToPrimaryUserProfile() {
   AttachToPrimaryUserExtensionRegistry();
   AttachToPrimaryUserArcVpnProviderManager();
-  AttachToVpnExtensionObserverAsh();
 }
 
 void VpnListForwarder::AttachToPrimaryUserExtensionRegistry() {
@@ -225,12 +190,4 @@ void VpnListForwarder::AttachToPrimaryUserArcVpnProviderManager() {
 
   if (arc_vpn_provider_manager_)
     arc_vpn_provider_manager_->AddObserver(this);
-}
-
-void VpnListForwarder::AttachToVpnExtensionObserverAsh() {
-  DCHECK(crosapi::CrosapiManager::IsInitialized());
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->vpn_extension_observer_ash()
-      ->SetDelegate(this);
 }

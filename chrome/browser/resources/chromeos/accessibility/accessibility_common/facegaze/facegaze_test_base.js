@@ -22,10 +22,12 @@ class Config {
     this.useLandmarkWeights = false;
     /** @type {boolean} */
     this.useVelocityThreshold = false;
-    /** @type {?Map<string, number>} */
-    this.speeds = null;
+    /** @type {Map<string, number>} */
+    this.speeds = {up: 20, down: 20, left: 20, right: 20};
     /** @type {number} */
-    this.repeatDelayMs = -1;
+    this.repeatDelayMs = undefined;
+    /** @type {number} */
+    this.minDurationMs = undefined;
     /** @type {boolean} */
     this.cursorControlEnabled = true;
     /** @type {boolean} */
@@ -43,18 +45,11 @@ class Config {
 
   /**
    * @param {!Map<FacialGesture, MacroName>} gestureToMacroName
-   * @return {!Config}
-   */
-  withGestureToMacroName(gestureToMacroName) {
-    this.gestureToMacroName = gestureToMacroName;
-    return this;
-  }
-
-  /**
    * @param {!Map<FacialGesture, number>} gestureToConfidence
    * @return {!Config}
    */
-  withGestureToConfidence(gestureToConfidence) {
+  withBindings(gestureToMacroName, gestureToConfidence) {
+    this.gestureToMacroName = gestureToMacroName;
     this.gestureToConfidence = gestureToConfidence;
     return this;
   }
@@ -104,6 +99,15 @@ class Config {
    */
   withRepeatDelayMs(repeatDelayMs) {
     this.repeatDelayMs = repeatDelayMs;
+    return this;
+  }
+
+  /**
+   * @param {number} minDurationMs
+   * @return {!Config}
+   */
+  withMinDurationMs(minDurationMs) {
+    this.minDurationMs = minDurationMs;
     return this;
   }
 
@@ -184,19 +188,32 @@ FaceGazeTestBase = class extends E2ETestBase {
     this.scrollDirection = this.mockAccessibilityPrivate.ScrollDirection;
 
     if (this.overrideIntervalFunctions_) {
-      this.intervalCallbacks_ = {};
-      this.nextCallbackId_ = 1;
+      this.intervalCallbacks_ = [];
+      this.nextIntervalId_ = 0;
+      this.timeoutCallbacks_ = {};
+      this.nextTimeoutId_ = 1;
 
       // Save the original set and clear interval functions so they can be used
       // in this file.
       window.setIntervalOriginal = window.setInterval;
       window.clearIntervalOriginal = window.clearInterval;
 
-      window.setInterval = (callback, timeout) => {
-        const id = this.nextCallbackId_;
-        this.nextCallbackId_++;
-        this.intervalCallbacks_[id] = callback;
+      window.setTimeout = (callback, timeout) => {
+        const id = this.nextTimeoutId_;
+        ++this.nextTimeoutId_;
+        this.timeoutCallbacks_[id] = callback;
         return id;
+      };
+      window.clearTimeout = (id) => {
+        delete this.timeoutCallbacks_[id];
+      };
+
+      window.setInterval = (callback, timeout) => {
+        // push() will return the new length of the array, which should be the
+        // next interval id. For the current callback, return nextIntervalId_ -
+        // 1, which should be the id for the current callback.
+        this.nextIntervalId_ = this.intervalCallbacks_.push(callback);
+        return this.nextIntervalId_ - 1;
       };
       window.clearInterval = (id) => {
         delete this.intervalCallbacks_[id];
@@ -204,8 +221,8 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     assertNotNullNorUndefined(accessibilityCommon);
+    assertNotNullNorUndefined(BubbleController);
     assertNotNullNorUndefined(FaceGaze);
-    assertNotNullNorUndefined(FaceGazeConstants);
     assertNotNullNorUndefined(FacialGesture);
     assertNotNullNorUndefined(FacialGesturesToMediapipeGestures);
     assertNotNullNorUndefined(GestureDetector);
@@ -248,6 +265,11 @@ FaceGazeTestBase = class extends E2ETestBase {
   /** @return {!FaceGaze} */
   getFaceGaze() {
     return accessibilityCommon.getFaceGazeForTest();
+  }
+
+  /** @return {!ScrollModeController} */
+  getScrollModeController() {
+    return this.getFaceGaze().mouseController_.scrollModeController_;
   }
 
   async startFacegazeWithConfigAndForeheadLocation_(
@@ -296,20 +318,32 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     if (config.bufferSize !== -1) {
-      await this.setPref(
-          MouseController.PREF_CURSOR_SMOOTHING, config.bufferSize);
+      faceGaze.mouseController_.setBufferSizeForTesting(config.bufferSize);
     }
 
-    if (config.speeds) {
-      await this.setPref(MouseController.PREF_SPD_UP, config.speeds.up);
-      await this.setPref(MouseController.PREF_SPD_DOWN, config.speeds.down);
-      await this.setPref(MouseController.PREF_SPD_LEFT, config.speeds.left);
-      await this.setPref(MouseController.PREF_SPD_RIGHT, config.speeds.right);
+    await this.setPref(MouseController.PREF_SPD_UP, config.speeds.up);
+    await this.setPref(MouseController.PREF_SPD_DOWN, config.speeds.down);
+    await this.setPref(MouseController.PREF_SPD_LEFT, config.speeds.left);
+    await this.setPref(MouseController.PREF_SPD_RIGHT, config.speeds.right);
+
+    if (config.repeatDelayMs !== undefined) {
+      faceGaze.gestureHandler_.gestureTimer_.repeatDelayMs_ =
+          config.repeatDelayMs;
     }
 
-    if (config.repeatDelayMs > 0) {
-      faceGaze.gestureHandler_.repeatDelayMs_ = config.repeatDelayMs;
+    // If no min duration is set then by default, set the timer to recognize
+    // all gestures instantly without requiring a duration.
+    if (config.minDurationMs === undefined) {
+      faceGaze.gestureHandler_.gestureTimer_.setGestureDurationForTesting(
+          false);
+    } else {
+      faceGaze.gestureHandler_.gestureTimer_.minDurationMs_ =
+          config.minDurationMs;
     }
+
+    // Increase the bubble controller timeout to avoid flaky behavior when
+    // asserting the text content of the bubble.
+    BubbleController.CLEAR_BUBBLE_TIMEOUT_MS = 100 * 1000;
 
     faceGaze.mouseController_.setLandmarkWeightsForTesting(
         config.useLandmarkWeights);
@@ -361,6 +395,12 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
   }
 
+  triggerBubbleControllerTimeout() {
+    const intervalId =
+        this.getFaceGaze().bubbleController_.resetBubbleTimeoutId_;
+    this.timeoutCallbacks_[intervalId]();
+  }
+
   /**
    * @param {!MockFaceLandmarkerResult} result
    * @param {boolean} triggerMouseControllerInterval
@@ -374,9 +414,20 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
   }
 
+  /**
+   * Gets the timestamp at which the given gesture was last recognized.
+   * @param {MediapipeFacialGesture} gesture
+   * @return {Date}
+   */
+  getGestureLastRecognized(gesture) {
+    return this.getFaceGaze()
+        .gestureHandler_.gestureTimer_.gestureLastRecognized_.get(gesture);
+  }
+
   /** Clears the timestamps at which gestures were last recognized. */
   clearGestureLastRecognizedTime() {
-    this.getFaceGaze().gestureHandler_.gestureLastRecognized_.clear();
+    this.getFaceGaze()
+        .gestureHandler_.gestureTimer_.gestureLastRecognized_.clear();
   }
 
   /**
@@ -386,6 +437,14 @@ FaceGazeTestBase = class extends E2ETestBase {
   sendAutomationMouseEvent(mockEvent) {
     this.getFaceGaze().mouseController_.onMouseMovedHandler_.handleEvent_(
         mockEvent);
+  }
+
+  /**
+   * Sets the gesture repeat delay in ms to given value.
+   * @param {number} delayMs
+   */
+  setGestureRepeatDelay(delayMs) {
+    this.getFaceGaze().gestureHandler_.gestureTimer_.repeatDelayMs_ = delayMs;
   }
 
   /** @param {!{x: number, y: number}} expected */
@@ -468,5 +527,10 @@ FaceGazeTestBase = class extends E2ETestBase {
         }
       }, 300);
     });
+  }
+
+  /** @return {string|undefined} */
+  getBubbleText() {
+    return this.mockAccessibilityPrivate.getFaceGazeBubbleText();
   }
 };

@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
@@ -123,7 +125,7 @@ CGFloat const kTitleLogoHeight = 32;
 
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                      @[ UITraitUserInterfaceStyle.self ])
+                                      @[ UITraitUserInterfaceStyle.class ])
                        withAction:@selector(resizeLogoOnTraitChange)];
   }
 }
@@ -293,6 +295,16 @@ CGFloat const kTitleLogoHeight = 32;
   return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
 }
 
+#pragma mark - UIResponder
+
+- (BOOL)canBecomeFirstResponder {
+  // In V2, since the listeners are removed early as soon as the presentation
+  // started, allow the sheet to become a first responder to not allow the
+  // keyboard popping over the sheet when there is a focus event on the WebView
+  // underneath the sheet.
+  return base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios);
+}
+
 #pragma mark - Private
 
 // Returns the title logo image that is resized to the correct size for the
@@ -411,14 +423,9 @@ CGFloat const kTitleLogoHeight = 32;
 
   // If we have the potential presence of a virtual card, the textLabel on its
   // own is no longer a unique identifier, so we include the description.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    cell.accessibilityIdentifier =
-        [NSString stringWithFormat:@"%@ %@", cell.textLabel.text,
-                                   [self descriptionAtRow:indexPath.row]];
-  } else {
-    cell.accessibilityIdentifier = cell.textLabel.text;
-  }
+  cell.accessibilityIdentifier =
+      [NSString stringWithFormat:@"%@ %@", cell.textLabel.text,
+                                 [self descriptionAtRow:indexPath.row]];
 
   cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
                                                   atIndexPath:indexPath];

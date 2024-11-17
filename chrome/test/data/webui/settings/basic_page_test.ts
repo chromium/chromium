@@ -8,7 +8,7 @@
 import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
-import {isChromeOS, isLacros} from 'chrome://resources/js/platform.js';
+import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -78,7 +78,7 @@ suite('BasicPage', () => {
       'autofill',
       'privacy',
     ];
-    if (!isChromeOS && !isLacros) {
+    if (!isChromeOS) {
       sections.push('defaultBrowser');
     }
 
@@ -221,6 +221,14 @@ suite('BasicPage', () => {
     await whenDone;
     await flushTasks();
     assertActiveSubpage(routes.SYNC.section);
+
+    // RouteState.SUBPAGE -> RoutState.SUBPAGE when they reside under different
+    // sections.
+    whenDone = eventToPromise('show-container', page);
+    Router.getInstance().navigateTo(routes.FONTS);
+    await whenDone;
+    await flushTasks();
+    assertActiveSubpage(routes.APPEARANCE.section);
 
     // RouteState.SUBPAGE -> RoutState.DIALOG when they reside under different
     // sections.

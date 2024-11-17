@@ -15,6 +15,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_ATTR_VALUE_TAINTING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_ATTR_VALUE_TAINTING_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -23,7 +24,7 @@ namespace blink {
 
 class CSSParserTokenStream;
 
-StringView GetCSSAttrTaintToken();
+CORE_EXPORT StringView GetCSSAttrTaintToken();
 
 // NOTE: IsAttrTainted() means “is this value tainted by an attr()”,
 // not “is this attr() value tainted” (it always is). In other words,

@@ -53,16 +53,6 @@ class CompatibleUtilsTest(unittest.TestCase):
             new_stat = os.stat(f.name).st_mode
             self.assertTrue(new_stat & stat.S_IXUSR)
 
-    def test_parse_host_port_splits_address_and_strips_brackets(self) -> None:
-        """Test |parse_host_port| splits ipv4 and ipv6 addresses correctly."""
-        self.assertEqual(compatible_utils.parse_host_port('hostname:55'),
-                         ('hostname', 55))
-        self.assertEqual(compatible_utils.parse_host_port('192.168.42.40:443'),
-                         ('192.168.42.40', 443))
-        self.assertEqual(
-            compatible_utils.parse_host_port('[2001:db8::1]:8080'),
-            ('2001:db8::1', 8080))
-
     def test_map_filter_filter_file_throws_value_error_if_wrong_path(self
                                                                      ) -> None:
         """Test |map_filter_file| throws ValueError if path is missing

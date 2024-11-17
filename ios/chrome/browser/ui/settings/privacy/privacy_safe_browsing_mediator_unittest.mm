@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
   auto prefs = std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
   user_prefs::PrefRegistrySyncable* registry = prefs->registry();
-  RegisterBrowserStatePrefs(registry);
+  RegisterProfilePrefs(registry);
   return prefs;
 }
 
@@ -45,12 +45,12 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
 class PrivacySafeBrowsingMediatorTest : public PlatformTest {
  public:
   PrivacySafeBrowsingMediatorTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.SetPrefService(CreatePrefService());
-    browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    builder.SetPrefService(CreatePrefService());
+    profile_ = std::move(builder).Build();
 
     mediator_ = [[PrivacySafeBrowsingMediator alloc]
-        initWithUserPrefService:browser_state_->GetPrefs()];
+        initWithUserPrefService:profile_->GetPrefs()];
     [mediator_ safeBrowsingItems];
   }
 
@@ -71,7 +71,7 @@ class PrivacySafeBrowsingMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   PrivacySafeBrowsingMediator* mediator_;
 };
 
@@ -82,9 +82,8 @@ TEST_F(PrivacySafeBrowsingMediatorTest, TurnOnEnhancedProtection) {
   [mediator_ selectSettingItem:enhanced_safe_browsing_item];
   EXPECT_TRUE([mediator_
       shouldItemTypeHaveCheckmark:ItemTypeSafeBrowsingEnhancedProtection]);
-  EXPECT_TRUE(
-      safe_browsing::GetSafeBrowsingState(*browser_state_->GetPrefs()) ==
-      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  EXPECT_TRUE(safe_browsing::GetSafeBrowsingState(*profile_->GetPrefs()) ==
+              safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
 }
 
 TEST_F(PrivacySafeBrowsingMediatorTest, TurnOnStandardProtection) {
@@ -94,9 +93,8 @@ TEST_F(PrivacySafeBrowsingMediatorTest, TurnOnStandardProtection) {
   [mediator_ selectSettingItem:standard_safe_browsing_item];
   EXPECT_TRUE([mediator_
       shouldItemTypeHaveCheckmark:ItemTypeSafeBrowsingStandardProtection]);
-  EXPECT_TRUE(
-      safe_browsing::GetSafeBrowsingState(*browser_state_->GetPrefs()) ==
-      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_TRUE(safe_browsing::GetSafeBrowsingState(*profile_->GetPrefs()) ==
+              safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 }
 
 TEST_F(PrivacySafeBrowsingMediatorTest, TurnOffSafeBrowsing) {
@@ -113,9 +111,8 @@ TEST_F(PrivacySafeBrowsingMediatorTest, TurnOffSafeBrowsing) {
   [mediator_ selectSettingItem:no_safe_browsing_item];
   EXPECT_TRUE(
       [mediator_ shouldItemTypeHaveCheckmark:ItemTypeSafeBrowsingNoProtection]);
-  EXPECT_TRUE(
-      safe_browsing::GetSafeBrowsingState(*browser_state_->GetPrefs()) ==
-      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_TRUE(safe_browsing::GetSafeBrowsingState(*profile_->GetPrefs()) ==
+              safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
 
   EXPECT_OCMOCK_VERIFY(mock_handler);
 }
@@ -133,9 +130,8 @@ TEST_F(PrivacySafeBrowsingMediatorTest, CancelTurnOffSafeBrowsing) {
   [mediator_ didSelectItem:no_safe_browsing_item];
   EXPECT_FALSE(
       [mediator_ shouldItemTypeHaveCheckmark:ItemTypeSafeBrowsingNoProtection]);
-  EXPECT_FALSE(
-      safe_browsing::GetSafeBrowsingState(*browser_state_->GetPrefs()) ==
-      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_FALSE(safe_browsing::GetSafeBrowsingState(*profile_->GetPrefs()) ==
+               safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
 
   EXPECT_OCMOCK_VERIFY(mock_handler);
 }

@@ -64,6 +64,7 @@ public class RouterImpl implements Router {
         }
 
         @Override
+        @SuppressWarnings("Finalize") // TODO(crbug.com/40286193): Use LifetimeAssert instead.
         protected void finalize() throws Throwable {
             if (!mAcceptWasInvoked) {
                 // We close the pipe here as a way of signaling to the calling application that an

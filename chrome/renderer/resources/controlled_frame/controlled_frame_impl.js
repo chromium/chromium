@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+var CHROME_WEB_VIEW_CONTEXT_MENUS_PROMISE_API_METHODS =
+    require('chromeWebViewContextMenusApiMethods').PROMISE_API_METHODS;
 var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
 var WebViewContextMenusImpl = require('chromeWebView').WebViewContextMenusImpl;
 var ControlledFrame = getInternalApi('controlledFrameInternal');
+var ControlledFrameEvents =
+    require('controlledFrameEvents').ControlledFrameEvents;
+var logging = requireNative('logging');
+var promiseWrap = require('guestViewContainerElement').promiseWrap;
 var utils = require('utils');
 
 function ControlledFrameContextMenusImpl(viewInstanceId) {
@@ -12,6 +18,33 @@ function ControlledFrameContextMenusImpl(viewInstanceId) {
 }
 $Object.setPrototypeOf(ControlledFrameContextMenusImpl.prototype,
   WebViewContextMenusImpl.prototype);
+
+function getCallbackIndex(name) {
+  var foundMethodDetails = undefined;
+  for (const methodDetails of
+        CHROME_WEB_VIEW_CONTEXT_MENUS_PROMISE_API_METHODS) {
+    if (methodDetails.name === name) {
+      foundMethodDetails = methodDetails;
+      break;
+    }
+  }
+  logging.CHECK(
+      foundMethodDetails !== undefined,
+      "could not find context menus method details");
+  return foundMethodDetails.callbackIndex;
+}
+
+ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased =
+    function(handler, name) {
+  var callbackIndex = getCallbackIndex(name);
+  // TODO(crbug.com/378956568): Verify these methods don't require an instance
+  // ID check.
+  function verifyEnvironment(reject) { return true; }
+  return function(var_args) {
+    return promiseWrap(handler.bind(this), arguments, callbackIndex,
+                       verifyEnvironment, /*callbackAllowed=*/true);
+  };
+}
 
 ControlledFrameContextMenusImpl.prototype.create = function() {
   let args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
@@ -22,6 +55,19 @@ ControlledFrameContextMenusImpl.prototype.create = function() {
   }
   return result;
 }
+
+ControlledFrameContextMenusImpl.prototype.remove =
+    ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
+        WebViewContextMenusImpl.prototype.remove, "remove");
+
+ControlledFrameContextMenusImpl.prototype.removeAll =
+    ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
+        WebViewContextMenusImpl.prototype.removeAll,
+        "removeAll");
+
+ControlledFrameContextMenusImpl.prototype.update =
+    ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
+        WebViewContextMenusImpl.prototype.update, "update");
 
 function ControlledFrameContextMenus() {
   privates(ControlledFrameContextMenus).constructPrivate(this, arguments);
@@ -41,8 +87,16 @@ class ControlledFrameImpl extends ChromeWebViewImpl {
     super(webviewElement);
   }
 
+  setupEvents() {
+    new ControlledFrameEvents(this);
+  }
+
   createWebViewContextMenus() {
     return new ControlledFrameContextMenus(this.viewInstanceId);
+  }
+
+  getLogTag() {
+    return 'controlledframe';
   }
 }
 

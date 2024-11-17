@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("./drive/drive.gni")
+import("./v2/authentication/authentication.gni")
 import("./v2/calendar/calendar.gni")
 import("./v2/file_suggestion/file_suggestion.gni")
 import("./v2/most_relevant_tab_resumption/most_relevant_tab_resumption.gni")
@@ -17,7 +17,8 @@ modules_non_web_component_files =
       "modules/module_descriptor.ts",
       "modules/module_descriptors.ts",
       "modules/module_registry.ts",
-    ] + calendar_v2_non_web_component_files + drive_non_web_component_files +
+    ] + calendar_v2_non_web_component_files +
+    file_suggestion_non_web_component_files +
     most_relevant_tab_resumption_v2_non_web_component_files
 
 if (!is_official_build) {
@@ -29,18 +30,19 @@ modules_web_component_files =
     [
       "modules/info_dialog.ts",
       "modules/module_header.ts",
-      "modules/modules.ts",
       "modules/module_wrapper.ts",
       "modules/v2/module_header.ts",
       "modules/v2/modules.ts",
-    ] + calendar_v2_web_component_files + drive_web_component_files +
+    ] + authentication_web_component_files + calendar_v2_web_component_files +
     file_suggestion_v2_web_component_files +
     most_relevant_tab_resumption_v2_web_component_files
 
-modules_css_files = [
-                      "modules/info_dialog.css",
-                      "modules/v2/module_header.css",
-                    ] + calendar_css_files + file_suggestion_v2_css_files
+modules_css_files =
+    [
+      "modules/info_dialog.css",
+      "modules/v2/module_header.css",
+    ] + authentication_css_files + calendar_css_files +
+    file_suggestion_v2_css_files + most_relevant_tab_resumption_v2_css_files
 
 if (!is_official_build) {
   modules_web_component_files += dummy_v2_web_component_files

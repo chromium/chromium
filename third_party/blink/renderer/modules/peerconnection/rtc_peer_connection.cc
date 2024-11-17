@@ -69,13 +69,18 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_candidate_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_connection_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_gathering_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_offer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_peer_connection_error_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_peer_connection_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_signaling_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediastreamtrack_string.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -243,12 +248,15 @@ RTCIceCandidatePlatform* ConvertToRTCIceCandidatePlatform(
       /*url can not be reconstruncted*/ std::nullopt);
 }
 
-webrtc::PeerConnectionInterface::IceTransportsType IceTransportPolicyFromString(
-    const String& policy) {
-  if (policy == "relay")
-    return webrtc::PeerConnectionInterface::kRelay;
-  DCHECK_EQ(policy, "all");
-  return webrtc::PeerConnectionInterface::kAll;
+webrtc::PeerConnectionInterface::IceTransportsType IceTransportPolicyFromEnum(
+    V8RTCIceTransportPolicy::Enum policy) {
+  switch (policy) {
+    case V8RTCIceTransportPolicy::Enum::kRelay:
+      return webrtc::PeerConnectionInterface::kRelay;
+    case V8RTCIceTransportPolicy::Enum::kAll:
+      return webrtc::PeerConnectionInterface::kAll;
+  }
+  NOTREACHED();
 }
 
 bool IsValidStunURL(const KURL& url) {
@@ -267,7 +275,7 @@ bool IsValidTurnURL(const KURL& url) {
   }
   if (!url.Query().empty()) {
     Vector<String> query_parts;
-    url.Query().Split("=", query_parts);
+    url.Query().ToString().Split("=", query_parts);
     if (query_parts.size() < 2 || query_parts[0] != "transport") {
       return false;
     }
@@ -285,12 +293,12 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
 
   if (configuration->hasIceTransportPolicy()) {
     UseCounter::Count(context, WebFeature::kRTCConfigurationIceTransportPolicy);
-    web_configuration.type =
-        IceTransportPolicyFromString(configuration->iceTransportPolicy());
+    web_configuration.type = IceTransportPolicyFromEnum(
+        configuration->iceTransportPolicy().AsEnum());
   } else if (configuration->hasIceTransports()) {
     UseCounter::Count(context, WebFeature::kRTCConfigurationIceTransports);
     web_configuration.type =
-        IceTransportPolicyFromString(configuration->iceTransports());
+        IceTransportPolicyFromEnum(configuration->iceTransports().AsEnum());
   }
 
   if (configuration->bundlePolicy() == "max-compat") {
@@ -998,8 +1006,8 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::setLocalDescription(
         break;
     }
   }
-  ParsedSessionDescription parsed_sdp =
-      ParsedSessionDescription::Parse(session_description_init->type(), sdp);
+  ParsedSessionDescription parsed_sdp = ParsedSessionDescription::Parse(
+      session_description_init->type().AsString(), sdp);
   if (session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     DOMException* exception = checkSdpForStateErrors(
         ExecutionContext::From(script_state), parsed_sdp);
@@ -1222,7 +1230,7 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
       result->setIceTransportPolicy("all");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   switch (webrtc_configuration.bundle_policy) {
@@ -1236,7 +1244,7 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
       result->setBundlePolicy("balanced");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   switch (webrtc_configuration.rtcp_mux_policy) {
@@ -1247,7 +1255,7 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
       result->setRtcpMuxPolicy("require");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   HeapVector<Member<RTCIceServer>> ice_servers;
@@ -1568,30 +1576,94 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::addIceCandidate(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-String RTCPeerConnection::signalingState() const {
-  return String(
-      webrtc::PeerConnectionInterface::AsString(signaling_state_).data());
-}
-
-String RTCPeerConnection::iceGatheringState() const {
-  return String(
-      webrtc::PeerConnectionInterface::AsString(ice_gathering_state_).data());
-}
-
-String RTCPeerConnection::iceConnectionState() const {
-  if (closed_) {
-    return "closed";
+V8RTCSignalingState RTCPeerConnection::signalingState() const {
+  switch (signaling_state_) {
+    case webrtc::PeerConnectionInterface::SignalingState::kStable:
+      return V8RTCSignalingState(V8RTCSignalingState::Enum::kStable);
+    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalOffer:
+      return V8RTCSignalingState(V8RTCSignalingState::Enum::kHaveLocalOffer);
+    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalPrAnswer:
+      return V8RTCSignalingState(V8RTCSignalingState::Enum::kHaveLocalPranswer);
+    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemoteOffer:
+      return V8RTCSignalingState(V8RTCSignalingState::Enum::kHaveRemoteOffer);
+    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemotePrAnswer:
+      return V8RTCSignalingState(
+          V8RTCSignalingState::Enum::kHaveRemotePranswer);
+    case webrtc::PeerConnectionInterface::SignalingState::kClosed:
+      return V8RTCSignalingState(V8RTCSignalingState::Enum::kClosed);
   }
-  return String(
-      webrtc::PeerConnectionInterface::AsString(ice_connection_state_).data());
+  NOTREACHED();
 }
 
-String RTCPeerConnection::connectionState() const {
-  if (closed_) {
-    return "closed";
+V8RTCIceGatheringState RTCPeerConnection::iceGatheringState() const {
+  switch (ice_gathering_state_) {
+    case webrtc::PeerConnectionInterface::IceGatheringState::kIceGatheringNew:
+      return V8RTCIceGatheringState(V8RTCIceGatheringState::Enum::kNew);
+    case webrtc::PeerConnectionInterface::IceGatheringState::
+        kIceGatheringGathering:
+      return V8RTCIceGatheringState(V8RTCIceGatheringState::Enum::kGathering);
+    case webrtc::PeerConnectionInterface::IceGatheringState::
+        kIceGatheringComplete:
+      return V8RTCIceGatheringState(V8RTCIceGatheringState::Enum::kComplete);
   }
-  return String(
-      webrtc::PeerConnectionInterface::AsString(peer_connection_state_).data());
+  NOTREACHED();
+}
+
+V8RTCIceConnectionState RTCPeerConnection::iceConnectionState() const {
+  if (closed_) {
+    return V8RTCIceConnectionState(V8RTCIceConnectionState::Enum::kClosed);
+  }
+  switch (ice_connection_state_) {
+    case webrtc::PeerConnectionInterface::IceConnectionState::kIceConnectionNew:
+      return V8RTCIceConnectionState(V8RTCIceConnectionState::Enum::kNew);
+    case webrtc::PeerConnectionInterface::IceConnectionState::
+        kIceConnectionChecking:
+      return V8RTCIceConnectionState(V8RTCIceConnectionState::Enum::kChecking);
+    case webrtc::PeerConnectionInterface::IceConnectionState::
+        kIceConnectionConnected:
+      return V8RTCIceConnectionState(V8RTCIceConnectionState::Enum::kConnected);
+    case webrtc::PeerConnectionInterface::IceConnectionState::
+        kIceConnectionCompleted:
+      return V8RTCIceConnectionState(V8RTCIceConnectionState::Enum::kCompleted);
+    case webrtc::PeerConnectionInterface::IceConnectionState::
+        kIceConnectionFailed:
+      return V8RTCIceConnectionState(V8RTCIceConnectionState::Enum::kFailed);
+    case webrtc::PeerConnectionInterface::IceConnectionState::
+        kIceConnectionDisconnected:
+      return V8RTCIceConnectionState(
+          V8RTCIceConnectionState::Enum::kDisconnected);
+    case webrtc::PeerConnectionInterface::IceConnectionState::
+        kIceConnectionClosed:
+      return V8RTCIceConnectionState(V8RTCIceConnectionState::Enum::kClosed);
+    case webrtc::PeerConnectionInterface::IceConnectionState::kIceConnectionMax:
+      // Should not happen.
+      break;
+  }
+  NOTREACHED();
+}
+
+V8RTCPeerConnectionState RTCPeerConnection::connectionState() const {
+  if (closed_) {
+    return V8RTCPeerConnectionState(V8RTCPeerConnectionState::Enum::kClosed);
+  }
+  switch (peer_connection_state_) {
+    case webrtc::PeerConnectionInterface::PeerConnectionState::kNew:
+      return V8RTCPeerConnectionState(V8RTCPeerConnectionState::Enum::kNew);
+    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting:
+      return V8RTCPeerConnectionState(
+          V8RTCPeerConnectionState::Enum::kConnecting);
+    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnected:
+      return V8RTCPeerConnectionState(
+          V8RTCPeerConnectionState::Enum::kConnected);
+    case webrtc::PeerConnectionInterface::PeerConnectionState::kFailed:
+      return V8RTCPeerConnectionState(V8RTCPeerConnectionState::Enum::kFailed);
+    case webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected:
+      return V8RTCPeerConnectionState(
+          V8RTCPeerConnectionState::Enum::kDisconnected);
+    case webrtc::PeerConnectionInterface::PeerConnectionState::kClosed:
+      return V8RTCPeerConnectionState(V8RTCPeerConnectionState::Enum::kClosed);
+  }
+  NOTREACHED();
 }
 
 std::optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
@@ -2555,7 +2627,7 @@ void RTCPeerConnection::DidAddRemoteDataChannel(
   MaybeDispatchEvent(MakeGarbageCollected<RTCDataChannelEvent>(
       event_type_names::kDatachannel, blink_channel));
   // The event handler might have closed the channel.
-  if (blink_channel->readyState() == "open") {
+  if (blink_channel->readyState() == V8RTCDataChannelState::Enum::kOpen) {
     blink_channel->DispatchOpenEvent();
   }
 }

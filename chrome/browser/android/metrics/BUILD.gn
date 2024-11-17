@@ -16,7 +16,6 @@ if (is_android) {
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [
-      "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfo.java",
       "java/src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetrics.java",
       "java/src/org/chromium/chrome/browser/metrics/PackageMetrics.java",
     ]
@@ -24,6 +23,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:service_loader_java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/default_browser_promo:java",
@@ -40,18 +40,7 @@ if (is_android) {
   android_library("delegate_java") {
     sources = [
       "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegate.java",
-      "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegateImpl.java",
     ]
-
-    # Add the actual implementation where necessary so that downstream
-    # targets can provide their own implementations.
-    jar_excluded_patterns = [ "*/AppUpdateInfoDelegateImpl.class" ]
-  }
-
-  android_library("delegate_public_impl_java") {
-    sources = [ "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegateImpl.java" ]
-
-    deps = [ ":delegate_java" ]
   }
 
   static_library("ukm_utils_for_test") {

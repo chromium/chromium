@@ -154,8 +154,7 @@ void BlocklistStateFetcher::OnURLLoaderCompleteInternal(
     int net_error) {
   auto it = requests_.find(url_loader);
   if (it == requests_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::unique_ptr<network::SimpleURLLoader> loader =

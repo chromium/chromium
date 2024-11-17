@@ -578,10 +578,13 @@ public class CronetUrlRequestTest {
         builder.addHeader("header:name", "headervalue");
         IllegalArgumentException e =
                 assertThrows(IllegalArgumentException.class, () -> builder.build().start());
+        var oldMessage = "Invalid header header:name=headervalue";
+        var newMessage = "Invalid header with headername: header:name";
         if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
                 && !mTestRule.isRunningInAOSP()) {
-            // TODO(b/307234565): Remove check once chromium Android 14 emulator has latest changes.
-            assertThat(e).hasMessageThat().isEqualTo("Invalid header header:name=headervalue");
+            // We may be running against an HttpEngine backed by an old version of Cronet, so accept
+            // both the old and new variants of the message.
+            assertThat(e).hasMessageThat().isAnyOf(oldMessage, newMessage);
         } else {
             assertThat(e).hasMessageThat().isEqualTo("Invalid header with headername: header:name");
         }
@@ -618,14 +621,15 @@ public class CronetUrlRequestTest {
         builder.addHeader("headername", "bad header\r\nvalue");
         IllegalArgumentException e =
                 assertThrows(IllegalArgumentException.class, () -> builder.build().start());
+        var oldMessage = "Invalid header headername=bad header\r\nvalue";
+        var newMessage = "Invalid header with headername: headername";
         if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
                 && !mTestRule.isRunningInAOSP()) {
-            // TODO(b/307234565): Remove check once chromium Android 14 emulator has latest changes.
-            assertThat(e)
-                    .hasMessageThat()
-                    .isEqualTo("Invalid header headername=bad header\r\nvalue");
+            // We may be running against an HttpEngine backed by an old version of Cronet, so accept
+            // both the old and new variants of the message.
+            assertThat(e).hasMessageThat().isAnyOf(oldMessage, newMessage);
         } else {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid header with headername: headername");
+            assertThat(e).hasMessageThat().isEqualTo(newMessage);
         }
     }
 
@@ -2875,12 +2879,12 @@ public class CronetUrlRequestTest {
         }
     }
 
-    @Test
-    @SmallTest
     /**
      * Open many connections and cancel them right away. This test verifies all internal sockets and
      * other Closeables are properly closed. See crbug.com/726193.
      */
+    @Test
+    @SmallTest
     public void testGzipCancel() throws Exception {
         String url = NativeTestServer.getFileURL("/gzipped.html");
         for (int i = 0; i < 100; i++) {
@@ -2912,10 +2916,10 @@ public class CronetUrlRequestTest {
         }
     }
 
+    /** Do a HEAD request and get back a 404. */
     @Test
     @SmallTest
     @RequiresMinApi(8) // JavaUrlRequest fixed in API level 8: crrev.com/499303
-    /** Do a HEAD request and get back a 404. */
     public void test404Head() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -2933,7 +2937,6 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @RequiresMinApi(9) // Tagging support added in API level 9: crrev.com/c/chromium/src/+/930086
-    @RequiresMinAndroidApi(Build.VERSION_CODES.M) // crbug/1301957
     public void testTagging() throws Exception {
         if (!CronetTestUtil.nativeCanGetTaggedBytes()) {
             Log.i(TAG, "Skipping test - GetTaggedBytes unsupported.");
@@ -2997,12 +3000,12 @@ public class CronetUrlRequestTest {
         assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
     }
 
-    @Test
-    @SmallTest
     /**
      * Initiate many requests concurrently to make sure neither Cronet implementation crashes.
      * Regression test for https://crbug.com/844031.
      */
+    @Test
+    @SmallTest
     public void testManyRequests() throws Exception {
         String url = NativeTestServer.getMultiRedirectURL();
         final int numRequests = 2000;
@@ -3064,7 +3067,6 @@ public class CronetUrlRequestTest {
     }
 
     @Test
-    @RequiresMinAndroidApi(Build.VERSION_CODES.M)
     public void testBindToInvalidNetworkFails() {
         String url = NativeTestServer.getEchoMethodURL();
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
@@ -3098,7 +3100,6 @@ public class CronetUrlRequestTest {
     }
 
     @Test
-    @RequiresMinAndroidApi(Build.VERSION_CODES.M)
     public void testBindToDefaultNetworkSucceeds() {
         String url = NativeTestServer.getEchoMethodURL();
         ConnectivityManagerDelegate delegate =

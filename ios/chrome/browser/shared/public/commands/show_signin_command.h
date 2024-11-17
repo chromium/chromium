@@ -62,16 +62,17 @@ enum class AuthenticationOperation {
                          identity:(id<SystemIdentity>)identity
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction
-                         callback:(ShowSigninCommandCompletionCallback)callback
+                       completion:
+                           (ShowSigninCommandCompletionCallback)completion
     NS_DESIGNATED_INITIALIZER;
 
-// Initializes a ShowSigninCommand with `identity` and `callback` set to nil.
+// Initializes a ShowSigninCommand with `identity` and `completion` set to nil.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction;
 
 // Initializes a ShowSigninCommand with PROMO_ACTION_NO_SIGNIN_PROMO and a nil
-// callback.
+// completion.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                       accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
@@ -80,9 +81,9 @@ enum class AuthenticationOperation {
 // Default value: NO.
 @property(nonatomic, assign) BOOL skipIfUINotAvaible;
 
-// The callback to be invoked after the operation is complete.
+// The completion to be invoked after the operation is complete.
 @property(nonatomic, copy, readonly)
-    ShowSigninCommandCompletionCallback callback;
+    ShowSigninCommandCompletionCallback completion;
 
 // The operation to perform during the sign-in flow.
 @property(nonatomic, readonly) AuthenticationOperation operation;

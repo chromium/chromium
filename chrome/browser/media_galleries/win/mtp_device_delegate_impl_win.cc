@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -199,10 +200,12 @@ base::File::Error ReadDirectoryOnBlockingPoolThread(
     return error;
 
   while (!(current = file_enum->Next()).empty()) {
-    entries->emplace_back(
-        storage::VirtualPath::BaseName(current), base::FilePath(),
-        file_enum->IsDirectory() ? filesystem::mojom::FsFileType::DIRECTORY
-                                 : filesystem::mojom::FsFileType::REGULAR_FILE);
+    auto name = base::SafeBaseName::Create(current);
+    CHECK(name) << current;
+    entries->emplace_back(*name, std::string(),
+                          file_enum->IsDirectory()
+                              ? filesystem::mojom::FsFileType::DIRECTORY
+                              : filesystem::mojom::FsFileType::REGULAR_FILE);
   }
   return error;
 }
@@ -392,7 +395,7 @@ void MTPDeviceDelegateImplWin::CreateDirectory(
     const bool recursive,
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::ReadDirectory(
@@ -445,7 +448,7 @@ void MTPDeviceDelegateImplWin::ReadBytes(
     int buf_len,
     ReadBytesSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool MTPDeviceDelegateImplWin::IsReadOnly() const {
@@ -459,7 +462,7 @@ void MTPDeviceDelegateImplWin::CopyFileLocal(
     CopyFileProgressCallback progress_callback,
     CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::MoveFileLocal(
@@ -468,7 +471,7 @@ void MTPDeviceDelegateImplWin::MoveFileLocal(
     CreateTemporaryFileCallback create_temporary_file_callback,
     MoveFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::CopyFileFromLocal(
@@ -476,21 +479,21 @@ void MTPDeviceDelegateImplWin::CopyFileFromLocal(
     const base::FilePath& device_file_path,
     CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::DeleteFile(
     const base::FilePath& file_path,
     DeleteFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::DeleteDirectory(
     const base::FilePath& file_path,
     DeleteDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::AddWatcher(

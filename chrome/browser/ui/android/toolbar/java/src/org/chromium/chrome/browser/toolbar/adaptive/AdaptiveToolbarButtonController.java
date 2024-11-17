@@ -22,13 +22,12 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -39,7 +38,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
@@ -76,7 +75,6 @@ public class AdaptiveToolbarButtonController
 
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final AndroidPermissionDelegate mAndroidPermissionDelegate;
-    private final SharedPreferencesManager mSharedPreferencesManager;
     private final CallbackController mCallbackController;
     private final Callback<AdaptiveToolbarStatePredictor.UiState> mUiStateCallback;
 
@@ -93,7 +91,7 @@ public class AdaptiveToolbarButtonController
     /**
      * Constructs the {@link AdaptiveToolbarButtonController}.
      *
-     * @param context used in {@link SettingsLauncher}
+     * @param context used in {@link SettingsNavigation}
      * @param lifecycleDispatcher notifies about native initialization
      * @param profileSupplier Allows access to the {@link Profile} for the current session.
      */
@@ -105,16 +103,14 @@ public class AdaptiveToolbarButtonController
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ObservableSupplier<Profile> profileSupplier,
             AdaptiveButtonActionMenuCoordinator menuCoordinator,
-            AndroidPermissionDelegate androidPermissionDelegate,
-            SharedPreferencesManager sharedPreferencesManager) {
+            AndroidPermissionDelegate androidPermissionDelegate) {
         mContext = context;
         mMenuClickListener =
                 id -> {
                     if (id == R.id.customize_adaptive_button_menu_id) {
                         RecordUserAction.record("MobileAdaptiveMenuCustomize");
-                        SettingsLauncherFactory.createSettingsLauncher()
-                                .launchSettingsActivity(
-                                        context, AdaptiveToolbarSettingsFragment.class);
+                        SettingsNavigationFactory.createSettingsNavigation()
+                                .startSettings(context, AdaptiveToolbarSettingsFragment.class);
                         return;
                     }
                     assert false : "unknown adaptive button menu id: " + id;
@@ -122,7 +118,6 @@ public class AdaptiveToolbarButtonController
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mMenuCoordinator = menuCoordinator;
-        mSharedPreferencesManager = sharedPreferencesManager;
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
         mAndroidPermissionDelegate = androidPermissionDelegate;
         mCallbackController = new CallbackController();
@@ -241,7 +236,7 @@ public class AdaptiveToolbarButtonController
                             receivedButtonSpec.isDynamicAction() ? null : mMenuHandler,
                             receivedButtonSpec.getContentDescription(),
                             receivedButtonSpec.getSupportsTinting(),
-                            receivedButtonSpec.getIPHCommandBuilder(),
+                            receivedButtonSpec.getIphCommandBuilder(),
                             receivedButtonSpec.getButtonVariant(),
                             receivedButtonSpec.getActionChipLabelResId(),
                             receivedButtonSpec.getHoverTooltipTextId(),

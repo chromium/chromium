@@ -69,7 +69,7 @@ class DataTypeStore : public DataTypeStoreBase {
       std::unique_ptr<RecordList> data_records)>;
 
   // Read operations return records either for all entries or only for ones
-  // identified in |id_list|. |error| is nullopt if all records were read
+  // identified in `id_list`. `error` is nullopt if all records were read
   // successfully, otherwise an empty or partial list of read records is
   // returned.
   // Callback for ReadData (ReadDataCallback) in addition receives list of ids
@@ -86,10 +86,10 @@ class DataTypeStore : public DataTypeStoreBase {
       ReadAllDataAndMetadataCallback callback) = 0;
 
   // Similar to ReadAllData() but allows some custom processing in the
-  // background sequence (e.g. proto parsing). Note that |preprocess_callback|
+  // background sequence (e.g. proto parsing). Note that `preprocess_callback`
   // will not run if reading itself triggers an error.
-  // |completion_on_frontend_sequence_callback| is guaranteed to outlive
-  // |preprocess_on_backend_sequence_callback|.
+  // `completion_on_frontend_sequence_callback` is guaranteed to outlive
+  // `preprocess_on_backend_sequence_callback`.
   virtual void ReadAllDataAndPreprocess(
       PreprocessCallback preprocess_on_backend_sequence_callback,
       CallbackWithResult completion_on_frontend_sequence_callback) = 0;

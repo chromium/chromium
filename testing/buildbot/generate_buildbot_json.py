@@ -152,17 +152,6 @@ class ScriptGenerator(BaseGenerator):
     return scripts
 
 
-class JUnitGenerator(BaseGenerator):
-  def generate(self, waterfall, tester_name, tester_config, input_tests):
-    scripts = []
-    for test_name, test_config in sorted(input_tests.items()):
-      test = self.bb_gen.generate_junit_test(
-        waterfall, tester_name, tester_config, test_name, test_config)
-      if test:
-        scripts.append(test)
-    return scripts
-
-
 class SkylabGenerator(BaseGenerator):
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     scripts = []
@@ -556,33 +545,15 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if substituted_array != original_args:
       test_config['args'] = self.maybe_fixup_args_array(substituted_array)
 
-  def dictionary_merge(self, a, b, path=None):
-    """http://stackoverflow.com/questions/7204805/
-        python-dictionaries-of-dictionaries-merge
-    merges b into a
-    """
-    if path is None:
-      path = []
-    for key in b:
-      if key not in a:
-        if b[key] is not None:
-          a[key] = b[key]
-        continue
-
-      if isinstance(a[key], dict) and isinstance(b[key], dict):
-        self.dictionary_merge(a[key], b[key], path + [str(key)])
-      elif a[key] == b[key]:
-        pass  # same leaf value
-      elif isinstance(a[key], list) and isinstance(b[key], list):
-        a[key] = a[key] + b[key]
-        if key.endswith('args'):
-          a[key] = self.maybe_fixup_args_array(a[key])
-      elif b[key] is None:
-        del a[key]
-      else:
-        a[key] = b[key]
-
-    return a
+  @staticmethod
+  def merge_swarming(swarming1, swarming2):
+    swarming2 = dict(swarming2)
+    if 'dimensions' in swarming2:
+      swarming1.setdefault('dimensions', {}).update(swarming2.pop('dimensions'))
+    if 'named_caches' in swarming2:
+      named_caches = swarming1.setdefault('named_caches', [])
+      named_caches.extend(swarming2.pop('named_caches'))
+    swarming1.update(swarming2)
 
   def clean_swarming_dictionary(self, swarming_dict):
     # Clean out redundant entries from a test's "swarming" dictionary.
@@ -604,7 +575,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     ):
       swarming = test.pop(key, None)
       if swarming and fn(builder):
-        self.dictionary_merge(test['swarming'], swarming)
+        self.merge_swarming(test['swarming'], swarming)
 
     for key, fn in (
         ('desktop_args', lambda cfg: not self.is_android(cfg)),
@@ -634,6 +605,18 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     test.setdefault('swarming', {}).setdefault('can_use_on_swarming_builders',
                                                swarmable)
 
+    # Test common mixins are mixins specified in the test declaration itself. To
+    # match the order of expansion in starlark, they take effect before anything
+    # specified in the legacy_test_config.
+    test_common = test.pop('test_common', {})
+    if test_common:
+      test_common_mixins = test_common.pop('mixins', [])
+      self.ensure_valid_mixin_list(test_common_mixins,
+                                   f'test {test_name} test_common mixins')
+      test_common = self.apply_mixins(test_common, test_common_mixins, [],
+                                      builder)
+      test = self.apply_mixin(test, test_common, builder)
+
     mixins_to_ignore = test.pop('remove_mixins', [])
     self.ensure_valid_mixin_list(mixins_to_ignore,
                                  f'test {test_name} remove_mixins')
@@ -646,8 +629,19 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.ensure_valid_mixin_list(test_mixins, f'test {test_name} mixins')
     test = self.apply_mixins(test, test_mixins, mixins_to_ignore, builder)
 
+    # Apply any variant details
+    variant = test.pop('*variant*', None)
+    if variant is not None:
+      test = self.apply_mixin(variant, test)
+      variant_mixins = test.pop('*variant_mixins*', [])
+      self.ensure_valid_mixin_list(
+          variant_mixins,
+          (f'variant mixins for test {test_name}'
+           f' with variant with identifier{test["variant_id"]}'))
+      test = self.apply_mixins(test, variant_mixins, mixins_to_ignore, builder)
+
     # Add any swarming or args from the builder
-    self.dictionary_merge(test['swarming'], builder.get('swarming', {}))
+    self.merge_swarming(test['swarming'], builder.get('swarming', {}))
     if supports_args:
       test.setdefault('args', []).extend(builder.get('args', []))
 
@@ -667,7 +661,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # test's specification.
     modifications = self.get_test_modifications(test, builder_name)
     if modifications:
-      test = self.dictionary_merge(test, modifications)
+      test = self.apply_mixin(modifications, test, builder)
 
     # Clean up the swarming entry or remove it if it's unnecessary
     if (swarming_dict := test.get('swarming')) is not None:
@@ -814,6 +808,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       }
     return result
 
+  _SCRIPT_FIELDS = ('name', 'script', 'args', 'precommit_args',
+                    'non_precommit_args', 'resultdb')
+
   def generate_script_test(self, waterfall, tester_name, tester_config,
                            test_name, test_config):
     # TODO(crbug.com/40623237): Remove this check whenever a better
@@ -824,13 +821,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                      tester_name + ', which explicitly forbids script tests')
     if not self.should_run_on_tester(waterfall, tester_name, test_config):
       return None
-    result = {
-        'name': test_config['name'],
-        'script': test_config['script'],
-    }
-    for a in ('args', 'precommit_args', 'non_precommit_args'):
-      if a in test_config:
-        result[a] = test_config[a]
+    result = copy.deepcopy(test_config)
     result = self.apply_common_transformations(waterfall,
                                                tester_name,
                                                tester_config,
@@ -838,22 +829,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                                test_name,
                                                swarmable=False,
                                                supports_args=False)
-    return result
-
-  def generate_junit_test(self, waterfall, tester_name, tester_config,
-                          test_name, test_config):
-    if not self.should_run_on_tester(waterfall, tester_name, test_config):
-      return None
-    result = copy.deepcopy(test_config)
-    # Use test_name here instead of test['name'] because test['name'] will be
-    # modified with the variant identifier in a matrix compound suite
-    result.setdefault('test', test_name)
-    result = self.apply_common_transformations(waterfall,
-                                               tester_name,
-                                               tester_config,
-                                               result,
-                                               test_name,
-                                               swarmable=False)
+    result = {k: result[k] for k in self._SCRIPT_FIELDS if k in result}
     return result
 
   def generate_skylab_test(self, waterfall, tester_name, tester_config,
@@ -862,7 +838,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       return None
     result = copy.deepcopy(test_config)
     result.setdefault('test', test_name)
-    result['run_cft'] = True
 
     if 'cros_board' in result or 'cros_board' in tester_config:
       result['cros_board'] = tester_config.get('cros_board') or result.get(
@@ -1028,8 +1003,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         GTestGenerator(self),
         'isolated_scripts':
         IsolatedScriptTestGenerator(self),
-        'junit_tests':
-        JUnitGenerator(self),
         'scripts':
         ScriptGenerator(self),
         'skylab_tests':
@@ -1180,10 +1153,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       variant_skylab = variant.pop('skylab', {})
 
       for test_name, test_config in basic_test_definition.items():
-        new_test = self.apply_mixin(variant, test_config)
-
-        new_test['mixins'] = (test_config.get('mixins', []) + variant_mixins +
-                              mixins)
+        new_test = copy.copy(test_config)
 
         # The identifier is used to make the name of the test unique.
         # Generators in the recipe uniquely identify a test by it's name, so we
@@ -1195,6 +1165,15 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # is mainly used in generate_gpu_telemetry_test().
         new_test['variant_id'] = identifier
 
+        # Save the variant details and mixins to be applied in
+        # apply_common_transformations to match the order that starlark will
+        # apply things
+        new_test['*variant*'] = variant
+        new_test['*variant_mixins*'] = variant_mixins + mixins
+
+        # TODO: crbug.com/40258588 - When skylab support is implemented in
+        # starlark, these fields should be incorporated into mixins and handled
+        # consistently with other fields
         for k, v in variant_skylab.items():
           # cros_chrome_version is the ash chrome version in the cros img in the
           # variant of cros_board. We don't want to include it in the final json
@@ -1246,12 +1225,14 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
         update_tests = functools.partial(update_tests_uncurried, full_suite)
 
+        mixins = mtx_test_suite_config.get('mixins', [])
         if (variants := mtx_test_suite_config.get('variants')):
-          mixins = mtx_test_suite_config.get('mixins', [])
           result = self.resolve_variants(basic_test_def, variants, mixins)
           update_tests(result)
         else:
-          suite = basic_suites[test_suite]
+          suite = copy.deepcopy(basic_suites[test_suite])
+          for test_config in suite.values():
+            test_config['mixins'] = test_config.get('mixins', []) + mixins
           update_tests(suite)
       matrix_compound_suites[matrix_suite_name] = full_suite
 
@@ -1283,6 +1264,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.variants = self.load_pyl_file(self.args.variants_pyl_path)
 
   def resolve_configuration_files(self):
+    self.resolve_mixins()
     self.resolve_test_names()
     self.resolve_isolate_names()
     self.resolve_dimension_sets()
@@ -1291,6 +1273,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.resolve_matrix_compound_test_suites()
     self.flatten_test_suites()
     self.link_waterfalls_to_test_suites()
+
+  def resolve_mixins(self):
+    for mixin in self.mixins.values():
+      mixin.pop('fail_if_unused', None)
 
   def resolve_test_names(self):
     for suite_name, suite in self.test_suites.get('basic_suites').items():
@@ -1404,20 +1390,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       new_test['description'] = '\n'.join(description)
 
     if 'swarming' in mixin:
-      swarming_mixin = mixin['swarming']
-      new_test.setdefault('swarming', {})
-      if 'dimensions' in swarming_mixin:
-        new_test['swarming'].setdefault('dimensions', {}).update(
-            swarming_mixin.pop('dimensions'))
-      if 'named_caches' in swarming_mixin:
-        new_test['swarming'].setdefault('named_caches', []).extend(
-            swarming_mixin['named_caches'])
-        del swarming_mixin['named_caches']
-      # python dict update doesn't do recursion at all. Just hard code the
-      # nested update we need (mixin['swarming'] shouldn't clobber
-      # test['swarming'], but should update it).
-      new_test['swarming'].update(swarming_mixin)
-      del mixin['swarming']
+      self.merge_swarming(new_test.setdefault('swarming', {}),
+                          mixin.pop('swarming'))
 
     for a in ('args', 'precommit_args', 'non_precommit_args'):
       if (value := mixin.pop(a, None)) is None:
@@ -1697,34 +1671,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
             f'$mixin_append is no longer supported (set in mixin "{name}"),'
             ' args and named caches specified as normal will be appended')
 
-    # All mixins must be referenced
-    seen_mixins = set()
-    for waterfall in self.waterfalls:
-      seen_mixins = seen_mixins.union(waterfall.get('mixins', set()))
-      for bot_name, tester in waterfall['machines'].items():
-        seen_mixins = seen_mixins.union(tester.get('mixins', set()))
-    for suite in self.test_suites.values():
-      if isinstance(suite, list):
-        # Don't care about this, it's a composition, which shouldn't include a
-        # swarming mixin.
-        continue
-
-      for test in suite.values():
-        assert isinstance(test, dict)
-        seen_mixins = seen_mixins.union(test.get('mixins', set()))
-
-    for variant in self.variants:
-      # Unpack the variant from variants.pyl if it's string based.
-      if isinstance(variant, str):
-        variant = self.variants[variant]
-      seen_mixins = seen_mixins.union(variant.get('mixins', set()))
-
-    missing_mixins = set(self.mixins.keys()) - seen_mixins
-    if missing_mixins:
-      raise BBGenErr('The following mixins are unreferenced: %s. They must be'
-                     ' referenced in a waterfall, machine, or test suite.' % (
-                         str(missing_mixins)))
-
     # All variant references must be referenced
     seen_variants = set()
     for suite in self.test_suites.values():
@@ -1742,6 +1688,39 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       raise BBGenErr('The following variants were unreferenced: %s. They must '
                      'be referenced in a matrix test suite under the variants '
                      'key.' % str(missing_variants))
+
+    # All mixins must be referenced
+    seen_mixins = set()
+    for waterfall in self.waterfalls:
+      seen_mixins = seen_mixins.union(waterfall.get('mixins', set()))
+      for bot_name, tester in waterfall['machines'].items():
+        seen_mixins = seen_mixins.union(tester.get('mixins', set()))
+    for suite in self.test_suites.values():
+      if isinstance(suite, list):
+        # Don't care about this, it's a composition, which shouldn't include a
+        # swarming mixin.
+        continue
+
+      for test in suite.values():
+        assert isinstance(test, dict)
+        seen_mixins = seen_mixins.union(test.get('mixins', set()))
+        seen_mixins = seen_mixins.union(
+            test.get('test_common', {}).get('mixins', set()))
+
+    for variant in self.variants:
+      # Unpack the variant from variants.pyl if it's string based.
+      if isinstance(variant, str):
+        variant = self.variants[variant]
+      seen_mixins = seen_mixins.union(variant.get('mixins', set()))
+
+    missing_mixins = set()
+    for name, mixin_value in self.mixins.items():
+      if name not in seen_mixins and mixin_value.get('fail_if_unused', True):
+        missing_mixins.add(name)
+    if missing_mixins:
+      raise BBGenErr('The following mixins are unreferenced: %s. They must be'
+                     ' referenced in a waterfall, machine, or test suite.' % (
+                         str(missing_mixins)))
 
 
   def type_assert(self, node, typ, file_path, verbose=False):

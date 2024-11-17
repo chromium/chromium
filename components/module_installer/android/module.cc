@@ -32,8 +32,8 @@ namespace module_installer {
 // in the unnamed namespace.
 class ScopedAllowModulePakLoad {
  public:
-  ScopedAllowModulePakLoad() {}
-  ~ScopedAllowModulePakLoad() {}
+  ScopedAllowModulePakLoad() = default;
+  ~ScopedAllowModulePakLoad() = default;
 
  private:
   base::ScopedAllowBlocking allow_blocking_;

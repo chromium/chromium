@@ -34,6 +34,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -418,8 +419,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
       return Promise.all([readPromise, notifyPromise]);
     })())");
 
-  const base::Value promise_values = js_values.ExtractList();
-  EXPECT_EQ(2U, promise_values.GetList().size());
+  const base::Value::List promise_values = js_values.ExtractList();
+  EXPECT_EQ(2U, promise_values.size());
   EXPECT_EQ(content::ListValueOf(1, 1), js_values);
 }
 
@@ -1059,27 +1060,27 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
   ~TestWebContentsObserver() override = default;
 
-  void OnDeviceConnectionTypesChanged(DeviceConnectionType connection_type,
-                                      bool used) override {
-    EXPECT_EQ(connection_type, DeviceConnectionType::kBluetooth);
-    ++num_device_connection_types_changed_;
+  void OnCapabilityTypesChanged(
+      content::WebContents::CapabilityType capability_type,
+      bool used) override {
+    EXPECT_EQ(capability_type,
+              content::WebContents::CapabilityType::kBluetoothConnected);
+    ++num_capability_types_changed_;
     last_device_used_ = used;
     if (quit_closure_ &&
-        expected_updating_count_ == num_device_connection_types_changed_) {
+        expected_updating_count_ == num_capability_types_changed_) {
       std::move(quit_closure_).Run();
     }
   }
 
-  int num_device_connection_types_changed() {
-    return num_device_connection_types_changed_;
-  }
+  int num_capability_types_changed() { return num_capability_types_changed_; }
 
   const std::optional<bool>& last_device_used() { return last_device_used_; }
 
   void clear_last_device_used() { last_device_used_.reset(); }
 
   void WaitUntilConnectionIsUpdated(int expected_count) {
-    if (num_device_connection_types_changed_ == expected_count) {
+    if (num_capability_types_changed_ == expected_count) {
       return;
     }
     expected_updating_count_ = expected_count;
@@ -1089,7 +1090,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   }
 
  private:
-  int num_device_connection_types_changed_ = 0;
+  int num_capability_types_changed_ = 0;
   std::optional<bool> last_device_used_;
   int expected_updating_count_;
   base::OnceClosure quit_closure_;
@@ -1118,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(
 
   observer.WaitUntilConnectionIsUpdated(1);
   // In the active main frame, the connection of Web Bluetooth works.
-  EXPECT_EQ(observer.num_device_connection_types_changed(), 1);
+  EXPECT_EQ(observer.num_capability_types_changed(), 1);
   EXPECT_TRUE(observer.last_device_used().has_value());
   EXPECT_TRUE(observer.last_device_used().value());
   observer.clear_last_device_used();
@@ -1144,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // In the prerendering, the connection of Web Bluetooth is deferred and
   // `observer` doesn't have any update.
-  EXPECT_EQ(observer.num_device_connection_types_changed(), 1);
+  EXPECT_EQ(observer.num_capability_types_changed(), 1);
   EXPECT_FALSE(observer.last_device_used().has_value());
 
   content::RenderFrameDeletedObserver rfh_observer(
@@ -1161,7 +1162,7 @@ IN_PROC_BROWSER_TEST_F(
   // During prerendering activation, the connection from the previous
   // RenderFrameHost to Web Bluetooth is closed, while the connection attempt
   // from the prerendering RenderFrameHost was refused.
-  EXPECT_EQ(observer.num_device_connection_types_changed(), 2);
+  EXPECT_EQ(observer.num_capability_types_changed(), 2);
   EXPECT_TRUE(observer.last_device_used().has_value());
   EXPECT_FALSE(observer.last_device_used().value());
 }

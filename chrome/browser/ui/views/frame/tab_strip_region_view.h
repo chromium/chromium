@@ -16,6 +16,7 @@ namespace views {
 class Button;
 }
 
+class GlicButton;
 class NewTabButton;
 class TabSearchButton;
 class TabStrip;
@@ -62,6 +63,8 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   ProductSpecificationsButton* product_specifications_button() {
     return product_specifications_button_;
   }
+
+  GlicButton* glic_button() { return glic_button_; }
 
   views::View* reserved_grab_handle_space_for_testing() {
     return reserved_grab_handle_space_;
@@ -133,6 +136,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
       nullptr;
   raw_ptr<ProductSpecificationsButton, DanglingUntriaged>
       product_specifications_button_ = nullptr;
+  raw_ptr<GlicButton, DanglingUntriaged> glic_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
   // laid out before the TabStrip. Storing this configuration prevents

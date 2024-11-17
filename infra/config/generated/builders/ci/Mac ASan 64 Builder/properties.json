@@ -81,7 +81,8 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac ASan 64 Builder/targets"
     }
   },
   "$build/reclient": {

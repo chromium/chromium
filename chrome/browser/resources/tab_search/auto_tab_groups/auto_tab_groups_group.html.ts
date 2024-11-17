@@ -66,6 +66,8 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
           @focus="${this.onTabFocus_}"
           @blur="${this.onTabBlur_}"
           close-button-icon="tab-search:remove"
+          close-button-tooltip="$i18n{tabOrganizationCloseTabTooltip}"
+          close-button-aria-label="${this.getCloseButtonAriaLabel_(item)}"
           in-suggested-group>
       </tab-search-item>
     `)}

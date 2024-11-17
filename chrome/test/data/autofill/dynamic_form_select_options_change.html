@@ -1,0 +1,69 @@
+<!-- A page that is used to test that a dynamic form fill feature works properly when select options are added/removed. -->
+<body>
+  <form action="https://example.com/" method="post">
+    Name: <input type="text" id="firstname" autocomplete="given-name"><br>
+    Address: <input type="text" id="address1"><br>
+    City: <input type="text" id="city"><br>
+    State: <div id="state_div">
+      <option value="ON">ON</option>
+      <option value="QC">QC</option>
+      <option value="AB">AB</option>
+    </div> <br>
+    Zip: <input id="zip"> <br>
+    Country: <select id="country" onchange="CountryChanged()">
+      <option value="CA">Canada</option>
+      <option value="US">United States</option>
+    </select> <br>
+    <input type="reset" value="Reset">
+    <input type="submit" value="Submit" id="profile_submit">
+  </form>
+  <!-- Used by test to double check GET parameter parsing -->
+  <input type="checkbox" id="is_async"/>
+</body>
+
+<script>
+function Init() {
+  let state_div = document.getElementById("state_div");
+  let state_select = document.createElement("select");
+  state_select.id = "state";
+  while (state_div.children.length > 0) {
+    state_select.appendChild(state_div.children[0]);
+  }
+
+  state_div.parentNode.replaceChild(state_select, state_div);
+}
+
+function GetBoolQueryParameter(parameter) {
+  return (new URLSearchParams(window.location.search).get(parameter)) == "true";
+}
+
+function CountryChanged() {
+  const is_async = GetBoolQueryParameter("is_async");
+  document.getElementById("is_async").checked = is_async;
+
+  if (is_async) {
+    // Update 'state' <select> asynchronously so that
+    // AutofillAgent::SelectControlDidChange() triggers the refill not
+    // AutofillAgent::TriggerRefillIfNeeded().
+    window.setTimeout(CountryChangedImpl, 0);
+    return;
+  }
+  CountryChangedImpl();
+}
+
+function CountryChangedImpl() {
+  window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
+
+  // Replace the provinces with states. The state should get selected by refill.
+  let state_select = document.getElementById("state");
+  while (state_select.length > 0) {
+     state_select.remove(0);
+  }
+  state_select.appendChild(new Option('WA', 'WA'));
+  state_select.appendChild(new Option('MA', 'MA'));
+  state_select.appendChild(new Option('TX', 'TX'));
+}
+
+Init();
+</script>

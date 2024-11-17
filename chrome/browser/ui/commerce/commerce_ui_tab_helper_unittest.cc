@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+
 #include <memory>
 #include <vector>
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -89,7 +91,7 @@ class CommerceUiTabHelperTest : public testing::Test {
 
   void SetUp() override {
     web_contents_ = test_web_contents_factory_.CreateWebContents(&profile_);
-    side_panel_registry_ = std::make_unique<SidePanelRegistry>();
+    side_panel_registry_ = std::make_unique<SidePanelRegistry>(&tab_interface_);
     tab_helper_ = std::make_unique<commerce::CommerceUiTabHelper>(
         web_contents_.get(), shopping_service_.get(), bookmark_model_.get(),
         image_fetcher_.get(), side_panel_registry_.get());
@@ -146,6 +148,7 @@ class CommerceUiTabHelperTest : public testing::Test {
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
+  tabs::MockTabInterface tab_interface_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
 
  private:

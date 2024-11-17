@@ -17,6 +17,7 @@ enum ViewID {
   kSettingsButton,
   kTextfield,
   kSubmitQuestionButton,
+  kElucidationButton,
 };
 
 // Metrics
@@ -29,13 +30,16 @@ enum class MahiMenuButton {
   kSubmitQuestionButton = 2,
   kCondensedMenuButton = 3,
   kSettingsButton = 4,
-  kMaxValue = kSettingsButton,
+  kElucidationButton = 5,
+  kMaxValue = kElucidationButton,
 };
 
 inline constexpr char kMahiContextMenuButtonClickHistogram[] =
     "ChromeOS.Mahi.ContextMenuView.ButtonClicked";
 inline constexpr char kMahiContextMenuDistillableHistogram[] =
     "ChromeOS.Mahi.ContextMenuView.Distillable";
+inline constexpr char kMahiContextMenuElucidationState[] =
+    "ChromeOS.Mahi.ContextMenuView.ElucidationState";
 
 }  // namespace chromeos::mahi
 

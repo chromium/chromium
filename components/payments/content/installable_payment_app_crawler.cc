@@ -57,18 +57,18 @@ InstallablePaymentAppCrawler::InstallablePaymentAppCrawler(
       number_of_web_app_manifest_to_parse_(0),
       number_of_web_app_icons_to_download_and_decode_(0) {}
 
-InstallablePaymentAppCrawler::~InstallablePaymentAppCrawler() {}
+InstallablePaymentAppCrawler::~InstallablePaymentAppCrawler() = default;
 
 void InstallablePaymentAppCrawler::Start(
     const std::vector<mojom::PaymentMethodDataPtr>& requested_method_data,
-    std::set<GURL> method_manifest_urls_for_icon_refetch,
+    std::set<GURL> method_manifest_urls_for_icon_refresh,
     FinishedCrawlingCallback callback,
     base::OnceClosure finished_using_resources) {
   callback_ = std::move(callback);
   finished_using_resources_ = std::move(finished_using_resources);
 
   std::set<GURL> manifests_to_download;
-  if (method_manifest_urls_for_icon_refetch.empty()) {
+  if (method_manifest_urls_for_icon_refresh.empty()) {
     // Crawl for JIT installable web apps.
     crawling_mode_ = CrawlingMode::kJustInTimeInstallation;
     for (const auto& method_data : requested_method_data) {
@@ -80,11 +80,11 @@ void InstallablePaymentAppCrawler::Start(
       }
     }
   } else {
-    // Crawl to refetch missing icons of already installed apps.
-    crawling_mode_ = CrawlingMode::kMissingIconRefetch;
-    method_manifest_urls_for_icon_refetch_ =
-        std::move(method_manifest_urls_for_icon_refetch);
-    for (const auto& method : method_manifest_urls_for_icon_refetch_) {
+    // Crawl to refresh icons of already installed apps.
+    crawling_mode_ = CrawlingMode::kInstalledAppIconRefresh;
+    method_manifest_urls_for_icon_refresh_ =
+        std::move(method_manifest_urls_for_icon_refresh);
+    for (const auto& method : method_manifest_urls_for_icon_refresh_) {
       DCHECK(method.is_valid());
       manifests_to_download.insert(method);
     }
@@ -512,9 +512,9 @@ void InstallablePaymentAppCrawler::OnPaymentWebAppIconDownloadAndDecoded(
       it->second->icon = std::make_unique<SkBitmap>(icon);
     }
   } else {
-    DCHECK_EQ(CrawlingMode::kMissingIconRefetch, crawling_mode_);
-    auto it = method_manifest_urls_for_icon_refetch_.find(method_manifest_url);
-    CHECK(it != method_manifest_urls_for_icon_refetch_.end(),
+    DCHECK_EQ(CrawlingMode::kInstalledAppIconRefresh, crawling_mode_);
+    auto it = method_manifest_urls_for_icon_refresh_.find(method_manifest_url);
+    CHECK(it != method_manifest_urls_for_icon_refresh_.end(),
           base::NotFatalUntil::M130);
     if (icon.drawsNothing()) {
       log_.Warn("Failed to refetch a valid icon from web app manifest \"" +

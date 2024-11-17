@@ -31,3 +31,7 @@ int LensTranslateToggleMode() {
 BASE_FEATURE(kLensWebPageLoadOptimizationEnabled,
              "LensWebPageLoadOptimizationEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensUnaryApisWithHttpTransportEnabled,
+             "LensUnaryApisWithHttpTransportEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);

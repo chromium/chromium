@@ -25,6 +25,7 @@ namespace ui {
 
 NativeThemeFluent::NativeThemeFluent(bool should_only_use_dark_colors)
     : NativeThemeBase(should_only_use_dark_colors) {
+  set_use_overlay_scrollbar(CalculateUseOverlayScrollbar());
   scrollbar_width_ = kFluentScrollbarThickness;
 }
 
@@ -363,7 +364,7 @@ void NativeThemeFluent::OffsetArrowRect(gfx::RectF& arrow_rect,
       arrow_rect.Offset(scaled_offset, 0);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

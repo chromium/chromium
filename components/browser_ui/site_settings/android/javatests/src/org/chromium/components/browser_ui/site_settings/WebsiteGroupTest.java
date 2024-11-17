@@ -12,7 +12,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,7 +21,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
@@ -35,7 +33,6 @@ import java.util.Set;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class WebsiteGroupTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private WebsitePreferenceBridge.Natives mBridgeMock;
 
@@ -57,7 +54,7 @@ public class WebsiteGroupTest {
     @Before
     public void setupTest() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mBridgeMock);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mBridgeMock);
     }
 
     @Test
@@ -75,7 +72,7 @@ public class WebsiteGroupTest {
 
     @Test
     @SmallTest
-    public void testIPAddress() {
+    public void testIpAddress() {
         Website origin = new Website(WebsiteAddress.create("https://1.1.1.1"), null);
         WebsiteGroup group =
                 new WebsiteGroup(origin.getAddress().getDomainAndRegistry(), Arrays.asList(origin));
@@ -137,9 +134,9 @@ public class WebsiteGroupTest {
 
     @Test
     @SmallTest
-    public void testRWSInfo() {
+    public void testRwsInfo() {
         var rwsInfo =
-                new RWSCookieInfo(
+                new RwsCookieInfo(
                         "google.com",
                         Arrays.asList(
                                 new Website(null, null),
@@ -150,13 +147,13 @@ public class WebsiteGroupTest {
         Website origin1 = new Website(WebsiteAddress.create("maps.google.com"), null);
         Website origin2 = new Website(WebsiteAddress.create("mail.google.com"), null);
         Website origin3 = new Website(WebsiteAddress.create("docs.google.com"), null);
-        origin2.setRWSCookieInfo(rwsInfo);
+        origin2.setRwsCookieInfo(rwsInfo);
         WebsiteGroup group =
                 new WebsiteGroup(
                         origin2.getAddress().getDomainAndRegistry(),
                         Arrays.asList(origin1, origin2, origin3));
 
-        Assert.assertEquals(rwsInfo, group.getRWSInfo());
+        Assert.assertEquals(rwsInfo, group.getRwsInfo());
     }
 
     @Test

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -23,8 +24,7 @@ class PerProfileWebUITracker;
 // WebUIs. At anytime, at most one WebContents is preloaded across all profiles.
 // If under heavy memory pressure, no preloaded contents will be created.
 //
-// To make a WebUI preloadable, update GetAllPreloadableWebUIURLs() and
-// ensure that tests pass.
+// See comments in TopChromeWebUIConfig for making a WebUI preloadable.
 class WebUIContentsPreloadManager : public ProfileObserver,
                                     public PerProfileWebUITracker::Observer {
  public:
@@ -55,7 +55,6 @@ class WebUIContentsPreloadManager : public ProfileObserver,
     bool is_ready_to_show;
   };
 
-  WebUIContentsPreloadManager();
   ~WebUIContentsPreloadManager() override;
 
   WebUIContentsPreloadManager(const WebUIContentsPreloadManager&) = delete;
@@ -68,9 +67,11 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // make a preloaded contents.
   void WarmupForBrowser(Browser* browser);
 
-  // Make a WebContents that shows `webui_url` under `browser_context`.
-  // Reuses the preloaded contents if it is under the same `browser_context`.
-  // A new preloaded contents will be created, unless we are under heavy
+  // Make a WebContents that shows `webui_url` under `browser_context`. If a
+  // preloaded WebContents exists for the same `browser_context`, it will be
+  // reused.
+  // This method handles navigation to `webui_url` internally.
+  // A new preloaded contents will be created, unless the system is under heavy
   // memory pressure.
   RequestResult Request(const GURL& webui_url,
                         content::BrowserContext* browser_context);
@@ -88,6 +89,8 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   void DisableNavigationForTesting();
 
  private:
+  WebUIContentsPreloadManager();
+  friend class base::NoDestructor<WebUIContentsPreloadManager>;
   friend class WebUIContentsPreloadManagerTestAPI;
   class WebUIControllerEmbedderStub;
   class PendingPreload;

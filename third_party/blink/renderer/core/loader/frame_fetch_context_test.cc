@@ -148,7 +148,7 @@ class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
       : policy_(policy), filtered_load_counter_(filtered_load_counter) {}
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                           mojom::blink::RequestContextType) override {
+                           network::mojom::RequestDestination) override {
     return policy_;
   }
 
@@ -583,9 +583,7 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest,
                                    public testing::WithParamInterface<bool> {
  public:
   FrameFetchContextHintsTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        blink::features::kClientHintsPrefersReducedTransparency,
-    };
+    std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(
@@ -842,9 +840,6 @@ TEST_P(FrameFetchContextHintsTest, MonitorViewportWidthHints) {
 }
 
 TEST_P(FrameFetchContextHintsTest, MonitorUAHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kClientHintsFormFactors);
-
   // `Sec-CH-UA` is always sent for secure requests
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA", true, "");
   ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA", false, "");
@@ -1040,9 +1035,6 @@ TEST_P(FrameFetchContextHintsTest, MonitorPrefersReducedTransparencyHint) {
 }
 
 TEST_P(FrameFetchContextHintsTest, MonitorAllHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kClientHintsFormFactors);
-
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", false, "");
@@ -1685,8 +1677,9 @@ class FrameFetchContextDisableReduceAcceptLanguageTest
 
     document->GetFrame()->SetReducedAcceptLanguage(AtomicString("en-GB"));
 
-    if (is_detached)
+    if (is_detached) {
       dummy_page_holder = nullptr;
+    }
 
     GetFetchContext()->UpgradeResourceRequestForLoader(
         ResourceType::kRaw, std::nullopt /* resource_width */, request,

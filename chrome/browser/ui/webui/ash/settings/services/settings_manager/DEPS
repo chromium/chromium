@@ -22,6 +22,7 @@ include_rules = [
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/profiles",
   "+chrome/browser/signin/identity_manager_factory.h",
+  "+chrome/browser/ui/ash/graduation",
   "+chrome/browser/ui/webui/ash/settings/constants",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",

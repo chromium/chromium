@@ -20,12 +20,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerFactory.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeFieldTrial.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeOSWrapper.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeOSWrapperImpl.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgePadAdjuster.java",
   ]
   deps = [
     "//base:base_java",
+    "//cc:cc_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
@@ -33,6 +35,8 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -48,8 +52,10 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinSceneLayerTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeFieldTrialUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgePadAdjusterUnitTest.java",
   ]
 
@@ -64,7 +70,9 @@ robolectric_library("junit") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/native_page:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -75,6 +83,7 @@ robolectric_library("junit") {
     "//third_party/blink/public/mojom:mojom_core_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:gendeps_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",

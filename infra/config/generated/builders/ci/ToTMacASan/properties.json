@@ -41,7 +41,8 @@
           "builder": "ToTMacASan",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTMacASan/targets"
     }
   },
   "$build/reclient": {

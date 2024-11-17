@@ -222,6 +222,7 @@ std::unique_ptr<IconButton> RefreshBannerView::CreateRefreshButton() {
 
 void RefreshBannerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   SetClipPath(GetClipPath(GetContentsBounds().size()));
+  layer()->SetClipRect(GetLocalBounds());
 }
 
 void RefreshBannerView::ViewHierarchyChanged(
@@ -265,12 +266,15 @@ void RefreshBannerView::OnUpdated(const MahiUiUpdate& update) {
     case MahiUiUpdateType::kErrorReceived:
     case MahiUiUpdateType::kAnswerLoaded:
     case MahiUiUpdateType::kOutlinesLoaded:
+    case MahiUiUpdateType::kPanelBoundsChanged:
     case MahiUiUpdateType::kQuestionAndAnswerViewNavigated:
     case MahiUiUpdateType::kQuestionPosted:
     case MahiUiUpdateType::kQuestionReAsked:
     case MahiUiUpdateType::kSummaryLoaded:
     case MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated:
     case MahiUiUpdateType::kSummaryAndOutlinesReloaded:
+    case MahiUiUpdateType::kElucidationRequested:
+    case MahiUiUpdateType::kElucidationLoaded:
       return;
   }
 }

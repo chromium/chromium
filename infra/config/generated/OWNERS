@@ -81,4 +81,9 @@ per-file builders/*/*/targets/chromium.coverage.json=pasthana@google.com
 per-file builders/*/*/targets/chromium.webrtc.fyi.json=file://infra/config/subprojects/webrtc/OWNERS
 per-file builders/*/*/targets/chromium.webrtc.json=file://infra/config/subprojects/webrtc/OWNERS
 
+# Build team owners
+per-file builders/*/*/targets/chromium.build.fyi.json=file://infra/config/groups/chrome-build/OWNERS
+per-file builders/*/*/targets/chromium.build.json=file://infra/config/groups/chrome-build/OWNERS
+
+
 # LINT.ThenChange(/testing/buildbot/OWNERS:chromium_tests)

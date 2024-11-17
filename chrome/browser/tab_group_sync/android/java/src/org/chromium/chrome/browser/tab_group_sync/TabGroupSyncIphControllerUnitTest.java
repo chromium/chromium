@@ -24,7 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -46,17 +46,17 @@ public class TabGroupSyncIphControllerUnitTest {
     @Before
     public void setUp() {
         when(mTracker.isInitialized()).thenReturn(true);
-        when(mTracker.wouldTriggerHelpUI(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE))
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE))
                 .thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
         mController = new TabGroupSyncIphController(mResources, mUserEducationHelper, 0, mTracker);
     }
 
     @Test
-    public void testRequestShowIPH() {
+    public void testRequestShowIph() {
         mController.maybeShowIphOnTabStrip(null, 0.f, 0.f, 0.f, 0.f);
-        var captor = ArgumentCaptor.forClass(IPHCommand.class);
-        verify(mUserEducationHelper).requestShowIPH(captor.capture());
+        var captor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper).requestShowIph(captor.capture());
         var cmd = captor.getValue();
         assertEquals(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE, cmd.featureName);
     }

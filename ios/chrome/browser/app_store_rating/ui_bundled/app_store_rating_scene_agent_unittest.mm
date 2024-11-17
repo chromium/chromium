@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/metrics/metrics_state_manager.h"
+#import "components/metrics/test/test_enabled_state_provider.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -39,6 +41,8 @@ using ::testing::AnyNumber;
 namespace {
 
 // TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
+// TODO(crbug.com/377275759): Check if TestVariationsServiceClient and
+// ScopedVariationsService can be consolidated with implementations elsewhere.
 class TestVariationsServiceClient : public variations::VariationsServiceClient {
  public:
   TestVariationsServiceClient() = default;
@@ -79,10 +83,20 @@ class ScopedVariationsService {
               TestingApplicationContext::GetGlobal()->GetVariationsService());
     synthetic_trial_registry_ =
         std::make_unique<variations::SyntheticTrialRegistry>();
+    enabled_state_provider_ =
+        std::make_unique<metrics::TestEnabledStateProvider>(false, false);
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        TestingApplicationContext::GetGlobal()->GetLocalState(),
+        enabled_state_provider_.get(),
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+
     variations_service_ = variations::VariationsService::Create(
         std::make_unique<TestVariationsServiceClient>(),
         TestingApplicationContext::GetGlobal()->GetLocalState(),
-        /*state_manager=*/nullptr, "dummy-disable-background-switch",
+        metrics_state_manager_.get(),
+        /*disable_network_switch=*/"dummy-disable-background-switch",
         variations::UIStringOverrider(),
         network::TestNetworkConnectionTracker::CreateGetter(),
         synthetic_trial_registry_.get());
@@ -109,6 +123,8 @@ class ScopedVariationsService {
     variations_service_->OverrideStoredPermanentCountry("us");
   }
 
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
   std::unique_ptr<variations::VariationsService> variations_service_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 };
@@ -171,13 +187,13 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
 
   // Enable Credentials Provider.
   void EnableCPE() {
-    profile_->GetPrefs()->SetBoolean(
+    local_state()->SetBoolean(
         password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
   }
 
   // Disable Credentials Provider.
   void DisableCPE() {
-    profile_->GetPrefs()->SetBoolean(
+    local_state()->SetBoolean(
         password_manager::prefs::kCredentialProviderEnabledOnStartup, false);
   }
 };

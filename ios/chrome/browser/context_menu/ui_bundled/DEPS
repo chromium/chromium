@@ -11,6 +11,7 @@ include_rules = [
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
   "+ios/chrome/browser/ui/menu",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  "+ios/chrome/browser/text_selection/model/text_classifier_util.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model",
 ]

@@ -21,7 +21,6 @@ namespace optimization_guide {
 class ModelQualityLogEntry {
  public:
   explicit ModelQualityLogEntry(
-      std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       base::WeakPtr<ModelQualityLogsUploaderService> uploader);
 
   virtual ~ModelQualityLogEntry();

@@ -46,6 +46,8 @@ public class TabState {
 
     public @TabLaunchType int tabLaunchTypeAtCreation;
 
+    public boolean tabHasSensitiveContent;
+
     /** Whether this TabState was created from a file containing info about an incognito Tab. */
     public boolean isIncognito;
 

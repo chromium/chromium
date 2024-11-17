@@ -31,6 +31,7 @@
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -103,11 +104,13 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/public/platform/web_thread_safe_data.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
+#include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/public/web/web_frame_serializer_client.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_link_preview_triggerer.h"
@@ -137,7 +140,6 @@ class WebAgentGroupScheduler;
 
 class WeakWrapperResourceLoadInfoNotifier;
 class WebBackgroundResourceFetchAssets;
-class WebComputedAXTree;
 class WebContentDecryptionModule;
 class WebElement;
 class WebLocalFrame;
@@ -169,6 +171,7 @@ class AgentSchedulingGroup;
 class BlinkInterfaceRegistryImpl;
 class DocumentState;
 class MediaPermissionDispatcher;
+class MHTMLPartsGenerationDelegateImpl;
 class NavigationClient;
 class PepperPluginInstanceImpl;
 class RendererPpapiHost;
@@ -238,10 +241,10 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
           associated_interface_provider,
       blink::WebView* web_view,
-      const std::optional<blink::FrameToken>& previous_frame_token,
-      const std::optional<blink::FrameToken>& opener_frame_token,
-      const std::optional<blink::FrameToken>& parent_frame_token,
-      const std::optional<blink::FrameToken>& previous_sibling_frame_token,
+      base::optional_ref<const blink::FrameToken> previous_frame_token,
+      base::optional_ref<const blink::FrameToken> opener_frame_token,
+      base::optional_ref<const blink::FrameToken> parent_frame_token,
+      base::optional_ref<const blink::FrameToken> previous_sibling_frame_token,
       const base::UnguessableToken& devtools_frame_token,
       blink::mojom::TreeScopeType tree_scope_type,
       blink::mojom::FrameReplicationStatePtr replicated_state,
@@ -558,7 +561,7 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::RemoteFrameToken& frame_token) override;
   blink::WebFrame* FindFrame(const blink::WebString& name) override;
   void WillDetach(blink::DetachReason detach_reason) override;
-  void FrameDetached() override;
+  void FrameDetached(blink::DetachReason detach_reason) override;
   void DidChangeName(const blink::WebString& name) override;
   void DidMatchCSS(
       const blink::WebVector<blink::WebString>& newly_matching_selectors,
@@ -659,12 +662,11 @@ class CONTENT_EXPORT RenderFrameImpl
   bool AllowContentInitiatedDataUrlNavigations(
       const blink::WebURL& url) override;
   void PostAccessibilityEvent(const ui::AXEvent& event) override;
-  bool SendAccessibilitySerialization(std::vector<ui::AXTreeUpdate> updates,
-                                      std::vector<ui::AXEvent> events,
-                                      bool had_load_complete_messages) override;
-  void CheckIfAudioSinkExistsAndIsAuthorized(
-      const blink::WebString& sink_id,
-      blink::WebSetSinkIdCompleteCallback callback) override;
+  bool SendAccessibilitySerialization(
+      std::vector<ui::AXTreeUpdate> updates,
+      std::vector<ui::AXEvent> events,
+      ui::AXLocationAndScrollUpdates location_and_scroll_updates,
+      bool had_load_complete_messages) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   blink::URLLoaderThrottleProvider* GetURLLoaderThrottleProvider() override;
   scoped_refptr<blink::WebBackgroundResourceFetchAssets>
@@ -948,6 +950,12 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote)
       override;
 
+  void OnSerializeMHTMLComplete(
+      std::unique_ptr<MHTMLPartsGenerationDelegateImpl> delegate,
+      SerializeAsMHTMLCallback callback,
+      std::vector<blink::WebThreadSafeData> mhtml_contents,
+      blink::WebThreadSafeData frame_mhtml_data);
+
   // Callback scheduled from SerializeAsMHTML for when writing serialized
   // MHTML to the handle has been completed in the file thread.
   void OnWriteMHTMLComplete(
@@ -992,20 +1000,19 @@ class CONTENT_EXPORT RenderFrameImpl
 
   void InitializeMediaStreamDeviceObserver();
 
-  // Called when the RenderFrameImpl is created. This creates and initializes
-  // the WebFrameWidget unless this is a LocalFrame<->LocalFrame swap. Widget
-  // creation maybe deferred until commit for this case.
+  // Called when the RenderFrameImpl is created. This either:
+  // - creates and initializes the WebFrameWidget with a new compositor, i.e.
+  //   the "typical" case or
+  // - stashes the creation params for later use. Experimental mode used only
+  //   for local -> local RenderFrame swaps. Widget creation will be deferred
+  //   until commit; when created, the widget will reuse the previous
+  //   RenderFrame's compositor.
   void MaybeInitializeWidget(mojom::CreateFrameWidgetParamsPtr widget_params);
 
   // Called during a LocalFrame<->LocalFrame swap. This creates and initializes
   // the WebFrameWidget if it was deferred when the RenderFrameImpl was created,
   // see `MaybeInitializeWidget()` above.
-  void EnsureWidgetInitialized();
-
-  // Returns the widget whose compositor should be reused for this widget if
-  // a non-null `previous_frame_token` is provided.
-  blink::WebFrameWidget* PreviousWidgetForLazyCompositorInitialization(
-      const std::optional<blink::FrameToken>& previous_frame_token) const;
+  void InitializeWidgetAtSwap(blink::WebLocalFrame& previous_frame);
 
   // Sends a FrameHostMsg_BeginNavigation to the browser
   void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,
@@ -1131,8 +1138,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
       mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
       const std::optional<base::UnguessableToken>& embedding_token);
-
-  blink::WebComputedAXTree* GetOrCreateWebComputedAXTree() override;
 
   std::unique_ptr<blink::WebSocketHandshakeThrottle>
   CreateWebSocketHandshakeThrottle() override;
@@ -1534,10 +1539,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // True if the frame host wants stack traces on JavaScript console messages of
   // kError severity.
   bool want_error_message_stack_trace_ = false;
-
-  // Contains a representation of the accessibility tree stored in content for
-  // use inside of Blink.
-  std::unique_ptr<blink::WebComputedAXTree> computed_ax_tree_;
 
   // Used for tracking a frame's main frame document intersection and
   // replicating it to the browser when it changes.

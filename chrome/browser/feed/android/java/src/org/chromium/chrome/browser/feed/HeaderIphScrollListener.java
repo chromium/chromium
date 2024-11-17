@@ -39,10 +39,10 @@ public class HeaderIphScrollListener implements ScrollListener {
     HeaderIphScrollListener(
             FeedBubbleDelegate delegate,
             ScrollableContainerDelegate scrollableContainerDelegate,
-            Runnable showIPHRunnable) {
+            Runnable showIphRunnable) {
         mDelegate = delegate;
         mScrollableContainerDelegate = scrollableContainerDelegate;
-        mShowIPHRunnable = showIPHRunnable;
+        mShowIPHRunnable = showIphRunnable;
 
         mMinScrollFraction = MIN_SCROLL_FRACTION;
         mHeaderMaxPosFraction = MAX_HEADER_POS_FRACTION;
@@ -52,7 +52,7 @@ public class HeaderIphScrollListener implements ScrollListener {
     public void onScrollStateChanged(@ScrollState int state) {
         if (state != ScrollState.IDLE) return;
 
-        maybeTriggerIPH(mScrollableContainerDelegate.getVerticalScrollOffset());
+        maybeTriggerIph(mScrollableContainerDelegate.getVerticalScrollOffset());
     }
 
     @Override
@@ -63,12 +63,12 @@ public class HeaderIphScrollListener implements ScrollListener {
         if (verticalOffset == 0) return;
 
         // Negate the vertical offset because it is inversely proportional to the scroll offset.
-        // For example, a header verical offset of -50px corresponds to a scroll offset of 50px.
-        maybeTriggerIPH(-verticalOffset);
+        // For example, a header vertical offset of -50px corresponds to a scroll offset of 50px.
+        maybeTriggerIph(-verticalOffset);
     }
 
-    private void maybeTriggerIPH(int verticalScrollOffset) {
-        try (TraceEvent e = TraceEvent.scoped("HeaderIphScrollListener.maybeTriggerIPH")) {
+    private void maybeTriggerIph(int verticalScrollOffset) {
+        try (TraceEvent e = TraceEvent.scoped("HeaderIphScrollListener.maybeTriggerIph")) {
             // Get the feature tracker for the IPH and determine whether to show the IPH.
             final String featureForIph = FeatureConstants.FEED_HEADER_MENU_FEATURE;
             final Tracker tracker = mDelegate.getFeatureEngagementTracker();
@@ -92,7 +92,7 @@ public class HeaderIphScrollListener implements ScrollListener {
             }
 
             // Check that the feed header is well positioned in the recycler view to show the IPH.
-            if (!mDelegate.isFeedHeaderPositionInContainerSuitableForIPH(mHeaderMaxPosFraction)) {
+            if (!mDelegate.isFeedHeaderPositionInContainerSuitableForIph(mHeaderMaxPosFraction)) {
                 return;
             }
 

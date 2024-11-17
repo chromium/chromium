@@ -6,15 +6,15 @@
 
 import 'chrome://extensions/extensions.js';
 
-import type {ExtensionsLoadErrorElement} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {LoadErrorElement} from 'chrome://extensions/extensions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {isElementVisible} from './test_util.js';
 
 suite('ExtensionLoadErrorTests', function() {
-  let loadError: ExtensionsLoadErrorElement;
+  let loadError: LoadErrorElement;
 
   let mockDelegate: TestService;
 
@@ -64,7 +64,7 @@ suite('ExtensionLoadErrorTests', function() {
     assertFalse(isElementVisible(dialogElement));
   });
 
-  test('CodeSection', function() {
+  test('CodeSection', async () => {
     assertTrue(loadError.$.code.shadowRoot!
                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
     const loadErrorWithSource = {
@@ -79,13 +79,14 @@ suite('ExtensionLoadErrorTests', function() {
     };
 
     loadError.loadError = loadErrorWithSource;
+    await microtasksFinished();
     assertFalse(loadError.$.code.shadowRoot!
                     .querySelector<HTMLElement>('#scroll-container')!.hidden);
   });
 
-  test('PathWithoutSource', function() {
+  test('PathWithoutSource', async () => {
     loadError.loadError = stubLoadError;
-    flush();
+    await microtasksFinished();
 
     // File should be visible with name.
     const fileRow = loadError.shadowRoot!.querySelector<HTMLElement>('#file')!;
@@ -95,12 +96,12 @@ suite('ExtensionLoadErrorTests', function() {
         'some/path/');
   });
 
-  test('GenericError', function() {
+  test('GenericError', async () => {
     assertTrue(loadError.$.code.shadowRoot!
                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
 
     loadError.loadError = new Error('Some generic error');
-    flush();
+    await microtasksFinished();
 
     // Code section should still be hidden because there is no source.
     assertTrue(loadError.$.code.shadowRoot!

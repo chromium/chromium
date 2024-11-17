@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -682,19 +681,16 @@ void AXTableInfo::ClearExtraMacNodes() {
     return;
   }
 
-  std::vector<AXNodeID> deleting_node_ids;
-  deleting_node_ids.reserve(extra_mac_nodes.size());
+  std::set<AXNodeID> deleting_node_ids;
   for (AXNode* extra_mac_node : extra_mac_nodes) {
-    deleting_node_ids.push_back(extra_mac_node->id());
+    deleting_node_ids.insert(extra_mac_node->id());
     for (AXTreeObserver& observer : tree_->observers()) {
       observer.OnNodeWillBeDeleted(tree_, extra_mac_node);
     }
   }
 
-  base::flat_set<AXNodeID> deleting_node_ids_unique(
-      std::move(deleting_node_ids));
   for (AXTreeObserver& observer : tree_->observers()) {
-    observer.OnAtomicUpdateStarting(tree_, deleting_node_ids_unique, {});
+    observer.OnAtomicUpdateStarting(tree_, deleting_node_ids, {});
   }
 
   {
@@ -708,7 +704,7 @@ void AXTableInfo::ClearExtraMacNodes() {
 
   }  // tree_update_in_progress.
 
-  for (AXNodeID deleted_id : deleting_node_ids_unique) {
+  for (AXNodeID deleted_id : deleting_node_ids) {
     for (AXTreeObserver& observer : tree_->observers()) {
       observer.OnNodeDeleted(tree_, deleted_id);
     }

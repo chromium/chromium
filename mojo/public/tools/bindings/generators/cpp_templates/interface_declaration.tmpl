@@ -103,5 +103,23 @@ class {{export_attribute|append_space_if_nonempty}}{{interface.name}}
 {%-   endif %}
   {{ kythe_annotation("%s.%s"|format(interface_prefix, method.name)) }}
   virtual void {{method.name}}({{interface_macros.declare_request_params("", method)}}) = 0;
+{%-   if method|has_non_const_ref_param %}
+  // Default implementation for non-const ref params. This method can be
+  // implemented as a performance optimization for non-const ref types.
+  virtual void {{method.name}}({{interface_macros.declare_request_params("", method, allow_non_const_ref=True)}}) {
+    {{method.name}}(
+{%-     for param in method.parameters -%}
+{%-       if param.kind|is_non_const_ref_kind -%}
+            const_cast<{{param.kind|cpp_wrapper_param_type}}>({{param.name}})
+{%-       else -%}
+            std::move({{param.name}})
+{%-       endif %}{%- if not loop.last -%}, {% endif -%}
+{%-     endfor -%}
+{%-     if method.response_parameters != None -%}
+{%-       if method.parameters %}, {% endif -%}
+          std::move(callback)
+{%-     endif -%});
+  }
+{%-   endif %}
 {%- endfor %}
 };

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
+
 # This config is applied to targets that depend on libhwy
 config("libhwy_external_config") {
   include_dirs = [ "src" ]
@@ -33,4 +35,70 @@ source_set("libhwy") {
   ]
 
   public_configs = [ ":libhwy_external_config" ]
+}
+
+test("highway_tests") {
+  defines = [ "HWY_IS_TEST" ]
+  sources = [
+    "src/hwy/nanobenchmark.cc",
+    "src/hwy/tests/arithmetic_test.cc",
+    "src/hwy/tests/bit_permute_test.cc",
+    "src/hwy/tests/blockwise_combine_test.cc",
+    "src/hwy/tests/blockwise_shift_test.cc",
+    "src/hwy/tests/blockwise_test.cc",
+    "src/hwy/tests/cast_test.cc",
+    "src/hwy/tests/combine_test.cc",
+    "src/hwy/tests/compare_test.cc",
+    "src/hwy/tests/compress_test.cc",
+    "src/hwy/tests/concat_test.cc",
+    "src/hwy/tests/convert_test.cc",
+    "src/hwy/tests/count_test.cc",
+    "src/hwy/tests/crypto_test.cc",
+    "src/hwy/tests/demote_test.cc",
+    "src/hwy/tests/div_test.cc",
+    "src/hwy/tests/dup128_vec_test.cc",
+    "src/hwy/tests/expand_test.cc",
+    "src/hwy/tests/float_test.cc",
+    "src/hwy/tests/fma_test.cc",
+    "src/hwy/tests/foreach_vec_test.cc",
+    "src/hwy/tests/if_test.cc",
+    "src/hwy/tests/in_range_float_to_int_conv_test.cc",
+    "src/hwy/tests/interleaved_test.cc",
+    "src/hwy/tests/logical_test.cc",
+    "src/hwy/tests/mask_combine_test.cc",
+    "src/hwy/tests/mask_convert_test.cc",
+    "src/hwy/tests/mask_mem_test.cc",
+    "src/hwy/tests/mask_slide_test.cc",
+    "src/hwy/tests/mask_test.cc",
+    "src/hwy/tests/masked_arithmetic_test.cc",
+    "src/hwy/tests/masked_minmax_test.cc",
+    "src/hwy/tests/memory_test.cc",
+    "src/hwy/tests/minmax_test.cc",
+    "src/hwy/tests/mul_by_pow2_test.cc",
+    "src/hwy/tests/mul_pairwise_test.cc",
+    "src/hwy/tests/mul_test.cc",
+    "src/hwy/tests/reduction_test.cc",
+    "src/hwy/tests/resize_test.cc",
+    "src/hwy/tests/reverse_test.cc",
+    "src/hwy/tests/rotate_test.cc",
+    "src/hwy/tests/saturated_test.cc",
+    "src/hwy/tests/shift_test.cc",
+    "src/hwy/tests/shuffle4_test.cc",
+    "src/hwy/tests/sign_test.cc",
+    "src/hwy/tests/slide_up_down_test.cc",
+    "src/hwy/tests/sums_abs_diff_test.cc",
+    "src/hwy/tests/swizzle_block_test.cc",
+    "src/hwy/tests/swizzle_test.cc",
+    "src/hwy/tests/table_test.cc",
+    "src/hwy/tests/test_util.cc",
+    "src/hwy/tests/test_util_test.cc",
+    "src/hwy/tests/truncate_test.cc",
+    "src/hwy/tests/tuple_test.cc",
+    "src/hwy/tests/widen_mul_test.cc",
+  ]
+  deps = [
+    ":libhwy",
+    "//testing/gtest",
+    "//testing/gtest:gtest_main",
+  ]
 }

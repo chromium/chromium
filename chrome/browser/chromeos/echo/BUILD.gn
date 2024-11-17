@@ -14,16 +14,8 @@ static_library("echo") {
 
   public_deps = [ "//base" ]
 
-  deps = [ "//build:chromeos_buildflags" ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/report:utils" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
+  deps = [
+    "//build:chromeos_buildflags",
+    "//chromeos/ash/components/report:utils",
+  ]
 }

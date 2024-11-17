@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -85,8 +85,8 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS, mSurfaceType);
             dismiss();
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(getContext(), AdMeasurementFragment.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(getContext(), AdMeasurementFragment.class);
         } else if (id == R.id.more_button) {
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED, mSurfaceType);

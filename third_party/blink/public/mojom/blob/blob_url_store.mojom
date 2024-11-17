@@ -50,6 +50,17 @@ interface BlobURLStore {
                        pending_receiver<BlobURLToken> token) => (
     // TODO(https://crbug.com/1224926): Remove this once experiment is over.
     mojo_base.mojom.UnguessableToken? unsafe_agent_cluster_id);
+
+  // This function is the same as ResolveForNavigation with the addition of
+  // checking whether the blink::StorageKey corresponding to url matches
+  // the blink::StorageKey of the context calling this method. If not, it
+  // would fail to resolve the URL as if the URL doesn't exist. It is
+  // currently intended for use when fetching a dedicated / shared worker
+  // script.
+  ResolveForWorkerScriptFetch(url.mojom.Url url,
+                       pending_receiver<BlobURLToken> token) => (
+    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+    mojo_base.mojom.UnguessableToken? unsafe_agent_cluster_id);
 };
 
 // A token representing a Blob URL. The browser process can use this to look up

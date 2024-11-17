@@ -1,0 +1,112 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
+
+// Most of the mojo definition in this file can be viewed as a representation
+// of the corresponding built-in API prompt API. Please note that the prompt
+// text string below in various methods are directly passed from the JavaScript
+// API, so they could contain arbitrary content provided from a untrustworthy
+// source.
+// See the explainer (https://github.com/explainers-by-googlers/prompt-api)
+// for more information.
+
+// This struct contains the parameters that control the sampling behavior of
+// the model execution behind the session.
+struct AILanguageModelSamplingParams {
+  uint32 top_k;
+  float temperature;
+};
+
+// This struct contains the information describing the default and max values
+// for session creation.
+struct AIModelInfo {
+  uint32 default_top_k;
+  uint32 max_top_k;
+  float default_temperature;
+};
+
+// The information of an AILanguageModel, this should be returned from any method
+// that creates a new AILanguageModel.
+struct AILanguageModelInfo {
+  uint64 max_tokens;
+
+  AILanguageModelSamplingParams sampling_params;
+};
+
+// The enum describes the possible roles in the initial prompt.
+enum AILanguageModelInitialPromptRole {
+  kSystem = 0,
+  kUser = 1,
+  kAssistant = 2,
+
+  // Append new line here
+};
+
+// Each initial prompt contains a role and the actual content.
+struct AILanguageModelInitialPrompt {
+  AILanguageModelInitialPromptRole role;
+  // This can be any arbitrary string taken from the JavaScript API.
+  string content;
+};
+
+// This is used when creating a new AILanguageModel.
+struct AILanguageModelCreateOptions {
+  AILanguageModelSamplingParams? sampling_params;
+  // This can be any arbitrary string taken from the JavaScript API.
+  string? system_prompt;
+  array<AILanguageModelInitialPrompt> initial_prompts;
+};
+
+// The client interface that receives an AILanguageModel from an AIManager.
+interface AIManagerCreateLanguageModelClient {
+  // Called with a created language model's mojo interface as a result for the
+  // CreateLanguageModel() method of the AIManager. When failed to create an
+  // AILanguageModel, this method is called with a null pending remote.
+  // It also returns the language model info if the language model is created
+  // successfully.
+  OnResult(
+    pending_remote<blink.mojom.AILanguageModel>? language_model_remote,
+    AILanguageModelInfo? info
+  );
+};
+
+// The client interface that receives the number of tokens counted by the
+// AIManager.
+interface AILanguageModelCountPromptTokensClient {
+  // Called with a created language model's mojo interface as a result for the
+  // CountPromptTokens() method of the AIManager.
+  OnResult(uint32 number_of_tokens);
+};
+
+// A session for a model that allows executing an input and streaming the
+// output.
+interface AILanguageModel {
+  // Prompts the model on the given input which can be an arbitrary string
+  // from the JavaScript API.
+  Prompt(
+    string input, pending_remote<ModelStreamingResponder> pending_responder
+  );
+  // Creates a new session with the same configuration and existing context
+  // as the current session.
+  // Note that this method is called by the `AILanguageModel.clone()` method from
+  // blink, but it is named as `Fork` instead of `Clone` to avoid confusion
+  // with the "clone" term in mojo context (which indicates binding another
+  // client to the same instance).
+  // Similar to `AIManager.CreateLanguageModel()`, this method returns the
+  // information of the created session.
+  Fork(
+    pending_remote<AIManagerCreateLanguageModelClient> client
+  );
+  // Destroys the session.
+  Destroy();
+  // Counts the number of token in the given prompt text `input` which can
+  // be an arbitrary string from the JavaScript API.
+  CountPromptTokens(
+    string input,
+    pending_remote<AILanguageModelCountPromptTokensClient> client
+  );
+};

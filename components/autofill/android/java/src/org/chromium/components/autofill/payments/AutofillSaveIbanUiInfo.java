@@ -17,18 +17,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-@JNINamespace("autofill")
 /**
  * The android version of the C++ AutofillSaveIbanUiInfo providing UI resources for the save IBAN
  * bottom sheet.
  */
+@JNINamespace("autofill")
 public class AutofillSaveIbanUiInfo {
     private final String mAcceptText;
     private final String mCancelText;
     // Description is empty for local save.
     private final String mDescriptionText;
-    // The obfuscated value of IBAN being saved, e.g. CH **8009.
-    private final String mIbanLabel;
+    // The value of IBAN being saved, e.g. CH56 0483 5012 3456 7800 9.
+    private final String mIbanValue;
+    private final boolean mIsServerSave;
     // This should be empty for local save.
     private final List<LegalMessageLine> mLegalMessageLines;
     // LogoIcon is 0 for local save.
@@ -47,8 +48,12 @@ public class AutofillSaveIbanUiInfo {
         return mDescriptionText;
     }
 
-    public String getIbanLabel() {
-        return mIbanLabel;
+    public String getIbanValue() {
+        return mIbanValue;
+    }
+
+    public boolean isServerSave() {
+        return mIsServerSave;
     }
 
     public List<LegalMessageLine> getLegalMessageLines() {
@@ -64,8 +69,6 @@ public class AutofillSaveIbanUiInfo {
         return mTitleText;
     }
 
-    @CalledByNative
-    @VisibleForTesting
     /**
      * Construct the {@link AutofillSaveIbanUiInfo} given all the members. This constructor is used
      * for native binding purposes.
@@ -76,15 +79,21 @@ public class AutofillSaveIbanUiInfo {
      *     null}.
      * @param descriptionText A bottom sheet description UI string displayed below the bottom sheet
      *     title. This value must not be {@code null}.
+     * @param ibanValue A string containing IBAN value. This value must not be {@code null}.
+     * @param legalMessageLines A list of legal message strings with user help links. This list is
+     *     empty for local save. Must not be {@code null}.
      * @param logoIcon A logo icon displayed at the top of the bottom sheet. This value is equals to
      *     {@code 0} for local save.
      * @param titleText A bottom sheet title UI string. This value must not be {@code null}.
      */
+    @CalledByNative
+    @VisibleForTesting
     /* package */ AutofillSaveIbanUiInfo(
             @JniType("std::u16string") String acceptText,
             @JniType("std::u16string") String cancelText,
             @JniType("std::u16string") String descriptionText,
-            @JniType("std::u16string") String ibanLabel,
+            @JniType("std::u16string") String ibanValue,
+            boolean isServerSave,
             @JniType("std::vector") List<LegalMessageLine> legalMessageLines,
             @DrawableRes int logoIcon,
             @JniType("std::u16string") String titleText) {
@@ -92,7 +101,8 @@ public class AutofillSaveIbanUiInfo {
         mCancelText = Objects.requireNonNull(cancelText, "Cancel text can't be null");
         mDescriptionText =
                 Objects.requireNonNull(descriptionText, "Description text can't be null");
-        mIbanLabel = Objects.requireNonNull(ibanLabel, "Iban label can't be null");
+        mIbanValue = Objects.requireNonNull(ibanValue, "Iban value can't be null");
+        mIsServerSave = isServerSave;
         mLegalMessageLines =
                 Collections.unmodifiableList(
                         Objects.requireNonNull(
@@ -107,7 +117,8 @@ public class AutofillSaveIbanUiInfo {
         private String mAcceptText;
         private String mCancelText;
         private String mDescriptionText;
-        private String mIbanLabel;
+        private String mIbanValue;
+        private boolean mIsServerSave;
         private List<LegalMessageLine> mLegalMessageLines = Collections.EMPTY_LIST;
         @DrawableRes private int mLogoIcon;
         private String mTitleText;
@@ -127,8 +138,13 @@ public class AutofillSaveIbanUiInfo {
             return this;
         }
 
-        public Builder withIbanLabel(String ibanLabel) {
-            mIbanLabel = ibanLabel;
+        public Builder withIbanValue(String ibanValue) {
+            mIbanValue = ibanValue;
+            return this;
+        }
+
+        public Builder withIsServerSave(boolean isServerSave) {
+            mIsServerSave = isServerSave;
             return this;
         }
 
@@ -152,13 +168,14 @@ public class AutofillSaveIbanUiInfo {
             // The asserts are only checked in tests and in some Canary builds but not in
             // production. This is intended as we don't want to crash Chrome production for the
             // below checks.
-            assert mIbanLabel != null && !TextUtils.isEmpty(mIbanLabel)
+            assert mIbanValue != null && !TextUtils.isEmpty(mIbanValue)
                     : "IBAN value cannot be null or empty.";
             return new AutofillSaveIbanUiInfo(
                     mAcceptText,
                     mCancelText,
                     mDescriptionText,
-                    mIbanLabel,
+                    mIbanValue,
+                    mIsServerSave,
                     mLegalMessageLines,
                     mLogoIcon,
                     mTitleText);

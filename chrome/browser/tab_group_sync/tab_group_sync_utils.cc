@@ -4,8 +4,11 @@
 
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 
-#include "components/saved_tab_groups/utils.h"
+#include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "net/http/http_request_headers.h"
 
 namespace tab_groups {
@@ -48,6 +51,24 @@ bool TabGroupSyncUtils::IsSaveableNavigation(
   }
 
   return IsURLValidForSavedTabGroups(navigation_handle->GetURL());
+}
+
+// statics
+void TabGroupSyncUtils::RecordSavedTabGroupNavigationUkmMetrics(
+    const LocalTabID& id,
+    SavedTabGroupType type,
+    content::NavigationHandle* navigation_handle,
+    TabGroupSyncService* tab_group_sync_service) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  tab_group_sync_service->GetTabGroupSyncMetricsLogger()
+      ->RecordSavedTabGroupNavigation(
+          id, navigation_handle->GetURL(), type, navigation_handle->IsPost(),
+          navigation_handle->GetRedirectChain().size() > 1,
+          navigation_handle->GetRenderFrameHost()->GetPageUkmSourceId());
 }
 
 }  // namespace tab_groups

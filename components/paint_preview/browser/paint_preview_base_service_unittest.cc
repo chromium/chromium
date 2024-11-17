@@ -266,8 +266,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
               } break;
 
               default:
-                NOTREACHED_IN_MIGRATION();
-                break;
+                NOTREACHED();
             }
             std::move(quit_closure).Run();
           },

@@ -24,7 +24,7 @@ class MEDIA_EXPORT OutputPositionTracker {
   OutputPositionTracker(const OutputPositionTracker&) = delete;
   OutputPositionTracker& operator=(const OutputPositionTracker&) = delete;
 
-  void WriteString(std::string_view data);
+  void WriteSpan(base::span<const uint8_t> data);
   uint32_t GetCurrentPos() const;
 
  private:

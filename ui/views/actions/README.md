@@ -6,7 +6,7 @@ controller should facilitate the interactions between actions and views.
 
 ActionViewController is the main view controller to be instantiated or
 subclassed. It should outlive all the views it manages. Call
-ActioinViewController::CreateActionViewRelationship(..) to link a view to an
+ActionViewController::CreateActionViewRelationship(..) to link a view to an
 action item.
 
 

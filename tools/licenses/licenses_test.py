@@ -9,8 +9,8 @@ import argparse
 import contextlib
 import csv
 import io
+import itertools
 import os
-import re
 import pathlib
 import sys
 import unittest
@@ -19,6 +19,7 @@ import unittest
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'licenses'))
+REL_REPOSITORY_ROOT = os.path.relpath(REPOSITORY_ROOT)
 
 import licenses
 from test_utils import path_from_root
@@ -158,6 +159,36 @@ class LicensesTest(unittest.TestCase):
             os.path.join('third_party', 'cld_3'),
             os.path.join('external', 'somelib'),
         ]))
+
+  def test_list_license_files_from_metadata(self):
+    license_files = licenses.ListLicenseFiles(
+        itertools.chain.from_iterable(self._get_metadata().values()))
+    expected = [
+        os.path.join('third_party', 'lib1', 'LICENSE'),
+        os.path.join('third_party', 'lib2', 'LICENSE-A'),
+        os.path.join('third_party', 'lib2', 'LICENSE-B'),
+        os.path.join('third_party', 'lib3-v2', 'LICENSE'),
+        os.path.join('third_party', 'lib3', 'LICENSE'),
+        os.path.join('third_party', 'lib_unshipped', 'LICENSE'),
+    ]
+    self.assertEqual(license_files, expected)
+
+  def test_list_license_files_from_template_entries(self):
+    fake_templates = [{
+        'name': m['Name'],
+        'content': '',
+        'license_file': m['License File']
+    } for m in itertools.chain.from_iterable(self._get_metadata().values())]
+    license_files = licenses.ListLicenseFiles(fake_templates)
+    expected = [
+        os.path.join('third_party', 'lib1', 'LICENSE'),
+        os.path.join('third_party', 'lib2', 'LICENSE-A'),
+        os.path.join('third_party', 'lib2', 'LICENSE-B'),
+        os.path.join('third_party', 'lib3-v2', 'LICENSE'),
+        os.path.join('third_party', 'lib3', 'LICENSE'),
+        os.path.join('third_party', 'lib_unshipped', 'LICENSE'),
+    ]
+    self.assertEqual(license_files, expected)
 
   def test_generate_license_file_csv(self):
     # This is the same for all the links and prevents wildly long strings.
@@ -494,7 +525,8 @@ class LicensesTest(unittest.TestCase):
     args = argparse.Namespace(format="txt",
                               gn_target=None,
                               enable_warnings=True,
-                              output_file=None)
+                              output_file=None,
+                              depfile=None)
 
     # Warnings enabled
     args.extra_third_party_dirs = ["test_dir_invalid_metadata"]

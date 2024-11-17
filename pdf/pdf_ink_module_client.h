@@ -5,8 +5,12 @@
 #ifndef PDF_PDF_INK_MODULE_CLIENT_H_
 #define PDF_PDF_INK_MODULE_CLIENT_H_
 
+#include <map>
+
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
+#include "pdf/pdf_ink_ids.h"
+#include "third_party/ink/src/ink/geometry/modeled_shape.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -17,11 +21,27 @@ namespace gfx {
 class PointF;
 }
 
+namespace ink {
+class Stroke;
+}
+
 namespace chrome_pdf {
 
 class PdfInkModuleClient {
  public:
+  // Key: ID to identify a shape.
+  // Value: The Ink shape.
+  using PageV2InkPathShapesMap = std::map<InkModeledShapeId, ink::ModeledShape>;
+
+  // Key: 0-based page index.
+  // Value: Map of shapes on the page.
+  using DocumentV2InkPathShapesMap = std::map<int, PageV2InkPathShapesMap>;
+
   virtual ~PdfInkModuleClient() = default;
+
+  // Asks the client to discard the stroke identified by `id` on the page at
+  // `page_index`.
+  virtual void DiscardStroke(int page_index, InkStrokeId id) {}
 
   // Gets the current page orientation.
   virtual PageOrientation GetOrientation() const = 0;
@@ -49,14 +69,38 @@ class PdfInkModuleClient {
   // Returns whether the page at `page_index` is visible or not.
   virtual bool IsPageVisible(int page_index) = 0;
 
+  // Asks the client to load Ink data from the PDF.
+  virtual DocumentV2InkPathShapesMap LoadV2InkPathsFromPdf() = 0;
+
   // Notifies the client whether annotation mode is enabled or not.
   virtual void OnAnnotationModeToggled(bool enable) {}
+
+  // Asks the client to post `message`.
+  virtual void PostMessage(base::Value::Dict message) {}
+
+  // Notifies that a stroke has been added to the page at `page_index`.
+  // Provides an `id` that identifies the `stroke` object.  The `id` can be
+  // used later with `UpdateStrokeActive()`.
+  virtual void StrokeAdded(int page_index,
+                           InkStrokeId id,
+                           const ink::Stroke& stroke) {}
 
   // Notifies the client that a stroke has finished drawing or erasing.
   virtual void StrokeFinished() {}
 
   // Asks the client to change the cursor to `bitmap`.
   virtual void UpdateInkCursorImage(SkBitmap bitmap) {}
+
+  // Notifies that an existing shape identified by `id` on the page at
+  // `page_index` should update its active state.
+  virtual void UpdateShapeActive(int page_index,
+                                 InkModeledShapeId id,
+                                 bool active) {}
+
+  // Notifies that an existing stroke identified by `id` on the page at
+  // `page_index` should update its active state.
+  virtual void UpdateStrokeActive(int page_index, InkStrokeId id, bool active) {
+  }
 
   // Asks the client to update the thumbnail for `page_index`.
   virtual void UpdateThumbnail(int page_index) {}

@@ -238,10 +238,7 @@ public class LocaleUtils {
         }
     }
 
-    /**
-     * Updates the default Locale/LocaleList to those of config.
-     * @param config
-     */
+    /** Updates the default Locale/LocaleList to those of config. */
     public static void setDefaultLocalesFromConfiguration(Configuration config) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ApisN.setLocaleList(config);

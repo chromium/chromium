@@ -22,7 +22,7 @@ namespace assist_ranker {
 
 ClassifierPredictor::ClassifierPredictor(const PredictorConfig& config)
     : BasePredictor(config) {}
-ClassifierPredictor::~ClassifierPredictor() {}
+ClassifierPredictor::~ClassifierPredictor() = default;
 
 // static
 std::unique_ptr<ClassifierPredictor> ClassifierPredictor::Create(
@@ -94,11 +94,11 @@ bool ClassifierPredictor::Predict(RankerExample example,
 RankerModelStatus ClassifierPredictor::ValidateModel(const RankerModel& model) {
   if (model.proto().model_case() != RankerModelProto::kNnClassifier) {
     DVLOG(0) << "Model is incompatible.";
-    return RankerModelStatus::INCOMPATIBLE;
+    return RankerModelStatus::kIncompatible;
   }
   return nn_classifier::Validate(model.proto().nn_classifier())
-             ? RankerModelStatus::OK
-             : RankerModelStatus::INCOMPATIBLE;
+             ? RankerModelStatus::kOk
+             : RankerModelStatus::kIncompatible;
 }
 
 bool ClassifierPredictor::Initialize() {

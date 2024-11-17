@@ -243,8 +243,7 @@ std::string EventResultToString(EventResult result) {
     case EventResult::BYPASSED:
       return "EVENT_RESULT_BYPASSED";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
@@ -262,8 +261,7 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
     case DeepScanAccessPoint::FILE_TRANSFER:
       return "FileTransfer";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void RecordDeepScanMetrics(

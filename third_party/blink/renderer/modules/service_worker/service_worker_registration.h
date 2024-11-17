@@ -26,6 +26,7 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
+class V8ServiceWorkerUpdateViaCache;
 
 // The implementation of a service worker registration object in Blink.
 class ServiceWorkerRegistration final
@@ -75,7 +76,7 @@ class ServiceWorkerRegistration final
   NavigationPreloadManager* navigationPreload();
 
   String scope() const;
-  String updateViaCache() const;
+  V8ServiceWorkerUpdateViaCache updateViaCache() const;
 
   int64_t RegistrationId() const { return registration_id_; }
 

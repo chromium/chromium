@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1066101356081285416">Chrome, તમે મુલાકાત લેતા હો તે સાઇટ પરના ટ્રૅકિંગ નંબરની ભાળ મેળવશે અને તમને નવા ટૅબ પેજ પર પૅકેજ સંબંધિત અપડેટ બતાવશે. દરેક જણને આ સુવિધા પ્રદાન કરવા અને Google પર શૉપિંગની સુવિધાઓને બહેતર બનાવવા માટે, Googleને પૅકેજ ટ્રૅકિંગ નંબર અને વેબસાઇટનું નામ મોકલવામાં આવશે. તમે કોઈપણ સમયે <ph name="BEGIN_LINK" />પૅકેજ ટ્રૅકિંગના સેટિંગ<ph name="END_LINK" />માં જઈને આને અપડેટ કરી શકો છો.</translation>
+<translation id="1086486568852410168">Google Lens વડે શોધો</translation>
 <translation id="1143896152279775643">તમારો પાસવર્ડ <ph name="EMAIL" /> માટેના Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે.</translation>
 <translation id="1146503048444965320">Chromeમાં નવું ટૅબ ખોલો</translation>
 <translation id="1166460004393506534">Chromeમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
@@ -38,7 +39,9 @@
 <translation id="1670609221633730681">Chrome વિશે ટિપ: તમારા ઍડ્રેસ બાર માટે જગ્યા પસંદ કરો</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chromeમાં ઇનપુટ કરેલા URLsને તમારા બુકમાર્કમાં ઉમેરે છે.</translation>
+<translation id="1799920918471566157">Chrome વિશે ટિપ</translation>
 <translation id="1830634592642484976">આ સરનામું હાલમાં Chromeમાં સાચવેલું છે. Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="USER_EMAIL" />માં સાચવો.</translation>
+<translation id="1891812034154776216">જ્યારે તમે Chromeમાંથી બહાર નીકળો, ત્યારે ખુલ્લા છૂપા ટૅબ છુપાવો</translation>
 <translation id="1917964099031477364">આ ડિવાઇસ પરની Chrome અને અન્ય Google ઍપમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>
 <translation id="1919130412786645364">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="1965935827552890526">તમે અન્ય ખુલ્લી Chrome વિંડોમાં જે કાર્ય કરતા તા તે પૂર્ણ કરો.</translation>
@@ -70,6 +73,7 @@
 <translation id="2689064829982324496">બધી વેબસાઇટ પર તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાંથી સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome અપડેટ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="2703746758996815929">Chromeની સહાયક ટિપ મેળવવા માટે, તમારા iOS સેટિંગમાં નોટિફિકેશન ચાલુ કરો.</translation>
+<translation id="2728851697704606655">Google Lens વડે અનુવાદ કરો</translation>
 <translation id="2736805085127235148">તમારા ડિવાઇસ સેટિંગમાં Chromeના નોટિફિકેશન હાલમાં બંધ કરવામાં આવ્યા છે.</translation>
 <translation id="2754428955276778271">Chromeનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.
 
@@ -247,6 +251,7 @@
 <translation id="7581063337314642333">Chromeમાં ટૅબ ગ્રિડની મુલાકાત લો</translation>
 <translation id="7599894504325210080">Chrome પર ઑટોમૅટિક રીતે ભરવાની સુવિધાનો મોટો કરેલો વ્યૂ</translation>
 <translation id="7642373780953416937">તમારા માટે Chrome ઑટોમૅટિક રીતે ભાળ મેળવે તેવી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યાઓ માટે અલર્ટ મેળવો.</translation>
+<translation id="7660356333829433649">Chromeનો વધુમાં વધુ લાભ મેળવવા અંગેની વધુ ઉપયોગી ટિપ માટે અહીં ફરી ચેક કરો.</translation>
 <translation id="7662994914830945754">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="7693590760643069321">હવે તમે જ્યારે પણ મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરી શકશો.</translation>
 <translation id="7698568245838009292">Chromeને કૅમેરાનો ઍક્સેસ જોઈશે</translation>
@@ -261,6 +266,7 @@
 <translation id="7948283758957877064">Chromeમાં નવું શું છે</translation>
 <translation id="8000174216052461231">Chrome ટિપ: Chromeની સૌથી સશક્ત સુરક્ષા મેળવો</translation>
 <translation id="8006014511203279255">મેસેજ અથવા અન્ય ઍપમાં જ્યારે પણ તમે કોઈ લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
+<translation id="8014670471808569312">Chrome તમારો પાસવર્ડ સાચવવાનું ઑફર કરશે.</translation>
 <translation id="8018153653741938705">Google Chromeનો ઉપયોગ કરીને સલામત રહો</translation>
 <translation id="8022947259858476807">લિંક ખોલવા, વિજેટથી શોધવા અને અન્ય ઍપમાં પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="804638182476029347">Chrome નોટિફિકેશનને કિંમતમાં ઘટાડા વિશે અલર્ટ મેળવવાની મંજૂરી આપો</translation>
@@ -292,6 +298,7 @@
 <translation id="8558480467877843976">હવે તમે કોઈપણ સમયે બ્રાઉઝ કરીને અથવા મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરીને Chromeનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="8603022514504485810">Google Password Manager બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો.<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">“જ્યારે તમે Chrome બંધ કરો, ત્યારે છૂપા ટૅબ લૉક કરો” ચાલુ કરો.</translation>
+<translation id="8673726683583791503">Google Lens વડે ખરીદો</translation>
 <translation id="8727043961453758442">Chromeનો વધુને વધુ લાભ મેળવો</translation>
 <translation id="8765470054473112089">જ્યારે તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં ટાઇપ કરો છો, ત્યારે બહેતર સૂચનો મેળવવા માટે Chrome તમે જે ટાઇપ કરો છો તેને તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે. આ સુવિધા છૂપા મોડમાં કામ કરતી નથી.</translation>
 <translation id="8772179140489533211">Chromeમાં સાઇન ઇન કરવા માટે સંકેતો બતાવો.</translation>

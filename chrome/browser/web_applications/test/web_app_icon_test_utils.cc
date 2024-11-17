@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/ranges/algorithm.h"
@@ -119,16 +120,13 @@ base::FilePath GetOtherIconsDir(Profile* profile,
   return icons_dir;
 }
 
-bool ReadBitmap(FileUtilsWrapper* utils,
-                const base::FilePath& file_path,
-                SkBitmap* bitmap) {
+SkBitmap ReadBitmap(FileUtilsWrapper* utils, const base::FilePath& file_path) {
   std::string icon_data;
-  if (!utils->ReadFileToString(file_path, &icon_data))
-    return false;
+  if (!utils->ReadFileToString(file_path, &icon_data)) {
+    return SkBitmap();
+  }
 
-  return gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(icon_data.c_str()),
-      icon_data.size(), bitmap);
+  return gfx::PNGCodec::Decode(base::as_byte_span(icon_data));
 }
 
 base::span<const int> GetIconSizes() {
@@ -184,9 +182,8 @@ std::map<SquareSizePx, SkBitmap> ReadPngsFromDirectory(
        path = enumerator.Next()) {
     EXPECT_TRUE(path.MatchesExtension(FILE_PATH_LITERAL(".png")));
 
-    SkBitmap bitmap;
-    EXPECT_TRUE(ReadBitmap(file_utils, path, &bitmap));
-
+    SkBitmap bitmap = ReadBitmap(file_utils, path);
+    EXPECT_FALSE(bitmap.empty());
     EXPECT_EQ(bitmap.width(), bitmap.height());
 
     const int size_px = bitmap.width();

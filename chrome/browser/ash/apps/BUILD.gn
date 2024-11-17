@@ -32,6 +32,7 @@ static_library("apps") {
     "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//components/pref_registry",
     "//components/prefs",
@@ -51,10 +52,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "apk_web_app_installer_browsertest.cc",
-    "apk_web_app_service_lacros_browsertest.cc",
-  ]
+  sources = [ "apk_web_app_installer_browsertest.cc" ]
 
   deps = [
     ":apps",
@@ -69,6 +67,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

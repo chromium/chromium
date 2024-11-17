@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
 #include "url/origin.h"
 
@@ -104,6 +106,22 @@ void AddCustomItemsToMenu(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 item->action),
             item->label);
+        if (item->is_experimental_feature) {
+          menu_model->SetMinorIcon(
+              menu_model->GetItemCount() - 1,
+              ui::ImageModel::FromVectorIcon(vector_icons::kScienceIcon));
+        }
+        if (item->accelerator) {
+          menu_model->SetAcceleratorAt(
+              menu_model->GetItemCount() - 1,
+              ui::Accelerator(
+                  static_cast<ui::KeyboardCode>(item->accelerator->key_code),
+                  item->accelerator->modifiers));
+          if (item->force_show_accelerator_for_item) {
+            menu_model->SetForceShowAcceleratorForItemAt(
+                menu_model->GetItemCount() - 1, true);
+          }
+        }
         break;
       case blink::mojom::CustomContextMenuItemType::kCheckableOption:
         menu_model->AddCheckItem(
@@ -113,8 +131,7 @@ void AddCustomItemsToMenu(
         break;
       case blink::mojom::CustomContextMenuItemType::kGroup:
         // TODO(viettrungluu): I don't know what this is supposed to do.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case blink::mojom::CustomContextMenuItemType::kSeparator:
         menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
         break;
@@ -130,8 +147,7 @@ void AddCustomItemsToMenu(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

@@ -20,14 +20,14 @@ component("codec") {
   ]
 
   deps = [
-    "//base",
     "//skia",
     "//skia:rusty_png_feature_detection",
     "//third_party/zlib",
-    "//ui/gfx:gfx_export",
     "//ui/gfx:gfx_skia",
     "//ui/gfx/geometry",
   ]
+
+  public_deps = [ "//base" ]
 
   if (!use_blink) {
     sources -= [

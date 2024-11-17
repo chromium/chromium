@@ -28,7 +28,12 @@ class AXTreeDistillerTestBase : public ChromeRenderViewTest {
     content::RenderFrame* render_frame =
         content::RenderFrame::FromWebFrame(GetMainFrame());
     ui::AXTreeUpdate snapshot;
-    // |ui::AXMode::kHTML| is needed for URL information.
+    // |ui::AXMode::kHTML| is needed for retrieving the presence of the
+    // "aria-expanded" attribute.
+    // TODO(crbug.com/366000250): This is a heavy-handed approach as it copies
+    // all HTML attributes into the accessibility tree. It should be removed
+    // ASAP.
+    //
     // |ui::AXMode::kScreenReader| is needed for heading level information.
     const ui::AXMode ax_mode = ui::AXMode::kWebContents | ui::AXMode::kHTML |
                                ui::AXMode::kScreenReader;
@@ -226,13 +231,14 @@ const TestCase kDistillWebPageTestCases[] = {
       <body>)HTML",
      {"Main"}},
     /* ----------------------- */
+    // Ensure Gmail thread support.
     {"simple_page_aria_expanded",
      R"HTML(<!doctype html>
       <body>
         <main>
           <p>Main</p>
-          <div aria-expanded='true'>Expanded</div>
-          <div aria-expanded='false'>Collapsed</div>
+          <div role='listitem' aria-expanded='true'>Expanded</div>
+          <div role='listitem' aria-expanded='false'>Collapsed</div>
         </main>
       <body>)HTML",
      {"Main", "Expanded"}},

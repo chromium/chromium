@@ -104,10 +104,6 @@ public class OmahaBase {
         int SCHEDULED = 3;
     }
 
-    /** Deprecated; kept around to cancel alarms set for OmahaClient pre-M58. */
-    private static final String ACTION_REGISTER_REQUEST =
-            "org.chromium.chrome.browser.omaha.ACTION_REGISTER_REQUEST";
-
     // Delays between events.
     static final long MS_POST_BASE_DELAY = DateUtils.HOUR_IN_MILLIS;
     static final long MS_POST_MAX_DELAY = DateUtils.HOUR_IN_MILLIS * 5;
@@ -131,7 +127,6 @@ public class OmahaBase {
     private long mTimestampOfInstall;
     private long mTimestampForNextPostAttempt;
     private long mTimestampForNewRequest;
-    private int mServerDate;
     private String mInstallSource;
     protected VersionConfig mVersionConfig;
     protected boolean mSendInstallEvent;

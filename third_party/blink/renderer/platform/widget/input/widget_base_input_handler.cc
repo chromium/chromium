@@ -6,17 +6,18 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "cc/trees/layer_tree_host.h"
-#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
@@ -78,8 +79,7 @@ void LogPassiveEventListenersUma(WebInputEventResult result,
         enum_value = PASSIVE_LISTENER_UMA_ENUM_CANCELABLE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   UMA_HISTOGRAM_ENUMERATION("Event.PassiveListeners", enum_value,
@@ -308,15 +308,12 @@ void WidgetBaseInputHandler::HandleInputEvent(
                WebInputEvent::GetName(input_event.GetType()));
   int64_t trace_id = coalesced_event.latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [trace_id](perfetto::EventContext ctx) {
-                auto* info =
-                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                        ->set_chrome_latency_info();
-                info->set_trace_id(trace_id);
-                info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::
-                                   Step::STEP_HANDLE_INPUT_EVENT_MAIN);
-                tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                       trace_id);
+              [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
+                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                        STEP_HANDLE_INPUT_EVENT_MAIN);
               });
 
   ui::LatencyInfo swap_latency_info(coalesced_event.latency_info());

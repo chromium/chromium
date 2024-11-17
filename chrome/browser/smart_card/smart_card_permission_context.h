@@ -7,6 +7,8 @@
 
 #include <map>
 #include <set>
+#include <string>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -19,7 +21,10 @@ class Profile;
 
 namespace content {
 class RenderFrameHost;
-}
+}  // namespace content
+namespace settings {
+class SmartCardReaderPermissionsSiteSettingsHandlerTest;
+}  // namespace settings
 
 class SmartCardPermissionContext
     : public permissions::ObjectPermissionContextBase {
@@ -46,9 +51,28 @@ class SmartCardPermissionContext
   std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
 
   void RevokeEphemeralPermissions();
+  void RevokeAllPermissions();
+  void RevokePersistentPermission(const std::string& reader_name,
+                                  const url::Origin& origin);
+
+  struct ReaderGrants {
+    ReaderGrants(const std::string& reader_name,
+                 const std::vector<url::Origin>& origins);
+    ~ReaderGrants();
+
+    ReaderGrants(const ReaderGrants& other);
+    bool operator==(const ReaderGrants& other) const;
+
+    std::string reader_name;
+    std::vector<url::Origin> origins;
+  };
+
+  // Returns persistent grants, grouped by reader.
+  std::vector<ReaderGrants> GetPersistentReaderGrants();
 
  private:
   friend class SmartCardPermissionContextTest;
+  friend class settings::SmartCardReaderPermissionsSiteSettingsHandlerTest;
 
   class OneTimeObserver;
   class PowerSuspendObserver;

@@ -24,7 +24,6 @@ static_library("mako") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/webui/top_chrome",
     "//chromeos/ash/services/orca/public/mojom",
     "//chromeos/components/magic_boost/public/cpp",
@@ -46,9 +45,12 @@ static_library("mako") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/lobster",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/mako:resources",
+    "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/ash/lobster:lobster",
     "//chrome/common:mojo_bindings",
     "//chromeos/constants",
     "//components/input",
@@ -62,7 +64,10 @@ static_library("mako") {
     "//ui/display",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/input_method" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/lobster",
+  ]
 }
 
 source_set("unit_tests") {

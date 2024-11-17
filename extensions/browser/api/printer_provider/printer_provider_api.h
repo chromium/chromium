@@ -35,7 +35,8 @@ class PrinterProviderAPI : public KeyedService {
   using GetPrinterInfoCallback =
       base::OnceCallback<void(const base::Value::Dict printer_info)>;
 
-  static PrinterProviderAPI* Create(content::BrowserContext* context);
+  static std::unique_ptr<PrinterProviderAPI> Create(
+      content::BrowserContext* context);
 
   // Returns generic error string for print request.
   static std::string GetDefaultPrintError();

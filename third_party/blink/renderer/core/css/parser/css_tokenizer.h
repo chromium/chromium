@@ -115,7 +115,8 @@ class CORE_EXPORT CSSTokenizer {
   CSSParserToken BlockStart(CSSParserTokenType);
   CSSParserToken BlockStart(CSSParserTokenType block_type,
                             CSSParserTokenType,
-                            StringView);
+                            StringView,
+                            CSSValueID id);
   CSSParserToken BlockEnd(CSSParserTokenType, CSSParserTokenType start_type);
 
   CSSParserToken HyphenMinus(UChar);

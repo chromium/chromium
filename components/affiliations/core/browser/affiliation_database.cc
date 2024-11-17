@@ -189,10 +189,11 @@ bool AffiliationDatabase::Init(const base::FilePath& path) {
     }
   }
 
-  int64_t db_size;
-  if (base::GetFileSize(path, &db_size)) {
+  std::optional<int64_t> db_size = base::GetFileSize(path);
+  if (db_size.has_value()) {
     base::UmaHistogramMemoryKB(
-        "PasswordManager.AffiliationDatabase.DatabaseSize", db_size / 1024);
+        "PasswordManager.AffiliationDatabase.DatabaseSize",
+        db_size.value() / 1024);
   }
 
   return true;

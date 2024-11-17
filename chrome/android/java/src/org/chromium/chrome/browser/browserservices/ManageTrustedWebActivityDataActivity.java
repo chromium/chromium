@@ -12,10 +12,8 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 /**
@@ -52,15 +50,13 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
             finish();
             return;
         }
-        new TrustedWebActivityUmaRecorder(
-                        ChromeBrowserInitializer.getInstance()::runNowOrAfterFullBrowserStarted)
-                .recordOpenedSettingsViaManageSpace();
+        TrustedWebActivityUmaRecorder.recordOpenedSettingsViaManageSpace();
 
         if (isWebApk) {
-            TrustedWebActivitySettingsLauncher.launchForWebApkPackageName(
+            TrustedWebActivitySettingsNavigation.launchForWebApkPackageName(
                     this, packageName, urlToLaunchSettingsFor);
         } else {
-            TrustedWebActivitySettingsLauncher.launchForPackageName(this, packageName);
+            TrustedWebActivitySettingsNavigation.launchForPackageName(this, packageName);
         }
     }
 
@@ -82,9 +78,7 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
             return null;
         }
 
-        CustomTabsConnection connection =
-                ChromeApplicationImpl.getComponent().resolveCustomTabsConnection();
-        return connection.getClientPackageNameForSession(session);
+        return CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
     }
 
     private void logNoPackageName() {

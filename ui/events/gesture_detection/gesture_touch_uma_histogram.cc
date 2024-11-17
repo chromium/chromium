@@ -96,8 +96,7 @@ UMAEventType GestureTouchUMAHistogram::UMAEventTypeFromEvent(
         return UMA_ET_GESTURE_DOUBLE_TAP;
       if (tap_count == 3)
         return UMA_ET_GESTURE_TRIPLE_TAP;
-      NOTREACHED_IN_MIGRATION() << "Received tap with tapcount " << tap_count;
-      return UMA_ET_UNKNOWN;
+      NOTREACHED() << "Received tap with tapcount " << tap_count;
     }
     case EventType::kGestureTapDown:
       return UMA_ET_GESTURE_TAP_DOWN;
@@ -150,8 +149,7 @@ UMAEventType GestureTouchUMAHistogram::UMAEventTypeFromEvent(
     case EventType::kGestureDoubleTap:
       return UMA_ET_GESTURE_DOUBLE_TAP;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return UMA_ET_UNKNOWN;
+      NOTREACHED();
   }
 }
 

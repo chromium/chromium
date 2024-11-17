@@ -59,6 +59,12 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="kCLErrorHistoricalLocationError"/>
 </enum>
 
+<enum name="CoreLocationSessionResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kCoreLocationError"/>
+  <int value="2" label="kWifiDisabled"/>
+</enum>
+
 <enum name="GeolocationClientId">
   <int value="0" label="kForTesting"/>
   <int value="1" label="kGeolocationServiceImpl"/>
@@ -94,14 +100,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kAllowed"/>
 </enum>
 
-<enum name="NetworkLocationRequestEvent">
-  <int value="0" label="REQUEST_START"/>
-  <int value="1" label="REQUEST_CANCEL"/>
-  <int value="2" label="RESPONSE_SUCCESS"/>
-  <int value="3" label="RESPONSE_NOT_OK"/>
-  <int value="4" label="RESPONSE_EMPTY"/>
-  <int value="5" label="RESPONSE_MALFORMED"/>
-  <int value="6" label="RESPONSE_INVALID_FIX"/>
+<enum name="NetworkLocationRequestResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kCanceled"/>
+  <int value="2" label="kNetworkError"/>
+  <int value="3" label="kResponseNotOk"/>
+  <int value="4" label="kResponseEmpty"/>
+  <int value="5" label="kResponseMalformed"/>
+  <int value="6" label="kInvalidPosition"/>
 </enum>
 
 <enum name="NetworkLocationRequestSource">

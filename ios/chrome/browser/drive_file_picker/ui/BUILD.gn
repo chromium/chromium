@@ -4,7 +4,11 @@
 
 source_set("ui") {
   sources = [
+    "drive_file_picker_cell_content_configuration.h",
+    "drive_file_picker_cell_content_configuration.mm",
     "drive_file_picker_consumer.h",
+    "drive_file_picker_empty_view.h",
+    "drive_file_picker_empty_view.mm",
     "drive_file_picker_item.h",
     "drive_file_picker_item.mm",
     "drive_file_picker_mutator.h",
@@ -13,15 +17,12 @@ source_set("ui") {
     "drive_file_picker_table_view_controller.h",
     "drive_file_picker_table_view_controller.mm",
     "drive_file_picker_table_view_controller_delegate.h",
-    "root_drive_file_picker_table_view_controller.h",
-    "root_drive_file_picker_table_view_controller.mm",
   ]
   deps = [
     ":alert_utils",
     ":constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -30,7 +31,9 @@ source_set("ui") {
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/settings/password:title_view",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/font:font_api",
   ]
 }
 
@@ -46,5 +49,10 @@ source_set("alert_utils") {
     "drive_file_picker_alert_utils.h",
     "drive_file_picker_alert_utils.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/strings:components_strings",
+    "//ios/chrome/app/strings",
+    "//ui/base",
+  ]
 }

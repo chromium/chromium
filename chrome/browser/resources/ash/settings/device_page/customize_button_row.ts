@@ -10,21 +10,22 @@ import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
 import '../os_settings_icons.html.js';
 
-import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ButtonPressObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 
 import {getTemplate} from './customize_button_row.html.js';
-import {CustomizeButtonSelectElement} from './customize_button_select.js';
+import type {CustomizeButtonSelectElement} from './customize_button_select.js';
 import {setDataTransferOriginIndex} from './drag_and_drop_manager.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface, MetaKey} from './input_device_settings_types.js';
+import type {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
+import {MetaKey} from './input_device_settings_types.js';
 import {buttonsAreEqual} from './input_device_settings_utils.js';
 
 export interface CustomizeButtonRowElement {

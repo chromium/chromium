@@ -9,17 +9,14 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class PrerenderService;
+class ProfileIOS;
 
 // Singleton that creates the PrerenderService and associates that service with
 // profile.
 class PrerenderServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static PrerenderService* GetForBrowserState(ProfileIOS* profile);
-
   static PrerenderService* GetForProfile(ProfileIOS* profile);
   static PrerenderServiceFactory* GetInstance();
 

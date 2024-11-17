@@ -115,8 +115,7 @@ SkImageInfo SharedImageBacking::AsSkImageInfo(int plane_index) const {
 }
 
 bool SharedImageBacking::CopyToGpuMemoryBuffer() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void SharedImageBacking::CopyToGpuMemoryBufferAsync(
@@ -128,14 +127,12 @@ void SharedImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
 
 bool SharedImageBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SharedImageBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void SharedImageBacking::ReadbackToMemoryAsync(
@@ -491,8 +488,7 @@ gfx::GpuMemoryBufferHandle SharedImageBacking::GetGpuMemoryBufferHandle() {
   // Reaching here is invalid since this method should be only called for
   // backings which implements it,i.e., memory buffer handle should only be
   // retrieved from the backings which supports native buffer or shared memory.
-  NOTREACHED_IN_MIGRATION();
-  return gfx::GpuMemoryBufferHandle();
+  NOTREACHED();
 }
 
 bool SharedImageBacking::IsPurgeable() const {

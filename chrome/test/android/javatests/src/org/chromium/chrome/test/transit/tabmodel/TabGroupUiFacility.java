@@ -34,12 +34,7 @@ public class TabGroupUiFacility<HostStationT extends PageStation> extends Facili
     private final List<Integer> mTabIds;
     private Supplier<View> mTabGroupUiToolbarView;
 
-    /**
-     * Create facility with expected tab Ids in the group.
-     *
-     * @param tabModelSelectorSupplier
-     * @param tabIds
-     */
+    /** Create facility with expected tab Ids in the group. */
     public TabGroupUiFacility(
             Supplier<TabModelSelector> tabModelSelectorSupplier, List<Integer> tabIds) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -48,11 +43,7 @@ public class TabGroupUiFacility<HostStationT extends PageStation> extends Facili
         assert mTabIds.size() >= 1 : "Expect at least one tabId.";
     }
 
-    /**
-     * Create facility with unknown tab ids.
-     *
-     * @param tabModelSelectorSupplier
-     */
+    /** Create facility with unknown tab ids. */
     public TabGroupUiFacility(Supplier<TabModelSelector> tabModelSelectorSupplier) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mTabIds = List.of();

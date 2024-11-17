@@ -53,10 +53,9 @@ TEST(SharedBufferBytesConsumerTest, Cancel) {
   EXPECT_EQ(PublicState::kReadableOrWaiting, bytes_consumer->GetPublicState());
 
   bytes_consumer->Cancel();
-  const char* buffer;
-  size_t available;
-  BytesConsumer::Result result = bytes_consumer->BeginRead(&buffer, &available);
-  EXPECT_EQ(0u, available);
+  base::span<const char> buffer;
+  BytesConsumer::Result result = bytes_consumer->BeginRead(buffer);
+  EXPECT_EQ(0u, buffer.size());
   EXPECT_EQ(BytesConsumer::Result::kDone, result);
   EXPECT_EQ(PublicState::kClosed, bytes_consumer->GetPublicState());
 }

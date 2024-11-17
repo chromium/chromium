@@ -48,8 +48,6 @@ public final class RadioButtonGroupThirdPartyPreference extends Preference {
      * If the buttons aren't available yet, the selected option will have an effect during binding.
      * This method invokes change listeners if the selected option changes and it is a noop if the
      * option is unchanged.
-     *
-     * @return A {@link ThirdPartyOption}
      */
     void setSelectedOption(@ThirdPartyOption int selectedOption) {
         if (mDefaultOption != null) {

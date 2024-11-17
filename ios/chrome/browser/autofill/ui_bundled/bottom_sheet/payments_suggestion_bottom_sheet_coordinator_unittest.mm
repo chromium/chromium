@@ -44,16 +44,14 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
                               ios::WebDataServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
     // Set circular SyncService dependency to null.
     personal_data_manager->SetSyncServiceForTest(nullptr);
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     window_ = [[UIWindow alloc] init];
     window_.rootViewController = [[UIViewController alloc] init];
@@ -127,9 +125,6 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
 // Test that using the primary button logs the correct exit reason when a
 // virtual card is used
 TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      autofill::features::kAutofillEnableVirtualCards);
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];

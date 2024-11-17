@@ -11,11 +11,11 @@
 
 namespace autofill {
 
-int FindShortestSubstringMatchInSelect(
+std::optional<size_t> FindShortestSubstringMatchInSelect(
     const std::u16string& value,
     bool ignore_whitespace,
     base::span<const SelectOption> field_options) {
-  int best_match = -1;
+  std::optional<size_t> best_match;
 
   std::u16string value_stripped =
       ignore_whitespace ? RemoveWhitespace(value) : value;
@@ -29,8 +29,9 @@ int FindShortestSubstringMatchInSelect(
         ignore_whitespace ? RemoveWhitespace(option.text) : option.text;
     if (searcher.Search(option_value, nullptr, nullptr) ||
         searcher.Search(option_text, nullptr, nullptr)) {
-      if (best_match == -1 ||
-          field_options[best_match].value.size() > option.value.size()) {
+      if (!best_match.has_value() ||
+          field_options[best_match.value()].value.size() >
+              option.value.size()) {
         best_match = i;
       }
     }
@@ -84,10 +85,9 @@ std::optional<std::u16string> GetSelectControlValueSubstringMatch(
     bool ignore_whitespace,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
-  if (int best_match = FindShortestSubstringMatchInSelect(
-          value, ignore_whitespace, field_options);
-      best_match >= 0) {
-    return field_options[best_match].value;
+  if (auto best_match = FindShortestSubstringMatchInSelect(
+          value, ignore_whitespace, field_options)) {
+    return field_options[best_match.value()].value;
   }
 
   if (failure_to_fill) {

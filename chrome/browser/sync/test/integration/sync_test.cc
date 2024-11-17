@@ -140,8 +140,9 @@ void SetURLLoaderFactoryForTest(
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   account_manager::AccountManager* account_manager =
       MaybeGetAshAccountManagerForTests();
-  if (account_manager)
+  if (account_manager) {
     account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -193,19 +194,6 @@ SyncTest::SyncTest(TestType test_type)
       num_clients_ = 2;
       break;
     }
-  }
-
-  std::vector<base::test::FeatureRefAndParams> enabled_features;
-  if (num_clients_ > 1) {
-    // Workaround to turn off single client optimization for sync standalone
-    // invalidations in tests.
-    // TODO(crbug.com/40908214): Remove once resolved.
-    enabled_features.push_back(
-        {switches::kSyncFilterOutInactiveDevicesForSingleClient,
-         {{switches::kSyncActiveDeviceMargin.name, "-2d"}}});
-  }
-  if (!enabled_features.empty()) {
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -268,8 +256,14 @@ void SyncTest::PostRunTestOnMainThread() {
   PlatformBrowserTest::PostRunTestOnMainThread();
 
 #if BUILDFLAG(IS_ANDROID)
-  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    sync_test_utils_android::TearDownFakeAuthForTesting();
+  // TODO(crbug.com/368091420): Consider moving into SyncSigninDelegateAndroid.
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER:
+      sync_test_utils_android::ShutdownLiveAuthForTesting();
+      break;
+    case IN_PROCESS_FAKE_SERVER:
+      sync_test_utils_android::TearDownFakeAuthForTesting();
+      break;
   }
 #endif
 }
@@ -291,6 +285,14 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
   if (!cl->HasSwitch(
           switches::kBypassAccountAlreadyUsedByAnotherProfileCheck)) {
     cl->AppendSwitch(switches::kBypassAccountAlreadyUsedByAnotherProfileCheck);
+  }
+
+  if (server_type_ == EXTERNAL_LIVE_SERVER &&
+      !cl->HasSwitch(switches::kDisableSyncInvalidationOptimizations)) {
+    // This flag is required because multiple devices in tests become active at
+    // the same time, and they may populate a single client optimization flag
+    // incorrectly resulting in missed invalidations.
+    cl->AppendSwitch(switches::kDisableSyncInvalidationOptimizations);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -656,8 +658,8 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
 #if BUILDFLAG(IS_ANDROID)
   // For Android, currently the framework only supports one client.
   // The client uses the default profile.
-  DCHECK(num_clients_ == 1) << "For Android, currently it only supports "
-                            << "one client.";
+  CHECK(num_clients_ == 1)
+      << "For Android, currently it only supports one client.";
 #endif
 
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -743,7 +745,6 @@ void SyncTest::TearDownOnMainThread() {
              .action = syncer::DISABLE_SYNC_ON_CLIENT});
       }
 #endif  // BUILDFLAG(IS_ANDROID)
-
     }
   }
 
@@ -1077,13 +1078,9 @@ void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
   syncer::DataTypeSet types_to_check = service->GetRegisteredDataTypesForTest();
   types_to_check.RemoveAll(excluded_types_from_check_for_data_type_failures_);
 
-  if (service->HasAnyDatatypeErrorForTest(types_to_check)) {
-    ADD_FAILURE() << "Data types failed during tests: "
-                  << GetClient(client_index)
-                         ->service()
-                         ->GetTypeStatusMapForDebugging()
-                         .DebugString();
-  }
+  ASSERT_FALSE(service->HasAnyModelErrorForTest(types_to_check))
+      << " for client " << client_index << " and types "
+      << syncer::DataTypeSetToDebugString(types_to_check);
 }
 
 void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
@@ -1128,8 +1125,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
   }
 
-  bool allow_passwords = base::FeatureList::IsEnabled(
-      syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
+  bool allow_passwords = true;
 #if !BUILDFLAG(IS_ANDROID)
   // This is an approximation because passwords are only enabled if the signin
   // is explicit (they are not enabled for users who signed in through Dice).

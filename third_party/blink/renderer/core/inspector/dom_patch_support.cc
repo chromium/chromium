@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/inspector/dom_patch_support.h"
 
 #include "base/memory/scoped_refptr.h"
@@ -129,7 +124,7 @@ Node* DOMPatchSupport::PatchNode(Node* node,
   if (IsA<HTMLDocument>(GetDocument()))
     fragment->ParseHTML(markup, target_element);
   else
-    fragment->ParseXML(markup, target_element);
+    fragment->ParseXML(markup, target_element, IGNORE_EXCEPTION);
 
   // Compose the old list.
   ContainerNode* parent_node = node->parentNode();
@@ -441,8 +436,7 @@ DOMPatchSupport::Digest* DOMPatchSupport::CreateDigest(
   DigestValue digest_result;
 
   Node::NodeType node_type = node->getNodeType();
-  digestor.Update(
-      {reinterpret_cast<const uint8_t*>(&node_type), sizeof(node_type)});
+  digestor.Update(base::byte_span_from_ref(node_type));
   digestor.UpdateUtf8(node->nodeName());
   digestor.UpdateUtf8(node->nodeValue());
 

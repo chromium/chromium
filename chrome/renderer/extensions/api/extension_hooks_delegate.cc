@@ -57,7 +57,8 @@ void GetAliasedFeature(v8::Local<v8::Name> property_name,
                        const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.Holder()->GetCreationContextChecked(isolate);
 
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Value> chrome;
@@ -298,9 +299,8 @@ APIBindingHooks::RequestResult ExtensionHooksDelegate::HandleGetViews(
     if (!options_dict.Get("windowId", &v8_window_id) ||
         !options_dict.Get("tabId", &v8_tab_id) ||
         !options_dict.Get("type", &v8_view_type)) {
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Unexpected exception: argument parsing produces plain objects";
-      return RequestResult(RequestResult::THROWN);
     }
 
     if (!v8_window_id->IsUndefined()) {

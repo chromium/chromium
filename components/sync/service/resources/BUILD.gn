@@ -33,13 +33,13 @@ build_webui("build") {
 
   ts_composite = true
   ts_deps = [
+    "//third_party/jstemplate:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
-    "jstemplate.d.ts",
   ]
 
   webui_context_type = "trusted"

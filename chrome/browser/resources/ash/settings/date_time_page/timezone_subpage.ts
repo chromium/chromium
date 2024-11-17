@@ -23,14 +23,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import type {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
-import {Route, routes} from '../router.js';
+import {type Route, routes} from '../router.js';
 
-import {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
+import {DateTimeBrowserProxy, type DateTimePageCallbackRouter, type DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
-import {TimezoneSelectorElement} from './timezone_selector.js';
+import type {TimezoneSelectorElement} from './timezone_selector.js';
 import {getTemplate} from './timezone_subpage.html.js';
 
 export interface TimezoneSubpageElement {

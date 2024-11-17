@@ -5,6 +5,7 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile.h"
@@ -121,11 +122,12 @@ class BitmapFetcherBrowserTest : public InProcessBrowserTest {
     std::unique_ptr<BasicHttpResponse> response(new BasicHttpResponse);
     if (request.relative_url == kStartTestURL) {
       // Encode the bits as a PNG.
-      std::vector<unsigned char> compressed;
-      gfx::PNGCodec::EncodeBGRASkBitmap(test_bitmap(), true, &compressed);
+      std::optional<std::vector<uint8_t>> compressed =
+          gfx::PNGCodec::EncodeBGRASkBitmap(test_bitmap(),
+                                            /*discard_transparency=*/true);
       // Copy the bits into a string and return them through the embedded
-      // test server
-      std::string image_string(compressed.begin(), compressed.end());
+      // test server.
+      std::string image_string(base::as_string_view(compressed.value()));
       response->set_code(net::HTTP_OK);
       response->set_content(image_string);
     } else if (request.relative_url == kOnImageDecodedTestURL) {

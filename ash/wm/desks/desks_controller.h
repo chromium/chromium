@@ -256,6 +256,15 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
                                   aura::Window* target_root,
                                   DesksMoveWindowFromActiveDeskSource source);
 
+  // Similar function to `MoveWindowFromActiveDeskTo`. Instead of moving the
+  // window from the active desk, it moves window from the desk with the give
+  // `index`;
+  bool MoveWindowFromDeskAtIndexTo(aura::Window* window,
+                                   size_t index,
+                                   Desk* target_desk,
+                                   aura::Window* target_root,
+                                   DesksMoveWindowFromActiveDeskSource source);
+
   // Adds |window| to |visible_on_all_desks_windows_|.
   void AddVisibleOnAllDesksWindow(aura::Window* window);
 
@@ -320,6 +329,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   // chromeos::DesksHelper:
   bool BelongsToActiveDesk(aura::Window* window) override;
+  bool BelongsToDesk(aura::Window* window, size_t index) override;
   int GetActiveDeskIndex() const override;
   std::u16string GetDeskName(int index) const override;
   int GetNumberOfDesks() const override;
@@ -341,6 +351,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   Desk* CreateNewDeskForSavedDesk(
       DeskTemplateType template_type,
       const std::u16string& customized_desk_name = std::u16string());
+
+  // Creates a new desk for the Coral group and activates it.
+  Desk* CreateNewDeskForCoralGroup(
+      const std::u16string& coral_desk_name = std::u16string());
 
   // Called when an app with `app_id` is a single instance app which is about to
   // get launched from a saved desk. Moves the existing app instance to the
@@ -513,6 +527,14 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Reports custom desk name metrics for the number of desks with custom names
   // and the percentage of the user's desks with custom names.
   void ReportCustomDeskNames() const;
+
+  // The internal function that moves `window` from `source_desk` to
+  // `target_desk`
+  bool MoveWindowFromSourceDeskTo(aura::Window* window,
+                                  Desk* source_desk,
+                                  Desk* target_desk,
+                                  aura::Window* target_root,
+                                  DesksMoveWindowFromActiveDeskSource source);
 
   static base::TimeDelta GetCloseAllWindowCloseTimeoutForTest();
   static base::AutoReset<base::TimeDelta> SetCloseAllWindowCloseTimeoutForTest(

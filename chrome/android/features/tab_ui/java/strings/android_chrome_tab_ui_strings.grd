@@ -173,15 +173,6 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <!-- In-Product Help strings -->
-      <message name="IDS_IPH_TAB_GROUPS_QUICKLY_COMPARE_PAGES_TEXT" desc="When Chrome detects that the user is searching or comparing multiple pages (e.g. while comparison shopping), this in-product help text appears at the bottom of the screen. The text informs the user that they can longpress on a link to open it as a new tab within a tab group.">
-        Quickly compare pages by making a group. To start, touch &amp; hold a link.
-      </message>
-      <message name="IDS_IPH_TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_TEXT" desc="This in-product help text points to the strip of favicons at the bottom of the page. The favicons indicate all the open tabs within the tab group. The text informs the user that they can tap on any favicon to switch to that tab.">
-        Tap to see another tab
-      </message>
-      <message name="IDS_IPH_TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_ACCESSIBILITY_TEXT" desc="This in-product help accessibility text points to the strip of favicons at the bottom of the page. The favicons indicate all the open tabs within the tab group. The text informs the user that they can tap on any favicon to switch to that tab.">
-        Switch between tabs in your tab group near bottom of screen
-      </message>
       <message name="IDS_IPH_TAB_SWITCHER_FLOATING_ACTION_BUTTON" desc="This in-product help points to the new location of the new tab button which floats atop the tabs rather than being located in the toolbar. The text informs users they can use the button to open new tabs.">
         You can now open a new tab here
       </message>
@@ -211,6 +202,9 @@
       <message name="IDS_TAB_GRID_SHARE_BUTTON_TEXT" desc="Text for sharing the current tab group from the tab group dialog toolbar.">
         Share
       </message>
+      <message name="IDS_TAB_GRID_MANAGE_BUTTON_TEXT" desc="Text for managing the sharing of the current tab group from the tab group dialog toolbar.">
+        Manage
+      </message>
 
       <!-- Bottom Tab Strip strings -->
       <message name="IDS_ACCESSIBILITY_BOTTOM_TAB_STRIP_EXPAND_TAB_SHEET" desc="Accessibility string for BottomTabStripToolbar button indicated visually by the '^' sign.">
@@ -220,18 +214,6 @@
       <!-- Tab Group Tab Switcher strings -->
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER" desc="Accessibility string for Tab Switcher view. This string is announced when the Tab Switcher is shown to screen.">
         Tab Switcher
-      </message>
-      <message name="IDS_ACCESSIBILITY_CLOSE_TAB_GROUP_BUTTON" desc="The accessibility text to read when the close button on a card representing a tab group is focused in grid tab switcher. When this close button is tapped, all tabs within the tab group will be closed. NUMBER_OF_TABS is the number of tabs within this group.">
-        {NUMBER_OF_TABS, plural,
-          =1 {Close tab group with <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab.}
-          other {Close tab group with <ph name="TABS_COUNT_MANY">%1$d<ex>2</ex></ph> tabs.}
-        }
-      </message>
-      <message name="IDS_ACCESSIBILITY_CLOSE_TAB_GROUP_BUTTON_WITH_GROUP_NAME" desc="The accessibility text to read when the close button on a card representing a tab group is focused in grid tab switcher. When this close button is tapped, all tabs within the tab group will be closed. TITLE_OF_GROUP is the title of the group. NUMBER_OF_TABS is the number of tabs within this group.">
-        {NUMBER_OF_TABS, plural,
-          =1 {Close <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> group with <ph name="TABS_COUNT_ONE">%2$d<ex>1</ex></ph> tab.}
-          other {Close <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> group with <ph name="TABS_COUNT_MANY">%2$d<ex>2</ex></ph> tabs.}
-        }
       </message>
 
       <!-- Tab Selection Editor strings -->
@@ -405,18 +387,6 @@
       </message>
 
       <!-- Tab Grid Dialog accessibility strings -->
-      <message name="IDS_ACCESSIBILITY_EXPAND_TAB_GROUP" desc="The accessibility text to read when a card representing a tab group is clicked in grid tab switcher. NUMBER_OF_TABS is the number of tabs within this group.">
-        {NUMBER_OF_TABS, plural,
-          =1 {Expand tab group with <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab.}
-          other {Expand tab group with <ph name="TABS_COUNT_MANY">%1$d<ex>2</ex></ph> tabs.}
-        }
-      </message>
-      <message name="IDS_ACCESSIBILITY_EXPAND_TAB_GROUP_WITH_GROUP_NAME" desc="The accessibility text to read when a card representing a tab group is clicked in grid tab switcher. TITLE_OF_GROUP is the title of the group. NUMBER_OF_TABS is the number of tabs within this group.">
-        {NUMBER_OF_TABS, plural,
-          =1 {Expand <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph> tab group with <ph name="TABS_COUNT_ONE">%2$d<ex>1</ex></ph> tab.}
-          other {Expand <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph> tab group with <ph name="TABS_COUNT_MANY">%2$d<ex>2</ex></ph> tabs.}
-        }
-      </message>
       <message name="IDS_ACCESSIBILITY_DIALOG_BACK_BUTTON" desc="The accessibility text to read when the back button in the dialog is focused. When this button is tapped, the dialog will be hidden. NUMBER_OF_TABS is the number of tabs within this group. Note that after collapsing with one tab, that group becomes a tab.">
         {TABS_COUNT, plural,
           =1 {Collapse <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab.}
@@ -500,20 +470,6 @@
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_PRICE_CARD" desc="This accessibility text is read when the Tab with a price drop annotation is selected." is_accessibility_with_no_ui="true">
         The price of this item recently dropped from <ph name="PREVIOUS_PRICE">%1$s<ex>$42</ex></ph> to <ph name="NEW_PRICE">%2$s<ex>$30</ex></ph>
-      </message>
-
-      <!-- Price Alerts Card strings -->
-      <message name="IDS_PRICE_DROP_ALERTS_CARD_TITLE" desc="This text shows on the price drop alerts message card if any item in the open tabs has a price drop. It familiarizes users with the feature getting price drop alerts.">
-        Get alerts for price drops?
-      </message>
-      <message name="IDS_PRICE_DROP_ALERTS_CARD_GET_NOTIFIED_CONTENT" desc="This text shows below 'Get alerts for price drops?'. It describes what will happen when clicking 'Get notified' button.">
-        You'll get an alert when there's a lower price in an open tab
-      </message>
-      <message name="IDS_PRICE_DROP_ALERTS_CARD_GET_NOTIFIED" desc="This text button shows below 'Get alerts for price drops?'. When user clicks on the text button, the price drop notifications feature will be turned on.">
-        Get notified
-      </message>
-      <message name="IDS_PRICE_DROP_ALERTS_CARD_GO_TO_SETTINGS_CONTENT" desc="This text shows below 'Get alerts for price drops?'. It asks users to turn on notifications in Android settings to get the price drop notifications.">
-        To get an alert when there's a lower price in an open tab, turn on notifications in Settings.
       </message>
 
       <!-- Price Tracking Settings Dialog strings -->
@@ -763,9 +719,6 @@
       <message name="IDS_DELETE_TAB_GROUP_NO_SYNC_DESCRIPTION" desc="Description of the action of deleting a tab group, shown in a confirmation dialog.">
         This will permanently delete the group from your device
       </message>
-      <message name="IDS_CONFIRMATION_STOP_SHOWING" desc="Text next to a checkbox asking if confirmation should not be shown again. Used for various tab operations.">
-        Don&apos;t ask again
-      </message>
       <message name="IDS_DELETE_TAB_GROUP_ACTION" desc="Button text in a confirmation dialog which will delete a tab group.">
         Delete group
       </message>
@@ -802,6 +755,12 @@
       <message name="IDS_OPEN_NEW_TAB_IN_GROUP_CONTEXT_MENU_ITEM" desc="Menu item text which will be display for tab group context menu on strip to allow opening a new tab in the tab group.">
         New tab in group
       </message>
+      <message name="IDS_SHARE_TAB_GROUP_CONTEXT_MENU_ITEM" desc="Menu item text which will be display for tab group context menu on strip to allow sharing a tab group.">
+        Share group
+      </message>
+      <message name="IDS_SHARE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will be displayed for the tab group context menu in the grid tab switcher to share the tab group. Intentionally shorter than IDS_SHARE_TAB_GROUP_CONTEXT_MENU_ITEM.">
+        Share
+      </message>
       <message name="IDS_TAB_GROUP_RENAME_DIALOG_TITLE" desc="When users edit an existing tab group, a dialog will pop up and this text is the title of that dialog. [CHAR_LIMIT=24]">
         Rename tab group
       </message>
@@ -830,6 +789,24 @@
       </message>
       <message name="IDS_CLOSE_FROM_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to close a tab and group.">
         Close tab and delete group?
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking the user if they want to keep the tab group.">
+        Keep tab group?
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_OWNER" desc="Main text content of a dialog asking the owner of a shared group if they want to keep it. The &#10; is a newline character to force formatting.">
+        Keep this group to add tabs later, or delete it if you no longer need it.&#10;&#10;If you delete it, everyone will immediately lose access to the "<ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>" tab group, and it will be deleted from all devices.
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_MEMBER" desc="Main text content of a dialog asking a member of a shared group if they want to keep it or leave. The &#10; is a newline character to force formatting.">
+        Keep this group to add tabs later, or leave.&#10;&#10;If you leave, you will immediately lose access to the "<ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>" tab group.
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_KEEP_ACTION" desc="Action button to keep the tab group in the keep group dialog.">
+        Keep group
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DELETE_ACTION" desc="Action button for the owner of a group to delete the tab group in the keep group dialog.">
+        Delete group
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_LEAVE_ACTION" desc="Action button for a member of a group to leave the tab group in the keep group dialog.">
+        Leave group
       </message>
       <message name="IDS_CLOSE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to close a tab group.">
         Close

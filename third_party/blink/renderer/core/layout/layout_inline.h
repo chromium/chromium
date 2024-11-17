@@ -196,8 +196,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   }
   void UpdateShouldCreateBoxFragment();
 
-  PhysicalRect LocalCaretRect(int, LayoutUnit* extra_width_to_end_of_line)
-      const final;
+  PhysicalRect LocalCaretRect(int) const final;
 
   // When this LayoutInline doesn't generate line boxes of its own, regenerate
   // the rects of the line boxes and hit test the rects.
@@ -215,9 +214,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   PhysicalRect AbsoluteBoundingBoxRectHandlingEmptyInline(
       MapCoordinatesFlags = 0) const final;
-
-  PhysicalRect VisualRectInDocument(
-      VisualRectFlags = kDefaultVisualRectFlags) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -307,12 +303,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   LayoutUnit OffsetTop(const Element*) const final;
   LayoutUnit OffsetWidth() const final;
   LayoutUnit OffsetHeight() const final;
-
-  // This method differs from VisualOverflowRect() in that
-  // 1. it doesn't include the rects for culled inline boxes, which aren't
-  //    necessary for paint invalidation;
-  // 2. it is in physical coordinates.
-  PhysicalRect LocalVisualRectIgnoringVisibility() const override;
 
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,

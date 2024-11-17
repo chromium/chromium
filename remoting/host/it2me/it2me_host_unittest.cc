@@ -387,7 +387,7 @@ void It2MeHostTest::StartHost() {
     it2me_host_->set_chrome_os_enterprise_params(*enterprise_params_);
   }
   if (authorized_helper_.has_value()) {
-    it2me_host_->set_authorized_helper(authorized_helper_.value());
+    it2me_host_->set_authorized_helper(*authorized_helper_);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -916,13 +916,13 @@ TEST_F(It2MeHostTest, TerminateUponInputDefaultsToFalse) {
 TEST_F(It2MeHostTest, ConnectRespectsEnableCurtainingParameter) {
   StartHost(ChromeOsEnterpriseParams{.curtain_local_user_session = true});
 
-  EXPECT_TRUE(GetHost()->desktop_environment_options().enable_curtaining());
+  EXPECT_TRUE(*get_local_session_policies().curtain_required);
 }
 
 TEST_F(It2MeHostTest, EnableCurtainingDefaultsToFalse) {
   StartHost(/*enterprise_params=*/std::nullopt);
 
-  EXPECT_FALSE(GetHost()->desktop_environment_options().enable_curtaining());
+  EXPECT_FALSE(get_local_session_policies().curtain_required.has_value());
 }
 
 TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyEnabled) {

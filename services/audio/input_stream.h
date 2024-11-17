@@ -31,7 +31,6 @@ class AudioParameters;
 namespace audio {
 class DeviceOutputListener;
 class InputSyncWriter;
-class UserInputMonitor;
 
 class InputStream final : public media::mojom::AudioInputStream,
                           public InputController::EventHandler {
@@ -51,7 +50,6 @@ class InputStream final : public media::mojom::AudioInputStream,
       mojo::PendingRemote<media::mojom::AudioLog> log,
       media::AudioManager* manager,
       media::AecdumpRecordingManager* aecdump_recording_manager,
-      std::unique_ptr<UserInputMonitor> user_input_monitor,
       DeviceOutputListener* device_output_listener,
       media::mojom::AudioProcessingConfigPtr processing_config,
       const std::string& device_id,
@@ -103,7 +101,6 @@ class InputStream final : public media::mojom::AudioInputStream,
   base::CancelableSyncSocket foreign_socket_;
   const std::unique_ptr<InputSyncWriter> writer_;
   std::unique_ptr<InputController> controller_;
-  const std::unique_ptr<UserInputMonitor> user_input_monitor_;
 
   base::WeakPtrFactory<InputStream> weak_factory_{this};
 };

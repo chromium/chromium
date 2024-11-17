@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Սովորական</translation>
 <translation id="1591562245178063882">Այս ամիս</translation>
 <translation id="1637811476055996098">Ընտրել ֆայլեր</translation>
-<translation id="1680090928918677457">Օգտագործել տեսախցիկը</translation>
 <translation id="1729654308190250600">Էլփոստի հասցեի տողը չպետք է դատարկ լինի:</translation>
 <translation id="1758486001363313524">Այլ…</translation>
 <translation id="1921819250265091946">օօ</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Կրճատեք այս տեքստը մինչև <ph name="MAX_CHARACTERS" /> գրանշան կամ ավելի քիչ (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="2247351761944213033">Շաբաթ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Կատարում <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Տեսախցիկի ու խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="2507943997699731163">Խնդրում ենք լրացնել այս դաշտը:</translation>
 <translation id="2613802280814924224">Մուտքագրեք ճիշտ արժեք: Ամենամոտ ճիշտ արժեքը <ph name="VALID_VALUE" />-ն է:</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Ընդլայնեք այս տեքստը մինչև <ph name="MIN_CHARACTERS" /> կամ ավելի գրանշան (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
 <translation id="383465348367842624">«<ph name="ATSIGN" />»-ին հետևող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
 <translation id="3846214748874656680">Դուք գալ լիաէկրան ռեժիմից</translation>
-<translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4360991593054037559">Մուտքագրեք ճիշտ արժեք: Մոտակա երկու ճիշտ արժեքներն են՝ <ph name="VALID_VALUE_LOW" /> և <ph name="VALID_VALUE_HIGHER" />:</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
-<translation id="4663373278480897665">Տեսախցիկի օգտագործումը թույլատրված է</translation>
 <translation id="4664250907885839816">«<ph name="ATSIGN" />»-ին հաջորդող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
 <translation id="4718048029184481307">Նվագարկվում է «նկար նկարի մեջ» ռեժիմում</translation>
-<translation id="4792862212177489858">Հասանելի դարձնել տեղադրության տվյալները</translation>
 <translation id="4812940957355064477">Մուտքագրեք համար:</translation>
-<translation id="49269513399674318">Օգտագործել խոսափողը</translation>
 <translation id="4975562563186953947">Ընտրված է՝ <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Միացնել ձայնը</translation>
 <translation id="49969490063480558">Մուտքագրեք «<ph name="ATSIGN" />» նշանին հաջորդող մասը: «<ph name="INVALIDADDRESS" />» հասցեն թերի է:</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Չհաջողվեց բեռնել փլագինը:</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Տեքստը <ph name="MIN_CHARACTERS" /> գրանշանից պակաս չի կարող լինել (ներկայումս 1 գրանշան է)։</translation>
-<translation id="7080893216867146095">Տեղադրության մասին տվյալների փոխանցումը թույլատրված է</translation>
 <translation id="709897737746224366">Հետևեք պահանջված ձևաչափին:</translation>
-<translation id="7134810312945846184">Օգտագործել խոսափողը և տեսախցիկը</translation>
 <translation id="7263440858009898357">Ցանկից որևէ միավոր ընտրեք:</translation>
 <translation id="7364796246159120393">Ընտրել ֆայլ</translation>
 <translation id="739024184232394898">Այլ…</translation>

@@ -392,8 +392,7 @@ class ArcVmmManager::AcceleratorTarget : public ui::AcceleratorTarget {
       DVLOG(1) << "Set diable vmm swap state by keyboard shortcut.";
       manager_->SetSwapState(SwapState::DISABLE);
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     return true;
   }

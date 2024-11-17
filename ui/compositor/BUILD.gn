@@ -94,7 +94,6 @@ component("compositor") {
   public_deps = [ "//cc" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//cc/animation",
     "//cc/paint",
     "//components/viz/host",
@@ -184,7 +183,6 @@ static_library("test_support") {
   public_deps = [ ":compositor" ]
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc",
     "//cc:test_support",
     "//components/viz/host",
@@ -250,7 +248,6 @@ test("compositor_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc",
     "//cc:test_support",
     "//components/viz/common",

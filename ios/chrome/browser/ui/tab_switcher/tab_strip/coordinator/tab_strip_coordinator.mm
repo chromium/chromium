@@ -11,7 +11,12 @@
 #import "base/uuid.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -23,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -82,26 +88,25 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(TabStripCommands)];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  CHECK(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  CHECK(profile);
   self.tabStripViewController = [[TabStripViewController alloc] init];
   self.tabStripViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
   self.tabStripViewController.overrideUserInterfaceStyle =
-      browserState->IsOffTheRecord() ? UIUserInterfaceStyleDark
-                                     : UIUserInterfaceStyleUnspecified;
-  self.tabStripViewController.isIncognito = browserState->IsOffTheRecord();
+      profile->IsOffTheRecord() ? UIUserInterfaceStyleDark
+                                : UIUserInterfaceStyleUnspecified;
+  self.tabStripViewController.isIncognito = profile->IsOffTheRecord();
 
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(browserState);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(browserState);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController
                              tabGroupSyncService:tabGroupSyncService
                                      browserList:browserList];
   self.mediator.webStateList = self.browser->GetWebStateList();
-  self.mediator.browserState = browserState;
+  self.mediator.profile = profile;
   self.mediator.browser = self.browser;
   self.mediator.tabStripHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabStripCommands);
@@ -109,7 +114,8 @@
   self.contextMenuHelper = [[TabStripContextMenuHelper alloc]
       initWithBrowserList:browserList
              webStateList:self.browser->GetWebStateList()];
-  self.contextMenuHelper.incognito = browserState->IsOffTheRecord();
+  self.contextMenuHelper.incognito = profile->IsOffTheRecord();
+  self.contextMenuHelper.profile = profile;
   self.contextMenuHelper.mutator = self.mediator;
   self.contextMenuHelper.handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabStripCommands);
@@ -136,11 +142,6 @@
 }
 
 #pragma mark - TabStripCommands
-
-- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
-  [self.tabStripViewController
-      setNewTabButtonOnTabStripIPHHighlighted:IPHHighlighted];
-}
 
 - (void)showTabStripGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers {
@@ -188,13 +189,13 @@
 
 - (void)showAlertForLastTabDragged:
     (TabStripLastTabDraggedAlertCommand*)command {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (browserState->IsOffTheRecord()) {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (profile->IsOffTheRecord()) {
     return;
   }
 
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
@@ -274,7 +275,7 @@
 - (void)showTabStripTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
   if (!IsTabGroupSyncEnabled() ||
-      self.browser->GetBrowserState()->IsOffTheRecord()) {
+      self.browser->GetProfile()->IsOffTheRecord()) {
     return;
   }
 
@@ -302,6 +303,48 @@
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
   [snackbarCommandsHandler showSnackbarMessage:message];
+}
+
+- (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
+  ProfileIOS* profile = self.browser->GetProfile();
+  tab_groups::TabGroupSyncService* syncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(profile);
+  NSString* collabID =
+      tab_groups::utils::GetTabGroupCollabID(group.get(), syncService);
+  if (!shareKitService || !collabID) {
+    return;
+  }
+  ShareKitManageConfiguration* config =
+      [[ShareKitManageConfiguration alloc] init];
+  config.baseViewController = self.baseViewController;
+  config.collabID = collabID;
+  config.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  shareKitService->ManageGroup(config);
+}
+
+- (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
+  const TabGroup* tabGroup = group.get();
+  if (!tabGroup || !shareKitService) {
+    return;
+  }
+  ShareKitShareGroupConfiguration* config =
+      [[ShareKitShareGroupConfiguration alloc] init];
+  config.tabGroup = tabGroup;
+  config.baseViewController = self.baseViewController;
+  config.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  shareKitService->ShareGroup(config);
+}
+
+- (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+  [tabGroupsHandler showRecentActivityForGroup:tabGroup];
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

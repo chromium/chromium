@@ -3,18 +3,25 @@
 <translationbundle lang="az">
 <translation id="1444443021901415601">Chrome son brauzer tarixçənizə əsaslanaraq maraqlandığınız mövzuları qeyd edir</translation>
 <translation id="2252052615723281030">Chrome-a daxil olduğunuz zaman bu ayar IP ünvanını məxfi saxlamağa kömək edir. Chrome saytın sizi izlədiyindən şübhələnsə, trafikin bir hissəsi məxfilik serverləri vasitəsilə göndərilə bilər.</translation>
+<translation id="235789365079050412">Google Məxfilik Siyasəti</translation>
 <translation id="2793385791865768072">Chromium son brauzer tarixçənizə əsaslanaraq maraqlandığınız mövzuları qeyd edir</translation>
+<translation id="2979365474350987274">Üçüncü tərəf kukiləri məhdudlaşdırılıb</translation>
 <translation id="33479675708419823">Chrome-a daxil olduğunuz zaman bu ayar IP ünvanını məxfi saxlamağa kömək edir. Chrome saytın sizi izlədiyindən şübhələnsə, trafikin bir hissəsi məxfilik serverləri vasitəsilə göndərilə bilər. <ph name="LINK_BEGIN" />IP qorunması<ph name="LINK_END" /> haqqında ətraflı məlumat əldə edin</translation>
 <translation id="3529311220178827364">IP ünvanını gizlətmək haqqında ətraflı məlumat əldə edin</translation>
+<translation id="385051799172605136">Geri</translation>
 <translation id="4041687306270459969">Müddəti 4 həftədən çox olan reklam mövzuları avtomatik olaraq silinir. İdman, geyim və s. kimi mövzular daxildir</translation>
 <translation id="4177501066905053472">Reklam mövzuları</translation>
 <translation id="4301151630239508244">Reklam mövzuları saytın reklamları fərdiləşdirmək üçün istifadə edə biləcəyi vasitələrdən biridir. Reklam mövzuları olmasa da, saytlar fərdiləşdirilməmiş reklamlar göstərə bilər. <ph name="BEGIN_LINK_1" />Reklam məxfiliyinin idarə edilməsi<ph name="END_LINK_1" /> haqqında ətraflı məlumat.</translation>
+<translation id="4501357987281382712"><ph name="BEGIN_LINK" />Məxfilik Siyasətimizdə<ph name="END_LINK" /> Google-un datanızı necə qoruduğu haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="453692855554576066">Reklam mövzularına Chromium ayarlarında baxa bilərsiniz və saytlarla paylaşılmasını istəmədiyiniz mövzuları blok edə bilərsiniz</translation>
 <translation id="4598427486995631491">IP ünvanını gizlədin</translation>
 <translation id="4692439979815346597">Reklam mövzularına Chrome ayarlarında baxa bilərsiniz və saytlarla paylaşılmasını istəmədiyiniz mövzuları blok edə bilərsiniz</translation>
 <translation id="5413586988657235240">Daxil olduğunuz saytlar Chromium-dan müvafiq reklamları sizə göstərmək məqsədilə mövzular istəyə bilər, eyni zamanda brauzer tarixçənizi və şəxsi məlumatlarınızı qoruyur</translation>
+<translation id="6053735090575989697">Məxfilik Siyasətimizdə Google-un datanızı necə qoruduğu haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="6186536480878693792">Daxil olduğunuz saytlar Chrome-dan müvafiq reklamları sizə göstərmək məqsədilə mövzular istəyə bilər, eyni zamanda brauzer tarixçənizi və şəxsi məlumatlarınızı qoruyur</translation>
+<translation id="6195163219142236913">Üçüncü tərəf kukiləri məhdudlaşdırılıb</translation>
 <translation id="6371812158043974664">Chromium-a daxil olduğunuz zaman bu ayar IP ünvanını məxfi saxlamağa kömək edir. Chromium saytın sizi izlədiyindən şübhələnsə, trafikin bir hissəsi məxfilik serverləri vasitəsilə göndərilə bilər. <ph name="LINK_BEGIN" />IP qorunması<ph name="LINK_END" /> haqqında ətraflı məlumat əldə edin</translation>
+<translation id="6398358690696005758"><ph name="BEGIN_LINK1" />Məxfilik Siyasətimizdə<ph name="LINK_END1" /> Google-un datanızı necə qoruduğu haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP qorunması haqqında<ph name="END_LINK" /> məlumat əldə edin</translation>
 <translation id="7475768947023614021">Reklam mövzusu ayarlarına baxın</translation>
 </translationbundle>

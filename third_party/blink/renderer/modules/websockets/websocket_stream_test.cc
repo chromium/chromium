@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_close_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_error.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_open_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_stream_options.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"

@@ -285,10 +285,6 @@ void ActionTap::UnbindInput(const InputElement& input_element) {
     pending_input_.reset();
   }
   pending_input_ = InputElement::CreateActionTapKeyElement(ui::DomCode::NONE);
-  if (!IsBeta() && action_view_) {
-    action_view_->set_unbind_label_index(0);
-  }
-  PostUnbindInputProcess();
 }
 
 ActionType ActionTap::GetType() const {

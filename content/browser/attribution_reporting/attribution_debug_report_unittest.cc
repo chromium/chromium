@@ -84,7 +84,7 @@ TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
 
   EXPECT_FALSE(AttributionDebugReport::Create(
       &OperationAllowed,
-      /*is_debug_cookie_set=*/true,
+      /*cookie_based_debug_allowed=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
                          TriggerBuilder().Build(),
                          CreateReportResult::NoMatchingImpressions(),
@@ -104,7 +104,7 @@ TEST(AttributionDebugReportTest, OperationProhibited_NoReportReturned) {
 
   EXPECT_FALSE(AttributionDebugReport::Create(
       &OperationProhibited,
-      /*is_debug_cookie_set=*/true,
+      /*cookie_based_debug_allowed=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
                          TriggerBuilder().SetDebugReporting(true).Build(),
                          CreateReportResult::NoMatchingImpressions(),
@@ -120,7 +120,7 @@ TEST(AttributionDebugReportTest,
       StoreSourceResult(
           SourceBuilder()
               .SetDebugReporting(true)
-              .SetDebugCookieSet(true)
+              .SetCookieBasedDebugAllowed(true)
               .Build(),
           /*is_noised=*/false, kSourceTime,
           /*destination_limit=*/std::nullopt,
@@ -159,7 +159,7 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
 
   EXPECT_FALSE(AttributionDebugReport::Create(
       &OperationAllowed,
-      /*is_debug_cookie_set=*/true,
+      /*cookie_based_debug_allowed=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
                          TriggerBuilder()
                              .SetDebugReporting(true)
@@ -450,22 +450,24 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
       },
   };
 
-  for (bool is_debug_cookie_set : {false, true}) {
+  for (bool cookie_based_debug_allowed : {false, true}) {
     for (const auto& test_case : kTestCases) {
-      StoreSourceResult result(SourceBuilder()
-                                   .SetDebugReporting(true)
-                                   .SetDebugKey(test_case.debug_key)
-                                   .SetDebugCookieSet(is_debug_cookie_set)
-                                   .Build(),
-                               test_case.is_noised, kSourceTime,
-                               test_case.destination_limit, test_case.result);
+      StoreSourceResult result(
+          SourceBuilder()
+              .SetDebugReporting(true)
+              .SetDebugKey(test_case.debug_key)
+              .SetCookieBasedDebugAllowed(cookie_based_debug_allowed)
+              .Build(),
+          test_case.is_noised, kSourceTime, test_case.destination_limit,
+          test_case.result);
 
-      SCOPED_TRACE(Message() << "is_debug_cookie_set: " << is_debug_cookie_set
+      SCOPED_TRACE(Message() << "cookie_based_debug_allowed: "
+                             << cookie_based_debug_allowed
                              << ", result: " << result.status());
 
       std::optional<AttributionDebugReport> report =
           AttributionDebugReport::Create(&OperationAllowed, std::move(result));
-      if (is_debug_cookie_set) {
+      if (cookie_based_debug_allowed) {
         EXPECT_EQ(report.has_value(),
                   test_case.expected_report_body != nullptr);
         if (report) {
@@ -486,7 +488,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
             StoreSourceResult(
                 SourceBuilder()
                     .SetDebugReporting(true)
-                    .SetDebugCookieSet(true)
+                    .SetCookieBasedDebugAllowed(true)
                     .SetDestinationSites({
                         net::SchemefulSite::Deserialize("https://c.test"),
                         net::SchemefulSite::Deserialize("https://d.test"),
@@ -577,8 +579,8 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
        ])json"},
   };
 
-  for (bool is_source_debug_cookie_set : {false, true}) {
-    for (bool is_trigger_debug_cookie_set : {false, true}) {
+  for (bool is_source_cookie_based_debug_allowed : {false, true}) {
+    for (bool is_trigger_cookie_based_debug_allowed : {false, true}) {
       for (const auto& test_case : kTestCases) {
         const CreateReportResult result(
             /*trigger_time=*/base::Time::Now(),
@@ -587,24 +589,28 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
             test_case.has_matching_source
                 ? std::make_optional(
                       SourceBuilder()
-                          .SetDebugCookieSet(is_source_debug_cookie_set)
+                          .SetCookieBasedDebugAllowed(
+                              is_source_cookie_based_debug_allowed)
                           .BuildStored())
                 : std::nullopt,
             /*min_null_aggregatable_report_time=*/std::nullopt);
 
         SCOPED_TRACE(Message()
-                     << "is_source_debug_cookie_set: "
-                     << is_source_debug_cookie_set
-                     << ", is_trigger_debug_cookie_set: "
-                     << is_trigger_debug_cookie_set << ", event_level_result: "
-                     << result.event_level_status() << ", aggregatable_result: "
+                     << "is_source_cookie_based_debug_allowed: "
+                     << is_source_cookie_based_debug_allowed
+                     << ", is_trigger_cookie_based_debug_allowed: "
+                     << is_trigger_cookie_based_debug_allowed
+                     << ", event_level_result: " << result.event_level_status()
+                     << ", aggregatable_result: "
                      << result.aggregatable_status());
 
         std::optional<AttributionDebugReport> report =
-            AttributionDebugReport::Create(&OperationAllowed,
-                                           is_trigger_debug_cookie_set, result);
-        if (is_trigger_debug_cookie_set &&
-            (!test_case.has_matching_source || is_source_debug_cookie_set)) {
+            AttributionDebugReport::Create(
+                &OperationAllowed, is_trigger_cookie_based_debug_allowed,
+                result);
+        if (is_trigger_cookie_based_debug_allowed &&
+            (!test_case.has_matching_source ||
+             is_source_cookie_based_debug_allowed)) {
           EXPECT_EQ(report.has_value(),
                     test_case.expected_report_body != nullptr);
           if (report) {
@@ -818,10 +824,11 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
        /*expected_report_body=*/nullptr},
   };
 
-  for (bool is_source_debug_cookie_set : {false, true}) {
-    for (bool is_trigger_debug_cookie_set : {false, true}) {
+  for (bool is_source_cookie_based_debug_allowed : {false, true}) {
+    for (bool is_trigger_cookie_based_debug_allowed : {false, true}) {
       for (const auto& test_case : kTestCases) {
-        if (!is_source_debug_cookie_set && test_case.source_debug_key) {
+        if (!is_source_cookie_based_debug_allowed &&
+            test_case.source_debug_key) {
           continue;
         }
 
@@ -836,23 +843,26 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
             test_case.has_matching_source
                 ? std::make_optional(
                       SourceBuilder(base::Time::UnixEpoch())
-                          .SetDebugCookieSet(is_source_debug_cookie_set)
+                          .SetCookieBasedDebugAllowed(
+                              is_source_cookie_based_debug_allowed)
                           .SetDebugKey(test_case.source_debug_key)
                           .BuildStored())
                 : std::nullopt,
             /*min_null_aggregatable_report_time=*/std::nullopt);
 
-        SCOPED_TRACE(Message() << "is_source_debug_cookie_set: "
-                               << is_source_debug_cookie_set
-                               << ", is_trigger_debug_cookie_set: "
-                               << is_trigger_debug_cookie_set
+        SCOPED_TRACE(Message() << "is_source_cookie_based_debug_allowed: "
+                               << is_source_cookie_based_debug_allowed
+                               << ", is_trigger_cookie_based_debug_allowed: "
+                               << is_trigger_cookie_based_debug_allowed
                                << ", result: " << result.event_level_status());
 
         std::optional<AttributionDebugReport> report =
-            AttributionDebugReport::Create(&OperationAllowed,
-                                           is_trigger_debug_cookie_set, result);
-        if (is_trigger_debug_cookie_set &&
-            (!test_case.has_matching_source || is_source_debug_cookie_set)) {
+            AttributionDebugReport::Create(
+                &OperationAllowed, is_trigger_cookie_based_debug_allowed,
+                result);
+        if (is_trigger_cookie_based_debug_allowed &&
+            (!test_case.has_matching_source ||
+             is_source_cookie_based_debug_allowed)) {
           EXPECT_EQ(report.has_value(),
                     test_case.expected_report_body != nullptr);
           if (report) {
@@ -952,6 +962,20 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
          },
          "type": "trigger-aggregate-insufficient-budget"
        }])json"},
+      {CreateReportResult::InsufficientNamedBudget(/*name=*/"biddable",
+                                                   /*budget=*/10),
+       /*source_debug_key=*/std::nullopt,
+       /*trigger_debug_key=*/std::nullopt,
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "limit": "10",
+           "name": "biddable",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "trigger-aggregate-insufficient-named-budget"
+       }])json"},
       {CreateReportResult::ExcessiveAggregatableReports(/*max=*/10),
        /*source_debug_key=*/std::nullopt,
        /*trigger_debug_key=*/std::nullopt,
@@ -1003,10 +1027,11 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
        }])json"},
   };
 
-  for (bool is_source_debug_cookie_set : {false, true}) {
-    for (bool is_trigger_debug_cookie_set : {false, true}) {
+  for (bool is_source_cookie_based_debug_allowed : {false, true}) {
+    for (bool is_trigger_cookie_based_debug_allowed : {false, true}) {
       for (const auto& test_case : kTestCases) {
-        if (!is_source_debug_cookie_set && test_case.source_debug_key) {
+        if (!is_source_cookie_based_debug_allowed &&
+            test_case.source_debug_key) {
           continue;
         }
 
@@ -1022,20 +1047,23 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
             /*aggregatable_result=*/test_case.result,
             SourceBuilder()
                 .SetDebugKey(test_case.source_debug_key)
-                .SetDebugCookieSet(is_source_debug_cookie_set)
+                .SetCookieBasedDebugAllowed(
+                    is_source_cookie_based_debug_allowed)
                 .BuildStored(),
             /*min_null_aggregatable_report_time=*/std::nullopt);
 
-        SCOPED_TRACE(Message() << "is_source_debug_cookie_set: "
-                               << is_source_debug_cookie_set
-                               << ", is_trigger_debug_cookie_set: "
-                               << is_trigger_debug_cookie_set
+        SCOPED_TRACE(Message() << "is_source_cookie_based_debug_allowed: "
+                               << is_source_cookie_based_debug_allowed
+                               << ", is_trigger_cookie_based_debug_allowed: "
+                               << is_trigger_cookie_based_debug_allowed
                                << ", result: " << result.aggregatable_status());
 
         std::optional<AttributionDebugReport> report =
-            AttributionDebugReport::Create(&OperationAllowed,
-                                           is_trigger_debug_cookie_set, result);
-        if (is_trigger_debug_cookie_set && is_source_debug_cookie_set) {
+            AttributionDebugReport::Create(
+                &OperationAllowed, is_trigger_cookie_based_debug_allowed,
+                result);
+        if (is_trigger_cookie_based_debug_allowed &&
+            is_source_cookie_based_debug_allowed) {
           EXPECT_EQ(report.has_value(),
                     test_case.expected_report_body != nullptr);
           if (report) {

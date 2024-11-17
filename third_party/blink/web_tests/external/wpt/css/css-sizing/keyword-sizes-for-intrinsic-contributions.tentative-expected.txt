@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] .test 15
+  assert_equals: \n<div class="test min-width" data-expected-width="70"><div class="stretch">XXX XXX</div></div>\nwidth expected 70 but got 10
+[FAIL] .test 18
+  assert_equals: \n<div class="test min-width" data-expected-width="90"><div style="min-width: fit-content">XXX XXX</div></div>\nwidth expected 90 but got 70
+[FAIL] .test 19
+  assert_equals: \n<div class="test min-width" data-expected-width="90"><div class="stretch">XXX XXX</div></div>\nwidth expected 90 but got 10
+[FAIL] .test 22
+  assert_equals: \n<div class="test min-width" data-expected-width="150"><div style="min-width: fit-content">XXX XXX</div></div>\nwidth expected 150 but got 70
+[FAIL] .test 23
+  assert_equals: \n<div class="test min-width" data-expected-width="150"><div class="stretch">XXX XXX</div></div>\nwidth expected 150 but got 10
+[FAIL] .test 26
+  assert_equals: \n<div class="test max-width" data-expected-width="70"><div style="max-width: fit-content">XXX XXX</div></div>\nwidth expected 70 but got 150
+[FAIL] .test 27
+  assert_equals: \n<div class="test max-width" data-expected-width="70"><div class="stretch">XXX XXX</div></div>\nwidth expected 70 but got 210
+[FAIL] .test 30
+  assert_equals: \n<div class="test max-width" data-expected-width="90"><div style="max-width: fit-content">XXX XXX</div></div>\nwidth expected 90 but got 150
+[FAIL] .test 31
+  assert_equals: \n<div class="test max-width" data-expected-width="90"><div class="stretch">XXX XXX</div></div>\nwidth expected 90 but got 210
+[FAIL] .test 35
+  assert_equals: \n<div class="test max-width" data-expected-width="150"><div class="stretch">XXX XXX</div></div>\nwidth expected 150 but got 210
+Harness: the test ran to completion.
+

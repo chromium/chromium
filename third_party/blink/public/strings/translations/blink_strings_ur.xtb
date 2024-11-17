@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">حسب معمول</translation>
 <translation id="1591562245178063882">اس مہینے</translation>
 <translation id="1637811476055996098">فائلوں کا انتخاب کریں</translation>
-<translation id="1680090928918677457">کیمرا استعمال کریں</translation>
 <translation id="1729654308190250600">براہ کرم ایک غیر خالی ای میل پتہ درج کریں</translation>
 <translation id="1758486001363313524">دیگر…</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">براہ کرم اس متن کو مختصر کر کے <ph name="MAX_CHARACTERS" /> یا اس سے کم حروف تک لائیں (آپ فی الحال <ph name="CURRENT_LENGTH" /> حروف استعمال کر رہے ہیں)۔</translation>
 <translation id="2247351761944213033">ہفتہ <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> کو ٹریک کریں</translation>
-<translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="2507943997699731163">براہ کرم یہ فیلڈ پُر کریں۔</translation>
 <translation id="2613802280814924224">براہ کرم ایک درست قدر درج کریں۔ قریب ترین درست قدر <ph name="VALID_VALUE" /> ہے۔</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">براہ کرم اس متن کو <ph name="MIN_CHARACTERS" /> حروف یا زیادہ تک بڑھائیں (آپ فی الحال <ph name="CURRENT_LENGTH" /> حروف استعمال کر رہے ہیں)۔</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' کے بعد ایک حصہ میں علامت '<ph name="INVALIDCHARACTER" />' شامل نہیں ہونی چاہیے۔</translation>
 <translation id="3846214748874656680">پوری اسکرین سے باہر نکلیں</translation>
-<translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="4360991593054037559">براہ کرم ایک درست قدر درج کریں۔ دو قریب ترین درست اقدار <ph name="VALID_VALUE_LOW" /> اور <ph name="VALID_VALUE_HIGHER" /> ہیں۔</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
-<translation id="4663373278480897665">کیمرا اجازت یافتہ ہے</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' کے بعد کے حصہ میں علامت '<ph name="INVALIDCHARACTER" />' شامل نہیں ہونی چاہیے۔</translation>
 <translation id="4718048029184481307">تصویر میں تصویر چلائی جا رہی ہے</translation>
-<translation id="4792862212177489858">مقام کا اشتراک کریں</translation>
 <translation id="4812940957355064477">براہ کرم ایک نمبر درج کریں۔</translation>
-<translation id="49269513399674318">مائیکروفون کا استعمال کریں</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> منتخب کر لیا گیا</translation>
 <translation id="4992066212339426712">آواز چلائیں</translation>
 <translation id="49969490063480558">براہ کرم '<ph name="ATSIGN" />' کے بعد ایک حصہ درج کریں۔ '<ph name="INVALIDADDRESS" />' نامکمل ہے۔</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">پلگ ان لوڈ نہیں ہو سکا۔</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">براہ کرم اس متن کو <ph name="MIN_CHARACTERS" /> حروف یا اس سے زیادہ تک بڑھائیں (آپ فی الحال 1 حرف استعمال کر رہے ہیں)۔</translation>
-<translation id="7080893216867146095">مقام کے اشتراک کی اجازت ہے</translation>
 <translation id="709897737746224366">براہ کرم مطلوبہ فارمیٹ کا مماثل بنائیں۔</translation>
-<translation id="7134810312945846184">مائیکروفون اور کیمرا استعمال کریں</translation>
 <translation id="7263440858009898357">براہ کرم فہرست میں ایک آئٹم منتخب کریں۔</translation>
 <translation id="7364796246159120393">فائل کا انتخاب کریں</translation>
 <translation id="739024184232394898">دیگر…</translation>

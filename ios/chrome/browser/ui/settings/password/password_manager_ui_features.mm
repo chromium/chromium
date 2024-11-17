@@ -13,6 +13,11 @@ BASE_FEATURE(kIOSEnablePasscodeSettings,
              "IOSEnablePasscodeSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables passkey syncing follow-up features.
+BASE_FEATURE(kIOSPasskeysM2,
+             "IOSPasskeysM2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Helper function returning the status of `kIOSEnablePasscodeSettings`.
 bool IsPasscodeSettingsEnabled() {
   return base::FeatureList::IsEnabled(kIOSEnablePasscodeSettings);

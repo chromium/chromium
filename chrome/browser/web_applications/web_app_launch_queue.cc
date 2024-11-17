@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
@@ -35,18 +36,17 @@ namespace {
 // the correct file system backend. This method checks if this is the case, and
 // updates `entry_path` to the path that should be used by the File System
 // Access implementation.
-content::FileSystemAccessEntryFactory::PathType MaybeRemapPath(
-    base::FilePath* entry_path) {
+content::PathInfo GetPathInfo(const base::FilePath& entry_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath virtual_path;
   auto* external_mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
-  if (external_mount_points->GetVirtualPath(*entry_path, &virtual_path)) {
-    *entry_path = std::move(virtual_path);
-    return content::FileSystemAccessEntryFactory::PathType::kExternal;
+  if (external_mount_points->GetVirtualPath(entry_path, &virtual_path)) {
+    return content::PathInfo(content::PathType::kExternal,
+                             std::move(virtual_path));
   }
 #endif
-  return content::FileSystemAccessEntryFactory::PathType::kLocal;
+  return content::PathInfo(entry_path);
 }
 
 class EntriesBuilder {
@@ -68,20 +68,14 @@ class EntriesBuilder {
   }
 
   void AddFileEntry(const base::FilePath& path) {
-    base::FilePath entry_path = path;
-    content::FileSystemAccessEntryFactory::PathType path_type =
-        MaybeRemapPath(&entry_path);
     entries_.push_back(entry_factory_->CreateFileEntryFromPath(
-        context_, path_type, entry_path, base::FilePath(),
+        context_, GetPathInfo(path),
         content::FileSystemAccessEntryFactory::UserAction::kSave));
   }
 
   void AddDirectoryEntry(const base::FilePath& path) {
-    base::FilePath entry_path = path;
-    content::FileSystemAccessEntryFactory::PathType path_type =
-        MaybeRemapPath(&entry_path);
     entries_.push_back(entry_factory_->CreateDirectoryEntryFromPath(
-        context_, path_type, entry_path, base::FilePath(),
+        context_, GetPathInfo(path),
         content::FileSystemAccessEntryFactory::UserAction::kOpen));
   }
 
@@ -147,6 +141,16 @@ bool WebAppLaunchQueue::IsInScope(const WebAppLaunchParams& launch_params,
   // don't have a concept of scope.
   return IsExtensionURL(current_url) ||
          registrar_->IsUrlInAppExtendedScope(current_url, launch_params.app_id);
+}
+
+void WebAppLaunchQueue::FlushForTesting() const {
+  CHECK_IS_TEST();
+  mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&launch_service);
+  launch_service.FlushForTesting();  // IN-TEST
 }
 
 void WebAppLaunchQueue::Reset() {

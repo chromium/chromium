@@ -140,12 +140,12 @@ PannerHandler& PannerNode::GetPannerHandler() const {
   return static_cast<PannerHandler&>(Handler());
 }
 
-String PannerNode::panningModel() const {
-  return GetPannerHandler().PanningModel();
+V8PanningModelType PannerNode::panningModel() const {
+  return V8PanningModelType(GetPannerHandler().PanningModel());
 }
 
-void PannerNode::setPanningModel(const String& model) {
-  GetPannerHandler().SetPanningModel(model);
+void PannerNode::setPanningModel(const V8PanningModelType& model) {
+  GetPannerHandler().SetPanningModel(model.AsEnum());
 }
 
 void PannerNode::setPosition(float x,
@@ -162,12 +162,12 @@ void PannerNode::setOrientation(float x,
   GetPannerHandler().SetOrientation(x, y, z, exceptionState);
 }
 
-String PannerNode::distanceModel() const {
-  return GetPannerHandler().DistanceModel();
+V8DistanceModelType PannerNode::distanceModel() const {
+  return V8DistanceModelType(GetPannerHandler().DistanceModel());
 }
 
-void PannerNode::setDistanceModel(const String& model) {
-  GetPannerHandler().SetDistanceModel(model);
+void PannerNode::setDistanceModel(const V8DistanceModelType& model) {
+  GetPannerHandler().SetDistanceModel(model.AsEnum());
 }
 
 double PannerNode::refDistance() const {

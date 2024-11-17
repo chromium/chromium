@@ -28,7 +28,8 @@ SubresourceFilterSafeBrowsingClientRequest::
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
             database_manager,
         SubresourceFilterSafeBrowsingClient* client)
-    : request_id_(request_id),
+    : safe_browsing::SafeBrowsingDatabaseManager::Client(GetPassKey()),
+      request_id_(request_id),
       start_time_(start_time),
       database_manager_(std::move(database_manager)),
       client_(client) {

@@ -55,7 +55,7 @@ void PaymentManifestWebDataServiceAndroid::OnWebDataServiceRequestDone(
       OnPaymentMethodManifestRequestDone(env, h, std::move(result));
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "unsupported data type";
+      NOTREACHED() << "unsupported data type";
   }
 }
 

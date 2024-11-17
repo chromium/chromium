@@ -14,9 +14,9 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -83,11 +83,17 @@ class TestDelegate : public ToolbarController::PinnedActionsDelegate {
   int get_overflowed_count() { return overflowed_count_; }
   std::vector<actions::ActionId> get_action_ids() { return action_ids_; }
 
+  const std::vector<actions::ActionId>& PinnedActionIds() const override {
+    return action_ids_;
+  }
+
  private:
   int overflowed_count_ = 0;
   std::vector<actions::ActionId> action_ids_ = {0, 1, 2};
   std::vector<std::unique_ptr<actions::ActionItem>> action_items_;
-  base::flat_map<actions::ActionId, actions::ActionItem*> kIdToItemMap_;
+  base::flat_map<actions::ActionId,
+                 raw_ptr<actions::ActionItem, CtnExperimental>>
+      kIdToItemMap_;
   base::flat_map<actions::ActionId, bool> kIdToOverflowedMap_;
   raw_ptr<views::View> container_view_;
 };
@@ -343,6 +349,12 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
   }
   bool IsOverflowed(const ToolbarController::ResponsiveElementInfo& element) {
     return toolbar_controller_->IsOverflowed(element);
+  }
+
+  std::vector<ToolbarController::ResponsiveElementInfo>
+  GetResponsiveElementsWithOrderedActions(
+      const ToolbarController* toolbar_controller) const {
+    return toolbar_controller->GetResponsiveElementsWithOrderedActions();
   }
 
  private:
@@ -779,6 +791,100 @@ TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
                 menu->IsEnabledAt(menu->GetIndexOfCommandId(i).value()));
     }
   }
+}
+
+TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreOrdered) {
+  auto test_delegate = std::make_unique<TestDelegate>();
+
+  using ElementIdInfo = ToolbarController::ElementIdInfo;
+  using ResponsiveElementInfo = ToolbarController::ResponsiveElementInfo;
+  using ActionId = actions::ActionId;
+
+  ResponsiveElementInfo element0(
+      ElementIdInfo{kDummyButton1, 0, &vector_icons::kErrorIcon,
+                    kDummyActivateView},
+      false);
+  ResponsiveElementInfo action0(test_delegate->get_action_ids()[0]);
+  ResponsiveElementInfo action1(test_delegate->get_action_ids()[1]);
+  ResponsiveElementInfo action2(test_delegate->get_action_ids()[2]);
+
+  auto test_controller = ToolbarController(
+      std::vector<ResponsiveElementInfo>(
+          {action2, action1, action0, element0, action2, action0}),
+      std::vector<ui::ElementIdentifier>({kDummyButton1}),
+      kElementFlexOrderStart, toolbar_container_view(),
+      const_cast<OverflowButton*>(overflow_button()), test_delegate.get());
+
+  std::vector<ToolbarController::ResponsiveElementInfo> elements =
+      GetResponsiveElementsWithOrderedActions(&test_controller);
+  EXPECT_EQ(int(elements.size()), 6);
+
+  // Both sections of actions are reordered
+  EXPECT_EQ(absl::get<ActionId>(elements[0].overflow_id),
+            absl::get<ActionId>(action0.overflow_id));
+  EXPECT_EQ(absl::get<ActionId>(elements[1].overflow_id),
+            absl::get<ActionId>(action1.overflow_id));
+  EXPECT_EQ(absl::get<ActionId>(elements[2].overflow_id),
+            absl::get<ActionId>(action2.overflow_id));
+  EXPECT_EQ(
+      absl::get<ElementIdInfo>(elements[3].overflow_id).overflow_identifier,
+      absl::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
+  EXPECT_EQ(absl::get<ActionId>(elements[4].overflow_id),
+            absl::get<ActionId>(action0.overflow_id));
+  EXPECT_EQ(absl::get<ActionId>(elements[5].overflow_id),
+            absl::get<ActionId>(action2.overflow_id));
+}
+
+TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreNotOrdered) {
+  auto test_delegate = std::make_unique<TestDelegate>();
+
+  using ElementIdInfo = ToolbarController::ElementIdInfo;
+  using ResponsiveElementInfo = ToolbarController::ResponsiveElementInfo;
+  using ActionId = actions::ActionId;
+
+  ResponsiveElementInfo element0(
+      ElementIdInfo{kDummyButton1, 0, &vector_icons::kErrorIcon,
+                    kDummyActivateView},
+      false);
+  ResponsiveElementInfo element1(
+      ElementIdInfo{kDummyButton2, 0, &vector_icons::kErrorIcon,
+                    kDummyActivateView},
+      false);
+  ResponsiveElementInfo action0(test_delegate->get_action_ids()[0]);
+  ResponsiveElementInfo action1(test_delegate->get_action_ids()[1]);
+  ResponsiveElementInfo action2(test_delegate->get_action_ids()[2]);
+
+  auto test_controller = ToolbarController(
+      std::vector<ResponsiveElementInfo>(
+          {element1, element0, action2, element0, action0, element0, action1}),
+      std::vector<ui::ElementIdentifier>({kDummyButton1, kDummyButton2}),
+      kElementFlexOrderStart, toolbar_container_view(),
+      const_cast<OverflowButton*>(overflow_button()), test_delegate.get());
+
+  std::vector<ToolbarController::ResponsiveElementInfo> elements =
+      GetResponsiveElementsWithOrderedActions(&test_controller);
+  EXPECT_EQ(int(elements.size()), 7);
+
+  // Only sections of actions are reordered, so we
+  // expect the order not to change
+  EXPECT_EQ(
+      absl::get<ElementIdInfo>(elements[0].overflow_id).overflow_identifier,
+      absl::get<ElementIdInfo>(element1.overflow_id).overflow_identifier);
+  EXPECT_EQ(
+      absl::get<ElementIdInfo>(elements[1].overflow_id).overflow_identifier,
+      absl::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
+  EXPECT_EQ(absl::get<ActionId>(elements[2].overflow_id),
+            absl::get<ActionId>(action2.overflow_id));
+  EXPECT_EQ(
+      absl::get<ElementIdInfo>(elements[3].overflow_id).overflow_identifier,
+      absl::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
+  EXPECT_EQ(absl::get<ActionId>(elements[4].overflow_id),
+            absl::get<ActionId>(action0.overflow_id));
+  EXPECT_EQ(
+      absl::get<ElementIdInfo>(elements[5].overflow_id).overflow_identifier,
+      absl::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
+  EXPECT_EQ(absl::get<ActionId>(elements[6].overflow_id),
+            absl::get<ActionId>(action1.overflow_id));
 }
 
 TEST_F(ToolbarControllerUnitTest, SupportActionIds) {

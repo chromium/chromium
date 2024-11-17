@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/io_buffer.h"
 
@@ -60,7 +61,7 @@ class IOBufferPool : public base::RefCountedThreadSafe<IOBufferPool> {
   const size_t buffer_size_;
   const size_t max_buffers_;
   const bool threadsafe_;
-  Internal* internal_;  // Manages its own lifetime.
+  raw_ptr<Internal> internal_;  // Manages its own lifetime.
 };
 
 }  // namespace chromecast

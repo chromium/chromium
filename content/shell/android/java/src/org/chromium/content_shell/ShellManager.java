@@ -15,6 +15,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -25,8 +26,6 @@ public class ShellManager extends FrameLayout {
     public static final String DEFAULT_SHELL_URL = "http://www.google.com";
     private WindowAndroid mWindow;
     private Shell mActiveShell;
-
-    private String mStartupUrl = DEFAULT_SHELL_URL;
 
     // The target for all content rendering.
     private ContentViewRenderView mContentViewRenderView;
@@ -57,11 +56,6 @@ public class ShellManager extends FrameLayout {
     /** Get the ContentViewRenderView. */
     public ContentViewRenderView getContentViewRenderView() {
         return mContentViewRenderView;
-    }
-
-    /** Sets the startup URL for new shell windows. */
-    public void setStartupUrl(String url) {
-        mStartupUrl = url;
     }
 
     /**
@@ -112,7 +106,7 @@ public class ShellManager extends FrameLayout {
         WebContents webContents = mActiveShell.getWebContents();
         if (webContents != null) {
             mContentViewRenderView.setCurrentWebContents(webContents);
-            webContents.onShow();
+            webContents.updateWebContentsVisibility(Visibility.VISIBLE);
         }
     }
 

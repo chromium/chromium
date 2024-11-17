@@ -9,7 +9,6 @@ import "url/mojom/url.mojom";
 
 // Includes all information about the current web page required by the
 // SmartReaderManagerAsh to provide a summary of the content.
-[Stable]
 struct SmartReaderPageContent {
   // The title of the page. It is be UTF-16 encoded.
   mojo_base.mojom.String16 title@0;
@@ -22,7 +21,7 @@ struct SmartReaderPageContent {
 
 // Client interface implemented by browsers (ash or lacros). It will allow Ash
 // to access page content from LaCrOS.
-[Stable, Uuid="55f815c8-e2d5-4710-b067-73048efa6739"]
+[Uuid="55f815c8-e2d5-4710-b067-73048efa6739"]
 interface SmartReaderClient {
   // Returns the content of the web page being summarized.
   GetPageContent@0() => (SmartReaderPageContent page_content);

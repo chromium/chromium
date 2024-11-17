@@ -25,7 +25,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
@@ -62,6 +63,8 @@ public class PasswordSettingsTest {
             "PasswordManager.Settings.ToggleOfferToSavePasswords";
     private static final String AUTO_SIGNIN_HISTOGRAM = "PasswordManager.Settings.ToggleAutoSignIn";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public SettingsActivityTestRule<PasswordSettings> mPasswordSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PasswordSettings.class);
@@ -78,7 +81,6 @@ public class PasswordSettingsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
 
         // By default sync is off. Tests can override this later.

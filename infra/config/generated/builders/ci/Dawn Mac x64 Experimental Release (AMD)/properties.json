@@ -77,7 +77,8 @@
           "builder": "dawn-try-mac-amd-exp",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Mac x64 Experimental Release (AMD)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

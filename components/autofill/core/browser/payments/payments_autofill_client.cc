@@ -105,8 +105,8 @@ void PaymentsAutofillClient::ShowVirtualCardEnrollDialog(
 void PaymentsAutofillClient::VirtualCardEnrollCompleted(
     PaymentsRpcResult result) {}
 
-void PaymentsAutofillClient::OnVirtualCardDataAvailable(
-    const VirtualCardManualFallbackBubbleOptions& options) {}
+void PaymentsAutofillClient::OnCardDataAvailable(
+    const FilledCardInformationBubbleOptions& options) {}
 
 void PaymentsAutofillClient::ConfirmSaveIbanLocally(
     const Iban& iban,
@@ -219,14 +219,14 @@ const AutofillOfferManager* PaymentsAutofillClient::GetAutofillOfferManager()
 
 bool PaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard> cards_to_suggest,
+    base::span<const CreditCard> cards_to_suggest,
     base::span<const Suggestion> suggestions) {
   return false;
 }
 
 bool PaymentsAutofillClient::ShowTouchToFillIban(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::Iban> ibans_to_suggest) {
+    base::span<const Iban> ibans_to_suggest) {
   return false;
 }
 
@@ -242,6 +242,10 @@ PaymentsAutofillClient::CreateCreditCardInternalAuthenticator(
 
 payments::MandatoryReauthManager*
 PaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  return nullptr;
+}
+
+payments::BnplManager* PaymentsAutofillClient::GetPaymentsBnplManager() {
   return nullptr;
 }
 

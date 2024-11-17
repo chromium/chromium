@@ -74,7 +74,7 @@ public class PaymentRequestNoUpdateWithTest {
     @MediumTest
     @Feature({"Payments"})
     public void testNoEventListener() throws Throwable {
-        mRule.runJavaScriptAndWaitForUIEvent(
+        mRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithoutListenersWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mRule.getReadyToPay());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());
@@ -91,7 +91,7 @@ public class PaymentRequestNoUpdateWithTest {
     @MediumTest
     @Feature({"Payments"})
     public void testNoUpdateWith() throws Throwable {
-        mRule.runJavaScriptAndWaitForUIEvent(
+        mRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithoutCallingUpdateWithWithMethods([{supportedMethods:"
                         + " 'https://bobpay.test'}]);",
                 mRule.getReadyToPay());
@@ -106,7 +106,7 @@ public class PaymentRequestNoUpdateWithTest {
     @MediumTest
     @Feature({"Payments"})
     public void testNoPromises() throws Throwable {
-        mRule.runJavaScriptAndWaitForUIEvent(
+        mRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithoutPromisesWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mRule.getReadyToPay());
         Assert.assertEquals("USD $5.00", mRule.getOrderSummaryTotal());

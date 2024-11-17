@@ -17,12 +17,15 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/data_type.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_exporter.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
@@ -42,10 +45,12 @@ namespace {
 constexpr const char* kBulkMovePasswordsToAccountButtonClickedUserAction =
     "Mobile.PasswordsSettings.BulkSavePasswordsToAccountButtonClicked";
 
-// Returns true if the credential passed is not stored in the account store.
-bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
-  return !credential.stored_in.contains(
-      password_manager::PasswordForm::Store::kAccountStore);
+// Returns true if the credential passed is a password (not a passkey) and not
+// stored in the account store.
+bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
+  return credential.passkey_credential_id.empty() &&
+         !credential.stored_in.contains(
+             password_manager::PasswordForm::Store::kAccountStore);
 }
 
 }  // namespace
@@ -84,6 +89,12 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
 
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
+
+  // Used to retrieve information about user's passkey security domain.
+  raw_ptr<TrustedVaultClientBackend> _trustedVaultClientBackend;
+
+  // Identity of the user. Can be nil if there is no primary account.
+  id<SystemIdentity> _identity;
 }
 
 // Helper object which maintains state about the "Export Passwords..." flow, and
@@ -116,7 +127,10 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
                         exportHandler:(id<PasswordExportHandler>)exportHandler
                           prefService:(PrefService*)prefService
                       identityManager:(signin::IdentityManager*)identityManager
-                          syncService:(syncer::SyncService*)syncService {
+                          syncService:(syncer::SyncService*)syncService
+            trustedVaultClientBackend:
+                (TrustedVaultClientBackend*)trustedVaultClientBackend
+                             identity:(id<SystemIdentity>)identity {
   self = [super init];
   if (self) {
     _passwordExporter =
@@ -142,6 +156,8 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
                                                                 self);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
+    _trustedVaultClientBackend = trustedVaultClientBackend;
+    _identity = identity;
   }
   return self;
 }
@@ -170,6 +186,10 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
   [self.consumer setOnDeviceEncryptionState:[self onDeviceEncryptionState]];
 
   [self updateShowBulkMovePasswordsToAccount];
+
+  if (syncer::IsWebauthnCredentialSyncEnabled()) {
+    [self checkUserCanChangeGPMPin];
+  }
 }
 
 - (void)userDidStartBulkMoveLocalPasswordsToAccountFlow {
@@ -367,34 +387,28 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
 
 // Returns the amount of local passwords.
 - (int)computeLocalPasswordsCount {
-  std::vector<password_manager::AffiliatedGroup> affiliatedGroups =
-      _savedPasswordsPresenter->GetAffiliatedGroups();
-
-  // Count passwords that don't appear in the account store.
   int passwordsCount = 0;
-  for (password_manager::AffiliatedGroup group : affiliatedGroups) {
+  for (password_manager::AffiliatedGroup group :
+       _savedPasswordsPresenter->GetAffiliatedGroups()) {
     passwordsCount += base::ranges::count_if(group.GetCredentials().begin(),
                                              group.GetCredentials().end(),
-                                             IsCredentialNotInAccountStore);
+                                             IsCredentialLocalPassword);
   }
-
   return passwordsCount;
 }
 
 // Returns the list of distinct domains present in the local passwords. If they
 // are in different affiliated groups, they are presumed to be distinct.
 - (NSMutableArray<NSString*>*)computeDistinctDomainsFromLocalPasswords {
-  std::vector<password_manager::AffiliatedGroup> affiliatedGroups =
-      _savedPasswordsPresenter->GetAffiliatedGroups();
-
   // Add distinct domains for which there exists a password that doesn't appear
   // in the account store.
   NSMutableArray<NSString*>* distinctDomains = [NSMutableArray array];
 
-  for (const password_manager::AffiliatedGroup& group : affiliatedGroups) {
+  for (const password_manager::AffiliatedGroup& group :
+       _savedPasswordsPresenter->GetAffiliatedGroups()) {
     auto credential = base::ranges::find_if(group.GetCredentials().begin(),
                                             group.GetCredentials().end(),
-                                            IsCredentialNotInAccountStore);
+                                            IsCredentialLocalPassword);
 
     // If a credential exists in this group that is in the profile store, append
     // the group's display name to the distinct domains.
@@ -415,6 +429,34 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
       showMovedToAccountSnackbarWithPasswordCount:count
                                         userEmail:_syncService->GetAccountInfo()
                                                       .email];
+}
+
+// Checks whether the account is recoverable in the passkey security domain
+// (this means that the user has a GPM Pin created). If yes, proceeds to check
+// whether the device was bootstrapped to use passkeys.
+- (void)checkUserCanChangeGPMPin {
+  __weak __typeof(self) weakSelf = self;
+  _trustedVaultClientBackend->GetDegradedRecoverabilityStatus(
+      _identity, trusted_vault::SecurityDomainId::kPasskeys,
+      base::BindOnce(^(BOOL is_degraded) {
+        if (!is_degraded) {
+          [weakSelf checkDeviceBootstrappedForPasskeys];
+        }
+      }));
+}
+
+// Checks whether the device can fetch shared keys for passkey security domain.
+// If yes, notifies the consumer that the change GPM Pin button should be
+// visible. This should be called from `checkUserCanChangeGPMPin`.
+- (void)checkDeviceBootstrappedForPasskeys {
+  __weak id<PasswordSettingsConsumer> weakConsumer = self.consumer;
+  _trustedVaultClientBackend->FetchKeys(
+      _identity, trusted_vault::SecurityDomainId::kPasskeys,
+      base::BindOnce(^(const std::vector<std::vector<uint8_t>>& keys) {
+        if (!keys.empty()) {
+          [weakConsumer setupChangeGPMPinButton];
+        }
+      }));
 }
 
 @end

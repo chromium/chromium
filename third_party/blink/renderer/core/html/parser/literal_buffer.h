@@ -17,6 +17,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -43,6 +44,8 @@ class LiteralBufferBase {
                 "T must be a character type");
 
  public:
+  using iterator = base::CheckedContiguousIterator<const T>;
+
   ~LiteralBufferBase() {
     if (!is_stored_inline())
       WTF::Partitions::BufferFree(begin_);
@@ -52,6 +55,11 @@ class LiteralBufferBase {
   ALWAYS_INLINE wtf_size_t size() const {
     return base::checked_cast<wtf_size_t>(end_ - begin_);
   }
+
+  // Iterators, so this type meets the requirements of
+  // `std::ranges::contiguous_range`.
+  ALWAYS_INLINE iterator begin() const { return iterator(begin_, end_); }
+  ALWAYS_INLINE iterator end() const { return iterator(begin_, end_, end_); }
 
   ALWAYS_INLINE bool IsEmpty() const { return begin_ == end_; }
 
@@ -258,7 +266,7 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     if (Is8Bit()) {
       return String::Make8BitFrom16BitSource(base::span(*this));
     }
-    return String(this->data(), this->size());
+    return String(*this);
   }
 
   String AsString8() const {
@@ -266,9 +274,9 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
   }
 
   AtomicString AsAtomicString() const {
-    return AtomicString(this->data(), this->size(),
-                        Is8Bit() ? WTF::AtomicStringUCharEncoding::kIs8Bit
-                                 : WTF::AtomicStringUCharEncoding::kIs16Bit);
+    return AtomicString(*this, Is8Bit()
+                                   ? WTF::AtomicStringUCharEncoding::kIs8Bit
+                                   : WTF::AtomicStringUCharEncoding::kIs16Bit);
   }
 
   ALWAYS_INLINE bool Is8Bit() const { return is_8bit_; }

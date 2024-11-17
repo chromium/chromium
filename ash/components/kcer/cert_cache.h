@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(KCER) CertCache {
   // Empty cache.
   CertCache();
   // Cache that contains `certs` (`certs` can be unsorted).
-  explicit CertCache(base::span<scoped_refptr<const Cert>> certs);
+  explicit CertCache(base::span<const scoped_refptr<const Cert>> certs);
   CertCache(CertCache&&);
   CertCache& operator=(CertCache&&);
   ~CertCache();

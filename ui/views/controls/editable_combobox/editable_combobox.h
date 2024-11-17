@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -96,6 +96,8 @@ class VIEWS_EXPORT EditableCombobox : public View,
   const std::u16string& GetText() const;
   void SetText(const std::u16string& text);
 
+  void SetInvalid(bool invalid);
+
   const std::u16string& GetPlaceholderText() const;
   void SetPlaceholderText(const std::u16string& text);
 
@@ -131,6 +133,10 @@ class VIEWS_EXPORT EditableCombobox : public View,
 
   Button* GetArrowButtonForTesting() { return arrow_; }
 
+  // View:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
+
  private:
   friend class EditableComboboxTest;
   friend class EditablePasswordComboboxTest;
@@ -152,7 +158,8 @@ class VIEWS_EXPORT EditableCombobox : public View,
   void ArrowButtonPressed(const ui::Event& event);
 
   // Shows the drop-down menu.
-  void ShowDropDownMenu(ui::MenuSourceType source_type = ui::MENU_SOURCE_NONE);
+  void ShowDropDownMenu(
+      ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kNone);
 
   // Recalculates the extra insets of the textfield based on the size of the
   // controls container.

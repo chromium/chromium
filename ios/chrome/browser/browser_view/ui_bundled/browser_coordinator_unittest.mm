@@ -102,7 +102,8 @@ class BrowserCoordinatorTest : public PlatformTest {
         ios::BookmarkModelFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     test_profile_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
@@ -133,9 +134,6 @@ class BrowserCoordinatorTest : public PlatformTest {
     WebUsageEnablerBrowserAgent* enabler =
         WebUsageEnablerBrowserAgent::FromBrowser(browser_.get());
     enabler->SetWebUsageEnabled(true);
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        GetProfile(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];

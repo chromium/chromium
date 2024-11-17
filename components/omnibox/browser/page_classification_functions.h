@@ -21,20 +21,21 @@ bool IsSearchResultsPage(
 bool IsOtherWebPage(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
-// Return true, if supplied page classification is a Lens searchbox.
-bool IsLensSearchbox(
-    ::metrics::OmniboxEventProto::PageClassification classification);
-
-// Return true, if supplied page classification is a Lens multimodal searchbox.
-bool IsLensMultiModalSearchbox(
-    ::metrics::OmniboxEventProto::PageClassification classification);
-
 // Return true, if supplied page classification is a Lens contextual searchbox.
 bool IsLensContextualSearchbox(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Return true, if supplied page classification is a Lens unimodal, multimodal,
+// or contextual searchbox.
+bool IsLensSearchbox(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 // Return true, if supplied page classification is a Chrome Custom Tab.
 bool IsCustomTab(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
+// Return true, if supplied page classification is the Android Hub searchbox.
+bool IsAndroidHub(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
 // Checks (and asserts in development builds) if Page Classification is

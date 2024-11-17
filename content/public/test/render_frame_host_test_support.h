@@ -32,6 +32,10 @@ void CreatePermissionService(
 // RenderFrameHost.
 void DisableUnloadTimerForTesting(RenderFrameHost* rfh);
 
+// Calls RenderFrameHostImpl::WebAuthnAssertionRequestSucceeded for the given
+// RenderFrameHost.
+void WebAuthnAssertionRequestSucceeded(RenderFrameHost* rfh);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_RENDER_FRAME_HOST_TEST_SUPPORT_H_

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/font_face_set.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_font_face_set_load_status.h"
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/css/font_face_set_load_event.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
@@ -48,6 +49,12 @@ void FontFaceSet::FireLoadingEvent() {
     DispatchEvent(
         *FontFaceSetLoadEvent::CreateForFontFaces(event_type_names::kLoading));
   }
+}
+
+V8FontFaceSetLoadStatus FontFaceSet::status() const {
+  return V8FontFaceSetLoadStatus(is_loading_
+                                     ? V8FontFaceSetLoadStatus::Enum::kLoading
+                                     : V8FontFaceSetLoadStatus::Enum::kLoaded);
 }
 
 FontFaceSet* FontFaceSet::addForBinding(ScriptState*,

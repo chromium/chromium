@@ -248,10 +248,6 @@ void HoverButton::SetBorder(std::unique_ptr<views::Border> b) {
   PreferredSizeChanged();
 }
 
-void HoverButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-}
-
 void HoverButton::PreferredSizeChanged() {
   LabelButton::PreferredSizeChanged();
   if (GetLayoutManager()) {

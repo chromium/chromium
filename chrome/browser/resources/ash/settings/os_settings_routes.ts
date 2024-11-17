@@ -13,7 +13,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
+import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /**
@@ -219,7 +219,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_LANGUAGES_LANGUAGES: Route;
   OS_PRINTING: Route;
   OS_PRIVACY: Route;
-  OS_RESET: Route;
   OS_SEARCH: Route;
   OS_SYNC: Route;
   OS_PEOPLE: Route;
@@ -307,11 +306,9 @@ export function createRoutes(): OsSettingsRoutes {
     r.APN =
         createSubpage(r.INTERNET, routesMojom.APN_SUBPAGE_PATH, Subpage.kApn);
   }
-  if (loadTimeData.getBoolean('isPasspointSettingsEnabled')) {
-    r.PASSPOINT_DETAIL = createSubpage(
-        r.INTERNET, routesMojom.PASSPOINT_DETAIL_SUBPAGE_PATH,
-        Subpage.kPasspointDetails);
-  }
+  r.PASSPOINT_DETAIL = createSubpage(
+      r.INTERNET, routesMojom.PASSPOINT_DETAIL_SUBPAGE_PATH,
+      Subpage.kPasspointDetails);
 
   // Bluetooth section.
   r.BLUETOOTH = createSection(
@@ -655,13 +652,6 @@ export function createRoutes(): OsSettingsRoutes {
           Subpage.kSyncSetup);
     }
   } else {
-    // Date and Time section.
-    r.DATETIME = createSection(
-        r.ADVANCED, routesMojom.DATE_AND_TIME_SECTION_PATH,
-        Section.kDateAndTime);
-    r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
-        r.DATETIME, routesMojom.TIME_ZONE_SUBPAGE_PATH, Subpage.kTimeZone);
-
     // Device section.
     r.STORAGE = createSubpage(
         r.DEVICE, routesMojom.STORAGE_SUBPAGE_PATH, Subpage.kStorage);
@@ -713,12 +703,6 @@ export function createRoutes(): OsSettingsRoutes {
       r.OS_LANGUAGES_APP_LANGUAGES = createSubpage(
           r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
           Subpage.kAppLanguages);
-    }
-
-    // Reset section.
-    if (isPowerwashAllowed()) {
-      r.OS_RESET = createSection(
-          r.ADVANCED, routesMojom.RESET_SECTION_PATH, Section.kReset);
     }
 
     // Search and Assistant section.
@@ -801,10 +785,6 @@ const PATH_REDIRECT_PAIRS: Array<[string, string]> = [
   [
     routesMojom.MY_ACCOUNTS_SUBPAGE_PATH,
     routesMojom.PEOPLE_SECTION_PATH,
-  ],
-  [
-    routesMojom.DATE_AND_TIME_SECTION_PATH,
-    routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
   ],
   [
     routesMojom.FILES_SECTION_PATH,

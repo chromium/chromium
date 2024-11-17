@@ -360,7 +360,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
      * @param thumbnails The Bitmaps to use for the thumbnail (or null).
      * @param videoDuration The time-length of the video (human-friendly string).
      * @param placeholder Whether the image given is a placeholder or the actual image.
-     * @ratio The aspect ratio of the image, if it were shown full-width.
+     * @param ratio The aspect ratio of the image, if it were shown full-width.
      */
     public void initialize(
             PickerBitmap bitmapDetails,

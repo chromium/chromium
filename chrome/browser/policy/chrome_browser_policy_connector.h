@@ -23,11 +23,6 @@
 #include "components/policy/core/browser/android/policy_cache_updater_android.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/device_settings_lacros.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 class PrefService;
 
 namespace policy {
@@ -104,9 +99,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(chromium:1502062): MachineLevelUserCloudPolicyManager is CBCM's policy
-  // provider. Since CBCM doesn't exist in Lacros,
-  // MachineLevelUserCloudPolicyManager shouldn't have to exist there either.
-  // Refactor the code accordingly.
+  // provider. Refactor the code accordingly.
   MachineLevelUserCloudPolicyManager*
   machine_level_user_cloud_policy_manager() {
     return machine_level_user_cloud_policy_manager_;
@@ -138,28 +131,6 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   virtual base::flat_set<std::string> device_affiliation_ids() const;
   void SetDeviceAffiliatedIdsForTesting(
       const base::flat_set<std::string>& device_affiliation_ids);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Checks if the main / primary user is managed or not.
-  // TODO(crbug.com/40788404): Remove once Lacros handles all profiles the same
-  // way.
-  bool IsMainUserManaged() const;
-
-  // The device settings used in Lacros.
-  crosapi::mojom::DeviceSettings* GetDeviceSettings() const;
-
-  DeviceSettingsLacros* device_settings_lacros() {
-    return device_settings_.get();
-  }
-
-  PolicyLoaderLacros* device_account_policy_loader() {
-    return device_account_policy_loader_;
-  }
-
-  ConfigurationPolicyProvider* ash_policy_provider() {
-    return ash_policy_provider_;
-  }
-#endif
 
  protected:
   // BrowserPolicyConnectorBase::
@@ -223,15 +194,6 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   raw_ptr<ConfigurationPolicyProvider> local_test_provider_for_testing_ =
       nullptr;
   std::unique_ptr<LocalTestPolicyProvider> local_test_provider_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;
-  // Owned by |platform_provider_|.
-  raw_ptr<PolicyLoaderLacros, DanglingUntriaged> device_account_policy_loader_ =
-      nullptr;
-  // Provides the user policy fetched/cached by ash-chrome. Owned by base class.
-  raw_ptr<ConfigurationPolicyProvider> ash_policy_provider_ = nullptr;
-#endif
 
   // Weak pointers needed for tasks that need to wait until it can be decided
   // if an enrollment token is available or not.

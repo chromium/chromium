@@ -42,16 +42,13 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
     GetSystemIdentityManager()->AddIdentity(kDefaultIdentity);
     GetSystemIdentityManager()->AddIdentity(kNonDefaultIdentity);
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    ASSERT_EQ(ChromeAccountManagerServiceFactory::GetForBrowserState(
-                  browser_state_.get())
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    ASSERT_EQ(ChromeAccountManagerServiceFactory::GetForProfile(profile_.get())
                   ->GetDefaultIdentity(),
               kDefaultIdentity);
   }
@@ -63,7 +60,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   }
 
   sync_preferences::TestingPrefServiceSyncable* GetPrefService() {
-    return browser_state_->GetTestingPrefService();
+    return profile_->GetTestingPrefService();
   }
 
   FakeSystemIdentityManager* GetSystemIdentityManager() {
@@ -74,12 +71,11 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   ConsistencyPromoSigninMediator* BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint access_point) {
     ChromeAccountManagerService* chrome_account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(profile_.get());
     ConsistencyPromoSigninMediator* mediator =
         [[ConsistencyPromoSigninMediator alloc]
             initWithAccountManagerService:chrome_account_manager_service
@@ -97,9 +93,8 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     account.id =
         CoreAccountId::FromGaiaId(base::SysNSStringToUTF8(identity.gaiaID));
     signin::AccountsInCookieJarInfo cookie_jar_info(
-        /*accounts_are_fresh_param=*/true,
-        /*signed_in_accounts_param=*/{account},
-        /*signed_out_accounts_param=*/{});
+        /*accounts_are_fresh=*/true,
+        /*accounts=*/{account});
     [(id<IdentityManagerObserverBridgeDelegate>)mediator
         onAccountsInCookieUpdated:cookie_jar_info
                             error:GoogleServiceAuthError(
@@ -108,9 +103,8 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
 
   void SimulateCookieFetchError(ConsistencyPromoSigninMediator* mediator) {
     signin::AccountsInCookieJarInfo cookie_jar_info(
-        /*accounts_are_fresh_param=*/false,
-        /*signed_in_accounts_param=*/{},
-        /*signed_out_accounts_param=*/{});
+        /*accounts_are_fresh=*/false,
+        /*accounts=*/{});
     [(id<IdentityManagerObserverBridgeDelegate>)mediator
         onAccountsInCookieUpdated:cookie_jar_info
                             error:GoogleServiceAuthError(
@@ -122,25 +116,28 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     task_environment_.AdvanceClock(base::Seconds(30));
   }
 
-  void ExpectAuthFlowStartAndSetSuccess(
-      id<SystemIdentity> identity,
-      signin_metrics::AccessPoint access_point,
-      bool success) {
+  void ExpectAuthFlowStartAndSetResult(id<SystemIdentity> identity,
+                                       signin_metrics::AccessPoint access_point,
+                                       SigninCoordinatorResult result) {
+    bool success =
+        result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediatorSigninStarted:[OCMArg any]]);
     OCMExpect([authentication_flow_ identity]).andReturn(identity);
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     OCMExpect([authentication_flow_
-        startSignInWithCompletion:[OCMArg checkWithBlock:^BOOL(
-                                              signin_ui::CompletionCallback
-                                                  callback) {
-          if (success) {
-            auth_service->SignIn(identity, access_point);
-          }
-          callback(success);
-          return YES;
-        }]]);
+        startSignInWithCompletion:[OCMArg
+                                      checkWithBlock:^BOOL(
+                                          signin_ui::SigninCompletionCallback
+                                              callback) {
+                                        if (success) {
+                                          auth_service->SignIn(identity,
+                                                               access_point);
+                                        }
+                                        callback(result);
+                                        return YES;
+                                      }]]);
   }
 
  protected:
@@ -150,11 +147,11 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
       OCMStrictProtocolMock(@protocol(ConsistencyPromoSigninMediatorDelegate));
 
  private:
-  // Needed for test browser state.
+  // Needed for test profile.
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests start and cancel by user.
@@ -205,9 +202,9 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
 
-  ExpectAuthFlowStartAndSetSuccess(
+  ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-      true);
+      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
 
   ConsistencyPromoSigninMediator* mediator =
       BuildConsistencyPromoSigninMediator(
@@ -242,9 +239,9 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
 
-  ExpectAuthFlowStartAndSetSuccess(
+  ExpectAuthFlowStartAndSetResult(
       kNonDefaultIdentity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-      true);
+      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
 
   ConsistencyPromoSigninMediator* mediator =
       BuildConsistencyPromoSigninMediator(
@@ -281,9 +278,9 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
   [mediator systemIdentityAdded:kDefaultIdentity];
 
-  ExpectAuthFlowStartAndSetSuccess(
+  ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-      true);
+      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
 
   [mediator signinWithAuthenticationFlow:authentication_flow_];
 
@@ -317,9 +314,9 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesError) {
       BuildConsistencyPromoSigninMediator(
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
 
-  ExpectAuthFlowStartAndSetSuccess(
+  ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-      true);
+      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
 
   [mediator signinWithAuthenticationFlow:authentication_flow_];
 
@@ -366,9 +363,9 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
       BuildConsistencyPromoSigninMediator(
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
 
-  ExpectAuthFlowStartAndSetSuccess(
+  ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-      true);
+      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
 
   [mediator signinWithAuthenticationFlow:authentication_flow_];
 
@@ -414,9 +411,9 @@ TEST_F(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
       BuildConsistencyPromoSigninMediator(
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
 
-  ExpectAuthFlowStartAndSetSuccess(
+  ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-      false);
+      SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
 
   // The error is only signaled after AuthenticationService::Signout() and
   // that's async (note: the user never really signed-in in this case, but the
@@ -461,9 +458,9 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
       BuildConsistencyPromoSigninMediator(
           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
-  ExpectAuthFlowStartAndSetSuccess(
+  ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
-      true);
+      SigninCoordinatorResult::SigninCoordinatorResultSuccess);
   OCMExpect([mediator_delegate_mock_
       consistencyPromoSigninMediatorSignInDone:mediator
                                   withIdentity:kDefaultIdentity]);

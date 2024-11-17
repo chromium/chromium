@@ -56,4 +56,7 @@ public interface ModuleProvider {
 
     /** Returns the text shown on the context menu to hide the module. */
     String getModuleContextMenuHideText(Context context);
+
+    /** Called when the module is visible to users on the magic stack. */
+    default void onViewCreated() {}
 }

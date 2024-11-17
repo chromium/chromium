@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_FREEZING_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_FREEZING_H_
 
+#include <set>
+#include <string>
+#include <vector>
+
 #include "components/performance_manager/public/graph/page_node.h"
 
 namespace content {
@@ -26,6 +30,22 @@ class FreezingVote {
 
  private:
   const base::WeakPtr<performance_manager::PageNode> page_node_;
+};
+
+// Returns a list of human-readable reasons why a page can't be frozen
+// automatically, or an empty list if it can be frozen automatically. Must be
+// invoked on the PM sequence.
+std::set<std::string> GetCannotFreezeReasonsForPageNode(
+    const PageNode* page_node);
+
+// Used to discard frozen pages with growing private memory footprint.
+class Discarder {
+ public:
+  Discarder();
+  virtual ~Discarder();
+
+  virtual void DiscardPages(Graph* graph,
+                            std::vector<const PageNode*> page_nodes) = 0;
 };
 
 }  // namespace performance_manager::freezing

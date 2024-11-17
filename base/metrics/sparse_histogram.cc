@@ -181,9 +181,9 @@ std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotFinalDelta() const {
   return std::move(snapshot);
 }
 
-void SparseHistogram::AddSamples(const HistogramSamples& samples) {
+bool SparseHistogram::AddSamples(const HistogramSamples& samples) {
   base::AutoLock auto_lock(lock_);
-  unlogged_samples_->Add(samples);
+  return unlogged_samples_->Add(samples);
 }
 
 bool SparseHistogram::AddSamplesFromPickle(PickleIterator* iter) {

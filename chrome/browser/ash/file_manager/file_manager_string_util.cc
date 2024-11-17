@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -710,6 +711,8 @@ void AddStringsGeneric(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_METADATA_BOX_MODIFICATION_TIME);
   SET_STRING("METADATA_BOX_MODIFIED_BY",
              IDS_FILE_BROWSER_METADATA_BOX_MODIFIED_BY);
+  SET_STRING("METADATA_BOX_DATE_TAKEN",
+             IDS_FILE_BROWSER_METADATA_BOX_DATE_TAKEN);
   SET_STRING("METADATA_BOX_PAGE_COUNT",
              IDS_FILE_BROWSER_METADATA_BOX_PAGE_COUNT);
   SET_STRING("METADATA_BOX_SOURCE", IDS_FILE_BROWSER_METADATA_BOX_SOURCE);
@@ -1155,6 +1158,8 @@ void AddStringsGeneric(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_TITLE);
   SET_STRING("ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE",
              IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE);
+  SET_STRING("ONEDRIVE_OFFLINE_TITLE", IDS_FILE_BROWSER_ONEDRIVE_OFFLINE_TITLE);
+  SET_STRING("ONEDRIVE", IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE);
 }  // NOLINT(readability/fn_size): Structure of AddStringsGeneric function
    // should be easy to manage.
 
@@ -1366,8 +1371,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   DCHECK(profile);
 
   dict->Set("HIDE_SPACE_INFO", ash::DemoSession::IsDeviceInDemoMode());
-  dict->Set("ARC_USB_STORAGE_UI_ENABLED",
-            base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature));
   dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());
   dict->Set("FILES_LOCAL_IMAGE_SEARCH",
             ash::features::IsFilesLocalImageSearchEnabled());
@@ -1392,8 +1395,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("MATERIALIZED_VIEWS", base::FeatureList::IsEnabled(
                                       ash::features::kFilesMaterializedViews));
 
-  if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {
     policy::DlpRulesManager* rules_manager =
         policy::DlpRulesManagerFactory::GetForPrimaryProfile();
@@ -1407,7 +1409,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(features::kSkyVaultV2));
 
   base::Value::List vms;
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   if (share_path) {
     for (const auto& guest : share_path->ListGuests()) {
       base::Value::Dict d;

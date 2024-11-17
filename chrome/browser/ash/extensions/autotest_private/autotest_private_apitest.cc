@@ -17,8 +17,6 @@
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_process_instance.h"
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -51,7 +49,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/pref_names.h"
@@ -528,48 +525,6 @@ class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest, SystemWebApps) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("systemWebApps")) << message_;
-}
-
-class AutotestPrivateLacrosTest : public AutotestPrivateApiTest {
- public:
-  AutotestPrivateLacrosTest(const AutotestPrivateLacrosTest&) = delete;
-  AutotestPrivateLacrosTest& operator=(const AutotestPrivateLacrosTest&) =
-      delete;
-
- protected:
-  AutotestPrivateLacrosTest() {
-    auto enabled_features = ash::standalone_browser::GetFeatureRefs();
-    enabled_features.push_back(viz::mojom::EnableVizTestApis);
-    feature_list_.InitWithFeatures(
-        enabled_features,
-        // Disable ash extension keeplist so that the test extension will not
-        // be blocked in Ash.
-        {ash::features::kEnforceAshExtensionKeeplist});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-
-    crosapi::BrowserManager::DisableForTesting();
-  }
-  ~AutotestPrivateLacrosTest() override {
-    crosapi::BrowserManager::EnableForTesting();
-  }
-
-  void SetUpOnMainThread() override {
-    // For testing APIs, we need web browser instance as JS runtime.
-    Browser::CreateParams params(ProfileManager::GetLastUsedProfile(), false);
-    Browser::Create(params);
-    SelectFirstBrowser();
-
-    AutotestPrivateApiTest::SetUpOnMainThread();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-IN_PROC_BROWSER_TEST_F(AutotestPrivateLacrosTest, Lacros) {
-  ASSERT_TRUE(RunAutotestPrivateExtensionTest("lacrosEnabled")) << message_;
 }
 
 class AutotestPrivateSearchTest

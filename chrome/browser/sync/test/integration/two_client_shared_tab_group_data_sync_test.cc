@@ -10,13 +10,13 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/data_sharing/public/features.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/saved_tab_group_model.h"
-#include "components/saved_tab_groups/saved_tab_group_tab.h"
-#include "components/saved_tab_groups/saved_tab_group_test_utils.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/collaboration_finder.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -46,6 +46,7 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
     // filtration of local entities on GetUpdates).
     GetFakeServer()->AddCollaboration(kCollaborationId);
   }
+
   ~TwoClientSharedTabGroupDataSyncTest() override = default;
 
   TabGroupSyncService* GetTabGroupSyncService(int profile_index) const {
@@ -89,8 +90,16 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
     static int next_value = 1;
     tab_to_edit.SetLocalTabID(++next_value);
 #else
-    tab_to_edit.SetLocalTabID(base::Token::CreateRandom());
+    tab_to_edit.SetLocalTabID(tab_groups::test::GenerateRandomTabID());
 #endif
+  }
+
+  void FakeCollaborationAvailable(int profile_index,
+                                  const std::string& collaborationId) {
+    CollaborationFinder* collaboration_finder =
+        GetTabGroupSyncService(profile_index)
+            ->GetCollaborationFinderForTesting();
+    collaboration_finder->SetCollaborationAvailableForTesting(collaborationId);
   }
 
  private:
@@ -100,6 +109,8 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
                        ShouldSyncGroupWithTabs) {
   ASSERT_TRUE(SetupSync());
+  FakeCollaborationAvailable(0, kCollaborationId);
+  FakeCollaborationAvailable(1, kCollaborationId);
 
   SavedTabGroup group(u"title", TabGroupColorId::kBlue,
                       /*urls=*/{}, /*position=*/std::nullopt);
@@ -125,6 +136,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
                        ShouldSyncTabPositions) {
   ASSERT_TRUE(SetupSync());
+  FakeCollaborationAvailable(0, kCollaborationId);
+  FakeCollaborationAvailable(1, kCollaborationId);
 
   SavedTabGroup group(u"title", TabGroupColorId::kBlue,
                       /*urls=*/{}, /*position=*/std::nullopt);

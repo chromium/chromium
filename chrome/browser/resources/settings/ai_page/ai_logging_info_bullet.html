@@ -1,0 +1,21 @@
+<style include="cr-shared-style settings-shared">
+  cr-icon {
+    flex-shrink: 0;
+  }
+
+  li {
+    column-gap: 16px;
+    display: flex;
+    margin: 16px 0;
+  }
+</style>
+<li>
+  <template is="dom-if" if="[[!isLoggingDisabledByPolicy_(pref)]]" restamp>
+    <cr-icon icon="settings20:account-box" aria-hidden="true"></cr-icon>
+  </template>
+  <template is="dom-if" if="[[isLoggingDisabledByPolicy_(pref)]]" restamp>
+    <cr-policy-pref-indicator id="policyIndicator" pref="[[pref]]">
+    </cr-policy-pref-indicator>
+  </template>
+  <div class="secondary">[[label_]]</div>
+</li>

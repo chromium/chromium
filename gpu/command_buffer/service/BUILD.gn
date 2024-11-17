@@ -37,6 +37,8 @@ target(link_target_type, "service_sources") {
 
   sources = [
     "async_api_interface.h",
+    "blocking_sequence_runner.cc",
+    "blocking_sequence_runner.h",
     "command_buffer_direct.cc",
     "command_buffer_direct.h",
     "command_buffer_service.cc",
@@ -394,12 +396,7 @@ target(link_target_type, "gles2_sources") {
     "//ui/gl/init",
   ]
 
-  # If statically linked against ANGLE, link against angle:translator which is already included with ANGLE.
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 
   if (use_ozone) {
     sources += [
@@ -629,6 +626,7 @@ target(link_target_type, "gles2_sources") {
       "shared_image/dxgi_swap_chain_image_representation.h",
     ]
     libs = [
+      "d3d12.lib",
       "dxguid.lib",
       "onecore.lib",
     ]

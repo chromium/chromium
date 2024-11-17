@@ -41,6 +41,8 @@ source_set("view_controller") {
     "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/promo_style:utils",
     "//ios/chrome/common/ui/util",
     "//ios/components/ui_util",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
@@ -70,8 +72,11 @@ source_set("entry_point") {
     "lens_overlay_entrypoint_view.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

@@ -203,7 +203,7 @@ void CryptAuthGroupPrivateKeySharerImpl::OnTimeout() {
                                         CryptAuthApiCallResult::kTimeout);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   FinishAttempt(*error_code);

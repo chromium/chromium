@@ -70,12 +70,6 @@ class MediaHost::ChromeosMediaStateObserver
 
   void UpdateMediaState() {
     if (media_session_info_ptr_) {
-      if (media_session_info_ptr_->is_sensitive) {
-        // Do not update media state if the session is considered to be
-        // sensitive (off the record profile).
-        return;
-      }
-
       if (media_session_info_ptr_->state ==
               MediaSessionInfo::SessionState::kSuspended &&
           media_session_info_ptr_->playback_state ==

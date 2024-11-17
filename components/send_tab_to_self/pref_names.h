@@ -12,6 +12,10 @@ namespace prefs {
 // once for this profile.
 extern const char kInitialSendAnimationShown[];
 
+// Stores the url of the most recent tab received on iOS from one of the user's
+// other devices.
+extern const char kIOSSendTabToSelfLastReceivedTabURLPref[];
+
 }  // namespace prefs
 }  // namespace send_tab_to_self
 

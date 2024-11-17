@@ -9,6 +9,12 @@
 
 namespace credential_provider_extension {
 
+// Struct used to contain information associated with a Google Account.
+struct AccountInfo {
+  NSString* gaia;
+  NSString* email;
+};
+
 // Queries Keychain Services for the passed identifier password.
 // Returns nil if `identifier` is nil or if no password found for `identifier`.
 NSString* PasswordWithKeychainIdentifier(NSString* identifier);
@@ -16,6 +22,14 @@ NSString* PasswordWithKeychainIdentifier(NSString* identifier);
 // Stores `password` in Keychain Services using `identifier` as its identifier
 // for later query. Returns `YES` if saving was successful and `NO` otherwise.
 BOOL StorePasswordInKeychain(NSString* password, NSString* identifier);
+
+// Queries Keychain Services for the stored account info (gaia and email).
+// Returns nil if no info is found.
+AccountInfo LoadAccountInfoFromKeychain();
+
+// Stores `gaia` and `user_email` in Keychain Services by encoding them with
+// `archiver`. Returns `YES` if saving was successful and `NO` otherwise.
+BOOL StoreAccountInfoInKeychain(NSString* gaia, NSString* user_email);
 
 }  // namespace credential_provider_extension
 

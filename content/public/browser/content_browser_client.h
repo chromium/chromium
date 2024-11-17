@@ -56,11 +56,13 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "media/mojo/mojom/media_service.mojom-forward.h"
 #include "media/mojo/mojom/remoting.mojom-forward.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -249,7 +251,6 @@ class NavigationUIData;
 class PrefetchServiceDelegate;
 class PrerenderWebContentsDelegate;
 class PresentationObserver;
-class PrivacySandboxAttestationsObserver;
 class PrivateNetworkDeviceDelegate;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
@@ -568,10 +569,16 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual network::mojom::IPAddressSpace DetermineAddressSpaceFromURL(
       const GURL& url);
 
-  // Called when WebUI objects are created to get aggregate usage data (i.e. is
-  // chrome://downloads used more than chrome://bookmarks?). Only internal (e.g.
-  // chrome://) URLs are logged. Returns whether the URL was actually logged.
-  virtual bool LogWebUIUrl(const GURL& web_ui_url);
+  // Called when WebUI objects are created. Only internal (e.g. chrome://) URLs
+  // are logged. Note that a WebUI can be created but never shown, which will
+  // also be logged by this function. Returns whether the URL was actually
+  // logged. This is used to collect WebUI usage data.
+  virtual bool LogWebUICreated(const GURL& web_ui_url);
+
+  // Called when a WebUI completes the first non-empty paint. Only internal
+  // (e.g. chrome://) URLs are logged. Returns whether the URL was actually
+  // logged. This is used to collect WebUI usage data.
+  virtual bool LogWebUIShown(const GURL& web_ui_url);
 
   // http://crbug.com/829412
   // Renderers with WebUI bindings shouldn't make http(s) requests for security
@@ -590,6 +597,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // TODO(crbug.com/40153317) Move custom protocol handler code to content.
   virtual bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
                                       const std::string& scheme);
+
+  // Returns whether a browser context involves WebRequest API.
+  virtual bool HasWebRequestAPIProxy(BrowserContext* browser_context);
 
   // Returns whether the given process is allowed to commit |url|.  This is a
   // more conservative check than IsSuitableHost, since it is used after a
@@ -872,6 +882,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // feature can be used. This is called on the UI thread.
   virtual bool AllowCompressionDictionaryTransport(BrowserContext* context);
 
+  // Allow to apply the fix to make SharedWorker with a blob URL inherit a
+  // ServiceWorker controller, which is aligned with the specification.
+  // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client.
+  virtual bool AllowSharedWorkerBlobURLFix(BrowserContext* context);
+
   virtual bool IsDataSaverEnabled(BrowserContext* context);
 
   // Updates the given prefs for Service Worker and Shared Worker. The prefs
@@ -949,31 +964,27 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   using InterestGroupApiOperation = content::InterestGroupApiOperation;
 
-  // Returns whether |api_origin| on |top_frame_origin| can perform
-  // |operation| within the interest group API.
+  // Returns whether `api_origin` on `top_frame_origin` can perform `operation`
+  // within the interest group API.
+  //
+  // If `render_frame_host` is null (e.g., due to the initiator frame being
+  // destroyed for a keep-alive worklet), certain operations like console error
+  // will be skipped. However, the core permission check will still be
+  // performed.
   virtual bool IsInterestGroupAPIAllowed(
+      content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
       InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,
       const url::Origin& api_origin);
 
   // Returns whether |destination_origin| can receive beacons sent through
-  // window.fence.reportEvent() or automatic beacons.
-  // Before M120: The reporting destination is required to be attested for its
-  // invoking API only.
-  // M120 and afterwards: If this is a post-impression reporting beacon invoked
-  // by Protected Audience API, the destination is required to be attested for
-  // either Protected Audience or Attribution Reporting, instead of Protected
-  // Audience only. This is because there are use cases that an adtech may need
-  // to measure Protected Audience ads, but not using any of the ads
-  // personalization or targeting features of Protected Audience. The adtech
-  // should be allowed to receive post-impression beacons if it is attested for
-  // Attribution Reporting.
+  // window.fence.reportEvent() or automatic beacons. The reporting destination
+  // is required to be attested for its invoking API.
   virtual bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api,
-      bool post_impression_reporting);
+      content::PrivacySandboxInvokingAPI invoking_api);
 
   // Called when a Fledge auction is complete (without being aborted). If there
   // is a winner, `winner_data_key` should be non-null. `is_server_auction`
@@ -1128,6 +1139,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific);
 
+  // Allows the embedder to control if fenced storage read can happen in a given
+  // context.
+  virtual bool IsFencedStorageReadAllowed(
+      content::BrowserContext* browser_context,
+      content::RenderFrameHost* rfh,
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin);
+
   // Allows the embedder to control if Private Aggregation API operations can
   // happen in a given context.
   //
@@ -1170,6 +1189,35 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::WebContents* web_contents,
       const GURL& url,
       const blink::StorageKey& storage_key);
+
+  // Temporarily allow `accessing_site` to access cookies when embedded on
+  // `top_frame_site` when third-party cookies are otherwise blocked. After
+  // `ttl` has passed, the access will be revoked. If `ignore_schemes` is true,
+  // then cookie access will be allowed for the sites for all schemes.
+  //
+  // Note that this is not a query to check whether cookie access is permitted.
+  // It is a request that such access *be* permitted; i.e., until `ttl` expires,
+  // `IsFullCookieAccessAllowed()` should return true when called with an URL
+  // belonging to `accessing_site` and a storage key belonging to
+  // `top_frame_site`.
+  //
+  // This method will only be called by cookie access heuristics, described at
+  // https://github.com/amaliev/3pcd-exemption-heuristics/blob/main/explainer.md
+  // "DueToHeuristic" is in the name so that embedders can optionally treat
+  // these grants differently from grants due to other causes, if other types
+  // are added in the future.
+  //
+  // This should only be called on the UI thread.
+  //
+  // TODO: crbug.com/40883201 - this is temporarily only called by code in
+  // //chrome. Once the cookie access heuristics move to //content, it will be
+  // called by code in //content.
+  virtual void GrantCookieAccessDueToHeuristic(
+      content::BrowserContext* browser_context,
+      const net::SchemefulSite& top_frame_site,
+      const net::SchemefulSite& accessing_site,
+      base::TimeDelta ttl,
+      bool ignore_schemes);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Notification that a trust anchor was used by the given user.
@@ -1486,6 +1534,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       blink::AssociatedInterfaceRegistry* associated_registry,
       RenderProcessHost* render_process_host) {}
 
+  // Allows to register browser interfaces exposed through the
+  // BrowserChildProcessHost. Note that interface factory callbacks added to
+  // `map` will by default be run immediately on the IO thread, unless a task
+  // runner is provided.
+  virtual void ExposeInterfacesToChild(
+      mojo::BinderMapWithContext<BrowserChildProcessHost*>* map) {}
+
   // Called to bind additional frame-bound media interfaces to the renderer.
   virtual void BindMediaServiceReceiver(RenderFrameHost* render_frame_host,
                                         mojo::GenericPendingReceiver receiver) {
@@ -1592,14 +1647,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                                        WebContents* web_contents);
   virtual void RemovePresentationObserver(PresentationObserver* observer,
                                           WebContents* web_contents);
-
-  // Add or remove an observer for privacy sandbox attestations. Returns true if
-  // privacy sandbox attestations have ever been loaded, or if attestations are
-  // not enforced.
-  virtual bool AddPrivacySandboxAttestationsObserver(
-      PrivacySandboxAttestationsObserver* observer);
-  virtual void RemovePrivacySandboxAttestationsObserver(
-      PrivacySandboxAttestationsObserver* observer);
 
   // Allows programmatic opening of a new tab/window without going through
   // another WebContents. For example, from a Worker. |site_instance|
@@ -2310,6 +2357,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // worker. If |web_contents| is not null, it is guaranteed to be associated
   // with the same BrowserContext as |browser_context|.
   // |browser_context| is always set.
+  // |is_request_for_primary_main_frame_navigation| is whether the request is
+  // for a navigation of the primary main frame.
+  // |is_request_for_navigation| is whether the request is for a navigation.
   // |first_auth_attempt| is needed by AwHttpAuthHandler constructor.
   // |auth_required_callback| is used to transfer auth credentials to
   // URLRequest::SetAuth(). The credentials parameter of the callback
@@ -2344,7 +2394,8 @@ class CONTENT_EXPORT ContentBrowserClient {
       WebContents* web_contents,
       BrowserContext* browser_context,
       const GlobalRequestID& request_id,
-      bool is_request_for_primary_main_frame,
+      bool is_request_for_primary_main_frame_navigation,
+      bool is_request_for_navigation,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
@@ -2381,6 +2432,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool has_user_gesture,
       const std::optional<url::Origin>& initiating_origin,
       RenderFrameHost* initiator_document,
+      const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory);
 
   // Creates an OverlayWindow to be used for video or Picture-in-Picture.
@@ -2568,10 +2620,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // if the `url` or `frame_url` that triggers the event is matched to any
   // enterprise policies that are set by administrators. For a description of
   // reported fields, see
-  // https://crsrc.org/c/components/enterprise/common/proto/legacy_tech_events.proto
+  // https://crsrc.org/c/components/enterprise/common/proto/synced/legacy_tech_events.proto
   virtual void ReportLegacyTechEvent(
       content::RenderFrameHost* render_frame_host,
-      const std::string type,
+      const std::string& type,
       const GURL& url,
       const GURL& frame_url,
       const std::string& filename,
@@ -3010,7 +3062,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   virtual void BindAIManager(
       BrowserContext* browser_context,
-      std::variant<RenderFrameHost*, base::SupportsUserData*> host,
+      base::SupportsUserData* context_user_data,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -3043,6 +3095,18 @@ class CONTENT_EXPORT ContentBrowserClient {
   // satisfied, and false when the request was refused.
   virtual void OnUiaProviderRequested(bool uia_provider_enabled);
 #endif
+
+  // Indicates whether this client allows paint holding in cross-origin
+  // navigations even if there was no user activation.
+  virtual bool AllowNonActivatedCrossOriginPaintHolding();
+
+  // Indicates whether this client requires dispatching the pagehide &
+  // visibilitychange events before the commit of a new document, when
+  // navigating same-site to `destination_url` and doing a BrowsingInstance
+  // swap, which used to fire those events at that timing.
+  virtual bool ShouldDispatchPagehideDuringCommit(
+      BrowserContext* browser_context,
+      const GURL& destination_url);
 };
 
 }  // namespace content

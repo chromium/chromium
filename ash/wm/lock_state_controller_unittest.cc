@@ -5,6 +5,7 @@
 #include "ash/wm/lock_state_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -1076,9 +1077,9 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
   // on disk successfully.
   void VerifyInformedRestoreImageOnDisk() {
     EXPECT_TRUE(base::PathExists(file_path()));
-    int64_t file_size = 0;
-    ASSERT_TRUE(base::GetFileSize(file_path(), &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(file_path());
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   const base::FilePath& file_path() const { return file_path_; }

@@ -4,7 +4,9 @@
 
 #include "pdf/pdf_ink_module.h"
 
+#include <array>
 #include <set>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -12,21 +14,28 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
+#include "pdf/pdfium/pdfium_ink_reader.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/ink/src/ink/brush/brush.h"
+#include "third_party/ink/src/ink/brush/type_matchers.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
-#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/ink/src/ink/strokes/input/type_matchers.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -37,8 +46,12 @@
 using testing::_;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
+using testing::Field;
 using testing::InSequence;
+using testing::NiceMock;
 using testing::Pair;
+using testing::Pointwise;
+using testing::Return;
 using testing::SizeIs;
 
 namespace chrome_pdf {
@@ -63,9 +76,26 @@ constexpr gfx::PointF kTwoPageVerticalLayoutPointOutsidePages(10.0f, 0.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint1InsidePage0(10.0f, 10.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint2InsidePage0(15.0f, 15.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint3InsidePage0(20.0f, 15.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutPoint4InsidePage0(10.0f, 20.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint1InsidePage1(10.0f, 75.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint2InsidePage1(15.0f, 80.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint3InsidePage1(20.0f, 80.0f);
+
+// Canonical points after stroking horizontal & vertical lines with some
+// commonly used points.
+// Horizontal line uses: kTwoPageVerticalLayoutPoint2InsidePage0 to
+//                       kTwoPageVerticalLayoutPoint3InsidePage0
+//                   or: kTwoPageVerticalLayoutPoint2InsidePage1 to
+//                       kTwoPageVerticalLayoutPoint3InsidePage1
+// Vertical line uses:   kTwoPageVerticalLayoutPoint1InsidePage0 to
+//                       kTwoPageVerticalLayoutPoint4InsidePage0
+constexpr gfx::PointF kTwoPageVerticalLayoutHorzLinePoint0Canonical(10.0f,
+                                                                    10.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutHorzLinePoint1Canonical(15.0f,
+                                                                    10.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutVertLinePoint0Canonical(5.0f, 5.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutVertLinePoint1Canonical(5.0f,
+                                                                    15.0f);
 
 // The inputs for a stroke that starts in first page, leaves the bounds of that
 // page, but then moves back into the page results in one stroke with two
@@ -80,6 +110,72 @@ constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment1[] = {
 constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment2[] = {
     gfx::PointF(10.0f, 0.0f), gfx::PointF(10.0f, 5.0f),
     gfx::PointF(15.0f, 10.0f)};
+
+// The stroke inputs for vertical and horizontal lines in the pages.  The
+// `.time` fields intentionally get a common value, to match the behavior of
+// `MouseEventBuilder`.
+constexpr auto kTwoPageVerticalLayoutHorzLinePage0Inputs =
+    std::to_array<PdfInkInputData>({
+        {kTwoPageVerticalLayoutHorzLinePoint0Canonical, base::Seconds(0)},
+        {kTwoPageVerticalLayoutHorzLinePoint1Canonical, base::Seconds(0)},
+    });
+constexpr auto kTwoPageVerticalLayoutVertLinePage0Inputs =
+    std::to_array<PdfInkInputData>({
+        {kTwoPageVerticalLayoutVertLinePoint0Canonical, base::Seconds(0)},
+        {kTwoPageVerticalLayoutVertLinePoint1Canonical, base::Seconds(0)},
+    });
+constexpr auto kTwoPageVerticalLayoutHorzLinePage1Inputs =
+    std::to_array<PdfInkInputData>({
+        {kTwoPageVerticalLayoutHorzLinePoint0Canonical, base::Seconds(0)},
+        {kTwoPageVerticalLayoutHorzLinePoint1Canonical, base::Seconds(0)},
+    });
+
+// Matcher for ink::Stroke objects against their expected brush and inputs.
+MATCHER_P(InkStrokeEq, expected_brush, "") {
+  const auto& [actual_stroke, expected_inputs] = arg;
+  const auto brush_matcher = ink::BrushEq(expected_brush);
+  const auto input_matcher = ink::StrokeInputBatchEq(expected_inputs);
+  return testing::Matches(brush_matcher)(actual_stroke->GetBrush()) &&
+         testing::Matches(input_matcher)(actual_stroke->GetInputs());
+}
+
+std::map<int, std::vector<raw_ref<const ink::Stroke>>> CollectVisibleStrokes(
+    PdfInkModule::PageInkStrokeIterator strokes_iter) {
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> visible_stroke_shapes;
+  for (auto page_stroke = strokes_iter.GetNextStrokeAndAdvance();
+       page_stroke.has_value();
+       page_stroke = strokes_iter.GetNextStrokeAndAdvance()) {
+    visible_stroke_shapes[page_stroke.value().page_index].push_back(
+        page_stroke.value().stroke);
+  }
+
+  return visible_stroke_shapes;
+}
+
+base::Value::Dict CreateGetAnnotationBrushMessageForTesting(
+    const std::string& brush_type) {
+  base::Value::Dict message;
+  message.Set("type", "getAnnotationBrush");
+  message.Set("messageId", "foo");
+  if (!brush_type.empty()) {
+    message.Set("brushType", brush_type);
+  }
+  return message;
+}
+
+blink::WebTouchEvent CreateTouchEvent(blink::WebInputEvent::Type type,
+                                      base::span<const gfx::PointF> points) {
+  CHECK_LE(points.size(), blink::WebTouchEvent::kTouchesLengthCap);
+
+  constexpr int kNoModifiers = 0;
+  blink::WebTouchEvent touch_event(
+      type, kNoModifiers, blink::WebInputEvent::GetStaticTimeStampForTests());
+  for (size_t i = 0; i < points.size(); ++i) {
+    touch_event.touches[i].SetPositionInWidget(points[i]);
+  }
+  touch_event.touches_length = points.size();
+  return touch_event;
+}
 
 class FakeClient : public PdfInkModuleClient {
  public:
@@ -111,9 +207,36 @@ class FakeClient : public PdfInkModuleClient {
     return base::Contains(visible_page_indices_, page_index);
   }
 
+  MOCK_METHOD(PdfInkModuleClient::DocumentV2InkPathShapesMap,
+              LoadV2InkPathsFromPdf,
+              (),
+              (override));
+
+  MOCK_METHOD(void, PostMessage, (base::Value::Dict message), (override));
+
+  MOCK_METHOD(void,
+              StrokeAdded,
+              (int page_index, InkStrokeId id, const ink::Stroke& stroke),
+              (override));
+
   void StrokeFinished() override { ++stroke_finished_count_; }
 
   MOCK_METHOD(void, UpdateInkCursorImage, (SkBitmap bitmap), (override));
+
+  MOCK_METHOD(void,
+              UpdateShapeActive,
+              (int page_index, InkModeledShapeId id, bool active),
+              (override));
+
+  MOCK_METHOD(void,
+              UpdateStrokeActive,
+              (int page_index, InkStrokeId id, bool active),
+              (override));
+
+  MOCK_METHOD(void,
+              DiscardStroke,
+              (int page_index, InkStrokeId id),
+              (override));
 
   void UpdateThumbnail(int page_index) override {
     updated_thumbnail_page_indices_.push_back(page_index);
@@ -190,14 +313,147 @@ class PdfInkModuleTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
 
-  FakeClient client_;
+  NiceMock<FakeClient> client_;
   PdfInkModule ink_module_{client_};
 };
+
+}  // namespace
 
 TEST_F(PdfInkModuleTest, UnknownMessage) {
   base::Value::Dict message;
   message.Set("type", "nonInkMessage");
   EXPECT_FALSE(ink_module().OnMessage(message));
+}
+
+// Verify that a get eraser message gets the eraser parameters.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageEraser) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "eraser",
+              "size": 3.0,
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateGetAnnotationBrushMessageForTesting("eraser")));
+}
+
+// Verify that a get pen message gets the pen brush parameters.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessagePen) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "pen",
+              "size": 3.0,
+              "color": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+              },
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("pen")));
+}
+
+// Verify that a get highlighter message gets the highlighter brush parameters.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageHighlighter) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "highlighter",
+              "size": 8.0,
+              "color": {
+                "r": 242,
+                "g": 139,
+                "b": 130,
+              },
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateGetAnnotationBrushMessageForTesting("highlighter")));
+}
+
+// Verify that a get brush message without a parameter gets the default brush
+// parameters.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageDefault) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "pen",
+              "size": 3.0,
+              "color": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+              },
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("")));
+}
+
+// Verify that a get brush message without a parameter gets the current brush
+// parameters if the brush has changed from the default brush.
+TEST_F(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  // Set the brush to eraser.
+  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationBrushMessageForTesting(
+      "eraser", /*size=*/4.5, nullptr)));
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAnnotationBrushReply",
+            "messageId": "foo",
+            "data": {
+              "type": "eraser",
+              "size": 4.5,
+            },
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("")));
 }
 
 // Verify that a set eraser message sets the annotation brush to an eraser.
@@ -231,10 +487,8 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  const ink::Brush& ink_brush = brush->GetInkBrush();
-  EXPECT_EQ(ink::Color::FromUint8(/*red=*/10, /*green=*/255, /*blue=*/50,
-                                  /*alpha=*/255),
-            ink_brush.GetColor());
+  const ink::Brush& ink_brush = brush->ink_brush();
+  EXPECT_EQ(SkColorSetRGB(10, 255, 50), GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(8.0f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
@@ -259,10 +513,8 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  const ink::Brush& ink_brush = brush->GetInkBrush();
-  EXPECT_EQ(ink::Color::FromUint8(/*red=*/240, /*green=*/133, /*blue=*/0,
-                                  /*alpha=*/255),
-            ink_brush.GetColor());
+  const ink::Brush& ink_brush = brush->ink_brush();
+  EXPECT_EQ(SkColorSetRGB(240, 133, 0), GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
@@ -286,8 +538,8 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  const ink::Brush& ink_brush = brush->GetInkBrush();
-  EXPECT_EQ(ink::Color::Black(), ink_brush.GetColor());
+  const ink::Brush& ink_brush = brush->ink_brush();
+  EXPECT_EQ(SK_ColorBLACK, GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
@@ -297,6 +549,25 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
 }
 
 TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
+  EXPECT_CALL(client(), LoadV2InkPathsFromPdf())
+      .WillOnce(Return(PdfInkModuleClient::DocumentV2InkPathShapesMap{
+          {0,
+           PdfInkModuleClient::PageV2InkPathShapesMap{
+               {InkModeledShapeId(0), ink::ModeledShape()},
+               {InkModeledShapeId(1), ink::ModeledShape()}}},
+          {3,
+           PdfInkModuleClient::PageV2InkPathShapesMap{
+               {InkModeledShapeId(2), ink::ModeledShape()}}},
+      }));
+
+  const auto kShapeMapMatcher = ElementsAre(
+      Pair(0, ElementsAre(Field(&PdfInkModule::LoadedV2ShapeState::id,
+                                InkModeledShapeId(0)),
+                          Field(&PdfInkModule::LoadedV2ShapeState::id,
+                                InkModeledShapeId(1)))),
+      Pair(3, ElementsAre(Field(&PdfInkModule::LoadedV2ShapeState::id,
+                                InkModeledShapeId(2)))));
+
   EXPECT_FALSE(ink_module().enabled());
 
   base::Value::Dict message =
@@ -304,14 +575,17 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
 
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
+  EXPECT_TRUE(ink_module().loaded_v2_shapes_.empty());
 
   message.Set("enable", true);
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_TRUE(ink_module().enabled());
+  EXPECT_THAT(ink_module().loaded_v2_shapes_, kShapeMapMatcher);
 
   message.Set("enable", false);
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
+  EXPECT_THAT(ink_module().loaded_v2_shapes_, kShapeMapMatcher);
 }
 
 TEST_F(PdfInkModuleTest, MaybeSetCursorWhenTogglingAnnotationMode) {
@@ -400,9 +674,28 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
   ink_module().OnGeometryChanged();
 }
 
+TEST_F(PdfInkModuleTest, ContentFocusedPostMessage) {
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder().CreateLeftClickAtPosition(gfx::PointF()).Build();
+
+  EXPECT_CALL(client(), PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "contentFocused",
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+      });
+
+  ink_module().HandleInputEvent(mouse_down_event);
+}
+
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {
  protected:
   // Mouse locations used for `RunStrokeCheckTest()`.
+  // Touch events may use the same coordinates.
   static constexpr gfx::PointF kMouseDownPoint = gfx::PointF(10.0f, 15.0f);
   static constexpr gfx::PointF kMouseMovePoint = gfx::PointF(20.0f, 25.0f);
   static constexpr gfx::PointF kMouseUpPoint = gfx::PointF(30.0f, 17.0f);
@@ -412,6 +705,13 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   void InitializeSimpleSinglePageBasicLayout() {
     // Single page layout that matches visible area.
     constexpr gfx::RectF kPage(0.0f, 0.0f, 50.0f, 60.0f);
+    client().set_page_layouts(base::span_from_ref(kPage));
+    client().set_page_visibility(0, true);
+  }
+
+  void InitializeScaledLandscapeSinglePageBasicLayout() {
+    // Single page layout that matches visible area.
+    constexpr gfx::RectF kPage(0.0f, 0.0f, 120.0f, 100.0f);
     client().set_page_layouts(base::span_from_ref(kPage));
     client().set_page_visibility(0, true);
   }
@@ -460,6 +760,70 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     }
   }
 
+  void ApplyStrokeWithTouchAtPoints(
+      base::span<const gfx::PointF> touch_start_points,
+      std::vector<base::span<const gfx::PointF>> all_touch_move_points,
+      base::span<const gfx::PointF> touch_end_points) {
+    ApplyStrokeWithTouchAtPointsMaybeHandled(
+        touch_start_points, all_touch_move_points, touch_end_points,
+        /*expect_touch_events_handled=*/true);
+  }
+
+  // TODO(crbug.com/377733396): Consider refactoring to combine with
+  // RunStrokeCheckTest().
+  void RunStrokeTouchCheckTest(bool annotation_mode_enabled) {
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
+    EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
+
+    const std::vector<base::span<const gfx::PointF>> all_touch_move_points{
+        base::span_from_ref(kMouseMovePoint),
+    };
+    ApplyStrokeWithTouchAtPointsMaybeHandled(
+        base::span_from_ref(kMouseDownPoint), all_touch_move_points,
+        base::span_from_ref(kMouseUpPoint),
+        /*expect_touch_events_handled=*/annotation_mode_enabled);
+
+    const int expected_count = annotation_mode_enabled ? 1 : 0;
+    EXPECT_EQ(expected_count, client().stroke_finished_count());
+    const std::vector<int>& updated_thumbnail_page_indices =
+        client().updated_thumbnail_page_indices();
+    if (annotation_mode_enabled) {
+      EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
+    } else {
+      EXPECT_TRUE(updated_thumbnail_page_indices.empty());
+    }
+  }
+
+  // TODO(crbug.com/377733396): Consider refactoring to combine with
+  // RunStrokeCheckTest().
+  //
+  // Note that currently multi-touch is not handled, so the test expectations
+  // are different from the ones in RunStrokeTouchCheckTest().
+  void RunStrokeMultiTouchCheckTest(bool annotation_mode_enabled) {
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
+    EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
+
+    const std::vector<gfx::PointF> touch_start_points{kMouseDownPoint,
+                                                      kMouseDownPoint};
+    const std::vector<gfx::PointF> touch_move_points{kMouseMovePoint,
+                                                     kMouseMovePoint};
+    const std::vector<base::span<const gfx::PointF>> all_touch_move_points{
+        touch_move_points,
+    };
+    const std::vector<gfx::PointF> touch_end_points{kMouseUpPoint,
+                                                    kMouseUpPoint};
+    ApplyStrokeWithTouchAtPointsMaybeHandled(
+        touch_start_points, all_touch_move_points, touch_end_points,
+        /*expect_touch_events_handled=*/false);
+
+    EXPECT_EQ(0, client().stroke_finished_count());
+    const std::vector<int>& updated_thumbnail_page_indices =
+        client().updated_thumbnail_page_indices();
+    EXPECT_TRUE(updated_thumbnail_page_indices.empty());
+  }
+
   void SelectEraserToolOfSize(float size) {
     EXPECT_TRUE(ink_module().OnMessage(
         CreateSetAnnotationBrushMessageForTesting("eraser", size, nullptr)));
@@ -471,6 +835,29 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   PdfInkModule::DocumentStrokeInputPointsMap VisibleStrokeInputPositions()
       const {
     return ink_module().GetVisibleStrokesInputPositionsForTesting();
+  }
+
+  void ExpectStrokesAdded(int strokes_affected) {
+    CHECK_GT(strokes_affected, 0);
+    EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(strokes_affected);
+  }
+
+  void ExpectNoStrokeAdded() {
+    EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  }
+
+  void ExpectUpdateStrokesActive(int strokes_affected, bool expected_active) {
+    CHECK_GT(strokes_affected, 0);
+    EXPECT_CALL(client(), UpdateStrokeActive(_, _, expected_active))
+        .Times(strokes_affected);
+  }
+
+  void ExpectNoUpdateStrokeActive() {
+    EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  }
+
+  void VerifyAndClearExpectations() {
+    testing::Mock::VerifyAndClearExpectations(this);
   }
 
  private:
@@ -499,16 +886,82 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_up_event));
   }
+
+  void ApplyStrokeWithTouchAtPointsMaybeHandled(
+      base::span<const gfx::PointF> touch_start_points,
+      std::vector<base::span<const gfx::PointF>> all_touch_move_points,
+      base::span<const gfx::PointF> touch_end_points,
+      bool expect_touch_events_handled) {
+    blink::WebTouchEvent touch_start_event = CreateTouchEvent(
+        blink::WebInputEvent::Type::kTouchStart, touch_start_points);
+    EXPECT_EQ(expect_touch_events_handled,
+              ink_module().HandleInputEvent(touch_start_event));
+    for (const auto& touch_move_points : all_touch_move_points) {
+      blink::WebTouchEvent touch_move_event = CreateTouchEvent(
+          blink::WebInputEvent::Type::kTouchMove, touch_move_points);
+      EXPECT_EQ(expect_touch_events_handled,
+                ink_module().HandleInputEvent(touch_move_event));
+    }
+
+    blink::WebTouchEvent touch_end_event = CreateTouchEvent(
+        blink::WebInputEvent::Type::kTouchEnd, touch_end_points);
+    EXPECT_EQ(expect_touch_events_handled,
+              ink_module().HandleInputEvent(touch_end_event));
+  }
 };
 
-TEST_F(PdfInkModuleStrokeTest, NoAnnotationIfNotEnabled) {
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMouseIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
 }
 
-TEST_F(PdfInkModuleStrokeTest, AnnotationIfEnabled) {
+TEST_F(PdfInkModuleStrokeTest, AnnotationWithMouseIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+}
+
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithTouchIfNotEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/false);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+}
+
+TEST_F(PdfInkModuleStrokeTest, AnnotationWithTouchIfEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/true);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+}
+
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfNotEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeMultiTouchCheckTest(/*annotation_mode_enabled=*/false);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+}
+
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeMultiTouchCheckTest(/*annotation_mode_enabled=*/true);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
 }
 
 TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
@@ -539,58 +992,51 @@ TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
                                        kCanonicalMouseUpPosition}})));
 }
 
-TEST_F(PdfInkModuleStrokeTest, DrawRenderTransform) {
-  // Simulate a viewport that is wider than page to be rendered, and has the
-  // page centered within that.  The page is positioned at top of viewport with
-  // no vertical padding.
-  constexpr gfx::SizeF kPageSize(50.0f, 60.0f);
-  constexpr gfx::PointF kPageOrigin(0.0f, -15.0f);
-  constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
-  constexpr gfx::Vector2dF kViewportOrigin(5.0f, 0.0f);
-  client().set_page_layouts(base::span_from_ref(kPageLayout));
-  client().set_page_visibility(0, true);
-  client().set_orientation(PageOrientation::kClockwise180);
-  client().set_viewport_origin_offset(kViewportOrigin);
-
-  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
-
-  // Simulate drawing the strokes, and verify that the expected transform was
-  // used.
-  std::vector<ink::AffineTransform> draw_render_transforms;
-  ink_module().SetDrawRenderTransformCallbackForTesting(
-      base::BindLambdaForTesting([&](const ink::AffineTransform& transform) {
-        draw_render_transforms.push_back(transform);
-      }));
-  SkCanvas canvas;
-  ink_module().Draw(canvas);
-
-  // Just one transform provided, to match the captured stroke.
-  EXPECT_THAT(draw_render_transforms,
-              ElementsAre(InkAffineTransformEq(-1.0f, 0.0f, 54.0f, 0.0f, -1.0f,
-                                               44.0f)));
-
-  // But if the one and only page is not visible, then Draw() does no transform
-  // calculations.
-  draw_render_transforms.clear();
-  client().set_page_visibility(0, false);
-  ink_module().Draw(canvas);
-  EXPECT_TRUE(draw_render_transforms.empty());
-}
-
-TEST_F(PdfInkModuleStrokeTest, InvalidationsFromStroke) {
+TEST_F(PdfInkModuleStrokeTest, BasicLayoutInvalidationsFromStroke) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  // The default brush param size is 1.0.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(9.0f, 14.0f),
-                                             gfx::Size(2.0f, 2.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(9.0f, 14.0f),
-                                             gfx::Size(12.0f, 12.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(19.0f, 16.0f),
-                                           gfx::Size(12.0f, 10.0f));
-  EXPECT_THAT(client().invalidations(), ElementsAre(kInvalidationAreaMouseDown,
-                                                    kInvalidationAreaMouseMove,
-                                                    kInvalidationAreaMouseUp));
+  // The default brush param size is 3.0.
+  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(4.0f, 4.0f));
+  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(14.0f, 14.0f));
+  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
+                                           gfx::Size(14.0f, 12.0f));
+  const gfx::Rect kInvalidationAreaFinishedStroke(8.0f, 13.0f, 25.0f, 7.0f);
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaFinishedStroke));
+}
+
+TEST_F(PdfInkModuleStrokeTest, TransformedLayoutInvalidationsFromStroke) {
+  // Setup to support examining the invalidation areas from page stroke points
+  // for a layout that is more complicated than what is provide by
+  // `InitializeSimpleSinglePageBasicLayout()`.  Include viewport offset,
+  // scroll, rotation, and zoom.
+  constexpr gfx::SizeF kPageSize(100.0f, 120.0f);
+  constexpr gfx::PointF kPageOrigin(5.0f, -15.0f);
+  constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
+  client().set_page_layouts(base::span_from_ref(kPageLayout));
+  client().set_page_visibility(0, true);
+  client().set_orientation(PageOrientation::kClockwise180);
+  client().set_zoom(2.0f);
+
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // The default brush param size is 3.0.
+  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(4.0f, 4.0f));
+  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(14.0f, 14.0f));
+  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
+                                           gfx::Size(14.0f, 12.0f));
+  const gfx::Rect kInvalidationAreaFinishedStroke(7.0f, 12.0f, 27.0f, 9.0f);
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaFinishedStroke));
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokeOutsidePage) {
@@ -783,6 +1229,8 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
 
 TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   InitializeSimpleSinglePageBasicLayout();
+  ExpectStrokesAdded(/*strokes_affected=*/2);
+  ExpectNoUpdateStrokeActive();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   // Draw a second stroke.
@@ -818,6 +1266,9 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   // Stroke with the eraser tool again at `kMousePoints`, but now with a much
   // bigger eraser size. This will actually intersect with both strokes.
   SelectEraserToolOfSize(8.0f);
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectUpdateStrokesActive(/*strokes_affected=*/2, /*expected_active=*/false);
   ApplyStrokeWithMouseAtPoints(
       kMouseMovePoint, base::span_from_ref(kMouseMovePoint), kMouseMovePoint);
 
@@ -837,6 +1288,9 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
   const std::vector<int>& updated_thumbnail_page_indices =
       client().updated_thumbnail_page_indices();
   EXPECT_TRUE(updated_thumbnail_page_indices.empty());
+
+  ExpectStrokesAdded(/*strokes_affected=*/2);
+  ExpectNoUpdateStrokeActive();
 
   // A stroke in the first page generates a stroke only for that page.
   ApplyStrokeWithMouseAtPoints(
@@ -859,6 +1313,9 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
 
   // Erasing across the two pages should erase everything.
   SelectEraserToolOfSize(3.0f);
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectUpdateStrokesActive(/*strokes_affected=*/2, /*expected_active=*/false);
   ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       std::vector<gfx::PointF>{kTwoPageVerticalLayoutPoint2InsidePage0,
@@ -915,22 +1372,67 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
 }
 
+TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Check that there are now some visible strokes.
+  EXPECT_THAT(
+      VisibleStrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
+  EXPECT_EQ(1, client().stroke_finished_count());
+  const std::vector<int>& updated_thumbnail_page_indices =
+      client().updated_thumbnail_page_indices();
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
+
+  // Stroke with the eraser tool.
+  SelectEraserToolOfSize(3.0f);
+  const std::vector<base::span<const gfx::PointF>> touch_move_points{
+      base::span_from_ref(kMouseMovePoint),
+  };
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
+                               touch_move_points,
+                               base::span_from_ref(kMouseDownPoint));
+
+  // Now there are no visible strokes left.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  // Erasing counts as another stroke action.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+
+  // Stroke again. The stroke that have already been erased should stay erased.
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
+                               touch_move_points,
+                               base::span_from_ref(kMouseDownPoint));
+
+  // Still no visible strokes.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  // Nothing got erased, so the count stays at 2.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+
+  // Stroke again with the mouse gets the same results.
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
+
+  // Still no visible strokes.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  // Nothing got erased, so the count stays at 2.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+}
+
 class PdfInkModuleUndoRedoTest : public PdfInkModuleStrokeTest {
  protected:
   void PerformUndo() {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateAnnotationUndoRedoMessage("annotationUndo")));
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateSetAnnotationUndoRedoMessageForTesting(
+            TestAnnotationUndoRedoMessageType::kUndo)));
   }
   void PerformRedo() {
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateAnnotationUndoRedoMessage("annotationRedo")));
-  }
-
- private:
-  base::Value::Dict CreateAnnotationUndoRedoMessage(std::string_view type) {
-    base::Value::Dict message;
-    message.Set("type", type);
-    return message;
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateSetAnnotationUndoRedoMessageForTesting(
+            TestAnnotationUndoRedoMessageType::kRedo)));
   }
 };
 
@@ -954,6 +1456,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEmpty) {
 
 TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   InitializeSimpleSinglePageBasicLayout();
+  ExpectStrokesAdded(/*strokes_affected=*/1);
+  ExpectUpdateStrokesActive(/*strokes_affected=*/1, /*expect_active=*/false);
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   const auto kMatcher =
@@ -974,12 +1478,18 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
 
   // Spurious undo message is a no-op.
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
   PerformUndo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   EXPECT_EQ(1, client().stroke_finished_count());
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
 
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectUpdateStrokesActive(/*strokes_affected=*/1, /*expect_active=*/true);
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
@@ -987,11 +1497,92 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0, 0));
 
   // Spurious redo message is a no-op.
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
   EXPECT_EQ(1, client().stroke_finished_count());
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0, 0));
+}
+
+TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsBasic) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // The default brush param size is 3.0.  Invalidation areas are in screen
+  // coordinates.
+  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(4.0f, 4.0f));
+  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(14.0f, 14.0f));
+  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
+                                           gfx::Size(14.0f, 12.0f));
+  // This size is smaller than the area of the merged invalidation constants
+  // above because InkStrokeModeler modeled the "V" shaped input into an input
+  // with a much gentler line slope.
+  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(8.0f, 13.0f),
+                                                gfx::Size(25.0f, 7.0f));
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaEntireStroke));
+
+  PerformUndo();
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaEntireStroke,
+                  kInvalidationAreaEntireStroke));
+
+  PerformRedo();
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaEntireStroke,
+                  kInvalidationAreaEntireStroke,
+                  kInvalidationAreaEntireStroke));
+}
+
+TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsScaledRotated90) {
+  InitializeScaledLandscapeSinglePageBasicLayout();
+  client().set_orientation(PageOrientation::kClockwise90);
+  client().set_zoom(2.0f);
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // The default brush param size is 3.0.  Invalidation areas are in screen
+  // coordinates.
+  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(4.0f, 4.0f));
+  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(14.0f, 14.0f));
+  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
+                                           gfx::Size(14.0f, 12.0f));
+  // This size is smaller than the area of the merged invalidation constants
+  // above because InkStrokeModeler modeled the "V" shaped input into an input
+  // with a much gentler line slope.
+  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(7.0f, 12.0f),
+                                                gfx::Size(27.0f, 9.0f));
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaEntireStroke));
+
+  PerformUndo();
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaEntireStroke,
+                  kInvalidationAreaEntireStroke));
+
+  PerformRedo();
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaEntireStroke,
+                  kInvalidationAreaEntireStroke,
+                  kInvalidationAreaEntireStroke));
 }
 
 TEST_F(PdfInkModuleUndoRedoTest, UndoRedoAnnotationModeDisabled) {
@@ -1082,8 +1673,15 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
               ElementsAre(Pair(
                   0, ElementsAreArray(kInitial4StrokeMatchersSpan.first(2u)))));
 
+  constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(2)));
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(3)));
+
   ApplyStrokeWithMouseAtPoints(
       kMouseDownPoint3, base::span_from_ref(kMouseMovePoint3), kMouseUpPoint3);
+  VerifyAndClearExpectations();
+
+  EXPECT_CALL(client(), DiscardStroke(_, _)).Times(0);
 
   // The 2 strokes that were undone have been discarded, and the newly drawn
   // stroke takes their place.
@@ -1118,6 +1716,11 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
   EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  VerifyAndClearExpectations();
+
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(0)));
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(1)));
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(2)));
 
   ApplyStrokeWithMouseAtPoints(
       kMouseDownPoint2, base::span_from_ref(kMouseMovePoint2), kMouseUpPoint2);
@@ -1181,6 +1784,192 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoOnTwoPages) {
               ElementsAre(kPage0Matcher, kPage1Matcher));
 }
 
-}  // namespace
+TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
+  constexpr int kPageIndex = 0;
+  constexpr InkModeledShapeId kShapeId0(0);
+  constexpr InkModeledShapeId kShapeId1(1);
+
+  const auto ink_points = base::ToVector(
+      kMousePoints,
+      [](const gfx::PointF& point) { return InkPointFromGfxPoint(point); });
+  std::optional<ink::Mesh> mesh0 =
+      CreateInkMeshFromPolylineForTesting(ink_points);
+  ASSERT_TRUE(mesh0.has_value());
+  auto shape0 =
+      ink::ModeledShape::FromMeshes(base::span_from_ref(mesh0.value()));
+  ASSERT_TRUE(shape0.ok());
+
+  constexpr ink::Point kCornerPoints[] = {
+      {49, 59},
+      {48, 59},
+      {48, 58},
+  };
+  std::optional<ink::Mesh> mesh1 =
+      CreateInkMeshFromPolylineForTesting(kCornerPoints);
+  ASSERT_TRUE(mesh1.has_value());
+  auto shape1 =
+      ink::ModeledShape::FromMeshes(base::span_from_ref(mesh1.value()));
+  ASSERT_TRUE(shape1.ok());
+
+  EXPECT_CALL(client(), LoadV2InkPathsFromPdf())
+      .WillOnce(Return(PdfInkModuleClient::DocumentV2InkPathShapesMap{
+          {kPageIndex, PdfInkModuleClient::PageV2InkPathShapesMap{
+                           {kShapeId0, *shape0},
+                           {kShapeId1, *shape1},
+                       }}}));
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
+  EXPECT_CALL(client(), UpdateShapeActive(_, _, _)).Times(0);
+
+  InitializeSimpleSinglePageBasicLayout();
+  EnableAnnotationMode();
+  ASSERT_TRUE(ink_module().enabled());
+
+  // Stroke with the eraser tool in the corner opposite from `kCornerPoints`,
+  // which does nothing.
+  SelectEraserToolOfSize(3.0f);
+  ApplyStrokeWithMouseAtPoints(
+      gfx::PointF(), base::span_from_ref(gfx::PointF()), gfx::PointF());
+  VerifyAndClearExpectations();
+
+  // Stroke twice where `shape0` is, and that should deactivate only that shape
+  // and only once.
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
+  EXPECT_CALL(client(),
+              UpdateShapeActive(kPageIndex, kShapeId0, /*active=*/false));
+  EXPECT_CALL(client(), UpdateShapeActive(_, kShapeId1, _)).Times(0);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint);
+  VerifyAndClearExpectations();
+
+  // Undo should reactivate `shape0`.
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
+  EXPECT_CALL(client(),
+              UpdateShapeActive(kPageIndex, kShapeId0, /*active=*/true));
+  EXPECT_CALL(client(), UpdateShapeActive(_, kShapeId1, _)).Times(0);
+  PerformUndo();
+  VerifyAndClearExpectations();
+
+  // Redo should deactivate `shape0`.
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
+  EXPECT_CALL(client(),
+              UpdateShapeActive(kPageIndex, kShapeId0, /*active=*/false));
+  EXPECT_CALL(client(), UpdateShapeActive(_, kShapeId1, _)).Times(0);
+  PerformRedo();
+}
+
+// Regression test for crbug.com/378724153.
+TEST_F(PdfInkModuleUndoRedoTest, StrokeStrokeUndoStroke) {
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Draw stroke 1.
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Draw stroke 2.
+  constexpr gfx::PointF kMouseDownPoint2 = gfx::PointF(11.0f, 15.0f);
+  constexpr gfx::PointF kMouseMovePoint2 = gfx::PointF(21.0f, 25.0f);
+  constexpr gfx::PointF kMouseUpPoint2 = gfx::PointF(31.0f, 17.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint2), kMouseUpPoint2);
+
+  // Strokes 1 and 2 should be visible.
+  const auto kInitialStrokeMatchers = {
+      ElementsAre(kMouseDownPoint, kMouseMovePoint, kMouseUpPoint),
+      ElementsAre(kMouseDownPoint2, kMouseMovePoint2, kMouseUpPoint2)};
+  const auto kInitialStrokeMatchersSpan =
+      base::make_span(kInitialStrokeMatchers);
+  EXPECT_THAT(
+      StrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAreArray(kInitialStrokeMatchersSpan))));
+  EXPECT_THAT(
+      VisibleStrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAreArray(kInitialStrokeMatchersSpan))));
+
+  // Undo makes 1 stroke visible.
+  PerformUndo();
+  EXPECT_THAT(
+      StrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAreArray(kInitialStrokeMatchersSpan))));
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(
+                  0, ElementsAreArray(kInitialStrokeMatchersSpan.first(1u)))));
+
+  // Stroke IDs are 0-indexed, so stroke 2 has a stroke ID of 1.
+  EXPECT_CALL(client(), DiscardStroke(/*page_index=*/0, InkStrokeId(1)));
+
+  // Draw stroke 3. Stroke 2 was undone and should be discarded.
+  constexpr gfx::PointF kMouseDownPoint3 = gfx::PointF(12.0f, 15.0f);
+  constexpr gfx::PointF kMouseMovePoint3 = gfx::PointF(22.0f, 25.0f);
+  constexpr gfx::PointF kMouseUpPoint3 = gfx::PointF(32.0f, 17.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint3, base::span_from_ref(kMouseMovePoint3), kMouseUpPoint3);
+
+  // Strokes 1 and 3 should be visible.
+  const auto kNextStrokeMatchers = {
+      ElementsAre(kMouseDownPoint, kMouseMovePoint, kMouseUpPoint),
+      ElementsAre(kMouseDownPoint3, kMouseMovePoint3, kMouseUpPoint3)};
+  const auto kNextStrokeMatchersSpan = base::make_span(kNextStrokeMatchers);
+  EXPECT_THAT(StrokeInputPositions(),
+              ElementsAre(Pair(0, ElementsAreArray(kNextStrokeMatchersSpan))));
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(0, ElementsAreArray(kNextStrokeMatchersSpan))));
+}
+
+using PdfInkModuleGetVisibleStrokesTest = PdfInkModuleStrokeTest;
+
+TEST_F(PdfInkModuleGetVisibleStrokesTest, NoPageStrokes) {
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>>
+      collected_stroke_shapes =
+          CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  ASSERT_EQ(collected_stroke_shapes.size(), 0u);
+}
+
+TEST_F(PdfInkModuleGetVisibleStrokesTest, MultiplePageStrokes) {
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
+
+  // Multiple strokes on one page, plus a stroke on another page.
+  ApplyStrokeWithMouseAtPoints(
+      kTwoPageVerticalLayoutPoint2InsidePage0,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint3InsidePage0),
+      kTwoPageVerticalLayoutPoint3InsidePage0);
+  ApplyStrokeWithMouseAtPoints(
+      kTwoPageVerticalLayoutPoint1InsidePage0,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint4InsidePage0),
+      kTwoPageVerticalLayoutPoint4InsidePage0);
+  ApplyStrokeWithMouseAtPoints(
+      kTwoPageVerticalLayoutPoint2InsidePage1,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint3InsidePage1),
+      kTwoPageVerticalLayoutPoint3InsidePage1);
+
+  std::optional<ink::StrokeInputBatch> expected_page0_horz_line_input_batch =
+      CreateInkInputBatch(kTwoPageVerticalLayoutHorzLinePage0Inputs);
+  ASSERT_TRUE(expected_page0_horz_line_input_batch.has_value());
+  std::optional<ink::StrokeInputBatch> expected_page0_vert_line_input_batch =
+      CreateInkInputBatch(kTwoPageVerticalLayoutVertLinePage0Inputs);
+  ASSERT_TRUE(expected_page0_vert_line_input_batch.has_value());
+  std::optional<ink::StrokeInputBatch> expected_page1_horz_line_input_batch =
+      CreateInkInputBatch(kTwoPageVerticalLayoutHorzLinePage1Inputs);
+  ASSERT_TRUE(expected_page1_horz_line_input_batch.has_value());
+
+  const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
+  ASSERT_TRUE(brush);
+
+  std::map<int, std::vector<raw_ref<const ink::Stroke>>> collected_strokes =
+      CollectVisibleStrokes(ink_module().GetVisibleStrokesIterator());
+  EXPECT_THAT(
+      collected_strokes,
+      ElementsAre(
+          Pair(0, Pointwise(InkStrokeEq(brush->ink_brush()),
+                            {expected_page0_horz_line_input_batch.value(),
+                             expected_page0_vert_line_input_batch.value()})),
+          Pair(1, Pointwise(InkStrokeEq(brush->ink_brush()),
+                            {expected_page1_horz_line_input_batch.value()}))));
+}
 
 }  // namespace chrome_pdf

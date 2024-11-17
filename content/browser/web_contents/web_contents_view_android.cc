@@ -93,7 +93,8 @@ bool IsDragEnabledForDropData(const DropData& drop_data) {
     return drop_data.text.has_value();
   }
   return !drop_data.url.is_empty() || !drop_data.file_contents.empty() ||
-         drop_data.text.has_value();
+         drop_data.text.has_value() ||
+         base::FeatureList::IsEnabled(features::kDragDropEmpty);
 }
 }
 
@@ -128,7 +129,7 @@ WebContentsViewAndroid::WebContentsViewAndroid(
     std::unique_ptr<WebContentsViewDelegate> delegate)
     : web_contents_(web_contents),
       delegate_(std::move(delegate)),
-      view_(ui::ViewAndroid::LayoutType::NORMAL),
+      view_(ui::ViewAndroid::LayoutType::kNormal),
       synchronous_compositor_client_(nullptr) {
   view_.SetLayer(cc::slim::Layer::Create());
   view_.set_event_handler(this);
@@ -148,6 +149,13 @@ WebContentsViewAndroid::WebContentsViewAndroid(
 }
 
 WebContentsViewAndroid::~WebContentsViewAndroid() {
+  // The animation manager holds a reference to `parent_for_web_page_widgets_`.
+  // Explicitly destroy the animation manager before resetting
+  // `parent_for_web_page_widgets_`.
+  if (back_forward_animation_manager_) {
+    back_forward_animation_manager_.reset();
+  }
+
   // Opposite to the construction order - disconnect the child first.
   parent_for_web_page_widgets_->RemoveFromParent();
   parent_for_web_page_widgets_.reset();
@@ -329,6 +337,10 @@ void WebContentsViewAndroid::UpdateWindowControlsOverlay(
 BackForwardTransitionAnimationManager*
 WebContentsViewAndroid::GetBackForwardTransitionAnimationManager() {
   return back_forward_animation_manager_.get();
+}
+
+void WebContentsViewAndroid::DestroyBackForwardTransitionAnimationManager() {
+  back_forward_animation_manager_.reset();
 }
 
 void WebContentsViewAndroid::ShowContextMenu(RenderFrameHost& render_frame_host,
@@ -906,6 +918,9 @@ void WebContentsViewAndroid::OnSizeChanged() {
 
 void WebContentsViewAndroid::OnPhysicalBackingSizeChanged(
     std::optional<base::TimeDelta> deadline_override) {
+  if (back_forward_animation_manager_) {
+    back_forward_animation_manager_->OnPhysicalBackingSizeChanged();
+  }
   if (web_contents_->GetRenderWidgetHostView())
     web_contents_->SendScreenRects();
 }

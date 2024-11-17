@@ -11,7 +11,7 @@ proto_library("seatbelt_proto") {
   sources = [ "seatbelt.proto" ]
   cc_generator_options = "dllexport_decl=SEATBELT_EXPORT:"
   cc_include = "sandbox/mac/seatbelt_export.h"
-  deps = [ ":seatbelt_export" ]
+  link_deps = [ ":seatbelt_export" ]
   defines = [ "SEATBELT_IMPLEMENTATION" ]
 }
 

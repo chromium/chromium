@@ -32,22 +32,22 @@ using testing::Not;
 using testing::Optional;
 using testing::Property;
 
-TEST(UpdateChannelId, DefaultChannelId) {
-  EXPECT_THAT(UpdateChannelId::default_id(),
-              Eq(*UpdateChannelId::Create("default")));
-  EXPECT_THAT(UpdateChannelId::default_id().ToString(), Eq("default"));
+TEST(UpdateChannel, DefaultChannel) {
+  EXPECT_THAT(UpdateChannel::default_channel(),
+              Eq(*UpdateChannel::Create("default")));
+  EXPECT_THAT(UpdateChannel::default_channel().ToString(), Eq("default"));
 }
 
-using UpdateChannelIdCreateInvalidTest = testing::TestWithParam<std::string>;
+using UpdateChannelCreateInvalidTest = testing::TestWithParam<std::string>;
 
-TEST_P(UpdateChannelIdCreateInvalidTest, Check) {
-  EXPECT_THAT(UpdateChannelId::Create(GetParam()),
+TEST_P(UpdateChannelCreateInvalidTest, Check) {
+  EXPECT_THAT(UpdateChannel::Create(GetParam()),
               ErrorIs(Eq(absl::monostate())));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    UpdateChannelIdCreateInvalidTest,
+    UpdateChannelCreateInvalidTest,
     testing::Values("",
                     // These are a few invalid UTF-8 sequences taken from
                     // `base/strings/string_util_unittest.cc`.
@@ -55,17 +55,17 @@ INSTANTIATE_TEST_SUITE_P(
                     "\xF4\x8F\xBF\xBE",
                     "\xC0\x80"));
 
-using UpdateChannelIdCreateValidTest = testing::TestWithParam<std::string>;
+using UpdateChannelCreateValidTest = testing::TestWithParam<std::string>;
 
-TEST_P(UpdateChannelIdCreateValidTest, Check) {
-  EXPECT_THAT(UpdateChannelId::Create(GetParam()),
-              ValueIs(Property("ToString", &UpdateChannelId::ToString,
-                               Eq(GetParam()))));
+TEST_P(UpdateChannelCreateValidTest, Check) {
+  EXPECT_THAT(
+      UpdateChannel::Create(GetParam()),
+      ValueIs(Property("ToString", &UpdateChannel::ToString, Eq(GetParam()))));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    UpdateChannelIdCreateValidTest,
+    UpdateChannelCreateValidTest,
     testing::Values(" ",
                     "stable",
                     "default",
@@ -129,7 +129,7 @@ TEST(UpdateManifestTest, ParsesManifestWithAdditionalKeys) {
               ElementsAre<UpdateManifest::VersionEntry>(
                   {GURL("https://example.com"),
                    base::Version("1.2.3"),
-                   {*UpdateChannelId::Create("default")}}));
+                   {*UpdateChannel::Create("default")}}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithVersion) {
@@ -147,7 +147,7 @@ TEST(UpdateManifestTest, ParsesManifestWithVersion) {
               ElementsAre<UpdateManifest::VersionEntry>(
                   {GURL("https://example.com"),
                    base::Version("1.2.3"),
-                   {*UpdateChannelId::Create("default")}}));
+                   {*UpdateChannel::Create("default")}}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc) {
@@ -169,10 +169,10 @@ TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc) {
       ElementsAre(
           UpdateManifest::VersionEntry{GURL("https://c.de/sub/foo/bar"),
                                        base::Version("1.2.3"),
-                                       {*UpdateChannelId::Create("default")}},
+                                       {*UpdateChannel::Create("default")}},
           UpdateManifest::VersionEntry{GURL("https://c.de/foo/bar"),
                                        base::Version("2.3.4"),
-                                       {*UpdateChannelId::Create("default")}}));
+                                       {*UpdateChannel::Create("default")}}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc2) {
@@ -189,7 +189,7 @@ TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc2) {
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://c.de/foo/bar"),
                   base::Version("1.2.3"),
-                  {*UpdateChannelId::Create("default")}}));
+                  {*UpdateChannel::Create("default")}}));
 }
 
 TEST(UpdateManifestTest, IgnoresVersionsWithoutUrl) {
@@ -209,7 +209,7 @@ TEST(UpdateManifestTest, IgnoresVersionsWithoutUrl) {
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example2.com"),
                   base::Version("2.0.0"),
-                  {*UpdateChannelId::Create("default")}}));
+                  {*UpdateChannel::Create("default")}}));
 }
 
 TEST(UpdateManifestTest, IgnoresVersionsWithoutSrc) {
@@ -229,7 +229,7 @@ TEST(UpdateManifestTest, IgnoresVersionsWithoutSrc) {
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example2.com"),
                   base::Version("2.0.0"),
-                  {*UpdateChannelId::Create("default")}}));
+                  {*UpdateChannel::Create("default")}}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithAdditionalVersionKeys) {
@@ -248,7 +248,7 @@ TEST(UpdateManifestTest, ParsesManifestWithAdditionalVersionKeys) {
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example.com"),
                   base::Version("1.2.3"),
-                  {*UpdateChannelId::Create("default")}}));
+                  {*UpdateChannel::Create("default")}}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithVersionChannels) {
@@ -269,19 +269,18 @@ TEST(UpdateManifestTest, ParsesManifestWithVersionChannels) {
                               .Set("version", "1.2.4")
                               .Set("src", "https://example.com")))),
           GURL("https://c.de/um.json")));
-
   EXPECT_THAT(
       update_manifest.versions(),
       ElementsAre(
           UpdateManifest::VersionEntry{GURL("https://example.com"),
                                        base::Version("1.2.3"),
-                                       {*UpdateChannelId::Create("beta"),
-                                        *UpdateChannelId::Create("stable")}},
+                                       {*UpdateChannel::Create("beta"),
+                                        *UpdateChannel::Create("stable")}},
           UpdateManifest::VersionEntry{
               GURL("https://example.com"), base::Version("1.2.4"),
               // If the Update Manifest contains "channels: []", then we
               // do _not_ automatically add "default" to it.
-              /*channel_ids=*/{}}));
+              /*channels=*/{}}));
 }
 
 TEST(UpdateManifestTest, IgnoresChannelOrder) {
@@ -311,13 +310,13 @@ TEST(UpdateManifestTest, IgnoresChannelOrder) {
           GURL("https://c.de/um.json")));
 
   EXPECT_THAT(update_manifest1.versions(), Eq(update_manifest2.versions()));
-  EXPECT_THAT(update_manifest1.versions(),
-              ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example.com"),
-                  base::Version("1.2.3"),
-                  // Order should not matter here, because it is a set.
-                  {*UpdateChannelId::Create("stable"),
-                   *UpdateChannelId::Create("beta")}}));
+  EXPECT_THAT(
+      update_manifest1.versions(),
+      ElementsAre(UpdateManifest::VersionEntry{
+          GURL("https://example.com"),
+          base::Version("1.2.3"),
+          // Order should not matter here, because it is a set.
+          {*UpdateChannel::Create("stable"), *UpdateChannel::Create("beta")}}));
 }
 
 TEST(UpdateManifestTest, DoesNotAllowEmptyChannels) {
@@ -355,10 +354,10 @@ TEST(UpdateManifestTest, ParsesManifestWithMultipleVersions) {
       ElementsAre(
           UpdateManifest::VersionEntry{GURL("https://example.com"),
                                        base::Version("1.2.3"),
-                                       {*UpdateChannelId::Create("default")}},
+                                       {*UpdateChannel::Create("default")}},
           UpdateManifest::VersionEntry{GURL("http://localhost"),
                                        base::Version("3.0.0"),
-                                       {*UpdateChannelId::Create("default")}}));
+                                       {*UpdateChannel::Create("default")}}));
 }
 
 TEST(UpdateManifestTest, OverwritesRepeatedEntriesWithSameVersion) {
@@ -389,10 +388,10 @@ TEST(UpdateManifestTest, OverwritesRepeatedEntriesWithSameVersion) {
       ElementsAre(
           UpdateManifest::VersionEntry{GURL("https://v3-3.com"),
                                        base::Version("3.0.0"),
-                                       {*UpdateChannelId::Create("default")}},
+                                       {*UpdateChannel::Create("default")}},
           UpdateManifest::VersionEntry{GURL("https://v5-2.com"),
                                        base::Version("5.0.0"),
-                                       {*UpdateChannelId::Create("default")}}));
+                                       {*UpdateChannel::Create("default")}}));
 }
 
 class UpdateManifestValidVersionTest
@@ -413,7 +412,7 @@ TEST_P(UpdateManifestValidVersionTest, ParsesValidVersion) {
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example.com"),
                   base::Version(GetParam()),
-                  {*UpdateChannelId::Create("default")}}));
+                  {*UpdateChannel::Create("default")}}));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -440,7 +439,7 @@ TEST_P(UpdateManifestInvalidVersionTest, IgnoresEntriesWithInvalidVersions) {
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example.com"),
                   base::Version("99.99.99"),
-                  {*UpdateChannelId::Create("default")}}));
+                  {*UpdateChannel::Create("default")}}));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -463,7 +462,7 @@ TEST_P(UpdateManifestValidSrcTest, ParsesValidSrc) {
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL(GetParam()),
                   base::Version("1.0.0"),
-                  {*UpdateChannelId::Create("default")}}));
+                  {*UpdateChannel::Create("default")}}));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -493,7 +492,7 @@ TEST_P(UpdateManifestInvalidSrcTest, IgnoresEntriesWithInvalidSrc) {
               ElementsAre(UpdateManifest::VersionEntry{
                   GURL("https://example.com"),
                   base::Version("99.99.99"),
-                  {*UpdateChannelId::Create("default")}}));
+                  {*UpdateChannel::Create("default")}}));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -541,7 +540,7 @@ TEST_F(UpdateManifestSecureOriginAllowlistTest, CanSetHttpOriginsAsTrusted) {
                 ElementsAre(UpdateManifest::VersionEntry{
                     GURL("http://example.com"),
                     base::Version("1.0.0"),
-                    {*UpdateChannelId::Create("default")}}));
+                    {*UpdateChannel::Create("default")}}));
   }
 }
 
@@ -569,15 +568,15 @@ TEST(GetLatestVersionTest, CalculatesLatestVersionCorrectly) {
           GURL("https://c.de/um.json")));
 
   EXPECT_THAT(
-      update_manifest.GetLatestVersion(*UpdateChannelId::Create("default")),
-      Optional(Eq(UpdateManifest::VersionEntry{
-          GURL("https://v10.com"),
-          base::Version("10.11.0"),
-          {*UpdateChannelId::Create("default")}})));
+      update_manifest.GetLatestVersion(*UpdateChannel::Create("default")),
+      Optional(Eq(
+          UpdateManifest::VersionEntry{GURL("https://v10.com"),
+                                       base::Version("10.11.0"),
+                                       {*UpdateChannel::Create("default")}})));
 
-  EXPECT_THAT(update_manifest.GetLatestVersion(
-                  *UpdateChannelId::Create("non-existing")),
-              Eq(std::nullopt));
+  EXPECT_THAT(
+      update_manifest.GetLatestVersion(*UpdateChannel::Create("non-existing")),
+      Eq(std::nullopt));
 }
 
 TEST(GetLatestVersionTest, CalculatesLatestVersionForChannel) {
@@ -610,15 +609,15 @@ TEST(GetLatestVersionTest, CalculatesLatestVersionForChannel) {
           GURL("https://c.de/um.json")));
 
   EXPECT_THAT(
-      update_manifest.GetLatestVersion(*UpdateChannelId::Create("default")),
-      Optional(Eq(UpdateManifest::VersionEntry{
-          GURL("https://v10.com"),
-          base::Version("10.11.0"),
-          {*UpdateChannelId::Create("default")}})));
+      update_manifest.GetLatestVersion(*UpdateChannel::Create("default")),
+      Optional(Eq(
+          UpdateManifest::VersionEntry{GURL("https://v10.com"),
+                                       base::Version("10.11.0"),
+                                       {*UpdateChannel::Create("default")}})));
 
-  EXPECT_THAT(update_manifest.GetLatestVersion(
-                  *UpdateChannelId::Create("non-existing")),
-              Eq(std::nullopt));
+  EXPECT_THAT(
+      update_manifest.GetLatestVersion(*UpdateChannel::Create("non-existing")),
+      Eq(std::nullopt));
 }
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelsMissing) {
@@ -630,16 +629,17 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelsMissing) {
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.GetChannelMetadata(UpdateChannelId::default_id()),
-              Eq(UpdateManifest::ChannelMetadata(
-                  /*id=*/UpdateChannelId::default_id(),
-                  /*name=*/std::nullopt)));
+  EXPECT_THAT(
+      update_manifest.GetChannelMetadata(UpdateChannel::default_channel()),
+      Eq(UpdateManifest::ChannelMetadata(
+          /*update_channel=*/UpdateChannel::default_channel(),
+          /*display_name=*/std::nullopt)));
 
-  ASSERT_OK_AND_ASSIGN(auto id, UpdateChannelId::Create("some_id"));
-  EXPECT_THAT(update_manifest.GetChannelMetadata(id),
+  ASSERT_OK_AND_ASSIGN(auto channel, UpdateChannel::Create("some_name"));
+  EXPECT_THAT(update_manifest.GetChannelMetadata(channel),
               Eq(UpdateManifest::ChannelMetadata(
-                  /*id=*/id,
-                  /*name=*/std::nullopt)));
+                  /*update_channel=*/channel,
+                  /*display_name=*/std::nullopt)));
 }
 
 TEST(UpdateManifestParsesChannelMetadataTest, EmptyChannelMetadata) {
@@ -652,16 +652,17 @@ TEST(UpdateManifestParsesChannelMetadataTest, EmptyChannelMetadata) {
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.GetChannelMetadata(UpdateChannelId::default_id()),
-              Eq(UpdateManifest::ChannelMetadata(
-                  /*id=*/UpdateChannelId::default_id(),
-                  /*name=*/std::nullopt)));
+  EXPECT_THAT(
+      update_manifest.GetChannelMetadata(UpdateChannel::default_channel()),
+      Eq(UpdateManifest::ChannelMetadata(
+          /*update_channel=*/UpdateChannel::default_channel(),
+          /*display_name=*/std::nullopt)));
 
-  ASSERT_OK_AND_ASSIGN(auto id, UpdateChannelId::Create("some_id"));
-  EXPECT_THAT(update_manifest.GetChannelMetadata(id),
+  ASSERT_OK_AND_ASSIGN(auto channel, UpdateChannel::Create("some_name"));
+  EXPECT_THAT(update_manifest.GetChannelMetadata(channel),
               Eq(UpdateManifest::ChannelMetadata(
-                  /*id=*/id,
-                  /*name=*/std::nullopt)));
+                  /*update_channel=*/channel,
+                  /*display_name=*/std::nullopt)));
 }
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelsNotADict) {
@@ -701,10 +702,11 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelMetadataWithoutName) {
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
 
   auto channel_metadata =
-      update_manifest.GetChannelMetadata(UpdateChannelId::default_id());
-  EXPECT_THAT(channel_metadata, Eq(UpdateManifest::ChannelMetadata(
-                                    /*id=*/UpdateChannelId::default_id(),
-                                    /*name=*/std::nullopt)));
+      update_manifest.GetChannelMetadata(UpdateChannel::default_channel());
+  EXPECT_THAT(channel_metadata,
+              Eq(UpdateManifest::ChannelMetadata(
+                  /*update_channel=*/UpdateChannel::default_channel(),
+                  /*display_name=*/std::nullopt)));
   EXPECT_THAT(channel_metadata.GetDisplayName(), Eq("default"));
 }
 
@@ -723,10 +725,11 @@ TEST(UpdateManifestParsesChannelMetadataTest,
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.GetChannelMetadata(UpdateChannelId::default_id()),
-              Eq(UpdateManifest::ChannelMetadata(
-                  /*id=*/UpdateChannelId::default_id(),
-                  /*name=*/std::nullopt)));
+  EXPECT_THAT(
+      update_manifest.GetChannelMetadata(UpdateChannel::default_channel()),
+      Eq(UpdateManifest::ChannelMetadata(
+          /*update_channel=*/UpdateChannel::default_channel(),
+          /*display_name=*/std::nullopt)));
 }
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelName) {
@@ -736,10 +739,10 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelName) {
       "default": {
         "name": "default channel"
       },
-      "some_id": {
+      "some_name": {
         "name": "some channel"
       },
-      "another_id": {
+      "another_name": {
       }
     },
     "versions" : []
@@ -750,29 +753,30 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelName) {
 
   {
     auto channel_metadata =
-        update_manifest.GetChannelMetadata(UpdateChannelId::default_id());
-    EXPECT_THAT(channel_metadata, Eq(UpdateManifest::ChannelMetadata(
-                                      /*id=*/UpdateChannelId::default_id(),
-                                      /*name=*/"default channel")));
+        update_manifest.GetChannelMetadata(UpdateChannel::default_channel());
+    EXPECT_THAT(channel_metadata,
+                Eq(UpdateManifest::ChannelMetadata(
+                    /*update_channel=*/UpdateChannel::default_channel(),
+                    /*display_name=*/"default channel")));
     EXPECT_THAT(channel_metadata.GetDisplayName(), Eq("default channel"));
   }
 
   {
-    ASSERT_OK_AND_ASSIGN(auto id, UpdateChannelId::Create("some_id"));
-    auto channel_metadata = update_manifest.GetChannelMetadata(id);
+    ASSERT_OK_AND_ASSIGN(auto channel, UpdateChannel::Create("some_name"));
+    auto channel_metadata = update_manifest.GetChannelMetadata(channel);
     EXPECT_THAT(channel_metadata, Eq(UpdateManifest::ChannelMetadata(
-                                      /*id=*/id,
-                                      /*name=*/"some channel")));
+                                      /*update_channel=*/channel,
+                                      /*display_name=*/"some channel")));
     EXPECT_THAT(channel_metadata.GetDisplayName(), Eq("some channel"));
   }
 
   {
-    ASSERT_OK_AND_ASSIGN(auto id, UpdateChannelId::Create("another_id"));
-    auto channel_metadata = update_manifest.GetChannelMetadata(id);
+    ASSERT_OK_AND_ASSIGN(auto channel, UpdateChannel::Create("another_name"));
+    auto channel_metadata = update_manifest.GetChannelMetadata(channel);
     EXPECT_THAT(channel_metadata, Eq(UpdateManifest::ChannelMetadata(
-                                      /*id=*/id,
-                                      /*name=*/std::nullopt)));
-    EXPECT_THAT(channel_metadata.GetDisplayName(), Eq("another_id"));
+                                      /*update_channel=*/channel,
+                                      /*display_name=*/std::nullopt)));
+    EXPECT_THAT(channel_metadata.GetDisplayName(), Eq("another_name"));
   }
 }
 

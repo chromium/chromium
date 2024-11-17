@@ -5,7 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_UTIL_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_UTIL_H_
 
-#import "components/saved_tab_groups/types.h"
+#import <Foundation/Foundation.h>
+
+#import "base/memory/raw_ptr.h"
+#import "components/saved_tab_groups/public/types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -24,14 +27,14 @@ namespace utils {
 
 // Struct containing local tab group information.
 struct LocalTabGroupInfo {
-  const TabGroup* tab_group = nil;
-  WebStateList* web_state_list = nil;
-  Browser* browser = nil;
+  raw_ptr<const TabGroup> tab_group = nullptr;
+  raw_ptr<WebStateList> web_state_list = nullptr;
+  raw_ptr<Browser> browser = nullptr;
 };
 
 // Struct containing local tab information.
 struct LocalTabInfo {
-  const TabGroup* tab_group = nil;
+  raw_ptr<const TabGroup> tab_group = nullptr;
   int index_in_group = WebStateList::kInvalidIndex;
 };
 
@@ -76,6 +79,15 @@ bool ShouldUpdateHistory(web::NavigationContext* navigation_context);
 // Whether the destination URL from a NavigationContext can be saved and
 // can be reloaded later on another machine.
 bool IsSaveableNavigation(web::NavigationContext* navigation_context);
+
+// Whether the given `tab_group` is shared or not.
+bool IsTabGroupShared(const TabGroup* tab_group,
+                      TabGroupSyncService* sync_service);
+
+// Returns the collabID of the given `tab_group` if it's shared.
+// Otherwise returns nil.
+NSString* GetTabGroupCollabID(const TabGroup* tab_group,
+                              TabGroupSyncService* sync_service);
 
 }  // namespace utils
 }  // namespace tab_groups

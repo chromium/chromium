@@ -130,14 +130,14 @@ void OpenManualFallback() {
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   DisableManualFillButtonsInProfileStore();
   // Clear feature related local state prefs.
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAutofillBrandingIconDisplayCount];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kAutofillBrandingIconAnimationRemainingCount];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the autofill branding icon only shows twice.

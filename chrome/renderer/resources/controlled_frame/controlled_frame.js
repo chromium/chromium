@@ -6,6 +6,8 @@
 
 var ControlledFrameImpl = require('controlledFrameImpl').ControlledFrameImpl;
 var forwardApiMethods = require('guestViewContainerElement').forwardApiMethods;
+var upgradeMethodsToPromises =
+    require('guestViewContainerElement').upgradeMethodsToPromises;
 var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
 var CONTROLLED_FRAME_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_API_METHODS;
@@ -28,6 +30,21 @@ class ControlledFrameElement extends WebViewElement {
     privates(this).internal = new ControlledFrameImpl(this);
     privates(this).originalGo = originalGo;
   }
+
+  // Override add/removeContentScripts to accept a `callback` parameter
+  // so they can be used with Promises. The upgradeMethodsToPromises call
+  // below will replace these with Promise-based versions.
+  addContentScripts(rules, callback) {
+    var internal = privates(this).internal;
+    return WebViewInternal.addContentScripts(
+        internal.viewInstanceId, rules, callback);
+  }
+
+  removeContentScripts(names, callback) {
+    var internal = privates(this).internal;
+    return WebViewInternal.removeContentScripts(
+        internal.viewInstanceId, names, callback);
+  }
 }
 
 // Forward remaining ControlledFrameElement.foo* method calls to
@@ -35,6 +52,17 @@ class ControlledFrameElement extends WebViewElement {
 forwardApiMethods(
     ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
     CONTROLLED_FRAME_API_METHODS, CONTROLLED_FRAME_PROMISE_API_METHODS);
+
+// Since |back| and |forward| are implemented in terms of |go|, we need to
+// keep a reference to the real |go| function, since user code may override
+// ControlledFrameElement.prototype.go|.
+var originalGo = ControlledFrameElement.prototype.go;
+
+// Wrap callback methods in promise handlers. Note: This disables the callback
+// forms.
+upgradeMethodsToPromises(
+    ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
+    CONTROLLED_FRAME_PROMISE_API_METHODS);
 
 // Delete GuestView methods that should not be part of the Controlled Frame API.
 (function() {
@@ -46,10 +74,5 @@ forwardApiMethods(
     }
   }
 })();
-
-// Since |back| and |forward| are implemented in terms of |go|, we need to
-// keep a reference to the real |go| function, since user code may override
-// ControlledFrameElement.prototype.go|.
-var originalGo = ControlledFrameElement.prototype.go;
 
 registerElement('ControlledFrame', ControlledFrameElement);

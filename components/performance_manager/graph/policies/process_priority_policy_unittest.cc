@@ -62,7 +62,7 @@ class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness,
   ProcessPriorityPolicyTest& operator=(const ProcessPriorityPolicyTest&) =
       delete;
   ProcessPriorityPolicyTest& operator=(ProcessPriorityPolicyTest&&) = delete;
-  ~ProcessPriorityPolicyTest() override {}
+  ~ProcessPriorityPolicyTest() override = default;
 
   void SetUp() override {
     PerformanceManagerTestHarness::SetUp();

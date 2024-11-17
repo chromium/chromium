@@ -336,7 +336,20 @@ void StorageAccessGrantPermissionContext::DecidePermission(
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
   net::CookieSettingOverrides overrides = rfh->GetCookieSettingOverrides();
-  overrides.Remove(net::CookieSettingOverride::kStorageAccessGrantEligible);
+  if (overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible) ||
+      overrides.Has(
+          net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
+    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
+    // The caller already has the `kStorageAccessGrantEligible` or
+    // `kStorageAccessGrantEligibleViaHeader` override, which is impossible
+    // since those overrides should be used solely by the network service. This
+    // suggests the renderer is misbehaving.
+    mojo::ReportBadMessage(
+        "requestStorageAccess: inconsistent state. Requested permission for a "
+        "frame that already claims to have permission.");
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
+  }
   if (cookie_settings->IsFullCookieAccessAllowed(request_data.requesting_origin,
                                                  net::SiteForCookies(),
                                                  embedding_origin, overrides)) {

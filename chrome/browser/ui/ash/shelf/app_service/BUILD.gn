@@ -35,6 +35,7 @@ static_library("app_service") {
   deps = [
     "//ash",
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc/video_accelerator:protected_native_pixmap_query_client",
     "//ash/constants",
     "//ash/public/cpp",
@@ -45,6 +46,7 @@ static_library("app_service") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/pip",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/borealis",
@@ -83,7 +85,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "app_service_app_window_browsertest.cc",
     "app_service_promise_app_shelf_context_menu_browsertest.cc",
     "app_service_shelf_context_menu_browsertest.cc",
     "web_app_shelf_browsertest.cc",

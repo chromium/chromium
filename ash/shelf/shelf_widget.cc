@@ -11,7 +11,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/contextual_tooltip.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -447,7 +447,8 @@ void ShelfWidget::DelegateView::UpdateBackgroundBlur() {
   // Blur only if the background is visible.
   const bool should_blur_background =
       opaque_background_layer()->visible() &&
-      shelf_widget_->shelf_layout_manager()->ShouldBlurShelfBackground();
+      shelf_widget_->shelf_layout_manager()->ShouldBlurShelfBackground() &&
+      chromeos::features::IsSystemBlurEnabled();
   if (should_blur_background == background_is_currently_blurred_)
     return;
 
@@ -789,10 +790,6 @@ gfx::Rect ShelfWidget::GetVisibleShelfBounds() const {
   DCHECK(!display.bounds().IsEmpty());
   shelf_region.Intersect(display.bounds());
   return screen_util::SnapBoundsToDisplayEdge(shelf_region, GetNativeWindow());
-}
-
-ApplicationDragAndDropHost* ShelfWidget::GetDragAndDropHostForAppList() {
-  return hotseat_widget()->GetShelfView();
 }
 
 LoginShelfView* ShelfWidget::GetLoginShelfView() {

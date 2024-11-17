@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/printing_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -23,7 +25,6 @@ namespace ash::settings {
 namespace mojom {
 using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kPrintingDetailsSubpagePath;
-using ::chromeos::settings::mojom::kPrintingSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -31,8 +32,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPrintingSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PRINTING_ADD_PRINTER,
        mojom::kPrintingDetailsSubpagePath,
        mojom::SearchResultIcon::kPrinter,
@@ -48,11 +49,11 @@ const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_PRINTING_ALT1, IDS_OS_SETTINGS_TAG_PRINTING_ALT2,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetSavedPrintersSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetSavedPrintersSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PRINTING_SAVED_PRINTERS,
        mojom::kPrintingDetailsSubpagePath,
        mojom::SearchResultIcon::kPrinter,
@@ -60,16 +61,13 @@ const std::vector<SearchConcept>& GetSavedPrintersSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSavedPrinters}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetPrintingManagementSearchConcepts() {
-  const char* url_path = ash::features::IsOsSettingsRevampWayfindingEnabled()
-                             ? mojom::kPrintingDetailsSubpagePath
-                             : mojom::kPrintingSectionPath;
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPrintingManagementSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PRINT_MANAGEMENT,
-       url_path,
+       mojom::kPrintingDetailsSubpagePath,
        mojom::SearchResultIcon::kPrinter,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -77,22 +75,19 @@ const std::vector<SearchConcept>& GetPrintingManagementSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_PRINT_MANAGEMENT_ALT1,
         IDS_OS_SETTINGS_TAG_PRINT_MANAGEMENT_ALT2, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetScanningAppSearchConcepts(
-    const char* section_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetScanningAppSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_SCANNING_APP,
-       section_path,
-       ash::features::IsOsSettingsRevampWayfindingEnabled()
-           ? mojom::SearchResultIcon::kScanner
-           : mojom::SearchResultIcon::kPrinter,
+       mojom::kDeviceSectionPath,
+       mojom::SearchResultIcon::kScanner,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kScanningApp}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace
@@ -105,7 +100,7 @@ PrintingSection::PrintingSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrintingSearchConcepts());
   updater.AddSearchTags(GetPrintingManagementSearchConcepts());
-  updater.AddSearchTags(GetScanningAppSearchConcepts(GetSectionPath()));
+  updater.AddSearchTags(GetScanningAppSearchConcepts());
 
   // Saved Printers search tags are added/removed dynamically.
   if (printers_manager_) {
@@ -335,9 +330,7 @@ int PrintingSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section PrintingSection::GetSection() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kDevice
-             : mojom::Section::kPrinting;
+  return mojom::Section::kDevice;
 }
 
 mojom::SearchResultIcon PrintingSection::GetSectionIcon() const {
@@ -345,9 +338,7 @@ mojom::SearchResultIcon PrintingSection::GetSectionIcon() const {
 }
 
 const char* PrintingSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kDeviceSectionPath
-             : mojom::kPrintingSectionPath;
+  return mojom::kDeviceSectionPath;
 }
 
 bool PrintingSection::LogMetric(mojom::Setting setting,

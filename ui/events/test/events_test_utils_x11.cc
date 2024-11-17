@@ -52,8 +52,7 @@ x11::KeyEvent::Opcode XKeyEventType(ui::EventType type) {
     case ui::EventType::kKeyReleased:
       return x11::KeyEvent::Release;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
   }
 }
 
@@ -78,8 +77,7 @@ int XIButtonEventType(ui::EventType type) {
     case ui::EventType::kMouseReleased:
       return x11::Input::DeviceEvent::ButtonRelease;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

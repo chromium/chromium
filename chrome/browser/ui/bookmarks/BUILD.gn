@@ -1,0 +1,169 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("bookmarks") {
+  sources = [
+    "bookmark_bar.h",
+    "bookmark_context_menu_controller.h",
+    "bookmark_drag_drop.h",
+    "bookmark_editor.h",
+    "bookmark_stats.h",
+    "bookmark_stats_tab_helper.h",
+    "bookmark_tab_helper.h",
+    "bookmark_tab_helper_observer.h",
+    "bookmark_ui_operations_helper.h",
+    "bookmark_utils.h",
+    "bookmark_utils_desktop.h",
+    "recently_used_folders_combo_model.h",
+    "test_bookmark_navigation_wrapper.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/page_load_metrics/browser",
+    "//components/profile_metrics",
+    "//components/tab_groups",
+    "//content/public/browser",
+    "//skia",
+    "//ui/base",
+    "//ui/base/dragdrop/mojom",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/menus",
+    "//url",
+  ]
+
+  if (!is_chromeos) {
+    sources += [ "bookmark_bubble_sign_in_delegate.h" ]
+
+    public_deps += [ "//chrome/browser/ui/signin:bubble_signin_promo_delegate" ]
+  }
+}
+
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "bookmark_context_menu_controller.cc",
+    "bookmark_drag_drop.cc",
+    "bookmark_editor.cc",
+    "bookmark_stats.cc",
+    "bookmark_stats_tab_helper.cc",
+    "bookmark_tab_helper.cc",
+    "bookmark_ui_operations_helper.cc",
+    "bookmark_utils.cc",
+    "bookmark_utils_desktop.cc",
+    "recently_used_folders_combo_model.cc",
+    "test_bookmark_navigation_wrapper.cc",
+  ]
+
+  deps = [
+    ":bookmarks",
+    "//chrome/app:command_ids",
+    "//chrome/browser/prefs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/bookmarks/managed",
+    "//components/saved_tab_groups/public:features",
+    "//components/search",
+    "//components/sync_preferences",
+    "//components/tab_groups",
+    "//components/undo",
+    "//components/user_prefs",
+  ]
+
+  if (!is_chromeos) {
+    sources += [ "bookmark_bubble_sign_in_delegate.cc" ]
+
+    deps += [ "//chrome/browser/ui:browser_list" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/web_applications" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "bookmark_browsertest.cc" ]
+
+  deps = [
+    ":bookmarks",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/app:command_ids",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/base/dragdrop/mojom",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bookmark_context_menu_controller_unittest.cc",
+    "bookmark_editor_unittest.cc",
+    "bookmark_stats_tab_helper_unittest.cc",
+    "bookmark_ui_operations_helper_unittest.cc",
+    "bookmark_ui_utils_desktop_unittest.cc",
+    "bookmark_unittest.cc",
+    "bookmark_utils_unittest.cc",
+    "recently_used_folders_combo_model_unittest.cc",
+  ]
+
+  deps = [
+    ":bookmarks",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:command_ids",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/bookmarks/managed",
+    "//components/bookmarks/test",
+    "//components/dom_distiller/core",
+    "//components/saved_tab_groups/public:features",
+    "//components/sync_preferences:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_test_support",
+    "//url",
+  ]
+}

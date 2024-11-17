@@ -111,6 +111,7 @@ class FakeSyncEngine final : public SyncEngine {
   void OnCookieJarChanged(bool account_mismatch,
                           base::OnceClosure callback) override;
   bool IsNextPollTimeInThePast() const override;
+  void ClearNigoriDataForMigration() override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
   void RecordNigoriMemoryUsageAndCountsHistograms() override;
 

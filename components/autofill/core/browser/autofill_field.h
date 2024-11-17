@@ -177,9 +177,6 @@ class AutofillField : public FormFieldData {
   // surrounding fields.
   AutofillType ComputedType() const;
 
-  // Returns true if the value of this field is empty.
-  bool IsEmpty() const;
-
   // The rank of a field is N iff this field is preceded by N other fields
   // in the frame-transcending form.
   size_t rank() const { return rank_; }
@@ -239,6 +236,9 @@ class AutofillField : public FormFieldData {
   // `ValueSemantics`, if `features::kAutofillFixValueSemantics` is enabled.
   // Otherwise just forwards to `FormFieldData::value().
   //
+  // In the context of form submission and import, consider calling
+  // `value_for_import()`.
+  //
   // Currently, `value(ValueSemantics::kInitial)` is the empty string for fields
   // of FormControlType::kSelect*.
   // TODO: crbug.com/40227496 - Let `value(kInitial)` for select elements behave
@@ -249,6 +249,31 @@ class AutofillField : public FormFieldData {
   // - `value(ValueSemantics::kCurrent)` with `FormFieldData::value()`
   // - `value(ValueSemantics::kInitial)` with `AutofillField::initial_value()`
   const std::u16string& value(ValueSemantics s) const;
+
+  // Returns the current value, formatted as desired for import:
+  // (1) If the user left a field unchanged, returns the empty string.
+  // (2) If the field has FormControlType::kSelect* and has a selected text,
+  //     it is FormFieldData::selected_text().
+  //
+  // The motivation behind (1) is that unchanged values usually carry little
+  // value for importing. The exception are <select> feilds, which often have
+  // a correct default value, so we consider them for import even if their value
+  // didn't change.
+  // TODO: crbug.com/40137859 - Consider making an exception for also for
+  // non-<select> ADDRESS_HOME_{STATE,COUNTRY} fields.
+  //
+  // The motivation behind (2) is that the human-readable text of an <option> is
+  // usually better suited for import than the its value. See the documentation
+  // of FormFieldData::value() and FormFieldData::selected_text() for further
+  // details.
+  //
+  // This function only behaves reasonably if kAutofillFixValueSemantics and
+  // kAutofillFixCurrentValueInImport are enabled. If the latter is not enabled,
+  // FormStructure::RetrieveFromCache() resets the field's current value, with
+  // the intention of avoiding form import.
+  // TODO: crbug.com/40227496 - Remove the previous paragraph when the feature
+  // is launched.
+  const std::u16string& value_for_import() const;
 
   // Sets the field's current value, if `features::kAutofillFixValueSemantics`
   // is enabled. Otherwise just forwards to FormFieldData::set_value().
@@ -351,14 +376,15 @@ class AutofillField : public FormFieldData {
   }
 
   const std::vector<FieldLogEventType>& field_log_events() const {
-    return field_log_events_;
+    static const std::vector<FieldLogEventType> empty_vector{};
+    return field_log_events_ ? *field_log_events_ : empty_vector;
   }
 
   // Avoid holding references to the return value. It is invalidated by
   // AppendLogEventIfNotRepeated().
   base::optional_ref<FieldLogEventType> last_field_log_event() {
-    if (!field_log_events_.empty()) {
-      return field_log_events_.back();
+    if (field_log_events_ && !field_log_events_->empty()) {
+      return field_log_events_->back();
     }
     return std::nullopt;
   }
@@ -368,7 +394,11 @@ class AutofillField : public FormFieldData {
   void AppendLogEventIfNotRepeated(const FieldLogEventType& log_event);
 
   // Clear all the log events for this field.
-  void ClearLogEvents() { field_log_events_.clear(); }
+  void ClearLogEvents() {
+    if (field_log_events_) {
+      field_log_events_->clear();
+    }
+  }
 
   void set_autofill_source_profile_guid(
       std::optional<std::string> autofill_profile_guid) {
@@ -437,15 +467,12 @@ class AutofillField : public FormFieldData {
   std::array<FieldType, static_cast<size_t>(HeuristicSource::kMaxValue) + 1>
       local_type_predictions_;
 
-  // The type of the field. Overrides all other types (html_type_,
-  // heuristic_type_).
-  // |AutofillType(NO_SERVER_DATA)| is used when this |overall_type_| has not
-  // been set.
-  // This field serves as a cache to prevent frequent re-evaluation of
-  // ComputedType(). It is invalidated when set_heuristic_type(),
-  // set_server_predictions() or SetHtmlType() is called and then set to a
-  // value during the rationalization.
-  AutofillType overall_type_;
+  // The rationalized `ComputedType()`. This is the type used for all
+  // autofilling operations. It defaults to `ComputedType()` and is invalidated
+  // when `set_heuristic_type()`, `set_server_predictions()` or `SetHtmlType()`
+  // are called. Rationalization potentially overwrites it using `SetTypeTo()`.
+  // The result is cached to prevent frequent re-evaluation of `ComputedType()`.
+  mutable AutofillType overall_type_;
 
   // The type of the field, as specified by the site author in HTML.
   HtmlFieldType html_type_ = HtmlFieldType::kUnspecified;
@@ -557,7 +584,8 @@ class AutofillField : public FormFieldData {
   // during autofill or editing, such as user clicks on the field, the
   // suggestion list is shown for the field, user accepts one suggestion to
   // fill the form and user edits the field.
-  std::vector<FieldLogEventType> field_log_events_;
+  std::optional<std::vector<FieldLogEventType>> field_log_events_ =
+      std::vector<FieldLogEventType>{};
 
   // The autofill profile's GUID that was used for field filling. It corresponds
   // to the autofill profile's GUID for the last address filling value of the

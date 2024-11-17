@@ -59,7 +59,8 @@ struct FieldDescription {
   bool should_autocomplete = true;
   std::optional<bool> is_autofilled;
   std::optional<url::Origin> origin;
-  std::vector<SelectOption> select_options = {};
+  std::vector<SelectOption> select_options;
+  std::vector<SelectOption> datalist_options;
   FieldPropertiesMask properties_mask = 0;
   FormFieldData::CheckStatus check_status =
       FormFieldData::CheckStatus::kNotCheckable;

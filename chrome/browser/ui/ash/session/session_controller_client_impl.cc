@@ -19,9 +19,8 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -44,7 +43,6 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -210,7 +208,7 @@ void SessionControllerClientImpl::PrepareForLock(base::OnceClosure callback) {
     Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
     if (profile) {
       auto* floating_workspace_service =
-          ash::FloatingWorkspaceService::GetForProfile(profile);
+          ash::FloatingWorkspaceServiceFactory::GetForProfile(profile);
       if (floating_workspace_service) {
         floating_workspace_service->CaptureAndUploadActiveDesk();
       }
@@ -283,14 +281,7 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
          session_manager::kMaximumNumberOfUserSessions);
 
   // Launch sign in screen to add another user to current session.
-  DCHECK(!UserManager::Get()->GetUsersAllowedForMultiProfile().empty());
-
-  // Lacros and multiprofile are mutually exclusive.
-  const auto* primary_user = UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
-  DCHECK(!crosapi::browser_util::IsLacrosEnabledForMigration(
-      primary_user,
-      ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
+  DCHECK(!UserManager::Get()->GetUsersAllowedForMultiUserSignIn().empty());
 
   // Don't show the dialog if any logged-in user in the multi-profile session
   // dismissed it.
@@ -375,17 +366,11 @@ bool SessionControllerClientImpl::IsMultiProfileAvailable() {
       ash::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
     return false;
   }
-  // Multiprofile mode is not allowed if Lacros is enabled.
-  const auto* primary_user = UserManager::Get()->GetPrimaryUser();
-  if (primary_user && crosapi::browser_util::IsLacrosEnabledForMigration(
-                          primary_user, ash::standalone_browser::migrator_util::
-                                            PolicyInitState::kAfterInit)) {
-    return false;
-  }
+
   size_t users_logged_in = UserManager::Get()->GetLoggedInUsers().size();
   // Does not include users that are logged in.
   size_t users_available_to_add =
-      UserManager::Get()->GetUsersAllowedForMultiProfile().size();
+      UserManager::Get()->GetUsersAllowedForMultiUserSignIn().size();
   return (users_logged_in + users_available_to_add) > 1;
 }
 
@@ -425,6 +410,11 @@ void SessionControllerClientImpl::OnUserNotAllowed(
   session_controller_->ShowMultiprofilesSessionAbortedDialog(user_email);
 }
 
+void SessionControllerClientImpl::OnUserToBeRemoved(
+    const AccountId& account_id) {
+  session_controller_->NotifyUserToBeRemoved(account_id);
+}
+
 // static
 bool SessionControllerClientImpl::CanLockScreen() {
   return !UserManager::Get()->GetUnlockUsers().empty();
@@ -450,8 +440,9 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
     return ash::AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER;
 
   UserManager* const user_manager = UserManager::Get();
-  if (user_manager->GetUsersAllowedForMultiProfile().empty())
+  if (user_manager->GetUsersAllowedForMultiUserSignIn().empty()) {
     return ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS;
+  }
 
   if (user_manager::GetMultiUserSignInPolicy(user_manager->GetPrimaryUser()) ==
       user_manager::MultiUserSignInPolicy::kNotAllowed) {
@@ -461,15 +452,6 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
   if (user_manager->GetLoggedInUsers().size() >=
       session_manager::kMaximumNumberOfUserSessions) {
     return ash::AddUserSessionPolicy::ERROR_MAXIMUM_USERS_REACHED;
-  }
-
-  const auto* primary_user = user_manager->GetPrimaryUser();
-  if (primary_user) {
-    if (crosapi::browser_util::IsLacrosEnabledForMigration(
-            primary_user, ash::standalone_browser::migrator_util::
-                              PolicyInitState::kAfterInit)) {
-      return ash::AddUserSessionPolicy::ERROR_LACROS_ENABLED;
-    }
   }
 
   return ash::AddUserSessionPolicy::ALLOWED;
@@ -532,9 +514,7 @@ void SessionControllerClientImpl::DoCycleActiveUser(
       it = logged_in_users.end();
     account_id = (*(--it))->GetAccountId();
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid direction=" << static_cast<int>(direction);
-    return;
+    NOTREACHED() << "Invalid direction=" << static_cast<int>(direction);
   }
 
   DoSwitchActiveUser(account_id);

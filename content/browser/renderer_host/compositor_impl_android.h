@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "cc/paint/element_id.h"
+#include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_client.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
@@ -47,7 +48,6 @@
 
 namespace cc::slim {
 class Layer;
-class LayerTree;
 }  // namespace cc::slim
 
 namespace viz {
@@ -109,8 +109,10 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   // Compositor implementation.
   void SetRootWindow(gfx::NativeWindow root_window) override;
   void SetRootLayer(scoped_refptr<cc::slim::Layer> root) override;
-  void SetSurface(const base::android::JavaRef<jobject>& surface,
-                  bool can_be_used_with_surface_control) override;
+  std::optional<gpu::SurfaceHandle> SetSurface(
+      const base::android::JavaRef<jobject>& surface,
+      bool can_be_used_with_surface_control,
+      const base::android::JavaRef<jobject>& host_input_token) override;
   void SetBackgroundColor(int color) override;
   void SetWindowBounds(const gfx::Size& size) override;
   const gfx::Size& GetWindowBounds() override;
@@ -137,8 +139,8 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   void DidLoseLayerTreeFrameSink() override;
 
   // WindowAndroidCompositor implementation.
-  std::unique_ptr<ReadbackRef> TakeReadbackRef(
-      const viz::SurfaceId& surface_id) override;
+  ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
+  TakeScopedKeepSurfaceAliveCallback(const viz::SurfaceId& surface_id) override;
   void RequestCopyOfOutputOnRootLayer(
       std::unique_ptr<viz::CopyOutputRequest> request) override;
   void SetNeedsAnimate() override;
@@ -201,9 +203,12 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   void InitializeVizLayerTreeFrameSink(
       scoped_refptr<viz::ContextProviderCommandBuffer> context_provider);
 
-  void DecrementPendingReadbacks();
-
   void MaybeUpdateObserveBeginFrame();
+
+  using PendingSurfaceCopyId =
+      base::StrongAlias<struct PendingSurfaceCopyIdTag, uint32_t>;
+  void RemoveScopedKeepSurfaceAlive(
+      const PendingSurfaceCopyId& scoped_keep_surface_alive_id);
 
   viz::FrameSinkId frame_sink_id_;
 
@@ -258,8 +263,6 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
 
   size_t num_of_consecutive_surface_failures_ = 0u;
 
-  uint32_t pending_readbacks_ = 0u;
-
   bool enable_swap_completion_callbacks_ = false;
 
   // Listen to display density change events and update painted device scale
@@ -273,6 +276,12 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   std::unique_ptr<ui::HostBeginFrameObserver> host_begin_frame_observer_;
 
   base::ObserverList<FrameSubmissionObserver> frame_submission_observers_;
+
+  // Tracks a list of pending `viz::CopyOutputRequest`s.
+  PendingSurfaceCopyId pending_surface_copy_id_ = PendingSurfaceCopyId(0u);
+  base::flat_map<PendingSurfaceCopyId,
+                 std::unique_ptr<cc::slim::LayerTree::ScopedKeepSurfaceAlive>>
+      pending_surface_copies_;
 
   base::WeakPtrFactory<CompositorImpl> weak_factory_{this};
 };

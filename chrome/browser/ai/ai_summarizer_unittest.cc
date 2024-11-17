@@ -11,10 +11,12 @@
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 using ::testing::_;
@@ -24,7 +26,6 @@ using ::testing::NiceMock;
 namespace {
 
 using optimization_guide::MockSession;
-using optimization_guide::MockSessionWrapper;
 using optimization_guide::proto::SummarizeRequest;
 using optimization_guide::proto::SummarizerOutputFormat;
 using optimization_guide::proto::SummarizerOutputLength;
@@ -37,17 +38,19 @@ class MockStreamingResponder : public blink::mojom::ModelStreamingResponder {
   MockStreamingResponder(const MockStreamingResponder&) = delete;
   MockStreamingResponder& operator=(const MockStreamingResponder&) = delete;
 
-  void OnResponse(blink::mojom::ModelStreamingResponseStatus status,
-                  const std::optional<std::string>& text,
-                  const std::optional<uint64_t> current_tokens) override {
-    status_ = status;
+  void OnStreaming(const std::string& text) override {
+    status_ = blink::mojom::ModelStreamingResponseStatus::kOngoing;
+    result_ += text;
+  }
 
-    if (text.has_value()) {
-      result_ += text.value();
-    }
-    if (status_ != blink::mojom::ModelStreamingResponseStatus::kOngoing) {
-      run_loop_.Quit();
-    }
+  void OnError(blink::mojom::ModelStreamingResponseStatus status) override {
+    status_ = status;
+    run_loop_.Quit();
+  }
+  void OnCompletion(
+      blink::mojom::ModelExecutionContextInfoPtr context_info) override {
+    status_ = blink::mojom::ModelStreamingResponseStatus::kComplete;
+    run_loop_.Quit();
   }
 
   mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
@@ -78,7 +81,7 @@ class AISummarizerUnitTest : public AITestUtils::AITestBase {
 
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
-            [&] { return std::make_unique<MockSessionWrapper>(&session_); });
+            [&] { return std::make_unique<NiceMock<MockSession>>(&session_); });
   }
 
   ~AISummarizerUnitTest() override = default;
@@ -177,16 +180,10 @@ CreateModelExecutionMock(const std::string& expected_input,
         EXPECT_EQ(request.options().output_length(), expected_output_length);
         optimization_guide::proto::StringValue summary_str;
         summary_str.set_value(output);
-        std::string serialized_metadata;
-        summary_str.SerializeToString(&serialized_metadata);
-        optimization_guide::proto::Any any;
-        any.set_value(serialized_metadata);
-        any.set_type_url(
-            AITestUtils::GetTypeURLForProto(summary_str.GetTypeName()));
         callback.Run(
             optimization_guide::OptimizationGuideModelStreamingExecutionResult(
                 optimization_guide::StreamingResponse{
-                    .response = any,
+                    .response = optimization_guide::AnyWrapProto(summary_str),
                     .is_complete = true,
                 },
                 /*provided_by_on_device=*/true));
@@ -219,7 +216,7 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
   EXPECT_TRUE(summarizer);
-  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
 
   MockStreamingResponder responder;
   summarizer->Summarize("Test input", "", responder.BindNewPipeAndPassRemote());
@@ -229,8 +226,9 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   EXPECT_EQ(responder.result(), "Test output");
 
   summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&context_bound_objects] { return context_bound_objects == nullptr; }));
+  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
+    return context_bound_objects->GetSizeForTesting() == 1u;
+  }));
 }
 
 TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
@@ -256,15 +254,16 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
   EXPECT_TRUE(summarizer);
-  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
 
   MockStreamingResponder responder;
   summarizer->Summarize("Test input", /*context=*/"",
                         responder.BindNewPipeAndPassRemote());
 
   summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&context_bound_objects] { return context_bound_objects == nullptr; }));
+  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
+    return context_bound_objects->GetSizeForTesting() == 1u;
+  }));
 }
 
 TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
@@ -294,7 +293,7 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
   EXPECT_TRUE(summarizer);
-  ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
+  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
 
   {
     MockStreamingResponder responder;
@@ -324,6 +323,7 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   }
 
   summarizer.reset();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&context_bound_objects] { return context_bound_objects == nullptr; }));
+  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
+    return context_bound_objects->GetSizeForTesting() == 1u;
+  }));
 }

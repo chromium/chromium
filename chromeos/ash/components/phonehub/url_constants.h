@@ -5,13 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_URL_CONSTANTS_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_URL_CONSTANTS_H_
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // The URL for the help center article about Phone Hub.
 extern const char kPhoneHubLearnMoreLink[];
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_URL_CONSTANTS_H_

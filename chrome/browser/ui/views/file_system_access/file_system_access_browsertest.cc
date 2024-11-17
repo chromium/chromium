@@ -33,6 +33,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -209,8 +210,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40939916): Re-enable the test after fixing on Lacros.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
@@ -259,7 +258,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsFullscreen());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class FileSystemAccessBrowserSlowLoadTest : public FileSystemAccessBrowserTest {
  public:
@@ -917,12 +915,12 @@ IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
       ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
   permission_context->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
   auto grant = permission_context->GetWritePermissionGrant(
-      kTestOrigin, test_file,
+      kTestOrigin, content::PathInfo(test_file),
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       content::FileSystemAccessPermissionContext::UserAction::kSave);
 
   EXPECT_TRUE(permission_context->HasExtendedPermissionForTesting(
-      kTestOrigin, test_file,
+      kTestOrigin, content::PathInfo(test_file),
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       ChromeFileSystemAccessPermissionContext::GrantType::kWrite));
 
@@ -1017,7 +1015,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFileSystemAccessBrowserTest,
   EXPECT_FALSE(deleted_observer.deleted());
 
   auto grant = permission_context->GetWritePermissionGrant(
-      url::Origin::Create(initial_url), test_file,
+      url::Origin::Create(initial_url), content::PathInfo(test_file),
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       content::FileSystemAccessPermissionContext::UserAction::kOpen);
 
@@ -1096,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFileSystemAccessBrowserTest,
   content::RenderFrameDeletedObserver deleted_observer(prerender_frame);
 
   auto grant = permission_context->GetWritePermissionGrant(
-      url::Origin::Create(initial_url), test_file,
+      url::Origin::Create(initial_url), content::PathInfo(test_file),
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       content::FileSystemAccessPermissionContext::UserAction::kOpen);
 
@@ -1212,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameFileSystemAccessBrowserTest,
   EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
 
   auto grant = permission_context->GetWritePermissionGrant(
-      url::Origin::Create(fenced_frame_url), test_file,
+      url::Origin::Create(fenced_frame_url), content::PathInfo(test_file),
       content::FileSystemAccessPermissionContext::HandleType::kFile,
       content::FileSystemAccessPermissionContext::UserAction::kOpen);
 

@@ -46,16 +46,15 @@ public interface ContentCaptureConsumer {
 
     /**
      * Invoked when the favicon is updated.
+     *
      * @param mainFrame the frame whose favicon is updated.
      */
     void onFaviconUpdated(ContentCaptureFrame mainFrame);
 
     /**
-     * @param urls
      * @return if the urls shall be captured.
-     *
-     * The content of urls might still streamed to the consumer even false is returned. The consumer
-     * shall filter the content upon receiving it.
+     *     <p>The content of urls might still streamed to the consumer even false is returned. The
+     *     consumer shall filter the content upon receiving it.
      */
     boolean shouldCapture(String[] urls);
 }

@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -38,12 +37,12 @@ bool TryGetHidDataProperty(io_service_t service,
                            std::vector<uint8_t>* result) {
   base::apple::ScopedCFTypeRef<CFDataRef> ref(base::apple::CFCast<CFDataRef>(
       IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, 0)));
-  if (!ref)
+  if (!ref) {
     return false;
+  }
 
-  base::STLClearObject(result);
-  const uint8_t* bytes = CFDataGetBytePtr(ref.get());
-  result->insert(result->begin(), bytes, bytes + CFDataGetLength(ref.get()));
+  auto data_span = base::apple::CFDataToSpan(ref.get());
+  result->assign(data_span.begin(), data_span.end());
   return true;
 }
 

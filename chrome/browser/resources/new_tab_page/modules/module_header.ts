@@ -7,8 +7,6 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
 import {getTemplate} from './module_header.html.js';
 
 export interface ModuleHeaderElement {
@@ -73,18 +71,6 @@ export class ModuleHeaderElement extends PolymerElement {
       disableText: String,
       moreActionsText: String,
 
-      modulesRedesignedEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
-        reflectToAttribute: true,
-      },
-
-      /** True if the header should display an icon. */
-      showIcon_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesHeaderIconEnabled'),
-      },
-
       iconStyle_: {
         type: String,
         computed: `computeIconStyle_(iconSrc)`,
@@ -102,7 +88,6 @@ export class ModuleHeaderElement extends PolymerElement {
   dismissText: string;
   disableText: string;
   moreActionsText: string;
-  private modulesRedesignedEnabled_: boolean;
 
   private computeIconStyle_() {
     return `-webkit-mask-image: url(${this.iconSrc});`;

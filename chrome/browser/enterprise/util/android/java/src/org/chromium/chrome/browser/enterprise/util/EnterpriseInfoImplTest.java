@@ -44,12 +44,12 @@ public class EnterpriseInfoImplTest {
         getEnterpriseInfoImpl().setSkipAsyncCheckForTesting(true);
 
         MockitoAnnotations.initMocks(this);
-        EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(mNatives);
+        EnterpriseInfoJni.setInstanceForTesting(mNatives);
     }
 
     @After
     public void tearDown() {
-        EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(null);
+        EnterpriseInfoJni.setInstanceForTesting(null);
     }
 
     private EnterpriseInfoImpl getEnterpriseInfoImpl() {

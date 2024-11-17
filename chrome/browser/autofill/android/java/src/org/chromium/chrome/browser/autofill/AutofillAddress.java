@@ -61,14 +61,12 @@ public class AutofillAddress extends EditableOption {
     private AutofillProfile mProfile;
     @Nullable private String mShippingLabelWithCountry;
     @Nullable private String mShippingLabelWithoutCountry;
-    @Nullable private String mBillingLabel;
 
     /**
      * Builds the autofill address.
      *
      * @param context The context where this address was created.
      * @param profile The autofill profile containing the address information.
-     * @param personalDataManager
      */
     public AutofillAddress(
             Context context, AutofillProfile profile, PersonalDataManager personalDataManager) {
@@ -114,7 +112,6 @@ public class AutofillAddress extends EditableOption {
         // labels are recomputed next time they are needed.
         mShippingLabelWithCountry = null;
         mShippingLabelWithoutCountry = null;
-        mBillingLabel = null;
 
         mProfile = profile;
         updateIdentifierAndLabels(
@@ -227,7 +224,6 @@ public class AutofillAddress extends EditableOption {
      * renderer.
      *
      * @param profile The autofill profile containing the address information.
-     * @param personalDataManager
      * @return int The completion status.
      */
     public static @CompletionStatus int checkAddressCompletionStatus(

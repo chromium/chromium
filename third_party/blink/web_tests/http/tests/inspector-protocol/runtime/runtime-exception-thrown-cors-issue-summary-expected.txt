@@ -1,0 +1,14 @@
+Tests that Runtime.exceptionThrown comes with a CORS issue summary.
+Exception: {
+    issueId : <string>
+    requestId : <string>
+}
+Exception: {
+    issueId : <string>
+    requestId : <string>
+}
+Exception: {
+    issueId : <string>
+    requestId : <string>
+}
+

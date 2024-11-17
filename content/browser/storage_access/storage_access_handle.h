@@ -31,6 +31,17 @@ class StorageAccessHandle
       RenderFrameHost* host,
       mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver);
 
+  // Returns true if `host` is considered to have access to unpartitioned
+  // storage. For more see:
+  // third_party/blink/renderer/modules/storage_access/README.md
+  //
+  // NOTE: This handles the general permissions check for the entire interface.
+  // Specific binding sights (e.g., IndexedDB) should not need their own
+  // additional checks once the StorageAccessHandle interface has been bound.
+  // One important exception to this is the `DOMStorageContextWrapper`, which
+  // is handled outside of this interface so does need to trigger this check.
+  static bool DoesFrameHaveStorageAccess(RenderFrameHost* host);
+
   StorageAccessHandle(const StorageAccessHandle&) = delete;
   StorageAccessHandle& operator=(const StorageAccessHandle&) = delete;
 

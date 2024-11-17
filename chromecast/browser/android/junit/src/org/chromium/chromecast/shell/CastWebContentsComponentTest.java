@@ -354,12 +354,12 @@ public class CastWebContentsComponentTest {
         } finally {
             LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
                     .unregisterReceiver(receiver);
-            if (shouldExpect) {
-                verify(receiver).onReceive(any(Context.class), mIntentCaptor.capture());
-            } else {
-                verify(receiver, times(0)).onReceive(any(Context.class), mIntentCaptor.getValue());
-            }
-            return mIntentCaptor.getValue();
         }
+        if (shouldExpect) {
+            verify(receiver).onReceive(any(Context.class), mIntentCaptor.capture());
+        } else {
+            verify(receiver, times(0)).onReceive(any(Context.class), mIntentCaptor.getValue());
+        }
+        return mIntentCaptor.getValue();
     }
 }

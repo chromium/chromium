@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -24,10 +23,6 @@ class Window;
 
 namespace base {
 class TimeDelta;
-}
-
-namespace wm {
-class TooltipObserver;
 }
 
 namespace views::corewm::test {
@@ -54,11 +49,6 @@ class TooltipControllerTestHelper : public aura::WindowObserver {
     return controller_->state_manager_.get();
   }
 
-  // Returns true if server side tooltip is enabled. The server side means
-  // tooltip is handled on ash (server) and lacros is the client.
-  // Always returns false except for Lacros.
-  bool UseServerSideTooltip();
-
   // These are mostly cover methods for TooltipController private methods.
   const std::u16string& GetTooltipText();
   aura::Window* GetTooltipParentWindow();
@@ -68,8 +58,6 @@ class TooltipControllerTestHelper : public aura::WindowObserver {
   void HideAndReset();
   void UpdateIfRequired(TooltipTrigger trigger);
   void FireHideTooltipTimer();
-  void AddObserver(wm::TooltipObserver* observer);
-  void RemoveObserver(wm::TooltipObserver* observer);
   bool IsWillShowTooltipTimerRunning();
   bool IsWillHideTooltipTimerRunning();
   bool IsTooltipVisible();

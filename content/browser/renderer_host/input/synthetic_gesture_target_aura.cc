@@ -92,8 +92,7 @@ bool MakeUITouchEventsFromWebTouchEvents(
       type = ui::EventType::kTouchCancelled;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   int flags = ui::WebEventModifiersToEventFlags(touch.GetModifiers());

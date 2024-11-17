@@ -5,14 +5,12 @@
 #include "chrome/browser/chromeos/crosapi/test_util.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #else
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
-#include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace crosapi {
@@ -29,16 +27,6 @@ int GetInterfaceVersionImpl(base::Token interface_uuid) {
 }
 
 }  // namespace internal
-
-mojom::TestController* GetTestController() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::LacrosService::Get()
-      ->GetRemote<mojom::TestController>()
-      .get();
-#else
-  return TestControllerAsh::Get();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
 
 bool AshSupportsCapabilities(const base::flat_set<std::string>& capabilities) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

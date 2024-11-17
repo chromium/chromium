@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/autofill/add_new_address_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
@@ -32,11 +34,8 @@
 #include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -113,9 +112,8 @@ View* ShowBubble(ToolbarButtonProvider* toolbar_button_provider,
 }  // namespace
 
 AutofillBubbleHandlerImpl::AutofillBubbleHandlerImpl(
-    Browser* browser,
     ToolbarButtonProvider* toolbar_button_provider)
-    : browser_(browser), toolbar_button_provider_(toolbar_button_provider) {}
+    : toolbar_button_provider_(toolbar_button_provider) {}
 
 AutofillBubbleHandlerImpl::~AutofillBubbleHandlerImpl() = default;
 
@@ -151,6 +149,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
   switch (bubble_type) {
     case IbanBubbleType::kLocalSave:
     case IbanBubbleType::kUploadSave:
+    case IbanBubbleType::kUploadInProgress:
       return ShowBubble<SaveIbanBubbleView>(
           toolbar_button_provider_, PageActionIconType::kSaveIban, web_contents,
           controller, is_user_gesture);
@@ -219,13 +218,12 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddNewAddressProfileBubble(
       is_user_gesture);
 }
 
-AutofillBubbleBase*
-AutofillBubbleHandlerImpl::ShowVirtualCardManualFallbackBubble(
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowFilledCardInformationBubble(
     content::WebContents* web_contents,
-    VirtualCardManualFallbackBubbleController* controller,
+    FilledCardInformationBubbleController* controller,
     bool is_user_gesture) {
-  return ShowBubble<VirtualCardManualFallbackBubbleViews>(
-      toolbar_button_provider_, PageActionIconType::kVirtualCardManualFallback,
+  return ShowBubble<FilledCardInformationBubbleViews>(
+      toolbar_button_provider_, PageActionIconType::kFilledCardInformation,
       web_contents, controller, is_user_gesture);
 }
 
@@ -268,7 +266,7 @@ AutofillBubbleHandlerImpl::ShowVirtualCardEnrollConfirmationBubble(
     VirtualCardEnrollBubbleController* controller) {
   views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
       PageActionIconType::kVirtualCardEnroll);
-  base::OnceCallback<void(PaymentsBubbleClosedReason)> callback =
+  base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
@@ -323,7 +321,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCardConfirmationBubble(
     SaveCardBubbleController* controller) {
   views::View* anchor_view =
       toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveCard);
-  base::OnceCallback<void(PaymentsBubbleClosedReason)> callback =
+  base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
@@ -340,7 +338,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveIbanConfirmationBubble(
     IbanBubbleController* controller) {
   views::View* anchor_view =
       toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveIban);
-  base::OnceCallback<void(PaymentsBubbleClosedReason)> callback =
+  base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
@@ -355,8 +353,7 @@ AutofillBubbleBase*
 AutofillBubbleHandlerImpl::ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
     views::View* anchor_view,
     content::WebContents* web_contents,
-    base::OnceCallback<void(PaymentsBubbleClosedReason)>
-        controller_hide_callback,
+    base::OnceCallback<void(PaymentsUiClosedReason)> controller_hide_callback,
     PageActionIconView* icon_view,
     SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params) {
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* bubble =

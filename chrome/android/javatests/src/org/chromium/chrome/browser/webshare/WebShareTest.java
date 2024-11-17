@@ -66,7 +66,7 @@ public class WebShareTest {
     private Intent mReceivedIntent;
 
     /** Waits until the JavaScript code supplies a result. */
-    private class WebShareUpdateWaiter extends EmptyTabObserver {
+    private static class WebShareUpdateWaiter extends EmptyTabObserver {
         private CallbackHelper mCallbackHelper;
         private String mStatus;
 
@@ -111,11 +111,7 @@ public class WebShareTest {
         }
     }
 
-    /**
-     * Verify that WebShare fails if called without a user gesture.
-     *
-     * @throws Exception
-     */
+    /** Verify that WebShare fails if called without a user gesture. */
     @Test
     @MediumTest
     @Feature({"WebShare"})
@@ -128,11 +124,7 @@ public class WebShareTest {
                 mUpdateWaiter.waitForUpdate());
     }
 
-    /**
-     * Verify WebShare fails if share of .apk is called from a user gesture.
-     *
-     * @throws Exception
-     */
+    /** Verify WebShare fails if share of .apk is called from a user gesture. */
     @Test
     @MediumTest
     @Feature({"WebShare"})
@@ -144,11 +136,7 @@ public class WebShareTest {
                 "Fail: NotAllowedError: Permission denied", mUpdateWaiter.waitForUpdate());
     }
 
-    /**
-     * Verify WebShare fails if share of .dex is called from a user gesture.
-     *
-     * @throws Exception
-     */
+    /** Verify WebShare fails if share of .dex is called from a user gesture. */
     @Test
     @MediumTest
     @Feature({"WebShare"})
@@ -160,11 +148,7 @@ public class WebShareTest {
                 "Fail: NotAllowedError: Permission denied", mUpdateWaiter.waitForUpdate());
     }
 
-    /**
-     * Verify WebShare fails if share of many files is called from a user gesture.
-     *
-     * @throws Exception
-     */
+    /** Verify WebShare fails if share of many files is called from a user gesture. */
     @Test
     @MediumTest
     @Feature({"WebShare"})
@@ -178,11 +162,7 @@ public class WebShareTest {
                 mUpdateWaiter.waitForUpdate());
     }
 
-    /**
-     * Verify WebShare fails if share of large files is called from a user gesture.
-     *
-     * @throws Exception
-     */
+    /** Verify WebShare fails if share of large files is called from a user gesture. */
     @Test
     @MediumTest
     @Feature({"WebShare"})
@@ -196,11 +176,7 @@ public class WebShareTest {
                 mUpdateWaiter.waitForUpdate());
     }
 
-    /**
-     * Verify WebShare fails if share of long text is called from a user gesture.
-     *
-     * @throws Exception
-     */
+    /** Verify WebShare fails if share of long text is called from a user gesture. */
     @Test
     @MediumTest
     @Feature({"WebShare"})
@@ -214,11 +190,7 @@ public class WebShareTest {
                 mUpdateWaiter.waitForUpdate());
     }
 
-    /**
-     * Verify WebShare fails if share of file name '/' is called from a user gesture.
-     *
-     * @throws Exception
-     */
+    /** Verify WebShare fails if share of file name '/' is called from a user gesture. */
     @Test
     @MediumTest
     @Feature({"WebShare"})

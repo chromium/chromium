@@ -10,19 +10,19 @@ import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {CropRegionRect, Mode, Resolution} from '../type.js';
 
-enum PTZAttr {
+enum PtzAttr {
   PAN = 'pan',
   TILT = 'tilt',
   ZOOM = 'zoom',
 }
 
-export interface PTZCapabilities {
+export interface PtzCapabilities {
   pan: MediaSettingsRange;
   tilt: MediaSettingsRange;
   zoom: MediaSettingsRange;
 }
 
-interface PTZSettings {
+interface PtzSettings {
   pan?: number;
   tilt?: number;
   zoom?: number;
@@ -31,9 +31,9 @@ interface PTZSettings {
 /**
  * All pan, tilt, and zoom values must be non-empty.
  */
-export type StrictPTZSettings = Required<PTZSettings>;
+export type StrictPtzSettings = Required<PtzSettings>;
 
-export interface PTZController {
+export interface PtzController {
   /**
    * Returns whether pan control is supported.
    */
@@ -52,12 +52,12 @@ export interface PTZController {
   /**
    * Returns min, max, and step values for pan, tilt, and zoom controls.
    */
-  getCapabilities(): PTZCapabilities;
+  getCapabilities(): PtzCapabilities;
 
   /**
    * Returns current pan, tilt, and zoom settings.
    */
-  getSettings(): PTZSettings;
+  getSettings(): PtzSettings;
 
   /**
    * Updates PTZ settings when the screen is rotated.
@@ -73,7 +73,7 @@ export interface PTZController {
   /**
    * Resets to the default PTZ value.
    */
-  resetPTZ(): Promise<void>;
+  resetPtz(): Promise<void>;
 
   /**
    * Applies a new pan value.
@@ -106,10 +106,10 @@ const panTiltRestrictedCameras = new Set([
   '046d:0893',
 ]);
 
-export class MediaStreamPTZController implements PTZController {
+export class MediaStreamPtzController implements PtzController {
   constructor(
       readonly track: MediaStreamTrack,
-      readonly defaultPTZ: MediaTrackConstraintSet,
+      readonly defaultPtz: MediaTrackConstraintSet,
       readonly vidPid: string|null) {}
 
   canPan(): boolean {
@@ -124,11 +124,11 @@ export class MediaStreamPTZController implements PTZController {
     return this.track.getCapabilities().zoom !== undefined;
   }
 
-  getCapabilities(): PTZCapabilities {
+  getCapabilities(): PtzCapabilities {
     return this.track.getCapabilities();
   }
 
-  getSettings(): PTZSettings {
+  getSettings(): PtzSettings {
     return this.track.getSettings();
   }
 
@@ -141,23 +141,23 @@ export class MediaStreamPTZController implements PTZController {
         (this.vidPid !== null && panTiltRestrictedCameras.has(this.vidPid));
   }
 
-  async resetPTZ(): Promise<void> {
-    await this.track.applyConstraints({advanced: [this.defaultPTZ]});
+  async resetPtz(): Promise<void> {
+    await this.track.applyConstraints({advanced: [this.defaultPtz]});
   }
 
   async pan(value: number): Promise<void> {
-    await this.applyPTZ(PTZAttr.PAN, value);
+    await this.applyPtz(PtzAttr.PAN, value);
   }
 
   async tilt(value: number): Promise<void> {
-    await this.applyPTZ(PTZAttr.TILT, value);
+    await this.applyPtz(PtzAttr.TILT, value);
   }
 
   async zoom(value: number): Promise<void> {
-    await this.applyPTZ(PTZAttr.ZOOM, value);
+    await this.applyPtz(PtzAttr.ZOOM, value);
   }
 
-  private async applyPTZ(attr: PTZAttr, value: number): Promise<void> {
+  private async applyPtz(attr: PtzAttr, value: number): Promise<void> {
     if (!this.track.enabled) {
       return;
     }
@@ -168,12 +168,12 @@ export class MediaStreamPTZController implements PTZController {
 const DIGITAL_ZOOM_MAX_PAN = 1;
 const DIGITAL_ZOOM_MAX_TILT = 1;
 const DIGITAL_ZOOM_DEFAULT_MAX_ZOOM = 6;
-export const DIGITAL_ZOOM_CAPABILITIES: PTZCapabilities = {
+export const DIGITAL_ZOOM_CAPABILITIES: PtzCapabilities = {
   pan: {min: -DIGITAL_ZOOM_MAX_PAN, max: DIGITAL_ZOOM_MAX_PAN, step: 0.1},
   tilt: {min: -DIGITAL_ZOOM_MAX_TILT, max: DIGITAL_ZOOM_MAX_TILT, step: 0.1},
   zoom: {min: 1, max: DIGITAL_ZOOM_DEFAULT_MAX_ZOOM, step: 0.1},
 };
-const DIGITAL_ZOOM_DEFAULT_SETTINGS: PTZSettings = {
+const DIGITAL_ZOOM_DEFAULT_SETTINGS: PtzSettings = {
   pan: 0,
   tilt: 0,
   zoom: 1,
@@ -212,8 +212,8 @@ function getFullCropRegionForAspectRatio(
 /**
  * Asserts that all pan, tilt, and zoom fields have values.
  */
-export function assertStrictPTZSettings({pan, tilt, zoom}: PTZSettings):
-    StrictPTZSettings {
+export function assertStrictPtzSettings({pan, tilt, zoom}: PtzSettings):
+    StrictPtzSettings {
   assert(pan !== undefined);
   assert(tilt !== undefined);
   assert(zoom !== undefined && zoom > 0, `Zoom value ${zoom} is invalid.`);
@@ -224,9 +224,9 @@ export function assertStrictPTZSettings({pan, tilt, zoom}: PTZSettings):
  * Calculate a crop region from given PTZ settings. The crop region result is
  * normalized given full width and full height equal to 1.
  */
-function calculateNormalizedCropRegion(ptzSettings: PTZSettings):
+function calculateNormalizedCropRegion(ptzSettings: PtzSettings):
     CropRegionRect {
-  const {pan, tilt, zoom} = assertStrictPTZSettings(ptzSettings);
+  const {pan, tilt, zoom} = assertStrictPtzSettings(ptzSettings);
 
   const width = 1 / zoom;
   const height = 1 / zoom;
@@ -254,7 +254,7 @@ function calculateNormalizedCropRegion(ptzSettings: PTZSettings):
  * Calculate a crop region from PTZ settings with respect to |fullCropRegion|.
  */
 function calculateCropRegion(
-    ptzSettings: PTZSettings, fullCropRegion: CropRegionRect): CropRegionRect {
+    ptzSettings: PtzSettings, fullCropRegion: CropRegionRect): CropRegionRect {
   const normCropRegion = calculateNormalizedCropRegion(ptzSettings);
   const {width: fullWidth, height: fullHeight} = fullCropRegion;
 
@@ -270,7 +270,7 @@ function calculateCropRegion(
  * Asserts that pan, tilt, or zoom value is within the range defined in
  * |DIGITAL_ZOOM_CAPABILITIES|.
  */
-function assertPTZRange(attr: PTZAttr, value: number) {
+function assertPtzRange(attr: PtzAttr, value: number) {
   const {max: maxValue, min: minValue} = DIGITAL_ZOOM_CAPABILITIES[attr];
   const tolerance = 1e-3;
   assert(
@@ -301,23 +301,23 @@ function rotateClockwise(
 /**
  * Rotates PTZ settings clockwise by |rotation| degree.
  */
-function rotatePTZ(ptzSettings: PTZSettings, rotation: number): PTZSettings {
-  const {pan, tilt, zoom} = assertStrictPTZSettings(ptzSettings);
+function rotatePtz(ptzSettings: PtzSettings, rotation: number): PtzSettings {
+  const {pan, tilt, zoom} = assertStrictPtzSettings(ptzSettings);
   const [rotatedPan, rotatedTilt] = rotateClockwise(pan, tilt, rotation);
   return {pan: rotatedPan, tilt: rotatedTilt, zoom};
 }
 
-export class DigitalZoomPTZController implements PTZController {
+export class DigitalZoomPtzController implements PtzController {
   /**
    * Current PTZ settings based on the camera frame with rotation = 0. This
    * value remains the same regardless of the camera rotation.
    */
-  private ptzSettings: PTZSettings = DIGITAL_ZOOM_DEFAULT_SETTINGS;
+  private ptzSettings: PtzSettings = DIGITAL_ZOOM_DEFAULT_SETTINGS;
 
   /**
    * Current camera frame rotation.
    */
-  private cameraRotation: number = 0;
+  private cameraRotation = 0;
 
   private constructor(
       private readonly deviceId: string,
@@ -335,14 +335,14 @@ export class DigitalZoomPTZController implements PTZController {
     return true;
   }
 
-  getCapabilities(): PTZCapabilities {
+  getCapabilities(): PtzCapabilities {
     return DIGITAL_ZOOM_CAPABILITIES;
   }
 
-  getSettings(): PTZSettings {
+  getSettings(): PtzSettings {
     // Rotates current PTZ settings because pan and tilt values are different in
     // different camera frame rotations.
-    return rotatePTZ(this.ptzSettings, this.cameraRotation);
+    return rotatePtz(this.ptzSettings, this.cameraRotation);
   }
 
   async handleScreenRotationUpdated(): Promise<void> {
@@ -371,7 +371,7 @@ export class DigitalZoomPTZController implements PTZController {
     return new Point(x, y);
   }
 
-  async resetPTZ(): Promise<void> {
+  async resetPtz(): Promise<void> {
     const deviceOperator = assertExists(DeviceOperator.getInstance());
     await deviceOperator.resetCropRegion(this.deviceId);
     this.ptzSettings = DIGITAL_ZOOM_DEFAULT_SETTINGS;
@@ -379,26 +379,26 @@ export class DigitalZoomPTZController implements PTZController {
   }
 
   async pan(value: number): Promise<void> {
-    assertPTZRange(PTZAttr.PAN, value);
+    assertPtzRange(PtzAttr.PAN, value);
     const newSettings = {...this.getSettings(), pan: value};
-    await this.applyPTZ(newSettings);
+    await this.applyPtz(newSettings);
   }
 
   async tilt(value: number): Promise<void> {
-    assertPTZRange(PTZAttr.TILT, value);
+    assertPtzRange(PtzAttr.TILT, value);
     const newSettings = {...this.getSettings(), tilt: value};
-    await this.applyPTZ(newSettings);
+    await this.applyPtz(newSettings);
   }
 
   async zoom(value: number): Promise<void> {
-    assertPTZRange(PTZAttr.ZOOM, value);
+    assertPtzRange(PtzAttr.ZOOM, value);
     const newSettings = {...this.getSettings(), zoom: value};
-    await this.applyPTZ(newSettings);
+    await this.applyPtz(newSettings);
   }
 
-  private async applyPTZ(settings: PTZSettings): Promise<void> {
+  private async applyPtz(settings: PtzSettings): Promise<void> {
     if (this.isFullFrame(settings)) {
-      return this.resetPTZ();
+      return this.resetPtz();
     }
 
     const deviceOperator = assertExists(DeviceOperator.getInstance());
@@ -407,7 +407,7 @@ export class DigitalZoomPTZController implements PTZController {
     // degree camera rotation.
     this.cameraRotation =
         await deviceOperator.getCameraFrameRotation(this.deviceId);
-    const baseSettings = rotatePTZ(settings, 360 - this.cameraRotation);
+    const baseSettings = rotatePtz(settings, 360 - this.cameraRotation);
 
     const cropRegion = calculateCropRegion(baseSettings, this.fullCropRegion);
     await deviceOperator.setCropRegion(this.deviceId, cropRegion);
@@ -420,7 +420,7 @@ export class DigitalZoomPTZController implements PTZController {
     return state.get(Mode.PHOTO) && loadTimeData.getChromeFlag(Flag.SUPER_RES);
   }
 
-  private isFullFrame({zoom}: PTZSettings): boolean {
+  private isFullFrame({zoom}: PtzSettings): boolean {
     assert(zoom !== undefined);
     const minZoom = assertExists(DIGITAL_ZOOM_CAPABILITIES.zoom.min);
     const zoomStep = assertExists(DIGITAL_ZOOM_CAPABILITIES.zoom.step);
@@ -428,11 +428,11 @@ export class DigitalZoomPTZController implements PTZController {
   }
 
   static async create(deviceId: string, aspectRatio: number):
-      Promise<DigitalZoomPTZController> {
+      Promise<DigitalZoomPtzController> {
     const deviceOperator = assertExists(DeviceOperator.getInstance());
     const activeArray = await deviceOperator.getActiveArraySize(deviceId);
     const fullCropRegion =
         getFullCropRegionForAspectRatio(activeArray, aspectRatio);
-    return new DigitalZoomPTZController(deviceId, fullCropRegion);
+    return new DigitalZoomPtzController(deviceId, fullCropRegion);
   }
 }

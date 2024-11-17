@@ -6,23 +6,32 @@ package org.jni_zero;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
+import org.jni_zero.internal.JniOverrideHolder;
 import org.jni_zero.module_GEN_JNI;
 
 @CheckDiscard("crbug.com/993421")
 class SampleModuleJni implements SampleModule.Natives {
-  private static SampleModule.Natives testInstance;
+  private static JniOverrideHolder sOverride;
 
-  public static final JniStaticTestMocker<SampleModule.Natives> TEST_HOOKS =
-      new JniStaticTestMocker<SampleModule.Natives>() {
-    @Override
-    public void setInstanceForTesting(SampleModule.Natives instance) {
-      if (!module_GEN_JNI.TESTING_ENABLED) {
-        throw new RuntimeException(
-            "Tried to set a JNI mock when mocks aren't enabled!");
-      }
-      testInstance = instance;
+  public static SampleModule.Natives get() {
+    JniOverrideHolder holder = sOverride;
+    if (holder != null && holder.value != null) {
+      return (SampleModule.Natives) holder.value;
     }
-  };
+    NativeLibraryLoadedStatus.checkLoaded();
+    return new SampleModuleJni();
+  }
+
+  public static void setInstanceForTesting(SampleModule.Natives impl) {
+    if (sOverride == null) {
+      sOverride = JniOverrideHolder.create();
+    }
+    sOverride.value = impl;
+  }
+
+  // TODO(crbug.com/329069277): Delete.
+  public static final JniStaticTestMocker TEST_HOOKS = x -> setInstanceForTesting((SampleModule.Natives) x);
+
 
   @Override
   public boolean bar(boolean a) {
@@ -32,20 +41,5 @@ class SampleModuleJni implements SampleModule.Natives {
   @Override
   public void foo() {
     module_GEN_JNI.org_jni_1zero_SampleModule_foo();
-  }
-
-  public static SampleModule.Natives get() {
-    if (module_GEN_JNI.TESTING_ENABLED) {
-      if (testInstance != null) {
-        return testInstance;
-      }
-      if (module_GEN_JNI.REQUIRE_MOCK) {
-        throw new UnsupportedOperationException(
-            "No mock found for the native implementation of SampleModule.Natives. "
-            + "The current configuration requires implementations be mocked.");
-      }
-    }
-    NativeLibraryLoadedStatus.checkLoaded();
-    return new SampleModuleJni();
   }
 }

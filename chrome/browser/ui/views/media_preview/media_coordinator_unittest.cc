@@ -54,7 +54,7 @@ class MediaCoordinatorTest : public TestWithBrowserView {
   void InitializeCoordinator(MediaCoordinator::ViewType view_type) {
     coordinator_.emplace(
         view_type, parent_view_, /*is_subsection=*/false,
-        MediaCoordinator::EligibleDevices{}, *profile()->GetPrefs(),
+        MediaCoordinator::EligibleDevices{}, profile()->GetWeakPtr(),
         /*allow_device_selection=*/true, GetMetricsContext(view_type));
   }
 

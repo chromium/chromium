@@ -19,12 +19,6 @@ DataTypeStoreServiceFactory* DataTypeStoreServiceFactory::GetInstance() {
 }
 
 // static
-syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<syncer::DataTypeStoreService*>(
@@ -41,10 +35,9 @@ DataTypeStoreServiceFactory::~DataTypeStoreServiceFactory() {}
 std::unique_ptr<KeyedService>
 DataTypeStoreServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<syncer::DataTypeStoreServiceImpl>(
-      browser_state->GetStatePath(), browser_state->GetPrefs());
+      profile->GetStatePath(), profile->GetPrefs());
 }
 
 web::BrowserState* DataTypeStoreServiceFactory::GetBrowserStateToUse(

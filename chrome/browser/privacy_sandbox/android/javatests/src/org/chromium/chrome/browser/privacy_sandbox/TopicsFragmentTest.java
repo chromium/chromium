@@ -45,7 +45,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -82,15 +81,13 @@ public final class TopicsFragmentTest {
     public SettingsActivityTestRule<TopicsFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(TopicsFragment.class);
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+        PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
 
         mUserActionTester = new UserActionTester();
     }
@@ -130,10 +127,6 @@ public final class TopicsFragmentTest {
 
     private View getBlockedTopicsRootView() {
         return getRootViewSanitized(R.string.settings_topics_page_blocked_topics_heading_new);
-    }
-
-    private View getLearnMoreRootView() {
-        return getRootViewSanitized(R.string.settings_topics_page_learn_more_heading);
     }
 
     private void setTopicsPrefEnabled(boolean isEnabled) {
@@ -217,7 +210,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testTurnTopicsOnWhenTopicListEmptyV2() {
+    public void testTurnTopicsOnWhenTopicListEmpty() {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
         onView(getTopicsToggleMatcher()).perform(click());
@@ -262,7 +255,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testTurnTopicsOffV2() {
+    public void testTurnTopicsOff() {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
         onView(getTopicsToggleMatcher()).perform(click());
@@ -290,7 +283,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBlockedTopicsAppearWhenTopicOnV2() {
+    public void testBlockedTopicsAppearWhenTopicOn() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
@@ -307,7 +300,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBlockTopicsV2() {
+    public void testBlockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
@@ -346,7 +339,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testUnblockTopicsV2() {
+    public void testUnblockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
@@ -447,7 +440,7 @@ public final class TopicsFragmentTest {
     @SmallTest
     public void testTopicsIconsExist() {
         var activity = mSettingsActivityTestRule.startSettingsActivity();
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, new PrivacySandboxBridgeJni());
+        PrivacySandboxBridgeJni.setInstanceForTesting(new PrivacySandboxBridgeJni());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PrivacySandboxBridge privacySandboxBridge =

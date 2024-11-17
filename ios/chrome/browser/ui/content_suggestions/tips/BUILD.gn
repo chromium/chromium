@@ -1,0 +1,87 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tips") {
+  sources = [
+    "tips_magic_stack_consumer.h",
+    "tips_magic_stack_mediator.h",
+    "tips_magic_stack_mediator.mm",
+    "tips_metrics.cc",
+    "tips_metrics.h",
+    "tips_module_audience.h",
+    "tips_module_consumer_source.h",
+    "tips_module_state.h",
+    "tips_module_state.mm",
+    "tips_module_view.h",
+    "tips_module_view.mm",
+    "tips_passwords_coordinator.h",
+    "tips_passwords_coordinator.mm",
+    "tips_prefs.h",
+    "tips_prefs.mm",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:shopping_service",
+    "//components/image_fetcher/core",
+    "//components/power_bookmarks/core",
+    "//components/power_bookmarks/core:features",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:magic_stack_module_content_view_delegate",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/browser/ui/content_suggestions/tips/ui",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "tips_magic_stack_mediator_unittest.mm",
+    "tips_module_view_unittest.mm",
+    "tips_passwords_coordinator_unittest.mm",
+  ]
+  deps = [
+    ":tips",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/image_fetcher/core",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

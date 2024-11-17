@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -319,12 +320,9 @@ std::u16string AddressComponent::GetFormatString() const {
 }
 
 std::vector<FieldType> AddressComponent::GetSubcomponentTypes() const {
-  std::vector<FieldType> subcomponent_types;
-  subcomponent_types.reserve(subcomponents_.size());
-  for (const AddressComponent* subcomponent : subcomponents_) {
-    subcomponent_types.emplace_back(subcomponent->GetStorageType());
-  }
-  return subcomponent_types;
+  return base::ToVector(subcomponents_, [](const AddressComponent* c) {
+    return c->GetStorageType();
+  });
 }
 
 bool AddressComponent::SetValueForType(

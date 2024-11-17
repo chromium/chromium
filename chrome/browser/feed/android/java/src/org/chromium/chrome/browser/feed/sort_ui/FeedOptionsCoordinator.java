@@ -136,12 +136,10 @@ public class FeedOptionsCoordinator {
             @StringRes int contentDescriptionId) {
         return new PropertyModel.Builder(ChipProperties.ALL_KEYS)
                 .with(ChipProperties.ID, id)
-                .with(ChipProperties.TEXT, mContext.getResources().getString(textId))
+                .with(ChipProperties.TEXT, mContext.getString(textId))
                 .with(ChipProperties.SELECTED, isSelected)
                 .with(ChipProperties.CLICK_HANDLER, this::onOptionSelected)
-                .with(
-                        ChipProperties.CONTENT_DESCRIPTION,
-                        mContext.getResources().getString(contentDescriptionId))
+                .with(ChipProperties.CONTENT_DESCRIPTION, mContext.getString(contentDescriptionId))
                 .build();
     }
 

@@ -130,9 +130,7 @@ class TelemetryLogWriterTest : public testing::Test {
   ProtobufHttpTestResponder test_responder_;
   TelemetryLogWriter log_writer_{
       std::make_unique<FakeOAuthTokenGetter>(OAuthTokenGetter::SUCCESS,
-                                             "dummy",
-                                             "dummy",
-                                             "dummy")};
+                                             OAuthTokenInfo())};
 
  private:
   // Incremented for each event to allow them to be distinguished.

@@ -355,7 +355,7 @@ bool IsValidChromeSigninReason(const GURL& url) {
     case signin_metrics::Reason::kUnknownReason:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

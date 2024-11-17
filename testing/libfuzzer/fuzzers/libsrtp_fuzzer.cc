@@ -97,7 +97,6 @@ struct Environment {
 
     memset(&policy, 0, sizeof(policy));
     policy.allow_repeat_tx = 1;
-    policy.ekt = nullptr;
     policy.key = key;
     policy.next = nullptr;
     policy.ssrc.type = ssrc_any_inbound;

@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
@@ -31,6 +30,9 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
@@ -66,9 +68,11 @@ PersistedData::PersistedData(
     std::unique_ptr<update_client::ActivityDataService> activity_service)
     : scope_(scope),
       pref_service_(pref_service),
-      delegate_(
-          update_client::CreatePersistedData(pref_service,
-                                             std::move(activity_service))) {
+      delegate_(update_client::CreatePersistedData(
+          base::BindRepeating(
+              [](PrefService* pref_service) { return pref_service; },
+              pref_service),
+          std::move(activity_service))) {
   CHECK(pref_service_);
 }
 
@@ -400,7 +404,7 @@ void PersistedData::SetLastUpdateCheckError(
   delegate_->SetLastUpdateCheckError(error);
 }
 
-void PersistedData::SetThrottleUpdatesUntil(const base::Time& time) {
+void PersistedData::SetThrottleUpdatesUntil(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->SetThrottleUpdatesUntil(time);
 }
@@ -620,7 +624,7 @@ base::Time PersistedData::GetLastChecked() const {
   return pref_service_->GetTime(kLastChecked);
 }
 
-void PersistedData::SetLastChecked(const base::Time& time) {
+void PersistedData::SetLastChecked(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pref_service_) {
     pref_service_->SetTime(kLastChecked, time);
@@ -632,7 +636,7 @@ base::Time PersistedData::GetLastStarted() const {
   return pref_service_->GetTime(kLastStarted);
 }
 
-void PersistedData::SetLastStarted(const base::Time& time) {
+void PersistedData::SetLastStarted(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pref_service_) {
     pref_service_->SetTime(kLastStarted, time);
@@ -658,7 +662,28 @@ std::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
     return std::nullopt;
   }
 
-  return *reinterpret_cast<const OSVERSIONINFOEX*>(decoded_os_version->data());
+  auto reader = base::SpanReader(base::make_span(*decoded_os_version));
+  OSVERSIONINFOEX info;
+  info.dwOSVersionInfoSize =
+      base::U32FromNativeEndian(*reader.Read<sizeof(DWORD)>());
+  info.dwMajorVersion =
+      base::U32FromNativeEndian(*reader.Read<sizeof(DWORD)>());
+  info.dwMinorVersion =
+      base::U32FromNativeEndian(*reader.Read<sizeof(DWORD)>());
+  info.dwBuildNumber = base::U32FromNativeEndian(*reader.Read<sizeof(DWORD)>());
+  info.dwPlatformId = base::U32FromNativeEndian(*reader.Read<sizeof(DWORD)>());
+  base::as_writable_byte_span(info.szCSDVersion)
+      .copy_from(*reader.Read<sizeof((OSVERSIONINFOEX){}.szCSDVersion)>());
+  info.wServicePackMajor =
+      base::U16FromNativeEndian(*reader.Read<sizeof(WORD)>());
+  info.wServicePackMinor =
+      base::U16FromNativeEndian(*reader.Read<sizeof(WORD)>());
+  info.wSuiteMask = base::U16FromNativeEndian(*reader.Read<sizeof(WORD)>());
+  info.wProductType = base::U8FromNativeEndian(*reader.Read<sizeof(BYTE)>());
+  info.wReserved = base::U8FromNativeEndian(*reader.Read<sizeof(BYTE)>());
+
+  CHECK_EQ(reader.remaining(), 0u);
+  return info;
 }
 
 void PersistedData::SetLastOSVersion() {

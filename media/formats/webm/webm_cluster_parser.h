@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -47,7 +48,11 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   // significant bits of the first byte. The index in this array corresponds
   // to the duration of each frame of the packet in microseconds. See
   // https://tools.ietf.org/html/rfc6716#page-14
-  static const uint16_t kOpusFrameDurationsMu[];
+  static constexpr auto kOpusFrameDurationsMu = std::to_array<uint16_t>(
+      {10000, 20000, 40000, 60000, 10000, 20000, 40000, 60000,
+       10000, 20000, 40000, 60000, 10000, 20000, 10000, 20000,
+       2500,  5000,  10000, 20000, 2500,  5000,  10000, 20000,
+       2500,  5000,  10000, 20000, 2500,  5000,  10000, 20000});
 
   WebMClusterParser() = delete;
   WebMClusterParser(const WebMClusterParser&) = delete;
@@ -202,7 +207,7 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
 
   bool ParseBlock(bool is_simple_block,
                   const uint8_t* buf,
-                  int size,
+                  size_t size,
                   const uint8_t* additional,
                   int additional_size,
                   int duration,
@@ -213,9 +218,9 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
                int timecode,
                int duration,
                const uint8_t* data,
-               int size,
+               size_t size,
                const uint8_t* additional,
-               int additional_size,
+               size_t additional_size,
                int64_t discard_padding,
                bool is_keyframe);
 

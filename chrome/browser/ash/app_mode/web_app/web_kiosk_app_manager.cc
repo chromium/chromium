@@ -114,7 +114,7 @@ void WebKioskAppManager::UpdateAppByAccountId(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebKioskAppManager::UpdateAppByAccountId(
@@ -128,7 +128,7 @@ void WebKioskAppManager::UpdateAppByAccountId(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,

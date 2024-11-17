@@ -403,10 +403,6 @@ void ActionMove::UnbindInput(const InputElement& input_element) {
       for (size_t i = 0; i < pending_input_->keys().size(); i++) {
         if (code == pending_input_->keys()[i]) {
           pending_input_->SetKey(i, ui::DomCode::NONE);
-          if (!IsBeta() && action_view_) {
-            action_view_->set_unbind_label_index(i);
-          }
-          PostUnbindInputProcess();
         }
       }
     }

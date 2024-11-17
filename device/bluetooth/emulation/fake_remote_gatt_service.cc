@@ -77,8 +77,7 @@ device::BluetoothDevice* FakeRemoteGattService::GetDevice() const {
 
 std::vector<device::BluetoothRemoteGattService*>
 FakeRemoteGattService::GetIncludedServices() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<device::BluetoothRemoteGattService*>();
+  NOTREACHED();
 }
 
 }  // namespace bluetooth

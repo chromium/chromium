@@ -15,17 +15,15 @@ namespace assist_ranker {
 // Enumeration denoting the outcome of an attempt to download the model. This
 // must be kept in sync with the RankerModelStatus enum in histograms.xml
 enum class RankerModelStatus {
-  OK = 0,
-  DOWNLOAD_THROTTLED = 1,
-  DOWNLOAD_FAILED = 2,
-  PARSE_FAILED = 3,
-  VALIDATION_FAILED = 4,
-  INCOMPATIBLE = 5,
-  LOAD_FROM_CACHE_FAILED = 6,
-  MODEL_LOADING_ABANDONED = 7,
-
-  // Insert new values above this line.
-  MAX
+  kOk = 0,
+  kDownloadThrottled = 1,
+  kDownloadFailed = 2,
+  kParseFailed = 3,
+  kValidationFailed = 4,
+  kIncompatible = 5,
+  kLoadFromCacheFailed = 6,
+  kModelLoadingAbandoned = 7,
+  kMaxValue = kModelLoadingAbandoned,
 };
 
 // Loads a ranker model. Will attempt to load the model from disk cache. If it

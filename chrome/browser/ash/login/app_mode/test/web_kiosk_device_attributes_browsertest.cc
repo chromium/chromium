@@ -4,6 +4,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -86,8 +87,8 @@ constexpr char kNotAllowedOriginExpectedError[] =
     "DeviceAttributesAllowedForOrigins policy.\"\n";
 
 constexpr char kNotTrustedOriginExpectedError[] =
-    "a JavaScript error: \"NotAllowedError: This API is available only for "
-    "managed apps.\"\n";
+    "a JavaScript error: \"NotAllowedError: Service connection error. This API "
+    "is available only for managed apps.\"\n";
 
 }  // namespace
 

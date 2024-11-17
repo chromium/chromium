@@ -23,7 +23,7 @@
 // On Apple platforms, the shared memory handle is shared using a Mach port
 // rendezvous key.
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/mach_port_rendezvous.h"
+#include "base/apple/mach_port_rendezvous.h"
 #endif
 
 // On POSIX, the shared memory handle is a file_descriptor mapped in the

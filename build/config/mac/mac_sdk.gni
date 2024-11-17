@@ -9,7 +9,9 @@ import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
 
-assert(current_os == "mac" || current_toolchain == default_toolchain)
+# Allow Android builds on macOS
+assert(current_os == "mac" || current_toolchain == default_toolchain ||
+       target_os == "android")
 
 declare_args() {
   # The following two variables control the minimum supported version for
@@ -45,12 +47,12 @@ declare_args() {
   # The SDK version used when making official builds. This is a single exact
   # version, not a minimum. If this version isn't available official builds
   # will fail.
-  mac_sdk_official_version = "15.0"
+  mac_sdk_official_version = "15.1"
 
   # The SDK build version used when making official builds.  This is a single
   # exact version found at "System/Library/CoreServices/SystemVersion.plist"
   # inside the SDK.
-  mac_sdk_official_build_version = "24A336"
+  mac_sdk_official_build_version = "24B75"
 
   # Production builds should use hermetic Xcode. If you want to do production
   # builds with system Xcode to test new SDKs, set this.

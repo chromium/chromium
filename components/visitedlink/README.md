@@ -28,10 +28,10 @@ of both models or appropriately gate behind the feature flags listed above.
 
 ## How do :visited links work?
 
-A description of the [design decisions and overview of the architecture for
-unpartitioned :visited links can be found here (internal only)](https://g3doc.corp.google.com/company/teams/chrome/chrome_history.md#details).
-Partitioned :visited links relies on many of the same tradeoff and design
-decisions as the original unpartitioned code.
+A description of the design decisions and overview of the architecture for
+unpartitioned :visited links can be found below in the Tradeoffs section.
+Partitioned :visited links relies on many of the same tradeoff and design as
+the original unpartitioned code.
 
 ### General Overview
 Like many APIs within chromium code, functionality is split between the browser
@@ -115,3 +115,110 @@ In contrast, the partitioned model has no additional file to which it saves the
 table on disk. It relies on a new table, the VisitedLinkDatabase, to persist
 this data across sessions. The in-memory hashtable is loaded from this database
 at every browser startup.
+
+## Tradeoffs
+
+***NOTE: the below documentation was written years ago during the creation of
+the original (unpartitioned) :visited link system. Some of these assumptions
+may be out of date but provide important context and reasoning for why the
+system makes many of these same tradeoffs today.***
+
+### Background and motivation
+
+Web browsers display links that the user has previously followed in a different
+color than when they are unvisited. All web browsers before Chrome use the
+history system for determining if a URL is visited. As the page is laid out, and
+when the mouse hovers over a link, this system must be queried, so it is very
+important that these lookups are fast (hundreds of links on a page is not
+uncommon). Because this lookup is extremely performance critical, something like
+a hashtable (Firefox 2) or Tree (Firefox 3) is used to speed queries.
+
+Chrome had a design goal of being able to store all of a user's history forever.
+This can easily be hundreds of thousands of URLs. Just storing them in memory
+would be prohibitive, and we can not go to disk because of the performance
+impact. Chrome has the additional problem that the rendering engine is in a
+different process as the history system, requiring either an IPC message or a
+duplication of data to get the information into the renderer.
+
+### Unpartitioned Visited Link Architecture
+
+Chrome separated the data store used for link coloring from the rest of history
+to make it more scalable and performant. We do not store the full URL, but
+rather 64 bits of the MD5 sum of the URL, and we store it in an open-addressed
+hash table. Basically, we give up on being 100% correct in order to extremely
+fast and memory-efficient. The odds of collisions are significantly below the
+acceptable level for this application.
+
+Because we only store 8 bytes per URL, we use very little memory and it can be
+loaded quickly. The format of the open addressed hash table is the same in
+memory as it is on disk, so it merely needs to be mapped into memory to be read.
+The open addressed format is just a table, so there are no pointers or complex
+data structures. This means that the renderers can map a read-only view of the
+hash table and read it directly, without locking, even though another process is
+changing it. In our scheme, only the browser process can write to the table. If
+URL fingerprint (the 8-bit MD5 hash of it) is being added at the same time it is
+being read, the read query will result in negative. This is fine because we do
+not guarantee when the URL will be added to the table in the first place. This
+collision does not affect queries of any other URL.
+
+### Details
+
+The browser and the renderer components are separate because only the browser
+needs to have write capabilities. The common functions such as fingerprint
+computation and hashtable lookup are provided by the `VisitedLinkCommon` class
+in `components/visitedlink/common/visitedlink_common.h`. The renderer uses the
+`VisitedLinkReader` object in
+`components/visitedlink/renderer/visitedlink_reader.h` which just provides the
+capability to receive the hashtable information from the browser, map it into
+memory, and set it up for querying.
+
+The browser uses the `VisitedLinkWriter` object in
+`components/visitedlink/browser/visitedlink_writer.h`. This object is kept
+up-to-date with the most recent changes in history by the `HistoryService`
+object on the main thread of the browser. It will load the hash table from disk,
+and provide the information for mapping it in the renderers
+
+Sometimes the hashtable needs to be grown or shrunk. This is accomplished by
+creating a new parallel hash table with the appropriate size and copying the
+existing data to it. The `VisitedLinkWriter` releases its reference to the old
+table and broadcasts the new table information to the renderers. The renderers
+will continue using the old table, which is no longer being updated but still
+exists, until they receive this message. The operating system will automatically
+free the physical memory when the last renderer has released its shared memory
+handle.
+
+There is a slight security problem with the MD5 fingerprint approach. 64 bits is
+not enough to be very cryptographically secure, so we need to assume that an
+attacker can generate URLs that hash to any specific fingerprint. If an attacker
+generates a page that hashes to the same URL as a popular site such as
+google.com, and that link appears on an otherwise trusted site such as a Google
+search result, the link may be colored as visited. This is a minor issue, but it
+may make the user more likely to click on it or trust the site's content,
+thinking they have been there before. To prevent this, we generate a salt when
+creating the table. This means that all users will have different fingerprints
+mapping to google.com, so an attacker does not know which URL to generate.
+
+### I/O
+
+The `VisitedLinkWriter` lives on the main thread, but we do not want to do I/O
+on the main thread. For initialization, we just block the main thread. This
+takes very little time, and we do not currently have a way to reevaluate the
+status of all the links if it is loaded asynchronously, although this could be a
+good future addition.
+
+As mentioned above, the unpartitioned hashtable relies on a file stored on disk
+independent of the HistoryDatabase to persist the hashtable across browsing
+sessions or for backup in the event of memory corruptiion. When writing changes
+to the file as the browser is running, it will send messages to the "file
+thread" with the information. These 8-byte additions are then written
+asynchronously to disk. When significant changes are made, the entire table is
+copied to the background thread to avoid thousands of small messages.
+
+Sometimes, we need to regenerate the hash table. We do this when we detect
+corruption or when there is no visited link file. To do this, we collect all
+URLs on a background thread using the `TableBuilder` object. When the collection
+is done, we pass them to the main thread and insert them into the hash table.
+This insertion is pretty quick. As noted above, the partitioned hashtable relies
+on this process to persist across browsing sessions and regenerates from the
+VisitedLinkDatabase each time at start-up.
+

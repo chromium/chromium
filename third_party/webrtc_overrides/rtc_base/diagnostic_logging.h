@@ -8,6 +8,10 @@
 #include <sstream>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "third_party/abseil-cpp/absl/strings/has_absl_stringify.h"
+#include "third_party/abseil-cpp/absl/strings/has_ostream_operator.h"
+#include "third_party/abseil-cpp/absl/strings/str_cat.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/rtc_base/checks.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
@@ -63,6 +67,18 @@ enum LogErrorContext {
 // stream" in Chrome) and to Chrome's logging stream.
 class RTC_EXPORT DiagnosticLogMessage {
  public:
+  template <typename T>
+  ABSL_ATTRIBUTE_NOINLINE DiagnosticLogMessage& operator<<(const T& v) {
+    if constexpr (absl::HasOstreamOperator<T>::value) {
+      print_stream_ << v;
+    } else if constexpr (absl::HasAbslStringify<T>::value) {
+      print_stream_ << absl::StrCat(v);
+    } else {
+      static_assert(false, "Unsupported type to log");
+    }
+    return *this;
+  }
+
   DiagnosticLogMessage(const char* file,
                        int line,
                        LoggingSeverity severity,
@@ -78,7 +94,7 @@ class RTC_EXPORT DiagnosticLogMessage {
 
   void CreateTimestamp();
 
-  std::ostream& stream() { return print_stream_; }
+  DiagnosticLogMessage& stream() { return *this; }
 
  private:
   const char* file_name_;
@@ -100,7 +116,7 @@ class LogMessageVoidify {
   LogMessageVoidify() {}
   // This has to be an operator with a precedence lower than << but
   // higher than ?:
-  void operator&(std::ostream&) {}
+  void operator&(DiagnosticLogMessage&) {}
 };
 
 //////////////////////////////////////////////////////////////////////

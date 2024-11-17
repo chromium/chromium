@@ -13,11 +13,15 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // The views implementation of the `PasswordCrossDomainConfirmationPopupView`.
 class PasswordCrossDomainConfirmationPopupViewViews
     : public PasswordCrossDomainConfirmationPopupView,
       public autofill::PopupBaseView {
+  METADATA_HEADER(PasswordCrossDomainConfirmationPopupViewViews,
+                  autofill::PopupBaseView)
+
  public:
   PasswordCrossDomainConfirmationPopupViewViews(
       base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,

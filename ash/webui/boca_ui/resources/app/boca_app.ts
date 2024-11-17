@@ -31,6 +31,7 @@ export declare interface Identity {
   id: string;
   name: string;
   email: string;
+  photoUrl?: string;
 }
 
 /**
@@ -52,11 +53,39 @@ export enum NavigationType {
   BLOCK = 2,
   DOMAIN = 3,
   LIMITED = 4,
+  SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED = 5
 }
 
 export enum JoinMethod {
   ROSTER = 0,
   ACCESS_CODE = 1,
+}
+
+export enum SubmitAccessCodeResult {
+  UNKNOWN = 0,
+  SUCCESS = 1,
+  INVALID_CODE = 2,
+}
+
+/**
+ * Declare network state enum type
+ */
+export enum NetworkState {
+  ONLINE = 0,
+  CONNECTED = 1,
+  PORTAL = 2,
+  CONNECTING = 3,
+  NOTCONNECTED = 4,
+}
+
+/**
+ * Declare network type enum type
+ */
+export enum NetworkType {
+  CELLULAR = 0,
+  ETHERNET = 1,
+  WIFI = 2,
+  UNSUPPORTED = 3,
 }
 
 /**
@@ -79,9 +108,9 @@ export declare interface OnTaskConfig {
  * Declare CaptionConfig
  */
 export declare interface CaptionConfig {
-  captionEnabled: boolean;
-  localOnly: boolean;
-  transcriptionEnabled: boolean;
+  sessionCaptionEnabled: boolean;
+  localCaptionEnabled: boolean;
+  sessionTranslationEnabled: boolean;
 }
 
 /**
@@ -91,9 +120,11 @@ export declare interface SessionConfig {
   sessionStartTime?: Date;
   sessionDurationInMinutes: number;
   students: Identity[];
+  studentsJoinViaCode?: Identity[];
   teacher?: Identity;
   onTaskConfig: OnTaskConfig;
   captionConfig: CaptionConfig;
+  accessCode?: string;
 }
 
 /**
@@ -123,8 +154,18 @@ export declare interface StudentActivity {
  * Declare IdentifiedActivity
  */
 export declare interface IdentifiedActivity {
-  email: string;
+  id: string;
   studentActivity: StudentActivity;
+}
+
+/**
+ * Declare NetworkInfo
+ */
+export declare interface NetworkInfo {
+  networkState: NetworkState;
+  networkType: NetworkType;
+  name: string;
+  signalStrength: number;
 }
 
 /**
@@ -152,9 +193,36 @@ export declare interface ClientApiDelegate {
   createSession(sessionConfig: SessionConfig): Promise<boolean>;
 
   /**
+   * Remove a student from the current session.
+   */
+  removeStudent(id: string): Promise<boolean>;
+
+  /**
    * Retrivies the current session.
    */
   getSession(): Promise<Session|null>;
+  /**
+   * End the current session
+   */
+  endSession(): Promise<boolean>;
+  /**
+   * Update on task config
+   */
+  updateOnTaskConfig(onTaskConfig: OnTaskConfig): Promise<boolean>;
+
+  /**
+   * Update caption config
+   */
+  updateCaptionConfig(captionConfig: CaptionConfig): Promise<boolean>;
+  /**
+   * Set float mode
+   */
+  setFloatMode(isFloatMode: boolean): Promise<boolean>;
+
+  /**
+   * Submit an access code for student to join the session.
+   */
+  submitAccessCode(accessCode: string): Promise<SubmitAccessCodeResult>;
 }
 
 /**
@@ -166,4 +234,21 @@ export declare interface ClientApi {
    * @param delegate
    */
   setDelegate(delegate: ClientApiDelegate|null): void;
+
+  /**
+   * Notify the app that the session config has been updated. Null if the
+   * session has ended.
+   */
+  onSessionConfigUpdated(sessionConfig: SessionConfig|null): void;
+
+  /**
+   * Notify the app that the student activity has been updated.
+   * The entire payload would be sent.
+   */
+  onStudentActivityUpdated(studentActivity: IdentifiedActivity[]): void;
+
+  /**
+   * Notify the app that the active networks has been updated.
+   */
+  onActiveNetworkStateChanged(activeNetworks: NetworkInfo[]): void;
 }

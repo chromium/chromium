@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -224,12 +224,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   EXPECT_FALSE(AreWebAppsEnabled(
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
-  Profile* lock_screen_profile = profile_manager().CreateTestingProfile(
-      ash::kLockScreenAppBrowserContextBaseName);
-  EXPECT_TRUE(AreWebAppsEnabled(lock_screen_profile));
-  EXPECT_TRUE(AreWebAppsEnabled(
-      lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-
   const AccountId account_id = AccountId::FromUserEmail("test@test");
   {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
@@ -299,12 +293,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
   EXPECT_FALSE(AreWebAppsUserInstallable(signin_profile));
   EXPECT_FALSE(AreWebAppsUserInstallable(
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-
-  Profile* lock_screen_profile = profile_manager().CreateTestingProfile(
-      ash::kLockScreenAppBrowserContextBaseName);
-  EXPECT_FALSE(AreWebAppsUserInstallable(lock_screen_profile));
-  EXPECT_FALSE(AreWebAppsUserInstallable(
-      lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 #endif
 }
 
@@ -380,18 +368,18 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
 // TODO(http://b/331208955): Remove after migration.
-TEST_F(WebAppUtilsTest, CanUserUninstallContainerApp) {
+TEST_F(WebAppUtilsTest, CanUserUninstalGeminiApp) {
   EXPECT_FALSE(CanUserUninstallWebApp(
-      kContainerAppId, WebAppManagementTypes({WebAppManagement::kDefault})));
+      ash::kGeminiAppId, WebAppManagementTypes({WebAppManagement::kDefault})));
   EXPECT_TRUE(CanUserUninstallWebApp(
-      kContainerAppId, WebAppManagementTypes({WebAppManagement::kSync})));
+      ash::kGeminiAppId, WebAppManagementTypes({WebAppManagement::kSync})));
 }
 
 // TODO(http://b/331208955): Remove after migration.
-TEST_F(WebAppUtilsTest, ContainerAppWillBeSystemWebApp) {
+TEST_F(WebAppUtilsTest, GeminiAppWillBeSystemWebApp) {
   for (auto src : WebAppManagementTypes::All()) {
     EXPECT_THAT(
-        WillBeSystemWebApp(kContainerAppId, WebAppManagementTypes({src})),
+        WillBeSystemWebApp(ash::kGeminiAppId, WebAppManagementTypes({src})),
         src == WebAppManagement::kDefault);
   }
 }

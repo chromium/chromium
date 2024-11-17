@@ -288,15 +288,11 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
   }
 
   // Send location update for node 2.
-  std::vector<AXLocationChanges> changes;
+  AXLocationAndScrollUpdates changes;
   AXRelativeBounds relative_bounds;
   relative_bounds.bounds =
       gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
-  AXLocationChanges change;
-  change.id = 2;
-  change.ax_tree_id = tree_id;
-  change.new_location = relative_bounds;
-  changes.push_back(change);
+  changes.location_changes.emplace_back(2, relative_bounds);
   manager_->OnLocationChanges(std::move(changes));
 
   {

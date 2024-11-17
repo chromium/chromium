@@ -4,5 +4,6 @@ include_rules = [
   "+components/sync_preferences",
   "+components/unified_consent",
   "+net",
+  "+services/metrics/public/cpp",
   "+ui/gfx/geometry/size_f.h",
 ]

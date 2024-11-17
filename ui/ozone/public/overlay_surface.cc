@@ -6,8 +6,8 @@
 
 namespace ui {
 
-OverlaySurface::OverlaySurface() {}
+OverlaySurface::OverlaySurface() = default;
 
-OverlaySurface::~OverlaySurface() {}
+OverlaySurface::~OverlaySurface() = default;
 
 }  // namespace ui

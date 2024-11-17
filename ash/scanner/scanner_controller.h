@@ -8,12 +8,14 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/memory/raw_ptr.h"
+#include "ash/scanner/scanner_session.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
 class ScannerDelegate;
-class ScannerSession;
 
 // This is the top level controller used for Scanner. It acts as a mediator
 // between Scanner and any consuming features.
@@ -24,17 +26,40 @@ class ASH_EXPORT ScannerController {
   ScannerController& operator=(const ScannerController&) = delete;
   ~ScannerController();
 
-  static bool IsEnabled();
+  // Checks system level constraints (e.g. prefs, feature flags) and returns
+  // true if the constraints allow a Scanner session to be created.
+  bool CanStartSession();
 
-  // As the name suggests this function creates a new ScannerSession. A
-  // ScannerSession will exist for the entire time a user is interacting with
-  // the feature. Triggering features should use this method to initiate a new
-  // ScannerSession. If nullptr is returned then Scanner cannot be initialized
-  // due to system level constraints (i.e. pref disabled, feature not allowed).
-  std::unique_ptr<ScannerSession> StartNewSession();
+  // Creates a new ScannerSession and returns a pointer to the created session.
+  // If the Scanner cannot be initialized due to system level constraints (e.g.
+  // pref disabled, feature not allowed), then no session is created and
+  // `nullptr` is returned instead. Note that calling `StartNewSession` will end
+  // the current session if there is one.
+  ScannerSession* StartNewSession();
+
+  // Fetches Scanner actions that are available based on the current
+  // `scanner_session_` and the contents of `jpeg_bytes`. The actions are
+  // returned via `callback`. If no session is active, then `callback` will be
+  // run with an empty list of actions.
+  void FetchActionsForImage(scoped_refptr<base::RefCountedMemory> jpeg_bytes,
+                            ScannerSession::FetchActionsCallback callback);
+
+  // Should be called when the user has finished interacting with a Scanner
+  // session. This will trigger relevant cleanup and eventually destroy the
+  // scanner session.
+  void OnSessionUIClosed();
+
+  bool HasActiveSessionForTesting() const;
+
+  ScannerDelegate* delegate_for_testing() { return delegate_.get(); }
 
  private:
   std::unique_ptr<ScannerDelegate> delegate_;
+
+  // May hold an active Scanner session, to allow access to the Scanner feature.
+  std::unique_ptr<ScannerSession> scanner_session_;
+
+  base::WeakPtrFactory<ScannerController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

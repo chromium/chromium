@@ -168,6 +168,10 @@ bool TurnSyncOnHelper::Delegate::
   return false;
 }
 
+bool TurnSyncOnHelper::Delegate::IsProfileCreationRequiredByPolicy() const {
+  return false;
+}
+
 // static
 void TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     const SigninUIError& error,
@@ -258,9 +262,6 @@ void TurnSyncOnHelper::TurnSyncOnInternal() {
   DCHECK(!account_info_.gaia.empty());
   DCHECK(!account_info_.email.empty());
 
-  DCHECK(!user_input_complete_timer_);
-  user_input_complete_timer_ = base::ElapsedTimer();
-
   if (HasCanOfferSigninError()) {
     AbortAndDelete();
     return;
@@ -296,8 +297,6 @@ bool TurnSyncOnHelper::HasCanOfferSigninError() {
 }
 
 void TurnSyncOnHelper::OnMergeAccountConfirmation(signin::SigninChoice choice) {
-  user_input_complete_timer_ = base::ElapsedTimer();
-
   switch (choice) {
     case signin::SIGNIN_CHOICE_NEW_PROFILE:
       base::RecordAction(
@@ -315,16 +314,12 @@ void TurnSyncOnHelper::OnMergeAccountConfirmation(signin::SigninChoice choice) {
       AbortAndDelete();
       break;
     case signin::SIGNIN_CHOICE_SIZE:
-      NOTREACHED_IN_MIGRATION();
-      AbortAndDelete();
-      break;
+      NOTREACHED();
   }
 }
 
 void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
     signin::SigninChoice choice) {
-  user_input_complete_timer_ = base::ElapsedTimer();
-
   enterprise_account_confirmed_ = choice == signin::SIGNIN_CHOICE_CONTINUE ||
                                   choice == signin::SIGNIN_CHOICE_NEW_PROFILE;
   signin_util::RecordEnterpriseProfileCreationUserChoice(
@@ -332,6 +327,14 @@ void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
 
   switch (choice) {
     case signin::SIGNIN_CHOICE_CANCEL:
+      // When profile creation/separation is enforced, declining the creation
+      // should fully sign the user out (even from the Web area) in order for
+      // the make sure not to bypass the policies in anyway.
+      if (delegate_->IsProfileCreationRequiredByPolicy() &&
+          (!enterprise_util::UserAcceptedAccountManagement(profile_) ||
+           !base::FeatureList::IsEnabled(kDisallowManagedProfileSignout))) {
+        signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
+      }
       base::RecordAction(
           base::UserMetricsAction("Signin_EnterpriseAccountPrompt_Cancel"));
       AbortAndDelete();
@@ -347,9 +350,7 @@ void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
       CreateNewSignedInProfile();
       break;
     case signin::SIGNIN_CHOICE_SIZE:
-      NOTREACHED_IN_MIGRATION();
-      AbortAndDelete();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -571,8 +572,7 @@ void TurnSyncOnHelper::OnSyncStartupStateChanged(
     SyncStartupTracker::ServiceStartupState state) {
   switch (state) {
     case SyncStartupTracker::ServiceStartupState::kPending:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case SyncStartupTracker::ServiceStartupState::kTimeout:
       DVLOG(1) << "Waiting for Sync Service to start timed out.";
       [[fallthrough]];
@@ -599,10 +599,6 @@ bool TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(Profile* profile) {
 void TurnSyncOnHelper::ShowSyncConfirmationUI() {
   // We have now gathered all the required async information to show either the
   // sync confirmation UI, or another screen.
-  DCHECK(user_input_complete_timer_);
-  base::UmaHistogramMediumTimes("Signin.SyncOptIn.PreSyncConfirmationLatency",
-                                user_input_complete_timer_->Elapsed());
-
   if (g_show_sync_enabled_ui_for_testing_ || GetSyncService()) {
     signin_metrics::LogSyncOptInStarted(signin_access_point_);
     delegate_->ShowSyncConfirmation(

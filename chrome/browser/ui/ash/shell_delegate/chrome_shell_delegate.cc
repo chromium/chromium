@@ -18,6 +18,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -65,7 +66,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
@@ -133,6 +133,8 @@ feedback::FeedbackSource ToChromeFeedbackSource(
       return feedback::FeedbackSource::kFeedbackSourceOverview;
     case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
       return feedback::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
+    case ash::ShellDelegate::FeedbackSource::kSunfish:
+      return feedback::FeedbackSource::kFeedbackSourceSunfish;
   }
   NOTREACHED() << "Unable to retrieve feedback::FeedbackSource due to "
                   "unknown source type.";
@@ -502,8 +504,10 @@ ash::DeskProfilesDelegate* ChromeShellDelegate::GetDeskProfilesDelegate() {
 void ChromeShellDelegate::OpenMultitaskingSettings() {
   const auto& sub_page_path =
       ash::features::IsOsSettingsRevampWayfindingEnabled()
-          ? chromeos::settings::mojom::kSystemPreferencesSectionPath
-          : chromeos::settings::mojom::kPersonalizationSectionPath;
+          ? std::string_view(
+                chromeos::settings::mojom::kSystemPreferencesSectionPath)
+          : std::string_view(
+                chromeos::settings::mojom::kPersonalizationSectionPath);
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(), sub_page_path,
       chromeos::settings::mojom::Setting::kSnapWindowSuggestions);

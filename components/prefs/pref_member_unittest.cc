@@ -62,7 +62,7 @@ class GetPrefValueHelper
 
  private:
   friend class base::RefCountedThreadSafe<GetPrefValueHelper>;
-  ~GetPrefValueHelper() {}
+  ~GetPrefValueHelper() = default;
 
   void GetPrefValue(base::WaitableEvent* event) {
     value_ = pref_.GetValue();

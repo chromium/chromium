@@ -27,9 +27,9 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -149,12 +149,12 @@ class VideoWakeLockTestWebFrameClient
       const WebString& sink_id,
       const cc::LayerTreeSettings* settings,
       scoped_refptr<base::TaskRunner> compositor_worker_task_runner) override {
-    web_media_player_client_ = client;
+    media_player_client_ = static_cast<MediaPlayerClient*>(client);
     return std::move(web_media_player_);
   }
 
-  WebMediaPlayerClient* web_media_player_client() const {
-    return web_media_player_client_;
+  MediaPlayerClient* media_player_client() const {
+    return media_player_client_;
   }
 
   void SetWebMediaPlayer(std::unique_ptr<WebMediaPlayer> web_media_player) {
@@ -162,16 +162,12 @@ class VideoWakeLockTestWebFrameClient
   }
 
  private:
-  WebMediaPlayerClient* web_media_player_client_ = nullptr;
+  MediaPlayerClient* media_player_client_ = nullptr;
   std::unique_ptr<WebMediaPlayer> web_media_player_;
 };
 
-class VideoWakeLockTest : public testing::Test,
-                          public testing::WithParamInterface<bool>,
-                          private ScopedIntersectionOptimizationForTest {
+class VideoWakeLockTest : public testing::Test {
  public:
-  VideoWakeLockTest() : ScopedIntersectionOptimizationForTest(GetParam()) {}
-
   void SetUp() override {
     auto media_player = std::make_unique<VideoWakeLockMediaPlayer>();
     media_player_ = media_player.get();
@@ -211,8 +207,8 @@ class VideoWakeLockTest : public testing::Test,
   HTMLVideoElement* Video() const { return video_.Get(); }
   VideoWakeLock* GetVideoWakeLock() const { return video_wake_lock_.Get(); }
   VideoWakeLockMediaPlayer* GetMediaPlayer() const { return media_player_; }
-  WebMediaPlayerClient* GetMediaPlayerClient() const {
-    return client_->web_media_player_client();
+  MediaPlayerClient* GetMediaPlayerClient() const {
+    return client_->media_player_client();
   }
 
   LocalFrame& GetFrame() const { return *helper_.LocalMainFrame()->GetFrame(); }
@@ -315,18 +311,16 @@ class VideoWakeLockTest : public testing::Test,
   frame_test_helpers::WebViewHelper helper_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, VideoWakeLockTest, testing::Bool());
-
-TEST_P(VideoWakeLockTest, NoLockByDefault) {
+TEST_F(VideoWakeLockTest, NoLockByDefault) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, PlayingVideoRequestsLock) {
+TEST_F(VideoWakeLockTest, PlayingVideoRequestsLock) {
   SimulatePlaying();
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, PausingVideoCancelsLock) {
+TEST_F(VideoWakeLockTest, PausingVideoCancelsLock) {
   SimulatePlaying();
   EXPECT_TRUE(HasWakeLock());
 
@@ -334,7 +328,7 @@ TEST_P(VideoWakeLockTest, PausingVideoCancelsLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, HiddingPageCancelsLock) {
+TEST_F(VideoWakeLockTest, HiddingPageCancelsLock) {
   SimulatePlaying();
   EXPECT_TRUE(HasWakeLock());
 
@@ -343,14 +337,14 @@ TEST_P(VideoWakeLockTest, HiddingPageCancelsLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, PlayingWhileHiddenDoesNotRequestLock) {
+TEST_F(VideoWakeLockTest, PlayingWhileHiddenDoesNotRequestLock) {
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                false);
   SimulatePlaying();
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, ShowingPageRequestsLock) {
+TEST_F(VideoWakeLockTest, ShowingPageRequestsLock) {
   SimulatePlaying();
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                false);
@@ -361,7 +355,7 @@ TEST_P(VideoWakeLockTest, ShowingPageRequestsLock) {
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, ShowingPageDoNotRequestsLockIfPaused) {
+TEST_F(VideoWakeLockTest, ShowingPageDoNotRequestsLockIfPaused) {
   SimulatePlaying();
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                false);
@@ -373,21 +367,21 @@ TEST_P(VideoWakeLockTest, ShowingPageDoNotRequestsLockIfPaused) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, RemotePlaybackDisconnectedDoesNotCancelLock) {
+TEST_F(VideoWakeLockTest, RemotePlaybackDisconnectedDoesNotCancelLock) {
   SimulatePlaying();
   GetVideoWakeLock()->OnRemotePlaybackStateChanged(
       mojom::blink::PresentationConnectionState::CLOSED);
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, RemotePlaybackConnectingDoesNotCancelLock) {
+TEST_F(VideoWakeLockTest, RemotePlaybackConnectingDoesNotCancelLock) {
   SimulatePlaying();
   GetVideoWakeLock()->OnRemotePlaybackStateChanged(
       mojom::blink::PresentationConnectionState::CONNECTING);
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, ActiveRemotePlaybackCancelsLock) {
+TEST_F(VideoWakeLockTest, ActiveRemotePlaybackCancelsLock) {
   SimulatePlaying();
   GetVideoWakeLock()->OnRemotePlaybackStateChanged(
       mojom::blink::PresentationConnectionState::CLOSED);
@@ -398,7 +392,7 @@ TEST_P(VideoWakeLockTest, ActiveRemotePlaybackCancelsLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, LeavingRemotePlaybackResumesLock) {
+TEST_F(VideoWakeLockTest, LeavingRemotePlaybackResumesLock) {
   SimulatePlaying();
   GetVideoWakeLock()->OnRemotePlaybackStateChanged(
       mojom::blink::PresentationConnectionState::CONNECTED);
@@ -409,7 +403,7 @@ TEST_P(VideoWakeLockTest, LeavingRemotePlaybackResumesLock) {
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, PictureInPictureLocksWhenPageNotVisible) {
+TEST_F(VideoWakeLockTest, PictureInPictureLocksWhenPageNotVisible) {
   SimulatePlaying();
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                false);
@@ -419,7 +413,7 @@ TEST_P(VideoWakeLockTest, PictureInPictureLocksWhenPageNotVisible) {
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, PictureInPictureDoesNoLockWhenPaused) {
+TEST_F(VideoWakeLockTest, PictureInPictureDoesNoLockWhenPaused) {
   SimulatePlaying();
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                false);
@@ -430,7 +424,7 @@ TEST_P(VideoWakeLockTest, PictureInPictureDoesNoLockWhenPaused) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, LeavingPictureInPictureCancelsLock) {
+TEST_F(VideoWakeLockTest, LeavingPictureInPictureCancelsLock) {
   SimulatePlaying();
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                false);
@@ -441,7 +435,7 @@ TEST_P(VideoWakeLockTest, LeavingPictureInPictureCancelsLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, RemotingVideoInPictureInPictureDoesNotRequestLock) {
+TEST_F(VideoWakeLockTest, RemotingVideoInPictureInPictureDoesNotRequestLock) {
   SimulatePlaying();
   SimulateEnterPictureInPicture();
   GetVideoWakeLock()->OnRemotePlaybackStateChanged(
@@ -449,7 +443,7 @@ TEST_P(VideoWakeLockTest, RemotingVideoInPictureInPictureDoesNotRequestLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, PausingContextCancelsLock) {
+TEST_F(VideoWakeLockTest, PausingContextCancelsLock) {
   SimulatePlaying();
   EXPECT_TRUE(HasWakeLock());
 
@@ -457,7 +451,7 @@ TEST_P(VideoWakeLockTest, PausingContextCancelsLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, ResumingContextResumesLock) {
+TEST_F(VideoWakeLockTest, ResumingContextResumesLock) {
   SimulatePlaying();
   EXPECT_TRUE(HasWakeLock());
 
@@ -468,7 +462,7 @@ TEST_P(VideoWakeLockTest, ResumingContextResumesLock) {
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, DestroyingContextCancelsLock) {
+TEST_F(VideoWakeLockTest, DestroyingContextCancelsLock) {
   SimulatePlaying();
   EXPECT_TRUE(HasWakeLock());
 
@@ -476,7 +470,7 @@ TEST_P(VideoWakeLockTest, DestroyingContextCancelsLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, LoadingCancelsLock) {
+TEST_F(VideoWakeLockTest, LoadingCancelsLock) {
   SimulatePlaying();
   EXPECT_TRUE(HasWakeLock());
 
@@ -488,7 +482,7 @@ TEST_P(VideoWakeLockTest, LoadingCancelsLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, MutedHiddenVideoDoesNotTakeLock) {
+TEST_F(VideoWakeLockTest, MutedHiddenVideoDoesNotTakeLock) {
   Video()->setMuted(true);
   HideVideo();
   UpdateObservers();
@@ -498,7 +492,7 @@ TEST_P(VideoWakeLockTest, MutedHiddenVideoDoesNotTakeLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, AudibleHiddenVideoTakesLock) {
+TEST_F(VideoWakeLockTest, AudibleHiddenVideoTakesLock) {
   Video()->setMuted(false);
   HideVideo();
   UpdateObservers();
@@ -508,7 +502,7 @@ TEST_P(VideoWakeLockTest, AudibleHiddenVideoTakesLock) {
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, UnmutingHiddenVideoTakesLock) {
+TEST_F(VideoWakeLockTest, UnmutingHiddenVideoTakesLock) {
   Video()->setMuted(true);
   HideVideo();
   UpdateObservers();
@@ -521,7 +515,7 @@ TEST_P(VideoWakeLockTest, UnmutingHiddenVideoTakesLock) {
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, MutingHiddenVideoReleasesLock) {
+TEST_F(VideoWakeLockTest, MutingHiddenVideoReleasesLock) {
   Video()->setMuted(false);
   HideVideo();
   UpdateObservers();
@@ -534,7 +528,7 @@ TEST_P(VideoWakeLockTest, MutingHiddenVideoReleasesLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, HidingAudibleVideoDoesNotReleaseLock) {
+TEST_F(VideoWakeLockTest, HidingAudibleVideoDoesNotReleaseLock) {
   Video()->setMuted(false);
   ShowVideo();
   UpdateObservers();
@@ -546,7 +540,7 @@ TEST_P(VideoWakeLockTest, HidingAudibleVideoDoesNotReleaseLock) {
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, HidingMutedVideoReleasesLock) {
+TEST_F(VideoWakeLockTest, HidingMutedVideoReleasesLock) {
   Video()->setMuted(true);
   ShowVideo();
   UpdateObservers();
@@ -558,7 +552,7 @@ TEST_P(VideoWakeLockTest, HidingMutedVideoReleasesLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, HiddenMutedVideoAlwaysVisibleInPictureInPicture) {
+TEST_F(VideoWakeLockTest, HiddenMutedVideoAlwaysVisibleInPictureInPicture) {
   Video()->setMuted(true);
   HideVideo();
   UpdateObservers();
@@ -572,21 +566,21 @@ TEST_P(VideoWakeLockTest, HiddenMutedVideoAlwaysVisibleInPictureInPicture) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, VideoWithNoFramesReleasesLock) {
+TEST_F(VideoWakeLockTest, VideoWithNoFramesReleasesLock) {
   GetMediaPlayer()->SetHasVideo(false);
   SimulatePlaying();
 
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, VideoWithFramesTakesLock) {
+TEST_F(VideoWakeLockTest, VideoWithFramesTakesLock) {
   GetMediaPlayer()->SetHasVideo(true);
   SimulatePlaying();
 
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, HidingVideoOnlyReleasesLock) {
+TEST_F(VideoWakeLockTest, HidingVideoOnlyReleasesLock) {
   GetMediaPlayer()->SetHasAudio(false);
   ShowVideo();
   UpdateObservers();
@@ -598,7 +592,7 @@ TEST_P(VideoWakeLockTest, HidingVideoOnlyReleasesLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, SmallMutedVideoDoesNotTakeLock) {
+TEST_F(VideoWakeLockTest, SmallMutedVideoDoesNotTakeLock) {
   ASSERT_LT(
       kSmallVideoSize.Area64() / static_cast<double>(kWindowSize.Area64()),
       GetVideoWakeLock()->GetSizeThresholdForTests());
@@ -621,7 +615,7 @@ TEST_P(VideoWakeLockTest, SmallMutedVideoDoesNotTakeLock) {
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, SizeChangeTakesLock) {
+TEST_F(VideoWakeLockTest, SizeChangeTakesLock) {
   // Set player to take less than 20% of the page and mute it.
   GetMediaPlayer()->SetSize(kSmallVideoSize);
   Video()->setMuted(true);
@@ -644,7 +638,7 @@ TEST_P(VideoWakeLockTest, SizeChangeTakesLock) {
   EXPECT_FALSE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, MutedVideoTooFarOffscreenDoesNotTakeLock) {
+TEST_F(VideoWakeLockTest, MutedVideoTooFarOffscreenDoesNotTakeLock) {
   Video()->setMuted(true);
 
   // Move enough of the video off screen to not take the lock.
@@ -664,7 +658,7 @@ TEST_P(VideoWakeLockTest, MutedVideoTooFarOffscreenDoesNotTakeLock) {
   EXPECT_TRUE(HasWakeLock());
 }
 
-TEST_P(VideoWakeLockTest, WakeLockTracksDocumentsPage) {
+TEST_F(VideoWakeLockTest, WakeLockTracksDocumentsPage) {
   // Create a document that has no Page.
   auto* another_document = Document::Create(GetDocument());
   ASSERT_FALSE(another_document->GetPage());
@@ -680,7 +674,7 @@ TEST_P(VideoWakeLockTest, WakeLockTracksDocumentsPage) {
   EXPECT_EQ(GetVideoWakeLock()->GetPage(), video()->GetDocument().GetPage());
 }
 
-TEST_P(VideoWakeLockTest, VideoOnlyMediaStreamAlwaysTakesLock) {
+TEST_F(VideoWakeLockTest, VideoOnlyMediaStreamAlwaysTakesLock) {
   // Default player is consumed on the first src=file load, so we must provide a
   // new one for the MediaStream load below.
   RecreateWebMediaPlayer();

@@ -105,6 +105,8 @@ class HttpStreamPool::Job {
 
   const ProxyInfo& proxy_info() const { return proxy_info_; }
 
+  const NextProtoSet& allowed_alpns() const { return allowed_alpns_; }
+
   const ConnectionAttempts& connection_attempts() const {
     return connection_attempts_;
   }
@@ -120,8 +122,8 @@ class HttpStreamPool::Job {
 
   const raw_ptr<Delegate> delegate_;
   raw_ptr<AttemptManager> attempt_manager_;
-  const NextProto expected_protocol_;
-  const bool is_http1_allowed_;
+  const NextProtoSet allowed_alpns_;
+  const bool is_h2_or_h3_required_;
   const ProxyInfo proxy_info_;
 
   ConnectionAttempts connection_attempts_;

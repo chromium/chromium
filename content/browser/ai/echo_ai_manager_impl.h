@@ -12,8 +12,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-forward.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 
 namespace content {
 
@@ -22,33 +25,30 @@ namespace content {
 // will be set using the default value.
 class EchoAIManagerImpl : public blink::mojom::AIManager {
  public:
-  using ReceiverContext =
-      std::variant<RenderFrameHost*, base::SupportsUserData*>;
+  // The context size for EchoAIManagerImpl is intentionally set to a small
+  // value so we can easily simulate the context overflow scenario.
+  static constexpr int kMaxContextSizeInTokens = 1000;
 
   EchoAIManagerImpl(const EchoAIManagerImpl&) = delete;
   EchoAIManagerImpl& operator=(const EchoAIManagerImpl&) = delete;
 
   ~EchoAIManagerImpl() override;
 
-  static void Create(content::BrowserContext* browser_context,
-                     ReceiverContext context,
+  static void Create(base::SupportsUserData& context_user_data,
                      mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
   friend base::NoDestructor<EchoAIManagerImpl>;
 
-  EchoAIManagerImpl(content::BrowserContext* browser_context,
-                    ReceiverContext context);
+  EchoAIManagerImpl();
 
   // `blink::mojom::AIManager` implementation.
-  void CanCreateAssistant(CanCreateAssistantCallback callback) override;
+  void CanCreateLanguageModel(CanCreateLanguageModelCallback callback) override;
 
-  void CreateAssistant(
-      mojo::PendingReceiver<::blink::mojom::AIAssistant> receiver,
-      blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-      const std::optional<std::string>& system_prompt,
-      std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-      CreateAssistantCallback callback) override;
+  void CreateLanguageModel(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client,
+      blink::mojom::AILanguageModelCreateOptionsPtr options) override;
 
   void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
 
@@ -63,8 +63,23 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   void CreateRewriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
       blink::mojom::AIRewriterCreateOptionsPtr options) override;
+  void AddModelDownloadProgressObserver(
+      mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+          observer_remote) override;
 
-  mojo::ReceiverSet<blink::mojom::AIManager, ReceiverContext> receivers_;
+  void ReturnAILanguageModelCreationResult(
+      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client_remote);
+  void DoMockDownloadingAndReturn(
+      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client_remote);
+
+  mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
+      download_progress_observers_;
+
+  mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
+
+  base::WeakPtrFactory<EchoAIManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

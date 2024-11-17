@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_section.h"
 
+#include <array>
 #include <optional>
 
 #include "ash/constants/ash_features.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/multitasking/multitasking_section.h"
@@ -28,8 +29,8 @@ using ::chromeos::settings::mojom::Setting;
 
 namespace {
 
-const std::vector<SearchConcept>& GetPersonalizationSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPersonalizationSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_WALLPAPER_AND_STYLE,
        mojom::kPersonalizationSectionPath,
        mojom::SearchResultIcon::kPersonalization,
@@ -37,7 +38,7 @@ const std::vector<SearchConcept>& GetPersonalizationSearchConcepts() {
        mojom::SearchResultType::kSection,
        {.section = mojom::Section::kPersonalization}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace

@@ -7,6 +7,7 @@ add_llvm_executable(spanify
   Spanifier.cpp
   ../raw_ptr_plugin/Util.cpp
   ../raw_ptr_plugin/RawPtrHelpers.cpp
+  ../raw_ptr_plugin/StackAllocatedChecker.cpp
   )
 
 target_link_libraries(spanify

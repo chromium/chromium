@@ -164,9 +164,6 @@ class CORE_EXPORT InlineItem {
   bool IsImage() const {
     return GetLayoutObject() && GetLayoutObject()->IsLayoutImage();
   }
-  bool IsRubyColumn() const {
-    return GetLayoutObject() && GetLayoutObject()->IsRubyColumn();
-  }
   bool IsTextCombine() const {
     return GetLayoutObject() && GetLayoutObject()->IsLayoutTextCombine();
   }

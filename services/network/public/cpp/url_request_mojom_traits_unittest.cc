@@ -24,6 +24,7 @@
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -135,7 +136,11 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       mojom::TrustTokenSignRequestData::kInclude;
   original.trust_token_params->additional_signed_headers.push_back(
       "some_header");
-
+#if BUILDFLAG(IS_ANDROID)
+  original.socket_tag = net::SocketTag(1, 2);
+#else
+  original.socket_tag = net::SocketTag();
+#endif
   network::ResourceRequest copied;
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::URLRequest>(original, copied));

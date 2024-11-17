@@ -101,7 +101,6 @@ bool IsNSRange(id value);
 // can be selected with Voiceover.
 @property(nonatomic, readonly) id endTextMarker;
 @property(nonatomic, readonly) NSNumber* expanded;
-@property(nonatomic, readonly) NSNumber* focused;
 @property(nonatomic, readonly) id header;
 // Index of a row, column, or tree item.
 @property(nonatomic, readonly) NSNumber* index;

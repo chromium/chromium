@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_CHROMEOS_TEST_UTIL_H_
 #define CHROME_BROWSER_UI_CHROMEOS_TEST_UTIL_H_
 
+#include "ash/wm/splitview/split_view_types.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -21,13 +21,9 @@ namespace views {
 class Widget;
 }
 
-// This class is meant primarily for writing UI-centric ChromeOS browser tests
-// that work for both Ash and Lacros(*), and in the latter case do so by using
-// crosapi's TestController behind the scenes to perform system-level UI actions
-// such as toggling tablet mode.
-//
-// (*) Typically, these tests are built into the `browser_tests` target for Ash,
-// and into the `lacros_chrome_browsertests` target for Lacros.
+// This class was meant primarily for writing UI-centric ChromeOS browser tests
+// that work for both Ash and Lacros. With Lacros gone, it has no purpose
+// anymore and could be removed (but it's still used by tests).
 class ChromeOSBrowserUITest : public MixinBasedInProcessBrowserTest {
  public:
   ChromeOSBrowserUITest() = default;
@@ -55,8 +51,7 @@ class ChromeOSBrowserUITest : public MixinBasedInProcessBrowserTest {
   static bool IsSnapWindowSupported();
 
   // Snaps the given window to the given part of the screen
-  static void SnapWindow(aura::Window* window,
-                         crosapi::mojom::SnapPosition position);
+  static void SnapWindow(aura::Window* window, ash::SnapPosition position);
 
   // Pins the given window. This is also known as locked fullscreen mode.
   static void PinWindow(aura::Window* window, bool trusted);

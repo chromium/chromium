@@ -270,7 +270,7 @@ void LogPasswordProtectionVerdict(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -393,14 +393,13 @@ void LogWarningAction(WarningUIType ui_type,
       }
       break;
     case WarningUIType::NOT_USED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
 void LogModalWarningDialogLifetime(
     base::TimeTicks modal_construction_start_time) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "PasswordProtection.ModalWarningDialogLifetime",
       base::TimeTicks::Now() - modal_construction_start_time);
 }

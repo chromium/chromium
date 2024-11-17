@@ -6,16 +6,14 @@
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_CHROMEOS_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/native_window_tracker.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
-
-#include "chrome/browser/sharesheet/sharesheet_types.h"
-#include "chromeos/components/sharesheet/constants.h"
 
 class Profile;
 
@@ -27,11 +25,9 @@ namespace views {
 class Button;
 }  // namespace views
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace sharesheet {
 class SharesheetService;
 }  // namespace sharesheet
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace sharing_hub {
 
@@ -75,17 +71,9 @@ class SharingHubBubbleControllerChromeOsImpl final
   void ShowSharesheet(views::Button* highlighted_button);
   void CloseSharesheet();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   sharesheet::SharesheetService* GetSharesheetService();
   void ShowSharesheetAsh();
   void CloseSharesheetAsh();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void ShowSharesheetLacros();
-  void CloseSharesheetLacros();
-  void OnSharesheetClosedLacros();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   void OnSharesheetClosed(views::Widget::ClosedReason reason);
 

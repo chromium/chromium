@@ -367,11 +367,14 @@ void PaintOpReader::Read(
   if (serialized_type == PaintOp::SerializedImageType::kNoImage)
     return;
 
+  // Compute the HDR headroom for tone mapping.
+  const float hdr_headroom =
+      ComputeHdrHeadroom(dynamic_range_limit, options_.hdr_headroom);
+
   if (enable_security_constraints_) {
     switch (serialized_type) {
       case PaintOp::SerializedImageType::kNoImage:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case PaintOp::SerializedImageType::kImageData: {
         SkColorType color_type;
         Read(&color_type);
@@ -411,6 +414,7 @@ void PaintOpReader::Read(
                      .set_id(PaintImage::GetNextId())
                      .set_texture_image(SkImages::RasterFromPixmapCopy(pixmap),
                                         PaintImage::kNonLazyStableId)
+                     .set_target_hdr_headroom(hdr_headroom)
                      .TakePaintImage();
       }
         return;
@@ -420,13 +424,8 @@ void PaintOpReader::Read(
         return;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
-
-  // Compute the HDR headroom for tone mapping.
-  const float hdr_headroom =
-      ComputeHdrHeadroom(dynamic_range_limit, options_.hdr_headroom);
 
   if (serialized_type == PaintOp::SerializedImageType::kMailbox) {
     if (!options_.shared_image_provider) {
@@ -440,6 +439,9 @@ void PaintOpReader::Read(
       SetInvalid(DeserializationError::kZeroMailbox);
       return;
     }
+
+    bool reinterpret_as_srgb = 0;
+    Read(&reinterpret_as_srgb);
 
     SharedImageProvider::Error error;
     sk_sp<SkImage> sk_image =
@@ -457,8 +459,7 @@ void PaintOpReader::Read(
           SetInvalid(DeserializationError::kSharedImageProviderUnknownMailbox);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       SetInvalid(DeserializationError::kSharedImageOpenFailure);
       return;
@@ -470,6 +471,7 @@ void PaintOpReader::Read(
                  .set_texture_image(std::move(sk_image),
                                     PaintImage::kNonLazyStableId)
                  .set_target_hdr_headroom(hdr_headroom)
+                 .set_reinterpret_as_srgb(reinterpret_as_srgb)
                  .TakePaintImage();
     return;
   }
@@ -1009,8 +1011,7 @@ void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
   AssertFieldAlignment();
   switch (type) {
     case PaintFilter::Type::kNullFilter:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case PaintFilter::Type::kColorFilter:
       ReadColorFilterPaintFilter(filter, crop_rect);
       break;
@@ -1270,8 +1271,8 @@ void PaintOpReader::ReadMatrixConvolutionPaintFilter(
   if (!valid_)
     return;
   filter->reset(new MatrixConvolutionPaintFilter(
-      kernel_size, kernel.data(), gain, bias, kernel_offset, tile_mode,
-      convolve_alpha, std::move(input), base::OptionalToPtr(crop_rect)));
+      kernel_size, kernel, gain, bias, kernel_offset, tile_mode, convolve_alpha,
+      std::move(input), base::OptionalToPtr(crop_rect)));
 }
 
 void PaintOpReader::ReadDisplacementMapEffectPaintFilter(
@@ -1384,9 +1385,7 @@ void PaintOpReader::ReadMergePaintFilter(
     Read(&input);
   if (!valid_)
     return;
-  filter->reset(new MergePaintFilter(inputs.data(),
-                                     static_cast<int>(input_count),
-                                     base::OptionalToPtr(crop_rect)));
+  filter->reset(new MergePaintFilter(inputs, base::OptionalToPtr(crop_rect)));
 }
 
 void PaintOpReader::ReadMorphologyPaintFilter(

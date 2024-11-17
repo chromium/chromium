@@ -42,14 +42,13 @@ void CheckHaveEmailAddressDisplayed(
 class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
  public:
   AccountCapabilitiesFetcherIOSTest()
-      : chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
   ~AccountCapabilitiesFetcherIOSTest() override = default;
 
   void SetUp() override {
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
   // Ensure that callback gets `capability_enabled` on
@@ -95,7 +94,7 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 

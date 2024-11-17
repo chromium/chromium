@@ -33,7 +33,6 @@ import "mojo/public/mojom/base/time.mojom";
 // reading/writing different patterns.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryDiagnosticMemoryRoutineArgument {
   // An optional field to indicate how much memory should be tested. If the
   // value is null, memory test will run with as much memory as possible.
@@ -45,9 +44,8 @@ struct TelemetryDiagnosticMemoryRoutineArgument {
 // Otherwise, the routine fails.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryDiagnosticVolumeButtonRoutineArgument {
-  [Stable, Extensible]
+  [Extensible]
   enum ButtonType {
     // The default value is for backward compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -64,7 +62,6 @@ struct TelemetryDiagnosticVolumeButtonRoutineArgument {
 // This routine checks whether the fan is controllable.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryDiagnosticFanRoutineArgument {};
 
 // Enumeration of each possible LED on a device. This enum type is a mirror of
@@ -72,7 +69,7 @@ struct TelemetryDiagnosticFanRoutineArgument {};
 // actual name of each installed LED, please refer to the EC firmware.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable, Extensible]
+[Extensible]
 enum TelemetryDiagnosticLedName {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -86,7 +83,7 @@ enum TelemetryDiagnosticLedName {
 // Enumeration of each possible LED color.
 //
 // NextMinVersion: 1, NextIndex: 7
-[Stable, Extensible]
+[Extensible]
 enum TelemetryDiagnosticLedColor {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -121,7 +118,6 @@ enum TelemetryDiagnosticLedColor {
 //    fails.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryDiagnosticLedLitUpRoutineArgument {
   // The LED to be lit up.
   TelemetryDiagnosticLedName name@0;
@@ -132,27 +128,24 @@ struct TelemetryDiagnosticLedLitUpRoutineArgument {
 // This routine checks the network bandwidth and reports the speed info.
 //
 // NextMinVersion: 1, NextIndex: 0
-[Stable]
 struct TelemetryDiagnosticNetworkBandwidthRoutineArgument {};
 
 // This routine checks the frames captured by camera. The frontend should ensure
 // the camera is opened during the execution of the routine.
 //
 // NextMinVersion: 1, NextIndex: 0
-[Stable]
 struct TelemetryDiagnosticCameraFrameAnalysisRoutineArgument {};
 
 // This routine checks whether the keyboard backlight can be lit up at any
 // brightless level.
 //
 // NextMinVersion: 1, NextIndex: 0
-[Stable]
 struct TelemetryDiagnosticKeyboardBacklightRoutineArgument {};
 
 // Argument types for the possible routines the routine control API can create.
 //
 // NextMinVersion: 8, NextIndex: 8
-[Stable, Extensible]
+[Extensible]
 union TelemetryDiagnosticRoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -179,18 +172,16 @@ union TelemetryDiagnosticRoutineArgument {
 // Routine has been initialized but not yet started.
 //
 // NextMinVersion: 1, NextIndex: 0
-[Stable]
 struct TelemetryDiagnosticRoutineStateInitialized {};
 
 // Running info regarding network bandwidth routine.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo {
   // The type of test that routine is running.
   //
   // NextMinVersion: 1, NextIndex: 3
-  [Stable, Extensible]
+  [Extensible]
   enum Type {
     [Default] kUnmappedEnumField = 0,
     // Routine is running download test.
@@ -208,7 +199,6 @@ struct TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo {
 // running state.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 union TelemetryDiagnosticRoutineRunningInfo {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -220,7 +210,6 @@ union TelemetryDiagnosticRoutineRunningInfo {
 // Routine is currently running.
 //
 // NextMinVersion: 2, NextIndex: 1
-[Stable]
 struct TelemetryDiagnosticRoutineStateRunning {
   [MinVersion=1] TelemetryDiagnosticRoutineRunningInfo? info@0;
 };
@@ -228,12 +217,11 @@ struct TelemetryDiagnosticRoutineStateRunning {
 // Details to reply to a routine requesting to check the LED lit up state.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryDiagnosticCheckLedLitUpStateReply {
   // State of the target LED.
   //
   // NextMinVersion: 1, NextIndex: 3
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     // The default value is for backward compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -249,12 +237,11 @@ struct TelemetryDiagnosticCheckLedLitUpStateReply {
 // keyboard backlight lit up.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryDiagnosticCheckKeyboardBacklightStateReply {
   // State of the keyboard backlight LED.
   //
   // NextMinVersion: 1, NextIndex: 3
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     // The default value is for backward compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -273,7 +260,7 @@ struct TelemetryDiagnosticCheckKeyboardBacklightStateReply {
 // - Led lit up routine
 //
 // NextMinVersion: 3, NextIndex: 3
-[Stable, Extensible]
+[Extensible]
 union TelemetryDiagnosticRoutineInquiryReply {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -294,7 +281,6 @@ union TelemetryDiagnosticRoutineInquiryReply {
 // `ReplyToInquiry`
 //
 // NextMinVersion: 1, NextIndex: 0
-[Stable]
 struct TelemetryDiagnosticCheckLedLitUpStateInquiry {};
 
 // Details regarding the inquiry to check the keyboard backlight lit up state.
@@ -302,7 +288,6 @@ struct TelemetryDiagnosticCheckLedLitUpStateInquiry {};
 // `TelemetryDiagnosticCheckKeyboardBacklightStateReply`.
 //
 // NextMinVersion: 1, NextIndex: 0
-[Stable]
 struct TelemetryDiagnosticCheckKeyboardBacklightStateInquiry {};
 
 // An interaction that has to be replied to. Each inquiry type has a
@@ -311,7 +296,7 @@ struct TelemetryDiagnosticCheckKeyboardBacklightStateInquiry {};
 // `TelemetryDiagnosticRoutineControl` with the corresponding reply type.
 //
 // NextMinVersion: 3, NextIndex: 3
-[Stable, Extensible]
+[Extensible]
 union TelemetryDiagnosticRoutineInquiry {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -334,7 +319,7 @@ union TelemetryDiagnosticRoutineInquiry {
 // that do not need to be replied to.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, Extensible]
+[Extensible]
 union TelemetryDiagnosticRoutineInteraction {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -346,12 +331,11 @@ union TelemetryDiagnosticRoutineInteraction {
 // Routine is currently waiting.
 //
 // NextMinVersion: 2, NextIndex: 3
-[Stable]
 struct TelemetryDiagnosticRoutineStateWaiting {
   // The reason why the routine waits.
   //
   // NextMinVersion: 1, NextIndex: 3
-  [Stable, Extensible]
+  [Extensible]
   enum Reason {
     [Default] kUnmappedEnumField = 0,
     // Waiting for the job to be scheduled for running.
@@ -373,7 +357,7 @@ struct TelemetryDiagnosticRoutineStateWaiting {
 // Enumeration of each possible memtester test item.
 //
 // NextMinVersion: 1, NextIndex: 20
-[Stable, Extensible]
+[Extensible]
 enum TelemetryDiagnosticMemtesterTestItemEnum {
   [Default] kUnmappedEnumField = 0,
   // The memtester test is not recognized.
@@ -430,7 +414,6 @@ enum TelemetryDiagnosticMemtesterTestItemEnum {
 // Result from running memtester.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryDiagnosticMemtesterResult {
   // Tests that have passed.
   array<TelemetryDiagnosticMemtesterTestItemEnum> passed_items@0;
@@ -441,7 +424,6 @@ struct TelemetryDiagnosticMemtesterResult {
 // Details regarding memory routine.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryDiagnosticMemoryRoutineDetail {
   // Number of bytes tested in the memory routine.
   uint64 bytes_tested@0;
@@ -452,13 +434,12 @@ struct TelemetryDiagnosticMemoryRoutineDetail {
 // Details regarding volume button routine.
 //
 // NextMinVersion: 1, NextIndex: 0
-[Stable]
 struct TelemetryDiagnosticVolumeButtonRoutineDetail {};
 
 // Whether the given hardware probed matches the hardware description recorded.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, Extensible]
+[Extensible]
 enum TelemetryDiagnosticHardwarePresenceStatus {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -473,7 +454,6 @@ enum TelemetryDiagnosticHardwarePresenceStatus {
 // Details regarding fan routine.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable]
 struct TelemetryDiagnosticFanRoutineDetail {
   // The ids of fans that can be controlled.
   array<uint8> passed_fan_ids@0;
@@ -486,7 +466,6 @@ struct TelemetryDiagnosticFanRoutineDetail {
 // Details regarding network bandwidth routine.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryDiagnosticNetworkBandwidthRoutineDetail {
   // Average download speed in kbit/s.
   double download_speed_kbps@0;
@@ -497,7 +476,7 @@ struct TelemetryDiagnosticNetworkBandwidthRoutineDetail {
 // All possible results for subtests of camera routines.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, Extensible]
+[Extensible]
 enum TelemetryDiagnosticCameraSubtestResult {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -513,13 +492,12 @@ enum TelemetryDiagnosticCameraSubtestResult {
 // Details regarding camera frame analysis routine.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable]
 struct TelemetryDiagnosticCameraFrameAnalysisRoutineDetail {
   // The first issue caught by the routine. See the fields for each subtest for
   // their details.
   //
   // NextMinVersion: 1, NextIndex: 5
-  [Stable, Extensible]
+  [Extensible]
   enum Issue {
     // For mojo backward compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -545,7 +523,7 @@ struct TelemetryDiagnosticCameraFrameAnalysisRoutineDetail {
 // Details about a finished routine.
 //
 // NextMinVersion: 6, NextIndex: 6
-[Stable, Extensible]
+[Extensible]
 union TelemetryDiagnosticRoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -567,7 +545,6 @@ union TelemetryDiagnosticRoutineDetail {
 // Information about a finished routine.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryDiagnosticRoutineStateFinished {
   // Whether the routine has passed or not.
   bool has_passed@0;
@@ -578,7 +555,6 @@ struct TelemetryDiagnosticRoutineStateFinished {
 // Possible routine states.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable]
 union TelemetryDiagnosticRoutineStateUnion {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -596,7 +572,6 @@ union TelemetryDiagnosticRoutineStateUnion {
 // Used to pass information regarding routine state.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryDiagnosticRoutineState {
   // The percentage of the completion of the routine. 0 to 100.
   uint8 percentage@0;
@@ -611,7 +586,6 @@ struct TelemetryDiagnosticRoutineState {
 // TelemetryDiagnosticRoutinesService.
 //
 // NextMinVersion: 3, NextIndex: 3
-[Stable]
 interface TelemetryDiagnosticRoutineControl {
   // Gets the current state of the routine. Note that if the routine fails to
   // initialize, the RoutineControl will disconnect before the callback is
@@ -636,7 +610,6 @@ interface TelemetryDiagnosticRoutineControl {
 // Implemented by clients who desire routine update notifications.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 interface TelemetryDiagnosticRoutineObserver {
   // Called when the routine state has changed. This is also called as soon
   // as a routine is initialized (right after calling `CreateRoutine`).
@@ -649,7 +622,7 @@ interface TelemetryDiagnosticRoutineObserver {
 // Diagnostic Routines interface exposed to Lacros, implemented in Ash.
 //
 // NextMinVersion: 3, NextIndex: 2
-[Stable, Uuid="0c7a9109-17eb-459d-82cd-60903bba315d"]
+[Uuid="0c7a9109-17eb-459d-82cd-60903bba315d"]
 interface TelemetryDiagnosticRoutinesService {
   // Requests that a routine using the RoutineControl API is created on the
   // platform. This function creates a different routine based on the

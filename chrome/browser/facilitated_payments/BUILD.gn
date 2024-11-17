@@ -20,6 +20,7 @@ static_library("facilitated_payments") {
     "//components/autofill/core/browser",
     "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",
+    "//components/facilitated_payments/core/ui_utils",
   ]
 }
 
@@ -32,5 +33,6 @@ source_set("unit_tests") {
     ":facilitated_payments",
     "//base",
     "//chrome/test:test_support",
+    "//components/optimization_guide/core:test_support",
   ]
 }

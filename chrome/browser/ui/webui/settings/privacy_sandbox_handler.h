@@ -24,7 +24,6 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
 
  private:
   friend class PrivacySandboxHandlerTest;
-  friend class PrivacySandboxHandlerPrivacyGuideAdTopicsTest;
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            SetFledgeJoiningAllowed);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,

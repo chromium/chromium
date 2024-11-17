@@ -44,6 +44,9 @@ abstract class AudioDeviceSelector {
     /** Gets whether the speakerphone is currently active. */
     public abstract boolean isSpeakerphoneOn();
 
+    /** Gets whether the bluetooth microphone is currently active. */
+    public abstract boolean isBluetoothMicrophoneOn();
+
     /**
      * Sets speakerphone on or off.
      *
@@ -185,7 +188,7 @@ abstract class AudioDeviceSelector {
         public static final int ID_USB_AUDIO = 4;
         public static final int DEVICE_COUNT = 5;
 
-        private Object mLock = new Object();
+        private final Object mLock = new Object();
 
         private int mRequestedAudioDevice = ID_INVALID;
 

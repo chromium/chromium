@@ -55,9 +55,9 @@ class Stub final : public mojom::EnterpriseCompanion {
                     [](IpcTrustDecider trust_decider,
                        mojom::EnterpriseCompanion* stub,
                        mojom::EnterpriseCompanion* untrusted_stub,
-                       std::unique_ptr<named_mojo_ipc_server::ConnectionInfo>
+                       const named_mojo_ipc_server::ConnectionInfo&
                            connection_info) {
-                      return trust_decider.Run(*connection_info)
+                      return trust_decider.Run(connection_info)
                                  ? stub
                                  : untrusted_stub;
                     },
@@ -103,15 +103,14 @@ class Stub final : public mojom::EnterpriseCompanion {
 
 named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
-  return {
-      .server_name = server_name,
-      .message_pipe_id =
-          named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection,
+  named_mojo_ipc_server::EndpointOptions options{
+      server_name,
+      named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection};
 #if BUILDFLAG(IS_WIN)
-      .security_descriptor =
-          GetGlobalConstants()->NamedPipeSecurityDescriptor(),
+  options.security_descriptor =
+      GetGlobalConstants()->NamedPipeSecurityDescriptor();
 #endif
-  };
+  return options;
 }
 
 // Creates a stub that receives RPC calls from the client and delegates them to

@@ -74,7 +74,16 @@ void WindowMiniViewBase::UpdateFocusState(bool focus) {
   }
 
   is_focused_ = focus;
+
+  // Notify all other subscriptions of the change.
+  OnPropertyChanged(&is_focused_, views::kPropertyEffectsPaint);
+
   views::FocusRing::Get(this)->SchedulePaint();
+}
+
+base::CallbackListSubscription WindowMiniViewBase::AddFocusedChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&is_focused_, std::move(callback));
 }
 
 WindowMiniViewBase::WindowMiniViewBase() = default;

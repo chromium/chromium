@@ -338,6 +338,7 @@ void FedCmMetrics::RecordRequestTokenStatus(
   base::UmaHistogramEnumeration("Blink.FedCm.Status.RequestIdToken", status);
   base::UmaHistogramEnumeration("Blink.FedCm.Status.MediationRequirement",
                                 requirement);
+  base::UmaHistogramEnumeration("Blink.FedCm.RpMode", rp_mode);
   // Reset the `session_id_`. We expect no more metrics from this API call.
   session_id_ = -1;
 }
@@ -664,14 +665,14 @@ void FedCmMetrics::RecordMultipleRequestsRpMode(
     const std::vector<GURL>& requested_providers) {
   DCHECK_GT(session_id_, 0);
   FedCmMultipleRequestsRpMode status;
-  if (pending_request_rp_mode == blink::mojom::RpMode::kWidget) {
-    status = new_request_rp_mode == blink::mojom::RpMode::kWidget
-                 ? FedCmMultipleRequestsRpMode::kWidgetThenWidget
-                 : FedCmMultipleRequestsRpMode::kWidgetThenButton;
+  if (pending_request_rp_mode == blink::mojom::RpMode::kPassive) {
+    status = new_request_rp_mode == blink::mojom::RpMode::kPassive
+                 ? FedCmMultipleRequestsRpMode::kPassiveThenPassive
+                 : FedCmMultipleRequestsRpMode::kPassiveThenActive;
   } else {
-    status = new_request_rp_mode == blink::mojom::RpMode::kWidget
-                 ? FedCmMultipleRequestsRpMode::kButtonThenWidget
-                 : FedCmMultipleRequestsRpMode::kButtonThenButton;
+    status = new_request_rp_mode == blink::mojom::RpMode::kPassive
+                 ? FedCmMultipleRequestsRpMode::kActiveThenPassive
+                 : FedCmMultipleRequestsRpMode::kActiveThenActive;
   }
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetMultipleRequestsRpMode(static_cast<int>(status));
@@ -690,7 +691,7 @@ void FedCmMetrics::RecordMultipleRequestsRpMode(
   base::UmaHistogramEnumeration("Blink.FedCm.MultipleRequestsRpMode", status);
 }
 
-void FedCmMetrics::RecordTimeBetweenUserInfoAndButtonModeAPI(
+void FedCmMetrics::RecordTimeBetweenUserInfoAndActiveModeAPI(
     base::TimeDelta duration) {
   DCHECK_GT(session_id_, 0);
   auto RecordUkm = [&](auto& ukm_builder) {

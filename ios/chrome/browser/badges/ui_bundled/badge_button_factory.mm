@@ -58,18 +58,18 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
     case kBadgeTypeParcelTracking:
       return [self parcelTrackingBadgeButton];
     case kBadgeTypeNone:
-      NOTREACHED_IN_MIGRATION() << "A badge should not have kBadgeTypeNone";
-      return nil;
+      NOTREACHED() << "A badge should not have kBadgeTypeNone";
   }
 }
 
 #pragma mark - Private
 - (BadgeButton*)passwordsSaveBadgeButton {
   UIImage* image =
+#if BUILDFLAG(IS_IOS_MACCATALYST)
       CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
-#if !BUILDFLAG(IS_IOS_MACCATALYST)
-  image = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
-                                    kInfobarSymbolPointSize);
+#else
+      CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
+                                kInfobarSymbolPointSize);
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
   BadgeButton* button = [self createButtonForType:kBadgeTypePasswordSave
                                             image:image];
@@ -85,10 +85,11 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 
 - (BadgeButton*)passwordsUpdateBadgeButton {
   UIImage* image =
+#if BUILDFLAG(IS_IOS_MACCATALYST)
       CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
-#if !BUILDFLAG(IS_IOS_MACCATALYST)
-  image = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
-                                    kInfobarSymbolPointSize);
+#else
+      CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
+                                kInfobarSymbolPointSize);
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
   BadgeButton* button = [self createButtonForType:kBadgeTypePasswordUpdate
                                             image:image];

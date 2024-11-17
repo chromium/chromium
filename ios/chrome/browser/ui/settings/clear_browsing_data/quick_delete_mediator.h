@@ -20,6 +20,7 @@ class PrefService;
 @protocol QuickDeleteCommands;
 @protocol QuickDeleteConsumer;
 @protocol QuickDeletePresentationCommands;
+@protocol UIBlockerTarget;
 
 // Mediator for the Quick Delete UI.
 @interface QuickDeleteMediator : NSObject <QuickDeleteMutator>
@@ -30,6 +31,8 @@ class PrefService;
 @property(nonatomic, weak) id<QuickDeletePresentationCommands>
     presentationHandler;
 
+// Initializes this mediator. The initial value for the selected time range is
+// the value that the `kDeleteTimePeriod` pref holds.
 - (instancetype)initWithPrefs:(PrefService*)prefs
     browsingDataCounterWrapperProducer:
         (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
@@ -37,6 +40,20 @@ class PrefService;
                    browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
         canPerformTabsClosureAnimation:(BOOL)canPerformTabsClosureAnimation
+                       uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
+    NS_DESIGNATED_INITIALIZER;
+
+// Initializes this mediator with `timeRange` as the initial value for the
+// selected time range. If the mediator is initialized by this method, the tabs
+// closure animation is not run.
+- (instancetype)initWithPrefs:(PrefService*)prefs
+    browsingDataCounterWrapperProducer:
+        (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
+                       identityManager:(signin::IdentityManager*)identityManager
+                   browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
+                   discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                             timeRange:(browsing_data::TimePeriod)timeRange
+                       uiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -78,13 +78,6 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
 
 #pragma mark - Setup
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface setUpFakeCreditCardServer];
@@ -106,10 +99,10 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearAllServerDataForTesting];
   [AutofillAppInterface tearDownFakeCreditCardServer];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)showAuthenticationSelection {

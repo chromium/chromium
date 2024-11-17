@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #include "ui/aura/window.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 
 namespace {
 
@@ -25,11 +24,6 @@ ui::WaylandWindowSnapDirection ToWaylandWindowSnapDirection(
 
 ui::WaylandToplevelExtension* WaylandToplevelExtensionForAuraWindow(
     aura::Window* window) {
-  // Lacros is based on Ozone/Wayland, which uses ui::PlatformWindow and
-  // views::DesktopWindowTreeHostLacros.
-  if (auto* host = views::DesktopWindowTreeHostLacros::From(window->GetHost()))
-    return host->GetWaylandToplevelExtension();
-
   return nullptr;
 }
 

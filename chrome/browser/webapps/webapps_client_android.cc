@@ -60,8 +60,7 @@ WebappInstallSource WebappsClientAndroid::GetInstallSource(
       DCHECK(!is_custom_tab);
       return WebappInstallSource::MENU_CREATE_SHORTCUT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebappInstallSource::COUNT;
+  NOTREACHED();
 }
 
 AppBannerManager* WebappsClientAndroid::GetAppBannerManager(

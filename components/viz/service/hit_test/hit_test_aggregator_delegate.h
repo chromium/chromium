@@ -18,7 +18,7 @@ class HitTestAggregatorDelegate {
 
  protected:
   // The dtor is protected so that HitTestAggregator does not take ownership.
-  virtual ~HitTestAggregatorDelegate() {}
+  virtual ~HitTestAggregatorDelegate() = default;
 };
 
 }  // namespace viz

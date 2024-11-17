@@ -249,6 +249,8 @@ public class WebPaymentIntentHelper {
      * @param paymentOptions The relevant merchant requested payment options. OK to be null.
      * @param shippingOptions Merchant specified available shipping options. Should be non-empty
      *          when paymentOptions.requestShipping is true.
+     * @param removeDeprecatedFields Whether the deprecated fields should be omitted from the
+     *          intent.
      * @return The intent to invoke the payment app.
      */
     public static Intent createPayIntent(
@@ -264,7 +266,8 @@ public class WebPaymentIntentHelper {
             @Nullable List<PaymentItem> displayItems,
             @Nullable Map<String, PaymentDetailsModifier> modifiers,
             @Nullable PaymentOptions paymentOptions,
-            @Nullable List<PaymentShippingOption> shippingOptions) {
+            @Nullable List<PaymentShippingOption> shippingOptions,
+            boolean removeDeprecatedFields) {
         Intent payIntent = new Intent();
         checkStringNotEmpty(activityName, "activityName");
         checkStringNotEmpty(packageName, "packageName");
@@ -282,28 +285,48 @@ public class WebPaymentIntentHelper {
                         displayItems,
                         modifiers,
                         paymentOptions,
-                        shippingOptions));
+                        shippingOptions,
+                        removeDeprecatedFields));
         return payIntent;
+    }
+
+    /**
+     * Create an intent for the service that dynamically updates the payment details (e.g., total
+     * price) based on user's payment method, shipping address, or shipping option.
+     *
+     * @param packageName The name of the package of the payment app. Only non-empty string is
+     *     allowed.
+     * @param serviceName The name of the service. Only non-empty string is allowed.
+     * @return The intent to invoke the service.
+     */
+    public static Intent createPaymentDetailsUpdateServiceIntent(
+            String packageName, String serviceName) {
+        Intent intent = new Intent();
+        checkStringNotEmpty(packageName, "packageName");
+        checkStringNotEmpty(serviceName, "serviceName");
+        intent.setClassName(packageName, serviceName);
+        return intent;
     }
 
     /**
      * Create an intent to invoke a service that can answer "is ready to pay" query.
      *
      * @param packageName The name of the package of the payment app. Only non-empty string is
-     *         allowed.
+     *     allowed.
      * @param serviceName The name of the service. Only non-empty string is allowed.
      * @param schemelessOrigin The schemeless origin of this merchant. Only non-empty string is
-     *         allowed.
+     *     allowed.
      * @param schemelessIframeOrigin The schemeless origin of the iframe that invoked
-     *         PaymentRequest. Only non-empty string is allowed.
+     *     PaymentRequest. Only non-empty string is allowed.
      * @param certificateChain The site certificate chain of the merchant. Can be null for localhost
-     *         or local file, which are secure contexts without SSL. Each byte array
-     *         cannot be null.
+     *     or local file, which are secure contexts without SSL. Each byte array cannot be null.
      * @param methodDataMap The payment-method specific data for all applicable payment methods,
-     *         e.g., whether the app should be invoked in test or production, a merchant identifier,
-     *         or a public key. The map should have at least one entry.
-     * @param clearIdFields When this feature flag is enabled, the IS_READY_TO_PAY
-     *        intent should NOT pass merchant and user identity to the payment app.
+     *     e.g., whether the app should be invoked in test or production, a merchant identifier, or
+     *     a public key. The map should have at least one entry.
+     * @param clearIdFields When this feature flag is enabled, the IS_READY_TO_PAY intent should NOT
+     *     pass merchant and user identity to the payment app.
+     * @param removeDeprecatedFields Whether the deprecated fields should be omitted from the
+     *     intent.
      * @return The intent to invoke the service.
      */
     public static Intent createIsReadyToPayIntent(
@@ -313,7 +336,8 @@ public class WebPaymentIntentHelper {
             String schemelessIframeOrigin,
             @Nullable byte[][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
-            boolean clearIdFields) {
+            boolean clearIdFields,
+            boolean removeDeprecatedFields) {
         Intent isReadyToPayIntent = new Intent();
         checkStringNotEmpty(serviceName, "serviceName");
         checkStringNotEmpty(packageName, "packageName");
@@ -325,6 +349,7 @@ public class WebPaymentIntentHelper {
                     schemelessIframeOrigin,
                     certificateChain,
                     methodDataMap,
+                    removeDeprecatedFields,
                     extras);
         }
         isReadyToPayIntent.putExtras(extras);
@@ -358,7 +383,8 @@ public class WebPaymentIntentHelper {
             @Nullable List<PaymentItem> displayItems,
             @Nullable Map<String, PaymentDetailsModifier> modifiers,
             @Nullable PaymentOptions paymentOptions,
-            @Nullable List<PaymentShippingOption> shippingOptions) {
+            @Nullable List<PaymentShippingOption> shippingOptions,
+            boolean removeDeprecatedFields) {
         Bundle extras = new Bundle();
         checkStringNotEmpty(id, "id");
         extras.putString(EXTRA_PAYMENT_REQUEST_ID, id);
@@ -398,9 +424,16 @@ public class WebPaymentIntentHelper {
         }
 
         addCommonExtrasWithIdentity(
-                schemelessOrigin, schemelessIframeOrigin, certificateChain, methodDataMap, extras);
+                schemelessOrigin,
+                schemelessIframeOrigin,
+                certificateChain,
+                methodDataMap,
+                removeDeprecatedFields,
+                extras);
 
-        return addDeprecatedPayIntentExtras(id, total, displayItems, extras);
+        return removeDeprecatedFields
+                ? extras
+                : addDeprecatedPayIntentExtras(id, total, displayItems, extras);
     }
 
     // Adds to the given `extras` bundle the common fields for both the IS_READY_TO_PAY (if identity
@@ -410,6 +443,7 @@ public class WebPaymentIntentHelper {
             String schemelessIframeOrigin,
             @Nullable byte[][] certificateChain,
             Map<String, PaymentMethodData> methodDataMap,
+            boolean removeDeprecatedFields,
             Bundle extras) {
         checkStringNotEmpty(schemelessOrigin, "schemelessOrigin");
         extras.putString(EXTRA_TOP_ORIGIN, schemelessOrigin);
@@ -434,13 +468,15 @@ public class WebPaymentIntentHelper {
         }
         extras.putParcelable(EXTRA_METHOD_DATA, methodDataBundle);
 
-        return addDeprecatedCommonExtrasWithIdentity(
-                schemelessOrigin,
-                schemelessIframeOrigin,
-                serializedCertificateChain,
-                methodDataMap,
-                methodDataBundle,
-                extras);
+        return removeDeprecatedFields
+                ? extras
+                : addDeprecatedCommonExtrasWithIdentity(
+                        schemelessOrigin,
+                        schemelessIframeOrigin,
+                        serializedCertificateChain,
+                        methodDataMap,
+                        methodDataBundle,
+                        extras);
     }
 
     // TODO(crbug.com/40849135): Remove this method.

@@ -12,7 +12,6 @@
 
 @protocol CredentialProviderPromoConsumer;
 
-class PrefService;
 class PromosManager;
 
 namespace feature_engagement {
@@ -29,9 +28,8 @@ class Tracker;
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
 
 // Designated initializer. Initializes the mediator with the
-// PromosManager, presenter, and PrefService.
+// PromosManager.
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                          prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

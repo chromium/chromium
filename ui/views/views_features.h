@@ -13,6 +13,7 @@ namespace views::features {
 
 // Please keep alphabetized.
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnablePlatformHighContrastInkDrop);
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableTouchDragCursorSync);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableViewPaintOptimization);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kKeyboardAccessibleTooltipInViews);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kAnnounceTextAdditionalAttributes);

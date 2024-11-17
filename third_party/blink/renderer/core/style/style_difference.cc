@@ -24,8 +24,7 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
       out << "FullLayout";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   out << ", reshape=" << diff.needs_reshape_;
@@ -42,8 +41,7 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
       out << "Normal";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   out << ", recomputeVisualOverflow=" << diff.recompute_visual_overflow_;
@@ -82,8 +80,7 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
           out << "BlendModeChanged";
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }

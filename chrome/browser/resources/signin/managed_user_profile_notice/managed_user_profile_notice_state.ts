@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -29,8 +29,8 @@ export class ManagedUserProfileNoticeStateElement extends CrLitElement {
     };
   }
 
-  override title: string;
-  subtitle: string;
+  override title: string = '';
+  subtitle: string = '';
 }
 
 declare global {

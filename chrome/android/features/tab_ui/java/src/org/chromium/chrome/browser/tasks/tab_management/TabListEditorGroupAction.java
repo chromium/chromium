@@ -11,12 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Token;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -104,10 +104,9 @@ public class TabListEditorGroupAction extends TabListEditorAction {
             if (tabGroupModelFilter.isTabInTabGroup(tab)) return true;
 
             tabGroupModelFilter.createSingleTabGroup(tab, /* notify= */ true);
-            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                    && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
-                            /* shouldShow= */ TabGroupCreationDialogManager
-                                    .shouldShowGroupCreationDialogViaSettingsSwitch())) {
+            if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
+                    /* shouldShow= */ TabGroupCreationDialogManager
+                            .shouldShowGroupCreationDialogViaSettingsSwitch())) {
                 mTabGroupCreationDialogManager.showDialog(tab.getRootId(), tabGroupModelFilter);
             }
             return true;
@@ -139,9 +138,8 @@ public class TabListEditorGroupAction extends TabListEditorAction {
                 tabGroupModelFilter.willMergingCreateNewGroup(tabsToMerge);
         tabGroupModelFilter.mergeListOfTabsToGroup(sortedTabs, destinationTab, /* notify= */ true);
 
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
-                && willMergingCreateNewGroup
-                && !TabGroupCreationDialogManager.shouldSkipGroupCreationDialog(
+        if (willMergingCreateNewGroup
+                && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
                         /* shouldShow= */ TabGroupCreationDialogManager
                                 .shouldShowGroupCreationDialogViaSettingsSwitch())) {
             mTabGroupCreationDialogManager.showDialog(

@@ -43,11 +43,12 @@ void RenderProcessHostTaskProvider::StartUpdating() {
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
     RenderProcessHost* host = it.GetCurrentValue();
+    host_observation_.AddObservation(host);
     if (host->GetProcess().IsValid()) {
       CreateTask(host->GetID());
     } else {
-      // If the host isn't ready do nothing and we will learn of its creation
-      // from the notification service.
+      // If the host isn't ready, do nothing and wait for the
+      // OnRenderProcessHostCreated() notification.
     }
   }
 
@@ -58,6 +59,7 @@ void RenderProcessHostTaskProvider::StopUpdating() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Then delete all tasks (if any).
+  host_observation_.RemoveAllObservations();
   tasks_by_rph_id_.clear();
 
   is_updating_ = false;
@@ -101,6 +103,8 @@ void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   if (is_updating_) {
     CreateTask(host->GetID());
+    // If the host is reused after the process exited, it is possible to get a
+    // second created notification for the same host.
     if (!host_observation_.IsObservingSource(host)) {
       host_observation_.AddObservation(host);
     }
@@ -110,18 +114,14 @@ void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
 void RenderProcessHostTaskProvider::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  if (is_updating_) {
-    DeleteTask(host->GetID());
-    host_observation_.RemoveObservation(host);
-  }
+  DeleteTask(host->GetID());
+  host_observation_.RemoveObservation(host);
 }
 
 void RenderProcessHostTaskProvider::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
-  if (is_updating_) {
-    DeleteTask(host->GetID());
-    host_observation_.RemoveObservation(host);
-  }
+  DeleteTask(host->GetID());
+  host_observation_.RemoveObservation(host);
 }
 
 }  // namespace task_manager

@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <memory>
+#include <optional>
 
 #include "base/notreached.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
@@ -19,13 +20,13 @@ namespace gfx {
 
 // Encoder ---------------------------------------------------------------------
 
-bool JPEGCodec::Encode(const SkPixmap& input,
-                       int quality,
-                       SkJpegEncoder::Downsample downsample,
-                       std::vector<unsigned char>* output,
-                       const SkData* xmp_metadata) {
-  output->clear();
-  VectorWStream dst(output);
+std::optional<std::vector<uint8_t>> JPEGCodec::Encode(
+    const SkPixmap& input,
+    int quality,
+    SkJpegEncoder::Downsample downsample,
+    const SkData* xmp_metadata) {
+  std::vector<uint8_t> output;
+  VectorWStream dst(&output);
 
   SkJpegEncoder::Options options;
   options.fQuality = quality;
@@ -33,55 +34,62 @@ bool JPEGCodec::Encode(const SkPixmap& input,
   if (xmp_metadata) {
     options.xmpMetadata = xmp_metadata;
   }
-  return SkJpegEncoder::Encode(&dst, input, options);
-}
 
-bool JPEGCodec::Encode(const SkPixmap& input,
-                       int quality,
-                       std::vector<unsigned char>* output) {
-  return Encode(input, quality, SkJpegEncoder::Downsample::k420, output);
-}
-
-bool JPEGCodec::Encode(const SkBitmap& src,
-                       int quality,
-                       std::vector<unsigned char>* output) {
-  SkPixmap pixmap;
-  if (!src.peekPixels(&pixmap)) {
-    return false;
+  if (!SkJpegEncoder::Encode(&dst, input, options)) {
+    return std::nullopt;
   }
 
-  return JPEGCodec::Encode(pixmap, quality, output);
+  return output;
+}
+
+std::optional<std::vector<uint8_t>> JPEGCodec::Encode(const SkPixmap& input,
+                                                      int quality) {
+  return Encode(input, quality, SkJpegEncoder::Downsample::k420);
+}
+
+std::optional<std::vector<uint8_t>> JPEGCodec::Encode(const SkBitmap& src,
+                                                      int quality) {
+  SkPixmap pixmap;
+  if (!src.peekPixels(&pixmap)) {
+    return std::nullopt;
+  }
+
+  return JPEGCodec::Encode(pixmap, quality);
 }
 
 // Decoder --------------------------------------------------------------------
 
-static bool PrepareForJPEGDecode(const unsigned char* input,
-                                 size_t input_size,
-                                 SkColorType color_type,
-                                 std::unique_ptr<SkCodec>* codec,
-                                 SkImageInfo* image_info) {
+namespace {
+
+struct PreparationOutput {
+  std::unique_ptr<SkCodec> codec;
+  SkImageInfo image_info;
+};
+
+std::optional<PreparationOutput> PrepareForJPEGDecode(
+    base::span<const uint8_t> input,
+    SkColorType color_type) {
+  PreparationOutput output;
+
   // We only support 8-bit RGBA and BGRA color types.
   CHECK(color_type == kRGBA_8888_SkColorType ||
         color_type == kBGRA_8888_SkColorType)
       << "Invalid pixel format " << color_type;
 
   // Parse the input stream with the JPEG decoder, yielding a SkCodec.
-  auto stream = std::make_unique<SkMemoryStream>(input, input_size,
+  auto stream = std::make_unique<SkMemoryStream>(input.data(), input.size(),
                                                  /*copyData=*/false);
   SkCodec::Result result;
-  *codec = SkJpegDecoder::Decode(std::move(stream), &result);
-  if (!*codec || result != SkCodec::kSuccess) {
-    return false;
+  output.codec = SkJpegDecoder::Decode(std::move(stream), &result);
+  if (!output.codec || result != SkCodec::kSuccess) {
+    return std::nullopt;
   }
 
-  // Create an SkImageInfo matching our JPEG's dimensions and color type.
-  SkISize size = (*codec)->dimensions();
-  *image_info = SkImageInfo::Make(size, color_type, kOpaque_SkAlphaType);
-
   // Reject images that would exceed INT_MAX bytes.
+  SkISize size = output.codec->dimensions();
   constexpr int kBytesPerPixel = 4;
   if (size.area() >= (INT_MAX / kBytesPerPixel)) {
-    return false;
+    return std::nullopt;
   }
 
   // The fuzzer is able to make astronomically large bitmaps (30000x30000) from
@@ -93,61 +101,69 @@ static bool PrepareForJPEGDecode(const unsigned char* input,
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
   constexpr int kFuzzerPixelLimit = 4000 * 4000;
   if (size.area() >= kFuzzerPixelLimit) {
-    return false;
+    return std::nullopt;
   }
 #endif
 
-  return true;
+  // Create an SkImageInfo matching our JPEG's dimensions and color type.
+  output.image_info = SkImageInfo::Make(size, color_type, kOpaque_SkAlphaType);
+
+  return output;
 }
 
-bool JPEGCodec::Decode(const unsigned char* input,
+}  // namespace
+
+bool JPEGCodec::Decode(const uint8_t* input,
                        size_t input_size,
                        SkColorType color_type,
-                       std::vector<unsigned char>* output,
+                       std::vector<uint8_t>* output,
                        int* w,
                        int* h) {
-  // Prepare a codec and image info for this JPEG. Populate `w` and `h` even if
-  // the image is too large to decode.
-  std::unique_ptr<SkCodec> codec;
-  SkImageInfo info;
-  bool ok = PrepareForJPEGDecode(input, input_size, color_type, &codec, &info);
-
-  *w = info.width();
-  *h = info.height();
-  if (!ok) {
+  std::optional<PreparationOutput> preparation_output = PrepareForJPEGDecode(
+      UNSAFE_BUFFERS(base::span(input, input_size)), color_type);
+  if (!preparation_output) {
     return false;
   }
 
+  *w = preparation_output->image_info.width();
+  *h = preparation_output->image_info.height();
+
   // Decode the pixels into the `output` vector.
-  output->resize(info.computeMinByteSize());
-  SkCodec::Result result =
-      codec->getPixels(info, &output->front(), info.minRowBytes());
+  output->resize(preparation_output->image_info.computeMinByteSize());
+  SkCodec::Result result = preparation_output->codec->getPixels(
+      preparation_output->image_info, &output->front(),
+      preparation_output->image_info.minRowBytes());
   return result == SkCodec::kSuccess;
 }
 
 // static
-std::unique_ptr<SkBitmap> JPEGCodec::Decode(const unsigned char* input,
-                                            size_t input_size) {
-  std::unique_ptr<SkCodec> codec;
-  SkImageInfo info;
+SkBitmap JPEGCodec::Decode(base::span<const uint8_t> input) {
   constexpr SkColorType kFormat =  // Parens around (0) solve dead-code warning.
       (SK_R32_SHIFT == (0))   ? kRGBA_8888_SkColorType
       : (SK_B32_SHIFT == (0)) ? kBGRA_8888_SkColorType
                               : kUnknown_SkColorType;
 
-  if (!PrepareForJPEGDecode(input, input_size, kFormat, &codec, &info)) {
-    return nullptr;
+  std::optional<PreparationOutput> preparation_output =
+      PrepareForJPEGDecode(input, kFormat);
+  if (!preparation_output) {
+    return SkBitmap();
   }
 
   // Allocate pixel storage for the decoded JPEG.
-  auto bitmap = std::make_unique<SkBitmap>();
-  if (!bitmap->tryAllocN32Pixels(info.width(), info.height())) {
-    return nullptr;
+  SkBitmap bitmap;
+  if (!bitmap.tryAllocN32Pixels(preparation_output->image_info.width(),
+                                preparation_output->image_info.height())) {
+    return SkBitmap();
   }
 
   // Decode the image pixels directly onto an SkBitmap.
-  SkCodec::Result result = codec->getPixels(bitmap->pixmap());
-  return (result == SkCodec::kSuccess) ? std::move(bitmap) : nullptr;
+  SkCodec::Result result =
+      preparation_output->codec->getPixels(bitmap.pixmap());
+  if (result == SkCodec::kSuccess) {
+    return bitmap;
+  } else {
+    return SkBitmap();
+  }
 }
 
 }  // namespace gfx

@@ -1,0 +1,55 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ip_protection.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// IP Protection uses two chained proxies to fully obscure IP addresses. The
+// browser first creates a tunnel through proxy A to proxy B, then within that
+// tunnel creates another tunnel to the destination.
+enum ProxyLayer {kProxyA, kProxyB};
+
+// A GeoHint represents a coarse location of a user.
+//
+// Phosphor, the Google service that provides blind-signed IP Protection tokens
+// and proxy configuration, also provides a location in the form of a GeoHint.
+// This value is only ever passed from the browser (trusted) to network
+// (untrusted) process.
+//
+// The field values based on RFC 8805 geolocation.
+struct GeoHint {
+  // Country code of the geo. Example: "US".
+  string country_code;
+
+  // ISO region of the geo. Example: "US-CA".
+  string iso_region;
+
+  // City name of the geo. Example: "MOUNTAIN VIEW".
+  string city_name;
+};
+
+// A blind-signed auth token.
+//
+// Phosphor, a Google service, provides tokens using a blind-signing process,
+// meaning that a token carries a trusted signature but that Phosphor cannot
+// correlate the content of the token with the signing process. That token is
+// carried in the `token` field, in a format suitable for inclusion in an HTTP
+// `Authorization` header when connecting to an IP Protection proxy. The
+// token's signature specifies an expiration date, after which it will be
+// rejected from proxies. This is carried in the `expiration` field. The
+// token's signature also carries a GeoHint, indicating the location of the
+// bearer as verified during the signing proecss. Typically, Phosphor provides
+// proxy configuration such that proxy B's egress IP address corresponds to
+// this location.
+struct BlindSignedAuthToken {
+  // The token value, for inclusion in a header.
+  string token;
+
+  // The expiration time of this token.
+  mojo_base.mojom.Time expiration;
+
+  // The GeoHint which specifies the coarse geolocation of the token.
+  GeoHint geo_hint;
+};

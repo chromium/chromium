@@ -13,10 +13,6 @@ namespace {
 const CGFloat kThumbnailImageCornerRadius = 12;
 /// The duration of the transition for the thumbnail button.
 const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
-/// Width of the thumbnail.
-// const CGFloat kThumbnailWidth = 48;
-///// Height of the thumbnail.
-// const CGFloat kThumbnailHeight = 40;
 }  // namespace
 
 @implementation OmniboxThumbnailButton {
@@ -25,7 +21,7 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
 
   /// Last view size. Used for resizing and reaplying the thumbnail image when
   /// the view frame changes.
-  CGSize lastSize;
+  CGSize _lastSize;
 }
 
 - (instancetype)init {
@@ -38,6 +34,16 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
   }
 
   return self;
+}
+
+- (UIImage*)resizeImageToFillFrame:(UIImage*)thumbnailImage {
+  if (!thumbnailImage) {
+    return nil;
+  }
+
+  return ResizeImage(thumbnailImage,
+                     CGSizeMake(self.frame.size.width, self.frame.size.height),
+                     ProjectionMode::kAspectFill);
 }
 
 - (UIImage*)thumbnailImageWithDiscardIntentOverlay:(UIImage*)thumbnailImage {
@@ -75,25 +81,27 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
   [super layoutSubviews];
 
   CGSize frameSize = self.frame.size;
-  if (frameSize.width == lastSize.width &&
-      frameSize.height == lastSize.height) {
+  if (frameSize.width == _lastSize.width &&
+      frameSize.height == _lastSize.height) {
     return;
   }
 
   // If the frame's size or layout constraints are adjusted, the displayed
   // thumbnail image should be resized proportionally to avoid cropping.
-  lastSize = frameSize;
+  _lastSize = frameSize;
+  UIImage* resizedImage = [self resizeImageToFillFrame:_thumbnailImage];
   UIImage* imageToSet =
       self.isSelected
-          ? [self thumbnailImageWithDiscardIntentOverlay:_thumbnailImage]
-          : _thumbnailImage;
+          ? [self thumbnailImageWithDiscardIntentOverlay:resizedImage]
+          : resizedImage;
 
   [self applyThumbnailImage:imageToSet animated:NO];
 }
 
 - (void)setThumbnailImage:(UIImage*)image {
   _thumbnailImage = image;
-  [self applyThumbnailImage:_thumbnailImage animated:NO];
+  UIImage* resizedImage = [self resizeImageToFillFrame:_thumbnailImage];
+  [self applyThumbnailImage:resizedImage animated:NO];
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -103,17 +111,18 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
 
+  UIImage* resizedImage = [self resizeImageToFillFrame:_thumbnailImage];
   UIImage* imageToSet =
-      selected ? [self thumbnailImageWithDiscardIntentOverlay:_thumbnailImage]
-               : _thumbnailImage;
+      selected ? [self thumbnailImageWithDiscardIntentOverlay:resizedImage]
+               : resizedImage;
 
   [self applyThumbnailImage:imageToSet animated:YES];
 }
 
 - (void)applyThumbnailImage:(UIImage*)thumbnailImage animated:(BOOL)animated {
-  thumbnailImage = ResizeImage(
-      thumbnailImage, CGSizeMake(self.frame.size.width, self.frame.size.height),
-      ProjectionMode::kAspectFill);
+  if (!thumbnailImage) {
+    return;
+  }
 
   if (!animated) {
     [self setBackgroundImage:thumbnailImage forState:UIControlStateNormal];

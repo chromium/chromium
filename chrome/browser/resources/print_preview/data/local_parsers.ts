@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {isChromeOS, isLacros} from 'chrome://resources/js/platform.js';
+import {isChromeOS} from 'chrome://resources/js/platform.js';
 
 import type {DestinationOptionalParams} from './destination.js';
 import {Destination, DestinationOrigin, PrinterType} from './destination.js';
@@ -80,8 +80,7 @@ function parseLocalDestination(destinationInfo: LocalDestinationInfo):
   }
   return new Destination(
       destinationInfo.deviceName,
-      (isChromeOS || isLacros) ? DestinationOrigin.CROS :
-                                 DestinationOrigin.LOCAL,
+      isChromeOS ? DestinationOrigin.CROS : DestinationOrigin.LOCAL,
       destinationInfo.printerName, options);
 }
 

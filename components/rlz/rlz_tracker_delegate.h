@@ -20,12 +20,12 @@ namespace rlz {
 // specific singletons or gives information about the embedder environment.
 class RLZTrackerDelegate {
  public:
-  RLZTrackerDelegate() {}
+  RLZTrackerDelegate() = default;
 
   RLZTrackerDelegate(const RLZTrackerDelegate&) = delete;
   RLZTrackerDelegate& operator=(const RLZTrackerDelegate&) = delete;
 
-  virtual ~RLZTrackerDelegate() {}
+  virtual ~RLZTrackerDelegate() = default;
 
   // Invoked during RLZTracker cleanup, to request the cleanup of the delegate.
   virtual void Cleanup() = 0;

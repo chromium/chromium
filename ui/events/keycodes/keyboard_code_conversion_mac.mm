@@ -48,11 +48,6 @@ inline bool IsDomKeyUnicodeCharacter(char32_t c) {
   return base::IsValidCodepoint(c) && !base::IsUnicodeControl(c);
 }
 
-// This value is not defined but shows up as 0x36.
-constexpr int kVK_RightCommand = 0x36;
-// Context menu is not defined but shows up as 0x6E.
-constexpr int kVK_ContextMenu = 0x6E;
-
 bool IsKeypadOrNumericKeyEvent(NSEvent* event) {
   // Check that this is the type of event that has a keyCode.
   switch (event.type) {
@@ -152,7 +147,7 @@ DomKey DomKeyFromKeyCode(unsigned short key_code) {
       {kVK_RightArrow, DomKey::ARROW_RIGHT},
       {kVK_DownArrow, DomKey::ARROW_DOWN},
       {kVK_UpArrow, DomKey::ARROW_UP},
-      {kVK_ContextMenu, DomKey::CONTEXT_MENU},
+      {kVK_ContextualMenu, DomKey::CONTEXT_MENU},
       {kVK_JIS_Eisu, DomKey::EISU},
       {kVK_JIS_Kana, DomKey::KANJI_MODE},
   });

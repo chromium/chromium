@@ -299,7 +299,7 @@ bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
     } else if (origin_val.is_string()) {
       origin_str = &origin_val.GetString();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     ContentSettingsPattern origin =
         ContentSettingsPattern::FromString(*origin_str);
@@ -499,10 +499,9 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
           info.primary_pattern, info.secondary_pattern, type,
           base::Value(std::move(*revoked_value)));
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Unable to find ContentSettingsType in neither "
-          << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
-          << ConvertContentSettingsTypeToKey(type);
+      NOTREACHED() << "Unable to find ContentSettingsType in neither "
+                   << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
+                   << ConvertContentSettingsTypeToKey(type);
     }
   }
   // Set this back to false, so that `OnContentSettingChanged` can cleanup
@@ -559,10 +558,9 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
           permissions_data.primary_pattern.ToRepresentativeUrl(), GURL(),
           permission, base::Value());
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Unable to find ContentSettingsType in neither "
-          << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
-          << ConvertContentSettingsTypeToKey(permission);
+      NOTREACHED() << "Unable to find ContentSettingsType in neither "
+                   << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
+                   << ConvertContentSettingsTypeToKey(permission);
     }
   }
   // Set this back to false, so that `OnContentSettingChanged` can cleanup
@@ -868,7 +866,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
                                                entry.source.secondary_pattern,
                                                entry.type, base::Value());
         } else {
-          NOTREACHED_IN_MIGRATION()
+          NOTREACHED()
               << "Unable to find ContentSettingsType in neither "
               << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
               << ConvertContentSettingsTypeToKey(entry.type);

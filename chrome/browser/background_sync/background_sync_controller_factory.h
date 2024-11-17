@@ -28,7 +28,7 @@ class BackgroundSyncControllerFactory : public ProfileKeyedServiceFactory {
   ~BackgroundSyncControllerFactory() override;
 
   // BrowserContextKeyedServiceFactory methods:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

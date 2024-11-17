@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_APPLE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/network_change_notifier.h"
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
@@ -95,6 +96,13 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceApple
 
  private:
   friend class SystemGeolocationSourceAppleTest;
+  // The enum represents the possible outcomes of a session (from starting to
+  // stopping provider).
+  enum class CoreLocationSessionResult {
+    kSuccess = 0,
+    kCoreLocationError = 1,
+    kWifiDisabled = 2,
+  };
 
   // Mock wifi status only used for testing.
   static std::optional<bool> mock_wifi_status_;
@@ -109,6 +117,15 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceApple
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   // Caches the initial Wi-Fi status at the beginning of watching position.
   bool was_wifi_enabled_ = false;
+  // Indicates whether any position updates have been received.
+  bool position_received_ = false;
+  // Stores the result of the CoreLocation session. This will hold the first
+  // error encountered, or be empty to indicate a successful session with no
+  // errors.
+  std::optional<CoreLocationSessionResult> session_result_;
+  // Time when position watching started. Used to calculate the time to first
+  // position is updated.
+  base::TimeTicks watch_start_time_;
   base::WeakPtrFactory<SystemGeolocationSourceApple> weak_ptr_factory_{this};
 };
 

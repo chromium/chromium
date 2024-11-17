@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_context_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decode_error_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decode_success_callback.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -94,13 +95,6 @@ class MODULES_EXPORT BaseAudioContext
   USING_PRE_FINALIZER(BaseAudioContext, Dispose);
 
  public:
-  // The state of an audio context.  On creation, the state is Suspended. The
-  // state is Running if audio is being processed (audio graph is being pulled
-  // for data). The state is Closed if the audio context has been closed.  The
-  // valid transitions are from Suspended to either Running or Closed; Running
-  // to Suspended or Closed. Once Closed, there are no valid transitions.
-  enum AudioContextState { kSuspended, kRunning, kClosed };
-
   ~BaseAudioContext() override;
 
   void Trace(Visitor*) const override;
@@ -126,7 +120,7 @@ class MODULES_EXPORT BaseAudioContext
   float sampleRate() const { return destination_handler_->SampleRate(); }
   double currentTime() const { return destination_handler_->CurrentTime(); }
   AudioListener* listener() { return listener_.Get(); }
-  String state() const;
+  V8AudioContextState state() const;
   AudioWorklet* audioWorklet() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)
   AnalyserNode* createAnalyser(ExceptionState&);
@@ -198,7 +192,9 @@ class MODULES_EXPORT BaseAudioContext
     return destination_handler_->CurrentSampleFrame();
   }
 
-  AudioContextState ContextState() const { return control_thread_state_; }
+  V8AudioContextState::Enum ContextState() const {
+    return control_thread_state_;
+  }
 
   // Warn user when creating a node on a closed context.  The node can't do
   // anything useful because the context is closed.
@@ -339,7 +335,7 @@ class MODULES_EXPORT BaseAudioContext
   void Initialize();
   virtual void Uninitialize();
 
-  void SetContextState(AudioContextState);
+  void SetContextState(V8AudioContextState::Enum);
 
   // Tries to handle AudioBufferSourceNodes that were started but became
   // disconnected or was never connected. Because these never get pulled
@@ -389,8 +385,14 @@ class MODULES_EXPORT BaseAudioContext
   // haven't finished playing.  Make sure to release them here.
   void ReleaseActiveSourceNodes();
 
+  // The state of an audio context.  On creation, the state is Suspended. The
+  // state is Running if audio is being processed (audio graph is being pulled
+  // for data). The state is Closed if the audio context has been closed.  The
+  // valid transitions are from Suspended to either Running or Closed; Running
+  // to Suspended or Closed. Once Closed, there are no valid transitions.
   // https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-control-thread-state-slot
-  AudioContextState control_thread_state_ = kSuspended;
+  V8AudioContextState::Enum control_thread_state_ =
+      V8AudioContextState::Enum::kSuspended;
 
   bool is_cleared_ = false;
 

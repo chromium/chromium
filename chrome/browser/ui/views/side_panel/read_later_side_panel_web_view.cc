@@ -24,8 +24,10 @@ END_METADATA
 
 ReadLaterSidePanelWebView::ReadLaterSidePanelWebView(
     Browser* browser,
+    SidePanelEntryScope& scope,
     base::RepeatingClosure close_cb)
     : SidePanelWebUIViewT(
+          scope,
           base::BindRepeating(
               &ReadLaterSidePanelWebView::UpdateActiveURLToActiveTab,
               base::Unretained(this)),

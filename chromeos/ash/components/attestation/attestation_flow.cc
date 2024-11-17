@@ -83,8 +83,7 @@ AttestationKeyType AttestationFlow::GetKeyTypeForProfile(
     case PROFILE_SOFT_BIND_CERTIFICATE:
       return KEY_USER;
   }
-  NOTREACHED_IN_MIGRATION();
-  return KEY_USER;
+  NOTREACHED();
 }
 
 AttestationFlowLegacy::AttestationFlowLegacy(

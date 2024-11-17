@@ -7,10 +7,12 @@
 #include <map>
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/barrier_callback.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -44,7 +46,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -56,6 +57,7 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
@@ -96,6 +98,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::ALMANAC_INSTALL_APP_URI:
     case InstallSource::WEBAPK_RESTORE:
     case InstallSource::OOBE_APP_RECOMMENDATIONS:
+    case InstallSource::WEB_INSTALL:
       return true;
     case InstallSource::DEVTOOLS:
     case InstallSource::MANAGEMENT_API:
@@ -117,8 +120,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::MICROSOFT_365_SETUP:
       return false;
     case InstallSource::COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -191,9 +193,10 @@ void ApplyUserDisplayModeSyncMitigations(
       // - Check that it is synced as a browser shortcut.
       // TODO(b/321617972): Remove when Windows/Mac/Linux support for tabbed web
       // apps is in sufficient circulation.
-      bool is_standalone_averse_app = web_app.app_id() == kGoogleDocsAppId ||
-                                      web_app.app_id() == kGoogleSheetsAppId ||
-                                      web_app.app_id() == kGoogleSlidesAppId;
+      bool is_standalone_averse_app =
+          web_app.app_id() == ash::kGoogleDocsAppId ||
+          web_app.app_id() == ash::kGoogleSheetsAppId ||
+          web_app.app_id() == ash::kGoogleSlidesAppId;
       if (!is_standalone_averse_app) {
         break;
       }
@@ -378,6 +381,12 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   web_app->SetParentAppId(web_app_info.parent_app_id);
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(options.source);
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppDontAddExistingAppsToSync) &&
+      options.source == WebAppManagement::kUserInstalled &&
+      IsSyncEnabledForApps(profile_)) {
+    web_app->AddSource(WebAppManagement::kSync);
+  }
   web_app->SetIsFromSyncAndPendingInstallation(false);
   web_app->SetLatestInstallSource(options.install_surface);
 
@@ -411,28 +420,6 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   }
 }
 
-bool WebAppInstallFinalizer::CanReparentTab(const webapps::AppId& app_id,
-                                            bool shortcut_created) const {
-  // Reparent the web contents into its own window only if that is the
-  // app's launch type.
-  DCHECK(provider_);
-  if (provider_->registrar_unsafe().GetAppUserDisplayMode(app_id) ==
-      mojom::UserDisplayMode::kBrowser) {
-    return false;
-  }
-
-  return provider_->ui_manager().CanReparentAppTabToWindow(app_id,
-                                                           shortcut_created);
-}
-
-void WebAppInstallFinalizer::ReparentTab(const webapps::AppId& app_id,
-                                         bool shortcut_created,
-                                         content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  provider_->ui_manager().ReparentAppTabToWindow(web_contents, app_id,
-                                                 shortcut_created);
-}
-
 void WebAppInstallFinalizer::FinalizeUpdate(
     const WebAppInstallInfo& web_app_info,
     InstallFinalizedCallback callback) {
@@ -459,11 +446,11 @@ void WebAppInstallFinalizer::FinalizeUpdate(
 
   auto web_app = std::make_unique<WebApp>(*existing_web_app);
   if (web_app->isolation_data().has_value()) {
-    const std::optional<WebApp::IsolationData::PendingUpdateInfo>&
-        pending_update_info = web_app->isolation_data()->pending_update_info();
+    const std::optional<IsolationData::PendingUpdateInfo>& pending_update_info =
+        web_app->isolation_data()->pending_update_info();
     CHECK(pending_update_info.has_value())
         << "Isolated Web Apps can only be updated if "
-           "`WebApp::IsolationData::PendingUpdateInfo` is set.";
+           "`IsolationData::PendingUpdateInfo` is set.";
     CHECK_EQ(web_app_info.isolated_web_app_version,
              pending_update_info->version);
     UpdateIsolationDataAndResetPendingUpdateInfo(
@@ -506,18 +493,16 @@ void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data) {
   CHECK(version.IsValid());
 
-  // If previous `controlled_frame_partitions` exist, keep them the same. This
-  // can only happen during an update, and never during an install.
-  std::set<std::string> controlled_frame_partitions;
-  if (web_app->isolation_data().has_value()) {
-    controlled_frame_partitions =
-        web_app->isolation_data()->controlled_frame_partitions;
+  IsolationData::Builder builder(location, version);
+  if (web_app->isolation_data()) {
+    builder.PersistFieldsForUpdate(*web_app->isolation_data());
   }
-  web_app->SetIsolationData(WebApp::IsolationData(
-      location, version, controlled_frame_partitions,
-      // Always reset `pending_update_info`, because reaching this point means
-      // that an install or update just succeeded.
-      /*pending_update_info=*/std::nullopt, std::move(integrity_block_data)));
+
+  if (integrity_block_data) {
+    builder.SetIntegrityBlockData(std::move(*integrity_block_data));
+  }
+
+  web_app->SetIsolationData(std::move(builder).Build());
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
@@ -639,6 +624,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     case WebAppManagement::kWebAppStore:
     case WebAppManagement::kOneDriveIntegration:
     case WebAppManagement::kSync:
+    case WebAppManagement::kUserInstalled:
     case WebAppManagement::kIwaUserInstalled:
       synchronize_options.reason = SHORTCUT_CREATION_BY_USER;
       break;
@@ -672,17 +658,6 @@ void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(
   provider_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
-bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const webapps::AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // OS integration should always be enabled on ChromeOS.
-  return true;
-#else
-  // If the app being updated was installed by default and not also manually
-  // installed by the user or an enterprise policy, disable os integration.
-  return !provider_->registrar_unsafe().WasInstalledByDefaultOnly(app_id);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     InstallFinalizedCallback callback,
     webapps::AppId app_id,
@@ -697,7 +672,17 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  if (!ShouldUpdateOsHooks(app_id)) {
+  // OS integration should always be enabled on ChromeOS for manifest updates.
+  bool should_skip_os_integration_on_manifest_update = false;
+#if !BUILDFLAG(IS_CHROMEOS)
+  // If the app being updated was installed by default and not also manually
+  // installed by the user or an enterprise policy, disable os integration.
+  should_skip_os_integration_on_manifest_update =
+      provider_->registrar_unsafe().IsInstallState(
+          app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION});
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  if (should_skip_os_integration_on_manifest_update) {
     provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
     std::move(callback).Run(
         app_id, webapps::InstallResultCode::kSuccessAlreadyInstalled);
@@ -725,7 +710,9 @@ void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
     GURL install_url,
     std::vector<std::string> additional_policy_ids) {
   DCHECK(!(source == WebAppManagement::Type::kSync && is_placeholder));
+  DCHECK(!(source == WebAppManagement::Type::kUserInstalled && is_placeholder));
   if (source != WebAppManagement::Type::kSync &&
+      source != WebAppManagement::Type::kUserInstalled &&
       !WebAppManagement::IsIwaType(source)) {
     web_app.AddPlaceholderInfoToManagementExternalConfigMap(source,
                                                             is_placeholder);

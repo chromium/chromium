@@ -97,12 +97,6 @@ class CrostiniExportImport : public KeyedService,
     OnceTrackerFactory tracker_factory;
   };
 
-  // Call this method to ensure that the factory for this KeyedService is built
-  // (necessary for embedders that disallow lazy initialization of factories).
-  static void EnsureFactoryBuilt();
-
-  static CrostiniExportImport* GetForProfile(Profile* profile);
-
   explicit CrostiniExportImport(Profile* profile);
 
   CrostiniExportImport(const CrostiniExportImport&) = delete;
@@ -202,6 +196,11 @@ class CrostiniExportImport : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportDiskImageFail);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestExportDiskImageCancelled);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestImportDiskImageSuccess);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportDiskImageFail);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestImportDiskImageCancelled);
 
   void FillOperationData(ExportImportType type,
                          guest_os::GuestId id,
@@ -255,9 +254,14 @@ class CrostiniExportImport : public KeyedService,
                        CrostiniManager::CrostiniResultCallback callback,
                        CrostiniResult result);
 
-  void AfterExportDiskImage(const guest_os::GuestId& container_id,
-                            CrostiniManager::CrostiniResultCallback callback,
-                            CrostiniResult result);
+  void ImportDiskImage(const guest_os::GuestId& container_id,
+                       const base::FilePath& path,
+                       CrostiniManager::CrostiniResultCallback callback,
+                       CrostiniResult result);
+
+  void AfterDiskImageOperation(const guest_os::GuestId& container_id,
+                               CrostiniManager::CrostiniResultCallback callback,
+                               CrostiniResult result);
 
   void ExportAfterSharing(const guest_os::GuestId& container_id,
                           const base::FilePath& path,

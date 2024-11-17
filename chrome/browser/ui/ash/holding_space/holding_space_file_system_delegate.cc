@@ -52,8 +52,7 @@ base::FilePath ConvertDrivePathToAbsoluteFilePath(
     if (base::FilePath("/").AppendRelativePath(drive_path, &absolute_file_path))
       return absolute_file_path;
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::FilePath();
+  NOTREACHED();
 }
 
 // Returns a mojo connection to the ARC file system.
@@ -483,8 +482,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
     if (src.IsParent(item->file().file_path)) {
       base::FilePath target_path(dst);
       if (!src.AppendRelativePath(item->file().file_path, &target_path)) {
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
       }
       items_to_move.push_back(std::make_pair(item->id(), target_path));
     }
@@ -510,8 +508,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
   // Get a list of the enabled Trash locations. Trash can be enabled and
   // disabled via policy, so ensure the latest list is retrieved.
   file_manager::trash::TrashPathsMap enabled_trash_locations =
-      file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-          profile(), /*base_path=*/base::FilePath());
+      file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile());
 
   // Mark items that were moved to an enabled Trash location for removal.
   std::set<std::string> item_ids_to_remove;

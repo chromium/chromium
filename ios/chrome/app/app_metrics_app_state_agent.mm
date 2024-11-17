@@ -13,7 +13,6 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -27,10 +26,7 @@ NSString* const kDeferredInitializationBlocksComplete =
     @"DeferredInitializationBlocksComplete";
 }  // namespace
 
-@interface AppMetricsAppStateAgent () <SceneStateObserver>
-
-// Observed app state.
-@property(nonatomic, weak) AppState* appState;
+@interface AppMetricsAppStateAgent ()
 
 // This flag is set when the first scene has activated since the startup, and
 // never reset during the app's lifetime.
@@ -44,25 +40,14 @@ NSString* const kDeferredInitializationBlocksComplete =
 
 @implementation AppMetricsAppStateAgent
 
-#pragma mark - AppStateAgent
-
-- (void)setAppState:(AppState*)appState {
-  // This should only be called once!
-  DCHECK(!_appState);
-
-  _appState = appState;
-  [appState addObserver:self];
-}
-
 #pragma mark - AppStateObserver
 
-- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
-  [sceneState addObserver:self];
-}
-
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage == InitStageBrowserObjectsForBackgroundHandlers) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  [super appState:appState didTransitionFromInitStage:previousInitStage];
+
+  if (appState.initStage ==
+      AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     // Log session start if the app is already foreground.
     if (self.appState.foregroundScenes.count > 0) {
       [self handleSessionStart];
@@ -74,17 +59,20 @@ NSString* const kDeferredInitializationBlocksComplete =
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  [super sceneState:sceneState transitionedToActivationLevel:level];
+
   if (!self.firstSceneHasConnected) {
     self.appState.startupInformation.firstSceneConnectionTime =
         base::TimeTicks::Now();
     self.firstSceneHasConnected = YES;
     if (self.appState.initStage >=
-        InitStageBrowserObjectsForBackgroundHandlers) {
+        AppInitStage::kBrowserObjectsForBackgroundHandlers) {
       [MetricsMediator createStartupTrackingTask];
     }
   }
 
-  if (self.appState.initStage < InitStageBrowserObjectsForBackgroundHandlers) {
+  if (self.appState.initStage <
+      AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     return;
   }
 
@@ -116,7 +104,7 @@ NSString* const kDeferredInitializationBlocksComplete =
       [MetricsMediator logStartupDuration:self.appState.startupInformation];
       if (ios::provider::IsPrimesSupported()) {
         ios::provider::PrimesAppReady();
-        [[DeferredInitializationRunner sharedInstance]
+        [self.appState.deferredRunner
             enqueueBlockNamed:kTakeStartupMemorySnapshot
                         block:^{
                           ios::provider::PrimesTakeMemorySnapshot(
@@ -128,16 +116,15 @@ NSString* const kDeferredInitializationBlocksComplete =
   }
 }
 
-#pragma mark - private
+#pragma mark - Private
 
 - (void)handleSessionStart {
   self.appState.lastTimeInForeground = base::TimeTicks::Now();
 
-  for (ChromeBrowserState* browserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     IOSProfileSessionDurationsService* psdService =
-        IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
-            browserState);
+        IOSProfileSessionDurationsServiceFactory::GetForProfile(profile);
     if (psdService) {
       psdService->OnSessionStarted(self.appState.lastTimeInForeground);
     }
@@ -154,11 +141,10 @@ NSString* const kDeferredInitializationBlocksComplete =
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
                              base::Milliseconds(1), base::Hours(24), 50);
 
-  for (ChromeBrowserState* browserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     IOSProfileSessionDurationsService* psdService =
-        IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
-            browserState);
+        IOSProfileSessionDurationsServiceFactory::GetForProfile(profile);
     if (psdService) {
       psdService->OnSessionEnded(duration);
     }

@@ -39,7 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_IOS)
-#include "base/mac/mach_port_rendezvous.h"
+#include "base/apple/mach_port_rendezvous.h"
 #endif
 
 namespace content {
@@ -339,17 +339,23 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
   }
 
   if (is_synchronous_launch) {
-    PostLaunchOnLauncherThread(std::move(process), launch_result);
+    // The LastError is set on the launcher thread, but needs to be transferred
+    // to the Client thread.
+    PostLaunchOnLauncherThread(std::move(process),
+#if BUILDFLAG(IS_WIN)
+                               ::GetLastError(),
+#endif
+                               launch_result);
   }
 }
 
 void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
     ChildProcessLauncherHelper::Process process,
+#if BUILDFLAG(IS_WIN)
+    DWORD last_error,
+#endif
     int launch_result) {
 #if BUILDFLAG(IS_WIN)
-  // The LastError is set on the launcher thread, but needs to be transferred to
-  // the Client thread.
-  DWORD last_error = ::GetLastError();
   const bool launch_elevated = delegate_->ShouldLaunchElevated();
 #else
   const bool launch_elevated = false;

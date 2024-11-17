@@ -94,6 +94,8 @@ source_set("unittests") {
   sources = [ "payment_handler_permission_context_unittest.cc" ]
 
   deps = [
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/infobars/content",

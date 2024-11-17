@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -65,31 +64,30 @@ public class CustomTabActivityLifecycleUmaTracker
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final Activity mActivity;
-    private final CustomTabsConnection mConnection;
 
     private WebappCustomTabTimeSpentLogger mWebappTimeSpentLogger;
     private boolean mIsInitialResume = true;
 
     private void recordIncognitoLaunchReason() {
         // TODO(crbug.com/352525607): Separate Ephemeral and Incognito CCT metrics.
-        @IntentHandler.IncognitoCCTCallerId int incognitoCCTCallerId;
+        @IntentHandler.IncognitoCctCallerId int incognitoCctCallerId;
         if (mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO) {
-            incognitoCCTCallerId =
+            incognitoCctCallerId =
                     ((IncognitoCustomTabIntentDataProvider) mIntentDataProvider)
                             .getFeatureIdForMetricsCollection();
         } else {
-            incognitoCCTCallerId =
+            incognitoCctCallerId =
                     ((EphemeralCustomTabIntentDataProvider) mIntentDataProvider)
                             .getFeatureIdForMetricsCollection();
         }
 
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.IncognitoCCTCallerId",
-                incognitoCCTCallerId,
-                IntentHandler.IncognitoCCTCallerId.NUM_ENTRIES);
+                "CustomTabs.IncognitoCctCallerId",
+                incognitoCctCallerId,
+                IntentHandler.IncognitoCctCallerId.NUM_ENTRIES);
 
         // Record which 1P app launched Incognito CCT.
-        if (incognitoCCTCallerId == IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS) {
+        if (incognitoCctCallerId == IntentHandler.IncognitoCctCallerId.GOOGLE_APPS) {
             String sendersPackageName = mIntentDataProvider.getClientPackageName();
             @IntentHandler.ExternalAppId
             int externalId = IntentHandler.mapPackageToExternalAppId(sendersPackageName);
@@ -135,17 +133,13 @@ public class CustomTabActivityLifecycleUmaTracker
 
     @Inject
     public CustomTabActivityLifecycleUmaTracker(
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            Activity activity,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
-            CustomTabsConnection connection) {
-        mIntentDataProvider = intentDataProvider;
+            BaseCustomTabActivity activity,
+            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
+        mIntentDataProvider = activity.getIntentDataProvider();
         mActivity = activity;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
-        mConnection = connection;
 
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     @Override
@@ -200,12 +194,14 @@ public class CustomTabActivityLifecycleUmaTracker
 
     @Override
     public void onStartWithNative() {
-        mConnection.setCustomTabIsInForeground(mIntentDataProvider.getSession(), true);
+        CustomTabsConnection.getInstance()
+                .setCustomTabIsInForeground(mIntentDataProvider.getSession(), true);
     }
 
     @Override
     public void onStopWithNative() {
-        mConnection.setCustomTabIsInForeground(mIntentDataProvider.getSession(), false);
+        CustomTabsConnection.getInstance()
+                .setCustomTabIsInForeground(mIntentDataProvider.getSession(), false);
     }
 
     @Override

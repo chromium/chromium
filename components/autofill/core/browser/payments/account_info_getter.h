@@ -28,7 +28,7 @@ class AccountInfoGetter {
   virtual bool IsSyncFeatureEnabledForPaymentsServerMetrics() const = 0;
 
  protected:
-  virtual ~AccountInfoGetter() {}
+  virtual ~AccountInfoGetter() = default;
 };
 
 }  // namespace autofill

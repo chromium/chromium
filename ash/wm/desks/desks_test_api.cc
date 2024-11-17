@@ -23,6 +23,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/run_loop.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
@@ -194,7 +195,7 @@ DeskActionContextMenu* DesksTestApi::GetContextMenuForDesk(
   DeskMiniView* mini_view = GetDeskBarView(type)->mini_views()[index];
 
   // The context menu is not created until it is opened, so open it first.
-  mini_view->OpenContextMenu(ui::MENU_SOURCE_MOUSE);
+  mini_view->OpenContextMenu(ui::mojom::MenuSourceType::kMouse);
   return mini_view->context_menu();
 }
 

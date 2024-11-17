@@ -16,8 +16,9 @@
 
 namespace ui {
 
-// Defines mappings for colors used in Ash and Lacros. Colors that
-// are only used in Ash are defined in //ash/style.
+// Defines mappings for colors used outside of //ash and includes overriding
+// some colors used in //ui. Colors that are only used in Ash are defined in
+// //ash/style.
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              const ColorProviderKey& key) {
   ColorMixer& mixer = provider->AddMixer();

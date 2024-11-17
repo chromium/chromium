@@ -13,20 +13,21 @@
       <include name="IDR_BLOCKED_PLUGIN_HTML" file="plugins/blocked_plugin.html" flattenhtml="true" type="BINDATA" />
       <include name="IDR_DISABLED_PLUGIN_HTML" file="plugins/disabled_plugin.html" flattenhtml="true" type="BINDATA" />
       <include name="IDR_PDF_PLUGIN_HTML" file="plugins/pdf_plugin.html" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_CART_PRODUCT_EXTRACTION_JS" file="cart/cart-product-extraction.js" type="BINDATA"/>
-      <include name="IDR_CART_DOMAIN_PRODUCT_ID_REGEX_JSON" file="cart/cart_domain_product_id_regex.json" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SKIP_ADD_TO_CART_REQUEST_DOMAIN_MAPPING_JSON" file="cart/skip_add_to_cart_request_domain_mapping.json" compress="gzip" type="BINDATA"/>
-      <include name="IDR_PURCHASE_URL_REGEX_DOMAIN_MAPPING_JSON" file="cart/purchase_url_regex_domain_mapping.json" compress="gzip" type="BINDATA"/>
 
       <!-- Extension libraries. -->
+      <if expr="enable_extensions_core">
+        <include name="IDR_NOTIFICATIONS_CUSTOM_BINDINGS_JS" file="extensions\notifications_custom_bindings.js" type="BINDATA" />
+      </if>
       <if expr="enable_extensions">
         <!-- Custom bindings for extension APIs. -->
         <include name="IDR_ACTION_CUSTOM_BINDINGS_JS" file="extensions\action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_BROWSER_ACTION_CUSTOM_BINDINGS_JS" file="extensions\browser_action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_JS" file="controlled_frame\controlled_frame.js" type="BINDATA" />
+        <include name="IDR_CONTROLLED_FRAME_EVENTS_JS" file="controlled_frame\controlled_frame_events.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_INTERNAL_CUSTOM_BINDINGS_JS" file="controlled_frame\controlled_frame_internal_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_IMPL_JS" file="controlled_frame\controlled_frame_impl.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_API_METHODS_JS" file="controlled_frame\controlled_frame_api_methods.js" type="BINDATA" />
+        <include name="IDR_CHROME_WEB_VIEW_CONTEXT_MENUS_API_METHODS_JS" file="extensions\web_view\chrome_web_view_context_menus_api_methods.js" type="BINDATA" />
         <include name="IDR_CHROME_WEB_VIEW_ELEMENT_JS" file="extensions\web_view\chrome_web_view_element.js" type="BINDATA" />
         <include name="IDR_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS" file="extensions\web_view\chrome_web_view_internal_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CHROME_WEB_VIEW_JS" file="extensions\web_view\chrome_web_view.js" type="BINDATA" />
@@ -39,7 +40,6 @@
         <include name="IDR_IMAGE_WRITER_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\image_writer_private_custom_bindings.js" type="BINDATA" />
         <include name="IDR_INPUT_IME_CUSTOM_BINDINGS_JS" file="extensions\input.ime_custom_bindings.js" type="BINDATA" />
         <include name="IDR_MEDIA_GALLERIES_CUSTOM_BINDINGS_JS" file="extensions\media_galleries_custom_bindings.js" type="BINDATA" />
-        <include name="IDR_NOTIFICATIONS_CUSTOM_BINDINGS_JS" file="extensions\notifications_custom_bindings.js" type="BINDATA" />
         <include name="IDR_OMNIBOX_CUSTOM_BINDINGS_JS" file="extensions\omnibox_custom_bindings.js" type="BINDATA" />
         <include name="IDR_PAGE_ACTION_CUSTOM_BINDINGS_JS" file="extensions\page_action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_PAGE_CAPTURE_CUSTOM_BINDINGS_JS" file="extensions\page_capture_custom_bindings.js" type="BINDATA" />

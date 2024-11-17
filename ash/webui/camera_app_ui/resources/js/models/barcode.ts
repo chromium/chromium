@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertInstanceof} from '../assert.js';
-import * as Comlink from '../lib/comlink.js';
+import * as comlink from '../lib/comlink.js';
 import {BARCODE_SCAN_INTERVAL} from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
 import {getSanitizedScriptUrl} from '../trusted_script_url_policy_util.js';
@@ -29,7 +29,7 @@ const MAX_SCAN_SIZE = 720;
 const ACTIVE_SCAN_RATIO = 1.0;
 
 const getBarcodeWorker = lazySingleton(
-    () => Comlink.wrap<BarcodeWorker>(new Worker(
+    () => comlink.wrap<BarcodeWorker>(new Worker(
         getSanitizedScriptUrl('/js/models/barcode_worker.js'),
         {type: 'module'})));
 
@@ -117,7 +117,7 @@ export class BarcodeScanner {
     const frame = await this.grabFrameForScan();
     const {width, height} = frame;
     const codes =
-        await getBarcodeWorker().detect(Comlink.transfer(frame, [frame]));
+        await getBarcodeWorker().detect(comlink.transfer(frame, [frame]));
     if (codes.length === 0) {
       return null;
     }

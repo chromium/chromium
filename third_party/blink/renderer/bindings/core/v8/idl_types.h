@@ -20,7 +20,8 @@ namespace blink {
 
 class BigInt;
 class EventListener;
-class ScriptPromiseUntyped;
+template <typename T>
+class ScriptPromise;
 class ScriptValue;
 struct ToV8UndefinedGenerator;
 
@@ -202,7 +203,8 @@ using IDLUSVStringStringContextTrustedScriptURL =
 struct IDLObject final : public IDLBaseHelper<ScriptValue> {};
 
 // Promise types
-struct IDLPromise final : public IDLBaseHelper<ScriptPromiseUntyped> {};
+template <typename T>
+struct IDLPromise final : public IDLBaseHelper<ScriptPromise<T>> {};
 
 // Sequence types
 template <typename T>

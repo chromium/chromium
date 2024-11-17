@@ -33,7 +33,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
     MetricIntegrationTest::SetUpOnMainThread();
   }
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(cc::switches::kEnableGpuBenchmarking);
+    command_line->AppendSwitch(switches::kEnableGpuBenchmarking);
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
     std::vector<base::test::FeatureRef> enabled_feature_list = {
         blink::features::kNavigationId,
@@ -384,11 +384,11 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LargestContentfulPaint) {
   // If the SoftNavigationHeuristics flag is enabled, we verify exact values
   // in Ukm against the web exposed values. Otherwise, we only verify that
   // there are 2 soft nav lcp reported to Ukm.
-  base::Value soft_nav_lcp_list_result;
+  base::Value::List soft_nav_lcp_list;
   if (GetParam()) {
-    soft_nav_lcp_list_result = EvalJs(web_contents()->GetPrimaryMainFrame(),
-                                      "GetSoftNavigationLCPEntries()")
-                                   .ExtractList();
+    soft_nav_lcp_list = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                               "GetSoftNavigationLCPEntries()")
+                            .ExtractList();
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -428,8 +428,6 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LargestContentfulPaint) {
   // If the SoftNavigationHeuristics flag is enabled, we verify exact values
   // in Ukm against the web exposed values.
   if (GetParam()) {
-    auto& soft_nav_lcp_list = soft_nav_lcp_list_result.GetList();
-
     auto json_soft_nav_lcp1 =
         base::JSONReader::Read(soft_nav_lcp_list[0].GetString());
 
@@ -624,9 +622,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LayoutShift) {
 
   // Retrieve web exposed values of the layout shift that happens before any
   // soft navigation happens.
-  base::Value entry_records =
+  base::Value::List entry_records_list =
       EvalJs(web_contents(), "GetLayoutShift()").ExtractList();
-  auto& entry_records_list = entry_records.GetList();
 
   // Verify that the entry_records_list has 1 or 2 records. There could be 2
   // layout shift entries emitted for the initial triggerLayoutShift() call.
@@ -659,9 +656,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LayoutShift) {
   // is on.
   double soft_nav_1_cls;
   if (GetParam()) {
-    auto soft_nav_entry_records =
+    auto soft_nav_1_entry_records_list =
         EvalJs(web_contents(), "GetLayoutShift(1)").ExtractList();
-    auto& soft_nav_1_entry_records_list = soft_nav_entry_records.GetList();
 
     // Verify that there is 1 layout shift entry after soft nav 1.
     EXPECT_EQ(soft_nav_1_entry_records_list.size(), 1u);
@@ -690,9 +686,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LayoutShift) {
   // is on.
   double soft_nav_2_cls;
   if (GetParam()) {
-    auto soft_nav_entry_records =
+    auto soft_nav_2_entry_records_list =
         EvalJs(web_contents(), "GetLayoutShift(2)").ExtractList();
-    auto& soft_nav_2_entry_records_list = soft_nav_entry_records.GetList();
 
     // Verify that there is 1 layout shift entry after soft nav 1.
     EXPECT_EQ(soft_nav_2_entry_records_list.size(), 1u);

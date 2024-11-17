@@ -20,4 +20,6 @@ constexpr base::FilePath::CharType
     kTranslateKitLanguagePackInstallationRelativeDir[] =
         FILE_PATH_LITERAL("TranslateKit/models");
 
+const size_t kMaxPendingTaskCount = 1024;
+
 }  // namespace on_device_translation

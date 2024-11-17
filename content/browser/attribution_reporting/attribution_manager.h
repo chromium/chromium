@@ -113,7 +113,7 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
   // Report errors from header validation.
   virtual void ReportRegistrationHeaderError(
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::RegistrationHeaderError&,
+      attribution_reporting::RegistrationHeaderError,
       const attribution_reporting::SuitableOrigin& context_origin,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id) = 0;

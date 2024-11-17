@@ -18,8 +18,7 @@ extern const char kManageYourGoogleAccountIdentifier[];
 // Identifier for the "Edit account list" menu entry.
 extern const char kEditAccountListIdentifier[];
 
-@interface AccountMenuViewController
-    : ChromeTableViewController <AccountMenuConsumer>
+@interface AccountMenuViewController : UIViewController <AccountMenuConsumer>
 
 // The mutator for the account menu.
 @property(nonatomic, weak) id<AccountMenuMutator> mutator;

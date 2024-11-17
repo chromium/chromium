@@ -215,10 +215,9 @@ public class MiniPlayerMediator implements BottomControlsLayer {
         // to 1 pixel instead in this case.
         // TODO(b/320750931): fix the underlying issue in browser controls code
         int minHeight = getBrowserControls().getBottomControlsMinHeight();
-        assert minHeight >= mLayoutHeightPx;
         setBottomControlsHeight(
                 Math.max(getBrowserControls().getBottomControlsHeight() - mLayoutHeightPx, 1),
-                minHeight - mLayoutHeightPx);
+                Math.max(minHeight - mLayoutHeightPx, 0));
     }
 
     private void setBottomControlsHeight(int height, int minHeight) {

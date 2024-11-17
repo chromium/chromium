@@ -29,6 +29,11 @@ void FakeAutocompleteControllerObserver::OnResultChanged(
   last_default_match_changed = default_match_changed;
 }
 
+void FakeAutocompleteControllerObserver::OnAutocompleteStopTimerTriggered(
+    const AutocompleteInput& input) {
+  on_autocomplete_stop_timer_stopped_call_count++;
+}
+
 FakeAutocompleteController::FakeAutocompleteController(
     raw_ptr<base::test::SingleThreadTaskEnvironment> task_environment)
     : AutocompleteController(std::make_unique<FakeAutocompleteProviderClient>(),
@@ -143,19 +148,26 @@ void FakeAutocompleteController::ExpectOnResultChanged(
   observer_->on_result_changed_call_count_ = 0;
 }
 
-void FakeAutocompleteController::ExpectStopAfter(int delay_ms) {
+void FakeAutocompleteController::ExpectStopAfter(int delay_ms,
+                                                 bool explicit_stop) {
   if (delay_ms) {
     task_environment_->FastForwardBy(base::Milliseconds(delay_ms - 1));
     EXPECT_NE(last_update_type_, AutocompleteController::UpdateType::kStop)
+        << delay_ms;
+    EXPECT_EQ(observer_->on_autocomplete_stop_timer_stopped_call_count, 0)
         << delay_ms;
     task_environment_->FastForwardBy(base::Milliseconds(1));
   }
   EXPECT_EQ(last_update_type_, AutocompleteController::UpdateType::kStop)
       << delay_ms;
+  EXPECT_EQ(observer_->on_autocomplete_stop_timer_stopped_call_count,
+            explicit_stop ? 0 : 1)
+      << delay_ms;
   // Any expected notifications should be verified with
   // `ExpectOnResultChanged()` and not slip through polluting subsequent
   // tests.
   EXPECT_EQ(observer_->on_result_changed_call_count_, 0) << delay_ms;
+  observer_->on_autocomplete_stop_timer_stopped_call_count = 0;
 }
 
 void FakeAutocompleteController::ExpectNoNotificationOrStop() {

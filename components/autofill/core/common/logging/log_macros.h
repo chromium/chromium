@@ -14,6 +14,17 @@
 //
 // Support for other types of `logger` can be added by adding template
 // specializations of `LoggerTraits`.
+//
+// This macro works as follows:
+//   LOG_AF(logger) << foo();
+// expands to
+//   !active(logger) ? (void)0 : Voidify() & get_stream(logger) << foo();
+// Due to the operator precedence, this is equivalent to:
+//   !active(logger) ? (void)0 : (Voidify() & (get_stream(logger) << foo()));
+// If the logger is inactive, this is equivalent to the no-op
+//   (void)0;
+// and otherwise it is equivalent to
+//   get_stream(logger) << foo();
 #define LOG_AF(logger)                                                        \
   !::autofill::internal::LoggerTraits<decltype(logger)>::active(logger)       \
       ? (void)0                                                               \
@@ -24,15 +35,36 @@
 namespace autofill::internal {
 
 // Traits for targets of LOG_AF(). There are currently specializations for
-// `LogManager*` and `LogBuffer*`.
+// `LogManager*` and `LogBuffer*`. The below is just a placeholder.
 template <typename T>
 struct LoggerTraits {
+  class Null {
+   public:
+    constexpr Null() = default;
+    template <typename U>
+    Null operator<<(const U&) {
+      return {};
+    }
+  };
+
   // Returns true iff logging to should be enabled.
-  static bool active(const T& logger) { return false; }
+  static bool active(const T& logger) {
+    static_assert(
+        false,
+        "Traits for this logger aren't visible. Are you missing an include of "
+        "log_manager.h and/or log_buffer.h?");
+    return false;
+  }
 
   // Returns an object that implements the stream insertion operator
   // operator<<().
-  static int get_stream(const T& logger) { return {}; }
+  static Null get_stream(const T& logger) {
+    static_assert(
+        false,
+        "Traits for this logger aren't visible. Are you missing an include of "
+        "log_manager.h and/or log_buffer.h?");
+    return {};
+  }
 };
 
 // This class is used to explicitly ignore values in the conditional
@@ -40,7 +72,7 @@ struct LoggerTraits {
 // is not used" and "statement has no effect".
 class Voidify {
  public:
-  Voidify() = default;
+  constexpr Voidify() = default;
   // This has to be an operator with a precedence lower than << but
   // higher than ?:
   template <typename U>

@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -17,13 +18,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
-
-namespace {
-
-using NamedArrayBufferViewsInfo =
-    Vector<std::pair<String, ArrayBufferViewInfo>>;
-
-}  // namespace
 
 HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
     const MLNamedOperands& named_outputs) {
@@ -87,129 +81,6 @@ HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
   return toposorted_operators;
 }
 
-std::optional<ArrayBufferViewInfo> TransferArrayBufferView(
-    v8::Isolate* isolate,
-    NotShared<DOMArrayBufferView> source_view,
-    ExceptionState& exception_state) {
-  // Need to check whether each `ArrayBufferView` of `NamedArrayBufferViews` is
-  // detached because transferring an `ArrayBuffer` would impact all
-  // `ArrayBufferView`s sharing the same `ArrayBuffer`.
-  if (source_view->IsDetached()) {
-    exception_state.ThrowTypeError("The ArrayBuffer is detached.");
-    return std::nullopt;
-  }
-
-  // Avoid transferring a non-detachable ArrayBuffer.
-  // `DOMArrayBuffer::Transfer()` would make a copy if the ArrayBuffer is not
-  // detachable. This behavior doesn't follow the algorithm to transfer an
-  // ArrayBuffer of WebIDL spec:
-  // https://webidl.spec.whatwg.org/#arraybuffer-transfer
-  if (!source_view->buffer()->IsDetachable(isolate)) {
-    exception_state.ThrowTypeError("The ArrayBuffer is not detachable.");
-    return std::nullopt;
-  }
-
-  // Get the offset and length of the source view before transferring it.
-  ArrayBufferViewInfo view_info;
-  view_info.type = source_view->GetType();
-  view_info.offset = source_view->byteOffset();
-  view_info.length = source_view->byteLength() / source_view->TypeSize();
-
-  ArrayBufferContents contents;
-  // The following `DOMArrayBuffer::Transfer()` call would fail if the
-  // detach key of the ArrayBuffer is not `undefined`.
-  if (!source_view->buffer()->Transfer(isolate, view_info.contents,
-                                       exception_state)) {
-    return std::nullopt;
-  }
-
-  return view_info;
-}
-
-DOMArrayBufferView* CreateArrayBufferView(ArrayBufferViewInfo view_info) {
-  auto* target_buffer = DOMArrayBuffer::Create(std::move(view_info.contents));
-
-  // Align with the ArrayBufferView types supported by WebNN MLOperandDataType:
-  // https://www.w3.org/TR/webnn/#appendices-MLOperandDataType-arraybufferview-compatibility
-  DOMArrayBufferView* target_view = nullptr;
-  switch (view_info.type) {
-    case DOMArrayBufferView::kTypeFloat32:
-      // Float32Array is used for MLOperandDataType::float32.
-      target_view = DOMFloat32Array::Create(target_buffer, view_info.offset,
-                                            view_info.length);
-      break;
-    case DOMArrayBufferView::kTypeUint16:
-      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
-      // https://github.com/webmachinelearning/webnn/issues/127
-      target_view = DOMUint16Array::Create(target_buffer, view_info.offset,
-                                           view_info.length);
-      break;
-    case DOMArrayBufferView::kTypeInt32:
-      // Int32Array is used for MLOperandDataType::int32.
-      target_view = DOMInt32Array::Create(target_buffer, view_info.offset,
-                                          view_info.length);
-      break;
-    case DOMArrayBufferView::kTypeUint32:
-      // Uint32Array is used for MLOperandDataType::uint32.
-      target_view = DOMUint32Array::Create(target_buffer, view_info.offset,
-                                           view_info.length);
-      break;
-    case DOMArrayBufferView::kTypeBigInt64:
-      // BigInt64Array is used for MLOperandDataType::int64.
-      target_view = DOMBigInt64Array::Create(target_buffer, view_info.offset,
-                                             view_info.length);
-      break;
-    case DOMArrayBufferView::kTypeBigUint64:
-      // BigUint64Array is used for MLOperandDataType::uint64.
-      target_view = DOMBigUint64Array::Create(target_buffer, view_info.offset,
-                                              view_info.length);
-      break;
-    case DOMArrayBufferView::kTypeInt8:
-      // Int8Array is used for MLOperandDataType::int8.
-      target_view = DOMInt8Array::Create(target_buffer, view_info.offset,
-                                         view_info.length);
-      break;
-    case DOMArrayBufferView::kTypeUint8:
-      // Uint8Array is used for MLOperandDataType::uint8.
-      target_view = DOMUint8Array::Create(target_buffer, view_info.offset,
-                                          view_info.length);
-      break;
-    default:
-      // Other ArrayBufferView types should not pass the
-      // `ValidateNamedArrayBufferViews()` and reach here.
-      NOTREACHED();
-  }
-  return target_view;
-}
-
-std::unique_ptr<NamedArrayBufferViewsInfo> TransferNamedArrayBufferViews(
-    v8::Isolate* isolate,
-    const MLNamedArrayBufferViews& source_views,
-    ExceptionState& exception_state) {
-  auto views_info = std::make_unique<NamedArrayBufferViewsInfo>();
-  views_info->reserve(source_views.size());
-  for (const auto& [name, source_view] : source_views) {
-    auto view_info =
-        TransferArrayBufferView(isolate, source_view, exception_state);
-    if (!view_info) {
-      return nullptr;
-    }
-    views_info->push_back(std::make_pair(name, std::move(view_info.value())));
-  }
-  return views_info;
-}
-
-MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
-    std::unique_ptr<NamedArrayBufferViewsInfo> views_info) {
-  auto* target_views = MakeGarbageCollected<MLNamedArrayBufferViews>();
-  target_views->reserve(views_info->size());
-  for (auto& [name, view_info] : *views_info) {
-    target_views->push_back(
-        std::make_pair(name, CreateArrayBufferView(std::move(view_info))));
-  }
-  return target_views;
-}
-
 DOMArrayBufferView::ViewType GetArrayBufferViewType(
     webnn::OperandDataType data_type) {
   switch (data_type) {
@@ -230,6 +101,9 @@ DOMArrayBufferView::ViewType GetArrayBufferViewType(
     case webnn::OperandDataType::kInt8:
       return DOMArrayBufferView::ViewType::kTypeInt8;
     case webnn::OperandDataType::kUint8:
+      return DOMArrayBufferView::ViewType::kTypeUint8;
+    case webnn::OperandDataType::kInt4:
+    case webnn::OperandDataType::kUint4:
       return DOMArrayBufferView::ViewType::kTypeUint8;
   }
 }
@@ -255,6 +129,10 @@ Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank) {
     std::iota(default_axes.begin(), default_axes.end(), 1);
   }
   return default_axes;
+}
+
+Vector<uint32_t> CreateSliceDefaultStrides(wtf_size_t rank) {
+  return Vector<uint32_t>(rank, 1);
 }
 
 base::expected<void, String> ValidateFilterLayout(
@@ -345,6 +223,10 @@ V8MLOperandDataType ToBlinkDataType(webnn::OperandDataType data_type) {
       return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt8);
     case webnn::OperandDataType::kUint8:
       return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint8);
+    case webnn::OperandDataType::kInt4:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt4);
+    case webnn::OperandDataType::kUint4:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint4);
   }
 }
 
@@ -366,6 +248,10 @@ webnn::OperandDataType FromBlinkDataType(V8MLOperandDataType::Enum data_type) {
       return webnn::OperandDataType::kInt8;
     case V8MLOperandDataType::Enum::kUint8:
       return webnn::OperandDataType::kUint8;
+    case V8MLOperandDataType::Enum::kInt4:
+      return webnn::OperandDataType::kInt4;
+    case V8MLOperandDataType::Enum::kUint4:
+      return webnn::OperandDataType::kUint4;
   }
 }
 
@@ -385,45 +271,22 @@ bool IsLogicalBinaryOperator(
     case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalXor:
       return true;
   }
 }
 
-// Allows a tensor's shape to be specified through either the
-// `MLOperandDescriptor`'s `shape` or `dimensions` fields. This code exists for
-// now to give callers the opportunity to migrate their code to use `shape`.
-//
-// TODO(crbug.com/365813262): Remove this function after about a milestone.
-base::expected<Vector<uint32_t>, std::string> GetShapeFromDescriptor(
-    ScriptState* script_state,
-    const MLOperandDescriptor& desc) {
-  if (!desc.hasDimensions()) {
-    return desc.shape();
-  }
-
-  if (desc.shape() != desc.dimensions()) {
-    if (!desc.shape().empty()) {
-      return base::unexpected(
-          "Invalid operand descriptor: shape and dimensions do not match.");
-    } else {
-      LogConsoleWarning(
-          script_state,
-          "WARNING: MLOperandDescriptor.dimensions is deprecated. "
-          "Use MLOperandDescriptor.shape instead.");
-    }
-  }
-
-  return desc.dimensions();
-}
-
-void LogConsoleWarning(ScriptState* script_state, const String& message) {
+void LogConsoleWarning(ScriptState* script_state,
+                       const String& message,
+                       mojom::blink::ConsoleMessageSource message_source) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (!execution_context) {
     return;
   }
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kWarning, message));
+      message_source, mojom::blink::ConsoleMessageLevel::kWarning, message));
 }
 
 }  // namespace blink

@@ -65,9 +65,6 @@ class ChildAccountServiceTest : public ::testing::Test {
     registry->RegisterBooleanPref(policy::policy_prefs::kForceGoogleSafeSearch,
                                   false);
 
-    // Set the user to be supervised.
-    supervised_user::EnableParentalControls(GetUserPerferences());
-
     list_family_members_service_ = std::make_unique<ListFamilyMembersService>(
         identity_test_environment_->identity_manager(),
         weak_wrapped_subresource_loader_factory, syncable_pref_service_);
@@ -119,24 +116,42 @@ class ChildAccountServiceTest : public ::testing::Test {
   std::unique_ptr<ChildAccountService> child_account_service_;
 };
 
-TEST_F(ChildAccountServiceTest, GetGoogleAuthStateNotAuthenticated) {
-  signin::SetListAccountsResponseNoAccounts(GetTestURLLoaderFactory());
-  // Initial state should be PENDING.
-  ASSERT_EQ(supervised_user::ChildAccountService::AuthState::PENDING,
+TEST_F(ChildAccountServiceTest, GetGoogleAuthStateNoPrimaryAccount) {
+  // Initial state should be NOT_AUTHENTICATED, as there is no primary account.
+  ASSERT_EQ(supervised_user::ChildAccountService::AuthState::NOT_AUTHENTICATED,
             child_account_service_->GetGoogleAuthState());
+}
+
+TEST_F(ChildAccountServiceTest,
+       GetGoogleAuthStatePrimaryAccountNoCookieNoToken) {
+  // Sign in.
+  AccountInfo account_info =
+      identity_test_environment_->MakePrimaryAccountAvailable(
+          kEmail, signin::ConsentLevel::kSignin);
+  supervised_user::UpdateSupervisionStatusForAccount(
+      account_info, identity_test_environment_->identity_manager(),
+      /*is_subject_to_parental_controls=*/true);
 
   // Wait until the response to the ListAccount request triggered by the call
   // above comes back.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(supervised_user::ChildAccountService::AuthState::NOT_AUTHENTICATED,
+  EXPECT_EQ(supervised_user::ChildAccountService::AuthState::
+                TRANSIENT_MOVING_TO_AUTHENTICATED,
             child_account_service_->GetGoogleAuthState());
 }
 
 TEST_F(ChildAccountServiceTest, GetGoogleAuthStateAuthenticated) {
+  // Sign in.
+  AccountInfo account_info =
+      identity_test_environment_->MakePrimaryAccountAvailable(
+          kEmail, signin::ConsentLevel::kSignin);
+  supervised_user::UpdateSupervisionStatusForAccount(
+      account_info, identity_test_environment_->identity_manager(),
+      /*is_subject_to_parental_controls=*/true);
+
   // A valid, signed-in account means authenticated.
   signin::SetListAccountsResponseOneAccountWithParams(
-      {"me@example.com",
-       /*gaia_id=*/"abcdef",
+      {kEmail, account_info.gaia,
        /*valid= */ true,
        /*signed_out=*/false,
        /*verified=*/true},
@@ -185,50 +200,29 @@ TEST_F(ChildAccountServiceTest, UpdateForceGoogleSafeSearch) {
   scoped_feature_list.InitAndEnableFeature(
       supervised_user::kForceSafeSearchForUnauthenticatedSupervisedUsers);
 
+  // SafeSearch should not be forced for signed-out users.
   ASSERT_FALSE(GetUserPerferences().GetBoolean(
       policy::policy_prefs::kForceGoogleSafeSearch));
 
-  // SafeSearch should not be forced for signed-out unsupervised users.
-  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail,
-                                                    /*gaia_id=*/"abcdef",
-                                                    /*valid=*/true,
-                                                    /*signed_out=*/true,
-                                                    /*verified=*/true});
-  EXPECT_FALSE(GetUserPerferences().GetBoolean(
-      policy::policy_prefs::kForceGoogleSafeSearch));
-
   // Add supervised account to the identity manager.
+  identity_test_environment_->WaitForRefreshTokensLoaded();
   AccountInfo account = identity_test_environment_->MakePrimaryAccountAvailable(
       kEmail, signin::ConsentLevel::kSignin);
   supervised_user::UpdateSupervisionStatusForAccount(
       account, identity_test_environment_->identity_manager(),
       /*is_subject_to_parental_controls=*/true);
 
-  // SafeSearch should be forced for unauthenticated supervised users.
-  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail,
-                                                    /*gaia_id=*/"abcdef",
-                                                    /*valid=*/true,
-                                                    /*signed_out=*/true,
-                                                    /*verified=*/true});
-  EXPECT_TRUE(GetUserPerferences().GetBoolean(
+  // At this point the user is in a transient state (since their cookies are not
+  // up to date) so SafeSearch should be forced).
+  ASSERT_TRUE(GetUserPerferences().GetBoolean(
       policy::policy_prefs::kForceGoogleSafeSearch));
 
-  // SafeSearch should be forced for an invalid signed-in supervised account.
-  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail,
-                                                    /*gaia_id=*/"abcdef",
-                                                    /*valid=*/false,
+  // SafeSearch should not be forced for a fully signed in supervised user.
+  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail, account.gaia,
+                                                    /*valid= */ true,
                                                     /*signed_out=*/false,
                                                     /*verified=*/true});
-  EXPECT_TRUE(GetUserPerferences().GetBoolean(
-      policy::policy_prefs::kForceGoogleSafeSearch));
-
-  // SafeSearch should not be forced for a valid signed-in supervised account.
-  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail,
-                                                    /*gaia_id=*/"abcdef",
-                                                    /*valid=*/true,
-                                                    /*signed_out=*/false,
-                                                    /*verified=*/true});
-  EXPECT_FALSE(GetUserPerferences().GetBoolean(
+  ASSERT_FALSE(GetUserPerferences().GetBoolean(
       policy::policy_prefs::kForceGoogleSafeSearch));
 }
 

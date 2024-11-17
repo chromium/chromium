@@ -16,6 +16,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -64,6 +65,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
@@ -74,7 +76,6 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -98,6 +99,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -105,11 +107,12 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
@@ -125,7 +128,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/button_menu_item_model.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/models/menu_separator_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -135,6 +138,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
@@ -173,7 +177,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowLensOverlay);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSaveAndShareMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCastTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kInstallAppItem);
@@ -224,11 +227,10 @@ std::u16string GetUpgradeDialogTitleText() {
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-  if (base::FeatureList::IsEnabled(features::kUpdateTextOptions)) {
     return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT);
-  }
-#endif
+#else
   return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
+#endif
 }
 
 // Returns the appropriate menu label for the IDC_INSTALL_PWA command if
@@ -482,7 +484,6 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
   avatar_image_model_ = ui::ImageModel::FromVectorIcon(
       kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon, avatar_icon_size);
-
   if (profile->IsIncognitoProfile()) {
     avatar_image_model_ = ui::ImageModel::FromVectorIcon(
         kIncognitoIcon, ui::kColorAvatarIconIncognito, avatar_icon_size);
@@ -640,8 +641,6 @@ bool ProfileSubMenuModel::BuildSyncSection() {
       IdentityManagerFactory::GetForProfile(profile_);
   AddTitle(GetSyncSectionTitle(profile_, identity_manager));
 
-  const bool is_sync_feature_enabled =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   // First, check for sync errors. They may exist even if sync-the-feature is
   // disabled and only sync-the-transport is running.
   const std::optional<AvatarSyncErrorType> error =
@@ -665,7 +664,7 @@ bool ProfileSubMenuModel::BuildSyncSection() {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_SHOW_SIGNIN_WHEN_PAUSED, IDS_PROFILES_VERIFY_ACCOUNT_BUTTON,
         vector_icons::kAccountCircleOffChromeRefreshIcon);
-  } else if (is_sync_feature_enabled) {
+  } else if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SYNC_SETTINGS,
                                      IDS_PROFILE_ROW_SYNC_IS_ON,
                                      vector_icons::kSyncChromeRefreshIcon);
@@ -876,21 +875,20 @@ void ToolsMenuModel::Build(Browser* browser) {
     if (tab_organization_service) {
       AddItemWithStringIdAndVectorIcon(
           this, IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU, kAutoTabGroupsIcon);
-      SetIsNewFeatureAt(
-          GetIndexOfCommandId(IDC_ORGANIZE_TABS).value(),
-          browser->window()->MaybeShowNewBadgeFor(features::kTabOrganization));
     }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kTabstripDeclutter) &&
+      !browser->profile()->IsIncognitoProfile()) {
+    AddItemWithStringIdAndVectorIcon(this, IDC_DECLUTTER_TABS,
+                                     IDS_DECLUTTER_MENU, kTabCloseInactiveIcon);
+    SetIsNewFeatureAt(
+        GetIndexOfCommandId(IDC_DECLUTTER_TABS).value(),
+        browser->window()->MaybeShowNewBadgeFor(features::kTabstripDeclutter));
   }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
                                    kNameWindowIcon);
-
-  AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_READING_MODE_SIDE_PANEL,
-                                   IDS_SHOW_READING_MODE_SIDE_PANEL,
-                                   kMenuBookChromeRefreshIcon);
-  SetElementIdentifierAt(
-      GetIndexOfCommandId(IDC_SHOW_READING_MODE_SIDE_PANEL).value(),
-      kReadingModeMenuItem);
 
   if (base::FeatureList::IsEnabled(features::kToolbarPinning) &&
       CustomizeChromePageHandler::IsSupported(
@@ -900,6 +898,15 @@ void ToolsMenuModel::Build(Browser* browser) {
                                      IDS_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
                                      kEditChromeRefreshIcon);
   }
+
+  AddSeparator(ui::NORMAL_SEPARATOR);
+
+  AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_READING_MODE_SIDE_PANEL,
+                                   IDS_SHOW_READING_MODE_SIDE_PANEL,
+                                   kMenuBookChromeRefreshIcon);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_SHOW_READING_MODE_SIDE_PANEL).value(),
+      kReadingModeMenuItem);
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   if (!features::IsExtensionMenuInRootAppMenu()) {
@@ -912,8 +919,8 @@ void ToolsMenuModel::Build(Browser* browser) {
                          kPerformanceMenuItem);
 
   if (chrome::CanOpenTaskManager()) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_TASK_MANAGER, IDS_TASK_MANAGER,
-                                     kTaskManagerIcon);
+    AddItemWithStringIdAndVectorIcon(this, IDC_TASK_MANAGER_APP_MENU,
+                                     IDS_TASK_MANAGER, kTaskManagerIcon);
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AddItemWithStringId(IDC_TAKE_SCREENSHOT, IDS_TAKE_SCREENSHOT);
@@ -1103,8 +1110,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
-      browser()->window()->NotifyFeatureEngagementEvent(
-          feature_engagement::events::kSidePanelFromMenuShown);
+      browser()->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHPowerBookmarksSidePanelFeature,
+          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     case IDC_SHOW_BOOKMARK_MANAGER:
       if (!uma_action_recorded_) {
@@ -1141,14 +1149,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
                                       delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_LENS_OVERLAY);
-      break;
-    // Search companion.
-    case IDC_SHOW_SEARCH_COMPANION:
-      if (!uma_action_recorded_) {
-        base::UmaHistogramMediumTimes(
-            "WrenchMenu.TimeToAction.ShowSearchCompanion", delta);
-      }
-      LogMenuAction(MENU_ACTION_SHOW_SEARCH_COMPANION);
       break;
     // Extensions menu.
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
@@ -1365,8 +1365,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
-      browser()->window()->NotifyFeatureEngagementEvent(
-          feature_engagement::events::kSidePanelFromMenuShown);
+      browser()->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHReadingModeSidePanelFeature,
+          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL:
       if (!uma_action_recorded_) {
@@ -1375,8 +1376,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
-      browser()->window()->NotifyFeatureEngagementEvent(
-          feature_engagement::events::kSidePanelFromMenuShown);
+      browser()->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
+          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     // Zoom menu
     case IDC_ZOOM_MINUS:
@@ -1647,6 +1649,15 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_SAFETY_HUB);
       break;
+    case IDC_DECLUTTER_TABS:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DeclutterTabs",
+                                      delta);
+      }
+      tabs::TabDeclutterController::EmitEntryPointHistogram(
+          tab_search::mojom::TabDeclutterEntryPoint::kAppMenu);
+      LogMenuAction(MENU_ACTION_DECLUTTER_TABS);
+      break;
     case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes(
@@ -1880,13 +1891,6 @@ void AppMenuModel::Build() {
     SetIsNewFeatureAt(lens_command_index,
                       browser()->window()->MaybeShowNewBadgeFor(
                           lens::features::kLensOverlay));
-  } else if (companion::IsSearchInCompanionSidePanelSupported(browser())) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SEARCH_COMPANION,
-                                     IDS_SHOW_SEARCH_COMPANION,
-                                     vector_icons::kGoogleGLogoMonochromeIcon);
-    SetElementIdentifierAt(
-        GetIndexOfCommandId(IDC_SHOW_SEARCH_COMPANION).value(),
-        kShowSearchCompanion);
   }
 #endif
 

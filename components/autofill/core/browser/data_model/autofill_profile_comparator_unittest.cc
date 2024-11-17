@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -59,7 +60,10 @@ class AutofillProfileComparatorTest : public testing::Test {
   NameInfo CreateNameInfo(const char16_t* first,
                           const char16_t* middle,
                           const char16_t* last,
-                          const char16_t* full) {
+                          const char16_t* full,
+                          const char16_t* alternative_given = u"",
+                          const char16_t* alternative_family = u"",
+                          const char16_t* alternative_full = u"") {
     NameInfo name;
     name.SetRawInfoWithVerificationStatus(NAME_FIRST, first,
                                           VerificationStatus::kObserved);
@@ -69,6 +73,14 @@ class AutofillProfileComparatorTest : public testing::Test {
                                           VerificationStatus::kObserved);
     name.SetRawInfoWithVerificationStatus(NAME_FULL, full,
                                           VerificationStatus::kObserved);
+    name.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME,
+                                          alternative_given,
+                                          VerificationStatus::kObserved);
+    name.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME,
+                                          alternative_family,
+                                          VerificationStatus::kObserved);
+    name.SetRawInfoWithVerificationStatus(
+        ALTERNATIVE_FULL_NAME, alternative_full, VerificationStatus::kObserved);
     return name;
   }
 
@@ -99,6 +111,15 @@ class AutofillProfileComparatorTest : public testing::Test {
     profile.SetRawInfoWithVerificationStatus(
         NAME_LAST, name.GetRawInfo(NAME_LAST),
         name.GetVerificationStatus(NAME_LAST));
+    profile.SetRawInfoWithVerificationStatus(
+        ALTERNATIVE_FULL_NAME, name.GetRawInfo(ALTERNATIVE_FULL_NAME),
+        name.GetVerificationStatus(ALTERNATIVE_FULL_NAME));
+    profile.SetRawInfoWithVerificationStatus(
+        ALTERNATIVE_GIVEN_NAME, name.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
+        name.GetVerificationStatus(ALTERNATIVE_GIVEN_NAME));
+    profile.SetRawInfoWithVerificationStatus(
+        ALTERNATIVE_FAMILY_NAME, name.GetRawInfo(ALTERNATIVE_FAMILY_NAME),
+        name.GetVerificationStatus(ALTERNATIVE_FAMILY_NAME));
     if (finalize)
       profile.FinalizeAfterImport();
 
@@ -164,12 +185,24 @@ class AutofillProfileComparatorTest : public testing::Test {
               actual.GetInfo(NAME_MIDDLE, kLocale));
     EXPECT_EQ(expected.GetInfo(NAME_LAST, kLocale),
               actual.GetInfo(NAME_LAST, kLocale));
+    EXPECT_EQ(expected.GetInfo(ALTERNATIVE_FULL_NAME, kLocale),
+              actual.GetInfo(ALTERNATIVE_FULL_NAME, kLocale));
+    EXPECT_EQ(expected.GetInfo(ALTERNATIVE_GIVEN_NAME, kLocale),
+              actual.GetInfo(ALTERNATIVE_GIVEN_NAME, kLocale));
+    EXPECT_EQ(expected.GetInfo(ALTERNATIVE_FAMILY_NAME, kLocale),
+              actual.GetInfo(ALTERNATIVE_FAMILY_NAME, kLocale));
 
     // Is the raw data correct?
     EXPECT_EQ(expected.GetRawInfo(NAME_FULL), actual.GetRawInfo(NAME_FULL));
     EXPECT_EQ(expected.GetRawInfo(NAME_FIRST), actual.GetRawInfo(NAME_FIRST));
     EXPECT_EQ(expected.GetRawInfo(NAME_MIDDLE), actual.GetRawInfo(NAME_MIDDLE));
     EXPECT_EQ(expected.GetRawInfo(NAME_LAST), actual.GetRawInfo(NAME_LAST));
+    EXPECT_EQ(expected.GetRawInfo(ALTERNATIVE_FULL_NAME),
+              actual.GetRawInfo(ALTERNATIVE_FULL_NAME));
+    EXPECT_EQ(expected.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
+              actual.GetRawInfo(ALTERNATIVE_GIVEN_NAME));
+    EXPECT_EQ(expected.GetRawInfo(ALTERNATIVE_FAMILY_NAME),
+              actual.GetRawInfo(ALTERNATIVE_FAMILY_NAME));
   }
 
   void MergeEmailAddressesAndExpect(const AutofillProfile& a,
@@ -779,6 +812,9 @@ TEST_F(AutofillProfileComparatorTest, MergeNames) {
 }
 
 TEST_F(AutofillProfileComparatorTest, MergeCJKNames) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+
   // Korean names that are all mergeable, but constructed differently.
   NameInfo name1 = CreateNameInfo(u"호", u"", u"이영", u"이영 호");
   NameInfo name2 = CreateNameInfo(u"이영호", u"", u"", u"이영호");
@@ -790,7 +826,21 @@ TEST_F(AutofillProfileComparatorTest, MergeCJKNames) {
   NameInfo name6 = CreateNameInfo(u"", u"", u"", u"ゲイツ・ビル");
   NameInfo name7 = CreateNameInfo(u"ビル", u"", u"ゲイツ", u"");
 
-  // Set the use dates for the profiles, because |MergeCJKNames()| tries to use
+  // Mergeable foreign name in Japanese with a 'KATAKANA MIDDLE DOT' and
+  // phonetic name being present.
+  NameInfo name8 =
+      CreateNameInfo(u"", u"", u"", u"山本・葵", u"", u"", u"やまもと・あおい");
+  NameInfo name9 =
+      CreateNameInfo(u"葵", u"", u"山本", u"", u"あおい", u"やまもと", u"");
+
+  // Mergeable foreign name in Japanese with a `　` and
+  // phonetic name being present.
+  NameInfo name10 =
+      CreateNameInfo(u"", u"", u"", u"山本・葵", u"", u"", u"すずき　はるか");
+  NameInfo name11 =
+      CreateNameInfo(u"葵", u"", u"山本", u"", u"はるか", u"すずき", u"");
+
+  // Set the use dates for the profiles, because `MergeNames()` tries to use
   // the most recent profile if there is a conflict. The ordering is
   // p1 > p2 > p3 > p4 > p5, with p1 being the most recent.
   AutofillProfile p1 = CreateProfileWithName(name1);
@@ -806,6 +856,10 @@ TEST_F(AutofillProfileComparatorTest, MergeCJKNames) {
 
   AutofillProfile p6 = CreateProfileWithName(name6);
   AutofillProfile p7 = CreateProfileWithName(name7);
+  AutofillProfile p8 = CreateProfileWithName(name8);
+  AutofillProfile p9 = CreateProfileWithName(name9);
+  AutofillProfile p10 = CreateProfileWithName(name10);
+  AutofillProfile p11 = CreateProfileWithName(name11);
 
   // Because |p1| is the most recent, it always wins over others.
   MergeNamesAndExpect(p1, p2, CreateNameInfo(u"호", u"", u"이영", u"이영 호"));
@@ -824,6 +878,14 @@ TEST_F(AutofillProfileComparatorTest, MergeCJKNames) {
   // There is no conflict between |p6| and |p7|, so use the parts from both.
   MergeNamesAndExpect(p6, p7,
                       CreateNameInfo(u"ビル", u"", u"ゲイツ", u"ゲイツ・ビル"));
+  // Japanese alternative names are mergeable.
+  MergeNamesAndExpect(
+      p8, p9,
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと・あおい"));
+  MergeNamesAndExpect(p10, p11,
+                      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵",
+                                     u"はるか", u"すずき", u"すずき　はるか"));
 }
 
 TEST_F(AutofillProfileComparatorTest, MergeEmailAddresses) {
@@ -1466,6 +1528,30 @@ TEST_F(AutofillProfileComparatorTest,
   a.ClearFields({ADDRESS_HOME_STREET_ADDRESS});
   EXPECT_THAT(comparator_.NonMergeableSettingVisibleTypes(a, b),
               testing::Optional(testing::IsEmpty()));
+}
+
+// Tests that `NonMergeableSettingVisibleTypes()` is nullopt if one
+// of the profiles has a field that has a too long value.
+TEST_F(AutofillProfileComparatorTest,
+       NonMergeableSettingVisibleTypes_ValueTooLong) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillLogDeduplicationMetrics};
+  AutofillProfile a = test::GetFullProfile();
+  AutofillProfile b = a;
+  // Profile `a` has street name longer than
+  // `kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam`
+  a.SetRawInfo(
+      ADDRESS_HOME_STREET_ADDRESS,
+      base::StrCat(
+          {u"123 Str",
+           std::u16string(
+               features::
+                   kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam
+                       .Get(),
+               'e'),
+           u"t"}));
+  b.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"123 Street");
+  EXPECT_THAT(comparator_.NonMergeableSettingVisibleTypes(a, b), std::nullopt);
 }
 
 // Tests that `NonMergeableSettingVisibleTypes()` is nullopt for profiles of

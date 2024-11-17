@@ -112,7 +112,7 @@ public class ProfileKeyedMap<T> {
     public T getForProfile(Profile profile, Function<Profile, T> factory) {
         profile = getProfileToUse(profile, mProfileSelection);
 
-        // TODO(365814339): Convert to checked exception once all callsites are fixed.
+        // TODO(crbug.com/365814339): Convert to checked exception once all call sites are fixed.
         assert !profile.shutdownStarted()
                 : "Attempting to access profile keyed data on destroyed Profile";
 

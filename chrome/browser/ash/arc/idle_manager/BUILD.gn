@@ -71,7 +71,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/instance_throttle",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
-    "//chrome/browser/ash/arc/util",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/concierge",
     "//components/sync_preferences:test_support",

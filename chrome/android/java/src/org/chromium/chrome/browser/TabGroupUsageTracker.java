@@ -10,10 +10,10 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 /** Tracks TabGroup usages related statistics. */
 public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, DestroyObserver {
@@ -71,10 +71,9 @@ public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, Dest
     public void onPauseWithNative() {}
 
     private void recordTabGroupCount() {
-        TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
-        TabGroupModelFilter normalFilter = (TabGroupModelFilter) provider.getTabModelFilter(false);
-        TabGroupModelFilter incognitoFilter =
-                (TabGroupModelFilter) provider.getTabModelFilter(true);
+        TabGroupModelFilterProvider provider = mTabModelSelector.getTabGroupModelFilterProvider();
+        TabGroupModelFilter normalFilter = provider.getTabGroupModelFilter(false);
+        TabGroupModelFilter incognitoFilter = provider.getTabGroupModelFilter(true);
         int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();
         RecordHistogram.recordCount1MHistogram("TabGroups.UserGroupCount", groupCount);
     }

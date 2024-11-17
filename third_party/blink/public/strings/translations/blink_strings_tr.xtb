@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Bu ay</translation>
 <translation id="1637811476055996098">Dosyaları Seç</translation>
-<translation id="1680090928918677457">Kamerayı kullan</translation>
 <translation id="1729654308190250600">Lütfen e-posta adresini boş bırakmayın.</translation>
 <translation id="1758486001363313524">Diğer...</translation>
 <translation id="1921819250265091946">gg</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Lütfen bu metni <ph name="MAX_CHARACTERS" /> veya daha az karakter olacak şekilde kısaltın (şu anda <ph name="CURRENT_LENGTH" /> karakter kullanıyorsunuz).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hafta, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. parça</translation>
-<translation id="2353297238722298836">Kamera ve mikrofona izin verildi</translation>
 <translation id="2507943997699731163">Lütfen bu alanı doldurun.</translation>
 <translation id="2613802280814924224">Lütfen geçerli bir değer girin. En yakın geçerli değer şudur: <ph name="VALID_VALUE" /></translation>
 <translation id="2653659639078652383">Gönder</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Lütfen bu metni <ph name="MIN_CHARACTERS" /> karakter veya daha fazla olacak şekilde uzatın (şu anda <ph name="CURRENT_LENGTH" /> karakter kullanıyorsunuz).</translation>
 <translation id="383465348367842624">Başında "<ph name="ATSIGN" />" bulunan kısımda "<ph name="INVALIDCHARACTER" />" simgesi bulunmamalıdır.</translation>
 <translation id="3846214748874656680">Tam ekran modundan çık</translation>
-<translation id="4031179711345676612">Mikrofona izin verildi</translation>
 <translation id="4360991593054037559">Lütfen geçerli bir değer girin. En yakın iki geçerli değer şunlardır: <ph name="VALID_VALUE_LOW" /> ve <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Ayrıntılar</translation>
-<translation id="4663373278480897665">Kameraya izin veriliyor</translation>
 <translation id="4664250907885839816">Başında "<ph name="ATSIGN" />" bulunan kısımda "<ph name="INVALIDCHARACTER" />" simgesi bulunmamalıdır.</translation>
 <translation id="4718048029184481307">Pencere içinde pencere modunda oynatılıyor</translation>
-<translation id="4792862212177489858">Konumu paylaş</translation>
 <translation id="4812940957355064477">Lütfen bir sayı girin.</translation>
-<translation id="49269513399674318">Mikrofonu kullan</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> öğe seçildi</translation>
 <translation id="4992066212339426712">Sesi aç</translation>
 <translation id="49969490063480558">Lütfen "<ph name="ATSIGN" />" işaretinden sonra gelen kısmı ekleyin. "<ph name="INVALIDADDRESS" />", tam bir adres değil.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Eklenti yüklenemedi.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Lütfen bu metni <ph name="MIN_CHARACTERS" /> karakter veya daha fazla olacak şekilde uzatın (şu anda 1 karakter kullanıyorsunuz).</translation>
-<translation id="7080893216867146095">Konum paylaşımına izin veriliyor</translation>
 <translation id="709897737746224366">Lütfen istenen biçimi eşleştirin.</translation>
-<translation id="7134810312945846184">Mikrofon ve kamerayı kullan</translation>
 <translation id="7263440858009898357">Lütfen listeden bir öğe seçin.</translation>
 <translation id="7364796246159120393">Dosya Seç</translation>
 <translation id="739024184232394898">Diğer...</translation>

@@ -87,8 +87,7 @@ std::string TetherService::TetherFeatureStateToString(
       // and this value is never actually used in practice.
       return "[TetherService initializing]";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "[Invalid state]";
+      NOTREACHED();
   }
 }
 
@@ -577,10 +576,8 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
     default:
       // Other FeatureStates:
       //   *kUnavailableInsufficientSecurity: Should never occur.
-      PA_LOG(ERROR) << "Invalid MultiDevice FeatureState: "
-                    << tether_multidevice_state;
-      NOTREACHED_IN_MIGRATION();
-      return NO_AVAILABLE_HOSTS;
+      NOTREACHED() << "Invalid MultiDevice FeatureState: "
+                   << tether_multidevice_state;
   }
 }
 

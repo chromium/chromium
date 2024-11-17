@@ -82,12 +82,8 @@
 #include "chrome/browser/ui/webui/profile_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/trusted_vault/features.h"
 #endif
 
 using content::WebContents;
@@ -184,7 +180,7 @@ void ParseConfigurationArguments(const base::Value::List& args,
   if ((*callback_id = &args[0]) && !json.empty()) {
     CHECK(GetConfiguration(json, config));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -204,8 +200,7 @@ std::string GetSyncErrorAction(SyncStatusActionType action_type) {
       return "noAction";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Returns the base::Value associated with the account, to use in the stored
@@ -356,7 +351,7 @@ void PeopleHandler::RegisterMessages() {
       base::BindRepeating(&PeopleHandler::HandleStartSignin,
                           base::Unretained(this)));
 #endif
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   web_ui()->RegisterMessageCallback(
       "SyncSetupSignout", base::BindRepeating(&PeopleHandler::HandleSignout,
                                               base::Unretained(this)));
@@ -563,8 +558,6 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   populate_accounts_list =
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  populate_accounts_list = !profile_->IsMainProfile();
 #endif
 
   if (populate_accounts_list) {
@@ -582,9 +575,8 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
     return base::Value::List();
   }
   // If DICE is disabled for this profile or unsupported on this platform (e.g.
-  // Chrome OS) or Lacros main profile (sync with a different account than the
-  // device account is not allowed), then show only the primary account,
-  // whether or not that account has consented to sync.
+  // Chrome OS) then show only the primary account, whether or not that account
+  // has consented to sync.
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   if (!primary_account_info.IsEmpty()) {
@@ -594,7 +586,7 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
 }
 
 void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) ||
          AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_));
   const base::Value& email = args[0];
@@ -719,11 +711,11 @@ void PeopleHandler::HandleAttemptUserExit(const base::Value::List& args) {
 }
 
 void PeopleHandler::HandleTurnOnSync(const base::Value::List& args) {
-  NOTREACHED_IN_MIGRATION() << "It is not possible to toggle Sync on Ash";
+  NOTREACHED() << "It is not possible to toggle Sync on Ash";
 }
 
 void PeopleHandler::HandleTurnOffSync(const base::Value::List& args) {
-  NOTREACHED_IN_MIGRATION() << "It is not possible to toggle Sync on Ash";
+  NOTREACHED() << "It is not possible to toggle Sync on Ash";
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -743,7 +735,7 @@ void PeopleHandler::HandleStartSignin(const base::Value::List& args) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void PeopleHandler::HandleSignout(const base::Value::List& args) {
   bool delete_profile = false;
@@ -769,16 +761,11 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
   if (!is_clear_primary_account_allowed) {
     // 'Signout' should not be offered in the UI if clear primary account is
     // not allowed.
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "Signout should not be offered if clear primary account is not "
            "allowed.";
-    return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
-#else
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (!browser) {
     return;
@@ -788,7 +775,6 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
           ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT,
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
       signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void PeopleHandler::HandleTurnOffSync(bool delete_profile,
@@ -817,10 +803,6 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::ProfileSignout::kRevokeSyncFromSettings);
   } else {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
-#else
     Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
     if (browser) {
       // Clearing the primary account isn't sufficient to signout SAML accounts,
@@ -850,7 +832,6 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
       identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
           signin_metrics::ProfileSignout::kRevokeSyncFromSettings);
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   // CAUTION: |this| may be deleted at this point.
@@ -860,7 +841,7 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
   }
 }
 
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void PeopleHandler::HandlePauseSync(const base::Value::List& args) {
@@ -875,15 +856,6 @@ void PeopleHandler::HandlePauseSync(const base::Value::List& args) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void PeopleHandler::HandleStartKeyRetrieval(const base::Value::List& args) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(
-          trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
-    OpenDialogForSyncKeyRetrieval(
-        profile_, syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
-    return;
-  }
-#endif
-
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (!browser) {
     return;

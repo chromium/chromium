@@ -76,7 +76,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel.MockTabModelD
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -104,7 +104,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     private float mDpToPx;
 
-    class LayoutObserverCallbackHelper extends CallbackHelper {
+    static class LayoutObserverCallbackHelper extends CallbackHelper {
         @LayoutType public int layoutType;
     }
 
@@ -179,7 +179,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         mTabModelSelector =
                 new MockTabModelSelector(
                         ProfileManager.getLastUsedRegularProfile(),
-                        ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
+                        ProfileManager.getLastUsedRegularProfile().getPrimaryOtrProfile(true),
                         standardTabCount,
                         incognitoTabCount,
                         this);
@@ -191,7 +191,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         }
         mTabModelSelector.selectModel(incognitoSelected);
         Assert.assertNotNull(
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter());
+                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
 
         LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
         TabContentManager tabContentManager =
@@ -220,7 +220,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;
         CompositorAnimationHandler.setTestingMode(true);
-        mManager.init(mTabModelSelector, null, null, null, mTopUiThemeColorProvider);
+        mManager.init(mTabModelSelector, null, null, null, mTopUiThemeColorProvider, () -> 0);
         initializeMotionEvent();
     }
 
@@ -228,9 +228,10 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Feature({"Android-TabSwitcher"})
     @UiThreadTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testCreation() {
-        initializeLayoutManagerPhone(0, 0);
+        // Initialize with 1 tab to avoid hub initialization with 0 tabs.
+        initializeLayoutManagerPhone(1, 0);
     }
 
     @Test
@@ -347,7 +348,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
     public void testHubTabSwitcherLayout_Enabled() throws Exception {
@@ -772,6 +773,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     public MockTab createTab(int id, boolean incognito) {
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         return MockTab.createAndInitialize(
-                id, incognito ? profile.getPrimaryOTRProfile(true) : profile);
+                id, incognito ? profile.getPrimaryOtrProfile(true) : profile);
     }
 }

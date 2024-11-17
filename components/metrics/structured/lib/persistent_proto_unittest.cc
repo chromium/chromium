@@ -300,12 +300,12 @@ TYPED_TEST(PersistentProtoTest, ClearContents) {
 
   this->Wait();
 
-  int64_t size = 0;
   std::string empty_proto;
   KeyProto().SerializeToString(&empty_proto);
 
-  ASSERT_TRUE(base::GetFileSize(this->test_.GetPath(), &size));
-  EXPECT_EQ(size, static_cast<int64_t>(empty_proto.size()));
+  std::optional<int64_t> size = base::GetFileSize(this->test_.GetPath());
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(size.value(), static_cast<int64_t>(empty_proto.size()));
 }
 
 TYPED_TEST(PersistentProtoTest, UpdatePath) {

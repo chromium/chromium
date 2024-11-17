@@ -37,6 +37,7 @@
 #include "android_webview/browser/permission/permission_callback.h"
 #include "android_webview/browser/permission/permission_request_handler.h"
 #include "android_webview/browser/permission/simple_permission_request.h"
+#include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/browser/state_serializer.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
@@ -1016,16 +1017,6 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetCertificate(
   return base::android::ToJavaByteArray(env, base::as_byte_span(der_string));
 }
 
-void AwContents::RequestNewHitTestDataAt(JNIEnv* env,
-                                         jfloat x,
-                                         jfloat y,
-                                         jfloat touch_major) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  gfx::PointF touch_center(x, y);
-  gfx::SizeF touch_area(touch_major, touch_major);
-  render_view_host_ext_->RequestNewHitTestDataAt(touch_center, touch_area);
-}
-
 void AwContents::UpdateLastHitTestData(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1524,6 +1515,43 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
       static_cast<NotRestoredReason>(reason));
 }
 
+void AwContents::StartPrerendering(
+    JNIEnv* env,
+    const std::string& prerendering_url,
+    const base::android::JavaParamRef<jobject>& prefetch_params) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Cancel existing prerendering before starting a new one to avoid hitting the
+  // limit.
+  // TODO(https://crbug.com/41490450): Allow multiple prerenders to run
+  // sequentially.
+  prerender_handle_.reset();
+
+  // TODO(https://crbug.com/41490450): Set the additional headers in a
+  // prerendering navigation request.
+  net::HttpRequestHeaders additional_headers =
+      GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
+
+  std::optional<net::HttpNoVarySearchData> no_vary_search_expected =
+      GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
+
+  // This is the same as the page transition of WebView.loadUrl().
+  auto page_transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_API);
+
+  // TODO(https://crbug.com/41490450): Do the following:
+  // - Pass a valid PreloadingAttempt.
+  // - Pass a valid navigation handle callback.
+  prerender_handle_ = web_contents_->StartPrerendering(
+      GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
+      "WebView", std::move(no_vary_search_expected), page_transition,
+      /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
+      content::PreloadingHoldbackStatus::kUnspecified,
+      /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
+      /*prerender_navigation_handle_callback=*/{});
+}
+
 void AwContents::CancelAllPrerendering(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   web_contents()->CancelAllPrerendering();
@@ -1635,6 +1663,11 @@ void LogSiteVisit(std::string etld_plus1, jlong site_hash) {
 }
 
 void AwContents::PrimaryPageChanged(content::Page& page) {
+  // TODO(https://crbug.com/378601799): Consider allowing prerendered pages
+  // triggered by the WebView prerender API to outlive PrimaryPageChanged. See
+  // the issue for the context.
+  prerender_handle_.reset();
+
   std::string scheme = page.GetMainDocument().GetLastCommittedURL().scheme();
   const url::Origin& origin = page.GetMainDocument().GetLastCommittedOrigin();
   std::string etld_plus1 =

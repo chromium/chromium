@@ -132,7 +132,6 @@ class GoogleTtsIntegrationTest : public AshIntegrationTest {
 
 IN_PROC_BROWSER_TEST_F(GoogleTtsIntegrationTest, Speak) {
   SetupContextWidget();
-  WaitForAshFullyStarted();
   RunTestSequence(Log("Setting up Google TTS extension"), Do([this] {
                     EnableGoogleTts();
                     InjectTestSupportScript();

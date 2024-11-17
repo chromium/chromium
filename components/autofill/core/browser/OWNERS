@@ -2,4 +2,5 @@ per-file autofill_optimization_guide*=file://components/autofill/core/browser/pa
 per-file BUILD.gn=file://components/autofill/core/browser/payments/OWNERS
 per-file mock_autofill_optimization_guide*=file://components/autofill/core/browser/payments/OWNERS
 per-file payments_data_manager*=file://components/autofill/core/browser/payments/OWNERS
+per-file payments_suggestion_generator*=file://components/autofill/core/browser/payments/OWNERS
 per-file test_payments_data_manager*=file://components/autofill/core/browser/payments/OWNERS

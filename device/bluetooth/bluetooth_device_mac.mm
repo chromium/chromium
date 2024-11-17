@@ -62,8 +62,7 @@ BluetoothDeviceMac::GetGattErrorCodeFromNSError(NSError* error) {
                 BluetoothGattService::GattErrorCode::kNotSupported)) {
       return gatt_error_code;
     }
-    NOTREACHED_IN_MIGRATION();
-    return BluetoothGattService::GattErrorCode::kFailed;
+    NOTREACHED();
   }
   // TODO(http://crbug.com/619595): Need to convert the error code from
   // CoreBluetooth to a GattErrorCode value.

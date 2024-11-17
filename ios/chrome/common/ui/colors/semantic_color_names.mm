@@ -52,6 +52,7 @@ NSString* const kTabGroupFaviconBackgroundColor =
     @"tab_group_favicons_background_color";
 NSString* const kOmniboxPopoutOverlayColor = @"omnibox_popout_overlay_color";
 NSString* const kTabStripBackgroundColor = @"tab_strip_background_color";
+NSString* const kTabStripV3BackgroundColor = @"tab_strip_v3_background_color";
 NSString* const kTabStripNewTabButtonColor = @"tab_strip_new_tab_button_color";
 NSString* const kTabGroupPinkColor = @"tab_group_pink_color";
 NSString* const kTabGroupCyanColor = @"tab_group_cyan_color";
@@ -61,6 +62,8 @@ NSString* const kTabGroupGreyColor = @"tab_group_grey_color";
 NSString* const kWhiteBlackAlpha50Color = @"white_black_alpha_50_color";
 NSString* const kLensOverlayConsentDialogDescriptionColor =
     @"lens_overlay_consent_dialog_description_color";
+NSString* const kLensOverlayConsentDialogAnimationPlayerButtonColor =
+    @"lens_overlay_consent_dialog_animation_player_button_color";
 
 #pragma mark - Standard Colors
 NSString* const kSolidBlackColor = @"solid_black_color";

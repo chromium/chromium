@@ -9,14 +9,29 @@
 #include <string_view>
 #include <vector>
 
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 class SigninReauthViewController;
+class SigninReauthUI;
 
 namespace content {
 class WebUI;
 class WebUIDataSource;
 }  // namespace content
+
+class SigninReauthUIConfig
+    : public content::DefaultWebUIConfig<SigninReauthUI> {
+ public:
+  SigninReauthUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISigninReauthHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // WebUI controller for the signin reauth dialog.
 //

@@ -5,7 +5,8 @@
 /**
  * @fileoverview Singleton that provides a remote for the UserDataService.
  */
-import {InputMethodUserDataService, InputMethodUserDataServiceInterface} from '../mojom-webui/input_method_user_data.mojom-webui.js';
+import type {InputMethodUserDataServiceInterface} from '../mojom-webui/input_method_user_data.mojom-webui.js';
+import {InputMethodUserDataService} from '../mojom-webui/input_method_user_data.mojom-webui.js';
 
 export class UserDataServiceProvider {
   private static instance_: InputMethodUserDataServiceInterface|null = null;

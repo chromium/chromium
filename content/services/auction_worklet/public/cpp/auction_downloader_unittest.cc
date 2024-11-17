@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
@@ -250,8 +251,6 @@ TEST_P(AuctionDownloaderTest, Timeout) {
 }
 
 TEST_P(AuctionDownloaderTest, AllowAdAuction) {
-  std::string allow_fledge_string;
-
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "X-Allow-FLEDGE: true");
   EXPECT_TRUE(RunRequest());
@@ -259,8 +258,7 @@ TEST_P(AuctionDownloaderTest, AllowAdAuction) {
   ASSERT_TRUE(observed_response_head_.has_value());
   const scoped_refptr<::net::HttpResponseHeaders> observed_header =
       observed_response_head_.value()->headers;
-  EXPECT_TRUE(observed_header->GetNormalizedHeader("X-Allow-FLEDGE",
-                                                   &allow_fledge_string));
+  EXPECT_TRUE(observed_header->GetNormalizedHeader("X-Allow-FLEDGE"));
   EXPECT_EQ(observed_completion_status_.error_code, net::OK);
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
@@ -348,44 +346,27 @@ TEST_P(AuctionDownloaderTest, AllowAdAuction) {
 }
 
 TEST_P(AuctionDownloaderTest, PassesHeaders) {
-  std::string allow_fledge_string;
-  std::string data_version_string;
-
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "Ad-Auction-Allowed: true");
   EXPECT_TRUE(RunRequest()) << last_error_msg();
-  EXPECT_TRUE(headers_->GetNormalizedHeader("Ad-Auction-Allowed",
-                                            &allow_fledge_string));
-  EXPECT_EQ("true", allow_fledge_string);
-  EXPECT_FALSE(
-      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
+  EXPECT_EQ(headers_->GetNormalizedHeader("Ad-Auction-Allowed"), "true");
+  EXPECT_FALSE(headers_->GetNormalizedHeader("Data-Version"));
 
   mime_type_ = AuctionDownloader::MimeType::kJson;
   AddVersionedJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody, 10u);
   EXPECT_TRUE(RunRequest()) << last_error_msg();
-  EXPECT_TRUE(headers_->GetNormalizedHeader("Ad-Auction-Allowed",
-                                            &allow_fledge_string));
-  EXPECT_EQ("true", allow_fledge_string);
-  EXPECT_TRUE(
-      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
-  EXPECT_EQ("10", data_version_string);
+  EXPECT_EQ(headers_->GetNormalizedHeader("Ad-Auction-Allowed"), "true");
+  EXPECT_EQ(headers_->GetNormalizedHeader("Data-Version"), "10");
 
   AddVersionedJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody, 5u);
   EXPECT_TRUE(RunRequest()) << last_error_msg();
-  EXPECT_TRUE(headers_->GetNormalizedHeader("Ad-Auction-Allowed",
-                                            &allow_fledge_string));
-  EXPECT_EQ("true", allow_fledge_string);
-  EXPECT_TRUE(
-      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
-  EXPECT_EQ("5", data_version_string);
+  EXPECT_EQ(headers_->GetNormalizedHeader("Ad-Auction-Allowed"), "true");
+  EXPECT_EQ(headers_->GetNormalizedHeader("Data-Version"), "5");
 
   AddJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody);
   EXPECT_TRUE(RunRequest()) << last_error_msg();
-  EXPECT_TRUE(headers_->GetNormalizedHeader("Ad-Auction-Allowed",
-                                            &allow_fledge_string));
-  EXPECT_EQ("true", allow_fledge_string);
-  EXPECT_FALSE(
-      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
+  EXPECT_EQ(headers_->GetNormalizedHeader("Ad-Auction-Allowed"), "true");
+  EXPECT_FALSE(headers_->GetNormalizedHeader("Data-Version"));
 }
 
 TEST_P(AuctionDownloaderTest, ResponseStartedCallback) {
@@ -397,10 +378,8 @@ TEST_P(AuctionDownloaderTest, ResponseStartedCallback) {
         EXPECT_TRUE(run_loop_);
         called = true;
         ASSERT_TRUE(response_head.headers);
-        std::string test_header_str;
-        EXPECT_TRUE(response_head.headers->GetNormalizedHeader(
-            "Test-Header", &test_header_str));
-        EXPECT_EQ("test-val", test_header_str);
+        EXPECT_EQ(response_head.headers->GetNormalizedHeader("Test-Header"),
+                  "test-val");
       });
 
   // Since response doesn't have Ad-Auction-Allowed, this will fail and not

@@ -314,7 +314,7 @@ bool IncidentReportingService::IsEnabledForProfile(Profile* profile) {
 }
 
 IncidentReportingService::IncidentReportingService(
-    SafeBrowsingService* safe_browsing_service)
+    SafeBrowsingServiceImpl* safe_browsing_service)
     : IncidentReportingService(safe_browsing_service,
                                base::Milliseconds(kDefaultCallbackIntervalMs),
                                GetBackgroundTaskRunner()) {
@@ -390,7 +390,7 @@ void IncidentReportingService::AddDownloadManager(
 }
 
 IncidentReportingService::IncidentReportingService(
-    SafeBrowsingService* safe_browsing_service,
+    SafeBrowsingServiceImpl* safe_browsing_service,
     base::TimeDelta delayed_task_interval,
     const scoped_refptr<base::TaskRunner>& delayed_task_runner)
     : url_loader_factory_(nullptr),

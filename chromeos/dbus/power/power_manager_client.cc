@@ -87,8 +87,7 @@ PowerManagerClient::LidState GetLidStateFromProtoEnum(
     case power_manager::SwitchStates_LidState_NOT_PRESENT:
       return PowerManagerClient::LidState::NOT_PRESENT;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled lid state " << state;
-  return PowerManagerClient::LidState::NOT_PRESENT;
+  NOTREACHED() << "Unhandled lid state " << state;
 }
 
 // Converts a TabletMode value from a power_manager::SwitchStates proto to the
@@ -103,8 +102,7 @@ PowerManagerClient::TabletMode GetTabletModeFromProtoEnum(
     case power_manager::SwitchStates_TabletMode_UNSUPPORTED:
       return PowerManagerClient::TabletMode::UNSUPPORTED;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled tablet mode " << mode;
-  return PowerManagerClient::TabletMode::UNSUPPORTED;
+  NOTREACHED() << "Unhandled tablet mode " << mode;
 }
 
 // Converts a ThermalState value from a power_manager::ThermalEvent proto to the
@@ -123,8 +121,7 @@ base::PowerThermalObserver::DeviceThermalState GetThermalStateFromProtoEnum(
     case power_manager::ThermalEvent_ThermalState_CRITICAL:
       return base::PowerThermalObserver::DeviceThermalState::kCritical;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled thermal state " << state;
-  return base::PowerThermalObserver::DeviceThermalState::kUnknown;
+  NOTREACHED() << "Unhandled thermal state " << state;
 }
 
 // Callback for D-Bus call made in |CreateArcTimers|.
@@ -1630,7 +1627,9 @@ class PowerManagerClientImpl : public PowerManagerClient {
 
   raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> power_manager_proxy_ =
       nullptr;
-  base::ObserverList<Observer>::Unchecked observers_;
+  // TODO(b/370501118): Make the observer list check it's empty once all
+  // observers unsubscribe on shutdown.
+  base::ObserverList<Observer> observers_;
 
   std::optional<bool> service_available_;
 

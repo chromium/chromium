@@ -23,23 +23,19 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
+using autofill::AccessorySuggestionType;
 using autofill::AccessoryTabType;
 using autofill::TestAutofillClientInjector;
 using autofill::TestContentAutofillClient;
 using autofill::mojom::FocusedFieldType;
 using plus_addresses::FakePlusAddressService;
-using plus_addresses::FakePlusAddressSettingService;
-using plus_addresses::PlusAddressSettingService;
-using plus_addresses::test::PlusAddressTestEnvironment;
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
@@ -55,8 +51,10 @@ AccessorySheetData filled_passwords_sheet() {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds",
                                      /*plus_address_title=*/std::u16string())
       .AddUserInfo("example.com", autofill::UserInfo::IsExactMatch(true))
-      .AppendField(u"Ben", u"Ben", false, true)
-      .AppendField(u"S3cur3", u"Ben's PW", true, false)
+      .AppendField(AccessorySuggestionType::kCredentialUsername, u"Ben", u"Ben",
+                   false, true)
+      .AppendField(AccessorySuggestionType::kCredentialPassword, u"S3cur3",
+                   u"Ben's PW", true, false)
       .Build();
 }
 
@@ -73,12 +71,8 @@ std::vector<uint8_t> test_passkey_id() {
 }
 
 std::unique_ptr<KeyedService> BuildFakePlusAddressService(
-    PrefService* pref_service,
-    signin::IdentityManager* identity_manager,
-    PlusAddressSettingService* setting_service,
     content::BrowserContext* context) {
-  return std::make_unique<FakePlusAddressService>(
-      pref_service, identity_manager, setting_service);
+  return std::make_unique<FakePlusAddressService>();
 }
 
 constexpr autofill::FieldRendererId kFocusedFieldId(123);
@@ -89,22 +83,12 @@ constexpr autofill::FieldRendererId kFocusedFieldId(123);
 // of the keyboard accessory and all its fallback sheets.
 class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
  public:
-  ManualFillingControllerTest() {
-    features_.InitWithFeatures(
-        {plus_addresses::features::kPlusAddressesEnabled,
-         plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
-        {});
-  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
     PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
-        GetBrowserContext(),
-        base::BindRepeating(&BuildFakePlusAddressService,
-                            &plus_environment_.pref_service(),
-                            plus_environment_.identity_env().identity_manager(),
-                            &plus_environment_.setting_service()));
+        GetBrowserContext(), base::BindRepeating(&BuildFakePlusAddressService));
 
     EXPECT_CALL(mock_pwd_controller_, RegisterFillingSourceObserver)
         .WillOnce(SaveArg<0>(&pwd_source_observer_));
@@ -150,7 +134,8 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      plus_addresses::features::kPlusAddressesEnabled};
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>
@@ -162,7 +147,6 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
 
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
-  PlusAddressTestEnvironment plus_environment_;
 };
 
 TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
@@ -180,6 +164,17 @@ TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
   EXPECT_CALL(*view(), Hide());
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/false);
+}
+
+TEST_F(ManualFillingControllerTest, PasswordAccessoryControllerReturnsNoData) {
+  EXPECT_CALL(mock_pwd_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*view(), OnItemsAvailable).Times(0);
+  EXPECT_CALL(*view(), Hide());
+
+  NotifyPasswordSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
 }
 
 TEST_F(ManualFillingControllerTest,
@@ -200,6 +195,17 @@ TEST_F(ManualFillingControllerTest,
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(false));
 }
 
+TEST_F(ManualFillingControllerTest, AddressAccessoryControllerReturnsNoData) {
+  EXPECT_CALL(mock_address_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*view(), OnItemsAvailable).Times(0);
+  EXPECT_CALL(*view(), Hide());
+
+  NotifyAddressSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+}
+
 TEST_F(ManualFillingControllerTest,
        ShowsAccessoryForAddressesTriggeredByObserver) {
   const AccessorySheetData kTestAddressSheet =
@@ -218,6 +224,18 @@ TEST_F(ManualFillingControllerTest,
 
   EXPECT_CALL(*view(), Hide());
   NotifyAddressSourceObserver(IsFillingSourceAvailable(false));
+}
+
+TEST_F(ManualFillingControllerTest,
+       CreditCardAccessoryControllerReturnsNoData) {
+  EXPECT_CALL(mock_payment_method_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*view(), OnItemsAvailable).Times(0);
+  EXPECT_CALL(*view(), Hide());
+
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 }
 
 TEST_F(ManualFillingControllerTest,

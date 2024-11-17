@@ -97,22 +97,14 @@ public class IdentityCredentialsDelegate {
                                 Log.d(TAG, "Sending an intent for sender");
                                 Log.d(TAG, request);
                                 startIntentSenderForResult(
-                                        /** activity= */
-                                        window,
-                                        /** intent= */
-                                        response.getPendingIntent().getIntentSender(),
-                                        /** requestCode= */
-                                        777,
-                                        /** fillInIntent= */
-                                        null,
-                                        /** flagsMask= */
-                                        0,
-                                        /** flagsValues= */
-                                        0,
-                                        /** extraFlags= */
-                                        0,
-                                        /** options= */
-                                        null);
+                                        /* activity= */ window,
+                                        /* intent= */ response.getPendingIntent().getIntentSender(),
+                                        /* requestCode= */ 777,
+                                        /* fillInIntent= */ null,
+                                        /* flagsMask= */ 0,
+                                        /* flagsValues= */ 0,
+                                        /* extraFlags= */ 0,
+                                        /* options= */ null);
                             } catch (SendIntentException e) {
                                 Log.e(TAG, "Sending an intent for sender failed");
                                 result.reject(e);

@@ -10,7 +10,7 @@ namespace base {
 
 PortProvider::PortProvider()
     : observer_list_(MakeRefCounted<ObserverListThreadSafe<Observer>>()) {}
-PortProvider::~PortProvider() {}
+PortProvider::~PortProvider() = default;
 
 void PortProvider::AddObserver(Observer* observer) {
   observer_list_->AddObserver(observer);

@@ -37,15 +37,15 @@ class SyncData {
 
   // Helper methods for creating SyncData objects for local data.
   //
-  // |client_tag_unhashed| Must be a non-empty string unique to this entity and
+  // `client_tag_unhashed` Must be a non-empty string unique to this entity and
   // is used (in hashed form) as a node identifier server-side.
   //
-  // For deletes: |datatype| must specify the datatype who node is being
+  // For deletes: `datatype` must specify the datatype who node is being
   // deleted.
   //
-  // For adds/updates: |specifics| must be valid and |non_unique_title| (can be
-  // the same as |client_tag_unhashed|) must be specfied.  Note:
-  // |non_unique_title| is primarily for debug purposes, and will be overwritten
+  // For adds/updates: `specifics` must be valid and `non_unique_title` (can be
+  // the same as `client_tag_unhashed`) must be specified.  Note:
+  // `non_unique_title` is primarily for debug purposes, and will be overwritten
   // if the datatype is encrypted.
   static SyncData CreateLocalDelete(std::string_view client_tag_unhashed,
                                     DataType datatype);

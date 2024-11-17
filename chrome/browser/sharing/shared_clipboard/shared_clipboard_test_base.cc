@@ -49,10 +49,10 @@ std::string SharedClipboardTestBase::GetClipboardText() {
 }
 
 SkBitmap SharedClipboardTestBase::GetClipboardImage() {
-  SkBitmap bitmap;
   std::vector<uint8_t> png_data =
       ui::clipboard_test_util::ReadPng(ui::Clipboard::GetForCurrentThread());
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
+  CHECK(!bitmap.isNull());
   return bitmap;
 }
 

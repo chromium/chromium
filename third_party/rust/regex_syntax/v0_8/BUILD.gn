@@ -12,47 +12,47 @@ cargo_crate("lib") {
   crate_name = "regex_syntax"
   epoch = "0.8"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/ast/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/ast/parse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/ast/print.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/ast/visitor.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/debug.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/either.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/hir/interval.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/hir/literal.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/hir/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/hir/print.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/hir/translate.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/hir/visitor.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/parser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/rank.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/age.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/case_folding_simple.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/general_category.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/grapheme_cluster_break.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/perl_decimal.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/perl_space.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/perl_word.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/property_bool.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/property_names.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/property_values.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/script.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/script_extension.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/sentence_break.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/unicode_tables/word_break.rs",
-    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.4/src/utf8.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/ast/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/ast/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/ast/print.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/ast/visitor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/debug.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/either.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/hir/interval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/hir/literal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/hir/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/hir/print.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/hir/translate.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/hir/visitor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/rank.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/age.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/case_folding_simple.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/general_category.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/grapheme_cluster_break.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/perl_decimal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/perl_space.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/perl_word.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/property_bool.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/property_names.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/property_values.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/script.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/script_extension.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/sentence_break.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/unicode_tables/word_break.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.5/src/utf8.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.4"
+  cargo_pkg_version = "0.8.5"
   cargo_pkg_authors =
       "The Rust Project Developers, Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "regex-syntax"

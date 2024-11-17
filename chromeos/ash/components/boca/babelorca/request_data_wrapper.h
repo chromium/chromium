@@ -9,21 +9,21 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/types/expected.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
 
+class TachyonResponse;
+
 struct RequestDataWrapper {
-  using ResponseCallback = base::OnceCallback<void(
-      base::expected<std::string, TachyonRequestError>)>;
+  using ResponseCallback = base::OnceCallback<void(TachyonResponse)>;
 
   RequestDataWrapper(
       const net::NetworkTrafficAnnotationTag& annotation_tag_param,
       std::string_view url_param,
       int max_retries_param,
-      ResponseCallback response_cb_param);
+      ResponseCallback response_cb_param,
+      std::string content_type_param = "application/x-protobuf");
 
   ~RequestDataWrapper();
 
@@ -34,6 +34,7 @@ struct RequestDataWrapper {
   int oauth_version = 0;
   int oauth_retry_num = 0;
   std::string content_data;
+  const std::string content_type;
 };
 
 }  // namespace ash::babelorca

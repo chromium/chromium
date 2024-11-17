@@ -299,7 +299,7 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
             device.id(),
             base::BindOnce(&FastPairRepositoryImpl::CompleteAccountKeyLookup,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           key_bytes));
+                           std::move(key_bytes)));
         return;
       }
     }
@@ -351,7 +351,7 @@ void FastPairRepositoryImpl::UpdateCacheAndRetryCheckAccountKeys(
 
 void FastPairRepositoryImpl::CompleteAccountKeyLookup(
     CheckAccountKeysCallback callback,
-    const std::vector<uint8_t> account_key,
+    std::vector<uint8_t> account_key,
     DeviceMetadata* device_metadata,
     bool has_retryable_error) {
   if (!device_metadata) {

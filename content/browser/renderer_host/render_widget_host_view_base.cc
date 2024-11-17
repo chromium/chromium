@@ -121,8 +121,7 @@ void RenderWidgetHostViewBase::SelectionBoundsChanged(
         this, anchor_rect, anchor_dir, focus_rect, focus_dir, bounding_box,
         is_anchor_first);
 #else
-  NOTREACHED_IN_MIGRATION()
-      << "Selection bounds should be routed through the compositor.";
+  NOTREACHED() << "Selection bounds should be routed through the compositor.";
 #endif
 }
 
@@ -168,11 +167,10 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "RenderWidgetHostViewAndroid::CopyFromSurface calls "
          "DelegatedFrameHostAndroid::CopyFromCompositingSurface directly, "
          "and popups are not supported.";
-  return;
 #else
   if (!popup_host || !popup_frame_host) {
     // No popup - just call CopyFromCompositingSurface once.
@@ -365,14 +363,12 @@ RenderWidgetHostViewBase::GetKeyboardLayoutMap() {
 }
 
 bool RenderWidgetHostViewBase::HasFallbackSurface() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 viz::SurfaceId RenderWidgetHostViewBase::GetFallbackSurfaceIdForTesting()
     const {
-  NOTREACHED_IN_MIGRATION();
-  return viz::SurfaceId();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewBase::SetWidgetType(WidgetType widget_type) {
@@ -702,7 +698,7 @@ void RenderWidgetHostViewBase::ProcessGestureEvent(
 
 gfx::PointF RenderWidgetHostViewBase::TransformPointToRootCoordSpaceF(
     const gfx::PointF& point) {
-  return point;
+  return RenderWidgetHostViewInput::TransformPointToRootCoordSpaceF(point);
 }
 
 bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() {

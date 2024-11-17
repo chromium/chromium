@@ -17,7 +17,6 @@ import android.graphics.Color;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,7 +62,7 @@ import java.util.Map;
 public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     @Parameters
     public static Collection<Object> data() {
-        return Arrays.asList(new Object[] {RpMode.WIDGET, RpMode.BUTTON});
+        return Arrays.asList(new Object[] {RpMode.PASSIVE, RpMode.ACTIVE});
     }
 
     @Rule(order = -2)
@@ -98,15 +97,17 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         public GURL mUrl;
         public String mExpectedSummary;
         public String mExpectedDescription;
+        public boolean mClickableText;
 
-        TokenError(String code, GURL url) {
+        TokenError(String code, GURL url, boolean clickableText) {
             mCode = code;
             mUrl = url;
             mExpectedSummary = mCodeToSummary.get(code);
             mExpectedDescription =
                     AccountSelectionViewBinder.SERVER_ERROR.equals(code)
                             ? mCodeToDescription.get(code)
-                            : appendExtraDescription(code, url);
+                            : appendExtraDescription(code, url, clickableText);
+            mClickableText = clickableText;
         }
 
         private final Map<String, String> mCodeToSummary =
@@ -155,10 +156,10 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                                 R.string.signin_server_error_dialog_description,
                                 TEST_RP_ETLD_PLUS_ONE));
 
-        private final String appendExtraDescription(String code, GURL url) {
+        private final String appendExtraDescription(String code, GURL url, boolean clickableText) {
             String initialDescription = mCodeToDescription.get(code);
             if (AccountSelectionViewBinder.GENERIC.equals(code)) {
-                if (mTestEmptyErrorUrl.equals(url)) {
+                if (mTestEmptyErrorUrl.equals(url) || !clickableText) {
                     return initialDescription;
                 }
                 return initialDescription
@@ -182,8 +183,16 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                     + mResources
                             .getString(
                                     AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE.equals(code)
-                                            ? R.string.signin_error_dialog_more_details_retry_prompt
-                                            : R.string.signin_error_dialog_more_details_prompt,
+                                            ? (clickableText
+                                                    ? R.string
+                                                            .signin_error_dialog_more_details_retry_prompt
+                                                    : R.string
+                                                            .signin_error_dialog_more_details_button_retry_prompt)
+                                            : (clickableText
+                                                    ? R.string
+                                                            .signin_error_dialog_more_details_prompt
+                                                    : R.string
+                                                            .signin_error_dialog_more_details_button_prompt),
                                     TEST_IDP_ETLD_PLUS_ONE)
                             .replaceAll(LINK_TAG_REGEX, "");
         }
@@ -329,55 +338,126 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     }
 
     @Test
-    public void testErrorDisplayed() {
+    public void testErrorText() {
         final TokenError[] mErrors =
                 new TokenError[] {
-                    new TokenError(AccountSelectionViewBinder.GENERIC, mTestEmptyErrorUrl),
-                    new TokenError(AccountSelectionViewBinder.GENERIC, mTestErrorUrl),
-                    new TokenError(AccountSelectionViewBinder.INVALID_REQUEST, mTestEmptyErrorUrl),
-                    new TokenError(AccountSelectionViewBinder.INVALID_REQUEST, mTestErrorUrl),
                     new TokenError(
-                            AccountSelectionViewBinder.UNAUTHORIZED_CLIENT, mTestEmptyErrorUrl),
-                    new TokenError(AccountSelectionViewBinder.UNAUTHORIZED_CLIENT, mTestErrorUrl),
-                    new TokenError(AccountSelectionViewBinder.ACCESS_DENIED, mTestEmptyErrorUrl),
-                    new TokenError(AccountSelectionViewBinder.ACCESS_DENIED, mTestErrorUrl),
+                            AccountSelectionViewBinder.GENERIC,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ true),
                     new TokenError(
-                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE, mTestEmptyErrorUrl),
+                            AccountSelectionViewBinder.GENERIC,
+                            mTestErrorUrl,
+                            /* clickableText= */ true),
                     new TokenError(
-                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE, mTestErrorUrl),
-                    new TokenError(AccountSelectionViewBinder.SERVER_ERROR, mTestEmptyErrorUrl),
-                    new TokenError(AccountSelectionViewBinder.SERVER_ERROR, mTestErrorUrl)
+                            AccountSelectionViewBinder.INVALID_REQUEST,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.INVALID_REQUEST,
+                            mTestErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.UNAUTHORIZED_CLIENT,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.UNAUTHORIZED_CLIENT,
+                            mTestErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.ACCESS_DENIED,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.ACCESS_DENIED,
+                            mTestErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE,
+                            mTestErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.SERVER_ERROR,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.SERVER_ERROR,
+                            mTestErrorUrl,
+                            /* clickableText= */ true),
+                    new TokenError(
+                            AccountSelectionViewBinder.GENERIC,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.GENERIC,
+                            mTestErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.INVALID_REQUEST,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.INVALID_REQUEST,
+                            mTestErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.UNAUTHORIZED_CLIENT,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.UNAUTHORIZED_CLIENT,
+                            mTestErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.ACCESS_DENIED,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.ACCESS_DENIED,
+                            mTestErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE,
+                            mTestErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.SERVER_ERROR,
+                            mTestEmptyErrorUrl,
+                            /* clickableText= */ false),
+                    new TokenError(
+                            AccountSelectionViewBinder.SERVER_ERROR,
+                            mTestErrorUrl,
+                            /* clickableText= */ false)
                 };
 
         for (TokenError error : mErrors) {
-            mModel.set(
-                    ItemProperties.ERROR_TEXT,
-                    buildErrorItem(
-                            TEST_IDP_ETLD_PLUS_ONE,
-                            TEST_RP_ETLD_PLUS_ONE,
-                            new IdentityCredentialTokenError(error.mCode, error.mUrl)));
-            assertEquals(View.VISIBLE, mContentView.getVisibility());
+            ErrorProperties.Properties properties = new ErrorProperties.Properties();
+            properties.mIdpForDisplay = TEST_IDP_ETLD_PLUS_ONE;
+            properties.mRpForDisplay = TEST_RP_ETLD_PLUS_ONE;
+            properties.mError = new IdentityCredentialTokenError(error.mCode, error.mUrl);
 
-            LinearLayout errorText = mContentView.findViewById(R.id.error_text);
-            assertTrue(errorText.isShown());
+            AccountSelectionViewBinder.ErrorText actualError =
+                    AccountSelectionViewBinder.getErrorText(
+                            mContext, properties, error.mClickableText);
 
-            TextView errorSummary = mContentView.findViewById(R.id.error_summary);
-            assertTrue(errorSummary.isShown());
-            // We use toString() here because otherwise getText() returns a
-            // Spanned, which is not equal to the string we get from the resources.
             assertEquals(
-                    "Incorrect error summary text",
-                    error.mExpectedSummary,
-                    errorSummary.getText().toString());
+                    "Incorrect error summary text", error.mExpectedSummary, actualError.mSummary);
 
-            TextView errorDescription = mContentView.findViewById(R.id.error_description);
-            assertTrue(errorDescription.isShown());
             // We use toString() here because otherwise getText() returns a
             // Spanned, which is not equal to the string we get from the resources.
             assertEquals(
                     "Incorrect error description text",
                     error.mExpectedDescription,
-                    errorDescription.getText().toString());
+                    actualError.mDescription.toString());
         }
     }
 

@@ -81,10 +81,8 @@ message ChromeUserPopulation {
   // profiles may be inactive.
   optional int32 number_of_loaded_profiles = 11;
 
-  // The number of profiles that are currently open, i.e. have open browsers or
-  // were open the last time Chrome was running. Profiles that fail to
-  // initialize are skipped.
-  optional int32 number_of_open_profiles = 12;
+  // Deprecated: number_of_open_profiles
+  reserved 12;
 
   // Server-side only field.
   reserved 13;
@@ -140,6 +138,21 @@ message ImageFeatureEmbedding {
 
   // Raw tensor output of the embedding layer.
   repeated float embedding_value = 2;
+}
+
+// The metadata for the Llama-CSD trigger rules which are propagated to
+// CSD-Phishing server through Chrome.
+message LlamaTriggerRuleInfo {
+  // Unique id for the llama-csd forced trigger rule
+  optional int32 llama_trigger_rule_id = 1;
+  // Whether to request additional intelligence from Chrome.
+  optional bool intelligent_scan = 2;
+}
+
+message LlamaForcedTriggerInfo {
+  repeated LlamaTriggerRuleInfo llama_trigger_rule_infos = 1;
+  // True if requested by any of the trigger rules.
+  optional bool intelligent_scan = 2;
 }
 
 message ClientPhishingRequest {
@@ -267,7 +280,11 @@ message ClientPhishingRequest {
 
   optional ReportType report_type = 30;
 
-  // next available tag number: 31.
+  // The information of Llama trigger rules that triggered a CSD ping. Set only
+  // if client_side_detection_type = FORCE_REQUEST.
+  optional LlamaForcedTriggerInfo llama_forced_trigger_info = 31;
+
+  // next available tag number: 32.
 }
 
 message ClientPhishingResponse {
@@ -309,7 +326,8 @@ enum PreClassificationCheckResult {
   NO_CLASSIFY_LOCAL_RESOURCE = 15;
   NO_CLASSIFY_CHROME_UI_PAGE = 16;
   OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17;
-  NO_CLASSIFY_MAX = 18;  // Always add before this, and update this value.
+  NO_CLASSIFY_MATCH_HC_ALLOWLIST = 18;
+  NO_CLASSIFY_MAX = 19;  // Always add before this, and update this value.
 }
 
 // This value must be kept in sync with those in
@@ -1171,7 +1189,7 @@ enum ClientSideDetectionType {
   KEYBOARD_LOCK_REQUESTED = 4;
   // Pointer lock request triggered.
   POINTER_LOCK_REQUESTED = 5;
-  // Vibration APi is called.
+  // Vibration API request triggered.
   VIBRATION_API = 6;
 }
 
@@ -1563,6 +1581,9 @@ message ClientSafeBrowsingReportRequest {
     // This report is triggered by the sampled HPRT lookup where it showed
     // different verdicts from the URL real-time lookup.
     URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY = 27;
+    // Triggered by a redirect to an external app, either through an
+    // external protocol scheme (e.g. mailto://) or an Intent.
+    EXTERNAL_APP_REDIRECT = 28;
   }
 
   message HTTPHeader {

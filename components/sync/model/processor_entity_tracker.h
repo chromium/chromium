@@ -31,7 +31,7 @@ class ProcessorEntityTracker {
  public:
   // Creates tracker and fills entities data from batch metadata map. This
   // constructor must be used only if initial_sync_done returns true in
-  // |data_type_state|.
+  // `data_type_state`.
   ProcessorEntityTracker(
       const sync_pb::DataTypeState& data_type_state,
       std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>>
@@ -68,18 +68,18 @@ class ProcessorEntityTracker {
       sync_pb::EntitySpecifics trimmed_specifics,
       std::optional<sync_pb::UniquePosition> unique_position);
 
-  // Removes item from |entities_| and |storage_key_to_tag_hash|. If entity does
+  // Removes item from `entities_` and `storage_key_to_tag_hash`. If entity does
   // not exist, does nothing.
   void RemoveEntityForClientTagHash(const ClientTagHash& client_tag_hash);
   void RemoveEntityForStorageKey(const std::string& storage_key);
 
-  // Removes items from |entities_| which are associated with a collaboration
+  // Removes items from `entities_` which are associated with a collaboration
   // which is not active anymore. Returns storage keys for the deleted entities.
   std::vector<std::string> RemoveInactiveCollaborations(
       const base::flat_set<std::string>& active_collaborations);
 
-  // Removes |storage_key| from |storage_key_to_tag_hash_| and clears it for
-  // the corresponding entity. Does not remove the entity from |entities_|.
+  // Removes `storage_key` from `storage_key_to_tag_hash_` and clears it for
+  // the corresponding entity. Does not remove the entity from `entities_`.
   void ClearStorageKey(const std::string& storage_key);
 
   // Returns the estimate of dynamically allocated memory in bytes.
@@ -118,11 +118,11 @@ class ProcessorEntityTracker {
   size_t size() const;
 
   // Increments sequence number for all entities except those in
-  // |already_updated_storage_keys|. Returns affected list of entities.
+  // `already_updated_storage_keys`. Returns affected list of entities.
   std::vector<const ProcessorEntity*> IncrementSequenceNumberForAllExcept(
       const std::unordered_set<std::string>& already_updated_storage_keys);
 
-  // Assigns a new storage key to the entity for the given |client_tag_hash|.
+  // Assigns a new storage key to the entity for the given `client_tag_hash`.
   // Clears previous storage key if entity already has one (the metadata of the
   // entity must be deleted).
   void UpdateOrOverrideStorageKey(const ClientTagHash& client_tag_hash,
@@ -146,7 +146,7 @@ class ProcessorEntityTracker {
   // The bridge wants to communicate entirely via storage keys that it is free
   // to define and can understand more easily. All of the sync machinery wants
   // to use client tag hash. This mapping allows us to convert from storage key
-  // to client tag hash. The other direction can use |entities_|.
+  // to client tag hash. The other direction can use `entities_`.
   // Entity is temporarily not included in this map for the duration of
   // MergeFullSyncData/ApplyIncrementalSyncChanges call when the bridge doesn't
   // support GetStorageKey(). In this case the bridge is responsible for

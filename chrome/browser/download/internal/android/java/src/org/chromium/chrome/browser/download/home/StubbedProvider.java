@@ -113,11 +113,9 @@ public class StubbedProvider {
     private static final long ONE_GIGABYTE = 1024L * 1024L * 1024L;
 
     private final Handler mHandler;
-    private final StubbedOfflineContentProvider mOfflineContentProvider;
 
     public StubbedProvider() {
         mHandler = new Handler(Looper.getMainLooper());
-        mOfflineContentProvider = new StubbedOfflineContentProvider();
     }
 
     /** Creates a new OfflineItem with pre-defined values. */

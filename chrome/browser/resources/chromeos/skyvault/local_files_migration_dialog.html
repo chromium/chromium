@@ -1,5 +1,4 @@
 <style include="cr-page-host-style cr-shared-style md-select cros-color-overrides">
-  /* TODO(b/342340599): add proper styling. */
   cr-dialog::part(dialog) {
     border-radius: 0%;
     height: 100%;
@@ -61,10 +60,19 @@
   }
 
   [slot='title'] {
-    --cr-dialog-title-slot-padding-bottom: 16px;
+    --cr-dialog-title-slot-padding-bottom: 4px;
     --cr-dialog-title-slot-padding-end: 24px;
     --cr-dialog-title-slot-padding-start: 24px;
     --cr-dialog-title-slot-padding-top: 24px;
+    --cr-primary-text-color: var(--cros-sys-on_surface);
+    font: var(--cros-display-7-font);
+  }
+
+  [slot='header'] {
+    flex: 1;
+    padding-bottom: 16px;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
     --cr-primary-text-color: var(--cros-sys-on_surface);
     font: var(--cros-display-7-font);
   }
@@ -74,15 +82,20 @@
     --cr-dialog-button-container-padding-horizontal: 24px;
     --cr-dialog-button-container-padding-top: 24px;
   }
+
+  .managed-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
 </style>
 
-<cr-dialog id="dialog" show-on-attach>
-  <!-- TODO(b/342340599): Make this color sensitive. -->
-  <div class="managed-icon-container">
-    <img src="chrome://resources/images/business.svg"
-      alt="Managed Icon" class="managed-icon">
+<cr-dialog id="dialog">
+  <div slot="title">
+    <iron-icon class="managed-icon" icon="skyvault:enterprise"></iron-icon>
   </div>
-  <div slot="title" id="title"></div>
+  <!-- Put title in the header; otherwise it's not detected properly
+  by screen readers -->
+  <div slot="header" id="header" role="heading"></div>
+
   <div slot="body">
     <p class="message" id="start-message"></p>
     <p class="message" id="done-message"></p>

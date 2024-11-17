@@ -101,6 +101,7 @@ public class PermissionParamsListBuilder {
 
         switch (permission.setting) {
             case ContentSettingValues.ALLOW:
+            case ContentSettingValues.ASK:
                 permissionParams.allowed = true;
                 break;
             case ContentSettingValues.BLOCK:

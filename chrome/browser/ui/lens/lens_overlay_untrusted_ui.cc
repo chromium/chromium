@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
@@ -50,6 +51,7 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                                   IDS_LENS_OVERLAY_COPY_AS_IMAGE);
   html_source->AddLocalizedString("copyAsImageToastMessage",
                                   IDS_LENS_OVERLAY_COPY_AS_IMAGE_TOAST_MESSAGE);
+  html_source->AddLocalizedString("copyText", IDS_LENS_OVERLAY_COPY_TEXT);
   html_source->AddLocalizedString("copyToastMessage",
                                   IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE);
   html_source->AddLocalizedString("dismiss",
@@ -90,6 +92,31 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "translateTo", IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE);
   html_source->AddLocalizedString("allLanguages",
                                   IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL);
+  html_source->AddLocalizedString("recentLanguages",
+                                  IDS_LENS_OVERLAY_RECENT_LANGUAGES_LABEL);
+  html_source->AddLocalizedString("languagePickerAriaLabel",
+                                  IDS_LENS_OVERLAY_LANGUAGE_PICKER_LABEL);
+  html_source->AddLocalizedString(
+      "translateCloseAriaLabel", IDS_LENS_OVERLAY_CLOSE_TRANSLATE_SCREEN_LABEL);
+  html_source->AddLocalizedString(
+      "sourceLanguageAriaLabel",
+      IDS_LENS_OVERLAY_SOURCE_LANGUAGE_ACCESSIBILITY_LABEL);
+  html_source->AddLocalizedString(
+      "targetLanguageAriaLabel",
+      IDS_LENS_OVERLAY_TARGET_LANGUAGE_ACCESSIBILITY_LABEL);
+  html_source->AddLocalizedString(
+      "searchboxGhostLoaderHintTextPrimary",
+      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY);
+  html_source->AddLocalizedString(
+      "searchboxGhostLoaderHintTextSecondary",
+      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_SECONDARY);
+  html_source->AddLocalizedString("searchboxGhostLoaderErrorText",
+                                  IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT);
+  html_source->AddLocalizedString(
+      "searchboxGhostLoaderNoSuggestText",
+      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT);
+  html_source->AddLocalizedString(
+      "searchButton", IDS_LENS_OVERLAY_SEARCH_LANGUAGE_PICKER_LABEL);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
@@ -135,8 +162,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddDouble(
       "selectTextTriggerThreshold",
       lens::features::GetLensOverlaySelectTextOverRegionTriggerThreshold());
-  html_source->AddBoolean("useShimmerCanvas",
-                          lens::features::GetLensOverlayUseShimmerCanvas());
   html_source->AddDouble(
       "postSelectionComparisonThreshold",
       lens::features::GetLensOverlayPostSelectionComparisonThreshold());
@@ -161,12 +186,30 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableOverlayContextualSearchbox",
       lens::features::IsLensOverlayContextualSearchboxEnabled());
+  html_source->AddBoolean(
+      "showContextualSearchboxLoadingState",
+      lens::features::ShowContextualSearchboxGhostLoaderLoadingState());
+  html_source->AddBoolean(
+      "shouldFetchSupportedLanguages",
+      lens::features::IsLensOverlayTranslateLanguagesFetchEnabled());
+  html_source->AddString(
+      "translateSourceLanguages",
+      lens::features::GetLensOverlayTranslateSourceLanguages());
+  html_source->AddString(
+      "translateTargetLanguages",
+      lens::features::GetLensOverlayTranslateSourceLanguages());
+  html_source->AddDouble(
+      "languagesCacheTimeout",
+      lens::features::GetLensOverlaySupportedLanguagesCacheTimeoutMs()
+          .InMilliseconds());
+  html_source->AddInteger(
+      "recentLanguagesAmount",
+      lens::features::GetLensOverlayTranslateRecentLanguagesAmount());
 
   // Controller doesn't exist in unsupported context but WebUI should still
   // load.
   if (auto* controller =
-          LensOverlayController::GetControllerFromWebViewWebContents(
-              web_ui->GetWebContents())) {
+          LensOverlayController::GetController(web_ui->GetWebContents())) {
     html_source->AddDouble("invocationTime",
                            controller->GetInvocationTimeSinceEpoch());
     html_source->AddString("invocationSource",
@@ -206,11 +249,12 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                                          Profile::FromWebUI(web_ui));
   html_source->AddString(
       "searchboxDefaultIcon",
-      "//resources/cr_components/searchbox/icons/google_g.svg");
+      "//resources/cr_components/searchbox/icons/google_g_cr23.svg");
   html_source->AddBoolean("reportMetrics", false);
   html_source->AddLocalizedString("searchBoxHint",
                                   IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL);
   html_source->AddBoolean("isLensSearchbox", true);
+  html_source->AddBoolean("queryAutocompleteOnEmptyInput", true);
 
   // Determine if the cursor tooltip should appear.
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -228,9 +272,16 @@ void LensOverlayUntrustedUI::BindInterface(
 }
 
 void LensOverlayUntrustedUI::BindInterface(
+    mojo::PendingReceiver<lens::mojom::LensGhostLoaderPageHandlerFactory>
+        receiver) {
+  lens_ghost_loader_page_factory_receiver_.reset();
+  lens_ghost_loader_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void LensOverlayUntrustedUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
   LensOverlayController* controller =
-      LensOverlayController::GetController(web_ui());
+      LensOverlayController::GetController(web_ui()->GetWebContents());
   // TODO(crbug.com/360724768): This should not need to be null-checked and
   // exists here as a temporary solution to handle situations where lens may be
   // loaded in an unsupported context (e.g. browser tab). Remove this once work
@@ -252,11 +303,20 @@ void LensOverlayUntrustedUI::BindInterface(
       web_ui()->GetWebContents(), std::move(receiver));
 }
 
+void LensOverlayUntrustedUI::BindInterface(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+        pending_receiver) {
+  if (help_bubble_handler_factory_receiver_.is_bound()) {
+    help_bubble_handler_factory_receiver_.reset();
+  }
+  help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
 void LensOverlayUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensPage> page) {
   LensOverlayController* controller =
-      LensOverlayController::GetController(web_ui());
+      LensOverlayController::GetController(web_ui()->GetWebContents());
   // TODO(crbug.com/360724768): This should not need to be null-checked and
   // exists here as a temporary solution to handle situations where lens may be
   // loaded in an unsupported context (e.g. browser tab). Remove this once work
@@ -267,6 +327,27 @@ void LensOverlayUntrustedUI::CreatePageHandler(
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
   controller->BindOverlay(std::move(receiver), std::move(page));
+}
+
+void LensOverlayUntrustedUI::CreateGhostLoaderPage(
+    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
+  LensOverlayController* controller =
+      LensOverlayController::GetController(web_ui()->GetWebContents());
+  // TODO(crbug.com/360724768): See above.
+  if (!controller) {
+    return;
+  }
+  // Once the interface is bound, we want to connect this instance with the
+  // appropriate instance of LensOverlayController.
+  controller->BindOverlayGhostLoader(std::move(page));
+}
+
+void LensOverlayUntrustedUI::CreateHelpBubbleHandler(
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
+  help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
+      std::move(handler), std::move(client), this,
+      std::vector<ui::ElementIdentifier>{kLensOverlayTranslateButtonElementId});
 }
 
 LensOverlayUntrustedUI::~LensOverlayUntrustedUI() = default;

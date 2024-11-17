@@ -11,7 +11,10 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
@@ -23,6 +26,28 @@ namespace ash {
 namespace {
 
 SimpleGeolocationProvider* g_geolocation_provider = nullptr;
+
+// Maximum interval (in hours) to record in the request interval histogram.
+// We track intervals within a day to identify clients that excessively request
+// geolocation updates (e.g., hourly). Longer intervals are considered normal.
+constexpr static int kMaxRequestIntervalHistogramHours = 24;
+
+std::string_view GetClientIdUmaName(
+    SimpleGeolocationProvider::ClientId client_id) {
+  switch (client_id) {
+    case SimpleGeolocationProvider::ClientId::kGeolocationController:
+      return "SimpleGeolocation.Provider.GeolocationControllerRequestInterval";
+    case SimpleGeolocationProvider::ClientId::kWizardController:
+      return "SimpleGeolocation.Provider.WizardControllerRequestInterval";
+    case SimpleGeolocationProvider::ClientId::kTimezoneResolver:
+      return "SimpleGeolocation.Provider.TimezoneResolverRequestInterval";
+    case SimpleGeolocationProvider::ClientId::kForTesting:
+      // This case is unused but required to avoid a compiler warning about
+      // missing 'default' case in the switch.
+      break;
+  }
+  NOTREACHED() << "GetClientIdUmaName: An invalid client_id is passed";
+}
 
 }  // namespace
 
@@ -79,8 +104,10 @@ void SimpleGeolocationProvider::RequestGeolocation(
     base::TimeDelta timeout,
     bool send_wifi_access_points,
     bool send_cell_towers,
-    SimpleGeolocationRequest::ResponseCallback callback) {
+    SimpleGeolocationRequest::ResponseCallback callback,
+    ClientId client_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  RecordClientIdUma(client_id);
 
   // Drop request if the system geolocation permission is not granted for
   // system services.
@@ -185,6 +212,24 @@ void SimpleGeolocationProvider::NotifyObservers() {
   for (auto& obs : observer_list_) {
     obs.OnGeolocationPermissionChanged(IsGeolocationUsageAllowedForSystem());
   }
+}
+
+void SimpleGeolocationProvider::RecordClientIdUma(ClientId client_id) {
+  if (client_id == ClientId::kForTesting) {
+    // Requests from tests are not relevant for metrics and can be skipped
+    return;
+  }
+
+  base::UmaHistogramEnumeration("SimpleGeolocation.Provider.ClientId",
+                                client_id);
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto it = last_request_times_.find(client_id);
+  if (it != last_request_times_.end()) {
+    base::UmaHistogramExactLinear(GetClientIdUmaName(client_id),
+                                  (now - it->second).InHours(),
+                                  kMaxRequestIntervalHistogramHours);
+  }
+  last_request_times_[client_id] = now;
 }
 
 }  // namespace ash

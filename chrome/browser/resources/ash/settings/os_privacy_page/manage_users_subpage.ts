@@ -25,8 +25,9 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {SettingsUsersAddUserDialogElement} from '../os_people_page/add_user_dialog.js';
-import {Route, routes} from '../router.js';
+import type {SettingsUsersAddUserDialogElement} from '../os_people_page/add_user_dialog.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {getTemplate} from './manage_users_subpage.html.js';
 

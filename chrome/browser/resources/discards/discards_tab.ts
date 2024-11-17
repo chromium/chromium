@@ -4,7 +4,7 @@
 
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
@@ -15,7 +15,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {boolToString, durationToString, getOrCreateDetailsProvider} from './discards.js';
 import type {DetailsProviderRemote, TabDiscardsInfo} from './discards.mojom-webui.js';
-import {LifecycleUnitVisibility} from './discards.mojom-webui.js';
+import {CanFreeze, LifecycleUnitVisibility} from './discards.mojom-webui.js';
 import {getTemplate} from './discards_tab.html.js';
 import {LifecycleUnitDiscardReason, LifecycleUnitLoadingState, LifecycleUnitState} from './lifecycle_unit_state.mojom-webui.js';
 import {SortedTableMixin} from './sorted_table_mixin.js';
@@ -49,7 +49,7 @@ export function compareTabDiscardsInfos(
   }
 
   // Compares boolean fields.
-  if (['isAutoDiscardable'].includes(sortKey)) {
+  if (['isAutoDiscardable', 'canDiscard'].includes(sortKey)) {
     if (val1 === val2) {
       return 0;
     }
@@ -68,7 +68,7 @@ export function compareTabDiscardsInfos(
   }
 
   // Compares numeric fields.
-  // NOTE: visibility, loadingState and state are represented as a numeric
+  // NOTE: visibility, loadingState and canFreeze are represented as a numeric
   // value.
   if ([
         'visibility',
@@ -77,6 +77,7 @@ export function compareTabDiscardsInfos(
         'utilityRank',
         'lastActiveSeconds',
         'siteEngagementScore',
+        'canFreeze',
       ].includes(sortKey)) {
     return (val1 as number) - (val2 as number);
   }
@@ -198,6 +199,8 @@ class DiscardsTabElement extends DiscardsTabElementBase {
         return 'proactive';
       case LifecycleUnitDiscardReason.SUGGESTED:
         return 'suggested';
+      case LifecycleUnitDiscardReason.FROZEN_WITH_GROWING_MEMORY:
+        return 'frozen with growing memory';
     }
   }
 
@@ -231,8 +234,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
     switch (state) {
       case LifecycleUnitState.ACTIVE:
         return pageLifecycleStateFromVisibilityAndFocus();
-      case LifecycleUnitState.THROTTLED:
-        return pageLifecycleStateFromVisibilityAndFocus() + ' (throttled)';
       case LifecycleUnitState.FROZEN:
         return 'frozen';
       case LifecycleUnitState.DISCARDED:
@@ -311,6 +312,23 @@ class DiscardsTabElement extends DiscardsTabElementBase {
   }
 
   /**
+   * Returns a string representation of a CanFreeze value for display in a
+   * table.
+   * @param value A CanFreeze value.
+   * @return A string representing the CanFreeze value.
+   */
+  private canFreezeToString_(canFreeze: CanFreeze): string {
+    switch (canFreeze) {
+      case CanFreeze.YES:
+        return '✔';
+      case CanFreeze.NO:
+        return '✘️';
+      case CanFreeze.UNKNOWN:
+        return '?';
+    }
+  }
+
+  /**
    * Converts a |secondsAgo| duration to a user friendly string.
    * @param secondsAgo The duration to render.
    * @return An English string representing the duration.
@@ -320,39 +338,55 @@ class DiscardsTabElement extends DiscardsTabElementBase {
   }
 
   /**
-   * Tests whether an item has reasons why it cannot be discarded.
-   * @param item The item in question.
-   * @return true iff there are reasons why the item cannot be discarded.
+   * Tests whether a tab can be loaded via the discards UI.
+   * @param tab The tab.
+   * @return true iff the tab can be loaded.
    */
-  private hasCannotDiscardReasons_(item: TabDiscardsInfo): boolean {
-    return item.cannotDiscardReasons.length !== 0;
+  private canLoadViaUi_(tab: TabDiscardsInfo): boolean {
+    return tab.loadingState === LifecycleUnitLoadingState.UNLOADED;
   }
 
   /**
-   * Tests whether an item can be loaded.
-   * @param item The item in question.
-   * @return true iff the item can be loaded.
+   * Tests whether a tab can be discarded via the discards UI. This is different
+   * from whether the tab could be automatically be discarded.
+   * @param tab The tab.
+   * @return true iff the tab can be discarded.
    */
-  private canLoad_(item: TabDiscardsInfo): boolean {
-    return item.loadingState === LifecycleUnitLoadingState.UNLOADED;
+  private canDiscardViaUi_(tab: TabDiscardsInfo): boolean {
+    return tab.visibility !== LifecycleUnitVisibility.VISIBLE &&
+        tab.state !== LifecycleUnitState.DISCARDED;
   }
 
   /**
-   * Tests whether an item can be discarded.
-   * @param item The item in question.
-   * @return true iff the item can be discarded.
+   * Tests whether a tab can be frozen via the discards UI. This is different
+   * from whether the tab could automatically be frozen.
+   * @param tab The tab.
+   * @return true iff the tab can be frozen.
    */
-  private canDiscard_(item: TabDiscardsInfo): boolean {
-    if (item.visibility === LifecycleUnitVisibility.HIDDEN ||
-        item.visibility === LifecycleUnitVisibility.OCCLUDED) {
-      // Only tabs that aren't visible can be discarded for now.
-      switch (item.state) {
-        case LifecycleUnitState.DISCARDED:
-          return false;
-      }
-      return true;
-    }
-    return false;
+  private canFreezeViaUi_(tab: TabDiscardsInfo): boolean {
+    return tab.visibility !== LifecycleUnitVisibility.VISIBLE &&
+        tab.state !== LifecycleUnitState.DISCARDED &&
+        tab.state !== LifecycleUnitState.FROZEN;
+  }
+
+  /**
+   * Tests whether a tab should show the reason why it cannot be discarded.
+   * @param tab The tab.
+   * @return true iff the tab should show the reason why it cannot be discarded.
+   */
+  private shouldShowCannotDiscardReason_(tab: TabDiscardsInfo): boolean {
+    return !tab.canDiscard && tab.state !== LifecycleUnitState.DISCARDED;
+  }
+
+  /**
+   * Tests whether a tab should show the reason why it cannot be frozen.
+   * @param tab The tab.
+   * @return true iff the tab should show the reason why it cannot be frozen.
+   */
+  private shouldShowCannotFreezeReason_(tab: TabDiscardsInfo): boolean {
+    return tab.canFreeze === CanFreeze.NO &&
+        tab.state !== LifecycleUnitState.FROZEN &&
+        tab.state !== LifecycleUnitState.DISCARDED;
   }
 
   /**
@@ -383,6 +417,11 @@ class DiscardsTabElement extends DiscardsTabElementBase {
     this.discardsDetailsProvider_!
         .discardById(e.model.item.id, LifecycleUnitDiscardReason.PROACTIVE)
         .then(this.updateTable_.bind(this));
+  }
+
+  /** Event handler that freezes a tab. */
+  private freezeTab_(e: DomRepeatEvent<TabDiscardsInfo>) {
+    this.discardsDetailsProvider_!.freezeById(e.model.item.id);
   }
 
   /** Implementation function to discard the next discardable tab. */

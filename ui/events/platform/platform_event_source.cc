@@ -32,9 +32,7 @@ PlatformEventSource::PlatformEventSource()
 
 PlatformEventSource::~PlatformEventSource() {
   CHECK_EQ(this, event_source);
-  for (PlatformEventObserver& observer : observers_) {
-    observer.PlatformEventSourceDestroying();
-  }
+  observers_.Notify(&PlatformEventObserver::PlatformEventSourceDestroying);
 }
 
 PlatformEventSource* PlatformEventSource::GetInstance() {
@@ -84,8 +82,7 @@ void PlatformEventSource::RemovePlatformEventObserver(
 uint32_t PlatformEventSource::DispatchEvent(PlatformEvent platform_event) {
   uint32_t action = POST_DISPATCH_PERFORM_DEFAULT;
 
-  for (PlatformEventObserver& observer : observers_)
-    observer.WillProcessEvent(platform_event);
+  observers_.Notify(&PlatformEventObserver::WillProcessEvent, platform_event);
   // Give the overridden dispatcher a chance to dispatch the event first.
   if (overridden_dispatcher_)
     action = overridden_dispatcher_->DispatchEvent(platform_event);
@@ -98,8 +95,7 @@ uint32_t PlatformEventSource::DispatchEvent(PlatformEvent platform_event) {
         break;
     }
   }
-  for (PlatformEventObserver& observer : observers_)
-    observer.DidProcessEvent(platform_event);
+  observers_.Notify(&PlatformEventObserver::DidProcessEvent, platform_event);
 
   overridden_dispatcher_restored_ = false;
 

@@ -18,11 +18,12 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "ui/accessibility/ax_mode_observer.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
@@ -56,6 +57,7 @@ class InputMethod;
 class Layer;
 class OSExchangeData;
 class ThemeProvider;
+class AXPlatform;
 }  // namespace ui
 
 namespace ui_devtools {
@@ -112,6 +114,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                             public ui::NativeThemeObserver,
                             public ui::ColorProviderSource,
                             public ui::PropertyHandler,
+                            public ui::AXModeObserver,
                             public ui::metadata::MetaDataProvider {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
@@ -320,8 +323,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // See Widget class comment above.
     Ownership ownership;
 
-    bool mirror_origin_in_rtl = false;
-
     ShadowType shadow_type = ShadowType::kDefault;
 
     // A hint about the size of the shadow if the type is ShadowType::kDrop. May
@@ -337,7 +338,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     bool remove_standard_frame = false;
 
     // Whether the widget should be maximized or minimized.
-    ui::WindowShowState show_state = ui::SHOW_STATE_DEFAULT;
+    ui::mojom::WindowShowState show_state =
+        ui::mojom::WindowShowState::kDefault;
 
     // The native *view* (not native *window*) to which this widget should be
     // parented. If this widget has a parent, then:
@@ -442,19 +444,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     //     ozone_platform.h `supports_subwindows_as_accelerated_widgets`)
     // See crbug.com/1280332
     std::optional<bool> use_accelerated_widget_override;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug.com/1327490): Rename restore info variables.
-    // Only used by Wayland. Specifies the session id window key, the restore
-    // window id, and the app id, respectively, respectively, used by the
-    // compositor to restore window state upon creation. Only one of
-    // `restore_window_id` and `restore_window_id_source` should be set, as
-    // `restore_window_id_source` is used for widgets without inherent restore
-    // window ids, e.g. Chrome apps.
-    int32_t restore_session_id = 0;
-    std::optional<int32_t> restore_window_id;
-    std::optional<std::string> restore_window_id_source;
 #endif
 
     // Contains any properties with which the native widget should be
@@ -1184,7 +1173,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void GetHitTestMask(SkPath* mask) const override;
   Widget* AsWidget() override;
   const Widget* AsWidget() const override;
-  bool SetInitialFocus(ui::WindowShowState show_state) override;
+  bool SetInitialFocus(ui::mojom::WindowShowState show_state) override;
   bool ShouldDescendIntoChildForEventHandling(
       ui::Layer* root_layer,
       gfx::NativeView child,
@@ -1202,6 +1191,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Overridden from ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
+  // Overridden from ui::AXModeObsever
+  // TODO(crbug.com/325137417): We might need to add an override for when the
+  // mode is removed, but currently we don't have the support for this in
+  // ViewAccessibility. Add the override once logic to remove a mode is added to
+  // ViewAccessibility.
+  void OnAXModeAdded(ui::AXMode mode) override;
 
   // Sets an override for `color_mode` when `GetColorProvider()` is requested.
   // e.g. if set to kDark, colors will always be for the dark theme.
@@ -1234,6 +1230,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Called to enable or disable screenshots of this widget.
   void SetAllowScreenshots(bool allow);
   bool AreScreenshotsAllowed();
+
+  // Called when we become / stop being `child_widget`'s parent.
+  void OnChildAdded(Widget* child_widget);
+  void OnChildRemoved(Widget* child_widget);
+
+  void UpdateAccessibleNameForRootView();
 
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
@@ -1322,7 +1324,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the bounds and "show" state from the delegate. Returns true if
   // the delegate wants to use a specified bounds.
   bool GetSavedWindowPlacement(gfx::Rect* bounds,
-                               ui::WindowShowState* show_state);
+                               ui::mojom::WindowShowState* show_state);
 
   // Returns the Views whose layers are parented directly to the Widget's
   // layer.
@@ -1439,7 +1441,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // The saved "show" state for this window. See note in SetInitialBounds
   // that explains why we save this.
-  ui::WindowShowState saved_show_state_ = ui::SHOW_STATE_DEFAULT;
+  ui::mojom::WindowShowState saved_show_state_ =
+      ui::mojom::WindowShowState::kDefault;
 
   // The restored bounds used for the initial show. This is only used if
   // |saved_show_state_| is maximized. initial_restored_bounds_ is in DIP units
@@ -1511,6 +1514,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
+
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
 
   base::WeakPtrFactory<Widget> weak_ptr_factory_{this};
 };

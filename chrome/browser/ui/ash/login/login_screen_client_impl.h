@@ -50,7 +50,6 @@ class LoginScreenClientImpl : public ash::LoginScreenClient,
     // Handles request to focus a lock screen app window. Returns whether the
     // focus has been handed over to a lock screen app. For example, this might
     // fail if a hander for lock screen apps focus has not been set.
-    virtual bool HandleFocusLockScreenApps(bool reverse) = 0;
     virtual void HandleFocusOobeDialog() = 0;
     virtual void HandleLaunchPublicSession(const AccountId& account_id,
                                            const std::string& locale,
@@ -103,7 +102,6 @@ class LoginScreenClientImpl : public ash::LoginScreenClient,
   void CancelAddUser() override;
   void ShowGuestTosScreen() override;
   void OnMaxIncorrectPasswordAttempted(const AccountId& account_id) override;
-  void FocusLockScreenApps(bool reverse) override;
   void FocusOobeDialog() override;
   void ShowGaiaSignin(const AccountId& prefilled_account) override;
   void StartUserRecovery(const AccountId& account_to_recover) override;
@@ -168,6 +166,19 @@ struct ScopedObservationTraits<LoginScreenClientImpl, ash::SystemTrayObserver> {
   static void RemoveObserver(LoginScreenClientImpl* source,
                              ash::SystemTrayObserver* observer) {
     source->RemoveSystemTrayObserver(observer);
+  }
+};
+
+template <>
+struct ScopedObservationTraits<LoginScreenClientImpl,
+                               LoginScreenShownObserver> {
+  static void AddObserver(LoginScreenClientImpl* source,
+                          LoginScreenShownObserver* observer) {
+    source->AddLoginScreenShownObserver(observer);
+  }
+  static void RemoveObserver(LoginScreenClientImpl* source,
+                             LoginScreenShownObserver* observer) {
+    source->RemoveLoginScreenShownObserver(observer);
   }
 };
 

@@ -23,11 +23,6 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 
 #include <algorithm>
@@ -72,12 +67,13 @@ void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad,
 
   SetConnected(device_gamepad.connected);
   SetTimestamp(device_gamepad, cross_origin_isolated_capability);
-  SetAxes(device_gamepad.axes_length, device_gamepad.axes);
-  SetButtons(device_gamepad.buttons_length, device_gamepad.buttons);
+  SetAxes(base::span(device_gamepad.axes).first(device_gamepad.axes_length));
+  SetButtons(
+      base::span(device_gamepad.buttons).first(device_gamepad.buttons_length));
 
   if (device_gamepad.supports_touch_events_) {
-    SetTouchEvents(device_gamepad.touch_events_length,
-                   device_gamepad.touch_events);
+    SetTouchEvents(base::span(device_gamepad.touch_events)
+                       .first(device_gamepad.touch_events_length));
   }
 
   // Always called as gamepads require additional steps to determine haptics
@@ -105,7 +101,7 @@ void Gamepad::SetMapping(device::GamepadMapping mapping) {
       mapping_ = "xr-standard";
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const Gamepad::DoubleVector& Gamepad::axes() {
@@ -113,15 +109,15 @@ const Gamepad::DoubleVector& Gamepad::axes() {
   return axes_;
 }
 
-void Gamepad::SetAxes(unsigned count, const double* data) {
-  bool skip_update =
-      axes_.size() == count && std::equal(data, data + count, axes_.begin());
-  if (skip_update)
+void Gamepad::SetAxes(base::span<const double> data) {
+  if (std::ranges::equal(data, axes_)) {
     return;
+  }
 
-  axes_.resize(count);
-  if (count)
-    std::copy(data, data + count, axes_.begin());
+  axes_.resize(base::checked_cast<wtf_size_t>(data.size()));
+  if (!data.empty()) {
+    base::span(axes_).copy_from(data);
+  }
   is_axis_data_dirty_ = true;
 }
 
@@ -138,36 +134,35 @@ const GamepadTouchVector* Gamepad::touchEvents() {
   return &touch_events_;
 }
 
-void Gamepad::SetTouchEvents(unsigned count, const device::GamepadTouch* data) {
+void Gamepad::SetTouchEvents(base::span<const device::GamepadTouch> data) {
   has_touch_events_ = true;
-  if (count < 1) {
+  if (data.empty()) {
     touch_events_.clear();
     return;
   }
 
   bool skip_update =
-      touch_events_.size() == count &&
-      std::equal(data, data + count, touch_events_.begin(),
-                 [](const device::GamepadTouch& device_gamepad_touch,
-                    const Member<GamepadTouch>& gamepad_touch) {
-                   return gamepad_touch->IsEqual(device_gamepad_touch);
-                 });
+      std::ranges::equal(data, touch_events_,
+                         [](const device::GamepadTouch& device_gamepad_touch,
+                            const Member<GamepadTouch>& gamepad_touch) {
+                           return gamepad_touch->IsEqual(device_gamepad_touch);
+                         });
   if (skip_update) {
     return;
   }
 
-  if (touch_events_.size() != count) {
+  if (touch_events_.size() != data.size()) {
     touch_events_.clear();
-    touch_events_.resize(count);
-    for (unsigned i = 0; i < count; ++i) {
+    touch_events_.resize(base::checked_cast<wtf_size_t>(data.size()));
+    for (size_t i = 0; i < data.size(); ++i) {
       touch_events_[i] = MakeGarbageCollected<GamepadTouch>();
     }
   }
 
   if (client_) {
-    client_->SetTouchEvents(*this, touch_events_, count, data);
+    client_->SetTouchEvents(*this, touch_events_, data);
   } else {
-    for (unsigned i = 0; i < count; ++i) {
+    for (size_t i = 0; i < data.size(); ++i) {
       touch_events_[i]->UpdateValuesFrom(data[i], data[i].touch_id);
     }
   }
@@ -175,24 +170,25 @@ void Gamepad::SetTouchEvents(unsigned count, const device::GamepadTouch* data) {
   is_touch_data_dirty_ = true;
 }
 
-void Gamepad::SetButtons(unsigned count, const device::GamepadButton* data) {
-  bool skip_update =
-      buttons_.size() == count &&
-      std::equal(data, data + count, buttons_.begin(),
-                 [](const device::GamepadButton& device_gamepad_button,
-                    const Member<GamepadButton>& gamepad_button) {
-                   return gamepad_button->IsEqual(device_gamepad_button);
-                 });
+void Gamepad::SetButtons(base::span<const device::GamepadButton> data) {
+  bool skip_update = std::ranges::equal(
+      data, buttons_,
+      [](const device::GamepadButton& device_gamepad_button,
+         const Member<GamepadButton>& gamepad_button) {
+        return gamepad_button->IsEqual(device_gamepad_button);
+      });
   if (skip_update)
     return;
 
-  if (buttons_.size() != count) {
-    buttons_.resize(count);
-    for (unsigned i = 0; i < count; ++i)
+  if (buttons_.size() != data.size()) {
+    buttons_.resize(base::checked_cast<wtf_size_t>(data.size()));
+    for (size_t i = 0; i < data.size(); ++i) {
       buttons_[i] = MakeGarbageCollected<GamepadButton>();
+    }
   }
-  for (unsigned i = 0; i < count; ++i)
+  for (size_t i = 0; i < data.size(); ++i) {
     buttons_[i]->UpdateValuesFrom(data[i]);
+  }
   is_button_data_dirty_ = true;
 }
 

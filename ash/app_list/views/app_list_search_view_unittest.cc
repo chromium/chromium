@@ -873,8 +873,7 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
                 u"Websites including pages you've visited and open pages");
 }
 
-// Verify that kCheckedState is updated in cache for checkboxmenuitemview
-TEST_P(SearchResultImageViewTest, AccessibleCheckedState) {
+TEST_P(SearchResultImageViewTest, AccessibleProperties) {
   GetAppListTestHelper()->ShowAppList();
   auto* app_list_client = GetAppListTestHelper()->app_list_client();
 
@@ -893,6 +892,8 @@ TEST_P(SearchResultImageViewTest, AccessibleCheckedState) {
           AppListSearchControlCategory::kApps);
   checkbox_menu_item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+            1);
 
   // Execute command to disable category.
   LeftClickOn(checkbox_menu_item_view);
@@ -1349,7 +1350,14 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultSelectionCycle) {
     EXPECT_EQ(controller->selected_location_details()->result_index, i);
   }
 
-  // Pressing down while the last result is selected moves focus to the close
+  // Pressing down while the last result is selected moves focus to the filter
+  // button.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+
+  EXPECT_FALSE(controller->selected_result());
+  EXPECT_TRUE(GetSearchBoxView()->filter_button()->HasFocus());
+
+  // Pressing down while the filter button is selected moves focus to the close
   // button.
   PressAndReleaseKey(ui::VKEY_DOWN);
 
@@ -1364,11 +1372,15 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultSelectionCycle) {
   EXPECT_EQ(controller->selected_location_details()->container_index, 2);
   EXPECT_EQ(controller->selected_location_details()->result_index, 0);
 
-  // Up key should cycle focus to the close button, and then the last search
-  // result.
+  // Up key should cycle focus to the close button, the filter button, and then
+  // the last search result.
   PressAndReleaseKey(ui::VKEY_UP);
   EXPECT_FALSE(controller->selected_result());
   EXPECT_TRUE(GetSearchBoxView()->close_button()->HasFocus());
+
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_FALSE(controller->selected_result());
+  EXPECT_TRUE(GetSearchBoxView()->filter_button()->HasFocus());
 
   PressAndReleaseKey(ui::VKEY_UP);
   EXPECT_TRUE(GetSearchBoxView()->search_box()->HasFocus());

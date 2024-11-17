@@ -198,7 +198,7 @@ public class MinidumpUploadServiceTest {
                 MinidumpUploadServiceImpl.getCrashType(minidumpFile.getAbsolutePath()));
     }
 
-    private class MinidumpPreparationContext extends AdvancedMockContext {
+    private static class MinidumpPreparationContext extends AdvancedMockContext {
         /** Field used in overridden versions of startService() so we can support retries. */
         protected MinidumpUploadServiceImpl mService;
 

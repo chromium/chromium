@@ -6,13 +6,14 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_namespace.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
-#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/chrome_browser_cloud_management_controller_ios.h"
 #import "ios/chrome/browser/policy/model/chrome_browser_cloud_management_controller_observer_bridge.h"
@@ -22,103 +23,42 @@
 
 namespace {
 
-constexpr CGFloat kTimeout = 30;
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 }  // namespace
 
 @interface EnterpriseAppAgent () <
     ChromeBrowserCloudManagementControllerObserver,
-    CloudPolicyClientObserver,
-    SceneStateObserver> {
-  std::unique_ptr<ChromeBrowserCloudManagementControllerObserverBridge>
-      _cloudManagementControllerObserver;
-  std::unique_ptr<CloudPolicyClientObserverBridge> _cloudPolicyClientObserver;
-
-  raw_ptr<BrowserPolicyConnectorIOS> _policyConnector;
-}
-
-// The app state for the app.
-@property(nonatomic, weak, readonly) AppState* appState;
-
-// Browser policy connector for iOS.
-@property(nonatomic, assign) raw_ptr<BrowserPolicyConnectorIOS> policyConnector;
-
-// YES if enterprise launch screen has been dismissed.
-@property(nonatomic, assign) BOOL launchScreenDismissed;
+    CloudPolicyClientObserver>
 
 @end
 
-@implementation EnterpriseAppAgent
+@implementation EnterpriseAppAgent {
+  // Bridge to observe the ChromeBrowserCloudManagementController.
+  std::unique_ptr<ChromeBrowserCloudManagementControllerObserverBridge>
+      _cloudManagementControllerObserver;
 
-- (void)dealloc {
-  for (SceneState* scene in _appState.connectedScenes) {
-    [scene removeObserver:self];
-  }
-  [_appState removeObserver:self];
-}
+  // Bridge to observe the CloudPolicyClient.
+  std::unique_ptr<CloudPolicyClientObserverBridge> _cloudPolicyClientObserver;
 
-- (void)setAppState:(AppState*)appState {
-  // This should only be called once!
-  DCHECK(!_appState);
+  // Timer used to automatically dismiss the screen after a timeout.
+  base::OneShotTimer _timer;
 
-  _appState = appState;
-  [appState addObserver:self];
-
-  for (SceneState* scene in appState.connectedScenes) {
-    [scene addObserver:self];
-  }
+  // YES if the enterprise launch screen has been dismissed.
+  BOOL _launchScreenDismissed;
 }
 
 #pragma mark - AppStateObserver
 
-- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
-  [sceneState addObserver:self];
-}
-
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage == InitStageEnterprise) {
-    if ([self shouldShowEnterpriseLoadScreen]) {
-      _cloudManagementControllerObserver = std::make_unique<
-          ChromeBrowserCloudManagementControllerObserverBridge>(
-          self,
-          self.policyConnector->chrome_browser_cloud_management_controller());
-
-      policy::CloudPolicyClient* client =
-          self.policyConnector->machine_level_user_cloud_policy_manager()
-              ->core()
-              ->client();
-      _cloudPolicyClientObserver =
-          std::make_unique<CloudPolicyClientObserverBridge>(self, client);
-
-      self.launchScreenDismissed = NO;
-      for (SceneState* scene in appState.connectedScenes) {
-        if (scene.activationLevel > SceneActivationLevelBackground) {
-          [self showUIInScene:scene];
-        }
-      }
-
-      // Ensure to never stay stuck on enterprise launch screen.
-      __weak EnterpriseAppAgent* weakSelf = self;
-      dispatch_after(
-          dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kTimeout * NSEC_PER_SEC)),
-          dispatch_get_main_queue(), ^{
-            if (!weakSelf.launchScreenDismissed) {
-              [weakSelf cloudPolicyDidError:nullptr];
-            }
-          });
-    } else {
-      [self.appState queueTransitionToNextInitStage];
-    }
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  [super appState:appState didTransitionFromInitStage:previousInitStage];
+  if (appState.initStage == AppInitStage::kEnterprise) {
+    [self maybeShowEnterpriseLoadScreen];
   }
 
-  if (previousInitStage == InitStageEnterprise) {
-    // Nothing left to do; clean up.
-    _cloudManagementControllerObserver = nullptr;
-    _cloudPolicyClientObserver = nullptr;
-
-    // Let the following line at the end of the block.
-    [self.appState removeAgent:self];
+  if (previousInitStage == AppInitStage::kEnterprise) {
+    [appState removeAgent:self];
   }
 }
 
@@ -126,35 +66,30 @@ constexpr CGFloat kTimeout = 30;
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.appState.initStage == InitStageEnterprise &&
-      level > SceneActivationLevelBackground) {
-    [self showUIInScene:sceneState];
+  [super sceneState:sceneState transitionedToActivationLevel:level];
+  if (level > SceneActivationLevelBackground) {
+    if (self.appState.initStage == AppInitStage::kEnterprise) {
+      [self showUIInScene:sceneState];
+    }
   }
 }
 
 #pragma mark - ChromeBrowserCloudManagementControllerObserverBridge
 
 - (void)policyRegistrationDidCompleteSuccessfuly:(BOOL)succeeded {
-  if (!succeeded && !self.launchScreenDismissed) {
-    self.launchScreenDismissed = YES;
-    [self.appState queueTransitionToNextInitStage];
+  if (!succeeded) {
+    [self dismissLaunchScreen];
   }
 }
 
 #pragma mark - CloudPolicyClientObserverBridge
 
 - (void)cloudPolicyWasFetched:(policy::CloudPolicyClient*)client {
-  if (!self.launchScreenDismissed) {
-    self.launchScreenDismissed = YES;
-    [self.appState queueTransitionToNextInitStage];
-  }
+  [self dismissLaunchScreen];
 }
 
 - (void)cloudPolicyDidError:(policy::CloudPolicyClient*)client {
-  if (!self.launchScreenDismissed) {
-    self.launchScreenDismissed = YES;
-    [self.appState queueTransitionToNextInitStage];
-  }
+  [self dismissLaunchScreen];
 }
 
 - (void)cloudPolicyRegistrationChanged:(policy::CloudPolicyClient*)client {
@@ -162,39 +97,86 @@ constexpr CGFloat kTimeout = 30;
   // results are needed.
 }
 
-#pragma mark - private
+#pragma mark - Private methods
 
 - (void)showUIInScene:(SceneState*)sceneState {
-  if ([sceneState.window.rootViewController
+  if ([sceneState.rootViewController
           isKindOfClass:[EnterpriseLoadScreenViewController class]]) {
     return;
   }
 
-  sceneState.window.rootViewController =
-      [[EnterpriseLoadScreenViewController alloc] init];
-  [sceneState.window makeKeyAndVisible];
+  [sceneState
+      setRootViewController:[[EnterpriseLoadScreenViewController alloc] init]
+          makeKeyAndVisible:YES];
 }
 
 - (BOOL)shouldShowEnterpriseLoadScreen {
-  self.policyConnector = GetApplicationContext()->GetBrowserPolicyConnector();
-  // `policyConnector` is nullptr if policy is not enabled.
-  if (!self.policyConnector) {
+  // Only show the screen if the FRE has not been presented yet.
+  if (!self.appState.startupInformation.isFirstRun) {
     return NO;
   }
 
-  // `machineLevelUserCloudPolicyManager` is nullptr if the DM token needed
-  // for fetch is explicitly invalid or if enrollment tokens and DM token are
-  // empty.
+  BrowserPolicyConnectorIOS* policyConnector =
+      GetApplicationContext()->GetBrowserPolicyConnector();
+
+  // Only show the screen if the policies are enabled.
+  if (!policyConnector ||
+      !policyConnector->chrome_browser_cloud_management_controller()
+           ->IsEnabled()) {
+    return NO;
+  }
+
   policy::MachineLevelUserCloudPolicyManager*
       machineLevelUserCloudPolicyManager =
-          self.policyConnector->machine_level_user_cloud_policy_manager();
+          policyConnector->machine_level_user_cloud_policy_manager();
 
-  return self.appState.startupInformation.isFirstRun &&
-         self.policyConnector->chrome_browser_cloud_management_controller()
-             ->IsEnabled() &&
-         machineLevelUserCloudPolicyManager &&
-         !machineLevelUserCloudPolicyManager->IsFirstPolicyLoadComplete(
-             policy::POLICY_DOMAIN_CHROME);
+  // Only show the screen if the policies are not fetched yet.
+  if (!machineLevelUserCloudPolicyManager ||
+      machineLevelUserCloudPolicyManager->IsFirstPolicyLoadComplete(
+          policy::POLICY_DOMAIN_CHROME)) {
+    return NO;
+  }
+
+  return YES;
+}
+
+- (void)maybeShowEnterpriseLoadScreen {
+  if (![self shouldShowEnterpriseLoadScreen]) {
+    [self.appState queueTransitionToNextInitStage];
+    return;
+  }
+
+  BrowserPolicyConnectorIOS* policyConnector =
+      GetApplicationContext()->GetBrowserPolicyConnector();
+
+  _cloudManagementControllerObserver =
+      std::make_unique<ChromeBrowserCloudManagementControllerObserverBridge>(
+          self, policyConnector->chrome_browser_cloud_management_controller());
+
+  _cloudPolicyClientObserver =
+      std::make_unique<CloudPolicyClientObserverBridge>(
+          self, policyConnector->machine_level_user_cloud_policy_manager()
+                    ->core()
+                    ->client());
+
+  for (SceneState* scene in self.appState.connectedScenes) {
+    if (scene.activationLevel > SceneActivationLevelBackground) {
+      [self showUIInScene:scene];
+    }
+  }
+
+  // Ensure to never stay stuck on enterprise launch screen.
+  __weak EnterpriseAppAgent* weakSelf = self;
+  _timer.Start(FROM_HERE, kTimeout, base::BindOnce(^{
+                 [weakSelf dismissLaunchScreen];
+               }));
+}
+
+- (void)dismissLaunchScreen {
+  if (!_launchScreenDismissed) {
+    _launchScreenDismissed = YES;
+    [self.appState queueTransitionToNextInitStage];
+  }
 }
 
 @end

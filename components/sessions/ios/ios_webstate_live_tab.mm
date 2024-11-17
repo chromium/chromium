@@ -28,7 +28,7 @@ IOSWebStateLiveTab* IOSWebStateLiveTab::GetForWebState(
 IOSWebStateLiveTab::IOSWebStateLiveTab(web::WebState* web_state)
     : web_state_(web_state) {}
 
-IOSWebStateLiveTab::~IOSWebStateLiveTab() {}
+IOSWebStateLiveTab::~IOSWebStateLiveTab() = default;
 
 bool IOSWebStateLiveTab::IsInitialBlankNavigation() {
   return navigation_manager()->GetItemCount() == 0;

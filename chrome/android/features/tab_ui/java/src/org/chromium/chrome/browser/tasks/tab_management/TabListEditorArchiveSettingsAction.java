@@ -4,36 +4,24 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinator.ArchiveDelegate;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
 
 /** Launches the archive settings activity {@link TabListEditorMenu}. */
 public class TabListEditorArchiveSettingsAction extends TabListEditorAction {
-    private final @NonNull Context mContext;
     private final @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
 
-    /**
-     * Create an action for closing tabs.
-     *
-     * @param context to load drawable from.
-     */
-    public static TabListEditorAction createAction(
-            @NonNull Context context,
-            @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate archiveDelegate) {
-        return new TabListEditorArchiveSettingsAction(context, archiveDelegate);
+    /** Create an action for closing tabs. */
+    public static TabListEditorAction createAction(@NonNull ArchiveDelegate archiveDelegate) {
+        return new TabListEditorArchiveSettingsAction(archiveDelegate);
     }
 
-    @VisibleForTesting
-    TabListEditorArchiveSettingsAction(
-            @NonNull Context context,
-            @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate archiveDelegate) {
+    private TabListEditorArchiveSettingsAction(@NonNull ArchiveDelegate archiveDelegate) {
         super(
                 R.id.tab_list_editor_archive_settings_menu_item,
                 ShowMode.MENU_ONLY,
@@ -43,7 +31,6 @@ public class TabListEditorArchiveSettingsAction extends TabListEditorAction {
                 null,
                 null);
 
-        mContext = context;
         mArchiveDelegate = archiveDelegate;
     }
 

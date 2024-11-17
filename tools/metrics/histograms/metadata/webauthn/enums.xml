@@ -93,87 +93,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="The passkey ID was found and removed."/>
 </enum>
 
-<enum name="WebAuthenticationAOADiscoveryEvent">
-  <int value="0" label="Started"/>
-  <int value="1" label="An AOA USB device appeared during a WebAuthn request"/>
-  <int value="2"
-      label="A non-AOA USB device was plugged in during a WebAuthn request"/>
-  <int value="3"
-      label="A non-AOA device did not have an AOA configuration interface"/>
-  <int value="4" label="Failed to open an AOA device"/>
-  <int value="5"
-      label="Failed to set the active configuration of an AOA device"/>
-  <int value="6" label="Failed to claim the interface of an AOA device"/>
-  <int value="7" label="Failed to write a sync message to an AOA device"/>
-  <int value="8" label="Failed to read a sync reply from an AOA device"/>
-  <int value="9" label="AOA device successfully discovered"/>
-  <int value="10" label="Failed to open a non-AOA device"/>
-  <int value="11"
-      label="Failed to get version information from non-AOA device"/>
-  <int value="12" label="AOA version one not supported"/>
-  <int value="13" label="Failed to set AOA configuration strings"/>
-  <int value="14" label="Device requested to switch to AOA mode"/>
-  <int value="15"
-      label="One or more previously discovered devices are still connected"/>
-</enum>
-
-<enum name="WebAuthenticationCableV2DiscoveryEvent">
-  <int value="0" label="Discovery started"/>
-  <int value="1" label="Pairing information was provided to this discovery"/>
-  <int value="2" label="QR keys were provided to this discovery"/>
-  <int value="3"
-      label="Keys from an extension were provided to this discovery"/>
-  <int value="4" label="An EID matched a pending tunnel"/>
-  <int value="5" label="An EID matched a QR code"/>
-  <int value="6" label="An EID matched an extension"/>
-  <int value="7" label="An EID was ignored because it didn't match anything"/>
-</enum>
-
-<enum name="WebAuthenticationCableV2MobileEvent">
-  <int value="0" label="QR read"/>
-  <int value="1" label="Server-linked connection started"/>
-  <int value="2" label="Cloud message received"/>
-  <int value="3" label="USB connection"/>
-  <int value="4" label="Authenticator setup"/>
-  <int value="5" label="Connected to tunnel server"/>
-  <int value="6" label="Handshake completed"/>
-  <int value="7" label="Request received"/>
-  <int value="8" label="CTAP response with non-zero status"/>
-  <int value="9" label="Unlinked all devices"/>
-  <int value="10" label="Showed notification"/>
-  <int value="11" label="Notification pressed"/>
-  <int value="12" label="User unselected linking checkbox during QR scan"/>
-  <int value="13" label="USB transaction was successful"/>
-  <int value="14"
-      label="Activity stopped while awaiting tunnel server connection"/>
-  <int value="15" label="Activity stopped while awaiting handshake"/>
-  <int value="16" label="Activity stopped while awaiting request"/>
-  <int value="17" label="Activity stopped in GMS Core request"/>
-  <int value="18" label="An unexpected GetAssertion response was received"/>
-  <int value="19" label="A GetAssertion request was started"/>
-  <int value="20" label="A GetAssertion response was received"/>
-  <int value="21" label="The first transaction on a connection was completed"/>
-  <int value="22"
-      label="The contact ID was not ready in time for a QR transaction"/>
-  <int value="23" label="Permission to send a BLE advert was requested"/>
-  <int value="24" label="Permission to send a BLE advert was granted"/>
-  <int value="25" label="Permission to send a BLE advert was rejected"/>
-</enum>
-
-<enum name="WebAuthenticationCableV2MobileResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Unexpected EOF"/>
-  <int value="2" label="Failed to connect to tunnel server"/>
-  <int value="3" label="Handshake failure"/>
-  <int value="4" label="Decryption failure"/>
-  <int value="5" label="Invalid CBOR received"/>
-  <int value="6" label="Invalid CTAP received"/>
-  <int value="7" label="Unknown command"/>
-  <int value="8" label="Internal error"/>
-  <int value="9" label="Invalid QR"/>
-  <int value="10" label="Invalid server link data"/>
-  <int value="11" label="EOF while processing a request"/>
-  <int value="12" label="Discoverable credentials request rejected"/>
+<enum name="SuccessState">
+  <int value="0" label="FIDO2 and Passkey Cache calls failed."/>
+  <int value="1" label="FIDO2 call failed; Passkey Cache call succeeded."/>
+  <int value="2" label="FIDO2 call succeeded; Passkey Cache call failed."/>
+  <int value="3" label="FIDO2 and Passkey Cache calls succeeded."/>
 </enum>
 
 <enum name="WebAuthenticationCableV2TunnelEvent">
@@ -249,6 +173,33 @@ chromium-metrics-reviews@google.com.
   <int value="8"
       label="User backed out of create passkey priority mechanism screen"/>
   <int value="9" label="User recovered from an iCloud Keychain recovery key"/>
+  <int value="10" label="Downloading the account state timed out"/>
+  <int value="11"
+      label="Recoverable sign in error, user needs to reauth to use the
+             enclave"/>
+</enum>
+
+<enum name="WebAuthenticationEnclaveRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No Supported Algorithm"/>
+  <int value="2" label="Duplicate"/>
+  <int value="3" label="Incorrect PIN"/>
+  <int value="4" label="PIN Locked"/>
+  <int value="5" label="PIN Outdated"/>
+  <int value="6" label="Recovery Key Store Downgrade"/>
+  <int value="7" label="Failed Transaction"/>
+  <int value="8" label="Other Error"/>
+</enum>
+
+<enum name="WebAuthenticationEnclaveTransactionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown Client Error"/>
+  <int value="2" label="Missing Public Key Error"/>
+  <int value="3" label="Service Failed To Verify Signature"/>
+  <int value="4" label="Handshake Failed"/>
+  <int value="5" label="Decryption Of Server Response Failed"/>
+  <int value="6" label="Failed To Parse Server Response"/>
+  <int value="7" label="Other Error"/>
 </enum>
 
 <enum name="WebAuthenticationFidoTransport">
@@ -257,7 +208,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Bluetooth Low Energy"/>
   <int value="3" label="Cloud-assisted BLE"/>
   <int value="4" label="Internal"/>
-  <int value="5" label="Android Accessory"/>
+  <int value="5" label="Android Accessory (Deprecated)"/>
 </enum>
 
 <enum name="WebAuthenticationGetAssertionOutcome">

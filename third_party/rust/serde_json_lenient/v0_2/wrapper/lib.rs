@@ -31,7 +31,6 @@ mod ffi {
         fn list_append_list<'a>(
             self: &Functions,
             ctx: Pin<&'a mut ContextPointer>,
-            reserve: usize,
         ) -> Pin<&'a mut ContextPointer>;
         fn list_append_dict<'a>(
             self: &Functions,
@@ -47,7 +46,6 @@ mod ffi {
             self: &Functions,
             ctx: Pin<&'a mut ContextPointer>,
             key: &'f str,
-            reserve: usize,
         ) -> Pin<&'a mut ContextPointer>;
         fn dict_set_dict<'f, 'a>(
             self: &Functions,

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace blink {
 
@@ -18,16 +19,24 @@ namespace {
 blink::mojom::CustomContextMenuItemPtr MenuItemBuild(
     const blink::MenuItemInfo& item) {
   auto result = blink::mojom::CustomContextMenuItem::New();
-
+  if (item.accelerator.has_value()) {
+    auto accelerator = blink::mojom::Accelerator::New();
+    accelerator->key_code = item.accelerator->key_code;
+    accelerator->modifiers = item.accelerator->modifiers;
+    result->accelerator = std::move(accelerator);
+  }
   result->label = item.label;
   result->tool_tip = item.tool_tip;
   result->type =
       static_cast<blink::mojom::CustomContextMenuItemType>(item.type);
   result->action = item.action;
+  result->is_experimental_feature = item.is_experimental_feature;
   result->rtl = (item.text_direction == base::i18n::RIGHT_TO_LEFT);
   result->has_directional_override = item.has_text_direction_override;
   result->enabled = item.enabled;
   result->checked = item.checked;
+  result->force_show_accelerator_for_item =
+      item.force_show_accelerator_for_item;
   for (const auto& sub_menu_item : item.sub_menu_items)
     result->submenu.push_back(MenuItemBuild(sub_menu_item));
 
@@ -81,9 +90,9 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
       data.is_content_editable_for_autofill;
   params.field_renderer_id = data.field_renderer_id;
   params.form_renderer_id = data.form_renderer_id;
-  params.is_password_type_by_heuristics = data.is_password_type_by_heuristics;
 
-  params.source_type = static_cast<ui::MenuSourceType>(data.source_type);
+  // TODO(crbug.com/373340199): Remove `WebMenuSourceType` and static_cast
+  params.source_type = static_cast<ui::mojom::MenuSourceType>(data.source_type);
 
   return params;
 }

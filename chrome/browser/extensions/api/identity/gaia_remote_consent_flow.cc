@@ -18,13 +18,9 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/signin/core/browser/consistency_cookie_manager.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -114,10 +110,7 @@ void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {
       gaia_failure = GaiaRemoteConsentFlow::LOAD_FAILED;
       break;
     case WebAuthFlow::INTERACTION_REQUIRED:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected error from web auth flow: " << failure;
-      gaia_failure = GaiaRemoteConsentFlow::LOAD_FAILED;
-      break;
+      NOTREACHED() << "Unexpected error from web auth flow: " << failure;
     case WebAuthFlow::CANNOT_CREATE_WINDOW:
       gaia_failure = GaiaRemoteConsentFlow::CANNOT_CREATE_WINDOW;
       break;

@@ -31,6 +31,20 @@ class ResourceManager;
 class UIResourceProvider;
 }  // namespace ui
 
+namespace jni_zero {
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<int>(JNIEnv* env,
+                                                  const int& input) {
+  ScopedJavaLocalRef<jclass> integer_class =
+      base::android::GetClass(env, "java/lang/Integer");
+  jmethodID constructor =
+      base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
+          env, integer_class.obj(), "<init>", "(I)V");
+  return ScopedJavaLocalRef<jobject>(
+      env, env->NewObject(integer_class.obj(), constructor, input));
+}
+}  // namespace jni_zero
+
 namespace android {
 
 class SceneLayer;
@@ -64,13 +78,15 @@ class CompositorView : public content::CompositorClient,
                       const base::android::JavaParamRef<jobject>& object);
   void SurfaceDestroyed(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& object);
-  void SurfaceChanged(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& object,
-                      jint format,
-                      jint width,
-                      jint height,
-                      bool can_be_used_with_surface_control,
-                      const base::android::JavaParamRef<jobject>& surface);
+  std::optional<int> SurfaceChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& object,
+      jint format,
+      jint width,
+      jint height,
+      bool can_be_used_with_surface_control,
+      const base::android::JavaParamRef<jobject>& surface,
+      const base::android::JavaParamRef<jobject>& browser_input_token);
   void OnPhysicalBackingSizeChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

@@ -60,6 +60,10 @@ class GPU_EXPORT FenceSyncReleaseDelegate {
 using TaskCallback =
     base::OnceCallback<void(FenceSyncReleaseDelegate* release_delegate)>;
 
+// A callback to be used for reporting when the task is ready to run (when the
+// dependencies have been solved).
+using ReportingCallback = base::OnceCallback<void(base::TimeTicks task_ready)>;
+
 // ScopedSyncPointClientState (if valid) destroys the corresponding
 // SyncPointClientState when it is destructed. It is move-only to avoid
 // calling destroy multiple times.
@@ -95,11 +99,6 @@ class GPU_EXPORT ScopedSyncPointClientState {
 // between tasks.
 class GPU_EXPORT TaskGraph {
  public:
-  // A callback to be used for reporting when the task is ready to run (when the
-  // dependencies have been solved).
-  using ReportingCallback =
-      base::OnceCallback<void(base::TimeTicks task_ready)>;
-
   class Sequence;
 
   explicit TaskGraph(SyncPointManager* sync_point_manager);
@@ -151,6 +150,10 @@ class GPU_EXPORT TaskGraph {
   // one calls DestroySequence() to destroy this sequence.
   Sequence* GetSequence(SequenceId sequence_id) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  // Validates task dependencies, starting from `root_sequence`.
+  void ValidateSequenceTaskFenceDeps(Sequence* root_sequence)
+      LOCKS_EXCLUDED(lock_);
+
   class GPU_EXPORT Sequence {
    public:
     // Notes regarding `front_task_unblocked_callback`:
@@ -158,6 +161,11 @@ class GPU_EXPORT TaskGraph {
     // - To avoid reentrancy, it is not called by AddTask() or FinishTask(),
     //   even if those methods result a new front task which is not blocked.
     // - It is called while holding `TaskGraph::lock_`.
+    //
+    // `validation_runner` is used for task dependency validation when
+    // graph-based validation is enabled. If not provided, validation is not
+    // automatically run and it is the sequence owner's responsibility to call
+    // ValidateSequenceTaskFenceDeps().
     //
     // If `namespace_id` is valid, also creates a SyncPointClientState that
     // lasts as long as the sequence itself.
@@ -390,10 +398,6 @@ class GPU_EXPORT TaskGraph {
   void DestroySyncPointClientState(SequenceId sequence_id,
                                    CommandBufferNamespace namespace_id,
                                    CommandBufferId command_buffer_id)
-      LOCKS_EXCLUDED(lock_);
-
-  // Validates task dependencies, starting from `root_sequence`.
-  void ValidateSequenceTaskFenceDeps(Sequence* root_sequence)
       LOCKS_EXCLUDED(lock_);
 
   using ReleaseMap = base::flat_map<SyncPointClientId, uint64_t>;

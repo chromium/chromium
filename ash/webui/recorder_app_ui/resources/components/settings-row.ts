@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  Switch as CrosSwitch,
-} from 'chrome://resources/cros_components/switch/switch.js';
 import {classMap, css, html} from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';
@@ -76,23 +73,42 @@ export class SettingsRow extends ReactiveLitElement {
         color: var(--cros-sys-on_surface_variant);
       }
     }
+
+    slot[name="description"]::slotted(.error) {
+      color: var(--cros-sys-on_error_container);
+    }
+
+    slot[name="action"]::slotted(cra-icon) {
+      color: var(--cros-sys-primary);
+      height: 20px;
+      width: 20px;
+    }
+
+    slot[name="action"]::slotted(cra-icon-button) {
+      --cros-icon-button-color-override: var(--cros-sys-primary);
+      --cros-icon-button-icon-size: 20px;
+
+      margin: -2px;
+    }
   `;
 
   private readonly interactive = signal(false);
 
-  private getSlottedSwitch(): CrosSwitch|null {
+  private getActionable(): Element|null {
+    // Select the action slot except for the disabled item.
     // We're getting the slotted item via querySelector in the light DOM
     // instead of the shadow DOM, so no .shadowRoot is needed here.
-    return this.querySelector('cros-switch[slot="action"]');
+    return this.querySelector('[slot="action"]:not([disabled])');
   }
 
   private onClick() {
-    const crosSwitch = this.getSlottedSwitch();
-    crosSwitch?.dispatchEvent(new Event('click'));
+    const actionItem = this.getActionable();
+    actionItem?.dispatchEvent(new Event('click'));
   }
 
+
   private onSlotChange() {
-    this.interactive.value = this.getSlottedSwitch() !== null;
+    this.interactive.value = this.getActionable() !== null;
   }
 
   override render(): RenderResult {

@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
 using testing::_;
@@ -165,24 +165,24 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
                                          int height,
                                          String url,
                                          String children = String()) {
-    WTF::TextStream ts;
+    StringBuilder ts;
     ts << "<a style='position: absolute; left: " << x << "px; top: " << y
        << "px; width: " << width << "px; height: " << height << "px' href='"
        << url << "'>" << (children ? children : url) << "</a>";
-    return ts.Release();
+    return ts.ReleaseString();
   }
 
   static String InlineHtmlForLink(String url, String children = String()) {
-    WTF::TextStream ts;
+    StringBuilder ts;
     ts << "<a href='" << url << "'>" << (children ? children : url) << "</a>";
-    return ts.Release();
+    return ts.ReleaseString();
   }
 
   static String HtmlForAnchor(int x, int y, String name, String text_content) {
-    WTF::TextStream ts;
+    StringBuilder ts;
     ts << "<a name='" << name << "' style='position: absolute; left: " << x
        << "px; top: " << y << "px'>" << text_content << "</a>";
-    return ts.Release();
+    return ts.ReleaseString();
   }
 
  private:

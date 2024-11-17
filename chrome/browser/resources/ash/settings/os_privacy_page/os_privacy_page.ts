@@ -22,25 +22,29 @@ import './peripheral_data_access_protection_dialog.js';
 import '../os_people_page/lock_screen_password_prompt_dialog.js';
 import '../os_people_page/os_sync_browser_proxy.js';
 
-import {SignedInState, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {AUTH_TOKEN_INVALID_EVENT_TYPE} from 'chrome://resources/ash/common/quick_unlock/utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {InSessionAuth, Reason, RequestTokenReply} from 'chrome://resources/mojo/chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.js';
+import type {RequestTokenReply} from 'chrome://resources/mojo/chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.js';
+import {InSessionAuth, Reason} from 'chrome://resources/mojo/chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.js';
 import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isAccountManagerEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './os_privacy_page.html.js';
-import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
+import type {PeripheralDataAccessBrowserProxy} from './peripheral_data_access_browser_proxy.js';
+import {PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
 import {PrivacyHubNavigationOrigin} from './privacy_hub_subpage.js';
 
 export interface OsSettingsPrivacyPageElement {
@@ -326,7 +330,6 @@ export class OsSettingsPrivacyPageElement extends
       this.supportedSettingIds.add(Setting.kNonSplitSyncEncryptionOptions);
       this.supportedSettingIds.add(Setting.kImproveSearchSuggestions);
       this.supportedSettingIds.add(Setting.kMakeSearchesAndBrowsingBetter);
-      this.supportedSettingIds.add(Setting.kGoogleDriveSearchSuggestions);
     }
 
     this.browserProxy_.isThunderboltSupported().then(enabled => {
@@ -407,15 +410,6 @@ export class OsSettingsPrivacyPageElement extends
               this.shadowRoot!.querySelector('os-settings-sync-subpage');
           return syncPage && syncPage.getPersonalizationOptions() &&
               syncPage.getPersonalizationOptions()!.getUrlCollectionToggle();
-        });
-        return false;
-
-      case Setting.kGoogleDriveSearchSuggestions:
-        this.afterRenderShowDeepLink_(settingId, () => {
-          const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-subpage');
-          return syncPage && syncPage.getPersonalizationOptions() &&
-              syncPage.getPersonalizationOptions()!.getDriveSuggestToggle();
         });
         return false;
 

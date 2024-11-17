@@ -511,7 +511,6 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
 }
 
 void ScopedLayerTreeSynchronizerBase::RestoreLayerTree(ui::Layer* layer) {
-  CHECK(root_layer_->Contains(layer));
   if (original_layers_info_.empty()) {
     return;
   }

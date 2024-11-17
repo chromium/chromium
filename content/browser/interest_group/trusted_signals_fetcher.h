@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -59,7 +60,6 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     BiddingPartition(int partition_id,
                      const std::set<std::string>* interest_group_names,
                      const std::set<std::string>* keys,
-                     const std::string* hostname,
                      const base::Value::Dict* additional_params);
     BiddingPartition(BiddingPartition&&);
 
@@ -71,7 +71,6 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
 
     base::raw_ref<const std::set<std::string>> interest_group_names;
     base::raw_ref<const std::set<std::string>> keys;
-    base::raw_ref<const std::string> hostname;
 
     // At the moment, valid keys are "experimentGroupId", "slotSize", and
     // "allSlotsRequestedSizes". We could take them separately, but seems better
@@ -86,7 +85,6 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     ScoringPartition(int partition_id,
                      const GURL* render_url,
                      const std::set<GURL>* component_render_urls,
-                     const std::string* hostname,
                      const base::Value::Dict* additional_params);
     ScoringPartition(ScoringPartition&&);
 
@@ -101,7 +99,6 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     base::raw_ref<const GURL> render_url;
 
     base::raw_ref<const std::set<GURL>> component_render_urls;
-    base::raw_ref<const std::string> hostname;
 
     // At the moment, valid keys are "experimentGroupId", "slotSize", and
     // "allSlotsRequestedSizes". We could take them separately, but seems better
@@ -151,19 +148,29 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   TrustedSignalsFetcher(const TrustedSignalsFetcher&) = delete;
   TrustedSignalsFetcher& operator=(const TrustedSignalsFetcher&) = delete;
 
-  // `partitions` is a map of all partitions in the request, indexed by
+  // `script_origin` is the owner of the interest group the request is for. Used
+  // as the initiator for CORS.
+  //
+  // `compression_groups` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchBiddingSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      std::string_view hostname,
+      const url::Origin& script_origin,
       const GURL& trusted_bidding_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
 
-  // `partitions` is a map of all partitions in the request, indexed by
+  // `script_origin` is the seller for the auction. Used as the initiator for
+  // CORS.
+  //
+  // `compression_groups` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchScoringSignals(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      std::string_view hostname,
+      const url::Origin& script_origin,
       const GURL& trusted_scoring_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
       const std::map<int, std::vector<ScoringPartition>>& compression_groups,
@@ -178,6 +185,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // this class.
   void EncryptRequestBodyAndStart(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      const url::Origin& script_origin,
       const GURL& trusted_signals_url,
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
       std::string plaintext_request_body,

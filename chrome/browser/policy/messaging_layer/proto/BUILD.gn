@@ -53,4 +53,11 @@ if (is_chromeos_ash) {
     import_dirs = [ "//components/reporting/proto/synced" ]
     deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
   }
+
+  proto_library("user_session_activity_proto") {
+    proto_in_dir = "//"
+    sources = [ "synced/user_session_activity.proto" ]
+    import_dirs = [ "//components/reporting/proto/synced" ]
+    deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
+  }
 }

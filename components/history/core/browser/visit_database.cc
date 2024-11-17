@@ -1196,8 +1196,7 @@ VisitDatabase::GetGoogleDomainVisitsFromSearchesInRange(base::Time begin_time,
 
 bool VisitDatabase::MigrateVisitsWithoutDuration() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
 
   if (!GetDB().DoesColumnExist("visits", "visit_duration")) {
@@ -1213,8 +1212,7 @@ bool VisitDatabase::MigrateVisitsWithoutDuration() {
 
 bool VisitDatabase::MigrateVisitsWithoutIncrementedOmniboxTypedScore() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
 
   if (!GetDB().DoesColumnExist("visits", "incremented_omnibox_typed_score")) {
@@ -1281,8 +1279,7 @@ bool VisitDatabase::MigrateVisitsWithoutIncrementedOmniboxTypedScore() {
 
 bool VisitDatabase::MigrateVisitsWithoutPubliclyRoutableColumn() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
 
   if (GetDB().DoesColumnExist("visits", "publicly_routable"))
@@ -1305,8 +1302,7 @@ bool VisitDatabase::CanMigrateFlocAllowed() {
 bool VisitDatabase::
     MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
 
   if (GetDB().DoesColumnExist("visits", "opener_visit"))
@@ -1338,8 +1334,7 @@ bool VisitDatabase::
 
 bool VisitDatabase::MigrateVisitsAutoincrementIdAndAddOriginatorColumns() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
 
   if (GetDB().DoesColumnExist("visits", "originator_cache_guid") &&
@@ -1377,8 +1372,7 @@ bool VisitDatabase::MigrateVisitsAutoincrementIdAndAddOriginatorColumns() {
 
 bool VisitDatabase::MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
 
   // Old versions don't have the originator_from_visit or
@@ -1435,8 +1429,7 @@ bool VisitDatabase::GetAllVisitedURLRowidsForMigrationToVersion40(
 
 bool VisitDatabase::MigrateVisitsAddIsKnownToSyncColumn() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
 
   if (!GetDB().DoesColumnExist("visits", "is_known_to_sync")) {
@@ -1459,8 +1452,7 @@ bool VisitDatabase::MigrateVisitsAddIsKnownToSyncColumn() {
 
 bool VisitDatabase::MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
 
   if (!GetDB().DoesColumnExist("visits", "consider_for_ntp_most_visited")) {
@@ -1476,8 +1468,7 @@ bool VisitDatabase::MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn() {
 
 bool VisitDatabase::MigrateVisitsAddExternalReferrerUrlColumn() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
 
   if (!GetDB().DoesColumnExist("visits", "external_referrer_url")) {
@@ -1492,8 +1483,7 @@ bool VisitDatabase::MigrateVisitsAddExternalReferrerUrlColumn() {
 
 bool VisitDatabase::MigrateVisitsAddVisitedLinkIdColumn() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
   if (!GetDB().DoesColumnExist("visits", "visited_link_id")) {
     if (!GetDB().Execute(
@@ -1506,8 +1496,7 @@ bool VisitDatabase::MigrateVisitsAddVisitedLinkIdColumn() {
 
 bool VisitDatabase::MigrateVisitsAddAppId() {
   if (!GetDB().DoesTableExist("visits")) {
-    NOTREACHED_IN_MIGRATION() << " Visits table should exist before migration";
-    return false;
+    NOTREACHED() << " Visits table should exist before migration";
   }
   if (!GetDB().DoesColumnExist("visits", "app_id")) {
     if (!GetDB().Execute("ALTER TABLE visits ADD COLUMN app_id TEXT")) {

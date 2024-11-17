@@ -41,7 +41,14 @@
           "builder": "android-13-x64-fyi-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-13-x64-fyi-rel",
+          "group": "tryserver.chromium.android"
+        }
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-13-x64-fyi-rel/targets"
     }
   },
   "$build/reclient": {

@@ -179,7 +179,7 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
 
   // Attempt to read file system sources in the custom data.
   if (std::optional<std::u16string> maybe_sources = ui::ReadCustomDataForType(
-          base::as_bytes(base::span(data.GetDataTransferCustomData())),
+          base::as_byte_span(data.GetDataTransferCustomData()),
           kFileSystemSourcesType);
       maybe_sources) {
     return std::move(*maybe_sources);

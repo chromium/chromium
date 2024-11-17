@@ -8,8 +8,8 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,12 +19,13 @@
 namespace {
 
 void OnGetExistingSelectorsComplete(
-    base::WeakPtr<user_education::FeaturePromoController>
-        feature_promo_controller,
+    base::WeakPtr<content::WebContents> web_contents,
     const std::vector<std::string>& selectors) {
-  if (feature_promo_controller && selectors.size() > 0) {
-    feature_promo_controller->MaybeShowPromo(
-        feature_engagement::kIPHDesktopSharedHighlightingFeature);
+  if (web_contents && selectors.size() > 0) {
+    BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+        web_contents.get())
+        ->MaybeShowFeaturePromo(
+            feature_engagement::kIPHDesktopSharedHighlightingFeature);
   }
 }
 
@@ -61,15 +62,8 @@ void SharedHighlightingPromo::CheckExistingSelectors(
   // Make sure that all the relevant things still exist - and then still use a
   // weak pointer to ensure we don't tear down the browser and its promo
   // controller before the callback returns.
-  auto* const window =
-      BrowserWindow::FindBrowserWindowWithWebContents(web_contents());
-  if (window) {
-    auto* const controller = window->GetFeaturePromoController();
-    if (controller) {
-      remote_->GetExistingSelectors(base::BindOnce(
-          &OnGetExistingSelectorsComplete, controller->GetAsWeakPtr()));
-    }
-  }
+  remote_->GetExistingSelectors(base::BindOnce(&OnGetExistingSelectorsComplete,
+                                               web_contents()->GetWeakPtr()));
 }
 
 bool SharedHighlightingPromo::HasTextFragment(std::string url) {

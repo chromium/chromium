@@ -7,10 +7,10 @@
 
 #include <optional>
 
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/types/expected.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -76,11 +76,10 @@ class CAPTURE_EXPORT VideoCaptureEffectsProcessor {
       base::expected<PostProcessDoneInfo,
                      video_effects::mojom::PostProcessError>)>;
 
-  // On-CPU variant. Marshals `data` into a shared memory buffer and prepares
-  // the shared images backed by `out_buffer` for receiving the processing
-  // results. Invokes the processor.
+  // On-CPU variant. Prepares the shared images backed by `out_buffer` for
+  // receiving the processing results. Invokes the processor.
   void PostProcessData(
-      base::span<const uint8_t> data,
+      base::ReadOnlySharedMemoryRegion data,
       mojom::VideoFrameInfoPtr frame_info,
       VideoCaptureDevice::Client::Buffer out_buffer,
       const VideoCaptureFormat& out_buffer_format,
@@ -97,6 +96,18 @@ class CAPTURE_EXPORT VideoCaptureEffectsProcessor {
       const VideoCaptureFormat& out_buffer_format,
       VideoCaptureBufferType out_buffer_type,
       VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb);
+
+  // On-GPU variant. Creates shared images backed by `in_buffer` and
+  // `out_buffer`. Invokes the processor. (Mainly used on MacOS)
+  void PostProcessExternalBuffer(
+      CapturedExternalVideoBuffer in_buffer,
+      mojom::VideoFrameInfoPtr frame_info,
+      VideoCaptureDevice::Client::Buffer out_buffer,
+      const VideoCaptureFormat& out_buffer_format,
+      VideoCaptureBufferType out_buffer_type,
+      VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb);
+
+  base::WeakPtr<VideoCaptureEffectsProcessor> GetWeakPtr();
 
  private:
   struct PostProcessContext {
@@ -135,17 +146,9 @@ class CAPTURE_EXPORT VideoCaptureEffectsProcessor {
     VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb;
   };
 
-  void PostProcessDataOnValidSequence(
-      PostProcessContext context,
-      mojom::VideoBufferHandlePtr in_buffer_handle,
-      mojom::VideoFrameInfoPtr frame_info,
-      mojom::VideoBufferHandlePtr out_buffer_handle,
-      const VideoCaptureFormat& out_buffer_format);
-
   void OnPostProcess(PostProcessContext context,
                      video_effects::mojom::PostProcessResultPtr result);
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

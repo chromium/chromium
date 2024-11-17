@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
@@ -31,6 +32,15 @@ base::TimeDelta ComputeAdpfTarget(const BeginFrameArgs& args) {
 
 bool DrawImmediatelyWhenInteractive() {
   return features::ShouldDrawImmediatelyWhenInteractive();
+}
+
+bool AdpfCanUseSetThreads() {
+#if BUILDFLAG(IS_ANDROID)
+  return android_get_device_api_level() >= __ANDROID_API_U__ &&
+         base::FeatureList::IsEnabled(features::kEnableADPFSetThreads);
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -86,6 +96,11 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
   begin_frame_deadline_closure_ = base::BindRepeating(
       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
+  session_states_.emplace_back(HintSession::SessionType::kAnimation);
+  if (base::FeatureList::IsEnabled(
+          features::kEnableADPFSeparateRendererMainSession)) {
+    session_states_.emplace_back(HintSession::SessionType::kRendererMain);
+  }
 }
 
 DisplayScheduler::~DisplayScheduler() {
@@ -94,6 +109,13 @@ DisplayScheduler::~DisplayScheduler() {
   begin_frame_source_->SetIsGpuBusy(false);
   StopObservingBeginFrames();
 }
+
+DisplayScheduler::AdpfSessionState::AdpfSessionState(
+    HintSession::SessionType type)
+    : type(type) {}
+DisplayScheduler::AdpfSessionState::AdpfSessionState(AdpfSessionState&&) =
+    default;
+DisplayScheduler::AdpfSessionState::~AdpfSessionState() = default;
 
 void DisplayScheduler::SetDamageTracker(DisplayDamageTracker* damage_tracker) {
   DisplaySchedulerBase::SetDamageTracker(damage_tracker);
@@ -167,32 +189,65 @@ void DisplayScheduler::OutputSurfaceLost() {
   ScheduleBeginFrameDeadline();
 }
 
-void DisplayScheduler::MaybeCreateHintSession(
-    base::flat_set<base::PlatformThreadId> thread_ids) {
+void DisplayScheduler::MaybeCreateHintSessions(
+    base::flat_set<base::PlatformThreadId> animation_thread_ids,
+    base::flat_set<base::PlatformThreadId> renderer_main_thread_ids) {
   if (!hint_session_factory_)
     return;
 
-  if ((!create_session_for_current_thread_ids_failed_ && !hint_session_) ||
-      current_thread_ids_ != thread_ids) {
-    hint_session_.reset();
-    current_thread_ids_ = std::move(thread_ids);
-    hint_session_ = hint_session_factory_->CreateSession(
-        current_thread_ids_, ComputeAdpfTarget(current_begin_frame_args_));
-    create_session_for_current_thread_ids_failed_ = !hint_session_;
+  if (!renderer_main_thread_ids.empty() &&
+      !base::FeatureList::IsEnabled(
+          features::kEnableADPFSeparateRendererMainSession)) {
+    animation_thread_ids.insert(renderer_main_thread_ids.begin(),
+                                renderer_main_thread_ids.end());
+    renderer_main_thread_ids.clear();
+  }
+
+  const auto adpf_target = ComputeAdpfTarget(current_begin_frame_args_);
+  for (auto& state : session_states_) {
+    auto thread_ids = state.type == HintSession::SessionType::kAnimation
+                          ? animation_thread_ids
+                          : renderer_main_thread_ids;
+
+    // Use SetThreads whenever possible - it's cheaper than recreating the
+    // session.
+    if (state.hint_session && state.thread_ids != thread_ids &&
+        AdpfCanUseSetThreads()) {
+      state.thread_ids = std::move(thread_ids);
+      state.hint_session->SetThreads(hint_session_factory_->GetSessionThreadIds(
+          state.thread_ids, state.type));
+      continue;
+    }
+    // If SetThreads cannot be used, (re)create the ADPF session - this is a
+    // more a expensive operation.
+    if ((!state.create_session_for_current_thread_ids_failed &&
+         !state.hint_session) ||
+        state.thread_ids != thread_ids) {
+      state.hint_session.reset();
+      state.thread_ids = std::move(thread_ids);
+      state.hint_session = hint_session_factory_->CreateSession(
+          state.thread_ids, adpf_target, state.type);
+      state.create_session_for_current_thread_ids_failed = !state.hint_session;
+    }
   }
 }
 
 void DisplayScheduler::ReportFrameTime(
     base::TimeDelta frame_time,
-    base::flat_set<base::PlatformThreadId> thread_ids,
+    base::flat_set<base::PlatformThreadId> animation_thread_ids,
+    base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
     base::TimeTicks draw_start,
     HintSession::BoostType boost_type) {
-  MaybeCreateHintSession(std::move(thread_ids));
-  if (hint_session_) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Compositing.Display.AdpfHintUs",
-                                            frame_time, base::Microseconds(1),
-                                            base::Milliseconds(50), 50);
-    hint_session_->ReportCpuCompletionTime(frame_time, draw_start, boost_type);
+  MaybeCreateHintSessions(std::move(animation_thread_ids),
+                          std::move(renderer_main_thread_ids));
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Compositing.Display.AdpfHintUs",
+                                          frame_time, base::Microseconds(1),
+                                          base::Milliseconds(50), 50);
+  for (const auto& state : session_states_) {
+    if (state.hint_session) {
+      state.hint_session->ReportCpuCompletionTime(frame_time, draw_start,
+                                                  boost_type);
+    }
   }
 }
 
@@ -275,8 +330,11 @@ void DisplayScheduler::OnBeginFrameContinuation(const BeginFrameArgs& args) {
 
   // Schedule the deadline.
   current_begin_frame_args_ = args;
-  if (hint_session_) {
-    hint_session_->UpdateTargetDuration(ComputeAdpfTarget(args));
+  const auto adpf_target = ComputeAdpfTarget(args);
+  for (auto& state : session_states_) {
+    if (state.hint_session) {
+      state.hint_session->UpdateTargetDuration(adpf_target);
+    }
   }
 
   current_begin_frame_args_.deadline -=
@@ -289,7 +347,8 @@ void DisplayScheduler::OnBeginFrameContinuation(const BeginFrameArgs& args) {
 }
 
 int DisplayScheduler::MaxPendingSwaps() const {
-  // Interval for 90hz and 120hz with some delta for margin of error.
+  // Interval for 72, 90, and 120hz with some delta for margin of error.
+  constexpr base::TimeDelta k72HzInterval = base::Microseconds(14000);
   constexpr base::TimeDelta k90HzInterval = base::Microseconds(11500);
   constexpr base::TimeDelta k120HzInterval = base::Microseconds(8500);
   int param_max_pending_swaps;
@@ -301,6 +360,10 @@ int DisplayScheduler::MaxPendingSwaps() const {
              pending_swap_params_.max_pending_swaps_90hz) {
     param_max_pending_swaps =
         pending_swap_params_.max_pending_swaps_90hz.value();
+  } else if (current_begin_frame_args_.interval < k72HzInterval &&
+             pending_swap_params_.max_pending_swaps_72hz) {
+    param_max_pending_swaps =
+        pending_swap_params_.max_pending_swaps_72hz.value();
   } else {
     param_max_pending_swaps = pending_swap_params_.max_pending_swaps;
   }
@@ -379,8 +442,7 @@ base::TimeTicks DisplayScheduler::DesiredBeginFrameDeadlineTime(
     case BeginFrameDeadlineMode::kNone:
       return base::TimeTicks::Max();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::TimeTicks();
+      NOTREACHED();
   }
 }
 

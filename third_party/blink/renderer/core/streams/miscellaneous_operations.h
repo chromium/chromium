@@ -100,15 +100,6 @@ CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(ScriptState*,
                                                   v8::Local<v8::Value> arg0,
                                                   ExceptionState&);
 
-// Used in JavaScriptByteStreamStartAlgoirthm to call the method.
-// This is a variation of the CallOrNoop1 method where it is given the method
-// function already.
-CORE_EXPORT v8::MaybeLocal<v8::Value> Call1(ScriptState*,
-                                            v8::Local<v8::Function> method,
-                                            v8::Local<v8::Object> object,
-                                            v8::Local<v8::Value> arg0,
-                                            ExceptionState&);
-
 // https://streams.spec.whatwg.org/#promise-call
 // "PromiseCall(F, V, args)"
 // "F" is called |method| here

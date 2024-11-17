@@ -9,4 +9,5 @@ found in the LICENSE file.
   <dimen name="search_engine_favicon_size">32dp</dimen>
   <dimen name="blocking_dialog_illustration_height">150dp</dimen>
   <dimen name="blocking_dialog_illustration_width">348dp</dimen>
+  <dimen name="blocking_dialog_required_height_for_illustration">400dp</dimen>
 </resources>

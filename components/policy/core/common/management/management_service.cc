@@ -112,6 +112,10 @@ void ManagementService::RefreshCache(CacheRefreshCallback callback) {
   }
 }
 
+ui::ImageModel* ManagementService::GetManagementIcon() {
+  return nullptr;
+}
+
 bool ManagementService::HasManagementAuthority(
     EnterpriseManagementAuthority authority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -30,7 +30,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/range/range.h"
 
-namespace chrome {
 namespace {
 
 UMABrowsingActivityObserver* g_uma_browsing_activity_observer_instance =
@@ -195,5 +194,3 @@ void UMABrowsingActivityObserver::TabHelper::NavigationEntryCommitted(
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(UMABrowsingActivityObserver::TabHelper);
-
-}  // namespace chrome

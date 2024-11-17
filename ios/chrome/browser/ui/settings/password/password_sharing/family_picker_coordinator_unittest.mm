@@ -41,8 +41,8 @@ NSArray<RecipientInfoForIOSDisplay*>* CreateRecipients(int amount) {
 class FamilyPickerCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    browser_ = std::make_unique<TestBrowser>(
-        TestChromeBrowserState::Builder().Build().get());
+    browser_ =
+        std::make_unique<TestBrowser>(TestProfileIOS::Builder().Build().get());
     view_controller_ = [[FamilyPickerViewController alloc]
         initWithStyle:UITableViewStylePlain];
 
@@ -104,8 +104,8 @@ TEST_F(FamilyPickerCoordinatorTest, OpensHelpCenterOnLearnMoreTap) {
   base::HistogramTester histogram_tester;
 
   OCMExpect([mock_application_commands_handler_
-      closeSettingsUIAndOpenURL:[OCMArg checkWithBlock:^BOOL(
-                                            OpenNewTabCommand* command) {
+      closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
+                                                OpenNewTabCommand* command) {
         return command.URL ==
                GURL("https://support.google.com/chrome/?p=password_sharing");
       }]]);

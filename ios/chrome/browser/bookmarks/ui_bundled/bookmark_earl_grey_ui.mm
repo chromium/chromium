@@ -172,10 +172,10 @@ id<GREYMatcher> SearchIconButton() {
   switch (kindOfTest) {
     case chrome_test_util::KindOfTest::kSignedOut:
     case chrome_test_util::KindOfTest::kAccount:
-      label = @"Mobile Bookmarks";
+      label = @"Mobile bookmarks";
       break;
     case chrome_test_util::KindOfTest::kLocal:
-      label = @"Mobile Bookmarks. Only on this device.";
+      label = @"Mobile bookmarks. Only on this device.";
       break;
   }
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
@@ -187,7 +187,7 @@ id<GREYMatcher> SearchIconButton() {
       selectElementWithMatcher:grey_allOf(
                                    grey_kindOfClassName(@"UITableViewCell"),
                                    grey_descendant(
-                                       grey_text(@"Mobile Bookmarks")),
+                                       grey_text(@"Mobile bookmarks")),
                                    nil)] performAction:grey_tap()];
 }
 

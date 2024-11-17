@@ -97,13 +97,16 @@ class FetchProcess {
       base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
           access_token);
   // Second phase of fetching: the remote service responded.
-  void OnSimpleUrlLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleUrlLoaderComplete(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<std::string> response_body);
 
   // Final phase of fetching: binary data is collected and ready to be
   // interpreted or error is encountered.
   virtual void OnResponse(std::unique_ptr<std::string> response_body) = 0;
   virtual void OnError(const ProtoFetcherStatus& status) = 0;
 
+  const raw_ref<signin::IdentityManager> identity_manager_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   const Payload payload_;
   const raw_ref<const FetcherConfig> config_;
@@ -119,6 +122,10 @@ class FetchProcess {
   // If an auth error was encountered when fetching the access token, it is
   // stored here (whether or not it was fatal).
   std::optional<GoogleServiceAuthError> access_token_auth_error_;
+
+  // Whether we have triggered a retry following an HTTP auth error.
+  // This is tracked to avoid retry loops.
+  bool triggered_retry_on_http_auth_error_ = false;
 };
 
 // Overlay over FetchProcess that interprets successful responses as given

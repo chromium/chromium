@@ -326,15 +326,15 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
         'manualDisableWriteProtectAvailable', {available: available});
   }
 
-  chooseManuallyDisableWriteProtect(): Promise<{stateResult: StateResult}> {
+  setManuallyDisableWriteProtect(): Promise<{stateResult: StateResult}> {
     return this.getNextStateForMethod(
-        'chooseManuallyDisableWriteProtect',
+        'setManuallyDisableWriteProtect',
         State.kChooseWriteProtectDisableMethod);
   }
 
-  chooseRsuDisableWriteProtect(): Promise<{stateResult: StateResult}> {
+  setRsuDisableWriteProtect(): Promise<{stateResult: StateResult}> {
     return this.getNextStateForMethod(
-        'chooseRsuDisableWriteProtect', State.kChooseWriteProtectDisableMethod);
+        'setRsuDisableWriteProtect', State.kChooseWriteProtectDisableMethod);
   }
 
   getRsuDisableWriteProtectChallenge(): Promise<{challenge: string}> {
@@ -1168,8 +1168,8 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     this.methods.register('setDifferentOwner');
     this.methods.register('setWipeDevice');
 
-    this.methods.register('chooseManuallyDisableWriteProtect');
-    this.methods.register('chooseRsuDisableWriteProtect');
+    this.methods.register('setManuallyDisableWriteProtect');
+    this.methods.register('setRsuDisableWriteProtect');
     this.methods.register('getRsuDisableWriteProtectChallenge');
     this.methods.register('getRsuDisableWriteProtectHwid');
     this.methods.register('getRsuDisableWriteProtectChallengeQrCode');

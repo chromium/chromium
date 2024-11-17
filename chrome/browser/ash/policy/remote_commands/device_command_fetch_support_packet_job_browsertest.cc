@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/managed_guest_session_test_helpers.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -246,7 +245,7 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
         ASSERT_NO_FATAL_FAILURE(LaunchMGS());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -396,10 +395,10 @@ IN_PROC_BROWSER_TEST_P(DeviceCommandFetchSupportPacketBrowserTestParameterized,
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -435,10 +434,10 @@ IN_PROC_BROWSER_TEST_P(DeviceCommandFetchSupportPacketBrowserTestParameterized,
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -473,10 +472,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -513,10 +512,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -555,10 +554,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(
@@ -599,10 +598,10 @@ IN_PROC_BROWSER_TEST_F(
   // Check contents of the resulting file.
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
-    int64_t file_size;
     base::FilePath exported_file(event.upload_settings().origin_path());
-    ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(exported_file);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   histogram_tester().ExpectUniqueSample(

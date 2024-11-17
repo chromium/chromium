@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_client.h"
 #import "components/variations/synthetic_trial_registry.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -27,24 +29,16 @@
 class ParcelTrackingUtilTest : public PlatformTest {
  protected:
   void SetUp() override {
-    browser_state_ = BuildChromeBrowserState();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            browser_state_.get()));
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     shopping_service_->SetIsParcelTrackingEligible(true);
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
-  }
-
-  std::unique_ptr<TestChromeBrowserState> BuildChromeBrowserState() {
-    TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    return std::move(builder).Build();
   }
 
   void SignIn() {
@@ -62,7 +56,7 @@ class ParcelTrackingUtilTest : public PlatformTest {
   }
 
   void SetPromptDisplayedStatus(bool displayed) {
-    browser_state_->GetPrefs()->SetBoolean(
+    profile_->GetPrefs()->SetBoolean(
         prefs::kIosParcelTrackingOptInPromptDisplayLimitMet, displayed);
   }
 
@@ -70,7 +64,7 @@ class ParcelTrackingUtilTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
   FakeSystemIdentity* fake_identity_ = nullptr;
 };
@@ -82,8 +76,8 @@ TEST_F(ParcelTrackingUtilTest, UserIsEligibleForPrompt) {
   SetPromptDisplayedStatus(false);
   IOSChromeScopedTestingVariationsService scoped_variations_service;
   scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
-  EXPECT_TRUE(IsUserEligibleParcelTrackingOptInPrompt(
-      browser_state_->GetPrefs(), shopping_service_.get()));
+  EXPECT_TRUE(IsUserEligibleParcelTrackingOptInPrompt(profile_->GetPrefs(),
+                                                      shopping_service_.get()));
 }
 
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
@@ -95,7 +89,17 @@ TEST_F(ParcelTrackingUtilTest, NotSignedIn) {
   IOSChromeScopedTestingVariationsService scoped_variations_service;
   scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
   EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
-      browser_state_->GetPrefs(), shopping_service_.get()));
+      profile_->GetPrefs(), shopping_service_.get()));
+}
+
+// Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
+// feature is disabled.
+TEST_F(ParcelTrackingUtilTest, FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(kIOSDisableParcelTracking);
+  SignIn();
+  SetPromptDisplayedStatus(false);
+  EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
+      profile_->GetPrefs(), shopping_service_.get()));
 }
 
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
@@ -106,7 +110,7 @@ TEST_F(ParcelTrackingUtilTest, UserHasSeenPrompt) {
   IOSChromeScopedTestingVariationsService scoped_variations_service;
   scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
   EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
-      browser_state_->GetPrefs(), shopping_service_.get()));
+      profile_->GetPrefs(), shopping_service_.get()));
 }
 
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
@@ -115,5 +119,5 @@ TEST_F(ParcelTrackingUtilTest, CountryNotUS) {
   SignIn();
   SetPromptDisplayedStatus(true);
   EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
-      browser_state_->GetPrefs(), shopping_service_.get()));
+      profile_->GetPrefs(), shopping_service_.get()));
 }

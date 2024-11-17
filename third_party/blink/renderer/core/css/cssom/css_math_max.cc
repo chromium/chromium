@@ -83,16 +83,14 @@ CSSMathExpressionNode* CSSMathMax::ToCalcExpressionNode() const {
     if (!operand) {
       // TODO(crbug.com/983784): Remove this when all ToCalcExpressionNode()
       // overrides are implemented.
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     operands.push_back(value->ToCalcExpressionNode());
   }
   if (!operands.size()) {
     // TODO(crbug.com/983784): Remove this when all ToCalcExpressionNode()
     // overrides are implemented.
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   return CSSMathExpressionOperation::CreateComparisonFunction(
       std::move(operands), CSSMathOperator::kMax);

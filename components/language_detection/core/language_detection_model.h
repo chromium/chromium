@@ -84,11 +84,13 @@ class LanguageDetectionModel {
   std::vector<Prediction> Predict(const std::u16string& contents,
                                   bool truncate = true) const;
 
-#if !BUILDFLAG(IS_IOS)
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page.
+  //
+  // This method is blocking and should only be called in context
+  // where it is fine to block the current thread. If you cannot
+  // block, use UpdateWithFileAsync(...) instead.
   void UpdateWithFile(base::File model_file);
-#endif
 
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page. Performs
@@ -104,6 +106,11 @@ class LanguageDetectionModel {
 
   std::string GetModelVersion() const;
 
+  // Detach the instance from the bound sequence. Must only be used if the
+  // object is created on a sequence and then moved on another sequence to
+  // live.
+  void DetachFromSequence() { DETACH_FROM_SEQUENCE(sequence_checker_); }
+
  private:
   void NotifyModelLoaded();
 
@@ -114,9 +121,7 @@ class LanguageDetectionModel {
   // Updates the model if the not unset.
   void SetModel(std::optional<OwnedNLClassifier> optional_model);
 
-#if BUILDFLAG(IS_IOS)
   SEQUENCE_CHECKER(sequence_checker_);
-#endif
 
   // The tflite classifier that can determine the language of text.
   OwnedNLClassifier lang_detection_model_;

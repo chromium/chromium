@@ -145,28 +145,22 @@ class BASE_EXPORT CheckError {
   std::unique_ptr<LogMessage> log_message_;
 };
 
+// Used for NOTREACHED(base::NotFatalUntil).
+// TODO(pbos): Reconsider the name of this + NotReachedNoreturnError to be less
+// confusing.
 class BASE_EXPORT NotReachedError : public CheckError {
  public:
   static NotReachedError NotReached(
-      base::NotFatalUntil fatal_milestone =
-          base::NotFatalUntil::NoSpecifiedMilestoneInternal,
+      base::NotFatalUntil fatal_milestone,
       const base::Location& location = base::Location::Current());
 
-  // Used to trigger a NOTREACHED_IN_MIGRATION() without providing file or line
-  // while also discarding log-stream arguments. See base/notreached.h.
-  NOMERGE NOINLINE NOT_TAIL_CALLED static void TriggerNotReached();
-
-  // TODO(crbug.com/40580068): Mark [[noreturn]] once this is CHECK-fatal on all
-  // builds.
   NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedError();
 
  private:
   using CheckError::CheckError;
 };
 
-// TODO(crbug.com/40580068): This should take the name of the above class once
-// all callers of NOTREACHED_IN_MIGRATION() have migrated to the CHECK-fatal
-// version.
+// Used for NOTREACHED(), its destructor is importantly [[noreturn]].
 class BASE_EXPORT NotReachedNoreturnError : public CheckError {
  public:
   explicit NotReachedNoreturnError(
@@ -206,6 +200,12 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 #endif  // defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 
 #if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
+
+// Official non-DCHECK builds do not preserve CHECK() logging (including
+// evaluation of logging arguments). This generates more compact code which is
+// good for both speed and binary size.
+#define CHECK_WILL_STREAM() false
+
 // Note that this uses IMMEDIATE_CRASH_ALWAYS_INLINE to force-inline in debug
 // mode as well. See LoggingTest.CheckCausesDistinctBreakpoints.
 [[noreturn]] NOMERGE IMMEDIATE_CRASH_ALWAYS_INLINE void CheckFailure() {
@@ -236,14 +236,13 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
           LOGGING_CHECK_FUNCTION_IMPL(                                  \
               logging::CheckError::Check(#cond, __VA_ARGS__), cond))
 
-#define CHECK_WILL_STREAM() false
-
 // Strip the conditional string from official builds.
 #define PCHECK(condition) \
   LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(), condition)
 
 #else
 
+// Generate logging versions of CHECKs to help diagnosing failures.
 #define CHECK_WILL_STREAM() true
 
 #define CHECK(condition, ...)                                              \

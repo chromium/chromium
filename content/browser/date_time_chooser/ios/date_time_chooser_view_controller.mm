@@ -71,8 +71,7 @@ const CGFloat kToolBarHeight = 44;
       style = UIDatePickerStyleInline;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid type for a DateTimeChooser.";
-      break;
+      NOTREACHED() << "Invalid type for a DateTimeChooser.";
   }
 
   datePicker.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];

@@ -137,12 +137,11 @@ GLFenceWin::GLFenceWin(Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
 GLFenceWin::~GLFenceWin() = default;
 
 bool GLFenceWin::HasCompleted() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void GLFenceWin::ClientWait() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLFenceWin::ServerWait() {

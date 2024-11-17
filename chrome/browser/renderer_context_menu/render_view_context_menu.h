@@ -35,9 +35,9 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
@@ -61,6 +61,7 @@ class Profile;
 class ReadWriteCardObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
+class ToastController;
 
 namespace content {
 class RenderFrameHost;
@@ -159,6 +160,10 @@ class RenderViewContextMenu
   // This may return nullptr (e.g. for WebUI dialogs). Virtual to allow tests to
   // override.
   virtual Browser* GetBrowser() const;
+
+  // May return nullptr if the WebContents does not have an associated
+  // BrowserWindowInterface (e.g. in isolated WebUI, or in tests).
+  ToastController* GetToastController() const;
 
   // Returns the correct IDC for the Search by Image context menu string
   int GetSearchForImageIdc() const;
@@ -348,15 +353,12 @@ class RenderViewContextMenu
   bool IsPrintPreviewEnabled() const;
   bool IsQRCodeGeneratorEnabled() const;
   bool IsRouteMediaEnabled() const;
-  bool IsOpenLinkOTREnabled() const;
   bool IsOpenLinkAllowedByDlp(const GURL& link_url) const;
   bool IsRegionSearchEnabled() const;
   bool IsAddANoteEnabled() const;
   bool IsVideoFrameItemEnabled(int id) const;
 
   // Command execution functions.
-  void ExecSearchWebInCompanionSidePanel(const GURL& url);
-  void ExecSearchWebInSidePanel(const GURL& url);
   void ExecOpenWebApp();
   void ExecOpenLinkPreview();
   void ExecProtocolHandler(int event_flags, int handler_index);

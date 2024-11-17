@@ -306,8 +306,7 @@ bool PhoneNumbersMatch(const std::u16string& number_a,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::u16string GetFormattedPhoneNumberForDisplay(const AutofillProfile& profile,

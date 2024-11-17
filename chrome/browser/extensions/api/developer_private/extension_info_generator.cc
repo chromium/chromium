@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
@@ -116,7 +115,7 @@ developer::ExtensionType GetExtensionType(Manifest::Type manifest_type) {
       type = developer::ExtensionType::kExtension;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return type;
 }
@@ -165,7 +164,7 @@ developer::RuntimeError ConstructRuntimeError(const RuntimeError& error) {
       result.severity = developer::ErrorLevel::kError;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   result.context_url = error.context_url().spec();
   result.occurrences = error.occurrences();
@@ -321,13 +320,14 @@ developer::RuntimeHostPermissions CreateRuntimeHostPermissionsInfo(
   return runtime_host_permissions;
 }
 
-// Returns if the extension can access site data. This checks for host
-// permissions, activeTab and API permissions that will surface a warning for
-// all hosts access.
+// Returns whether the extension can access site data through host permissions,
+// activeTab permissions or API permissions.
 bool CanAccessSiteData(PermissionsManager* permissions_manager,
                        const Extension& extension) {
-  return permissions_manager->ExtensionRequestsHostPermissionsOrActiveTab(
-             extension) ||
+  // We check whether permissions warn all hosts because it's the
+  // only way to compute if API permissions that can access site data.
+  return permissions_manager->HasRequestedHostPermissions(extension) ||
+         permissions_manager->HasRequestedActiveTab(extension) ||
          PermissionsParser::GetRequiredPermissions(&extension)
              .ShouldWarnAllHosts() ||
          PermissionsParser::GetOptionalPermissions(&extension)
@@ -407,7 +407,6 @@ ExtensionInfoGenerator::ExtensionInfoGenerator(
       command_service_(CommandService::Get(browser_context)),
       extension_system_(ExtensionSystem::Get(browser_context)),
       extension_prefs_(ExtensionPrefs::Get(browser_context)),
-      extension_action_api_(ExtensionActionAPI::Get(browser_context)),
       warning_service_(WarningService::Get(browser_context)),
       error_console_(ErrorConsole::Get(browser_context)),
       image_loader_(ImageLoader::Get(browser_context)),
@@ -746,8 +745,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
           // https://crbug.com/503427.
           break;
         case ExtensionError::Type::kNumErrorTypes:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_task_environment.h"
@@ -362,7 +363,7 @@ class SelfDestructingSimpleDevToolsProtocolClient
   }
 
   void DispatchProtocolMessageTask(base::Value::Dict message) override {
-    CHECK(false) << "use-after-free";
+    NOTREACHED() << "use-after-free";
   }
 };
 

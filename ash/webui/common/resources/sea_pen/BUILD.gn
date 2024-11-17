@@ -100,7 +100,6 @@ build_webui("build_ts") {
   ]
   ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
   ts_out_dir = "$root_gen_dir/ash/webui/common/resources/preprocessed/sea_pen"
-  ts_tsconfig_base = "tsconfig_base.json"
 
   # This should be "relative" since this code is served from //resources
   # and is available to both trusted and untrusted UIs, but since some

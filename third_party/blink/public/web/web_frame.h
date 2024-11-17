@@ -44,6 +44,8 @@
 
 namespace blink {
 
+enum class DetachReason;
+
 #if INSIDE_BLINK
 class Frame;
 #endif
@@ -97,7 +99,7 @@ class BLINK_EXPORT WebFrame {
   // This method closes and deletes the WebFrame. This is typically called by
   // the embedder in response to a frame detached callback to the WebFrame
   // client.
-  virtual void Close();
+  virtual void Close(DetachReason detach_reason);
 
   // Called by the embedder when it needs to detach the subtree rooted at this
   // frame.

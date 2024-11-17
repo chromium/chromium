@@ -11,8 +11,11 @@
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ash/lobster/lobster_bubble_coordinator.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_resizer.h"
+#include "chrome/browser/ash/lobster/lobster_event_sink.h"
+#include "chrome/browser/ash/lobster/lobster_insertion.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -22,7 +25,7 @@ class SnapperProvider;
 
 class Profile;
 
-class LobsterService : public KeyedService {
+class LobsterService : public KeyedService, public LobsterEventSink {
  public:
   explicit LobsterService(
       std::unique_ptr<manta::SnapperProvider> image_provider,
@@ -42,10 +45,23 @@ class LobsterService : public KeyedService {
                         const std::string& query,
                         ash::InflateCandidateCallback);
 
+  void QueueInsertion(const std::string& image_bytes,
+                      StatusCallback insert_status_callback);
+
   bool SubmitFeedback(const std::string& query,
                       const std::string& model_version,
                       const std::string& description,
                       const std::string& image_bytes);
+
+  void LoadUI(std::optional<std::string> query, ash::LobsterMode mode);
+
+  void ShowUI();
+
+  void CloseUI();
+  bool UserHasAccess();
+
+  // Relevant input events
+  void OnFocus(int context_id) override;
 
  private:
   // Not owned by this class
@@ -60,6 +76,10 @@ class LobsterService : public KeyedService {
   LobsterCandidateResizer resizer_;
 
   LobsterSystemStateProvider system_state_provider_;
+
+  ash::LobsterBubbleCoordinator bubble_coordinator_;
+
+  std::unique_ptr<LobsterInsertion> queued_insertion_;
 };
 
 #endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_

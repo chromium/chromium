@@ -11,7 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/recent_session_policy.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/user_education/recent_session_observer.h"
 #include "chrome/browser/user_education/recent_session_tracker.h"
 

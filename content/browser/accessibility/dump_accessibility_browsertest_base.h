@@ -30,7 +30,6 @@ class BrowserAccessibility;
 
 namespace content {
 
-
 // Base class for an accessibility browsertest that takes an HTML file as
 // input, loads it into a tab, dumps some accessibility data in text format,
 // then compares that text to an expectation file in the same directory.
@@ -194,10 +193,17 @@ class DumpAccessibilityTestBase
       const ax::mojom::StringAttribute attr,
       const std::string& value) const;
 
+  std::string FormatWebContentsTestNode(const ui::AXTreeFormatter&) const;
+
+  // Returns true if the tests should run against the external accessibility
+  // tree.
+  bool IsTestingExternalTree() const;
+
  protected:
   ui::AXInspectTestHelper test_helper_;
 
   WebContentsImpl* GetWebContents() const;
+  gfx::AcceleratedWidget GetAcceleratedWidget() const;
 
   // Wait until all accessibility events and dirty objects have been processed
   // with the given AXMode.
@@ -230,6 +236,8 @@ class DumpAccessibilityTestBase
   }
 
  private:
+  std::string FormatWebContentsTree(const ui::AXTreeFormatter&) const;
+
   ui::BrowserAccessibility* FindNodeInSubtree(ui::BrowserAccessibility& node,
                                               const std::string& name) const;
 

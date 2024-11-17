@@ -5,149 +5,159 @@
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
 import './item.js';
 import './mv2_deprecation_panel.js';
-import './shared_style.css.js';
 import './review_panel.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {DummyItemDelegate} from './item.js';
 import type {ExtensionsItemElement, ItemDelegate} from './item.js';
-import {getTemplate} from './item_list.html.js';
+import {getCss} from './item_list.css.js';
+import {getHtml} from './item_list.html.js';
 import {getMv2ExperimentStage, Mv2ExperimentStage} from './mv2_deprecation_util.js';
 
 type Filter = (info: chrome.developerPrivate.ExtensionInfo) => boolean;
 
-const ExtensionsItemListElementBase = I18nMixin(PolymerElement);
+const ExtensionsItemListElementBase = I18nMixinLit(CrLitElement);
 
 export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   static get is() {
     return 'extensions-item-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      apps: Array,
-      extensions: Array,
-      delegate: Object,
+      apps: {type: Array},
+      extensions: {type: Array},
+      delegate: {type: Object},
 
       inDevMode: {
         type: Boolean,
-        value: false,
+        reflect: true,
       },
 
       isMv2DeprecationNoticeDismissed: {
         type: Boolean,
         notify: true,
+        reflect: true,
       },
 
       filter: {
         type: String,
       },
 
-      computedFilter_: {
-        type: String,
-        computed: 'computeFilter_(filter)',
-        observer: 'announceSearchResults_',
-      },
+      computedFilter_: {type: String},
+      maxColumns_: {type: Number},
 
-      maxColumns_: {
-        type: Number,
-        value: 3,
-      },
+      filteredExtensions_: {type: Array},
+      filteredApps_: {type: Array},
 
       /**
        * List of potentially unsafe extensions that should be visible in the
        * review panel.
        */
-      unsafeExtensions_: {
-        type: Array,
-        computed: 'computeUnsafeExtensions_(extensions.*)',
-      },
+      unsafeExtensions_: {type: Array},
 
       /**
        * Current Manifest V2 experiment stage.
        */
-      mv2ExperimentStage_: {
-        type: Number,
-        value: () => getMv2ExperimentStage(
-            loadTimeData.getInteger('MV2ExperimentStage')),
-      },
+      mv2ExperimentStage_: {type: Number},
 
       /**
        * List of extensions that are affected by the mv2 deprecation and should
        * be visible in the mv2 deprecation panel.
        */
-      mv2DeprecatedExtensions_: {
-        type: Array,
-        computed: 'computeMv2DeprecatedExtensions_(extensions.*)',
-      },
+      mv2DeprecatedExtensions_: {type: Array},
 
-      shownAppsCount_: {
-        type: Number,
-        value: 0,
-      },
-
-      shownExtensionsCount_: {
-        type: Number,
-        value: 0,
-      },
+      shownAppsCount_: {type: Number},
+      shownExtensionsCount_: {type: Number},
 
       /**
        * Indicates whether the review panel is shown.
        */
-      showSafetyCheckReviewPanel_: {
-        type: Boolean,
-        computed: 'computeShowSafetyCheckReviewPanel_(unsafeExtensions_)',
-      },
+      showSafetyCheckReviewPanel_: {type: Boolean},
 
       /**
        * Indicates if the review panel has ever been shown.
        */
       reviewPanelShown_: {
         type: Boolean,
-        value: false,
-      },
-
-      /*
-       * Indicates whether the mv2 deprecation panel is shown.
-       */
-      showMv2DeprecationPanel_: {
-        type: Boolean,
-        computed: 'computeShowMv2DeprecationPanel_(' +
-            'mv2ExperimentStage_, mv2DeprecatedExtensions_, ' +
-            'isMv2DeprecationNoticeDismissed)',
-      },
-
-      hasSafetyCheckTriggeringExtension_: {
-        type: Boolean,
-        computed: 'computeHasSafetyCheckTriggeringExtension_(extensions)',
+        state: true,
       },
     };
   }
 
-  apps: chrome.developerPrivate.ExtensionInfo[];
-  extensions: chrome.developerPrivate.ExtensionInfo[];
-  delegate: ItemDelegate;
-  inDevMode: boolean;
-  isMv2DeprecationNoticeDismissed: boolean;
-  filter: string;
-  private computedFilter_: string;
-  private maxColumns_: number;
-  private unsafeExtensions_: chrome.developerPrivate.ExtensionInfo[];
-  private mv2ExperimentStage_: Mv2ExperimentStage;
-  private mv2DeprecatedExtensions_: chrome.developerPrivate.ExtensionInfo[];
-  private shownAppsCount_: number;
-  private shownExtensionsCount_: number;
-  private showMv2DeprecationPanel_: boolean;
-  private showSafetyCheckReviewPanel_: boolean;
-  private reviewPanelShown_: boolean;
-  private hasSafetyCheckTriggeringExtension_: boolean;
+  apps: chrome.developerPrivate.ExtensionInfo[] = [];
+  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  delegate: ItemDelegate = new DummyItemDelegate();
+  inDevMode: boolean = false;
+  isMv2DeprecationNoticeDismissed: boolean = false;
+  filter: string = '';
+  protected filteredExtensions_: chrome.developerPrivate.ExtensionInfo[] = [];
+  protected filteredApps_: chrome.developerPrivate.ExtensionInfo[] = [];
+  protected computedFilter_: Filter|null = null;
+  protected maxColumns_: number = 3;
+  protected unsafeExtensions_: chrome.developerPrivate.ExtensionInfo[] = [];
+  protected mv2ExperimentStage_: Mv2ExperimentStage =
+      getMv2ExperimentStage(loadTimeData.getInteger('MV2ExperimentStage'));
+  protected mv2DeprecatedExtensions_: chrome.developerPrivate.ExtensionInfo[] =
+      [];
+  protected shownAppsCount_: number = 0;
+  protected shownExtensionsCount_: number = 0;
+  protected showSafetyCheckReviewPanel_: boolean = false;
+  private reviewPanelShown_: boolean = false;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('filter')) {
+      this.computedFilter_ = this.computeFilter_();
+    }
+
+    if (changedProperties.has('filter') ||
+        changedProperties.has('extensions')) {
+      this.filteredExtensions_ = this.computedFilter_ ?
+          this.extensions.filter(
+              extension => this.computedFilter_!(extension)) :
+          this.extensions;
+      this.shownExtensionsCount_ = this.filteredExtensions_.length;
+    }
+
+    if (changedProperties.has('filter') || changedProperties.has('apps')) {
+      this.filteredApps_ = this.computedFilter_ ?
+          this.apps.filter(app => this.computedFilter_!(app)) :
+          this.apps;
+      this.shownAppsCount_ = this.filteredApps_.length;
+    }
+
+    if (changedProperties.has('extensions')) {
+      this.unsafeExtensions_ = this.computeUnsafeExtensions_();
+      this.showSafetyCheckReviewPanel_ =
+          this.computeShowSafetyCheckReviewPanel_();
+      this.mv2DeprecatedExtensions_ = this.computeMv2DeprecatedExtensions_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('computedFilter_')) {
+      this.announceSearchResults_();
+    }
+  }
 
   getDetailsButton(id: string): HTMLElement|null {
     const item =
@@ -194,7 +204,6 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
    * Computes the filter function to be used for determining which items
    * should be shown. A |null| value indicates that everything should be
    * shown.
-   * return {?Function}
    */
   private computeFilter_(): Filter|null {
     const formattedFilter = this.filter.trim().toLowerCase();
@@ -224,9 +233,8 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
               extension.disableReasons.unsupportedManifestVersion &&
               !extension.didAcknowledgeMV2DeprecationNotice;
         case Mv2ExperimentStage.UNSUPPORTED:
-          // TODO(https://crbug.com/367395349): Add support for the kUnsupported
-          // experiment stage.
-          return false;
+          return extension.isAffectedByMV2Deprecation &&
+              extension.disableReasons.unsupportedManifestVersion;
       }
     });
   }
@@ -236,7 +244,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
    * in the review panel.
    */
   private computeUnsafeExtensions_(): chrome.developerPrivate.ExtensionInfo[] {
-    return this.extensions?.filter(
+    return this.extensions.filter(
         extension =>
             !!(extension.safetyCheckText &&
                extension.safetyCheckText.panelString));
@@ -246,33 +254,24 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
    * Returns whether the review deprecation panel should be visible.
    */
   private computeShowSafetyCheckReviewPanel_(): boolean {
-    // Panel is hidden if neither safety feature is on.
-    if (!loadTimeData.getBoolean('safetyCheckShowReviewPanel') &&
-        !loadTimeData.getBoolean('safetyHubShowReviewPanel')) {
-      return false;
-    }
-
     // If there are any unsafe extensions, they will be shown in the panel.
     // Store this, so we can show the completion info in the panel when there
     // are no unsafe extensions left after the user finished reviewing the
     // extensions.
-    // Note: Unsafe extensions may not be initialized at construction, thus we
-    // check for their existence.
-    if (this.unsafeExtensions_?.length !== 0) {
+    if (this.unsafeExtensions_.length !== 0) {
       this.reviewPanelShown_ = true;
     }
 
     // Panel is visible if there are any unsafe extensions, or the there are
     // none left after the user finished reviewing the extensions.
-    // Note: Unsafe extensions may not be initialized at construction, thus we
-    // check for their existence.
-    return this.unsafeExtensions_?.length !== 0 || this.reviewPanelShown_;
+    return this.unsafeExtensions_.length !== 0 || this.reviewPanelShown_;
   }
 
-  private computeHasSafetyCheckTriggeringExtension_(): boolean {
-    if (!this.extensions) {
-      return false;
-    }
+
+  /*
+   * Indicates whether the mv2 deprecation panel is shown.
+   */
+  protected hasSafetyCheckTriggeringExtension_(): boolean {
     for (const extension of this.extensions) {
       if (!!extension.safetyCheckText &&
           !!extension.safetyCheckText.panelString &&
@@ -286,37 +285,30 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   /**
    * Returns whether the manifest v2 deprecation panel should be visible.
    */
-  private computeShowMv2DeprecationPanel_(): boolean {
+  protected shouldShowMv2DeprecationPanel_(): boolean {
     switch (this.mv2ExperimentStage_) {
       case Mv2ExperimentStage.NONE:
         return false;
       case Mv2ExperimentStage.WARNING:
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+      case Mv2ExperimentStage.UNSUPPORTED:
         // Panel is visible when it has not been dismissed and at least one
         // extension is affected by the MV2 deprecation.
         return !this.isMv2DeprecationNoticeDismissed &&
             this.mv2DeprecatedExtensions_?.length !== 0;
-      case Mv2ExperimentStage.UNSUPPORTED:
-        // TODO(https://crbug.com/367395349): Add support for the kUnsupported
-        // experiment stage.
-        return false;
     }
   }
 
-  private shouldShowEmptyItemsMessage_() {
-    if (!this.apps || !this.extensions) {
-      return;
-    }
-
+  protected shouldShowEmptyItemsMessage_(): boolean {
     return this.apps.length === 0 && this.extensions.length === 0;
   }
 
-  private shouldShowEmptySearchMessage_() {
+  protected shouldShowEmptySearchMessage_(): boolean {
     return !this.shouldShowEmptyItemsMessage_() && this.shownAppsCount_ === 0 &&
         this.shownExtensionsCount_ === 0;
   }
 
-  private onNoExtensionsClick_(e: Event) {
+  protected onNoExtensionsClick_(e: Event) {
     if ((e.target as HTMLElement).tagName === 'A') {
       chrome.metricsPrivate.recordUserAction('Options_GetMoreExtensions');
     }

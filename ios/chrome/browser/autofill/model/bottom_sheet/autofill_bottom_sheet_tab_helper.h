@@ -115,9 +115,13 @@ class AutofillBottomSheetTabHelper
   // sheet on the provided frame.
   void DetachPasswordListeners(const std::string& frame_id, bool refocus);
 
-  // Detach the password listeners, which will deactivate the password bottom
-  // sheet on all frames.
-  void DetachPasswordListenersForAllFrames();
+  // Detaches the password listeners, which will deactivate the password bottom
+  // sheet on all frames. Refocuses on the last field that triggered a
+  // bottom sheet if `refocus` is true, which can be a login field or any other
+  // field associated with a bottom sheet. The last element is reset after
+  // focusing, meaning that refocusing multiple times will be no op until a new
+  // sheet is presented.
+  void DetachPasswordListenersForAllFrames(bool refocus);
 
   // Detach the password generation listeners, which will deactivate the
   // proactive password generation bottom sheet on all frames.
@@ -130,6 +134,10 @@ class AutofillBottomSheetTabHelper
   // Detach the payments listeners, which will deactivate the payments bottom
   // sheet on all frames.
   void DetachPaymentsListenersForAllFrames(bool refocus);
+
+  // Refocuses on the last field that triggered a bottom sheet, which can be a
+  // login field or any other field associated with a bottom sheet.
+  void RefocusElementIfNeeded(const std::string& frame_id);
 
   // WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
@@ -164,6 +172,13 @@ class AutofillBottomSheetTabHelper
   // This value is moved and should only be retrieved once per bottom sheet.
   autofill::VirtualCardEnrollmentCallbacks GetVirtualCardEnrollmentCallbacks();
 
+  // Attaches the listeners for the payments form corresponding to `form_id`.
+  // Only attaches the listeners on newly discovered renderer ids if `only_new`
+  // is true.
+  void AttachListenersForPaymentsForm(autofill::AutofillManager& manager,
+                                      autofill::FormGlobalId form_id,
+                                      bool only_new);
+
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
 
@@ -182,7 +197,8 @@ class AutofillBottomSheetTabHelper
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       std::set<autofill::FieldRendererId>& registered_renderer_ids,
       const std::string& frame_id,
-      bool allow_autofocus);
+      bool allow_autofocus,
+      bool only_new);
 
   // Detach listeners, which will deactivate the associated bottom sheet.
   void DetachListenersForFrame(

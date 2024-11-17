@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_READ_ONLY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_MATRIX_READ_ONLY_H_
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -46,19 +42,19 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
                                              ExceptionState&);
   static DOMMatrixReadOnly* fromMatrix(DOMMatrixInit*, ExceptionState&);
   static DOMMatrixReadOnly* fromMatrix2D(DOMMatrix2DInit*, ExceptionState&);
-  static DOMMatrixReadOnly* CreateForSerialization(double[], int size);
+  static DOMMatrixReadOnly* CreateForSerialization(base::span<const double>);
 
   DOMMatrixReadOnly() = default;
   DOMMatrixReadOnly(const String&, ExceptionState&);
   explicit DOMMatrixReadOnly(const gfx::Transform&, bool is2d = true);
 
-  template <typename T>
-  DOMMatrixReadOnly(T sequence, int size) {
-    if (size == 6) {
+  template <typename T, size_t N>
+  explicit DOMMatrixReadOnly(base::span<T, N> sequence) {
+    if (sequence.size() == 6) {
       matrix_ = gfx::Transform::Affine(sequence[0], sequence[1], sequence[2],
                                        sequence[3], sequence[4], sequence[5]);
       is2d_ = true;
-    } else if (size == 16) {
+    } else if (sequence.size() == 16) {
       matrix_ = gfx::Transform::ColMajor(
           sequence[0], sequence[1], sequence[2], sequence[3], sequence[4],
           sequence[5], sequence[6], sequence[7], sequence[8], sequence[9],
@@ -66,7 +62,7 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
           sequence[15]);
       is2d_ = false;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   ~DOMMatrixReadOnly() override;

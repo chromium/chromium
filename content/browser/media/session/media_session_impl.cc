@@ -143,7 +143,7 @@ bool IsSizesAtLeast(const std::vector<gfx::Size>& sizes, int min_size) {
   return check_size;
 }
 
-std::u16string SanitizeMediaTitle(const std::u16string title) {
+std::u16string SanitizeMediaTitle(const std::u16string& title) {
   std::u16string out;
   base::TrimString(title, u" ", &out);
   return out;
@@ -361,11 +361,26 @@ void MediaSessionImpl::DidUpdateFaviconURL(
     icons.push_back(image);
   }
 
+  bool should_update_observers = true;
   auto it = images_.find(MediaSessionImageType::kSourceIcon);
-  if (it != images_.end() && it->second == icons)
-    return;
+  if (it != images_.end() && it->second == icons) {
+    should_update_observers = false;
+  }
 
   images_.insert_or_assign(MediaSessionImageType::kSourceIcon, icons);
+
+  // Notify the VideoPictureInPictureWindowControllerImpl regardless of whether
+  // or not the images have actually changed, since there may or may not have
+  // been a picture-in-picture window last time we updated.
+  if (auto* pip_window_controller_ =
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller_->MediaSessionImagesChanged(images_);
+  }
+
+  if (!should_update_observers) {
+    return;
+  }
 
   for (auto& observer : observers_)
     observer->MediaSessionImagesChanged(this->images_);
@@ -624,16 +639,20 @@ void MediaSessionImpl::RebuildAndNotifyMediaPositionChanged() {
     }
   }
 
+  // Notify the VideoPictureInPictureWindowControllerImpl regardless of whether
+  // or not the position has actually changed, since there may or may not have
+  // been a picture-in-picture window last time we updated.
+  if (auto* pip_window_controller_ =
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller_->MediaSessionPositionChanged(position);
+  }
+
   if (position == position_)
     return;
 
   position_ = position;
 
-  if (auto* pip_window_controller_ =
-          VideoPictureInPictureWindowControllerImpl::FromWebContents(
-              web_contents())) {
-    pip_window_controller_->MediaSessionPositionChanged(position_);
-  }
 
   for (auto& observer : observers_)
     observer->MediaSessionPositionChanged(position_);
@@ -928,8 +947,7 @@ void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
               MediaSessionSuspendedSource::kSystemPermanent);
           break;
         case State::ACTIVE:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case SuspendType::kContent:
@@ -1102,15 +1120,6 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   info->audio_video_states = GetMediaAudioVideoStates();
   info->is_controllable = IsControllable();
 
-  // If the browser context is off the record then it should be sensitive.
-  // This is used as a proxy to hide the metadata from sensitive surfaces such
-  // as the lock screen.
-  // TODO(crbug.com/40282278): Remove this field once the new feature to hide
-  // metadata from sensitive profiles is launched.
-  info->is_sensitive =
-      web_contents()->GetBrowserContext()->IsOffTheRecord() &&
-      !base::FeatureList::IsEnabled(media::kHideIncognitoMediaMetadata);
-
   info->picture_in_picture_state =
       web_contents()->HasPictureInPictureVideo() ||
               web_contents()->HasPictureInPictureDocument()
@@ -1197,8 +1206,7 @@ void MediaSessionImpl::FinishSystemAudioFocusRequest(
       case AudioFocusType::kAmbient:
       case AudioFocusType::kGainTransient:
         // MediaSessionImpl does not use |kGainTransient| or |kAmbient|.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case AudioFocusType::kGainTransientMayDuck:
         // The focus request failed, we should suspend any players that have
         // the same audio focus type.
@@ -1748,6 +1756,15 @@ const base::UnguessableToken& MediaSessionImpl::GetRequestId() const {
   return delegate_->request_id();
 }
 
+void MediaSessionImpl::UpdateVideoPictureInPictureWindowController(
+    VideoPictureInPictureWindowControllerImpl* pip_controller) const {
+  pip_controller->MediaSessionActionsChanged(actions_);
+  pip_controller->MediaSessionImagesChanged(images_);
+  pip_controller->MediaSessionPositionChanged(position_);
+  pip_controller->MediaSessionInfoChanged(session_info_);
+  pip_controller->MediaSessionMetadataChanged(metadata_);
+}
+
 base::WeakPtr<MediaSessionImpl> MediaSessionImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -1756,14 +1773,6 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
   std::set<media_session::mojom::MediaSessionAction> actions =
       routed_service_ ? routed_service_->actions()
                       : std::set<media_session::mojom::MediaSessionAction>();
-
-  // Picture-in-Picture window controller needs to know only actions that are
-  // handled by the website.
-  if (auto* pip_window_controller_ =
-          VideoPictureInPictureWindowControllerImpl::FromWebContents(
-              web_contents())) {
-    pip_window_controller_->MediaSessionActionsChanged(actions);
-  }
 
   // If we are controllable then we should always add these actions as we can
   // support them by directly interacting with the players underneath.
@@ -1817,6 +1826,15 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
         media_session::mojom::MediaSessionAction::kSwitchAudioDevice);
   }
 
+  // Notify the VideoPictureInPictureWindowControllerImpl regardless of whether
+  // or not the actions have actually changed, since there may or may not have
+  // been a picture-in-picture window last time we updated.
+  if (auto* pip_window_controller_ =
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller_->MediaSessionActionsChanged(actions);
+  }
+
   if (actions_ == actions)
     return;
 
@@ -1856,6 +1874,11 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
     if (images_changed) {
       observer->MediaSessionImagesChanged(this->images_);
     }
+  }
+  if (auto* pip_window_controller =
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller->MediaSessionMetadataChanged(metadata_);
   }
 }
 

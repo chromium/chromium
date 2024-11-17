@@ -16,11 +16,12 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /** This class is responsible for rendering the check passwords view in the settings menu. */
-public class PasswordCheckFragmentView extends PreferenceFragmentCompat implements SettingsPage {
+public class PasswordCheckFragmentView extends PreferenceFragmentCompat
+        implements EmbeddableSettingsPage {
     // Key for the argument with which the PasswordsCheck fragment will be launched. The value for
     // this argument should be part of the PasswordCheckReferrer enum, which contains
     // all points of entry to the password check UI.

@@ -14,9 +14,11 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/push_notification/metrics.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
@@ -48,16 +50,15 @@
 - (void)start {
   _viewController = [[NotificationsOptInViewController alloc] init];
   NotificationsOptInMediator* mediator = [[NotificationsOptInMediator alloc]
-      initWithAuthenticationService:AuthenticationServiceFactory::
-                                        GetForBrowserState(
-                                            self.browser->GetBrowserState())];
+      initWithAuthenticationService:AuthenticationServiceFactory::GetForProfile(
+                                        self.browser->GetProfile())];
   mediator.consumer = _viewController;
   mediator.presenter = self;
   _viewController.delegate = mediator;
   _viewController.notificationsDelegate = mediator;
   _viewController.presentationController.delegate = self;
   _viewController.isContentNotificationEnabled =
-      IsContentNotificationEnabled(self.browser->GetBrowserState());
+      IsContentNotificationEnabled(self.browser->GetProfile());
   [mediator configureConsumer];
   self.mediator = mediator;
   [self.baseViewController presentViewController:_viewController
@@ -79,19 +80,16 @@
 
 - (void)presentSignIn {
   __weak __typeof(self) weakSelf = self;
-  ShowSigninCommandCompletionCallback callback =
+  ShowSigninCommandCompletionCallback completion =
       ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
         if (result != SigninCoordinatorResultSuccess) {
           [weakSelf.mediator disableUserSelectionForItem:kContent];
         }
       };
   // If there are 0 identities, kInstantSignin requires less taps.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationOperation operation =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
-              ->HasIdentities()
-          ? AuthenticationOperation::kSigninOnly
-          : AuthenticationOperation::kInstantSignin;
+      [self hasIdentitiesOnDevice] ? AuthenticationOperation::kSigninOnly
+                                   : AuthenticationOperation::kInstantSignin;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil
@@ -100,7 +98,7 @@
                     ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:callback];
+             completion:completion];
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
               showSignin:command
       baseViewController:_viewController];
@@ -155,6 +153,18 @@
 }
 
 #pragma mark - Private
+
+- (bool)hasIdentitiesOnDevice {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    return !IdentityManagerFactory::GetForProfile(profile)
+                ->GetAccountsOnDevice()
+                .empty();
+  } else {
+    return ChromeAccountManagerServiceFactory::GetForProfile(profile)
+        ->HasIdentities();
+  }
+}
 
 // Dismisses the base view controller.
 - (void)dismissViewController {

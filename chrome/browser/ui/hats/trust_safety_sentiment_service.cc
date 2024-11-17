@@ -194,7 +194,7 @@ std::map<std::string, bool> BuildProductSpecificDataForPasswordProtection(
       product_specific_data["Is interstitial UI"] = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   product_specific_data["User completed password change"] = false;
   product_specific_data["User clicked change password"] = false;
@@ -212,7 +212,7 @@ std::map<std::string, bool> BuildProductSpecificDataForPasswordProtection(
       product_specific_data["User marked as legitimate"] = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return product_specific_data;
 }
@@ -430,11 +430,6 @@ void TrustSafetySentimentService::FinishedPrivacyGuide() {
   TriggerOccurred(FeatureArea::kPrivacyGuide, {});
 }
 
-void TrustSafetySentimentService::InteractedWithPrivacySandbox4(
-    FeatureArea feature_area) {
-  TriggerOccurred(feature_area, {});
-}
-
 void TrustSafetySentimentService::InteractedWithSafeBrowsingInterstitial(
     bool did_proceed,
     safe_browsing::SBThreatType threat_type) {
@@ -482,7 +477,7 @@ void TrustSafetySentimentService::InteractedWithDownloadWarningUI(
       product_specific_data["Is download prompt UI"] = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   switch (action) {
     case DownloadItemWarningData::WarningAction::PROCEED:
@@ -492,7 +487,7 @@ void TrustSafetySentimentService::InteractedWithDownloadWarningUI(
       product_specific_data["User proceeded past warning"] = false;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   TriggerOccurred(FeatureArea::kDownloadWarningUI, product_specific_data);
 }
@@ -721,17 +716,12 @@ bool TrustSafetySentimentService::VersionCheck(FeatureArea feature_area) {
       return isV2 == true;
     // Both Versions
     case (FeatureArea::kTrustedSurface):
-    case (FeatureArea::kPrivacySandbox4ConsentAccept):
-    case (FeatureArea::kPrivacySandbox4ConsentDecline):
-    case (FeatureArea::kPrivacySandbox4NoticeOk):
-    case (FeatureArea::kPrivacySandbox4NoticeSettings):
       return true;
     // None
     case (FeatureArea::kIneligible):
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -756,14 +746,6 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
         return kHatsSurveyTriggerTrustSafetyV2PrivacyGuide;
       case (FeatureArea::kControlGroup):
         return kHatsSurveyTriggerTrustSafetyV2ControlGroup;
-      case (FeatureArea::kPrivacySandbox4ConsentAccept):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentAccept;
-      case (FeatureArea::kPrivacySandbox4ConsentDecline):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentDecline;
-      case (FeatureArea::kPrivacySandbox4NoticeOk):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk;
-      case (FeatureArea::kPrivacySandbox4NoticeSettings):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings;
       case (FeatureArea::kSafeBrowsingInterstitial):
         return kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial;
       case (FeatureArea::kDownloadWarningUI):
@@ -771,8 +753,7 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
       case (FeatureArea::kPasswordProtectionUI):
         return kHatsSurveyTriggerTrustSafetyV2PasswordProtectionUI;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return "";
+        NOTREACHED();
     }
   }
   switch (feature_area) {
@@ -782,17 +763,8 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
       return kHatsSurveyTriggerTrustSafetyTrustedSurface;
     case (FeatureArea::kTransactions):
       return kHatsSurveyTriggerTrustSafetyTransactions;
-    case (FeatureArea::kPrivacySandbox4ConsentAccept):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept;
-    case (FeatureArea::kPrivacySandbox4ConsentDecline):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline;
-    case (FeatureArea::kPrivacySandbox4NoticeOk):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeOk;
-    case (FeatureArea::kPrivacySandbox4NoticeSettings):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeSettings;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -838,26 +810,6 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2ControlGroupProbability
                    .Get();
-      case (FeatureArea::kPrivacySandbox4ConsentAccept):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4ConsentAcceptProbability
-                       .Get();
-      case (FeatureArea::kPrivacySandbox4ConsentDecline):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4ConsentDeclineProbability
-                       .Get();
-      case (FeatureArea::kPrivacySandbox4NoticeOk):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeOkProbability
-                       .Get();
-      case (FeatureArea::kPrivacySandbox4NoticeSettings):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeSettingsProbability
-                       .Get();
       case (FeatureArea::kSafeBrowsingInterstitial):
         return base::RandDouble() <
                features::
@@ -874,8 +826,7 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
                    kTrustSafetySentimentSurveyV2PasswordProtectionUIProbability
                        .Get();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
   }
 
@@ -891,28 +842,7 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
     case (FeatureArea::kTransactions):
       return base::RandDouble() <
              features::kTrustSafetySentimentSurveyTransactionsProbability.Get();
-    case (FeatureArea::kPrivacySandbox4ConsentAccept):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4ConsentAcceptProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox4ConsentDecline):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4ConsentDeclineProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox4NoticeOk):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4NoticeOkProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox4NoticeSettings):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4NoticeSettingsProbability
-                     .Get();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }

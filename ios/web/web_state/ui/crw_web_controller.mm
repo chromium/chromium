@@ -72,9 +72,6 @@ using web::NavigationManagerImpl;
 using web::WebState;
 using web::WebStateImpl;
 
-using web::wk_navigation_util::IsRestoreSessionUrl;
-using web::wk_navigation_util::IsWKInternalUrl;
-
 namespace {
 char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 
@@ -505,19 +502,15 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
 }
 
 - (GURL)currentURL {
-  // The web view URL is the current URL only if it is neither a placeholder URL
-  // (used to hold WKBackForwardListItem for WebUI) nor a restore_session.html
-  // (used to replay session history in WKWebView).
   // TODO(crbug.com/40528091): Investigate if this method is still needed and if
   // it can be implemented using NavigationManager API after removal of legacy
   // navigation stack.
-  if (self.webView && !IsWKInternalUrl(self.webView.URL)) {
+  if (self.webView) {
     return _documentURL;
   }
 
   web::NavigationItem* item =
-      self.navigationManagerImpl
-          ->GetLastCommittedItemInCurrentOrRestoredSession();
+      self.navigationManagerImpl->GetLastCommittedItem();
   if (item) {
     // This special case is added for any app specific URLs that have been
     // rewritten to about:// URLs.
@@ -1091,8 +1084,8 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
     _userInteractionState.SetUserInteractionRegisteredSinceLastUrlChange(false);
   }
   if (context && !context->IsLoadingErrorPage() &&
-      !context->IsLoadingHtmlString() && !IsWKInternalUrl(newURL) &&
-      !newURL.SchemeIs(url::kAboutScheme) && self.webView) {
+      !context->IsLoadingHtmlString() && !newURL.SchemeIs(url::kAboutScheme) &&
+      self.webView) {
     // On iOS13, WebKit started changing the URL visible webView.URL when
     // opening a new tab and then writing to it, e.g.
     // window.open('javascript:document.write(1)').  This URL is never commited,
@@ -1185,13 +1178,10 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
     }
   }
 
-  // Restore allowsBackForwardNavigationGestures once restoration is complete.
-  if (!self.navigationManagerImpl->IsRestoreSessionInProgress()) {
-    if (_webView.allowsBackForwardNavigationGestures !=
-        _allowsBackForwardNavigationGestures) {
-      _webView.allowsBackForwardNavigationGestures =
-          _allowsBackForwardNavigationGestures;
-    }
+  if (_webView.allowsBackForwardNavigationGestures !=
+      _allowsBackForwardNavigationGestures) {
+    _webView.allowsBackForwardNavigationGestures =
+        _allowsBackForwardNavigationGestures;
   }
 
   BOOL success = !context || !context->GetError();
@@ -1289,7 +1279,6 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
   }
 }
 
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
 CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     WKFullscreenState state) API_AVAILABLE(ios(16.0)) {
   switch (state) {
@@ -1302,11 +1291,9 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     case WKFullscreenStateNotInFullscreen:
       return CrFullscreenState::kNotInFullScreen;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CrFullscreenState::kNotInFullScreen;
+      NOTREACHED();
   }
 }
-#endif  // defined (__IPHONE_16_0)
 
 #pragma mark - Security Helpers
 
@@ -1436,12 +1423,10 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     return;
 
   CrFullscreenState fullScreenState = CrFullscreenState::kNotInFullScreen;
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
     fullScreenState =
         CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
   }
-#endif
   CRWWebViewContentView* webViewContentView =
       [[CRWWebViewContentView alloc] initWithWebView:self.webView
                                           scrollView:self.webScrollView
@@ -1617,7 +1602,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 - (void)fullscreenStateDidChange {
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
     CrFullscreenState fullScreenState =
         CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
@@ -1628,7 +1612,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
         fullScreenState == CrFullscreenState::kInFullscreen;
     base::UmaHistogramEnumeration(kFullScreenStateHistogram, fullScreenState);
   }
-#endif  // defined (__IPHONE_16_0)
 }
 
 #pragma mark - CRWWebViewHandlerDelegate

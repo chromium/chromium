@@ -31,6 +31,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/plus_addresses/features.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -59,6 +60,7 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -119,30 +121,12 @@ const base::Feature* FetchIPHFeatureFromEnum(
     ExpandedManualFillCoordinatorDelegate,
     SecurityAlertCommands>
 
-// Coordinator in charge of the presenting password autofill options as a modal.
-@property(nonatomic, strong)
-    ManualFillAllPasswordCoordinator* allPasswordCoordinator;
-
-// Coordinator in charge of the keyboard autofill branding.
-@property(nonatomic, strong) BrandingCoordinator* brandingCoordinator;
-
-// The Mediator for the input accessory view controller.
-@property(nonatomic, strong)
-    FormInputAccessoryMediator* formInputAccessoryMediator;
-
-// The View Controller for the input accessory view.
-@property(nonatomic, strong)
-    FormInputAccessoryViewController* formInputAccessoryViewController;
-
 // The object in charge of interacting with the web view. Used to fill the data
 // in the forms.
 @property(nonatomic, strong) ManualFillInjectionHandler* injectionHandler;
 
 // Reauthentication Module used for re-authentication.
 @property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
-
-// Modal alert.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
 // Active Form Input View Controller.
 @property(nonatomic, strong) UIViewController* formInputViewController;
@@ -165,6 +149,21 @@ const base::Feature* FetchIPHFeatureFromEnum(
 @end
 
 @implementation FormInputAccessoryCoordinator {
+  // Coordinator in charge of the presenting password autofill options as a
+  // modal.
+  ManualFillAllPasswordCoordinator* _allPasswordCoordinator;
+
+  BrandingCoordinator* _brandingCoordinator;
+
+  // The Mediator for the input accessory view controller.
+  FormInputAccessoryMediator* _formInputAccessoryMediator;
+
+  // The View Controller for the input accessory view.
+  FormInputAccessoryViewController* _formInputAccessoryViewController;
+
+  // Modal alert.
+  AlertCoordinator* _alertCoordinator;
+
   // Coordinator in charge of presenting the view to show all plus addresses.
   ManualFillAllPlusAddressCoordinator* _allPlusAddressCoordinator;
 }
@@ -186,23 +185,22 @@ const base::Feature* FetchIPHFeatureFromEnum(
 }
 
 - (void)start {
-  [self.brandingCoordinator start];
-  self.formInputAccessoryViewController =
-      [[FormInputAccessoryViewController alloc]
-          initWithFormInputAccessoryViewControllerDelegate:self];
-  self.formInputAccessoryViewController.brandingViewController =
-      self.brandingCoordinator.viewController;
+  [_brandingCoordinator start];
+  _formInputAccessoryViewController = [[FormInputAccessoryViewController alloc]
+      initWithFormInputAccessoryViewControllerDelegate:self];
+  _formInputAccessoryViewController.brandingViewController =
+      _brandingCoordinator.viewController;
 
   LayoutGuideCenter* layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.formInputAccessoryViewController.layoutGuideCenter = layoutGuideCenter;
+  _formInputAccessoryViewController.layoutGuideCenter = layoutGuideCenter;
 
   DCHECK(self.profile);
   auto profilePasswordStore =
-      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+      IOSChromeProfilePasswordStoreFactory::GetForProfile(
           self.profile, ServiceAccessType::EXPLICIT_ACCESS);
   auto accountPasswordStore =
-      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+      IOSChromeAccountPasswordStoreFactory::GetForProfile(
           self.profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   // There is no personal data manager in OTR (incognito). Get the original
@@ -213,19 +211,19 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
   __weak id<SecurityAlertCommands> securityAlertHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SecurityAlertCommands);
-  self.formInputAccessoryMediator = [[FormInputAccessoryMediator alloc]
-            initWithConsumer:self.formInputAccessoryViewController
+  _formInputAccessoryMediator = [[FormInputAccessoryMediator alloc]
+            initWithConsumer:_formInputAccessoryViewController
                      handler:self
                 webStateList:self.browser->GetWebStateList()
          personalDataManager:personalDataManager
         profilePasswordStore:profilePasswordStore
         accountPasswordStore:accountPasswordStore
         securityAlertHandler:securityAlertHandler
-      reauthenticationModule:self.reauthenticationModule
+      reauthenticationModule:_reauthenticationModule
            engagementTracker:feature_engagement::TrackerFactory::GetForProfile(
                                  self.browser->GetProfile())];
-  self.formInputAccessoryViewController.formSuggestionClient =
-      self.formInputAccessoryMediator;
+  _formInputAccessoryViewController.formSuggestionClient =
+      _formInputAccessoryMediator;
 
   self.layoutGuide =
       [layoutGuideCenter makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
@@ -234,24 +232,32 @@ const base::Feature* FetchIPHFeatureFromEnum(
   _injectionHandler = [[ManualFillInjectionHandler alloc]
         initWithWebStateList:self.browser->GetWebStateList()
         securityAlertHandler:securityAlertHandler
-      reauthenticationModule:_reauthenticationModule
-        formSuggestionClient:self.formInputAccessoryMediator];
+      reauthenticationModule:self.reauthenticationModule
+        formSuggestionClient:_formInputAccessoryMediator];
 }
 
 - (void)stop {
   [self clearPresentedState];
-  [self.formInputAccessoryTapRecognizer.view
-      removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
-  self.formInputAccessoryViewController = nil;
-  self.formInputViewController = nil;
-  [GetFirstResponder() reloadInputViews];
 
-  [self.formInputAccessoryMediator disconnect];
-  self.formInputAccessoryMediator = nil;
+  // Avoid cleaning up the views after the scene has been disconnected. This
+  // seems to cause watchdog kills. See crbug.com/40918951.
+  if (SceneState* sceneState = self.browser->GetSceneState();
+      sceneState.activationLevel > SceneActivationLevelDisconnected) {
+    [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
+    [self.formInputAccessoryTapRecognizer.view
+        removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
+    [GetFirstResponder() reloadInputViews];
+  }
 
-  [self.brandingCoordinator stop];
-  self.brandingCoordinator = nil;
-  [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
+  _formInputAccessoryViewController = nil;
+  _formInputViewController = nil;
+
+  [_formInputAccessoryMediator disconnect];
+  _formInputAccessoryMediator = nil;
+
+  [_brandingCoordinator stop];
+  _brandingCoordinator = nil;
+
   self.layoutGuide = nil;
 }
 
@@ -272,7 +278,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
 }
 
 - (void)stopChildren {
-  self.formInputAccessoryMediator.formInputInteractionDelegate = nil;
+  _formInputAccessoryMediator.formInputInteractionDelegate = nil;
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
     [coordinator stop];
   }
@@ -351,18 +357,22 @@ const base::Feature* FetchIPHFeatureFromEnum(
 // Starts the expanded manual fill coordinator and displays its view controller.
 - (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType
           invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
+  manual_fill::ManualFillDataType focusedFieldDataType = [ManualFillUtil
+      manualFillDataTypeFromFillingProduct:
+          [_formInputAccessoryMediator currentProviderMainFillingProduct]];
   ExpandedManualFillCoordinator* expandedManualFillCoordinator =
       [[ExpandedManualFillCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                          forDataType:dataType
+                focusedFieldDataType:focusedFieldDataType
               reauthenticationModule:self.reauthenticationModule];
 
   expandedManualFillCoordinator.injectionHandler = self.injectionHandler;
   expandedManualFillCoordinator.invokedOnObfuscatedField =
       invokedOnObfuscatedField;
   expandedManualFillCoordinator.delegate = self;
-  self.formInputAccessoryMediator.formInputInteractionDelegate =
+  _formInputAccessoryMediator.formInputInteractionDelegate =
       expandedManualFillCoordinator;
   [expandedManualFillCoordinator start];
 
@@ -450,7 +460,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
                   didPressPasswordButton:(UIButton*)passwordButton {
   [self stopChildren];
   BOOL invokedOnObfuscatedField =
-      [self.formInputAccessoryMediator lastFocusedFieldWasObfuscated];
+      [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
   [self startPasswordsFromButton:passwordButton
         invokedOnObfuscatedField:invokedOnObfuscatedField];
   [self updateKeyboardAccessoryForManualFilling];
@@ -465,7 +475,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
   [self stopChildren];
   BOOL invokedOnObfuscatedField =
-      [self.formInputAccessoryMediator lastFocusedFieldWasObfuscated];
+      [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
   [self startManualFillForDataType:dataType
           invokedOnObfuscatedField:invokedOnObfuscatedField];
 
@@ -482,8 +492,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
 - (void)formInputAccessoryViewControllerReset:
     (FormInputAccessoryViewController*)formInputAccessoryViewController {
-  CHECK_EQ(self.formInputAccessoryViewController,
-           formInputAccessoryViewController);
+  CHECK_EQ(_formInputAccessoryViewController, formInputAccessoryViewController);
   [self resetInputViews];
 }
 
@@ -714,8 +723,8 @@ const base::Feature* FetchIPHFeatureFromEnum(
 }
 
 - (UIView*)inputAccessoryView {
-  if (self.formInputAccessoryMediator.inputAccessoryViewActive) {
-    return self.formInputAccessoryViewController.view;
+  if (_formInputAccessoryMediator.inputAccessoryViewActive) {
+    return _formInputAccessoryViewController.view;
   }
   return nil;
 }
@@ -751,9 +760,9 @@ const base::Feature* FetchIPHFeatureFromEnum(
 }
 
 - (void)stopManualFillAllPasswordCoordinator {
-  [self.allPasswordCoordinator stop];
-  self.allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = nil;
-  self.allPasswordCoordinator = nil;
+  [_allPasswordCoordinator stop];
+  _allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = nil;
+  _allPasswordCoordinator = nil;
 }
 
 - (void)stopManualFillAllPlusAddressCoordinator {
@@ -763,8 +772,8 @@ const base::Feature* FetchIPHFeatureFromEnum(
 }
 
 - (void)dismissAlertCoordinator {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
+  [_alertCoordinator stop];
+  _alertCoordinator = nil;
 }
 
 - (ProfileIOS*)profile {
@@ -798,31 +807,31 @@ const base::Feature* FetchIPHFeatureFromEnum(
   NSString* message = l10n_util::GetNSStringF(
       IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
 
-  self.alertCoordinator = [[AlertCoordinator alloc]
+  _alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                            title:title
                          message:message];
-  [self.childCoordinators addObject:self.alertCoordinator];
+  [self.childCoordinators addObject:_alertCoordinator];
 
   __weak __typeof__(self) weakSelf = self;
 
-  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                   action:^{
-                                     [weakSelf dismissAlertCoordinator];
-                                   }
-                                    style:UIAlertActionStyleCancel];
+  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                               action:^{
+                                 [weakSelf dismissAlertCoordinator];
+                               }
+                                style:UIAlertActionStyleCancel];
 
   NSString* actionTitle =
       l10n_util::GetNSString(IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE);
-  [self.alertCoordinator addItemWithTitle:actionTitle
-                                   action:^{
-                                     [weakSelf showAllPasswords];
-                                     [weakSelf dismissAlertCoordinator];
-                                   }
-                                    style:UIAlertActionStyleDefault];
+  [_alertCoordinator addItemWithTitle:actionTitle
+                               action:^{
+                                 [weakSelf showAllPasswords];
+                                 [weakSelf dismissAlertCoordinator];
+                               }
+                                style:UIAlertActionStyleDefault];
 
-  [self.alertCoordinator start];
+  [_alertCoordinator start];
 }
 
 // Opens other passwords.
@@ -832,12 +841,12 @@ const base::Feature* FetchIPHFeatureFromEnum(
   // it before starting a new one. See crbug.com/40063966.
   [self stopManualFillAllPasswordCoordinator];
 
-  self.allPasswordCoordinator = [[ManualFillAllPasswordCoordinator alloc]
+  _allPasswordCoordinator = [[ManualFillAllPasswordCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
-  self.allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = self;
-  [self.allPasswordCoordinator start];
+  _allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = self;
+  [_allPasswordCoordinator start];
 }
 
 // Returns a new bubble view controller presenter for password suggestion tip.
@@ -948,17 +957,17 @@ const base::Feature* FetchIPHFeatureFromEnum(
 // Resets `formInputAccessoryViewController` and `formInputViewController` to
 // their initial state.
 - (void)resetInputViews {
-  self.formInputAccessoryMediator.suggestionsEnabled = YES;
-  [self.formInputAccessoryViewController reset];
+  _formInputAccessoryMediator.suggestionsEnabled = YES;
+  [_formInputAccessoryViewController reset];
 
-  self.formInputViewController = nil;
+  _formInputViewController = nil;
 }
 
 // Updates the keyboard accessory to the state it should be in when a manual
 // fill view is displayed.
 - (void)updateKeyboardAccessoryForManualFilling {
-  [self.formInputAccessoryViewController lockManualFallbackView];
-  self.formInputAccessoryMediator.suggestionsEnabled = NO;
+  [_formInputAccessoryViewController lockManualFallbackView];
+  _formInputAccessoryMediator.suggestionsEnabled = NO;
 }
 
 // Creates a SettingsCommend handler and uses it to dispatch a command to show

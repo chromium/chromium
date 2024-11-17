@@ -47,7 +47,6 @@ BASE_DECLARE_FEATURE(kNtpLogo);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromo);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromoDismissal);
 BASE_DECLARE_FEATURE(kNtpModulesLoadTimeoutMilliseconds);
-BASE_DECLARE_FEATURE(kNtpWideModules);
 BASE_DECLARE_FEATURE(kNtpModulesOrder);
 BASE_DECLARE_FEATURE(kNtpModulesOverflowScrollbar);
 BASE_DECLARE_FEATURE(kNtpModulesDragAndDrop);
@@ -61,12 +60,10 @@ BASE_DECLARE_FEATURE(kNtpPhotosModuleCustomizedOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpFeedModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
-BASE_DECLARE_FEATURE(kNtpLensDirectUpload);
 BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpSharepointModule);
 BASE_DECLARE_FEATURE(kNtpShortcuts);
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
-BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
@@ -74,6 +71,8 @@ BASE_DECLARE_FEATURE(kNtpTabResumptionModuleTimeLimit);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButton);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimation);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimationShownThreshold);
+BASE_DECLARE_FEATURE(kNtpMobilePromo);
+BASE_DECLARE_FEATURE(kNtpMicrosoftAuthenticationModule);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
@@ -158,8 +157,13 @@ extern const char kNtpTabResumptionModuleVisibilityThresholdDataParam[];
 // Parameter determining the number of times to animate the NTP Wallpaper Search
 // button.
 extern const char kNtpWallpaperSearchButtonAnimationShownThresholdParam[];
+// Parameter determining what condition to use to hide the wallpaper search
+// button.
+extern const char kNtpWallpaperSearchButtonHideConditionParam[];
 // Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
 extern const char kWallpaperSearchHatsDelayParam[];
+// Parameter determining the target url to go to from the Ntp Mobile Promo.
+extern const char kNtpMobilePromoTargetUrlParam[];
 
 // Parameter determining the experiment name to pass to the Google Calendar
 // API.
@@ -179,6 +183,9 @@ extern const base::FeatureParam<bool>
     kNtpRealboxCr23ExpandedStateBgMatchesOmnibox;
 // Parameter determining the whether the steady state realbox has a shadow.
 extern const base::FeatureParam<bool> kNtpRealboxCr23SteadyStateShadow;
+// Parameter determining the impression limit for the NTP mobile promo. The
+// promo will not be shown again after the impression limit is reached.
+extern const base::FeatureParam<int> kNtpMobilePromoImpressionLimit;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
@@ -198,6 +205,11 @@ std::vector<std::string> GetModulesOrder();
 // Returns the maximum number of times to show animation for NTP wallpaper
 // search button.
 int GetWallpaperSearchButtonAnimationShownThreshold();
+
+// Returns the condition to use to hide the wallpaper search button.
+int GetWallpaperSearchButtonHideCondition();
+
+std::string GetMobilePromoTargetURL();
 }  // namespace ntp_features
 
 #endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_

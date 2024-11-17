@@ -179,6 +179,32 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
         true,
         false,
     },
+
+    // Ensure fully-qualified domain names (FQDNs) match correctly.
+    ExperimentGroupMatchTest{
+        "NoExperimentGroup_DefaultResourceMatch_FQDN",
+        "example.com.",
+        "top.com.",
+        "0",
+        true,
+        true,
+    },
+    ExperimentGroupMatchTest{
+        "NoExperimentGroup_DefaultResourceMatch_FQDN_Req",
+        "example.com.",
+        "top.com",
+        "0",
+        true,
+        true,
+    },
+    ExperimentGroupMatchTest{
+        "NoExperimentGroup_DefaultResourceMatch_FQDN_Top",
+        "example.com",
+        "top.com.",
+        "0",
+        true,
+        true,
+    },
 };
 
 constexpr std::string_view kTestDomain = "example.com";

@@ -19,7 +19,8 @@
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -245,16 +246,18 @@ bool SelectionPopupController::ShowSelectionMenu(
     return false;
 
   // Display paste pop-up only when selection is empty and editable.
-  const bool from_touch = params.source_type == ui::MENU_SOURCE_TOUCH ||
-                          params.source_type == ui::MENU_SOURCE_LONG_PRESS ||
-                          params.source_type == ui::MENU_SOURCE_TOUCH_HANDLE ||
-                          params.source_type == ui::MENU_SOURCE_STYLUS;
+  const bool from_touch =
+      params.source_type == ui::mojom::MenuSourceType::kTouch ||
+      params.source_type == ui::mojom::MenuSourceType::kLongPress ||
+      params.source_type == ui::mojom::MenuSourceType::kTouchHandle ||
+      params.source_type == ui::mojom::MenuSourceType::kStylus;
 
-  const bool from_mouse = params.source_type == ui::MENU_SOURCE_MOUSE;
+  const bool from_mouse =
+      params.source_type == ui::mojom::MenuSourceType::kMouse;
 
   const bool from_selection_adjustment =
-      params.source_type == ui::MENU_SOURCE_ADJUST_SELECTION ||
-      params.source_type == ui::MENU_SOURCE_ADJUST_SELECTION_RESET;
+      params.source_type == ui::mojom::MenuSourceType::kAdjustSelection ||
+      params.source_type == ui::mojom::MenuSourceType::kAdjustSelectionReset;
 
   // If source_type is not in the list then return.
   if (!from_touch && !from_mouse && !from_selection_adjustment)
@@ -273,15 +276,17 @@ bool SelectionPopupController::ShowSelectionMenu(
       params.form_control_type == blink::mojom::FormControlType::kInputPassword;
   const ScopedJavaLocalRef<jstring> jselected_text =
       ConvertUTF16ToJavaString(env, params.selection_text);
-  const bool should_suggest = params.source_type == ui::MENU_SOURCE_TOUCH ||
-                              params.source_type == ui::MENU_SOURCE_LONG_PRESS;
+  const bool should_suggest =
+      params.source_type == ui::mojom::MenuSourceType::kTouch ||
+      params.source_type == ui::mojom::MenuSourceType::kLongPress;
 
   Java_SelectionPopupControllerImpl_showSelectionMenu(
       env, obj, params.x, params.y, params.selection_rect.x(),
       params.selection_rect.y(), params.selection_rect.right(),
       params.selection_rect.bottom(), handle_height, params.is_editable,
       is_password_type, jselected_text, params.selection_start_offset,
-      can_select_all, can_edit_richly, should_suggest, params.source_type,
+      can_select_all, can_edit_richly, should_suggest,
+      static_cast<int>(params.source_type),
       render_frame_host->GetJavaRenderFrameHost());
   return true;
 }

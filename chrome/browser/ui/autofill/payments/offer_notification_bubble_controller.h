@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -69,7 +69,7 @@ class OfferNotificationBubbleController {
   virtual void OnIconExpanded() = 0;
 
   // Removes the reference the controller has to the bubble.
-  virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+  virtual void OnBubbleClosed(PaymentsUiClosedReason closed_reason) = 0;
 };
 
 }  // namespace autofill

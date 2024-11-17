@@ -72,7 +72,7 @@ class AlignmentManager {
      * Register view to receive layout requests in cases where it may be misaligned with other
      * views.
      *
-     * @param View view to register.
+     * @param view view to register.
      */
     void registerView(View view) {
         mVisibleTailSuggestions.add(view);

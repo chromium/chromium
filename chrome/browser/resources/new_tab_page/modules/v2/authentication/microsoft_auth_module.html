@@ -1,0 +1,16 @@
+<ntp-module-header-v2
+    id="moduleHeaderElementV2"
+    .menuItemGroups="${this.getMenuItemGroups_()}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}">
+</ntp-module-header-v2>
+<div id="contents">
+  <div id="headings">
+    <h2 id="heading">$i18n{modulesMicrosoftAuthHeading}</h2>
+    <h3 id="subheading">$i18n{modulesMicrosoftAuthSubheading}</h3>
+  </div>
+  <cr-button role="link" class="action-button" id="signInButton"
+      @click="${this.onSignInClick_}">
+    $i18n{modulesMicrosoftAuthSignIn}
+  </cr-button>
+</div>

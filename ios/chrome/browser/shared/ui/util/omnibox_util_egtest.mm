@@ -22,8 +22,8 @@
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
   [ChromeEarlGrey closeAllTabs];
 }

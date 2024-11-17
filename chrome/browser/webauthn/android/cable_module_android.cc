@@ -311,35 +311,7 @@ GetSyncDataIfRegisteredInternal() {
     }
   }
 
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthnEnableAndroidCableAuthenticator) ||
-      !state->device_supports_cable()) {
-    return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
-  }
-
-  syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
-  paask_info.tunnel_server_domain = device::cablev2::kTunnelServer.value();
-  paask_info.contact_id = *state->sync_registration()->contact_id();
-  const uint32_t pairing_id = device::cablev2::sync::IDNow();
-  paask_info.id = pairing_id;
-
-  std::array<uint8_t, device::cablev2::kPairingIDSize> pairing_id_bytes = {0};
-  static_assert(sizeof(pairing_id) <= EXTENT(pairing_id_bytes), "");
-  memcpy(pairing_id_bytes.data(), &pairing_id, sizeof(pairing_id));
-
-  paask_info.secret = device::cablev2::Derive<EXTENT(paask_info.secret)>(
-      state->secret(), pairing_id_bytes,
-      device::cablev2::DerivedValueType::kPairedSecret);
-
-  CHECK_EQ(paask_info.peer_public_key_x962.size(),
-           EC_POINT_point2oct(EC_KEY_get0_group(state->identity_key()),
-                              EC_KEY_get0_public_key(state->identity_key()),
-                              POINT_CONVERSION_UNCOMPRESSED,
-                              paask_info.peer_public_key_x962.data(),
-                              paask_info.peer_public_key_x962.size(),
-                              /*ctx=*/nullptr));
-
-  return paask_info;
+  return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
 }
 
 void SetPrefIfDifferent(PrefService* state,

@@ -23,8 +23,8 @@ Are you a Google employee? See
 
 ### Visual Studio
 
-Chromium requires [Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes) (>=17.0.0)
-to build. Visual Studio can also be used to debug Chromium.
+Chromium requires [Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes)
+(>=17.0.0) to build. Visual Studio can also be used to debug Chromium.
 The clang-cl compiler is used but Visual Studio's header files, libraries, and
 some tools are required. Visual Studio Community Edition should work if its
 license is appropriate for you. You must install the "Desktop development with
@@ -58,12 +58,21 @@ appropriate box in the Visual Studio Installer.
 Debugging tools is needed in order to support reading the large-page PDBs that
 Chrome uses to allow greater-than 4 GiB PDBs. This can be installed after the
 matching Windows SDK version is installed, from: Control Panel -> Programs and
-Features
--> Windows Software Development Kit [version] -> Change -> Debugging Tools for
+Features -> Windows Software Development Kit [version] -> Change -> Debugging Tools for
 Windows. If building on ARM64 Windows then you will need to manually copy the
 Debuggers\x64 directory from another machine because it does not get installed
 on ARM64 and is needed, whether you are building Chromium for x64 or ARM64 on
 ARM64.
+
+WARNING: On sufficiently old versions of Windows (1909 or earlier), dawn (or
+related components) may fail with a D3d-related error when using the 26100 SDK.
+This is because the d3dcompiler_47.dll file in the new SDK attempts to
+dynamically link versions of the Universal C Runtime which are not present by
+default on older systems. If you experience these errors, you can either update
+the UCRT on your system, or install the 22612 SDK and use the d3dcompiler_47.dll
+file included there, which statically links the UCRT.
+
+This problem may also manifest as a DLL failure to load `__CxxFrameHandler4`.
 
 ## git installation
 
@@ -151,9 +160,10 @@ skip this step.
   * `C:\Program Files\Git\usr\bin`
 ***
 
-Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and set
-it to 0. This tells depot_tools to use your locally installed version of Visual
-Studio (by default, depot_tools will try to use a google-internal version).
+Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and
+set it to 0. This tells depot_tools to use your locally installed version of
+Visual Studio (by default, depot_tools will try to use a google-internal
+version).
 
 You may also have to set variable `vs2022_install` to your installation path of
 Visual Studio 2022, like
@@ -309,8 +319,8 @@ binaries as well.
 
 #### Use Reclient
 
-In addition, Google employees should use Reclient, a distributed compilation system.
-Detailed information is available internally but the relevant gn arg is:
+In addition, Google employees should use Reclient, a distributed compilation
+system. Detailed information is available internally but the relevant gn arg is:
 * `use_remoteexec = true`
 
 Google employees can visit
@@ -388,7 +398,8 @@ will have a weighted time that is the same or similar to its elapsed time. A
 compile that runs in parallel with 999 other compiles will have a weighted time
 that is tiny.
 
-You can also generate these reports by manually running the script after a build:
+You can also generate these reports by manually running the script after a
+build:
 
 ```shell
 $ python depot_tools\post_build_ninja_summary.py -C out\Default

@@ -8,29 +8,30 @@
 #include <utility>
 
 #include "base/features.h"
+#include "base/json/json_parser.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/rust_buildflags.h"
+#include "build/build_config.h"
 
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
+#if !BUILDFLAG(IS_NACL)
 #include "base/strings/string_view_rust.h"
 #include "third_party/rust/serde_json_lenient/v0_2/wrapper/functions.h"
 #include "third_party/rust/serde_json_lenient/v0_2/wrapper/lib.rs.h"
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
-#include "base/json/json_parser.h"
+#endif
 
 namespace base {
 
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
+// TODO(crbug.com/40811643): Move the C++ parser into components/nacl to just
+// run in-process there. Don't compile base::JSONReader on NaCL at all.
+#if !BUILDFLAG(IS_NACL)
 
 namespace {
 using serde_json_lenient::ContextPointer;
 
 const char kSecurityJsonParsingTime[] = "Security.JSONParser.ParsingTime";
 
-ContextPointer& ListAppendList(ContextPointer& ctx, size_t reserve) {
+ContextPointer& ListAppendList(ContextPointer& ctx) {
   auto& value = reinterpret_cast<base::Value&>(ctx);
-  value.GetList().reserve(reserve);
   value.GetList().Append(base::Value::List());
   return reinterpret_cast<ContextPointer&>(value.GetList().back());
 }
@@ -52,22 +53,18 @@ void ListAppendValue(ContextPointer& ctx, T v) {
   value.GetList().Append(As{v});
 }
 
-ContextPointer& DictSetList(ContextPointer& ctx,
-                            rust::Str key,
-                            size_t reserve) {
+ContextPointer& DictSetList(ContextPointer& ctx, rust::Str key) {
   auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
-  base::Value::List list;
-  list.reserve(reserve);
-  dict.Set(base::RustStrToStringView(key), std::move(list));
-  return reinterpret_cast<ContextPointer&>(
-      *dict.Find(base::RustStrToStringView(key)));
+  base::Value* value =
+      dict.Set(base::RustStrToStringView(key), base::Value::List());
+  return reinterpret_cast<ContextPointer&>(*value);
 }
 
 ContextPointer& DictSetDict(ContextPointer& ctx, rust::Str key) {
   auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
-  dict.Set(base::RustStrToStringView(key), base::Value(base::Value::Dict()));
-  return reinterpret_cast<ContextPointer&>(
-      *dict.Find(base::RustStrToStringView(key)));
+  base::Value* value =
+      dict.Set(base::RustStrToStringView(key), base::Value::Dict());
+  return reinterpret_cast<ContextPointer&>(*value);
 }
 
 void DictSetNone(ContextPointer& ctx, rust::Str key) {
@@ -132,13 +129,16 @@ JSONReader::Result DecodeJSONInRust(std::string_view json,
 
 }  // anonymous namespace
 
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // static
 std::optional<Value> JSONReader::Read(std::string_view json,
                                       int options,
                                       size_t max_depth) {
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
+#if BUILDFLAG(IS_NACL)
+  internal::JSONParser parser(options, max_depth);
+  return parser.Parse(json);
+#else   // BUILDFLAG(IS_NACL)
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
   if (UsingRust()) {
     JSONReader::Result result = DecodeJSONInRust(json, options, max_depth);
@@ -150,10 +150,7 @@ std::optional<Value> JSONReader::Read(std::string_view json,
     internal::JSONParser parser(options, max_depth);
     return parser.Parse(json);
   }
-#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
-  internal::JSONParser parser(options, max_depth);
-  return parser.Parse(json);
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+#endif  // BUILDFLAG(IS_NACL)
 }
 
 // static
@@ -171,7 +168,19 @@ std::optional<Value::Dict> JSONReader::ReadDict(std::string_view json,
 JSONReader::Result JSONReader::ReadAndReturnValueWithError(
     std::string_view json,
     int options) {
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
+#if BUILDFLAG(IS_NACL)
+  internal::JSONParser parser(options);
+  auto value = parser.Parse(json);
+  if (!value) {
+    Error error;
+    error.message = parser.GetErrorMessage();
+    error.line = parser.error_line();
+    error.column = parser.error_column();
+    return base::unexpected(std::move(error));
+  }
+
+  return std::move(*value);
+#else   // BUILDFLAG(IS_NACL)
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
   if (UsingRust()) {
     return DecodeJSONInRust(json, options, internal::kAbsoluteMaxDepth);
@@ -188,19 +197,7 @@ JSONReader::Result JSONReader::ReadAndReturnValueWithError(
 
     return std::move(*value);
   }
-#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
-  internal::JSONParser parser(options);
-  auto value = parser.Parse(json);
-  if (!value) {
-    Error error;
-    error.message = parser.GetErrorMessage();
-    error.line = parser.error_line();
-    error.column = parser.error_column();
-    return base::unexpected(std::move(error));
-  }
-
-  return std::move(*value);
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+#endif  // BUILDFLAG(IS_NACL)
 }
 
 // static
@@ -211,11 +208,11 @@ bool JSONReader::UsingRust() {
   if (!base::FeatureList::GetInstance()) {
     return false;
   }
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
-  return base::FeatureList::IsEnabled(base::features::kUseRustJsonParser);
-#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
+#if BUILDFLAG(IS_NACL)
   return false;
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+#else
+  return base::FeatureList::IsEnabled(base::features::kUseRustJsonParser);
+#endif
 }
 
 }  // namespace base

@@ -29,10 +29,10 @@ class CONTENT_EXPORT FederatedAuthRequestPageData
   void SetUserInfoAccountsResponseTime(const GURL& idp_url,
                                        const base::TimeTicks& time);
   // Gets the accounts response time from the User Info API. This is used in the
-  // button flow where we measure the time gap between a User Info API call and
-  // a button mode API call. Returns nullopt if no such response is available.
+  // active flow where we measure the time gap between a User Info API call and
+  // an active mode API call. Returns nullopt if no such response is available.
   // Once returned, the entry will be erased to avoid incorrect counting. e.g. a
-  // user may close the button modal and trigger it again in which case we only
+  // user may close the active modal and trigger it again in which case we only
   // want to record the first one.
   std::optional<base::TimeTicks> ConsumeUserInfoAccountsResponseTime(
       const GURL& idp_url);

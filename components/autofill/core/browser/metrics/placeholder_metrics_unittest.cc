@@ -14,10 +14,7 @@
 namespace autofill::autofill_metrics {
 namespace {
 
-constexpr autofill::FieldType kPreFilledType = autofill::NAME_LAST;
 constexpr char16_t kPreFilledValue[] = u"pre-filled";
-constexpr char kUmaAutofillPreFilledValueStatusAddress[] =
-    "Autofill.PreFilledValueStatus.Address";
 
 class PlaceholderMetricsTest : public AutofillMetricsBaseTest,
                                public testing::Test {
@@ -53,7 +50,8 @@ TEST_F(PlaceholderMetricsTest, EmitsUmaAutofillPreFilledFieldStatus) {
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
   ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-      form, form.fields()[0], &cached_form, &cached_triggering_field));
+      form.global_id(), form.fields()[0].global_id(), &cached_form,
+      &cached_triggering_field));
   cached_form->fields()[1]->set_may_use_prefilled_placeholder(false);
   FillTestProfile(form);
   SubmitForm(form);
@@ -90,7 +88,8 @@ TEST_F(PlaceholderMetricsTest,
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
   ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-      form, form.fields()[0], &cached_form, &cached_triggering_field));
+      form.global_id(), form.fields()[0].global_id(), &cached_form,
+      &cached_triggering_field));
   cached_form->fields()[1]->set_may_use_prefilled_placeholder(false);
   FillTestProfile(form);
   SubmitForm(form);
@@ -128,7 +127,8 @@ TEST_F(PlaceholderMetricsTest, EmitsUmaAutofillPreFilledFieldClassifications) {
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
   ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-      form, form.fields()[0], &cached_form, &cached_triggering_field));
+      form.global_id(), form.fields()[0].global_id(), &cached_form,
+      &cached_triggering_field));
   cached_form->fields()[1]->set_may_use_prefilled_placeholder(false);
   // Fill form.
   FillTestProfile(form);
@@ -180,7 +180,8 @@ TEST_F(PlaceholderMetricsTest,
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
   ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-      form, form.fields()[0], &cached_form, &cached_triggering_field));
+      form.global_id(), form.fields()[0].global_id(), &cached_form,
+      &cached_triggering_field));
   cached_form->field(1)->set_may_use_prefilled_placeholder(true);
   cached_form->field(2)->set_may_use_prefilled_placeholder(true);
   cached_form->field(3)->set_may_use_prefilled_placeholder(false);
@@ -205,138 +206,6 @@ TEST_F(PlaceholderMetricsTest,
                  base::Bucket(AutofillPreFilledFieldClassificationsQuality::
                                   kMeaningfullyPreFilledValueChanged,
                               1)));
-}
-
-class PlaceholderMetricsValueStatusTest : public PlaceholderMetricsTest {
- public:
-  void SetUp() override {
-    SetUpHelper();
-    placeholders_features_.InitWithFeatures(
-        {features::kAutofillOverwritePlaceholdersOnly,
-         features::kAutofillSkipPreFilledFields},
-        {});
-  }
-
-  void TearDown() override { TearDownHelper(); }
-
-  void SeeForm() {
-    form_ = test::GetFormData(form_description_);
-    // Simulate page load.
-    autofill_manager().AddSeenForm(form_,
-                                   test::GetHeuristicTypes(form_description_),
-                                   test::GetServerTypes(form_description_),
-                                   /*preserve_values_in_form_structure=*/true);
-    // Simluate interacting with the form.
-    autofill_manager().OnAskForValuesToFillTest(form_,
-                                                form_.fields()[0].global_id());
-  }
-
-  void ClassifyThePreFilledFieldAsPlaceholder() {
-    FormStructure* cached_form;
-    AutofillField* cached_triggering_field;
-    ASSERT_TRUE(autofill_manager().GetCachedFormAndField(
-        form_, form_.fields()[0], &cached_form, &cached_triggering_field));
-    cached_form->field(1)->set_may_use_prefilled_placeholder(true);
-  }
-
-  void SubmitFormAndExpect(AutofillPreFilledValueStatus expected_value_status) {
-    SubmitForm(form_);
-    ResetDriverToCommitMetrics();
-    EXPECT_THAT(histogram_tester_.GetAllSamples(
-                    kUmaAutofillPreFilledValueStatusAddress),
-                BucketsAre(base::Bucket(expected_value_status, 1)));
-  }
-
- protected:
-  FormData form_;
-  test::FormDescription form_description_ = {
-      .fields = {{.role = NAME_FIRST, .heuristic_type = NAME_FIRST},
-                 {.role = kPreFilledType,
-                  .heuristic_type = kPreFilledType,
-                  .value = kPreFilledValue}}};
-};
-
-TEST_F(PlaceholderMetricsValueStatusTest, ValueNotChanged) {
-  SeeForm();
-  FillTestProfile(form_);
-  SubmitFormAndExpect(AutofillPreFilledValueStatus::kPreFilledValueNotChanged);
-}
-
-TEST_F(PlaceholderMetricsValueStatusTest,
-       ValueWasManuallyRestoredAfterAutofill) {
-  SeeForm();
-  ClassifyThePreFilledFieldAsPlaceholder();
-  FillTestProfile(form_);
-  test_api(form_).field(1).set_value(kPreFilledValue);
-  SubmitFormAndExpect(AutofillPreFilledValueStatus::
-                          kPreFilledValueWasManuallyRestoredAfterAutofill);
-}
-
-TEST_F(PlaceholderMetricsValueStatusTest, ValueWasRestoredByAutofill) {
-  form_description_.fields[1].value = personal_data()
-                                          .address_data_manager()
-                                          .GetProfileByGUID(kTestProfileId)
-                                          ->GetRawInfo(kPreFilledType);
-  form_description_.fields[1].is_autofilled = true;
-  SeeForm();
-  ClassifyThePreFilledFieldAsPlaceholder();
-  FillTestProfile(form_);
-  SubmitFormAndExpect(
-      AutofillPreFilledValueStatus::kPreFilledValueWasRestoredByAutofill);
-}
-
-TEST_F(PlaceholderMetricsValueStatusTest, ValueChangedToEmpty) {
-  SeeForm();
-  FillTestProfile(form_);
-  test_api(form_).field(1).set_value(u"");
-  SubmitFormAndExpect(
-      AutofillPreFilledValueStatus::kPreFilledValueChangedToEmpty);
-}
-
-TEST_F(PlaceholderMetricsValueStatusTest,
-       ValueChangedToWhatWouldHaveBeenFilled) {
-  SeeForm();
-  FillTestProfile(form_);
-  test_api(form_).field(1).set_value(personal_data()
-                                         .address_data_manager()
-                                         .GetProfileByGUID(kTestProfileId)
-                                         ->GetRawInfo(kPreFilledType));
-  SubmitFormAndExpect(AutofillPreFilledValueStatus::
-                          kPreFilledValueChangedToWhatWouldHaveBeenFilled);
-}
-
-TEST_F(PlaceholderMetricsValueStatusTest,
-       ValueChangedToWhatWouldHaveBeenFilledLast) {
-  SeeForm();
-  FillTestProfile(form_);
-  FillProfileByGUID(form_, kTestProfile2Id);
-  test_api(form_).field(1).set_value(personal_data()
-                                         .address_data_manager()
-                                         .GetProfileByGUID(kTestProfile2Id)
-                                         ->GetRawInfo(kPreFilledType));
-  SubmitFormAndExpect(AutofillPreFilledValueStatus::
-                          kPreFilledValueChangedToWhatWouldHaveBeenFilled);
-}
-
-TEST_F(PlaceholderMetricsValueStatusTest,
-       ValueChangedToCorrespondingFieldType) {
-  SeeForm();
-  ClassifyThePreFilledFieldAsPlaceholder();
-  FillTestProfile(form_);
-  test_api(form_).field(1).set_value(personal_data()
-                                         .address_data_manager()
-                                         .GetProfileByGUID(kTestProfile2Id)
-                                         ->GetRawInfo(kPreFilledType));
-  ;
-  SubmitFormAndExpect(AutofillPreFilledValueStatus::
-                          kPreFilledValueChangedToCorrespondingFieldType);
-}
-
-TEST_F(PlaceholderMetricsValueStatusTest, ValueChangedToAnyOtherValue) {
-  SeeForm();
-  FillTestProfile(form_);
-  test_api(form_).field(1).set_value(u"any other value");
-  SubmitFormAndExpect(AutofillPreFilledValueStatus::kPreFilledValueChanged);
 }
 
 }  // namespace

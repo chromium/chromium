@@ -43,7 +43,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayDeque;
 
@@ -176,7 +176,7 @@ public class ContentViewFocusTest {
     @Test
     @MediumTest
     @Feature({"TabContents"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "http://crbug.com/967128")
     public void testHideSelectionOnPhoneTabSwitcher() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -209,11 +209,7 @@ public class ContentViewFocusTest {
         Assert.assertFalse("Unexpected focus change", haveFocusChanges());
     }
 
-    /**
-     * Verify ContentView window focus changes propagate to contents.
-     *
-     * @throws Exception
-     */
+    /** Verify ContentView window focus changes propagate to contents. */
     @Test
     @MediumTest
     public void testPauseTriggersBlur() throws Exception {

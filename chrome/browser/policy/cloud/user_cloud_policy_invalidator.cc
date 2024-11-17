@@ -11,10 +11,9 @@
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
 namespace {
@@ -71,8 +70,7 @@ void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
   }
 
   Initialize(invalidation_provider->GetInvalidationServiceOrListener(
-      kPolicyFCMInvalidationSenderID,
-      invalidation::InvalidationListener::kProjectNumberEnterprise));
+      GetPolicyInvalidationProjectNumber(PolicyInvalidationScope::kUser)));
 }
 
 }  // namespace policy

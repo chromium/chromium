@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_util.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ui/base/app_types.h"
@@ -52,12 +51,6 @@ void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb) {
   TextFieldContextualInfo info;
   GetTextFieldAppTypeAndKey(info);
 
-  if (info.app_type == chromeos::AppType::LACROS) {
-    GetUrlForTextFieldOnLacros(base::BindOnce(
-        TextFieldContextualInfoWithUrl, std::move(cb), base::OwnedRef(info)));
-    return;
-  }
-
   TextFieldContextualInfoWithUrl(std::move(cb), info,
                                  info.app_type == chromeos::AppType::BROWSER
                                      ? GetUrlForTextFieldOnAshChrome()
@@ -67,8 +60,7 @@ void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb) {
 std::optional<GURL> GetUrlForTextFieldOnAshChrome() {
   Browser* browser = chrome::FindLastActive();
   // Ash chrome will return true for browser->window()->IsActive() if the
-  // user is currently typing in an ash browser tab. IsActive() will return
-  // false if the user is currently typing a lacros browser tab.
+  // user is currently typing in an ash browser tab.
   if (browser && browser->window() && browser->window()->IsActive() &&
       browser->tab_strip_model() &&
       browser->tab_strip_model()->GetActiveWebContents()) {
@@ -78,20 +70,6 @@ std::optional<GURL> GetUrlForTextFieldOnAshChrome() {
   }
 
   return std::nullopt;
-}
-
-void GetUrlForTextFieldOnLacros(TextFieldTabUrlCallback cb) {
-  crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
-  // browser_manager will exist whenever there is a lacros browser running.
-  // GetActiveTabUrlSupported() will only return true if the current lacros
-  // browser is being used by the user.
-  if (browser_manager && browser_manager->IsRunning() &&
-      browser_manager->GetActiveTabUrlSupported()) {
-    browser_manager->GetActiveTabUrl(std::move(cb));
-    return;
-  }
-
-  std::move(cb).Run(std::nullopt);
 }
 
 }  // namespace input_method

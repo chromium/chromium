@@ -15,7 +15,7 @@
 namespace {
 std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs() {
   return ChromeIOSTranslateClient::CreateTranslatePrefs(
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs());
+      chrome_test_util::GetOriginalProfile()->GetPrefs());
 }
 }  // namespace
 
@@ -32,7 +32,7 @@ std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs() {
 
 + (NSString*)languages {
   return base::SysUTF8ToNSString(
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs()->GetString(
+      chrome_test_util::GetOriginalProfile()->GetPrefs()->GetString(
           language::prefs::kAcceptLanguages));
 }
 

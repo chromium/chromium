@@ -56,12 +56,14 @@ enum class RenderDocumentLevel {
   kAllFrames = 4,
 };
 
-// Whether same-site navigations will result in a change of RenderFrameHosts,
-// which will happen when RenderDocument is enabled. Due to the various levels
-// of the feature, the result may differ depending on whether the
-// RenderFrameHost is a main/local root/non-local-root frame, whether it has
+// Whether same-SiteInstance navigations will result in a change of
+// RenderFrameHosts, which will happen when RenderDocument is enabled. Due to
+// the various levels of the feature, the result may differ depending on whether
+// the RenderFrameHost is a main/local root/non-local-root frame, whether it has
 // committed any navigations or not, and whether it's a crashed frame that
 // must be replaced or not.
+// Note: It is up to the caller to ensure this is called for same-SiteInstance
+// navigations.
 CONTENT_EXPORT bool ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
     bool is_main_frame,
     bool is_local_root = true,
@@ -102,10 +104,6 @@ CONTENT_EXPORT bool ShouldAvoidRedundantNavigationCancellations();
 
 // Returns true if GetNavigationQueueingFeatureLevel() is kFull.
 CONTENT_EXPORT bool ShouldQueueNavigationsWhenPendingCommitRFHExists();
-
-// As part of the Citadel desktop protections, we want to stop allowing calls to
-// CanAccessDataForOrigin on the IO thread, and only allow it on the UI thread.
-CONTENT_EXPORT bool ShouldRestrictCanAccessDataForOriginToUIThread();
 
 // Returns true if data: URL subframes should be put in a separate SiteInstance
 // in the SiteInstanceGroup of the initiator.

@@ -112,6 +112,13 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
     std::vector<nearby::fastpair::FastPairDevice> devices) {
   CD_LOG(VERBOSE, Feature::FP) << __func__;
 
+  // If Javascript is not allowed something unexpected has happened to the page
+  // while we were loading the saved devices and we should just exit gracefully.
+  if (!IsJavascriptAllowed()) {
+    loading_saved_device_page_ = false;
+    return;
+  }
+
   // The JavaScript WebUI layer needs an enum to stay in sync with the
   // nearby::fastpair::OptInStatus enum from ash/quick_pair/proto/enums.proto
   // to properly handle this message.
@@ -234,6 +241,14 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
 
   quick_pair::RecordSavedDevicesCount(
       /*num_devices=*/saved_devices_list.size());
+
+  // If Javascript is not allowed something unexpected has happened to the page
+  // while we were saving device images and we should just exit gracefully.
+  if (!IsJavascriptAllowed()) {
+    loading_saved_device_page_ = false;
+    return;
+  }
+
   FireWebUIListener(kSavedDevicesListMessage, saved_devices_list);
   CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Sending device list";
   base::TimeDelta total_load_time =

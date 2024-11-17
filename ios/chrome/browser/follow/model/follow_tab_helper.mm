@@ -113,10 +113,10 @@ void FollowTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   // Do not show follow IPH if the user is not signed in.
-  ChromeBrowserState* browserState =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   if (!authenticationService || !authenticationService->GetPrimaryIdentity(
                                     signin::ConsentLevel::kSignin)) {
     return;
@@ -186,8 +186,8 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   }
 
   feature_engagement::Tracker* feature_engagement_tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
+      feature_engagement::TrackerFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
   // Do not show follow IPH if the feature engagement conditions are
   // not fulfilled. Ex. Do not show more than 5 Follow IPHs per week.
   if (!feature_engagement_tracker->WouldTriggerHelpUI(
@@ -196,8 +196,8 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   }
 
   NSURL* recommended_url =
-      FollowServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()))
+      FollowServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()))
           ->GetRecommendedSiteURL(web_page_urls);
 
   // Do not show follow IPH if:
@@ -212,8 +212,8 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
 
   // Check if the site has enough visit count.
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()),
+      ios::HistoryServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()),
           ServiceAccessType::EXPLICIT_ACCESS);
 
   // Ignore any visits within the last hour so that we do not count
@@ -264,8 +264,8 @@ void FollowTabHelper::UpdateFollowMenuItemWithURL(WebPageURLs* web_page_urls) {
   // webFrame can be retrieved. Otherwise, leave the option disabled.
   if (web_page_urls && web_frame) {
     const bool followed =
-        FollowServiceFactory::GetForBrowserState(
-            ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()))
+        FollowServiceFactory::GetForProfile(
+            ProfileIOS::FromBrowserState(web_state_->GetBrowserState()))
             ->IsWebSiteFollowed(web_page_urls);
 
     std::string domain_name = web_frame->GetSecurityOrigin().host();

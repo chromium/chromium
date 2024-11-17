@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="basic-48.png">
+</head>
+<script>
+  console.log('Setting up the launch queue');
+  var launchParamsTargetUrls = [];
+
+  // Used for debugging when you want to slow down the test a bit, so you can
+  // follow along manually. The delay is inserted after the launch param has
+  // been received and displayed on screen, but before it is added to the launch
+  // param array.
+  const delay = 0; // Delay in ms per launch param.
+
+  function recordLaunchParam(url) {
+    // Display the launch param received.
+    let messageElement = document.getElementById('message');
+    const message = document.createTextNode(
+      '\n' + launchParamsTargetUrls.length + ': ' + url
+    );
+    messageElement.appendChild(message);
+
+    // Add the launch param to the array, possibly delayed.
+    setTimeout(() => {
+      console.log('Received launch param: ' + url);
+      launchParamsTargetUrls.push(url);
+    }, delay)
+  }
+
+  window.launchQueue.setConsumer((launchParams) => {
+    recordLaunchParam(launchParams.targetURL);
+  });
+</script>
+<body>
+  <h1>Intent Picker Navigation Capture test</h1>
+  <pre id="message">Launch params received:</pre>
+</body>
+</html>

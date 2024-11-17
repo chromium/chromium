@@ -47,6 +47,7 @@ source_set("public") {
     "//base",
     "//base:i18n",
     "//components/keyed_service/core",
+    "//components/segmentation_platform/embedder/home_modules:constants",
     "//services/metrics/public/cpp:metrics_cpp",
     "//url",
   ]

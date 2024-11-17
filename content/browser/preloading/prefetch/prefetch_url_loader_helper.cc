@@ -151,6 +151,7 @@ void ContinueOnGotPrefetchToServe(
 
   switch (state->reader.GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
       std::move(state->callback).Run({});
       return;
@@ -345,6 +346,7 @@ void OnGotPrefetchToServe(
 
   switch (reader.GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
       std::move(get_prefetch_callback).Run({});
       return;

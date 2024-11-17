@@ -234,9 +234,8 @@ void MostVisitedHandler::PrerenderMostVisitedTile(
   auto* prerender_manager = PrerenderManager::FromWebContents(web_contents_);
 
   prerender_handle_ = prerender_manager->StartPrerenderNewTabPage(
-      tile->url, is_hover_trigger
-                     ? chrome_preloading_predictor::kMouseHoverOnNewTabPage
-                     : chrome_preloading_predictor::kPointerDownOnNewTabPage);
+      tile->url,
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
 }
 
 void MostVisitedHandler::PreconnectMostVisitedTile(

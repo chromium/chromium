@@ -60,8 +60,8 @@ found in the LICENSE file.
             app:tabGravity="center"
             app:tabIndicatorHeight="0dp"
             app:tabMinWidth="0dp"
-            app:tabPaddingStart="8dp"
-            app:tabPaddingEnd="8dp" />
+            app:tabPaddingStart="@dimen/steps_tab_paddingHorizontal"
+            app:tabPaddingEnd="@dimen/steps_tab_paddingHorizontal" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/next_button"

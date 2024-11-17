@@ -45,6 +45,7 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/url_constants.h"
 
 namespace page_load_metrics {
 
@@ -73,9 +74,9 @@ UserInitiatedInfo CreateUserInitiatedInfo(
       !navigation_handle->NavigationInputStart().is_null());
 }
 
-bool IsUrlSchemeSupported(const GURL& url) {
-  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kDataScheme) ||
-         url.SchemeIs(url::kFileScheme);
+bool ShouldTrackSchemeForNonWebUI(std::string_view scheme) {
+  return scheme == url::kHttpsScheme || scheme == url::kHttpScheme ||
+         scheme == url::kDataScheme || scheme == url::kFileScheme;
 }
 
 }  // namespace
@@ -177,7 +178,7 @@ void MetricsWebContentsObserver::BindPageLoadMetrics(
   observer->page_load_metrics_receivers_.Bind(rfh, std::move(receiver));
 }
 
-MetricsWebContentsObserver::~MetricsWebContentsObserver() {}
+MetricsWebContentsObserver::~MetricsWebContentsObserver() = default;
 
 void MetricsWebContentsObserver::WebContentsWillSoonBeDestroyed() {
   // TODO(crbug.com/40238907): Should not rely on this call.
@@ -378,7 +379,7 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
       source_id = ukm::NoURLSourceId();
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // For prerendered page activations, we don't create a new PageLoadTracker,
@@ -486,9 +487,7 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const content::GlobalRequestID& request_id,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  // Ignore non-HTTP schemes (e.g. chrome://) for non-webUI surfaces.
-  if (!resource_load_info.final_url.SchemeIsHTTPOrHTTPS() &&
-      !embedder_interface_->IsNonTabWebUI()) {
+  if (!ShouldTrackScheme(resource_load_info.final_url.scheme_piece())) {
     return;
   }
 
@@ -663,6 +662,7 @@ void MetricsWebContentsObserver::DidFinishNavigation(
     return;
   }
 
+  CHECK(navigation_handle->IsInMainFrame());
   // Not all navigations trigger the WillStartNavigationRequest callback (for
   // example, navigations to about:blank). DidFinishNavigation is guaranteed to
   // be called for every navigation, so we also update has_navigated_ here, to
@@ -670,13 +670,12 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   // TODO(crbug.com/40216775): This flag seems broken for Prerender and
   // FencedFrames.
   has_navigated_ = true;
+  main_frame_is_webui_ = web_contents()->GetWebUI() != nullptr;
 
   std::unique_ptr<PageLoadTracker> navigation_handle_tracker(
       std::move(provisional_loads_[navigation_handle]));
   provisional_loads_.erase(navigation_handle);
 
-  // Ignore same-document navigations.
-  CHECK(navigation_handle->IsInMainFrame());
   if (navigation_handle->HasCommitted() &&
       navigation_handle->IsSameDocument()) {
     if (navigation_handle_tracker) {
@@ -1225,8 +1224,7 @@ bool MetricsWebContentsObserver::DoesTimingUpdateHaveError(
     return true;
   }
 
-  if (!IsUrlSchemeSupported(tracker->GetUrl()) &&
-      !embedder_interface_->IsNonTabWebUI()) {
+  if (!ShouldTrackScheme(tracker->GetUrl().scheme_piece())) {
     RecordInternalError(ERR_IPC_FROM_BAD_URL_SCHEME);
     return true;
   }
@@ -1286,18 +1284,6 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
   CHECK(navigation_handle->IsInMainFrame());
   CHECK(!navigation_handle->HasCommitted() ||
         !navigation_handle->IsSameDocument());
-  // For non-webUI surfaces, only track http/https/data/file schemes.
-  // For webUI surfaces, track all schemes.
-  if (!IsUrlSchemeSupported(navigation_handle->GetURL()) &&
-      !embedder_interface_->IsNonTabWebUI()) {
-    return false;
-  }
-
-  // Ignore NTP loads.
-  if (embedder_interface_->IsNewTabPageUrl(navigation_handle->GetURL())) {
-    return false;
-  }
-
   // The navigation served from the back-forward cache will use the previously
   // created tracker for the document.
   if (navigation_handle->IsServedFromBackForwardCache()) {
@@ -1324,7 +1310,23 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
     }
   }
 
-  return true;
+  const GURL& url = navigation_handle->GetURL();
+  if (embedder_interface_->IsNonTabWebUI(url) ||
+      embedder_interface_->IsNewTabPageUrl(url)) {
+    return true;
+  }
+
+  return ShouldTrackSchemeForNonWebUI(url.scheme_piece());
+}
+
+bool MetricsWebContentsObserver::ShouldTrackScheme(
+    std::string_view scheme) const {
+  // Allow any scheme if we are tracking WebUIs.
+  if (main_frame_is_webui_) {
+    return true;
+  }
+
+  return ShouldTrackSchemeForNonWebUI(scheme);
 }
 
 void MetricsWebContentsObserver::OnBrowserFeatureUsage(

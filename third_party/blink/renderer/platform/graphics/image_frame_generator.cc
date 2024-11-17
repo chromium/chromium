@@ -23,13 +23,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -68,7 +64,7 @@ SkYUVAInfo::Subsampling SubsamplingToSkiaSubsampling(
 static bool UpdateYUVAInfoSubsamplingAndWidthBytes(
     ImageDecoder* decoder,
     SkYUVAInfo::Subsampling* subsampling,
-    size_t component_width_bytes[SkYUVAInfo::kMaxPlanes]) {
+    base::span<size_t, SkYUVAInfo::kMaxPlanes> component_width_bytes) {
   SkYUVAInfo::Subsampling tempSubsampling =
       SubsamplingToSkiaSubsampling(decoder->GetYUVSubsampling());
   if (tempSubsampling == SkYUVAInfo::Subsampling::kUnknown) {
@@ -171,9 +167,9 @@ bool ImageFrameGenerator::DecodeToYUV(
     SegmentReader* data,
     wtf_size_t index,
     SkColorType color_type,
-    const SkISize component_sizes[cc::kNumYUVPlanes],
-    void* planes[cc::kNumYUVPlanes],
-    const wtf_size_t row_bytes[cc::kNumYUVPlanes],
+    base::span<const SkISize, cc::kNumYUVPlanes> component_sizes,
+    base::span<void*, cc::kNumYUVPlanes> planes,
+    base::span<const wtf_size_t, cc::kNumYUVPlanes> row_bytes,
     cc::PaintImage::GeneratorClientId client_id) {
   base::AutoLock lock(generator_lock_);
   DCHECK_EQ(index, 0u);
@@ -186,8 +182,8 @@ bool ImageFrameGenerator::DecodeToYUV(
   if (decode_failed_ || yuv_decoding_failed_)
     return false;
 
-  if (!planes || !planes[0] || !planes[1] || !planes[2] || !row_bytes ||
-      !row_bytes[0] || !row_bytes[1] || !row_bytes[2]) {
+  if (!planes.data() || !planes[0] || !planes[1] || !planes[2] ||
+      !row_bytes.data() || !row_bytes[0] || !row_bytes[1] || !row_bytes[2]) {
     return false;
   }
   const bool all_data_received = true;
@@ -199,7 +195,7 @@ bool ImageFrameGenerator::DecodeToYUV(
   // ImageDecoder::create must succeed.
   DCHECK(decoder);
 
-  std::unique_ptr<ImagePlanes> image_planes =
+  auto image_planes =
       std::make_unique<ImagePlanes>(planes, row_bytes, color_type);
   // TODO(crbug.com/943519): Don't forget to initialize planes to black or
   // transparent for incremental decoding.
@@ -291,7 +287,7 @@ bool ImageFrameGenerator::GetYUVAInfo(
   DCHECK(decoder->CanDecodeToYUV())
       << decoder->FilenameExtension() << " image decoder";
   SkYUVAInfo::Subsampling subsampling;
-  size_t width_bytes[SkYUVAInfo::kMaxPlanes];
+  std::array<size_t, SkYUVAInfo::kMaxPlanes> width_bytes;
   if (!UpdateYUVAInfoSubsamplingAndWidthBytes(decoder.get(), &subsampling,
                                               width_bytes)) {
     return false;
@@ -317,7 +313,7 @@ bool ImageFrameGenerator::GetYUVAInfo(
   } else {
     return false;
   }
-  *info = SkYUVAPixmapInfo(yuva_info, dataType, width_bytes);
+  *info = SkYUVAPixmapInfo(yuva_info, dataType, width_bytes.data());
   DCHECK(info->isSupported(supported_data_types));
 
   return true;

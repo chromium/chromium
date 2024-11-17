@@ -40,32 +40,19 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/shelf_item.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "ui/events/event_constants.h"
 #else
 #include "base/command_line.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/shelf_item.h"
-#include "ash/public/cpp/shelf_model.h"
-#include "ash/public/cpp/shelf_types.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "chrome/browser/ui/lacros/window_utility.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
-#include "chromeos/crosapi/mojom/url_handler.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "url/gurl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
 
@@ -199,26 +186,8 @@ void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
   if (!window_) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::LacrosShelfItemTracker>()) {
-    std::string window_id =
-        lacros_window_utility::GetRootWindowUniqueId(window_);
 
-    crosapi::mojom::WindowDataPtr window_data =
-        crosapi::mojom::WindowData::New();
-    window_data->item_id = instance_id_;
-    window_data->window_id = window_id;
-    window_data->instance_type =
-        crosapi::mojom::InstanceType::kIsolatedWebAppInstaller;
-    window_data->icon = icon_;
-
-    lacros_service->GetRemote<crosapi::mojom::LacrosShelfItemTracker>()
-        ->AddOrUpdateWindow(std::move(window_data));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
   ash::ShelfID shelf_id = ash::ShelfID(instance_id_);
 
@@ -257,10 +226,12 @@ void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
     ash::ShelfModel::Get()->Set(index, item);
   }
 
+  // TODO(https://crbug.com/375937556): Revise this now that the Lacros support
+  // is removed.
   static_cast<LacrosShelfItemController*>(
       shelf_model->GetShelfItemDelegate(shelf_id))
       ->AddWindow(window_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void IsolatedWebAppInstallerViewController::SetIcon(gfx::ImageSkia icon) {
@@ -355,20 +326,19 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return true;
 }
 
 void IsolatedWebAppInstallerViewController::OnComplete() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
   ash::ShelfID shelf_id = ash::ShelfID(instance_id_);
   int index = shelf_model->ItemIndexByID(shelf_id);
   if (-1 != index) {
     shelf_model->RemoveItemAt(index);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   view_ = nullptr;
   dialog_delegate_ = nullptr;
@@ -448,22 +418,10 @@ void IsolatedWebAppInstallerViewController::OnShowMetadataLearnMoreClicked() {
 }
 
 void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kManageIsolatedWebAppsSubpagePath);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  DCHECK(service->IsAvailable<crosapi::mojom::UrlHandler>());
-
-  GURL manage_isolated_web_apps_subpage_url =
-      GURL(chrome::kChromeUIOSSettingsURL)
-          .Resolve(
-              chromeos::settings::mojom::kManageIsolatedWebAppsSubpagePath);
-  service->GetRemote<crosapi::mojom::UrlHandler>()->OpenUrl(
-      manage_isolated_web_apps_subpage_url);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
@@ -506,7 +464,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -521,8 +479,7 @@ void IsolatedWebAppInstallerViewController::OnStepChanged() {
 
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case IsolatedWebAppInstallerModel::Step::kDisabled:
       IsolatedWebAppInstallerView::SetDialogButtons(
           dialog_delegate_, IDS_APP_CLOSE,

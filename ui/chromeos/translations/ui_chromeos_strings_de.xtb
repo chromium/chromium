@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalanisch</translation>
 <translation id="1168100932582989117">Google-Nameserver</translation>
+<translation id="1170788066030116158">Aufnahmedatum</translation>
 <translation id="1172970565351728681">Noch ungefähr <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Umbenennen</translation>
 <translation id="1173916544412572294">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Remote-Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="4394214039309501350">Externer Link</translation>
 <translation id="4394980935660306080">Früher in dieser Woche</translation>
+<translation id="4397435965699247285">OneDrive ist offline nicht verfügbar</translation>
 <translation id="4398096759193130964">Stelle die Elemente wieder her oder ziehe sie in einen neuen Ordner außerhalb des Papierkorbs</translation>
 <translation id="4401287888955153199">Alles extrahieren</translation>
 <translation id="4410695710508688828">Fehler beim Extrahieren. <ph name="ERROR_MESSAGE" /></translation>

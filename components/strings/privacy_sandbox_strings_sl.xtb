@@ -3,18 +3,25 @@
 <translationbundle lang="sl">
 <translation id="1444443021901415601">Chrome beleži teme zanimanja na podlagi nedavne zgodovine brskanja</translation>
 <translation id="2252052615723281030">Ko ste prijavljeni v Chrome, lahko s to nastavitvijo poskrbite, da je naslov IP zaseben. Če Chrome sumi, da vam spletno mesto sledi, se nekaj vašega prometa morda pošlje prek strežnikov za zasebnost.</translation>
+<translation id="235789365079050412">Googlov pravilnik o zasebnosti</translation>
 <translation id="2793385791865768072">Chromium beleži teme zanimanja na podlagi nedavne zgodovine brskanja</translation>
+<translation id="2979365474350987274">Piškotki tretjih oseb so omejeni</translation>
 <translation id="33479675708419823">Ko ste prijavljeni v Chrome, lahko s to nastavitvijo poskrbite, da je naslov IP zaseben. Če Chrome sumi, da vam spletno mesto sledi, se nekaj vašega prometa morda pošlje prek strežnikov za zasebnost. Preberite več o tem, <ph name="LINK_BEGIN" />kako deluje zaščita naslova IP<ph name="LINK_END" />.</translation>
 <translation id="3529311220178827364">Preberite več o skrivanju naslova IP</translation>
+<translation id="385051799172605136">Nazaj</translation>
 <translation id="4041687306270459969">Teme oglasov, starejše od 4 tednov, se samodejno izbrišejo. Teme vključujejo stvari, kot so šport, oblačila in drugo</translation>
 <translation id="4177501066905053472">Teme oglasov</translation>
 <translation id="4301151630239508244">Teme oglasov so samo ena od številnih stvari, s katerimi lahko spletno mesto osebno prilagaja oglase. Spletna mesta vam lahko oglase prikazujejo tudi brez tem oglasov, vendar bodo morda manj osebno prilagojeni. Preberite več o <ph name="BEGIN_LINK_1" />upravljanju zasebnosti pri oglaševanju<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Več o tem, kako Google varuje vaše podatke, lahko preberete v <ph name="BEGIN_LINK" />pravilniku o zasebnosti<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">V nastavitvah Chromiuma si lahko ogledate teme oglasov in blokirate tiste, ki jih ne želite deliti s spletnimi mesti</translation>
 <translation id="4598427486995631491">Skrij naslov IP</translation>
 <translation id="4692439979815346597">V nastavitvah Chroma si lahko ogledate teme oglasov in blokirate tiste, ki jih ne želite deliti s spletnimi mesti</translation>
 <translation id="5413586988657235240">Spletno mesto, ki ga obiščete, lahko od Chromiuma zahteva teme zaradi prikazovanja ustreznih oglasov, obenem pa varuje vašo zgodovino brskanja in identiteto</translation>
+<translation id="6053735090575989697">Več o tem, kako Google varuje vaše podatke, lahko preberete v pravilniku o zasebnosti.</translation>
 <translation id="6186536480878693792">Spletno mesto, ki ga obiščete, lahko od Chroma zahteva teme, da vam prikaže ustrezne oglase, obenem pa varuje vašo zgodovino brskanja in identiteto</translation>
+<translation id="6195163219142236913">Piškotki tretjih oseb so omejeni</translation>
 <translation id="6371812158043974664">Ko ste prijavljeni v Chromium, lahko s to nastavitvijo poskrbite, da je naslov IP zaseben. Če Chromium sumi, da vam spletno mesto sledi, se nekaj vašega prometa morda pošlje prek strežnikov za zasebnost. Preberite več o tem, <ph name="LINK_BEGIN" />kako deluje zaščita naslova IP<ph name="LINK_END" />.</translation>
+<translation id="6398358690696005758">Več o tem, kako Google varuje vaše podatke, lahko preberete v <ph name="BEGIN_LINK1" />pravilniku o zasebnosti<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Preberite, <ph name="BEGIN_LINK" />kako deluje zaščita naslova IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Pregled nastavitve tem oglasov</translation>
 </translationbundle>

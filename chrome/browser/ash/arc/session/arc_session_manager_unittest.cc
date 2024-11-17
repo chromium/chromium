@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
+#include "chrome/browser/ash/arc/session/mock_arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/arc/test/arc_data_removed_waiter.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -403,8 +404,8 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
     ash::ResourcedClient::Shutdown();
     ArcSessionManagerTestBase::TearDown();
   }
-
  protected:
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   raw_ptr<ash::FakeResourcedClient> resourced_client_ = nullptr;
 };
 
@@ -1662,6 +1663,43 @@ TEST_F(ArcSessionManagerTest, RequestDisableWithArcDataRemoval) {
   arc_session_manager()->Shutdown();
 }
 
+// Hardware check enablement test case on the board that supports
+// the arcvm dlc method. (Only the reven board has arcvm dlc feature now).
+TEST_F(ArcSessionManagerTest, EnableHardwareCheck) {
+  cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
+      "example.com", "fake-device-id");
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kRevenBranding);
+  // Add arcvm-dlc command flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVmDlc);
+  auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
+  EXPECT_CALL(*mock_hardware_checker_,
+              IsRevenDeviceCompatibleForArc(::testing::_))
+      .WillOnce(
+          ::testing::Invoke([](base::OnceCallback<void(bool)> callback) {}));
+  // Inject the mock hardware checker into the ArcSessionManager.
+  arc_session_manager()->SetHardwareCheckerForTesting(
+      std::move(mock_hardware_checker_));
+  arc_session_manager()->ExpandPropertyFilesAndReadSalt();
+}
+
+// Verify that the hardware check is not being run to install
+// the arcvm DLC image for unmanaged reven devices.
+TEST_F(ArcSessionManagerTest, NoArcVmInstallOnUnmanaged) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kRevenBranding);
+  // Add arcvm-dlc command flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVmDlc);
+  auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
+  EXPECT_CALL(*mock_hardware_checker_,
+              IsRevenDeviceCompatibleForArc(::testing::_))
+      .Times(0);
+  arc_session_manager()->reset_property_files_expansion_result();
+  arc_session_manager()->ExpandPropertyFilesAndReadSalt();
+}
+
 class ArcSessionManagerArcAlwaysStartTest : public ArcSessionManagerTest {
  public:
   ArcSessionManagerArcAlwaysStartTest() = default;
@@ -1845,8 +1883,7 @@ class ArcSessionManagerPolicyTest
       case 2:
         return base::Value(true);
     }
-    NOTREACHED_IN_MIGRATION();
-    return base::Value();
+    NOTREACHED();
   }
 
   base::Value location_service_pref_value() const {
@@ -1858,8 +1895,7 @@ class ArcSessionManagerPolicyTest
       case 2:
         return base::Value(true);
     }
-    NOTREACHED_IN_MIGRATION();
-    return base::Value();
+    NOTREACHED();
   }
 
  private:
@@ -2319,6 +2355,7 @@ TEST_F(ArcSessionManagerTest, FileExpansion_AlreadyDone) {
   arc_session_manager()->AddObserver(&observer);
   ASSERT_TRUE(observer.property_files_expansion_result().has_value());
   EXPECT_TRUE(observer.property_files_expansion_result().value());
+  arc_session_manager()->RemoveObserver(&observer);
 }
 
 // Tests that OnPropertyFilesExpanded() is called with true when the files are
@@ -2331,6 +2368,7 @@ TEST_F(ArcSessionManagerTest, FileExpansion) {
   arc_session_manager()->OnExpandPropertyFilesAndReadSaltForTesting(true);
   ASSERT_TRUE(observer.property_files_expansion_result().has_value());
   EXPECT_TRUE(observer.property_files_expansion_result().value());
+  arc_session_manager()->RemoveObserver(&observer);
 }
 
 // Tests that OnPropertyFilesExpanded() is called with false when the expansion
@@ -2343,6 +2381,7 @@ TEST_F(ArcSessionManagerTest, FileExpansion_Fail) {
   arc_session_manager()->OnExpandPropertyFilesAndReadSaltForTesting(false);
   ASSERT_TRUE(observer.property_files_expansion_result().has_value());
   EXPECT_FALSE(observer.property_files_expansion_result().value());
+  arc_session_manager()->RemoveObserver(&observer);
 }
 
 // Tests that TrimVmMemory doesn't crash.

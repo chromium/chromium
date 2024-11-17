@@ -29,6 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/display/display.h"
@@ -304,11 +305,6 @@ void AppListView::Show(AppListViewState preferred_state) {
   time_shown_ = std::nullopt;
 }
 
-void AppListView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  app_list_main_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
-}
-
 void AppListView::CloseOpenedPage() {
   if (HandleCloseOpenFolder())
     return;
@@ -453,8 +449,9 @@ void AppListView::HandleClickOrTap(ui::LocatedEvent* event) {
     gfx::Point onscreen_location(event->location());
     ConvertPointToScreen(this, &onscreen_location);
     delegate_->ShowWallpaperContextMenu(
-        onscreen_location, event->IsGestureEvent() ? ui::MENU_SOURCE_TOUCH
-                                                   : ui::MENU_SOURCE_MOUSE);
+        onscreen_location, event->IsGestureEvent()
+                               ? ui::mojom::MenuSourceType::kTouch
+                               : ui::mojom::MenuSourceType::kMouse);
     return;
   }
 

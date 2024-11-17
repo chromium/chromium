@@ -8,8 +8,8 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 enum class ServiceAccessType;
 
 namespace password_manager {
@@ -21,10 +21,6 @@ class BulkLeakCheckServiceInterface;
 class IOSChromeBulkLeakCheckServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static password_manager::BulkLeakCheckServiceInterface* GetForBrowserState(
-      ProfileIOS* profile);
-
   static password_manager::BulkLeakCheckServiceInterface* GetForProfile(
       ProfileIOS* profile);
   static IOSChromeBulkLeakCheckServiceFactory* GetInstance();

@@ -25,11 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
@@ -38,7 +34,6 @@ import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 /** JUnit tests of the class {@link MSBBFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MSBBFragmentTest {
-    @Rule public JniMocker mocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -50,7 +45,7 @@ public class MSBBFragmentTest {
 
     @Before
     public void setUp() {
-        mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
+        UnifiedConsentServiceBridgeJni.setInstanceForTesting(mNativeMock);
     }
 
     @After
@@ -86,21 +81,18 @@ public class MSBBFragmentTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testIsSwitchOffWhenMSBBOff() {
         initFragmentWithMSBBState(false);
         assertFalse(mMSBBButton.isChecked());
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testIsSwitchOnWhenMSBBOn() {
         initFragmentWithMSBBState(true);
         assertTrue(mMSBBButton.isChecked());
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testTurnMSBBOn() {
         initFragmentWithMSBBState(false);
         mMSBBButton.performClick();
@@ -108,7 +100,6 @@ public class MSBBFragmentTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testTurnMSBBOff() {
         initFragmentWithMSBBState(true);
         mMSBBButton.performClick();
@@ -116,7 +107,6 @@ public class MSBBFragmentTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testTurnMSBBOff_changeMSBBOffUserAction() {
         initFragmentWithMSBBState(true);
         mMSBBButton.performClick();
@@ -124,54 +114,7 @@ public class MSBBFragmentTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testTurnMSBBOn_changeMSBBOnUserAction() {
-        initFragmentWithMSBBState(false);
-        mMSBBButton.performClick();
-        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeMSBBOn"));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testIsSwitchOffWhenMSBBOffPG3() {
-        initFragmentWithMSBBState(false);
-        assertFalse(mMSBBButton.isChecked());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testIsSwitchOnWhenMSBBOnPG3() {
-        initFragmentWithMSBBState(true);
-        assertTrue(mMSBBButton.isChecked());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testTurnMSBBOnPG3() {
-        initFragmentWithMSBBState(false);
-        mMSBBButton.performClick();
-        Mockito.verify(mNativeMock).setUrlKeyedAnonymizedDataCollectionEnabled(mProfile, true);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testTurnMSBBOffPG3() {
-        initFragmentWithMSBBState(true);
-        mMSBBButton.performClick();
-        Mockito.verify(mNativeMock).setUrlKeyedAnonymizedDataCollectionEnabled(mProfile, false);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testTurnMSBBOff_changeMSBBOffUserActionPG3() {
-        initFragmentWithMSBBState(true);
-        mMSBBButton.performClick();
-        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeMSBBOff"));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testTurnMSBBOn_changeMSBBOnUserActionPG3() {
         initFragmentWithMSBBState(false);
         mMSBBButton.performClick();
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeMSBBOn"));

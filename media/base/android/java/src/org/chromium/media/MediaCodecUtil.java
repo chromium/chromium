@@ -207,8 +207,9 @@ class MediaCodecUtil {
 
     /**
      * Check if a given MIME type can be decoded.
+     *
      * @param mime MIME type of the media.
-     * @param secure Whether secure decoder is required.
+     * @param isSecure Whether secure decoder is required.
      * @return true if system is able to decode, or false otherwise.
      */
     @CalledByNative

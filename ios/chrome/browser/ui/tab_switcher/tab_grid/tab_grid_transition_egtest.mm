@@ -102,13 +102,13 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 
 // Rotate the device back to portrait if needed, since some tests attempt to run
 // in landscape.
-- (void)tearDown {
+- (void)tearDownHelper {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
 
   // Release the histogram tester.
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Sets up the EmbeddedTestServer as needed for tests.
@@ -684,10 +684,6 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 
 // Tests leaving tab grid after entering and exit inactive tabs grid.
 - (void)testLeaveSwitcherAfterEnteringAndExittingInactiveTabs {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
-                           @"only supported on iPhone.");
-  }
   // Mark the User Education screen as already-seen by default.
   [ChromeEarlGrey setUserDefaultsObject:@YES
                                  forKey:kInactiveTabsUserEducationShownOnceKey];
@@ -698,10 +694,9 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   // Relaunch with inactive tabs enabled.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdImmediateDemoParam);
+  config.features_enabled.push_back(kInactiveTabsIPadFeature);
+  config.additional_args.push_back("-InactiveTabsTestMode");
+  config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   GREYAssertNil([MetricsAppInterface setupHistogramTester],

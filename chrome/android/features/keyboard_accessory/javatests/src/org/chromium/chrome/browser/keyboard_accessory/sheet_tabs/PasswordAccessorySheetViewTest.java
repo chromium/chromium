@@ -44,6 +44,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -161,19 +162,20 @@ public class PasswordAccessorySheetViewTest {
 
         UserInfo testInfo = new UserInfo("", false);
         testInfo.addField(
-                new UserInfoField(
-                        "Name Suggestion",
-                        "Name Suggestion",
-                        "",
-                        false,
-                        item -> clicked.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
+                        .setDisplayText("Name Suggestion")
+                        .setA11yDescription("Name Suggestion")
+                        .setCallback(item -> clicked.set(true))
+                        .build());
         testInfo.addField(
-                new UserInfoField(
-                        "Password Suggestion",
-                        "Password Suggestion",
-                        "",
-                        true,
-                        item -> clicked.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_PASSWORD)
+                        .setDisplayText("Password Suggestion")
+                        .setA11yDescription("Password Suggestion")
+                        .setIsObfuscated(true)
+                        .setCallback(item -> clicked.set(true))
+                        .build());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
@@ -240,6 +242,8 @@ public class PasswordAccessorySheetViewTest {
                                     new PlusAddressInfo(
                                             /* origin= */ "google.com",
                                             new UserInfoField.Builder()
+                                                    .setSuggestionType(
+                                                            AccessorySuggestionType.PLUS_ADDRESS)
                                                     .setDisplayText("example@gmail.com")
                                                     .setTextToFill("example@gmail.com")
                                                     .setIsObfuscated(false)
@@ -267,9 +271,19 @@ public class PasswordAccessorySheetViewTest {
 
         UserInfo usernameEnabled = new UserInfo("", false);
         usernameEnabled.addField(
-                new UserInfoField("username1", "username1", "", false, item -> clicked.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
+                        .setDisplayText("username1")
+                        .setA11yDescription("username1")
+                        .setCallback(item -> clicked.set(true))
+                        .build());
         usernameEnabled.addField(
-                new UserInfoField("pa55w0rd", "Password for username1", "", true, null));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_PASSWORD)
+                        .setDisplayText("pa55w0rd")
+                        .setA11yDescription("Password for username1")
+                        .setIsObfuscated(true)
+                        .build());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -297,7 +311,12 @@ public class PasswordAccessorySheetViewTest {
     public void testAddingUserInfoTitlesAreRenderedIfNotEmpty() {
         assertThat(mView.get().getChildCount(), is(0));
         final UserInfoField kUnusedInfoField =
-                new UserInfoField("Unused Name", "Unused Password", "", false, cb -> {});
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
+                        .setDisplayText("Unused Name")
+                        .setA11yDescription("Unused Password")
+                        .setCallback(cb -> {})
+                        .build();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

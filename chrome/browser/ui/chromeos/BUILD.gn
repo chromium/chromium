@@ -2,15 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
-
-static_library("chromeos") {
-  sources = [ "window_pin_util.h" ]
-
-  deps = [ "//chromeos/ui/base" ]
-}
 
 static_library("test_support") {
   testonly = true
@@ -21,9 +13,12 @@ static_library("test_support") {
   ]
 
   deps = [
-    ":chromeos",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/exclusive_access:test_support",
@@ -37,19 +32,4 @@ static_library("test_support") {
   ]
 
   allow_circular_includes_from = [ "//chrome/test:test_support" ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash",
-      "//ash/constants",
-      "//ash/public/cpp",
-      "//chrome/browser/ash/crosapi:test_support",
-    ]
-  } else {
-    deps += [
-      "//base/test:test_support",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
 }

@@ -29,7 +29,7 @@ TestPaymentRequestDelegate::TestPaymentRequestDelegate(
                          &payments_network_interface_,
                          personal_data_manager) {}
 
-TestPaymentRequestDelegate::~TestPaymentRequestDelegate() {}
+TestPaymentRequestDelegate::~TestPaymentRequestDelegate() = default;
 
 autofill::PersonalDataManager*
 TestPaymentRequestDelegate::GetPersonalDataManager() {

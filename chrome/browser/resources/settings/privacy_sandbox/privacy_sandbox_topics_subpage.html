@@ -5,11 +5,7 @@
     padding: 0 var(--cr-section-padding);
   }
 
-  #currentTopicsDescriptionEmpty {
-    align-items: center;
-  }
-
-  .topics-empty-text-v2 {
+  .topics-empty-text {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -59,12 +55,6 @@
   }
 
   #blockedTopicsDescription {
-    min-height: auto;
-    padding-block-end: 16px;
-    padding-block-start: 16px;
-  }
-
-  #blockedTopicsDescriptionV2 {
     color: var(--cr-secondary-text-color);
   }
 
@@ -99,29 +89,20 @@
     id="topicsToggle"
     pref="{{prefs.privacy_sandbox.m1.topics_enabled}}"
     label="$i18n{topicsPageToggleLabel}"
-    sub-label="[[computeTopicsPageToggleSubLabel_(shouldShowV2_)]]"
+    sub-label="$i18n{topicsPageToggleSubLabel}"
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
-<div id="disclaimer" hidden="[[!shouldShowV2_]]">
+<div id="disclaimer">
   $i18nRaw{topicsPageDisclaimerDesktop}
 </div>
-<template is="dom-if" if="[[!shouldShowV2EmptyState_]]" restamp>
+<template is="dom-if" if="[[!emptyState_]]" restamp>
   <template is="dom-if" if="[[!isTopicsPrefManaged_(
       prefs.privacy_sandbox.m1.topics_enabled.enforcement)]]" restamp>
     <div id="currentTopicsSection">
       <div id="currentTopicsSectionWrapper" class="hr">
-        <h2 id="currentTopicsHeading">
-          [[computeTopicsPageCurrentTopicsHeading_(shouldShowV2_)]]
-        </h2>
+        <h2 id="currentTopicsHeading">$i18n{topicsPageActiveTopicsHeading}</h2>
         <div id="currentTopicsDescription" class="cr-secondary-text">
-          [[computeTopicsPageCurrentTopicsDescription_(shouldShowV2_)]]
-          <!-- TODO(b/262502300): Add "Learn more" into current topics
-              description string. -->
-          <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
-              "$i18n{topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel}"
-              hidden="[[shouldShowV2_]]">
-            $i18n{topicsPageCurrentTopicsDescriptionLearnMoreLink}
-          </button>
+          $i18n{topicsPageActiveTopicsDescription}
         </div>
         <template is="dom-if" if="[[isTopicsEnabledAndLoaded_(
             prefs.privacy_sandbox.m1.topics_enabled.value,
@@ -134,22 +115,15 @@
               </privacy-sandbox-interest-item>
             </template>
           </div>
-          <div id="currentTopicsDescriptionEmpty"
-              class="no-topics cr-secondary-text"
-              hidden="[[!isTopicsListEmpty_(topicsList_.length,
-              shouldShowV2_)]]">
-            $i18n{topicsPageCurrentTopicsDescriptionEmpty}
-          </div>
-          <div id="currentTopicsEmptyTextV2"
-              class="topics-empty-text-v2"
-              hidden="[[!isTopicsListEmptyV2_(topicsList_.length,
-              shouldShowV2_)]]">
+          <div id="currentTopicsEmptyText"
+              class="topics-empty-text"
+              hidden="[[!isTopicsListEmpty_(topicsList_.length)]]">
             <span id="currentTopicsDescriptionEmptyTextHeading">
               $i18n{topicsPageCurrentTopicsDescriptionEmptyTextHeading}
             </span>
-            <span id="currentTopicsDescriptionEmptyTextV2"
+            <span id="currentTopicsDescriptionEmptyText"
                 class="cr-secondary-text">
-              $i18n{topicsPageCurrentTopicsDescriptionEmptyTextV2}
+              $i18n{topicsPageCurrentTopicsDescriptionEmptyText}
             </span>
           </div>
         </template>
@@ -161,30 +135,23 @@
       </div>
     </div>
   </template>
-  <cr-expand-button id="blockedTopicsRow" class="cr-row"
+   <cr-expand-button id="blockedTopicsRow" class="cr-row"
       expanded="{{blockedTopicsExpanded_}}">
-    [[computeTopicsPageBlockedTopicsHeading_(shouldShowV2_)]]
-    <div id="blockedTopicsDescriptionV2" hidden="[[!shouldShowV2_]]">
-      $i18n{topicsPageBlockedTopicsDescriptionNew}
+      $i18n{topicsPageBlockedTopicsHeading}
+    <div id="blockedTopicsDescription">
+      $i18n{topicsPageBlockedTopicsDescription}
     </div>
   </cr-expand-button>
   <cr-collapse opened="[[blockedTopicsExpanded_]]">
-    <div id="blockedTopicsDescription"
-        class$="[[getBlockedTopicsDescriptionClass_(
-        blockedTopicsList_.length)]]"
-        hidden="[[shouldShowV2_]]">
-      [[computeBlockedTopicsDescription_(blockedTopicsList_.length)]]
-    </div>
     <div id="blockedTopicsEmptyText"
-        class="topics-empty-text-v2"
-        hidden="[[!isBlockedTopicsListEmptyV2_(blockedTopicsList_.length,
-        shouldShowV2_)]]">
+        class="topics-empty-text"
+        hidden="[[!isBlockedTopicsListEmpty_(blockedTopicsList_.length)]]">
       <span id="blockedTopicsDescriptionEmptyTextHeading">
           $i18n{topicsPageBlockedTopicsDescriptionEmptyTextHeading}
       </span>
-      <span id="blockedTopicsDescriptionEmptyTextV2"
+      <span id="blockedTopicsDescriptionEmptyText"
           class="cr-secondary-text">
-        $i18n{topicsPageBlockedTopicsDescriptionEmptyTextV2}
+        $i18n{topicsPageBlockedTopicsDescriptionEmptyText}
       </span>
     </div>
     <div id="blockedTopicsList" role="region"
@@ -196,48 +163,23 @@
       </template>
     </div>
   </cr-collapse>
-  <template is="dom-if" if="[[shouldShowV2_]]">
-    <div id="manageTopicsSection" class="hr">
-        <cr-link-row id="privacySandboxManageTopicsLinkRow"
-            label="$i18n{manageTopicsHeading}"
-            sub-label="$i18n{manageTopicsDescription}"
-            on-click="onPrivacySandboxManageTopicsClick_">
-        </cr-link-row>
-    </div>
-  </template>
+  <div id="manageTopicsSection" class="hr">
+      <cr-link-row id="privacySandboxManageTopicsLinkRow"
+          label="$i18n{manageTopicsHeading}"
+          sub-label="$i18n{manageTopicsDescription}"
+          on-click="onPrivacySandboxManageTopicsClick_">
+      </cr-link-row>
+  </div>
 </template>
-<div id="footer" class="cr-secondary-text hr footer"
-    hidden="[[shouldShowV2_]]">
+<div id="footer" class="cr-secondary-text hr footer">
   $i18nRaw{topicsPageFooter}
 </div>
-<div id="footerV2" class="cr-secondary-text hr footer"
-    hidden="[[!shouldShowV2_]]">
-  $i18nRaw{topicsPageFooterV2}
-</div>
-<template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
-  <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>
-    <div slot="title">$i18n{topicsPageLearnMoreHeading}</div>
-    <div slot="body">
-      <p>$i18n{topicsPageLearnMoreBullet1}</p>
-      <p>$i18n{topicsPageLearnMoreBullet2}</p>
-      <p>$i18nRaw{topicsPageLearnMoreBullet3}</p>
-    </div>
-    <div slot="button-container">
-      <cr-button id="closeButton" class="cancel-button" autofocus
-          on-click="onCloseDialog_">
-        $i18n{close}
-      </cr-button>
-    </div>
-  </cr-dialog>
-</template>
-<template is="dom-if" if="[[shouldShowV2_]]">
-  <cr-toast id="unblockTopicToast" duration="10000">
-    <div id="unblockTopicToastBody">$i18n{unblockTopicToastBody}</div>
-    <cr-button id="closeToastButton" on-click="onHideToastClick_">
-      $i18n{unblockTopicToastButtonText}
-    </cr-button>
-  </cr-toast>
-</template>
+<cr-toast id="unblockTopicToast" duration="10000">
+  <div id="unblockTopicToastBody">$i18n{unblockTopicToastBody}</div>
+  <cr-button id="closeToastButton" on-click="onHideToastClick_">
+    $i18n{unblockTopicToastButtonText}
+  </cr-button>
+</cr-toast>
 <template is="dom-if" if="[[shouldShowBlockTopicDialog_]]" restamp>
   <settings-simple-confirmation-dialog id="blockTopicDialog"
       title-text="[[blockTopicDialogTitle_]]"

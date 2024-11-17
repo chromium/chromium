@@ -35,8 +35,7 @@ Multiple tests may share one resource, or URI handler.
      connection succeeds and "FAIL" otherwise.
 
 - check-origin.html : A page which checks the origin header of the WebSocket
-     opening handshake with check-origin_wsh.py. The page is expected to be
-     accessed via a file:// URL.
+     opening handshake. The page is expected to be accessed via a file:// URL.
 
 - multiple-connections.html : Verify that HTTP connection limits are not applied
      to WebSockets. Used by WebSocketBrowserTest.SSLConnectionLimit.
@@ -63,12 +62,6 @@ Multiple tests may share one resource, or URI handler.
      connection with arbitrary code and reason.
      Used by kinds of PPAPI tests for WebSocket.
 
-- close-with-split-packet_wsh.py : A WebSocket URL handler for testing split
-     packet handling. Here, packets mean TCP segments for WebSocket, or SSL
-     records for secure WebSocket.
-     Used by WebSocketBrowserTest.WebSocketSplitSegments and
-     WebSocketBrowserTest.SecureWebSocketSplitRecords.
-
 - close-observer_wsh.py : enables observing the close of one WebSocket due to
      the tab being closed from another page.
      Used by the SendCloseFrameWhenTabIsClosed browser test.
@@ -76,9 +69,6 @@ Multiple tests may share one resource, or URI handler.
 - protocol-test_wsh.py : A WebSocket URL handler for testing outgoing opening
      handshake protocol.
      Used by kinds of PPAPI tests for WebSocket.
-
-- check-origin_wsh.py : A WebSocket URL handler to echo back the origin header
-     used in the opening handshake.
 
 - send-message-every-quarter-second_wsh.py : A WebSocket URL handler to send
      a caller-specified number of messages through the port, each a quarter

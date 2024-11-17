@@ -19,7 +19,6 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
-#include "media/base/media_switches.h"
 #include "media/filters/wsola_internals.h"
 
 namespace media {
@@ -72,16 +71,13 @@ constexpr base::TimeDelta kStartingCapacity = base::Milliseconds(200);
 // encrypted playback is always worse than clear playback, due to decryption and
 // potentially IPC overhead. For the context, see https://crbug.com/403462,
 // https://crbug.com/718161 and https://crbug.com/879970.
-constexpr base::TimeDelta kMinStartingCapacityForEncrypted =
+constexpr base::TimeDelta kStartingCapacityForEncrypted =
     base::Milliseconds(500);
 
 AudioRendererAlgorithm::AudioRendererAlgorithm(MediaLog* media_log)
     : AudioRendererAlgorithm(
           media_log,
-          {kMaxCapacity, kStartingCapacity,
-           std::max(
-               kMinStartingCapacityForEncrypted,
-               kAudioRendererAlgorithmStartingCapacityForEncrypted.Get())}) {}
+          {kMaxCapacity, kStartingCapacity, kStartingCapacityForEncrypted}) {}
 
 AudioRendererAlgorithm::AudioRendererAlgorithm(
     MediaLog* media_log,

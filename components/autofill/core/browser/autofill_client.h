@@ -75,15 +75,19 @@ class AutofillAblationStudy;
 class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
 class AutofillDriverFactory;
-class AutofillMlPredictionModelHandler;
 class AutofillOptimizationGuide;
+#if BUILDFLAG(IS_ANDROID)
+class AutofillSnackbarControllerImpl;
+#endif  // BUILDFLAG(IS_ANDROID)
 class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
-class AutofillPredictionImprovementsDelegate;
+class AutofillAiDelegate;
 class AutofillProfile;
+class FieldClassificationModelHandler;
 class FormDataImporter;
 class LogManager;
 class PersonalDataManager;
+class SingleFieldFillRouter;
 class StrikeDatabase;
 struct Suggestion;
 enum class WebauthnDialogState;
@@ -136,6 +140,12 @@ class AutofillClient {
     // prompt shown on the same tab.
     kAutoDeclined,
     kMaxValue = kAutoDeclined,
+  };
+
+  // Describes the types of Iph shown by Autofill and anchored to a field.
+  enum class IphFeature {
+    kManualFallback,
+    kPredictionImprovements,
   };
 
   // Required arguments to create a dropdown showing autofill suggestions.
@@ -196,7 +206,17 @@ class AutofillClient {
   // user closing the dialog directly and not when user closes the browser tab.
   using AddressProfileDeleteDialogCallback = base::OnceCallback<void(bool)>;
 
+  // Callback to run when the user decides to undo the plus address full form
+  // fulling. If the user never undoes the operation, the callback is never
+  // triggered.
+  using EmailOverrideUndoCallback = base::OnceClosure;
+
   virtual ~AutofillClient() = default;
+
+  virtual base::WeakPtr<AutofillClient> GetWeakPtr() = 0;
+
+  // Returns the app locale, e.g., "en-US".
+  virtual const std::string& GetAppLocale() const = 0;
 
   // Returns the channel for the installation. In branded builds, this will be
   // version_info::Channel::{STABLE,BETA,DEV,CANARY}. In unbranded builds, or
@@ -230,10 +250,19 @@ class AutofillClient {
   // if the AutofillOptimizationGuide's dependencies are not present.
   virtual AutofillOptimizationGuide* GetAutofillOptimizationGuide() const;
 
-  // Gets the AutofillModelHandler instance for autofill machine learning
-  // predictions associated with the client.
-  virtual AutofillMlPredictionModelHandler*
-  GetAutofillMlPredictionModelHandler();
+  // Gets the FieldClassificationModelHandler instance for autofill machine
+  // learning predictions associated with the client.
+  virtual FieldClassificationModelHandler*
+  GetAutofillFieldClassificationModelHandler();
+
+  // Gets the FieldClassificationModelHandler instance for password manager
+  // machine learning predictions associated with the client.
+  virtual FieldClassificationModelHandler*
+  GetPasswordManagerFieldClassificationModelHandler();
+
+  // Handles routing single-field form filling requests, such as for
+  // Autocomplete and merchant promo codes.
+  virtual SingleFieldFillRouter& GetSingleFieldFillRouter() = 0;
 
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;
@@ -241,13 +270,10 @@ class AutofillClient {
   // Returns the `AutofillComposeDelegate` instance for the tab of this client.
   virtual AutofillComposeDelegate* GetComposeDelegate();
 
-  // Returns the `AutofillPredictionImprovementsDelegate` instance for
-  // the tab of this client. This method can return nullptr if the user does not
-  // have the feature available, either because of not being part of the
-  // experiment or because of the current platform (prediction improvements are
-  // only available in Desktop).
-  virtual AutofillPredictionImprovementsDelegate*
-  GetAutofillPredictionImprovementsDelegate();
+  // Returns the `AutofillAiDelegate` instance for the tab of this client.
+  // Returns `nullptr` if, at the time of the AutofillClient's construction, the
+  // Autofill AI feature is unsupported.
+  virtual AutofillAiDelegate* GetAutofillAiDelegate();
 
   // Returns the `AutofillPlusAddressDelegate` associated with the profile of
   // the window of this tab.
@@ -259,6 +285,7 @@ class AutofillClient {
   // Orchestrates UI for enterprise plus address creation; no-op
   // except on supported platforms.
   virtual void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
+                                        bool is_manual_fallback,
                                         PlusAddressCallback callback);
 
   enum class PlusAddressErrorDialogType {
@@ -290,6 +317,7 @@ class AutofillClient {
 
   // Gets the IdentityManager associated with the client.
   virtual signin::IdentityManager* GetIdentityManager() = 0;
+  virtual const signin::IdentityManager* GetIdentityManager() const = 0;
 
   // Gets the FormDataImporter instance owned by the client.
   virtual FormDataImporter* GetFormDataImporter() = 0;
@@ -396,6 +424,15 @@ class AutofillClient {
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) = 0;
 
+  // Notifies the user via a patform specific UI that full form filling for plus
+  // addresses has occurred (i.e. the filled email address was overridden by the
+  // plus address). The UI provides the user with the option to undo the
+  // filling operation back to back to `original_email`, in which case the
+  // `email_override_undo_callback` is triggered.
+  virtual void ShowPlusAddressEmailOverrideNotification(
+      const std::string& original_email,
+      EmailOverrideUndoCallback email_override_undo_callback);
+
   // Update the data list values shown by the Autofill suggestions, if visible.
   virtual void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) = 0;
@@ -440,11 +477,22 @@ class AutofillClient {
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data);
 
+  // Returns true if either Profile or CreditCard Autofill is enabled.
+  virtual bool IsAutofillEnabled() const = 0;
+
+  // Returns true if the value of the AutofillProfileEnabled pref is true and
+  // the client supports Autofill.
+  virtual bool IsAutofillProfileEnabled() const = 0;
+
+  // Returns true if the value of the AutofillCreditCardEnabled pref is true
+  // and the client supports Autofill.
+  virtual bool IsAutofillPaymentMethodsEnabled() const = 0;
+
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() const = 0;
 
   // Returns whether password management is enabled as per the user preferences.
-  virtual bool IsPasswordManagerEnabled() = 0;
+  virtual bool IsPasswordManagerEnabled() const = 0;
 
   // Inform the client that the form has been filled.
   virtual void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
@@ -459,6 +507,12 @@ class AutofillClient {
   virtual LogManager* GetLogManager() const;
 
   virtual const AutofillAblationStudy& GetAblationStudy() const;
+
+#if BUILDFLAG(IS_ANDROID)
+  // The AutofillSnackbarController is used to show a snackbar notification
+  // on Android.
+  virtual AutofillSnackbarControllerImpl* GetAutofillSnackbarController();
+#endif
 
 #if BUILDFLAG(IS_IOS)
   // Checks whether `field_id` is the last field that for which
@@ -483,24 +537,19 @@ class AutofillClient {
   virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
   GetDeviceAuthenticator();
 
-  // Attaches the IPH for the manual fallback feature to the `field`, on
-  // platforms that support manual fallback.
-  virtual void ShowAutofillFieldIphForManualFallbackFeature(
-      const FormFieldData& field);
+  // Attaches the IPH for `feature` to the `field`, on
+  // platforms that it. If another IPH has been shown for the tab, the IPH is
+  // granteed not to be shown. Returns `true` if the IPH bubble is shown after
+  // this method call, which includes the case when it was open before the call.
+  virtual bool ShowAutofillFieldIphForFeature(
+      const FormFieldData& field,
+      AutofillClient::IphFeature feature);
 
-  // Hides the IPH for the manual fallback feature.
-  virtual void HideAutofillFieldIphForManualFallbackFeature();
+  // Hides any open IPH.
+  virtual void HideAutofillFieldIph();
 
-  // Notifies the IPH code that the manual fallback feature was used.
-  virtual void NotifyAutofillManualFallbackUsed();
-
-  // Shows a bubble asking whether the user wants to save prediction
-  // improvements data.
-  virtual void ShowSaveAutofillPredictionImprovementsBubble(
-      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-          to_be_upserted_entries,
-      base::OnceCallback<void(bool prompt_was_accepted)>
-          prompt_acceptance_callback);
+  // Notifies the IPH code that `feature` was used.
+  virtual void NotifyIphFeatureUsed(AutofillClient::IphFeature feature);
 
   // Stores test addresses provided by devtools and used to help developers
   // debug their forms with a list of well formatted addresses. Differently from

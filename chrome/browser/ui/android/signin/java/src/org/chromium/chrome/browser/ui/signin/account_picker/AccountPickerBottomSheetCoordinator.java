@@ -8,6 +8,7 @@ import android.view.View;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
@@ -20,6 +21,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
@@ -72,7 +74,8 @@ public class AccountPickerBottomSheetCoordinator {
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             @AccountPickerLaunchMode int launchMode,
             boolean isWebSignin,
-            @SigninAccessPoint int signinAccessPoint) {
+            @SigninAccessPoint int signinAccessPoint,
+            @Nullable CoreAccountId selectedAccountId) {
         mIsWebSignin = isWebSignin;
         mSigninAccessPoint = signinAccessPoint;
         SigninMetricsUtils.logAccountConsistencyPromoAction(
@@ -87,7 +90,8 @@ public class AccountPickerBottomSheetCoordinator {
                         deviceLockActivityLauncher,
                         launchMode,
                         isWebSignin,
-                        signinAccessPoint);
+                        signinAccessPoint,
+                        selectedAccountId);
         mView =
                 new AccountPickerBottomSheetView(
                         windowAndroid.getActivity().get(), mAccountPickerBottomSheetMediator);

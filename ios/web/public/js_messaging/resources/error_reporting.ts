@@ -10,7 +10,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
  * @param closure The closure block to be executed.
  * @return The result of running `closure`.
  */
-function catchAndReportErrors(
+function catchAndReportErrors(functionName: string,
     closure: Function, closureArgs?: unknown[]): unknown {
   try {
     return closure.apply(null, closureArgs);
@@ -22,6 +22,10 @@ function catchAndReportErrors(
       if (error.stack) {
         errorStack = error.stack;
       }
+      if (errorStack.length > 0) {
+        errorStack += '\n';
+      }
+      errorStack += functionName;
     }
     sendWebKitMessage(
         'WindowErrorResultHandler',

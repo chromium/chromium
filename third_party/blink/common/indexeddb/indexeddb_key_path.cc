@@ -48,8 +48,7 @@ bool IndexedDBKeyPath::operator==(const IndexedDBKeyPath& other) const {
     case mojom::IDBKeyPathType::Array:
       return array_ == other.array_;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace blink

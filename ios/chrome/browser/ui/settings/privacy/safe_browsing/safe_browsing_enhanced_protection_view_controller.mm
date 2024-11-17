@@ -236,7 +236,7 @@ const CGFloat kSymbolSize = 20;
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.applicationHandler closeSettingsUIAndOpenURL:command];
+  [self.applicationHandler closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - Properties

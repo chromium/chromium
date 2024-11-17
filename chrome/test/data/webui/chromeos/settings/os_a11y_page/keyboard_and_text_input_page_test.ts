@@ -12,7 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -206,14 +206,6 @@ suite('<settings-keyboard-and-text-input-page>', () => {
 
   test('Caret blink interval setting', async () => {
     await initPage();
-    if (!loadTimeData.getBoolean(
-            'isAccessibilityCaretBlinkIntervalSettingEnabled')) {
-      // Caret blink interval section should not be visible if flag is disabled.
-      const caretBlinkIntervalRow =
-          page.shadowRoot!.querySelector('#caretBlinkIntervalRow');
-      assertNull(caretBlinkIntervalRow);
-      return;
-    }
 
     // Caret blink interval section is visible. Test it is connected to
     // the expected preference.
@@ -363,5 +355,24 @@ suite('<settings-keyboard-and-text-input-page>', () => {
       assertFalse(isVisible(disabledTooltipIcon));
       assertTrue(toggle.checked);
     });
+  });
+
+  // With the feature flag disabled, verify the keyboard settings page still
+  // loads properly. This is tested separately from filter_keys_test.ts since
+  // some prefs wouldn't have been registered in this case.
+  test('Filter keys feature disabled shows no filter keys rows', async () => {
+    loadTimeData.overrideValues({
+      isAccessibilityFilterKeysEnabled: false,
+    });
+    await initPage();
+
+    assertFalse(!!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#slowKeysToggle'));
+    assertFalse(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
+        '#slowKeysDelaySlider'));
+    assertFalse(!!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#bounceKeysToggle'));
+    assertFalse(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
+        '#bounceKeysDelaySlider'));
   });
 });

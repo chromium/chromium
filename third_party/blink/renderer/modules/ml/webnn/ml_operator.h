@@ -25,6 +25,7 @@ class MLGruCellOptions;
 class MLLstmOptions;
 class MLLstmCellOptions;
 class MLPadOptions;
+class MLSliceOptions;
 class MLSplitOptions;
 
 class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
@@ -84,7 +85,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   // connected by operands (edges). This method connects the operator with its
   // input and output operands during a computational graph building session. An
   // operator is only allowed to be connected once.
-  void Connect(HeapVector<Member<const MLOperand>> inputs,
+  void Connect(HeapVector<Member<MLOperand>> inputs,
                HeapVector<Member<const MLOperand>> outputs);
 
  private:
@@ -252,9 +253,10 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
 class MODULES_EXPORT MLSliceOperator : public MLOperator {
  public:
   MLSliceOperator(MLGraphBuilder* builder,
-                  const Vector<uint32_t>& beginning_padding,
-                  const Vector<uint32_t>& ending_padding,
-                  const MLOperatorOptions* options);
+                  const Vector<uint32_t>& starts,
+                  const Vector<uint32_t>& sizes,
+                  const Vector<uint32_t>& strides,
+                  const MLSliceOptions* options);
 
   MLSliceOperator(const MLSliceOperator&) = delete;
   MLSliceOperator& operator=(const MLSliceOperator&) = delete;
@@ -263,10 +265,12 @@ class MODULES_EXPORT MLSliceOperator : public MLOperator {
 
   const Vector<uint32_t>& Starts() const;
   const Vector<uint32_t>& Sizes() const;
+  const Vector<uint32_t>& Strides() const;
 
  private:
   Vector<uint32_t> starts_;
   Vector<uint32_t> sizes_;
+  Vector<uint32_t> strides_;
 };
 
 class MODULES_EXPORT MLSoftmaxOperator : public MLOperator {

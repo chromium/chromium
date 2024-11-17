@@ -4,17 +4,25 @@
 
 package com.android.webview.chromium;
 
+import android.os.Bundle;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
 import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwPrefetchCallback;
+import org.chromium.android_webview.AwPrefetchParameters;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
+
+import java.util.concurrent.Executor;
 
 /**
  * An abstraction of {@link AwBrowserContext}, this class reflects the state needed for the
@@ -22,6 +30,9 @@ import org.chromium.base.ThreadUtils;
  */
 @Lifetime.Profile
 public class Profile {
+
+    @NonNull private final AwBrowserContext mBrowserContext;
+
     @NonNull private final String mName;
 
     @NonNull private final CookieManager mCookieManager;
@@ -35,6 +46,7 @@ public class Profile {
     public Profile(@NonNull final AwBrowserContext browserContext) {
         assert ThreadUtils.runningOnUiThread();
         WebViewChromiumFactoryProvider factory = WebViewChromiumFactoryProvider.getSingleton();
+        mBrowserContext = browserContext;
         mName = browserContext.getName();
 
         if (browserContext.isDefaultAwBrowserContext()) {
@@ -78,18 +90,55 @@ public class Profile {
         return mServiceWorkerController;
     }
 
+    @AnyThread
     public void prefetchUrl(
             String url,
-            PrefetchParams params,
+            @Nullable PrefetchParams params,
             ValueCallback<PrefetchOperationResult> resultCallback) {
-        // TODO(334016945): do the actual implementation
+        try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.PRE_START")) {
+            if (url == null) {
+                throw new IllegalArgumentException("URL cannot be null for prefetch.");
+            }
+
+            if (resultCallback == null) {
+                throw new IllegalArgumentException("Callback cannot be null for prefetch.");
+            }
+
+            AwPrefetchParameters awPrefetchParameters =
+                    params == null ? null : params.toAwPrefetchParams();
+            AwPrefetchCallback awCallback =
+                    new AwPrefetchCallback() {
+                        @Override
+                        public void onStatusUpdated(
+                                @StatusCode int statusCode, @Nullable Bundle extras) {
+                            PrefetchOperationResult operationResult =
+                                    PrefetchOperationResult.fromPrefetchStatusCode(
+                                            statusCode, extras);
+                            if (operationResult != null) {
+                                resultCallback.onReceiveValue(operationResult);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            resultCallback.onReceiveValue(
+                                    new PrefetchOperationResult(
+                                            PrefetchOperationStatusCode.FAILURE));
+                        }
+                    };
+            Executor callingThreadExecutor = Runnable::run;
+            ThreadUtils.runOnUiThread(
+                    () ->
+                            mBrowserContext.startPrefetchRequest(
+                                    url, awPrefetchParameters, awCallback, callingThreadExecutor));
+        }
     }
 
     public void clearPrefetch(String url, ValueCallback<PrefetchOperationResult> resultCallback) {
         // TODO(334016945): do the actual implementation
     }
 
-    public void cancelPrefetch(String url) {
+    public void cancelPrefetch(String url, ValueCallback<PrefetchOperationResult> resultCallback) {
         // TODO(334016945): do the actual implementation
     }
 }

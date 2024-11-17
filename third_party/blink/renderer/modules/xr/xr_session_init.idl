@@ -4,8 +4,8 @@
 
 // https://immersive-web.github.io/webxr/#dictdef-xrsessioninit
 dictionary XRSessionInit {
-  sequence<any> requiredFeatures;
-  sequence<any> optionalFeatures;
+  sequence<DOMString> requiredFeatures;
+  sequence<DOMString> optionalFeatures;
   XRDOMOverlayInit domOverlay;
   [RuntimeEnabled=WebXRImageTracking] sequence<XRTrackedImageInit> trackedImages;
   XRDepthStateInit depthSensing;

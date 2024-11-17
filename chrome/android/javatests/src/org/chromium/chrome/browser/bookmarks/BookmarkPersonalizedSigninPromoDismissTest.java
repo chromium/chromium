@@ -50,11 +50,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 
 /** Tests different scenarios when the bookmark personalized signin promo is not shown. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:use_root_bookmark_as_default/false"
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class BookmarkPersonalizedSigninPromoDismissTest {
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 

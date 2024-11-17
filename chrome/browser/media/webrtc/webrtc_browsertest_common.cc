@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -83,8 +84,7 @@ base::FilePath GetToolForPlatform(const std::string& tool_name) {
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return tools_dir.Append(FILE_PATH_LITERAL("linux")).AppendASCII(tool_name);
 #else
-  CHECK(false) << "Can't retrieve tool " << tool_name << " on this platform.";
-  return base::FilePath();
+  NOTREACHED() << "Can't retrieve tool " << tool_name << " on this platform.";
 #endif
 }
 

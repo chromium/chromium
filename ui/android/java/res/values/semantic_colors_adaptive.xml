@@ -127,4 +127,8 @@ found in the LICENSE file.
     <!-- Commerce colors -->
     <color name="price_drop_annotation_bg_color">@color/price_drop_annotation_bg_color_light</color>
     <color name="price_drop_annotation_text_green">@color/price_drop_annotation_text_green_light</color>
+
+    <!-- Address Bar preference Colors -->
+    <color name="address_bar_preference_header_background">@color/address_bar_preference_header_background_light</color>
+    <color name="address_bar_preference_header_primary">@color/address_bar_preference_header_primary_light</color>
 </resources>

@@ -1,4 +1,4 @@
-div {
+.testcase {
   --enabled-applied: 'false';
   --disabled-applied: 'false';
   --valid-applied: 'false';
@@ -16,51 +16,51 @@ div {
   --placeholder-shown-applied: 'false';
   --autofill-applied: 'false';
 }
-div:enabled {
+.testcase:enabled {
   --enabled-applied: 'true';
 }
-div:disabled {
+.testcase:disabled {
   --disabled-applied: 'true';
 }
-div:valid {
+.testcase:valid {
   --valid-applied: 'true';
 }
-div:invalid {
+.testcase:invalid {
   --invalid-applied: 'true';
 }
-div:user-valid {
+.testcase:user-valid {
   --user-valid-applied: 'true';
 }
-div:user-invalid {
+.testcase:user-invalid {
   --user-invalid-applied: 'true';
 }
-div:required {
+.testcase:required {
   --required-applied: 'true';
 }
-div:optional {
+.testcase:optional {
   --optional-applied: 'true';
 }
-div:read-only {
+.testcase:read-only {
   --read-only-applied: 'true';
 }
-div:read-write {
+.testcase:read-write {
   --read-write-applied: 'true';
 }
-div:in-range {
+.testcase:in-range {
   --in-range-applied: 'true';
 }
-div:out-of-range {
+.testcase:out-of-range {
   --out-of-range-applied: 'true';
 }
-div:checked {
+.testcase:checked {
   --checked-applied: 'true';
 }
-div:indeterminate {
+.testcase:indeterminate {
   --indeterminate-applied: 'true';
 }
-div:placeholder-shown {
+.testcase:placeholder-shown {
   --placeholder-shown-applied: 'true';
 }
-div:autofill {
+.testcase:autofill {
   --autofill-applied: 'true';
 }

@@ -460,7 +460,6 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
@@ -488,6 +487,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kIbanEntry:
+    case SuggestionType::kBnplEntry:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kMixedFormMessage:
@@ -508,6 +508,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kEditPredictionImprovementsInformation:
     case SuggestionType::kPredictionImprovementsLoadingState:
       return false;
   }

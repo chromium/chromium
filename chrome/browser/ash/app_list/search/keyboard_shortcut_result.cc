@@ -38,10 +38,6 @@
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace app_list {
 
 namespace {
@@ -145,11 +141,7 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
     case ash::SearchResultTextItem::kKeyboardShortcutAccessibility:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY;
     case ash::SearchResultTextItem::kKeyboardShortcutKeyboardRightAlt:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      return IDS_KEYBOARD_RIGHT_ALT_LABEL;
-#else
-      return IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER;
-#endif
+      return IDS_KEYBOARD_QUICK_INSERT_LABEL;
   }
 }
 
@@ -341,7 +333,6 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"ViewAllApps", IconCode::kKeyboardShortcutAllApps},
        {u"ZoomToggle", IconCode::kKeyboardShortcutZoom}});
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static constexpr auto kRefreshIconCodes =
       base::MakeFixedFlatMap<std::u16string_view, IconCode>(
           {{u"LaunchApplication1",
@@ -355,7 +346,6 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
       it_refresh != kRefreshIconCodes.end()) {
     return it_refresh->second;
   }
-#endif
 
   auto it = kIconCodes.find(key_string);
   if (it == kIconCodes.end()) {

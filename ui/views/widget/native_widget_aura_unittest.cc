@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/uuid.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/event.h"
@@ -240,7 +242,7 @@ TEST_F(NativeWidgetAuraTest, CreateMinimized) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.bounds.SetRect(0, 0, 1024, 800);
   auto widget = std::make_unique<Widget>();
   widget->Init(std::move(params));
@@ -273,7 +275,7 @@ TEST_F(NativeWidgetAuraTest, GetWorkspace) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.bounds.SetRect(0, 0, 1024, 800);
   auto widget = std::make_unique<Widget>();
   widget->Init(std::move(params));
@@ -298,14 +300,14 @@ TEST_F(NativeWidgetAuraTest, GetWorkspace) {
 // A WindowObserver that counts kShowStateKey property changes.
 class TestWindowObserver : public aura::WindowObserver {
  public:
-  explicit TestWindowObserver(gfx::NativeWindow window) : window_(window) {
-    window_->AddObserver(this);
+  explicit TestWindowObserver(gfx::NativeWindow window) {
+    window_observation_.Observe(window);
   }
 
   TestWindowObserver(const TestWindowObserver&) = delete;
   TestWindowObserver& operator=(const TestWindowObserver&) = delete;
 
-  ~TestWindowObserver() override { window_->RemoveObserver(this); }
+  ~TestWindowObserver() override = default;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -314,17 +316,19 @@ class TestWindowObserver : public aura::WindowObserver {
     if (key != aura::client::kShowStateKey)
       return;
     count_++;
-    state_ = window_->GetProperty(aura::client::kShowStateKey);
+    state_ = window_observation_.GetSource()->GetProperty(
+        aura::client::kShowStateKey);
   }
 
   int count() const { return count_; }
-  ui::WindowShowState state() const { return state_; }
+  ui::mojom::WindowShowState state() const { return state_; }
   void Reset() { count_ = 0; }
 
  private:
-  gfx::NativeWindow window_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
   int count_ = 0;
-  ui::WindowShowState state_ = ui::SHOW_STATE_DEFAULT;
+  ui::mojom::WindowShowState state_ = ui::mojom::WindowShowState::kDefault;
 };
 
 // Tests that window transitions from normal to minimized and back do not
@@ -334,7 +338,7 @@ TEST_F(NativeWidgetAuraTest, ToggleState) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_NORMAL;
+  params.show_state = ui::mojom::WindowShowState::kNormal;
   params.bounds.SetRect(0, 0, 1024, 800);
   auto widget = std::make_unique<Widget>();
   widget->Init(std::move(params));
@@ -343,18 +347,18 @@ TEST_F(NativeWidgetAuraTest, ToggleState) {
   widget->Show();
   EXPECT_FALSE(widget->IsMinimized());
   EXPECT_EQ(0, observer->count());
-  EXPECT_EQ(ui::SHOW_STATE_DEFAULT, observer->state());
+  EXPECT_EQ(ui::mojom::WindowShowState::kDefault, observer->state());
 
   widget->Minimize();
   EXPECT_TRUE(widget->IsMinimized());
   EXPECT_EQ(1, observer->count());
-  EXPECT_EQ(ui::SHOW_STATE_MINIMIZED, observer->state());
+  EXPECT_EQ(ui::mojom::WindowShowState::kMinimized, observer->state());
   observer->Reset();
 
   widget->Show();
   widget->Restore();
   EXPECT_EQ(1, observer->count());
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, observer->state());
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal, observer->state());
 
   observer.reset();
   EXPECT_FALSE(widget->IsMinimized());
@@ -438,7 +442,7 @@ TEST_F(NativeWidgetAuraTest, ShowMaximizedDoesntBounceAround) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMaximized;
   params.bounds = gfx::Rect(10, 10, 100, 200);
   widget->Init(std::move(params));
   EXPECT_FALSE(
@@ -905,14 +909,14 @@ TEST_F(NativeWidgetAuraTest, MinimizedWidgetRestoreBounds) {
   Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_WINDOW);
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.bounds = restore_bounds;
 
   widget->Init(std::move(params));
   widget->Show();
 
   aura::Window* window = widget->GetNativeWindow();
-  EXPECT_EQ(ui::SHOW_STATE_MINIMIZED,
+  EXPECT_EQ(ui::mojom::WindowShowState::kMinimized,
             window->GetProperty(aura::client::kShowStateKey));
   EXPECT_EQ(restore_bounds,
             *window->GetProperty(aura::client::kRestoreBoundsKey));
@@ -930,7 +934,7 @@ TEST_F(NativeWidgetAuraTest, WorkspaceUuid) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.bounds.SetRect(0, 0, 1024, 800);
   const std::string uuid = "e1b6731b-2a99-48be-bcb7-54e3ba274d05";
   params.workspace = base::Uuid::ParseLowercase(uuid).AsLowercaseString();
@@ -949,7 +953,7 @@ TEST_F(NativeWidgetAuraTest, WorkspaceUuid) {
                              Widget::InitParams::TYPE_WINDOW);
   params2.parent = nullptr;
   params2.context = root_window();
-  params2.show_state = ui::SHOW_STATE_MINIMIZED;
+  params2.show_state = ui::mojom::WindowShowState::kMinimized;
   params2.bounds.SetRect(0, 0, 1024, 800);
   params2.workspace = "2";
   auto widget2 = std::make_unique<Widget>();

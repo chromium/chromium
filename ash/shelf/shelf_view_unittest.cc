@@ -17,7 +17,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -71,7 +71,7 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_education/common/events.h"
+#include "components/user_education/common/user_education_events.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -4124,6 +4124,50 @@ TEST_F(ShelfViewPromiseAppTest, AccessibleDescription) {
   item.progress = 0.3f;
   model_->Set(index, item);
   EXPECT_EQ(u"", button->GetViewAccessibility().GetCachedDescription());
+}
+
+TEST_F(ShelfViewPromiseAppTest, AccessibleName) {
+  ShelfID last_added = AddAppShortcut();
+  ShelfItem item = GetItemByID(last_added);
+  int index = model_->ItemIndexByID(last_added);
+  ShelfAppButton* button = GetButtonByID(last_added);
+
+  // Default title of the shelf item should be updated as the accessible name of
+  // the shelf app button.
+  ui::AXNodeData data;
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            item.title);
+
+  // On updating the item's title the accessible name of the shelf app button
+  // should also be updated.
+  item.title = u"Test app";
+  model_->Set(index, item);
+
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            item.title);
+
+  // If a non-empty accessible name of the shelf item itself is being provided
+  // in that case the preference should be given to item's accessible name
+  item.accessible_name = u"Test accessible name";
+  model_->Set(index, item);
+
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            item.accessible_name);
+
+  // Passing an empty accessible to the item should once again give the
+  // preference back to item's title.
+  item.accessible_name = u"";
+  model_->Set(index, item);
+
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            item.title);
 }
 
 TEST_F(ShelfViewPromiseAppTest, AppStatusReflectsOnProgressIndicator) {

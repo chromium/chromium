@@ -53,13 +53,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-#error "Extensions must be enabled"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/extensions/ash_extension_keeplist_manager.h"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
 class BlocklistedExtensionSyncServiceTest;
 class Profile;
@@ -515,7 +509,7 @@ class ExtensionService : public ExtensionServiceInterface,
  private:
   // Loads extensions specified via a command line flag/switch.
   void LoadExtensionsFromCommandLineFlag(const char* switch_name);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void LoadSigninProfileTestExtension(const std::string& path);
 #endif
 
@@ -658,6 +652,12 @@ class ExtensionService : public ExtensionServiceInterface,
       const std::string& extension_id,
       const std::optional<CrxInstallError>& error);
 
+  // Called when the Developer Mode preference is changed:
+  // - Disables unpacked extensions if developer mode is OFF.
+  // - Re-enables unpacked extensions if developer mode is ON and there are no
+  // other disable reasons associated with them.
+  void OnDeveloperModePrefChanged();
+
   raw_ptr<const base::CommandLine, DanglingUntriaged> command_line_ = nullptr;
 
   // The normal profile associated with this ExtensionService.
@@ -790,13 +790,11 @@ class ExtensionService : public ExtensionServiceInterface,
   base::ScopedObservation<CWSInfoService, CWSInfoService::Observer>
       cws_info_service_observation_{this};
 
-  using InstallGateRegistry =
-      std::map<ExtensionPrefs::DelayReason, InstallGate*>;
+  using InstallGateRegistry = std::map<ExtensionPrefs::DelayReason,
+                                       raw_ptr<InstallGate, CtnExperimental>>;
   InstallGateRegistry install_delayer_registry_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  AshExtensionKeeplistManager ash_keeplist_manager_;
-#endif
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<ExtensionService> weak_ptr_factory_{this};
 

@@ -54,7 +54,7 @@ class MockSocket : public net::MockClientSocket {
       return buf_len;
     }
     strncpy(buf->data(), return_values_array.front().data(), chunk_length);
-    return_values_array = return_values_array.subspan(1);
+    return_values_array = return_values_array.subspan<1>();
     if (chunk_length == 0) {
       return net::ERR_IO_PENDING;
     }

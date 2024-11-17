@@ -23,7 +23,6 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
               ShouldShowAccountStorageReSignin,
               (const GURL&),
               (override, const));
-  MOCK_METHOD(bool, ShouldShowAccountStorageBubbleUi, (), (override, const));
   MOCK_METHOD(PasswordForm::Store,
               GetDefaultPasswordStore,
               (),

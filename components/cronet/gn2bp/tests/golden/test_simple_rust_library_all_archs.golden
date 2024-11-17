@@ -1,0 +1,86 @@
+{
+  "//components/cronet/gn2bp/tests/test_rlib_crate:target1_gn2bp_test": {
+    "arm": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "armv7"
+    ],
+    "arm64": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "aarch64"
+    ],
+    "riscv64": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "riscv64"
+    ],
+    "x64": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "x86_64"
+    ],
+    "x86": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "i686"
+    ]
+  },
+  "//components/cronet/gn2bp/tests/test_rlib_crate:target2_gn2bp_test": {
+    "arm": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "armv7"
+    ],
+    "arm64": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "aarch64"
+    ],
+    "riscv64": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "riscv64"
+    ],
+    "x64": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "x86_64"
+    ],
+    "x86": [
+      "--cfg",
+      "build_script_ran",
+      "--cfg",
+      "is_android",
+      "--cfg",
+      "i686"
+    ]
+  }
+}

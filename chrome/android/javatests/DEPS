@@ -55,6 +55,7 @@ include_rules = [
   "+components/security_state/content/android/java",
   "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/sync/test",
+  "+components/ukm/android/java",
   "+components/webauthn/android/java",
   "+components/webxr/android",
 

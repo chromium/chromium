@@ -319,7 +319,10 @@ void SurroundingTextTracker::OnInsertText(
   expected_updates_.emplace_back(
       predicted_state_,
       base::BindRepeating(&SurroundingTextTracker::OnInsertText,
-                          base::Unretained(this), text, cursor_behavior));
+                          // Bind `text` as a `std::u16string` to avoid
+                          // a dangling string_view when callbacks are run.
+                          base::Unretained(this), std::u16string(text),
+                          cursor_behavior));
 }
 
 void SurroundingTextTracker::OnExtendSelectionAndDelete(size_t before,

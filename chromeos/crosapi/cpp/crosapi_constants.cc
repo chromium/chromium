@@ -22,13 +22,6 @@ const char kLacrosUserDataPath[] = "/home/chronos/user/lacros";
 // The default directory that contains Lacros files shared across users.
 const char kLacrosSharedDataPath[] = "/home/chronos/lacros_shared";
 
-// The file name of shared resource file.
-const char kSharedResourcesPackName[] = "resources_for_sharing.rspak";
-const char kSharedChrome100PercentPackName[] =
-    "chrome_100_percent_for_sharing.rspak";
-const char kSharedChrome200PercentPackName[] =
-    "chrome_200_percent_for_sharing.rspak";
-
 // Release channel key in /etc/lsb-release.
 const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
 

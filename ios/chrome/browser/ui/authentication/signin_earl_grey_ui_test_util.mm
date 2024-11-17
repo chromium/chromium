@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -122,6 +122,10 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
     GREYAssert(isSigned,
                @"Signed in failed. Expected: %@, Currently signed: %@",
                fakeIdentity.gaiaID, [SigninEarlGrey primaryAccountGaiaID]);
+
+    [ChromeEarlGrey
+        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+
     return;
   }
 
@@ -254,8 +258,10 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
 
 + (void)openRemoveAccountConfirmationDialogWithFakeIdentity:
     (FakeSystemIdentity*)fakeIdentity {
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                          fakeIdentity.userEmail)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabel(
+                                              fakeIdentity.userEmail),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:ButtonWithAccessibilityLabel(
@@ -267,9 +273,12 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
 + (void)tapRemoveAccountFromDeviceWithFakeIdentity:
     (FakeSystemIdentity*)fakeIdentity {
   [self openRemoveAccountConfirmationDialogWithFakeIdentity:fakeIdentity];
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                          l10n_util::GetNSString(
-                                              IDS_IOS_REMOVE_ACCOUNT_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   ButtonWithAccessibilityLabel(
+                                       l10n_util::GetNSString(
+                                           IDS_IOS_REMOVE_ACCOUNT_LABEL)),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Wait until the account is removed.
   [ChromeEarlGreyUI waitForAppToIdle];

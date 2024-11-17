@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import <memory>
 #import <utility>
@@ -16,6 +16,7 @@
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/rand_util.h"
 #import "base/strings/stringprintf.h"
@@ -397,6 +398,17 @@ void OmahaService::Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
 }
 
 // static
+bool OmahaService::HasStarted() {
+  if (!OmahaService::IsEnabled()) {
+    return false;
+  }
+
+  OmahaService* service = GetInstance();
+
+  return service->started_;
+}
+
+// static
 void OmahaService::CheckNow(OneOffCallback callback) {
   DCHECK(!callback.is_null());
 
@@ -495,6 +507,11 @@ OmahaService::OmahaService(bool schedule)
 OmahaService::~OmahaService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (foreground_notification_registration_handle_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:foreground_notification_registration_handle_];
+  }
+
   for (auto& observer : observers_) {
     observer.ServiceWillShutdown(this);
   }
@@ -504,6 +521,8 @@ OmahaService::~OmahaService() {
 
 void OmahaService::StartInternal(
     const scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (started_) {
     return;
   }
@@ -567,6 +586,12 @@ void OmahaService::StartInternal(
 
   if (persist_again)
     PersistStates();
+
+  if (IsOmahaServiceRefactorEnabled()) {
+    for (auto& observer : observers_) {
+      observer.OnServiceStarted(this);
+    }
+  }
 }
 
 // static
@@ -795,7 +820,53 @@ void OmahaService::SendOrScheduleNextPing() {
     timer_.Start(
         FROM_HERE, next_tries_time_ - now,
         base::BindOnce(&OmahaService::SendPing, base::Unretained(this)));
+    // Once the timer is started, register for
+    // applicationWillEnterForeground notifications.
+    if (!foreground_notification_registration_handle_ &&
+        base::FeatureList::IsEnabled(kOmahaResyncTimerOnForeground)) {
+      foreground_notification_registration_handle_ =
+          [[NSNotificationCenter defaultCenter]
+              addObserverForName:@"UIApplicationWillEnterForegroundNotification"
+                          object:nil
+                           queue:nil
+                      usingBlock:^(NSNotification* notification) {
+                        web::GetIOThreadTaskRunner({})->PostTask(
+                            FROM_HERE,
+                            base::BindOnce(&OmahaService::ResyncTimerIfNeeded,
+                                           base::Unretained(this)));
+                      }];
+    }
   }
+}
+
+// base::TimeTicks pauses when the device is asleep, which artifically
+// extends long-running timers. Mitigate this by resyncing timers to
+// the expected deadline.
+void OmahaService::ResyncTimerIfNeeded() {
+  DCHECK_CURRENTLY_ON(web::WebThread::IO);
+  CHECK(base::FeatureList::IsEnabled(kOmahaResyncTimerOnForeground),
+        base::NotFatalUntil::M134);
+
+  // If the timer isn't already running, nothing needs to be done.
+  if (!timer_.IsRunning()) {
+    return;
+  }
+
+  // If the deadline has already passed, fire the timer
+  // immediately. Note that this check uses wall clock time, so may
+  // fire early if the device's clock was changed, but sending extra
+  // pings is not harmful.
+  base::Time now = base::Time::Now();
+  if (next_tries_time_ <= now) {
+    timer_.FireNow();
+    return;
+  }
+
+  // The deadline is still in the future, but may not match what the
+  // timer is currently set to. Reset the timer with a new deadline.
+  CHECK(schedule_, base::NotFatalUntil::M134);
+  timer_.Start(FROM_HERE, next_tries_time_ - now,
+               base::BindOnce(&OmahaService::SendPing, base::Unretained(this)));
 }
 
 void OmahaService::PersistStates() {
@@ -853,6 +924,7 @@ void OmahaService::OnURLLoadComplete(
           ? base::Time::Now()
           : base::Time::Now() + base::Hours(kHoursBetweenRequests);
   current_ping_time_ = next_tries_time_;
+  base::Time original_last_sent_time = last_sent_time_;
   last_sent_time_ = base::Time::Now();
   last_sent_version_ = version_info::GetVersion();
   sending_install_event_ = false;
@@ -860,6 +932,11 @@ void OmahaService::OnURLLoadComplete(
   ClearInstallRetryRequestId();
   PersistStates();
   bool need_to_schedule_ping = true;
+
+  // Log metrics.
+  base::TimeDelta success_delta = last_sent_time_ - original_last_sent_time;
+  base::UmaHistogramCounts1000("IOS.Omaha.HoursSinceLastSuccess",
+                               success_delta.InHours());
 
   // Send notification for updates if needed.
   UpgradeRecommendedDetails* details = [delegate upgradeRecommendedDetails];

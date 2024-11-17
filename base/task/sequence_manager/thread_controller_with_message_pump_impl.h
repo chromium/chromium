@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/work_id_provider.h"
@@ -159,12 +160,12 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void InitializeSingleThreadTaskRunnerCurrentDefaultHandle()
       EXCLUSIVE_LOCKS_REQUIRED(task_runner_lock_);
 
-  MainThreadOnly& main_thread_only() {
+  MainThreadOnly& main_thread_only() LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }
 
-  const MainThreadOnly& main_thread_only() const {
+  const MainThreadOnly& main_thread_only() const LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }

@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.download.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -39,9 +38,6 @@ public class OpenDownloadDialog {
 
         int COUNT = 4;
     }
-
-    private PropertyModelChangeProcessor<PropertyModel, OpenDownloadCustomView, PropertyKey>
-            mPropertyModelChangeProcessor;
 
     /**
      * Called to show a dialog for opening a download.
@@ -107,12 +103,11 @@ public class OpenDownloadDialog {
                                 OpenDownloadDialogProperties.AUTO_OPEN_CHECKBOX_CHECKED,
                                 autoOpenEnabled)
                         .build();
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        propertyModel,
-                        customView,
-                        OpenDownloadDialogViewBinder::bind,
-                        /* performInitialBind= */ true);
+        PropertyModelChangeProcessor.create(
+                propertyModel,
+                customView,
+                OpenDownloadDialogViewBinder::bind,
+                /* performInitialBind= */ true);
 
         PropertyModel showPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

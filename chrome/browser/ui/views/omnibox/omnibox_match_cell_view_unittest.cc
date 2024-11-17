@@ -19,7 +19,7 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   available_width = 200;
   OmniboxMatchCellView::ComputeMatchMaxWidths(
       contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, false, true, &contents_max_width, &description_max_width,
+      available_width, true, &contents_max_width, &description_max_width,
       &iph_link_max_width);
   EXPECT_EQ(contents_max_width, contents_width);
   EXPECT_EQ(description_max_width, description_width);
@@ -32,7 +32,7 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   available_width = 20;
   OmniboxMatchCellView::ComputeMatchMaxWidths(
       contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, false, true, &contents_max_width, &description_max_width,
+      available_width, true, &contents_max_width, &description_max_width,
       &iph_link_max_width);
   EXPECT_EQ(contents_max_width, 0);
   EXPECT_EQ(description_max_width, 0);
@@ -45,25 +45,11 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   available_width = 130;
   OmniboxMatchCellView::ComputeMatchMaxWidths(
       contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, false, true, &contents_max_width, &description_max_width,
+      available_width, true, &contents_max_width, &description_max_width,
       &iph_link_max_width);
   EXPECT_EQ(contents_max_width, contents_width);
   EXPECT_EQ(description_max_width, 0);
   EXPECT_EQ(iph_link_max_width, 30);
-
-  // If contents and description are on separate lines, each can take the full
-  // available width.
-  contents_width = 300;
-  description_width = 100;
-  iph_link_view_width = 0;
-  available_width = 384;
-  OmniboxMatchCellView::ComputeMatchMaxWidths(
-      contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, true, true, &contents_max_width, &description_max_width,
-      &iph_link_max_width);
-  EXPECT_EQ(contents_max_width, contents_width);
-  EXPECT_EQ(description_max_width, description_width);
-  EXPECT_EQ(iph_link_max_width, 0);
 
   // Both contents and description will be limited.
   contents_width = 310;
@@ -72,7 +58,7 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   available_width = 430;
   OmniboxMatchCellView::ComputeMatchMaxWidths(
       contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, false, true, &contents_max_width, &description_max_width,
+      available_width, true, &contents_max_width, &description_max_width,
       &iph_link_max_width);
   EXPECT_EQ(contents_max_width, kMinimumContentsWidth);
   EXPECT_EQ(description_max_width, available_width - kMinimumContentsWidth -
@@ -86,39 +72,11 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   available_width = 230;
   OmniboxMatchCellView::ComputeMatchMaxWidths(
       contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, false, true, &contents_max_width, &description_max_width,
+      available_width, true, &contents_max_width, &description_max_width,
       &iph_link_max_width);
   EXPECT_EQ(contents_max_width, available_width - iph_link_max_width);
   EXPECT_EQ(description_max_width, 0);
   EXPECT_EQ(iph_link_max_width, 30);
-
-  // Large contents will be truncated but small description won't if two line
-  // suggestion.
-  contents_width = 400;
-  description_width = 100;
-  iph_link_view_width = 0;
-  available_width = 200;
-  OmniboxMatchCellView::ComputeMatchMaxWidths(
-      contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, true, true, &contents_max_width, &description_max_width,
-      &iph_link_max_width);
-  EXPECT_EQ(contents_max_width, available_width);
-  EXPECT_EQ(description_max_width, description_width);
-  EXPECT_EQ(iph_link_max_width, 0);
-
-  // Large description will be truncated but small contents won't if two line
-  // suggestion.
-  contents_width = 100;
-  description_width = 400;
-  iph_link_view_width = 0;
-  available_width = 200;
-  OmniboxMatchCellView::ComputeMatchMaxWidths(
-      contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, true, true, &contents_max_width, &description_max_width,
-      &iph_link_max_width);
-  EXPECT_EQ(contents_max_width, contents_width);
-  EXPECT_EQ(description_max_width, available_width);
-  EXPECT_EQ(iph_link_max_width, 0);
 
   // Half and half.
   contents_width = 395;
@@ -127,7 +85,7 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   available_width = 700;
   OmniboxMatchCellView::ComputeMatchMaxWidths(
       contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, false, true, &contents_max_width, &description_max_width,
+      available_width, true, &contents_max_width, &description_max_width,
       &iph_link_max_width);
   EXPECT_EQ(contents_max_width, 345);
   EXPECT_EQ(description_max_width, 345);
@@ -141,8 +99,8 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   available_width = 700;
   OmniboxMatchCellView::ComputeMatchMaxWidths(
       contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, false, false, &contents_max_width,
-      &description_max_width, &iph_link_max_width);
+      available_width, false, &contents_max_width, &description_max_width,
+      &iph_link_max_width);
   EXPECT_EQ(contents_max_width, contents_width);
   EXPECT_EQ(description_max_width, available_width - contents_width -
                                        separator_width - iph_link_max_width);
@@ -156,7 +114,7 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   available_width = 699;
   OmniboxMatchCellView::ComputeMatchMaxWidths(
       contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, false, true, &contents_max_width, &description_max_width,
+      available_width, true, &contents_max_width, &description_max_width,
       &iph_link_max_width);
   EXPECT_EQ(contents_max_width, 345);
   EXPECT_EQ(description_max_width, 344);
@@ -169,7 +127,7 @@ TEST(OmniboxMatchCellViewTest, ComputeMatchMaxWidths) {
   available_width = 0;
   OmniboxMatchCellView::ComputeMatchMaxWidths(
       contents_width, separator_width, description_width, iph_link_view_width,
-      available_width, false, true, &contents_max_width, &description_max_width,
+      available_width, true, &contents_max_width, &description_max_width,
       &iph_link_max_width);
   EXPECT_EQ(contents_max_width, 0);
   EXPECT_EQ(description_max_width, 0);

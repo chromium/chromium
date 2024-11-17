@@ -132,7 +132,8 @@ class AbandonedPageLoadMetricsObserverBrowserTest
       SCOPED_TRACE(
           testing::Message()
           << " ExpectTotalCountForAllNavigationMilestones on milestone "
-          << ((int)milestone) << " with suffix " << histogram_suffix);
+          << static_cast<int>(milestone) << " with suffix "
+          << histogram_suffix);
       bool is_redirect =
           (milestone ==
                NavigationMilestone::kFirstRedirectResponseLoaderCallback ||
@@ -144,11 +145,19 @@ class AbandonedPageLoadMetricsObserverBrowserTest
     }
   }
 
-  void ExpectEmptyNavigationAbandonment() {
+  void ExpectEmptyNavigationAbandonmentUntilCommit() {
+    // Only check for navigations up unit kDidCommit. We don't check the loading
+    // milestones because in most tests when we do multiple navigations one
+    // after another, the previous page hasn't reached all its loading
+    // milestones, and we would log that as an abandonment.
     for (auto milestone : all_milestones()) {
-      SCOPED_TRACE(testing::Message()
-                   << " ExpectEmptyNavigationAbandonment on milestone "
-                   << ((int)milestone));
+      if (milestone > NavigationMilestone::kDidCommit) {
+        continue;
+      }
+      SCOPED_TRACE(
+          testing::Message()
+          << " ExpectEmptyNavigationAbandonmentUntilCommit on milestone "
+          << static_cast<int>(milestone));
       EXPECT_TRUE(histogram_tester()
                       .GetTotalCountsForPrefix(
                           GetMilestoneToAbandonHistogramName(milestone))
@@ -187,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 0);
-  ExpectEmptyNavigationAbandonment();
+  ExpectEmptyNavigationAbandonmentUntilCommit();
 
   // Navigate to `url_a`.
   auto waiter = CreatePageLoadMetricsTestWaiterForLoading();
@@ -203,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
       1);
 
   // There should be no new entry for the navigation abandonment metrics.
-  ExpectEmptyNavigationAbandonment();
+  ExpectEmptyNavigationAbandonmentUntilCommit();
   EXPECT_TRUE(ukm_recorder.GetEntriesByName("AbandonedSRPNavigation").empty());
 
   // LCP is collected only at the end of the page lifecycle. Navigate to
@@ -275,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
       expected_count);
 
   // No abandonment happened, so no abandonment metrics was logged.
-  ExpectEmptyNavigationAbandonment();
+  ExpectEmptyNavigationAbandonmentUntilCommit();
   EXPECT_TRUE(ukm_recorder.GetEntriesByName("AbandonedSRPNavigation").empty());
 }
 

@@ -237,7 +237,8 @@
           "builder": "linux-dawn-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Linux x64 Builder/targets"
     }
   },
   "$build/reclient": {

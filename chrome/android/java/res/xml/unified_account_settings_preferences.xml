@@ -98,6 +98,7 @@ found in the LICENSE file.
         android:title="@string/account_android_device_accounts"/>
 
     <org.chromium.chrome.browser.ui.signin.SignoutButtonPreference
-        android:key="sign_out_button"/>
+        android:key="sign_out_button"
+        app:allowDividerAbove="false"/>
 
 </PreferenceScreen>

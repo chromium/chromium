@@ -330,7 +330,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   };
 
   void InitTimer(const base::TimeTicks& timestamp);
-  void TryNotifyAnimationCycleEnded() const;
+  void TryNotifyAnimationCycleEnded();
   cc::SkottieWrapper::FrameDataFetchResult LoadImageForAsset(
       gfx::Canvas* canvas,
       cc::SkottieFrameDataMap& all_frame_data,

@@ -55,8 +55,6 @@ void GameControlsTestBase::SetUp() {
 
   ash::AshTestBase::SetUp();
 
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kGameDashboard);
-
   profile_ = std::make_unique<TestingProfile>();
   arc_app_test_.set_wait_compatibility_mode(true);
   arc_app_test_.SetUp(profile_.get());

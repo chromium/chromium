@@ -18,6 +18,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -32,15 +33,17 @@
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 #include "chrome/enterprise_companion/test/test_server.h"
 #include "chrome/enterprise_companion/test/test_utils.h"
+#include "chrome/updater/protos/omaha_settings.pb.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
-#include "device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -57,6 +60,12 @@ constexpr char kFakeMachineLevelUserPolicyValue[] =
     "machine-level-user payload";
 constexpr char kFakeMachineLevelExtensionPolicyValue[] =
     "machine-level-extension payload";
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+std::string ToProxyURL(const GURL& url) {
+  return base::StrCat({url.host(), ":", url.port()});
+}
+#endif
 
 }  // namespace
 
@@ -88,9 +97,9 @@ class IntegrationTests : public ::testing::Test {
  protected:
   // Launches the installed app.
   void LaunchApp() {
-    std::optional<base::FilePath> install_dir = GetInstallDirectory();
-    ASSERT_TRUE(install_dir);
-    base::CommandLine command_line(install_dir->AppendASCII(kExecutableName));
+    std::optional<base::FilePath> exe_path = FindExistingInstall();
+    ASSERT_TRUE(exe_path);
+    base::CommandLine command_line(*exe_path);
     // This will change the verification key to be used by the
     // CloudPolicyValidator. It will allow for the policy data provided by tests
     // to pass signature validation.
@@ -128,9 +137,7 @@ class IntegrationTests : public ::testing::Test {
     EXPECT_EQ(WaitForProcess(server_process_), 0);
   }
 
-  // Configures the overrides JSON file to inject test values into the app
-  // under test.
-  void InstallConstantsOverrides() {
+  base::Value::Dict GetDefaultConstantsOverrides() {
     base::Value::Dict overrides;
 
 #if BUILDFLAG(IS_WIN)
@@ -147,7 +154,15 @@ class IntegrationTests : public ::testing::Test {
     overrides.Set(kDMServerUrlKey, dm_test_server_.GetServiceURL().spec());
     overrides.Set(kEventLoggingUrlKey, test_server_.event_logging_url().spec());
     overrides.Set(kEventLoggerMinTimeoutSecKey, 0);
+    return overrides;
+  }
 
+  // Configures the overrides JSON file to inject test values into the app
+  // under test.
+  void InstallConstantsOverrides() {
+    InstallConstantsOverrides(GetDefaultConstantsOverrides());
+  }
+  void InstallConstantsOverrides(const base::Value::Dict& overrides) {
     std::optional<base::FilePath> overrides_json_path = GetOverridesFilePath();
     ASSERT_TRUE(overrides_json_path);
     ASSERT_TRUE(base::CreateDirectory(overrides_json_path->DirName()));
@@ -286,15 +301,6 @@ class IntegrationTests : public ::testing::Test {
 
     ASSERT_NO_FATAL_FAILURE(
         CopyApplicationArtifacts(*install_dir, artifacts_dir));
-
-#if BUILDFLAG(IS_WIN)
-    std::optional<base::FilePath> alt_install_dir =
-        GetInstallDirectoryForAlternateArch();
-    if (alt_install_dir) {
-      ASSERT_NO_FATAL_FAILURE(CopyApplicationArtifacts(
-          *alt_install_dir, artifacts_dir.AppendASCII("alt_arch")));
-    }
-#endif
   }
 
   void CopyApplicationArtifacts(const base::FilePath& install_dir,
@@ -332,9 +338,9 @@ TEST_F(IntegrationTests, Uninstall) {
   ASSERT_NO_FATAL_FAILURE(LaunchApp());
   ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
 
-  std::optional<base::FilePath> install_dir = GetInstallDirectory();
-  ASSERT_TRUE(install_dir);
-  base::CommandLine command_line(install_dir->AppendASCII(kExecutableName));
+  std::optional<base::FilePath> exe_path = FindExistingInstall();
+  ASSERT_TRUE(exe_path);
+  base::CommandLine command_line(*exe_path);
   command_line.AppendSwitch(kUninstallSwitch);
   base::Process uninstall_process = base::LaunchProcess(command_line, {});
   ASSERT_TRUE(uninstall_process.IsValid());
@@ -348,76 +354,6 @@ TEST_F(IntegrationTests, Uninstall) {
 
   ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectClean());
 }
-
-// Running the application's "install if needed" command should install the
-// application if an enrollment token is present.
-TEST_F(IntegrationTests, InstallIfNeeded_WithEnrollmentToken_Installs) {
-  StoreEnrollmentToken(kFakeEnrollmentToken);
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
-}
-
-// Running the application's "install if needed" command should install the
-// application if a device management token is present.
-TEST_F(IntegrationTests, InstallIfNeeded_WithDMToken_Installs) {
-  StoreDMToken(policy::kFakeDeviceToken);
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
-}
-
-// Running the application's "install if needed" command should not install the
-// application if the device does not appear to be managed.
-TEST_F(IntegrationTests, InstallIfNeeded_NotManaged_SkipsInstall) {
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  std::optional<base::FilePath> install_dir = GetInstallDirectory();
-  ASSERT_TRUE(install_dir);
-  EXPECT_FALSE(base::PathExists(install_dir->AppendASCII(kExecutableName)));
-}
-
-// Running the application's "install if needed" command should not install the
-// application if the application is already installed.
-TEST_F(IntegrationTests, InstallIfNeeded_AlreadyInstalled_SkipsInstall) {
-  std::optional<base::FilePath> install_dir = GetInstallDirectory();
-  ASSERT_TRUE(install_dir);
-  ASSERT_TRUE(base::CreateDirectory(*install_dir));
-  ASSERT_TRUE(
-      base::WriteFile(install_dir->AppendASCII(kExecutableName), "fake_exe"));
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  std::string exe_contents;
-  ASSERT_TRUE(base::ReadFileToStringWithMaxSize(
-      install_dir->AppendASCII(kExecutableName), &exe_contents, 64));
-  EXPECT_EQ(exe_contents, "fake_exe");
-}
-
-#if BUILDFLAG(IS_WIN)
-// Running the application's "install if needed" command should not install the
-// application if the application is already installed for a different
-// architecture.
-TEST_F(IntegrationTests, InstallIfNeeded_AlreadyInstalledAltArch_SkipsInstall) {
-  std::optional<base::FilePath> install_dir =
-      GetInstallDirectoryForAlternateArch();
-  if (!install_dir) {
-    GTEST_SKIP() << "Not implemented for x86 hosts.";
-  }
-  ASSERT_TRUE(base::CreateDirectory(*install_dir));
-  ASSERT_TRUE(
-      base::WriteFile(install_dir->AppendASCII(kExecutableName), "fake_exe"));
-
-  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallIfNeeded());
-
-  std::string exe_contents;
-  ASSERT_TRUE(base::ReadFileToStringWithMaxSize(
-      install_dir->AppendASCII(kExecutableName), &exe_contents, 64));
-  EXPECT_EQ(exe_contents, "fake_exe");
-}
-#endif
 
 // Attempting to shut down the server when it's not running should fail.
 TEST_F(IntegrationTests, ShutdownWithoutServerFails) {
@@ -536,22 +472,105 @@ TEST_F(IntegrationTests, ReloadsTokens) {
   ASSERT_NO_FATAL_FAILURE(LaunchApp());
   ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
 
-  // Attempt a registration with the invalid enrollment token, it should fail.
-  ASSERT_NO_FATAL_FAILURE(
-      StoreEnrollmentToken(policy::kInvalidEnrollmentToken));
   test_server_.ExpectOnce(
       {CreateEventLogMatcher(
           test_server_,
           {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
             EnterpriseCompanionStatus::FromDeviceManagementStatus(
-                policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID)}})},
+                policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID)},
+           {proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::Success()},
+           {proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus::Success()}})},
       CreateLogResponse());
+
+  // Attempt a registration with the invalid enrollment token, it should fail.
+  ASSERT_NO_FATAL_FAILURE(
+      StoreEnrollmentToken(policy::kInvalidEnrollmentToken));
   EXPECT_TRUE(CreateAppFetchPolicies()->Run().EqualsDeviceManagementStatus(
       policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID));
 
   // Change the enrollment token externally and attempt enrollment again, it
   // should succeed.
   ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectDefaultPolicyValuesPersisted());
+}
+
+// Tests relating to proxy configurations. The application does not support
+// proxies on Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+// The application should tunnel network requests through the proxy server
+// configured by Cloud Policy.
+TEST_F(IntegrationTests, CloudPolicyProxy_FixedServer) {
+  SetDefaultPolicyFetchResponses();
+
+  wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
+      omaha_settings;
+  omaha_settings.set_proxy_mode("fixed_servers");
+  omaha_settings.set_proxy_server(ToProxyURL(dm_test_server_.GetServiceURL()));
+  dm_test_server_.policy_storage()->SetPolicyPayload(
+      policy::dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+      omaha_settings.SerializeAsString());
+
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::Success()},
+           {proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+  WaitForTestServerExpectationsToBeMet();
+  EXPECT_TRUE(CreateAppShutdown()->Run().ok());
+  EXPECT_EQ(WaitForProcess(server_process_), 0);
+
+  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
+  ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
+
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_, {{proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+                          EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+}
+
+// The application should tunnel network requests through the proxy server
+// configured by Cloud Policy without having to restart.
+TEST_F(IntegrationTests, CloudPolicyProxy_SettingsChangeAppliedAtRuntime) {
+  SetDefaultPolicyFetchResponses();
+
+  // Start the server with no proxy configuration, all hosts are reachable on
+  // the local network.
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  // Configure cloud policies which configure the proxy. All hosts are still
+  // reachable on the local network so these policies won't cause traffic to be
+  // routed through the proxy.
+  wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
+      omaha_settings;
+  omaha_settings.set_proxy_mode("fixed_servers");
+  omaha_settings.set_proxy_server(ToProxyURL(dm_test_server_.GetServiceURL()));
+  dm_test_server_.policy_storage()->SetPolicyPayload(
+      policy::dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+      omaha_settings.SerializeAsString());
   test_server_.ExpectOnce(
       {CreateEventLogMatcher(
           test_server_,
@@ -561,8 +580,185 @@ TEST_F(IntegrationTests, ReloadsTokens) {
             EnterpriseCompanionStatus::Success()}})},
       CreateLogResponse());
   EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+  WaitForTestServerExpectationsToBeMet();
+
+  // Restart the server and override the DM server URL. Subsequent requests to
+  // this service should be routed through the proxy.
+  EXPECT_TRUE(CreateAppShutdown()->Run().ok());
+  EXPECT_EQ(WaitForProcess(server_process_), 0);
+  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
+  ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  // Configure the cloud policies to set the proxy mode to direct and trigger a
+  // fetch. After the settings are applied, the DM server URL should be
+  // unreachable.
+  omaha_settings.Clear();
+  omaha_settings.set_proxy_mode("direct");
+  dm_test_server_.policy_storage()->SetPolicyPayload(
+      policy::dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+      omaha_settings.SerializeAsString());
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_, {{proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+                          EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+  WaitForTestServerExpectationsToBeMet();
+
+  // Expect subsequent policy fetch requests to fail, as the DM server is
+  // unreachable without a proxy.
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                policy::DeviceManagementStatus::DM_STATUS_REQUEST_FAILED)}})},
+      CreateLogResponse());
+  EXPECT_FALSE(CreateAppFetchPolicies()->Run().ok());
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
+// Tests relating to Windows-specific proxy settings.
+#if BUILDFLAG(IS_WIN)
+
+// The application should tunnel network requests through the proxy server
+// specified by a PAC script pointed to by Cloud Policy. This test is only
+// enabled on Windows because there is no system PAC implementation on Linux,
+// and the application does not support proxies on Mac.
+TEST_F(IntegrationTests, CloudPolicyProxy_PacScript) {
+  SetDefaultPolicyFetchResponses();
+
+  wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
+      omaha_settings;
+  omaha_settings.set_proxy_mode("pac_script");
+  omaha_settings.set_proxy_pac_url(test_server_.proxy_pac_url().spec());
+  dm_test_server_.policy_storage()->SetPolicyPayload(
+      policy::dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
+      omaha_settings.SerializeAsString());
+
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::Success()},
+           {proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+  WaitForTestServerExpectationsToBeMet();
+  EXPECT_TRUE(CreateAppShutdown()->Run().ok());
+  EXPECT_EQ(WaitForProcess(server_process_), 0);
+
+  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
+  ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
+
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreatePacUrlMatcher(test_server_)},
+      base::StringPrintf(
+          "function FindProxyForURL(url, host) { return \"PROXY %s\"; }",
+          ToProxyURL(dm_test_server_.GetServiceURL())));
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_, {{proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+                          EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+}
+
+// The application should tunnel network requests through the proxy server
+// configured by Group Policy.
+TEST_F(IntegrationTests, GroupPolicyProxy_ProxyServer) {
+  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
+  ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
+  ASSERT_NO_FATAL_FAILURE(SetLocalProxyPolicies(
+      /*proxy_mode=*/"fixed_servers",
+      /*pac_url=*/std::nullopt, ToProxyURL(dm_test_server_.GetServiceURL()),
+      /*cloud_policy_overrides_platform_policy=*/std::nullopt));
+
+  SetDefaultPolicyFetchResponses();
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::Success()},
+           {proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
 
   ASSERT_NO_FATAL_FAILURE(ExpectDefaultPolicyValuesPersisted());
 }
 
+// The application should tunnel network requests through the proxy server
+// configured by the PAC script specified by Group Policy.
+TEST_F(IntegrationTests, GroupPolicyProxy_PacScript) {
+  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
+  ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
+  ASSERT_NO_FATAL_FAILURE(SetLocalProxyPolicies(
+      /*proxy_mode=*/"pac_script", test_server_.proxy_pac_url().spec(),
+      /*proxy_server=*/std::nullopt,
+      /*cloud_policy_overrides_platform_policy=*/std::nullopt));
+  test_server_.ExpectOnce(
+      {CreatePacUrlMatcher(test_server_)},
+      base::StringPrintf(
+          "function FindProxyForURL(url, host) { return \"PROXY %s\"; }",
+          ToProxyURL(dm_test_server_.GetServiceURL())));
+
+  SetDefaultPolicyFetchResponses();
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_,
+          {{proto::EnterpriseCompanionEvent::kBrowserEnrollmentEvent,
+            EnterpriseCompanionStatus::Success()},
+           {proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+            EnterpriseCompanionStatus::Success()}})},
+      CreateLogResponse());
+
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().ok());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectDefaultPolicyValuesPersisted());
+}
+
+// The application should exit with a failure if proxy navigation fails and the
+// server is not directly reachable.
+TEST_F(IntegrationTests, GroupPolicyProxy_BadProxyServer) {
+  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
+  ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
+  ASSERT_NO_FATAL_FAILURE(SetLocalProxyPolicies(
+      /*proxy_mode=*/"fixed_servers",
+      /*pac_url=*/std::nullopt, "http://proxy.server.not_exist",
+      /*cloud_policy_overrides_platform_policy=*/std::nullopt));
+  EXPECT_FALSE(CreateAppFetchPolicies()->Run().ok());
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace enterprise_companion

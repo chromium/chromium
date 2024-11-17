@@ -7,7 +7,7 @@
 #import "base/test/task_environment.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
-#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
+#import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -82,12 +82,12 @@ std::unique_ptr<KeyedService> CreateMockSyncService(
 class TabGroupsPanelCoordinatorTest : public PlatformTest {
  protected:
   TabGroupsPanelCoordinatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     tab_grid_handler_mock_ = OCMProtocolMock(@protocol(TabGridCommands));
     [browser_->GetCommandDispatcher()
@@ -105,9 +105,9 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
         disabledViewControllerDelegate:disabled_grid_view_controller_delegate_];
   }
 
-  // Needed for test browser state created by TestBrowser().
+  // Needed for test profile created by TestBrowser().
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   TestToolbarsMutator* toolbars_mutator_;
@@ -142,7 +142,7 @@ TEST_F(TabGroupsPanelCoordinatorTest, NoIncognitoPolicy_TabGroupsShown) {
 // Groups.
 TEST_F(TabGroupsPanelCoordinatorTest, IncognitoDisabled_TabGroupsShown) {
   // Disable Incognito with policy.
-  browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));
@@ -162,7 +162,7 @@ TEST_F(TabGroupsPanelCoordinatorTest, IncognitoDisabled_TabGroupsShown) {
 // disabled Tab Groups view.
 TEST_F(TabGroupsPanelCoordinatorTest, IncognitoForced_TabGroupsDisabled) {
   // Force Incognito with policy.
-  browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kForced)));

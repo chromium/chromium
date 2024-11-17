@@ -72,8 +72,6 @@ class CrostiniInstaller : public KeyedService,
     // at the top of this enum.
   };
 
-  static CrostiniInstaller* GetForProfile(Profile* profile);
-
   explicit CrostiniInstaller(Profile* profile);
 
   CrostiniInstaller(const CrostiniInstaller&) = delete;
@@ -107,8 +105,6 @@ class CrostiniInstaller : public KeyedService,
   void set_skip_launching_terminal_for_testing() {
     skip_launching_terminal_for_testing_ = true;
   }
-
-  static void EnsureFactoryBuilt();
 
  private:
   enum class State {

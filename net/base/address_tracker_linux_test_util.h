@@ -5,6 +5,11 @@
 #ifndef NET_BASE_ADDRESS_TRACKER_LINUX_TEST_UTIL_H_
 #define NET_BASE_ADDRESS_TRACKER_LINUX_TEST_UTIL_H_
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/374320451): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #include <stdint.h>

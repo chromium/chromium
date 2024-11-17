@@ -15,9 +15,11 @@
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/video/video_encode_accelerator.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -102,9 +104,8 @@ void VEAEncoder::BitstreamBufferReady(
   DVLOG(3) << __func__;
 
   OutputBuffer* output_buffer = output_buffers_[bitstream_buffer_id].get();
-  base::span<char> data_span =
-      output_buffer->mapping.GetMemoryAsSpan<char>(metadata.payload_size_bytes);
-  std::string data(data_span.begin(), data_span.end());
+  auto data_span = output_buffer->mapping.GetMemoryAsSpan<const uint8_t>(
+      metadata.payload_size_bytes);
 
   auto front_frame = frames_in_encode_.front();
   frames_in_encode_.pop();
@@ -113,9 +114,11 @@ void VEAEncoder::BitstreamBufferReady(
     front_frame.first.visible_rect_size = *metadata.encoded_size;
   }
 
-  on_encoded_video_cb_.Run(front_frame.first, std::move(data), std::string(),
-                           std::nullopt, front_frame.second,
-                           metadata.key_frame);
+  auto buffer = media::DecoderBuffer::CopyFrom(data_span);
+  buffer->set_is_key_frame(metadata.key_frame);
+
+  on_encoded_video_cb_.Run(front_frame.first, std::move(buffer), std::nullopt,
+                           front_frame.second);
 
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 }
@@ -311,6 +314,11 @@ void VEAEncoder::ConfigureEncoder(const gfx::Size& size,
           ? media::VideoEncodeAccelerator::Config::ContentType::kDisplay
           : media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   config.h264_output_level = level_;
+  config.required_encoder_type =
+      media::MayHaveAndAllowSelectOSSoftwareEncoder(
+          media::VideoCodecProfileToVideoCodec(codec_))
+          ? media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference
+          : media::VideoEncodeAccelerator::Config::EncoderType::kHardware;
   if (!video_encoder_ ||
       !video_encoder_->Initialize(config, this,
                                   std::make_unique<media::NullMediaLog>())) {

@@ -77,6 +77,16 @@ def clear() -> None:
   _records.clear()
 
 
+def clear_stacktrace() -> None:
+  """Clear the stacktrace from all the records while keeping the records.
+
+  This can be called to reduce the size of the overall records and avoid
+  the size issue when uploaded to other services, e.g. RDB.
+  """
+  for record in _records:
+    record.ClearField('stacktrace')
+
+
 def to_dict() -> dict:
   """Convert all the registered ExceptionOccurrence records to an dict.
 

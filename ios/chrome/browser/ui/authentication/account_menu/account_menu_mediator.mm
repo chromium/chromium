@@ -8,6 +8,8 @@
 #import <string>
 
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -15,6 +17,8 @@
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
@@ -23,12 +27,16 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 
 @interface AccountMenuMediator () <ChromeAccountManagerServiceObserver,
                                    IdentityManagerObserverBridgeDelegate,
                                    SyncObserverModelBridge>
+
+// Whether the account menu’s interaction is blocked.
+@property(nonatomic, assign) BOOL userInteractionsBlocked;
 
 @end
 
@@ -51,9 +59,10 @@
   AccountErrorUIInfo* _error;
   // Whether the UI should not update anymore.
   BOOL _blockUpdates;
-  // Whether the account menu operations requires the user interacitons to be
-  // ignored.
-  BOOL _blockUserInteractions;
+  // The authentication flow,
+  AuthenticationFlow* _authenticationFlow;
+  // This object is set iff an account switch is in progress.
+  base::ScopedClosureRunner _accountSwitchInProgress;
 
   // The list of identities to display and their index in the table view’s
   // identities section
@@ -62,6 +71,13 @@
   // The type of account error that is being displayed in the error section for
   // signed in accounts. Is set to kNone when there is no error section.
   syncer::SyncService::UserActionableError _diplayedAccountErrorType;
+
+  // Records the displayed primary account info by the view. Used to limit the
+  // view updates to only when one of these values is updated.
+  NSString* _primaryAccountDisplayedEmail;
+  NSString* _primaryAccountDisplayedUserFullName;
+  UIImage* _primaryAccountDisplayedAvatar;
+  BOOL _primaryAccountDisplayedManaged;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
@@ -77,7 +93,7 @@
     CHECK(authService);
     CHECK(identityManager);
     _blockUpdates = NO;
-    _blockUserInteractions = NO;
+    _userInteractionsBlocked = NO;
     _identities = [NSMutableArray array];
     _accountManagerService = accountManagerService;
     _accountManagerServiceObserver =
@@ -94,15 +110,20 @@
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
     _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
-    _primaryIdentity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
     [self updateIdentities];
+    // By default, if the mediator was not involved in stopping the account
+    // menu, it mean the coordinator was directly interupted.
+    self.signinCoordinatorResult = SigninCoordinatorResultInterrupted;
+    _signinCompletionInfo =
+        [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
     _error = GetAccountErrorUIInfo(_syncService);
   }
   return self;
 }
 
 - (void)disconnect {
+  _accountSwitchInProgress.RunAndReset();
+  _signinCompletionInfo = nil;
   _blockUpdates = YES;
   _accountManagerService = nullptr;
   _accountManagerServiceObserver.reset();
@@ -163,17 +184,19 @@
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  if (_blockUpdates) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onAccountsOnDeviceChanged` instead.
     return;
   }
-  [self updateIdentities];
+  [self handleIdentityListChanged];
 }
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  if (_blockUpdates) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onExtendedAccountInfoUpdated` instead.
     return;
   }
-  [self updateIdentities];
+  [self handleIdentityUpdated];
 }
 
 - (void)onChromeAccountManagerServiceShutdown:
@@ -202,9 +225,29 @@
       if (_authenticationService->IsAccountSwitchInProgress()) {
         return;
       }
+      self.signinCoordinatorResult =
+          SigninCoordinatorResult::SigninCoordinatorResultInterrupted;
+      _blockUpdates = YES;
+      self.userInteractionsBlocked = YES;
       [self.delegate mediatorWantsToBeDismissed:self];
       break;
   }
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityUpdated` instead.
+    return;
+  }
+  [self handleIdentityUpdated];
+}
+
+- (void)onAccountsOnDeviceChanged {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityListChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
 }
 
 #pragma mark - SyncObserverModelBridge
@@ -227,31 +270,61 @@
 - (void)viewControllerWantsToBeClosed:
     (AccountMenuViewController*)viewController {
   CHECK_EQ(viewController, _consumer);
-  _blockUserInteractions = YES;
+  self.userInteractionsBlocked = YES;
+  self.signinCoordinatorResult =
+      SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser;
   [_delegate mediatorWantsToBeDismissed:self];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
+    return;
+  }
+  if (![self.delegate blockOtherScenesIfPossible]) {
+    // This scene is currently blocked. Abort signout.
     return;
   }
   _blockUpdates = YES;
-  _blockUserInteractions = YES;
-  [self.delegate blockScene];
+  self.userInteractionsBlocked = YES;
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
-                              callback:^(BOOL success) {
-                                [weakSelf signoutEndedWithSuccess:success];
-                              }];
+                             forSwitch:NO
+                            completion:^(BOOL success) {
+                              [weakSelf signoutEndedWithSuccess:success];
+                            }];
 }
 
 - (void)accountTappedWithGaiaID:(NSString*)gaiaID
                      targetRect:(CGRect)targetRect {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
+
+  [self.consumer switchingStarted];
+  [self.delegate blockOtherScenesIfPossible];
   _blockUpdates = YES;
-  _blockUserInteractions = YES;
+  self.userInteractionsBlocked = YES;
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    std::optional<std::string> profileName =
+        GetApplicationContext()
+            ->GetAccountProfileMapper()
+            ->FindProfileNameForGaiaID(base::SysNSStringToUTF8(gaiaID));
+    if (profileName &&
+        *profileName != _accountManagerService->GetProfileName()) {
+      // TODO(crbug.com/375604649): Unblock the UI (and show some error?) if
+      // switching failed.
+      // TODO(crbug.com/375604649): Provide a `completion` to ensure that after
+      // a successful profile switch, the correct account is signed in in the
+      // new profile.
+      [self.delegate triggerProfileSwitchToProfileNamed:base::SysUTF8ToNSString(
+                                                            *profileName)
+                                             completion:^(bool success){
+                                             }];
+      return;
+    }
+  }
+
   id<SystemIdentity> newIdentity = nil;
   for (id<SystemIdentity> identity : _identities) {
     if (identity.gaiaID == gaiaID) {
@@ -260,116 +333,219 @@
     }
   }
   CHECK(newIdentity);
-
-  BOOL viewWillBeDismissedAfterSignout =
-      _authenticationService->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin);
-
+  _accountSwitchInProgress =
+      _authenticationService->DeclareAccountSwitchInProgress();
   __weak __typeof(self) weakSelf = self;
-  [self.delegate
-      triggerAccountSwitchWithTargetRect:targetRect
-                             newIdentity:newIdentity
-         viewWillBeDismissedAfterSignout:viewWillBeDismissedAfterSignout
-                        signInCompletion:^(SigninCoordinatorResult result,
-                                           SigninCompletionInfo* info) {
-                          BOOL success = result ==
-                                         SigninCoordinatorResult::
-                                             SigninCoordinatorResultSuccess;
-                          [weakSelf signinEndedWithSuccess:success];
-                        }];
+  id<SystemIdentity> fromIdentity = _primaryIdentity;
+  [self.delegate signOutFromTargetRect:targetRect
+                             forSwitch:YES
+                            completion:^(BOOL success) {
+                              [weakSelf signoutEndedWithSuccess:success
+                                                   fromIdentity:fromIdentity
+                                                     toIdentity:newIdentity];
+                            }];
 }
 
 - (void)didTapErrorButton {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
   switch (_error.errorType) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate: {
       if (_authenticationService->HasCachedMDMErrorForIdentity(
               _primaryIdentity)) {
+        base::RecordAction(
+            base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
         [self.delegate openMDMErrodDialogWithSystemIdentity:_primaryIdentity];
       } else {
+        base::RecordAction(
+            base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Reauth"));
         [self.delegate openPrimaryAccountReauthDialog];
       }
       break;
     }
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Passphrase"));
       [self.delegate openPassphraseDialogWithModalPresentation:YES];
       break;
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForPasswords:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountMenu_ErrorButton_TrustedVaultForPasswords"));
+      [self.delegate openTrustedVaultReauthForFetchKeys];
+      break;
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountMenu_ErrorButton_TrustedVaultForEverything"));
       [self.delegate openTrustedVaultReauthForFetchKeys];
       break;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForPasswords"));
+      [self.delegate openTrustedVaultReauthForDegradedRecoverability];
+      break;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_AccountMenu_ErrorButton_TrustedVaultDegradedForEverything"));
       [self.delegate openTrustedVaultReauthForDegradedRecoverability];
       break;
     case syncer::SyncService::UserActionableError::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
 - (void)didTapManageYourGoogleAccount {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
   [self.delegate didTapManageYourGoogleAccount];
 }
 
-- (void)didTapEditAccountList {
-  if (_blockUserInteractions) {
+- (void)didTapManageAccounts {
+  if (self.userInteractionsBlocked) {
     return;
   }
-  [self.delegate didTapEditAccountList];
+  [self.delegate didTapManageAccounts];
 }
 
 - (void)didTapAddAccount {
-  if (_blockUserInteractions) {
+  if (self.userInteractionsBlocked) {
     return;
   }
   __weak __typeof(self) weakSelf = self;
-  _blockUserInteractions = YES;
-  [self.delegate didTapAddAccount:^(SigninCoordinatorResult result,
-                                    SigninCompletionInfo* info) {
-    [weakSelf accountAddedIsDone];
-  }];
+  self.userInteractionsBlocked = YES;
+  [self.delegate
+      didTapAddAccountWithCompletion:^(SigninCoordinatorResult result,
+                                       SigninCompletionInfo* info) {
+        [weakSelf accountAddedIsDone];
+      }];
 }
 
-#pragma mark - Private
+#pragma mark - Callbacks
 
 // Callback for didTapAddAccount
 - (void)accountAddedIsDone {
   [self restartUpdates];
-  _blockUserInteractions = NO;
+  self.userInteractionsBlocked = NO;
+}
+
+// Callback for signout.
+- (void)signoutEndedWithSuccess:(BOOL)success {
+  [self.delegate unblockOtherScenes];
+  if (success) {
+    // By signing-out the user cancelled the option to signin in this menu.
+    self.signinCoordinatorResult = SigninCoordinatorResultCanceledByUser;
+    [_delegate mediatorWantsToBeDismissed:self];
+  } else {
+    // User had not signed-out. Allow to interact with the UI.
+    self.userInteractionsBlocked = NO;
+    [self restartUpdates];
+  }
+}
+
+// Callback for the first part of the switch, which is a sign-out.
+- (void)signoutEndedWithSuccess:(BOOL)signoutSuccess
+                   fromIdentity:(id<SystemIdentity>)previousIdentity
+                     toIdentity:(id<SystemIdentity>)newIdentity {
+  if (!signoutSuccess) {
+    // User had not signed-out. Allow to interact with the UI.
+    [self.delegate unblockOtherScenes];
+    self.userInteractionsBlocked = NO;
+    _accountSwitchInProgress.RunAndReset();
+    [self restartUpdates];
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  _authenticationFlow = [self.delegate
+      triggerSigninWithSystemIdentity:newIdentity
+                           completion:^(SigninCoordinatorResult result) {
+                             [weakSelf signinEndedWithResult:result
+                                                fromIdentity:previousIdentity
+                                                  toIdentity:newIdentity];
+                           }];
+}
+
+- (void)signinEndedWithResult:(SigninCoordinatorResult)result
+                 fromIdentity:(id<SystemIdentity>)previousIdentity
+                   toIdentity:(id<SystemIdentity>)newIdentity {
+  CHECK(_authenticationFlow);
+  _authenticationFlow = nil;
+  _accountSwitchInProgress.RunAndReset();
+  [self.delegate unblockOtherScenes];
+  BOOL success =
+      result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
+  if (success) {
+    _signinCompletionInfo =
+        [SigninCompletionInfo signinCompletionInfoWithIdentity:newIdentity];
+    self.signinCoordinatorResult = result;
+    [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
+    [_delegate mediatorWantsToBeDismissed:self];
+  } else if (_accountManagerService->IsValidIdentity(previousIdentity)) {
+    // If the sign-in failed, sign back in previous account if possible and
+    // restart using the account menu.
+    _authenticationService->SignIn(
+        previousIdentity,
+        signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH);
+    self.userInteractionsBlocked = NO;
+    [self restartUpdates];
+  } else {
+    self.signinCoordinatorResult = result;
+    [_delegate mediatorWantsToBeDismissed:self];
+  }
+}
+
+#pragma mark - Private
+
+- (void)handleIdentityListChanged {
+  if (_blockUpdates) {
+    return;
+  }
+  [self updateIdentities];
+}
+
+- (void)handleIdentityUpdated {
+  if (_blockUpdates) {
+    return;
+  }
+  [self updateIdentities];
 }
 
 // Updates the identity list in `_identities`, and sends an notification to
 // the consumer.
 - (void)updateIdentities {
-  NSArray<id<SystemIdentity>>* allIdentities =
-      _accountManagerService->GetAllIdentities();
+  NSArray<id<SystemIdentity>>* allIdentities;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    std::vector<AccountInfo> accountInfos =
+        _identityManager->GetAccountsOnDevice();
+    allIdentities =
+        _accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
+  } else {
+    allIdentities = _accountManagerService->GetAllIdentities();
+  }
 
   NSMutableArray<NSString*>* gaiaIDsToRemove = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToAdd = [NSMutableArray array];
-
+  NSMutableArray<NSString*>* gaiaIDsToKeep = [NSMutableArray array];
   for (id<SystemIdentity> secondaryIdentity : allIdentities) {
+    NSString* gaiaID = secondaryIdentity.gaiaID;
     if (secondaryIdentity == _primaryIdentity) {
       continue;
     }
     BOOL mustAdd = YES;
     for (id<SystemIdentity> displayedIdentity : _identities) {
-      if (secondaryIdentity.gaiaID == displayedIdentity.gaiaID) {
+      if (gaiaID == displayedIdentity.gaiaID) {
+        [gaiaIDsToKeep addObject:gaiaID];
         mustAdd = NO;
         break;
       }
     }
     if (mustAdd) {
       [_identities addObject:secondaryIdentity];
-      [gaiaIDsToAdd addObject:secondaryIdentity.gaiaID];
+      [gaiaIDsToAdd addObject:gaiaID];
     }
   }
 
@@ -384,41 +560,30 @@
   }
 
   [self.consumer updateAccountListWithGaiaIDsToAdd:gaiaIDsToAdd
-                                   gaiaIDsToRemove:gaiaIDsToRemove];
+                                   gaiaIDsToRemove:gaiaIDsToRemove
+                                     gaiaIDsToKeep:gaiaIDsToKeep];
   // In case the primary account information changed.
-  [self.consumer updatePrimaryAccount];
-}
-
-// Callback for signout.
-- (void)signoutEndedWithSuccess:(BOOL)success {
-  [self.delegate unblockScene];
-  if (!success) {
-    // User had not signed-out. Allow to interact with the UI.
-    _blockUserInteractions = NO;
-    [self restartUpdates];
+  if ([self primaryAccountInfoChanged]) {
+    [self.consumer updatePrimaryAccount];
   }
 }
 
-- (void)signinEndedWithSuccess:(BOOL)success {
-  if (success) {
-    [_delegate mediatorWantsToBeDismissed:self];
-  } else if (_authenticationService->GetPrimaryIdentity(
-                 signin::ConsentLevel::kSignin)) {
-    // Sign in to the new identity failed, and the user was signed back.
-    [self restartUpdates];
-    _blockUserInteractions = NO;
-  } else {
-    // That should be extremely are. MDM invalidated the previous account
-    // during the switch.
-    [self.delegate mediatorWantsToBeDismissed:self];
-  }
-}
-
-// Refresh everything and update the UI according to the change in the state.
+// Refresh everything and update the UI according to the change in the state. Do
+// nothing if the mediator was disconnected.
 - (void)restartUpdates {
+  if ([self isDisconnected]) {
+    // The mediator was disconnected. Don’t restart updates.
+    return;
+  }
+  [self.consumer switchingStopped];
   _blockUpdates = NO;
   [self updateIdentities];
   [self onSyncStateChanged];
+}
+
+- (void)setUserInteractionsBlocked:(BOOL)blocked {
+  _userInteractionsBlocked = blocked;
+  [self.consumer setUserInteractionsEnabled:!blocked];
 }
 
 - (id<SystemIdentity>)identityForGaiaID:(NSString*)gaiaID {
@@ -428,6 +593,35 @@
     }
   }
   NOTREACHED();
+}
+
+// Updates the displayed values, and returns YES if the primary account info
+// changed from the displayed ones. Otherwise returns NO.
+- (BOOL)primaryAccountInfoChanged {
+  if (_primaryAccountDisplayedAvatar != self.primaryAccountAvatar ||
+      _primaryAccountDisplayedUserFullName != self.primaryAccountUserFullName ||
+      _primaryAccountDisplayedEmail != self.primaryAccountEmail ||
+      _primaryAccountDisplayedManaged !=
+          self.managementState.is_profile_managed()) {
+    [self recordPrimaryAccountDisplayedInfo];
+    return YES;
+  }
+  return NO;
+}
+
+// Records the displayed primary account info.
+- (void)recordPrimaryAccountDisplayedInfo {
+  _primaryAccountDisplayedEmail = self.primaryAccountEmail;
+  _primaryAccountDisplayedUserFullName = self.primaryAccountUserFullName;
+  _primaryAccountDisplayedAvatar = self.primaryAccountAvatar;
+  _primaryAccountDisplayedManaged = self.managementState.is_profile_managed();
+}
+
+// Returns whether this mediator is disconnected
+- (BOOL)isDisconnected {
+  // The account manager service is set in init and reset in `disconnect`. So
+  // this property correctly reflects whether the mediator is disconnected.
+  return !_accountManagerService;
 }
 
 @end

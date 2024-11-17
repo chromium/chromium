@@ -21,7 +21,7 @@ GestureEventQueue::GestureEventWithLatencyInfoAckState::
         const GestureEventWithLatencyInfo& event)
     : GestureEventWithLatencyInfo(event) {}
 
-GestureEventQueue::Config::Config() {}
+GestureEventQueue::Config::Config() = default;
 
 GestureEventQueue::GestureEventQueue(
     GestureEventQueueClient* client,
@@ -39,7 +39,7 @@ GestureEventQueue::GestureEventQueue(
   DCHECK(fling_scheduler_client);
 }
 
-GestureEventQueue::~GestureEventQueue() {}
+GestureEventQueue::~GestureEventQueue() = default;
 
 bool GestureEventQueue::DebounceOrForwardEvent(
     const GestureEventWithLatencyInfo& gesture_event) {

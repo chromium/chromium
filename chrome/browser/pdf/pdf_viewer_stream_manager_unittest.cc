@@ -643,13 +643,12 @@ TEST_F(PdfViewerStreamManagerTest,
 
   ASSERT_TRUE(pdf_viewer_stream_manager());
 
-  NiceMock<content::MockNavigationHandle> navigation_handle;
+  NiceMock<content::MockNavigationHandle> navigation_handle(GURL(kOriginalUrl1),
+                                                            pdf_host);
 
   // Set `navigation_handle`'s frame host to a grandchild frame host. This acts
   // as the PDF frame host.
   ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
-  ON_CALL(navigation_handle, GetFrameTreeNodeId)
-      .WillByDefault(Return(content_frame_tree_node_id));
   navigation_handle.set_render_frame_host(pdf_host);
 
   // Start the navigation. The content host frame tree node ID should now be

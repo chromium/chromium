@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
@@ -97,8 +92,7 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
       DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -626,9 +620,9 @@ const CSSValue* Border::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   const CSSValue* value = GetCSSPropertyBorderTop().CSSValueFromComputedStyle(
       style, layout_object, allow_visited_style, value_phase);
-  static const CSSProperty* kProperties[3] = {&GetCSSPropertyBorderRight(),
-                                              &GetCSSPropertyBorderBottom(),
-                                              &GetCSSPropertyBorderLeft()};
+  static const std::array<const CSSProperty*, 3> kProperties = {
+      &GetCSSPropertyBorderRight(), &GetCSSPropertyBorderBottom(),
+      &GetCSSPropertyBorderLeft()};
   for (size_t i = 0; i < std::size(kProperties); ++i) {
     const CSSValue* value_for_side = kProperties[i]->CSSValueFromComputedStyle(
         style, layout_object, allow_visited_style, value_phase);
@@ -843,8 +837,8 @@ bool BorderRadius::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* horizontal_radii[4] = {nullptr};
-  CSSValue* vertical_radii[4] = {nullptr};
+  std::array<CSSValue*, 4> horizontal_radii = {nullptr};
+  std::array<CSSValue*, 4> vertical_radii = {nullptr};
 
   if (!css_parsing_utils::ConsumeRadii(horizontal_radii, vertical_radii, stream,
                                        context,
@@ -1184,6 +1178,11 @@ bool Flex::ParseShorthand(bool important,
                 CSSValueID::kFitContent>(stream.Peek().Id())) {
           flex_basis = css_parsing_utils::ConsumeIdent(stream);
         }
+        if (RuntimeEnabledFeatures::LayoutStretchEnabled() &&
+            CSSValueID::kStretch == stream.Peek().Id()) {
+          flex_basis = css_parsing_utils::ConsumeIdent(stream);
+        }
+
         if (!flex_basis) {
           flex_basis = css_parsing_utils::ConsumeLengthOrPercent(
               stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
@@ -3089,25 +3088,6 @@ const CSSValue* PositionTry::CSSValueFromComputedStyleInternal(
   return list;
 }
 
-bool AlternativePositionTry::ParseShorthand(
-    bool important,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParsePositionTryShorthand(alternativePositionTryShorthand(), important,
-                                   stream, context, local_context, properties);
-}
-
-const CSSValue* AlternativePositionTry::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return GetCSSPropertyPositionTry().CSSValueFromComputedStyleInternal(
-      style, layout_object, allow_visited_style, value_phase);
-}
-
 bool ScrollMarginBlock::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
@@ -3412,47 +3392,6 @@ const CSSValue* ScrollStart::CSSValueFromComputedStyleInternal(
   return block_value;
 }
 
-bool ScrollStartTarget::ParseShorthand(
-    bool important,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* block_value = css_parsing_utils::ConsumeScrollStartTarget(stream);
-  if (!block_value) {
-    return false;
-  }
-  CSSValue* inline_value = css_parsing_utils::ConsumeScrollStartTarget(stream);
-  if (!inline_value) {
-    inline_value = CSSIdentifierValue::Create(CSSValueID::kNone);
-  }
-  AddProperty(scrollStartTargetShorthand().properties()[0]->PropertyID(),
-              scrollStartTargetShorthand().id(), *block_value, important,
-              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  AddProperty(scrollStartTargetShorthand().properties()[1]->PropertyID(),
-              scrollStartTargetShorthand().id(), *inline_value, important,
-              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  return true;
-}
-
-const CSSValue* ScrollStartTarget::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  const CSSValue* block_value =
-      scrollStartTargetShorthand().properties()[0]->CSSValueFromComputedStyle(
-          style, layout_object, allow_visited_style, value_phase);
-  const CSSValue* inline_value =
-      scrollStartTargetShorthand().properties()[1]->CSSValueFromComputedStyle(
-          style, layout_object, allow_visited_style, value_phase);
-  if (To<CSSIdentifierValue>(*inline_value).GetValueID() != CSSValueID::kNone) {
-    return MakeGarbageCollected<CSSValuePair>(
-        block_value, inline_value, CSSValuePair::kDropIdenticalValues);
-  }
-  return block_value;
-}
-
 bool ScrollTimeline::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
@@ -3575,8 +3514,7 @@ CSSValue* ConsumeTransitionValue(CSSPropertyID property,
       }
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

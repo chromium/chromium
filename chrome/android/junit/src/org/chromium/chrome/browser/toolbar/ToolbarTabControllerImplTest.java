@@ -24,11 +24,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,7 +40,7 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ToolbarTabControllerImplTest {
-    private class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
+    private static class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
         LoadUrlParams mLoadUrlParams;
 
         public LoadUrlParamsMatcher(LoadUrlParams loadUrlParams) {
@@ -164,49 +161,7 @@ public class ToolbarTabControllerImplTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.BACK_GESTURE_REFACTOR,
-        ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER
-    })
-    public void
-            testUsingCorrectTabSupplier_refactorOff_controlWithActivityTabProviderOff_usesRegularTabSupplier() {
-        // Should only use regular tab supplier when back press refactor is disabled and
-        // control with activity tab provider is also disabled.
-        setUpUsingCorrectTabSupplier();
-
-        Assert.assertTrue(mToolbarTabController.back());
-        Assert.assertTrue(mToolbarTabController.canGoBack());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER)
-    public void
-            testUsingCorrectTabSupplier_refactorOn_controlWithActivityTabProviderOff_doesNotUseRegularTabSupplier() {
-        setUpUsingCorrectTabSupplier();
-
-        Assert.assertFalse(mToolbarTabController.back());
-        Assert.assertFalse(mToolbarTabController.canGoBack());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER)
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void
-            testUsingCorrectTabSupplier_refactorOff_controlWithActivityTabProviderOn_doesNotUseRegularTabSupplier() {
-        setUpUsingCorrectTabSupplier();
-
-        Assert.assertFalse(mToolbarTabController.back());
-        Assert.assertFalse(mToolbarTabController.canGoBack());
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER,
-        ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER
-    })
-    public void
-            testUsingCorrectTabSupplier_refactorOn_controlWithActivityTabProviderOn_doesNotUseRegularTabSupplier() {
+    public void testUsingCorrectTabSupplier_doesNotUseRegularTabSupplier() {
         setUpUsingCorrectTabSupplier();
 
         Assert.assertFalse(mToolbarTabController.back());

@@ -137,10 +137,10 @@ class WebsitePreference extends ChromeImageViewPreference {
     }
 
     protected String buildSummary() {
-        if (mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
+        if (mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUiFeatureEnabled()
                 && mSiteSettingsDelegate.isRelatedWebsiteSetsDataAccessEnabled()
-                && mSite.getRWSCookieInfo() != null) {
-            var rwsInfo = mSite.getRWSCookieInfo();
+                && mSite.getRwsCookieInfo() != null) {
+            var rwsInfo = mSite.getRwsCookieInfo();
             return getContext()
                     .getResources()
                     .getQuantityString(
@@ -200,11 +200,10 @@ class WebsitePreference extends ChromeImageViewPreference {
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
             // Create and set the delete button for this preference.
             setImageView(
-                    R.drawable.btn_close,
+                    R.drawable.ic_delete_white_24dp,
                     getContext()
-                            .getResources()
                             .getString(
-                                    R.string.webstorage_delete_data_content_description,
+                                    R.string.site_settings_delete_zoom_level_content_description,
                                     buildTitle()),
                     (OnClickListener)
                             view -> {
@@ -221,7 +220,6 @@ class WebsitePreference extends ChromeImageViewPreference {
             setImageView(
                     R.drawable.ic_expand_more_horizontal_black_24dp,
                     getContext()
-                            .getResources()
                             .getString(
                                     R.string.webstorage_delete_data_content_description,
                                     buildTitle()),
@@ -260,24 +258,23 @@ class WebsitePreference extends ChromeImageViewPreference {
         super.onBindViewHolder(holder);
         TextView usageText = (TextView) holder.findViewById(R.id.usage_text);
         usageText.setVisibility(View.GONE);
-        var resources = getContext().getResources();
         if (mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             long totalUsage = mSite.getTotalUsage();
             if (totalUsage > 0) {
                 usageText.setText(Formatter.formatShortFileSize(getContext(), totalUsage));
-                usageText.setTextSize(resources.getDimensionPixelSize(R.dimen.usage_text_size));
                 usageText.setVisibility(View.VISIBLE);
             }
         }
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+            TextView summaryText = (TextView) holder.findViewById(android.R.id.summary);
             long readableZoomLevel =
                     Math.round(
                             100
                                     * PageZoomUtils.convertZoomFactorToZoomLevel(
                                             mSite.getZoomFactor()));
-            usageText.setText(getContext().getString(R.string.page_zoom_level, readableZoomLevel));
-            usageText.setTextSize(resources.getDimensionPixelSize(R.dimen.usage_text_size));
-            usageText.setVisibility(View.VISIBLE);
+            summaryText.setText(
+                    getContext().getString(R.string.page_zoom_level, readableZoomLevel));
+            summaryText.setVisibility(View.VISIBLE);
             setViewClickable(false);
         }
 

@@ -50,9 +50,14 @@ class SyncableService {
   // wait (per datatype, if the SyncableService supports multiple).
   virtual void WaitUntilReadyToSync(base::OnceClosure done) = 0;
 
-  // Informs the service to begin syncing the specified synced datatype |type|.
-  // The service should then merge |initial_sync_data| into it's local data,
-  // calling |sync_processor|'s ProcessSyncChanges as necessary to reconcile the
+  // Informs the service that initial sync is about start. This is to allow the
+  // service to differentiate between browser startup and initial sync since
+  // MergeDataAndStartSyncing is called during both.
+  virtual void WillStartInitialSync();
+
+  // Informs the service to begin syncing the specified synced datatype `type`.
+  // The service should then merge `initial_sync_data` into it's local data,
+  // calling `sync_processor`'s ProcessSyncChanges as necessary to reconcile the
   // two. After this, the SyncableService's local data should match the server
   // data, and the service should be ready to receive and process any further
   // SyncChange's as they occur.

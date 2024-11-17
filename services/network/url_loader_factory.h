@@ -14,6 +14,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
@@ -89,6 +90,8 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
       const override;
   orb::PerFactoryState& GetMutableOrbState() override;
   bool DataUseUpdatesEnabled() override;
+  mojom::DeviceBoundSessionAccessObserver* GetDeviceBoundSessionAccessObserver()
+      const override;
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
   // optimization.
@@ -147,6 +150,8 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::TrustTokenAccessObserver> trust_token_observer_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
+  mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observer_;
 
   base::OneShotTimer update_load_info_timer_;
   bool waiting_on_load_state_ack_ = false;

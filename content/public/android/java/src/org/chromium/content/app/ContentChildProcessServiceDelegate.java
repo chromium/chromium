@@ -6,11 +6,15 @@ package org.chromium.content.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.SparseArray;
 import android.view.Surface;
+import android.window.InputTransferToken;
+
+import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -26,6 +30,7 @@ import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
 import org.chromium.content.browser.ChildProcessCreationParamsImpl;
 import org.chromium.content.browser.ContentChildProcessConstants;
 import org.chromium.content.common.IGpuProcessCallback;
+import org.chromium.content.common.InputTransferTokenWrapper;
 import org.chromium.content.common.SurfaceWrapper;
 import org.chromium.content_public.common.ContentProcessInfo;
 
@@ -189,6 +194,21 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
         } catch (RemoteException e) {
             Log.e(TAG, "Unable to call getViewSurface: %s", e);
             return null;
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @CalledByNative
+    private void forwardInputTransferToken(int surfaceId, InputTransferToken vizInputToken) {
+        if (mGpuCallback == null) {
+            Log.e(TAG, "No callback interface has been provided.");
+            return;
+        }
+        try {
+            mGpuCallback.forwardInputTransferToken(
+                    surfaceId, new InputTransferTokenWrapper(vizInputToken));
+        } catch (RemoteException e) {
+            Log.e(TAG, "Unable to call forwardInputTransferToken: %s", e);
         }
     }
 

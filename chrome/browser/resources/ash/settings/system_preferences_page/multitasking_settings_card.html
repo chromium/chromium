@@ -5,12 +5,12 @@
   }
 </style>
 
-<settings-card header-text="[[getHeaderText_()]]">
+<settings-card header-text="$i18n{multitaskingSettingsCardTitle}">
   <settings-toggle-button id="snapWindowSuggestionsToggle"
       icon="os-settings:snap-window-suggestions"
       pref="{{prefs.ash.snap_window_suggestions.enabled}}"
-      label="[[getLabelText_()]]"
-      sub-label="[[getDescriptionText_()]]"
+      label="$i18n{snapWindowLabel}"
+      sub-label="$i18n{snapWindowDescription}"
       deep-link-focus-id$="[[Setting.kSnapWindowSuggestions]]">
   </settings-toggle-button>
 </settings-card>

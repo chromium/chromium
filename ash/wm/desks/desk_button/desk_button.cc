@@ -158,15 +158,6 @@ void DeskButton::Layout(PassKey) {
   }
 }
 
-void DeskButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-
-  ShelfWidget* shelf_widget =
-      Shelf::ForWindow(GetWidget()->GetNativeWindow())->shelf_widget();
-  GetViewAccessibility().SetPreviousFocus(shelf_widget->navigation_widget());
-  GetViewAccessibility().SetNextFocus(shelf_widget);
-}
-
 void DeskButton::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::EventType::kMousePressed &&
       event->IsOnlyRightMouseButton()) {
@@ -324,6 +315,18 @@ void DeskButton::UpdateLocaleSpecificSettings() {
 
   // Update the button text since the default desk name can be locale specific.
   desk_name_label_->SetText(GetDeskNameLabelText(active_desk));
+}
+
+void DeskButton::UpdateAccessiblePreviousAndNextFocus() {
+  if (GetWidget() && GetWidget()->GetNativeWindow()) {
+    ShelfWidget* shelf_widget =
+        Shelf::ForWindow(GetWidget()->GetNativeWindow())->shelf_widget();
+    GetViewAccessibility().SetPreviousFocus(shelf_widget->navigation_widget());
+    GetViewAccessibility().SetNextFocus(shelf_widget);
+  } else {
+    GetViewAccessibility().SetPreviousFocus(nullptr);
+    GetViewAccessibility().SetNextFocus(nullptr);
+  }
 }
 
 void DeskButton::OnButtonPressed() {

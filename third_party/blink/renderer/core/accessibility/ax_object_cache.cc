@@ -95,6 +95,7 @@ bool HasInteractiveARIAAttribute(const Element& element) {
       // These attributes implicitly indicate the given widget is interactive.
       // From http://www.w3.org/TR/wai-aria/states_and_properties#attrs_widgets
       // clang-format off
+      &html_names::kAriaActionsAttr,
       &html_names::kAriaActivedescendantAttr,
       &html_names::kAriaCheckedAttr,
       &html_names::kAriaControlsAttr,

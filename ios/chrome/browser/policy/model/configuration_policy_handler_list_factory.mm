@@ -15,6 +15,8 @@
 #import "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/connectors/core/connectors_prefs.h"
+#import "components/enterprise/connectors/core/enterprise_connectors_policy_handler.h"
 #import "components/enterprise/idle/idle_timeout_policy_handler.h"
 #import "components/history/core/common/pref_names.h"
 #import "components/lens/lens_overlay_permission_utils.h"
@@ -152,6 +154,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kTabCompareSettings,
     optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
+  { policy::key::kDownloadRestrictions,
+    policy::policy_prefs::kDownloadRestrictions,
+    base::Value::Type::INTEGER },
+  { policy::key::kFilePickerChooseFromDriveSettings,
+    prefs::kIosChooseFromDriveFilePickerPolicySettings,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 
@@ -232,6 +240,21 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(
       std::make_unique<policy::GenAiDefaultSettingsPolicyHandler>(
           std::move(gen_ai_default_policies)));
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          policy::key::kEnterpriseRealTimeUrlCheckMode,
+          enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+          enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+          chrome_schema));
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          policy::key::kOnSecurityEventEnterpriseConnector,
+          enterprise_connectors::kOnSecurityEventPref,
+          enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
 
   return handlers;
 }

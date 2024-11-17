@@ -202,7 +202,7 @@ class BASE_EXPORT HistogramBase {
   void AddTimeMicrosecondsGranularity(const TimeDelta& time);
   void AddBoolean(bool value);
 
-  virtual void AddSamples(const HistogramSamples& samples) = 0;
+  virtual bool AddSamples(const HistogramSamples& samples) = 0;
   virtual bool AddSamplesFromPickle(base::PickleIterator* iter) = 0;
 
   // Serialize the histogram info into |pickle|.

@@ -1,0 +1,44 @@
+<!--
+@MAC-ALLOW:AXDescription='File'
+@MAC-DENY:AXValue
+@MAC-ALLOW:AXLinkedUIElements
+@MAC-DENY:AXLinkedUIElements=[]
+@WIN-ALLOW:n_relations*
+@WIN-ALLOW:controllerFor*
+@WAIT_FOR:Done
+-->
+<!DOCTYPE html>
+<html>
+<script>
+class XSpan extends HTMLElement {
+    constructor() {
+	super();
+	this.i = this.attachInternals();
+    }
+}
+customElements.define('x-span', XSpan);
+</script>    
+  <body>
+    <div role="menubar" style="list-style-type: none">
+      <x-span role="menuitem" data-controls="filemenu">File</x-span>
+      <x-span role="menuitem">Edit</x-span>
+    </div>
+    <div id="filemenu" role="menu" aria-label="File"
+        style="list-style-type: none">
+      <x-span role="menuitem">New</x-span>
+      <x-span role="menuitem">Open</x-span>
+    </div>
+    <div id="script-status"></div>
+  </body>
+<script>
+const elements = document.querySelectorAll("[data-controls]");
+for (const element of elements) {
+    const controlsIds = element.dataset.controls.split(/\s+/);
+    const controlsElements = controlsIds.map(id => document.getElementById(id));
+    element.i.ariaControlsElements = controlsElements;
+    element.removeAttribute("data-controls");
+}
+document.getElementById("script-status").innerText = "Done";
+</script>
+</html>
+

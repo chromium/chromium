@@ -58,8 +58,11 @@
   testRunner.log('LayoutInvalidationTracking');
   tracingHelper.logEventShape(layoutInvalidationTracking);
 
+  // styleRecalcInvalidationTracking[0] was logged during initial insertion of
+  // nodes into the tree at page load and thus has no stack trace.
+  // Use styleRecalcInvalidationTracking[1] for testing instead.
   testRunner.log('Style recalc initiator:');
-  testRunner.log(styleRecalcInvalidationTracking[0].args?.data?.stackTrace[0].functionName);
+  testRunner.log(styleRecalcInvalidationTracking[1].args?.data?.stackTrace[0].functionName);
 
   testRunner.log('Layout initiator:');
   testRunner.log(layout.args?.beginData?.stackTrace[0].functionName);

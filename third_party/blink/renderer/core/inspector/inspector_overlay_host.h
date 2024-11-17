@@ -49,7 +49,7 @@ class CORE_EXPORT InspectorOverlayHost final : public ScriptWrappable {
   explicit InspectorOverlayHost(Delegate*);
   void Trace(Visitor*) const override;
 
-  void send(const ScriptValue& message, ExceptionState& exception_state);
+  void send(const ScriptValue& message);
   void ClearDelegate();
 
  private:

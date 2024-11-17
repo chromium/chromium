@@ -1790,7 +1790,7 @@
         "results_handler": "layout tests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-11-22000"
+            "os": "Windows-11-22000|Windows-11-22631"
           },
           "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1818,7 +1818,7 @@
         "results_handler": "layout tests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-11-22000"
+            "os": "Windows-11-22000|Windows-11-22631"
           },
           "hard_timeout": 2400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1845,7 +1845,7 @@
         "results_handler": "layout tests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-11-22000"
+            "os": "Windows-11-22000|Windows-11-22631"
           },
           "hard_timeout": 900,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1877,7 +1877,7 @@
         "results_handler": "layout tests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-11-22000"
+            "os": "Windows-11-22000|Windows-11-22631"
           },
           "hard_timeout": 900,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

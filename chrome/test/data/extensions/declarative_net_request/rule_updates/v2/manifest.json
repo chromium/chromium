@@ -1,0 +1,16 @@
+{
+  "name": "Declarative Net Request Blocker V2",
+  "manifest_version": 3,
+  "version": "2",
+  "declarative_net_request" : {
+    "rule_resources" : [{
+      "id": "ruleset",
+      "enabled": false,
+      "path": "rules.json"
+    }]
+  },
+  "permissions": [
+    "declarativeNetRequest"
+  ],
+  "background": {"service_worker": "background.js"}
+}

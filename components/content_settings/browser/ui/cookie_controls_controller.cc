@@ -167,7 +167,7 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
         ShouldUserBypassIconBeVisible(status.features, status.protections_on,
                                       status.controls_visible),
         status.protections_on, status.blocking_status,
-        ShouldHighlightUserBypass());
+        ShouldHighlightUserBypass(status.protections_on));
   }
 }
 
@@ -440,7 +440,7 @@ bool CookieControlsController::GetIsSubresourceBlocked() const {
       FingerprintingProtectionWebContentsHelper::FromWebContents(
           GetWebContents());
   return fpf_web_contents_helper != nullptr &&
-         fpf_web_contents_helper->is_subresource_blocked();
+         fpf_web_contents_helper->subresource_blocked_in_current_primary_page();
 }
 
 void CookieControlsController::UpdateUserBypass() {
@@ -450,7 +450,7 @@ void CookieControlsController::UpdateUserBypass() {
         ShouldUserBypassIconBeVisible(status.features, status.protections_on,
                                       status.controls_visible),
         status.protections_on, status.blocking_status,
-        ShouldHighlightUserBypass());
+        ShouldHighlightUserBypass(status.protections_on));
   }
 }
 
@@ -578,7 +578,12 @@ void CookieControlsController::RecordActivationMetrics() {
   // TODO(crbug.com/40064612): Add metrics, related to repeated activations.
 }
 
-bool CookieControlsController::ShouldHighlightUserBypass() {
+bool CookieControlsController::ShouldHighlightUserBypass(bool protections_on) {
+  // Only highlight if 3PCs are blocked on the site.
+  if (!protections_on) {
+    return false;
+  }
+
   auto* web_contents = GetWebContents();
   // We don't want to show UI animation, and IPH in this case as we can't
   // persist their usage cross-session. This puts us at high risk of

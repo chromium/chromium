@@ -335,9 +335,13 @@ bool StreamPacketSocket::HandleWriteResult(int result) {
   PendingPacket& packet = send_queue_.front();
   packet.data->DidConsume(result);
   if (packet.data->BytesRemaining() == 0) {
-    SignalSentPacket(
-        this, rtc::SentPacket(packet.options.packet_id, rtc::TimeMillis()));
+    // Pop the queue before SignalSentPacket just in case SignalSentPacket
+    // ends up reentrant. This is a speculative fix for a hardening crash when
+    // send_queue_.pop_front() was called after SignalSentPacket.
+    const rtc::SentPacket sent_packet(packet.options.packet_id,
+                                      rtc::TimeMillis());
     send_queue_.pop_front();
+    SignalSentPacket(this, sent_packet);
   }
   return true;
 }

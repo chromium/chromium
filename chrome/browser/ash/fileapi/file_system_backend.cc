@@ -18,7 +18,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/fileapi/file_access_permissions.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/user_manager/user.h"
 #include "extensions/common/extension.h"
@@ -328,9 +328,8 @@ storage::AsyncFileUtil* FileSystemBackend::GetAsyncFileUtil(
     case storage::kFileSystemTypeSmbFs:
       return smbfs_delegate_->GetAsyncFileUtil(type);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 storage::WatcherManager* FileSystemBackend::GetWatcherManager(
@@ -424,9 +423,8 @@ bool FileSystemBackend::HasInplaceCopyImplementation(
     case storage::kFileSystemTypeFuseBox:
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return true;
 }
 
 std::unique_ptr<storage::FileStreamReader>
@@ -475,9 +473,8 @@ FileSystemBackend::CreateFileStreamReader(
       return arc_documents_provider_delegate_->CreateFileStreamReader(
           url, offset, max_bytes_to_read, expected_modification_time, context);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 std::unique_ptr<storage::FileStreamWriter>
@@ -514,9 +511,8 @@ FileSystemBackend::CreateFileStreamWriter(
     case storage::kFileSystemTypeArcContent:
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 bool FileSystemBackend::GetVirtualPath(const base::FilePath& filesystem_path,

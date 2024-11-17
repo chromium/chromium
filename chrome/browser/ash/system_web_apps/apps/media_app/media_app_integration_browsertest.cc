@@ -29,7 +29,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -46,6 +45,7 @@
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -304,10 +304,12 @@ class NotificationWatcher : public NotificationDisplayService::Observer {
     network_portal_detector.SimulateDefaultNetworkState(
         ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
 
-    NotificationDisplayService::GetForProfile(profile_)->AddObserver(this);
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->AddObserver(
+        this);
   }
   ~NotificationWatcher() override {
-    NotificationDisplayService::GetForProfile(profile_)->RemoveObserver(this);
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->RemoveObserver(
+        this);
   }
   std::string NextSeenNotificationId() {
     if (seen_notification_id_.empty()) {

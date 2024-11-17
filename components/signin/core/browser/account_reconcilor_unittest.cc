@@ -192,12 +192,10 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
         return std::make_unique<signin::DiceAccountReconcilorDelegate>(
             identity_manager, client);
 #else
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
 #endif
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 };
 
@@ -685,8 +683,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       if (PickAccountIdForAccount(account.gaia_id, account.email) == account_id)
         return account;
     }
-    NOTREACHED_IN_MIGRATION();
-    return Account();
+    NOTREACHED();
   }
 
   // Simulates the effect of a Multilogin call on the cookies.
@@ -2169,10 +2166,14 @@ TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieSuccess) {
 
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_test_env()->identity_manager()->GetAccountsInCookieJar();
-  ASSERT_TRUE(accounts_in_cookie_jar_info.accounts_are_fresh);
-  ASSERT_EQ(1u, accounts_in_cookie_jar_info.signed_in_accounts.size());
-  ASSERT_EQ(account_id, accounts_in_cookie_jar_info.signed_in_accounts[0].id);
-  ASSERT_EQ(0u, accounts_in_cookie_jar_info.signed_out_accounts.size());
+  ASSERT_TRUE(accounts_in_cookie_jar_info.AreAccountsFresh());
+  ASSERT_EQ(1u,
+            accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
+                .size());
+  ASSERT_EQ(account_id, accounts_in_cookie_jar_info
+                            .GetPotentiallyInvalidSignedInAccounts()[0]
+                            .id);
+  ASSERT_EQ(0u, accounts_in_cookie_jar_info.GetSignedOutAccounts().size());
 }
 
 // Checks that calling EnableReconcile() while the reconcilor is already running
@@ -2204,10 +2205,14 @@ TEST_F(AccountReconcilorMirrorTest, EnableReconcileWhileAlreadyRunning) {
 
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_test_env()->identity_manager()->GetAccountsInCookieJar();
-  ASSERT_TRUE(accounts_in_cookie_jar_info.accounts_are_fresh);
-  ASSERT_EQ(1u, accounts_in_cookie_jar_info.signed_in_accounts.size());
-  ASSERT_EQ(account_id, accounts_in_cookie_jar_info.signed_in_accounts[0].id);
-  ASSERT_EQ(0u, accounts_in_cookie_jar_info.signed_out_accounts.size());
+  ASSERT_TRUE(accounts_in_cookie_jar_info.AreAccountsFresh());
+  ASSERT_EQ(1u,
+            accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
+                .size());
+  ASSERT_EQ(account_id, accounts_in_cookie_jar_info
+                            .GetPotentiallyInvalidSignedInAccounts()[0]
+                            .id);
+  ASSERT_EQ(0u, accounts_in_cookie_jar_info.GetSignedOutAccounts().size());
 }
 
 TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieFailure) {
@@ -2225,9 +2230,11 @@ TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieFailure) {
 
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_test_env()->identity_manager()->GetAccountsInCookieJar();
-  ASSERT_FALSE(accounts_in_cookie_jar_info.accounts_are_fresh);
-  ASSERT_EQ(0u, accounts_in_cookie_jar_info.signed_in_accounts.size());
-  ASSERT_EQ(0u, accounts_in_cookie_jar_info.signed_out_accounts.size());
+  ASSERT_FALSE(accounts_in_cookie_jar_info.AreAccountsFresh());
+  ASSERT_EQ(0u,
+            accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
+                .size());
+  ASSERT_EQ(0u, accounts_in_cookie_jar_info.GetSignedOutAccounts().size());
   // List accounts retries once on |UNEXPECTED_SERVICE_RESPONSE| errors with
   // backoff protection.
   task_environment()->FastForwardBy(base::Seconds(2));
@@ -2261,8 +2268,8 @@ TEST_F(AccountReconcilorMirrorTest, ExtraCookieChangeNotification) {
   // Add extra cookie change notification. Reconcilor should ignore it.
   gaia::ListedAccount listed_account =
       ListedAccountFromCookieParams(cookie_params, account_id);
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
-      /*accounts_are_fresh=*/true, {listed_account}, {}};
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
+      /*accounts_are_fresh=*/true, /*accounts=*/{listed_account});
   reconcilor->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
 
@@ -2316,7 +2323,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileCookiesDisabled) {
   // This will be the first call to ListAccounts.
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_test_env()->identity_manager()->GetAccountsInCookieJar();
-  ASSERT_FALSE(accounts_in_cookie_jar_info.accounts_are_fresh);
+  ASSERT_FALSE(accounts_in_cookie_jar_info.AreAccountsFresh());
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 }
 
@@ -2971,8 +2978,7 @@ TEST_P(AccountReconcilorMethodParamTest,
       break;
     }
     case signin::AccountConsistencyMethod::kDisabled:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   ASSERT_FALSE(reconcilor->is_reconcile_started_);

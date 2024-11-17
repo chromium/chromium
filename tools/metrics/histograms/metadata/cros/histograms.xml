@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.ArchiveType" enum="CrosDisksArchiveType"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.DeviceMediaType" enum="CrosDisksDeviceMediaType"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.Error.Fuse.PrematureTermination.{FileSystem}"
-    enum="DaemonError" expires_after="2025-03-01">
+    enum="DaemonError" expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -67,16 +67,62 @@ chromium-metrics-reviews@google.com.
     <variant name="drivefs" summary="DriveFS"/>
     <variant name="fuseblk.exfat" summary="FUSE-exFAT"/>
     <variant name="fuseblk.ntfs" summary="FUSE-NTFS"/>
-    <variant name="fusebox"/>
+    <variant name="fusebox" summary="Fusebox"/>
     <variant name="rar" summary="RAR"/>
-    <variant name="smbfs"/>
+    <variant name="smbfs" summary="SMBFS"/>
     <variant name="sshfs" summary="SSHFS"/>
     <variant name="zip" summary="ZIP"/>
   </token>
 </histogram>
 
-<histogram name="CrosDisks.Error.{Action}.{FileSystem}" enum="DaemonError"
+<histogram name="CrosDisks.Error.Fuse.Start.archive" enum="FuseArchiveError"
     expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the archive FUSE program when it starts or fails to
+    daemonize.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Error.Fuse.Start.rar" enum="Rar2fsError"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the RAR FUSE program when it starts or fails to daemonize.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Error.Fuse.Start.zip" enum="FuseZipError"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the ZIP FUSE program when it starts or fails to daemonize.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Error.Fuse.Start.{FileSystem}" enum="DaemonError"
+    expires_after="2025-05-04">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by the {FileSystem} FUSE program when it starts or fails to
+    daemonize.
+  </summary>
+  <token key="FileSystem">
+    <variant name="drivefs" summary="DriveFS"/>
+    <variant name="fuseblk.exfat" summary="exFAT"/>
+    <variant name="fuseblk.ntfs" summary="NTFS"/>
+    <variant name="fusebox" summary="Fusebox"/>
+    <variant name="smbfs" summary="SMBFS"/>
+    <variant name="sshfs" summary="SSHFS"/>
+  </token>
+</histogram>
+
+<histogram name="CrosDisks.Error.{Action}.{FileSystem}" enum="DaemonError"
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -94,12 +140,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.Error.{SysCall}.{FileSystem}" enum="PopularOSErrno"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error encountered by the ChromeOS cros-disks daemon when it tried to
-    {SysCall} a {FileSystem} filesystem.
+    {SysCall} {FileSystem} filesystem.
   </summary>
   <token key="SysCall">
     <variant name="mount"/>
@@ -108,29 +154,29 @@ chromium-metrics-reviews@google.com.
     <variant name="umount2" summary="detach"/>
   </token>
   <token key="FileSystem">
-    <variant name="archive"/>
-    <variant name="drivefs" summary="DriveFS"/>
-    <variant name="exfat" summary="exFAT"/>
-    <variant name="ext2"/>
-    <variant name="ext3"/>
-    <variant name="ext4"/>
-    <variant name="fuseblk.exfat" summary="FUSE-exFAT"/>
-    <variant name="fuseblk.ntfs" summary="FUSE-NTFS"/>
-    <variant name="fusebox"/>
-    <variant name="hfsplus" summary="HFS+"/>
-    <variant name="iso9660" summary="ISO 9660"/>
-    <variant name="ntfs3" summary="NTFS"/>
-    <variant name="rar" summary="RAR"/>
-    <variant name="smbfs"/>
-    <variant name="sshfs" summary="SSHFS"/>
-    <variant name="udf" summary="UDF"/>
-    <variant name="vfat" summary="FAT"/>
-    <variant name="zip" summary="ZIP"/>
+    <variant name="archive" summary="an archive"/>
+    <variant name="drivefs" summary="a DriveFS"/>
+    <variant name="exfat" summary="an exFAT"/>
+    <variant name="ext2" summary="an ext2"/>
+    <variant name="ext3" summary="an ext3"/>
+    <variant name="ext4" summary="an ext4"/>
+    <variant name="fuseblk.exfat" summary="a FUSE-exFAT"/>
+    <variant name="fuseblk.ntfs" summary="a FUSE-NTFS"/>
+    <variant name="fusebox" summary="a Fusebox"/>
+    <variant name="hfsplus" summary="an HFS+"/>
+    <variant name="iso9660" summary="an ISO 9660"/>
+    <variant name="ntfs3" summary="an NTFS"/>
+    <variant name="rar" summary="a RAR"/>
+    <variant name="smbfs" summary="an SMBFS"/>
+    <variant name="sshfs" summary="an SSHFS"/>
+    <variant name="udf" summary="a UDF"/>
+    <variant name="vfat" summary="a FAT"/>
+    <variant name="zip" summary="a ZIP"/>
   </token>
 </histogram>
 
 <histogram name="CrosDisks.FilesystemType" enum="CrosDisksFilesystemType"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -139,38 +185,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CrosDisks.Fuse.FuseArchive" enum="FuseArchiveError"
-    expires_after="2025-03-01">
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Error returned by the fuse-archive program, which is called every time a
-    user opens various archive files in ChromeOS Files App.
-  </summary>
-</histogram>
-
-<histogram name="CrosDisks.Fuse.FuseZip" enum="FuseZipError"
-    expires_after="2025-03-01">
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Error returned by the ZIP mounting program mount-zip, which is called every
-    time a user opens a ZIP archive in ChromeOS Files App.
-  </summary>
-</histogram>
-
-<histogram name="CrosDisks.Fuse.Rar2fs" enum="Rar2fsError"
-    expires_after="2025-03-01">
-  <owner>fdegros@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Error returned by the RAR mounting program rar2fs, which is called every
-    time a user opens a RAR archive in ChromeOS Files App.
-  </summary>
-</histogram>
-
 <histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
-    enum="CrosDisksFilesystemType" expires_after="2025-03-01">
+    enum="CrosDisksFilesystemType" expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -180,8 +196,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CrosDisks.StillUnmountingWhenWakingUp" units="items"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Number of removable drives that are still in the process of being unmounted
+    when the system wakes up.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Time.BlockSuspend" units="ms"
+    expires_after="2025-03-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time taken to unmount all the removable drives before the system goes to
+    sleep.
+  </summary>
+</histogram>
+
 <histogram name="CrosDisks.Time.Fuse.PrematureTermination.{FileSystem}"
-    units="ms" expires_after="2025-03-01">
+    units="ms" expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -194,16 +230,36 @@ chromium-metrics-reviews@google.com.
     <variant name="drivefs" summary="DriveFS"/>
     <variant name="fuseblk.exfat" summary="FUSE-exFAT"/>
     <variant name="fuseblk.ntfs" summary="FUSE-NTFS"/>
-    <variant name="fusebox"/>
+    <variant name="fusebox" summary="Fusebox"/>
     <variant name="rar" summary="RAR"/>
-    <variant name="smbfs"/>
+    <variant name="smbfs" summary="SMBFS"/>
+    <variant name="sshfs" summary="SSHFS"/>
+    <variant name="zip" summary="ZIP"/>
+  </token>
+</histogram>
+
+<histogram name="CrosDisks.Time.Fuse.Start.{FileSystem}" units="ms"
+    expires_after="2025-05-04">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time taken by the {FileSystem} FUSE daemon to start and daemonize.
+  </summary>
+  <token key="FileSystem">
+    <variant name="archive"/>
+    <variant name="drivefs" summary="DriveFS"/>
+    <variant name="fuseblk.exfat" summary="exFAT"/>
+    <variant name="fuseblk.ntfs" summary="NTFS"/>
+    <variant name="fusebox" summary="Fusebox"/>
+    <variant name="rar" summary="RAR"/>
+    <variant name="smbfs" summary="SMBFS"/>
     <variant name="sshfs" summary="SSHFS"/>
     <variant name="zip" summary="ZIP"/>
   </token>
 </histogram>
 
 <histogram name="CrosDisks.Time.{Action}.{FileSystem}" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Time taken by the program {Action} {FileSystem} partition.</summary>
@@ -219,11 +275,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.Time.{SysCall}.{FileSystem}" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Time taken by the ChromeOS cros-disks daemon when it tried to {SysCall} a
+    Time taken by the ChromeOS cros-disks daemon when it tried to {SysCall}
     {FileSystem} filesystem.
   </summary>
   <token key="SysCall">
@@ -233,29 +289,29 @@ chromium-metrics-reviews@google.com.
     <variant name="umount2" summary="detach"/>
   </token>
   <token key="FileSystem">
-    <variant name="archive"/>
-    <variant name="drivefs" summary="DriveFS"/>
-    <variant name="exfat" summary="exFAT"/>
-    <variant name="ext2"/>
-    <variant name="ext3"/>
-    <variant name="ext4"/>
-    <variant name="fuseblk.exfat" summary="FUSE-exFAT"/>
-    <variant name="fuseblk.ntfs" summary="FUSE-NTFS"/>
-    <variant name="fusebox"/>
-    <variant name="hfsplus" summary="HFS+"/>
-    <variant name="iso9660" summary="ISO 9660"/>
-    <variant name="ntfs3" summary="NTFS"/>
-    <variant name="rar" summary="RAR"/>
-    <variant name="smbfs"/>
-    <variant name="sshfs" summary="SSHFS"/>
-    <variant name="udf" summary="UDF"/>
-    <variant name="vfat" summary="FAT"/>
-    <variant name="zip" summary="ZIP"/>
+    <variant name="archive" summary="an archive"/>
+    <variant name="drivefs" summary="a DriveFS"/>
+    <variant name="exfat" summary="an exFAT"/>
+    <variant name="ext2" summary="an ext2"/>
+    <variant name="ext3" summary="an ext3"/>
+    <variant name="ext4" summary="an ext4"/>
+    <variant name="fuseblk.exfat" summary="a FUSE-exFAT"/>
+    <variant name="fuseblk.ntfs" summary="a FUSE-NTFS"/>
+    <variant name="fusebox" summary="a Fusebox"/>
+    <variant name="hfsplus" summary="an HFS+"/>
+    <variant name="iso9660" summary="an ISO 9660"/>
+    <variant name="ntfs3" summary="an NTFS"/>
+    <variant name="rar" summary="a RAR"/>
+    <variant name="smbfs" summary="an SMBFS"/>
+    <variant name="sshfs" summary="an SSHFS"/>
+    <variant name="udf" summary="a UDF"/>
+    <variant name="vfat" summary="a FAT"/>
+    <variant name="zip" summary="a ZIP"/>
   </token>
 </histogram>
 
 <histogram name="CrosDisksClient.FormatCompletedError"
-    enum="CrosDisksClientFormatError" expires_after="2025-03-01">
+    enum="CrosDisksClientFormatError" expires_after="2025-05-04">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -265,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatTime" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -274,7 +330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.MountCompletedError"
-    enum="CrosDisksClientMountError" expires_after="2025-03-01">
+    enum="CrosDisksClientMountError" expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -284,7 +340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.MountErrorMountType"
-    enum="CrosDisksMountTypeError" expires_after="2025-03-01">
+    enum="CrosDisksMountTypeError" expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -294,7 +350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.MountTime" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -303,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.UnmountError" enum="CrosDisksClientMountError"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -313,7 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.UnmountTime" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

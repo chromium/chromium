@@ -65,6 +65,13 @@ config("mediapipe_internal_config") {
 
     # MediaPipe's CHECK macros are redefined from absl's.
     "-Wno-macro-redefined",
+
+    # Upstream MediaPipe does not seem to use C++20, so it can rely on implicit
+    # `this` capture in lambdas. C++20 deprecated that, so we need to disable
+    # the warning.
+    # TODO(http://crbug.com/372293769): remove once upstream MediaPipe stops
+    # relying on implicit `this` capture.
+    "-Wno-deprecated-this-capture",
   ]
 }
 
@@ -104,7 +111,7 @@ proto_library("any_lite_proto_impl") {
 proto_library("mediapipe_proto") {
   proto_in_dir = "src"
   cc_generator_options = "lite=true:"
-  link_deps = [ ":any_lite_proto_impl" ]
+  deps = [ ":any_lite_proto_impl" ]
   sources = [
     "src/mediapipe/calculators/core/flow_limiter_calculator.proto",
     "src/mediapipe/calculators/core/split_vector_calculator.proto",

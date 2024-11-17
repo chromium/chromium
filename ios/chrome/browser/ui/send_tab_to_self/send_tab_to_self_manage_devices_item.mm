@@ -104,6 +104,7 @@ const CGFloat kAvatarSize = 24;
 
 #pragma mark - UITextViewDelegate
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -116,6 +117,16 @@ const CGFloat kAvatarSize = 24;
   DCHECK(self.showManageDevicesLink);
   [self.delegate openManageDevicesTab];
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  DCHECK(self.delegate) << "Delegate not set";
+  DCHECK(self.showManageDevicesLink);
+  [self.delegate openManageDevicesTab];
+  return defaultAction;
 }
 
 #pragma mark - SendTabToSelfManageDevicesItem

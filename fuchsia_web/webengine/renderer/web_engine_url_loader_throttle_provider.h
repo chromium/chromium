@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_WEB_WEBENGINE_RENDERER_WEB_ENGINE_URL_LOADER_THROTTLE_PROVIDER_H_
 #define FUCHSIA_WEB_WEBENGINE_RENDERER_WEB_ENGINE_URL_LOADER_THROTTLE_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 
@@ -34,7 +35,7 @@ class WebEngineURLLoaderThrottleProvider
   void SetOnline(bool is_online) override;
 
  private:
-  const WebEngineContentRendererClient* const content_renderer_client_;
+  const raw_ptr<const WebEngineContentRendererClient> content_renderer_client_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

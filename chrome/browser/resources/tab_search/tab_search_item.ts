@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
@@ -64,6 +64,8 @@ export class TabSearchItemElement extends TabSearchItemBase {
       buttonRipples_: {type: Boolean},
       inSuggestedGroup: {type: Boolean},
       hideUrl: {type: Boolean},
+      closeButtonAriaLabel: {type: String},
+      closeButtonTooltip: {type: String},
       closeButtonIcon: {type: String},
 
       compact: {
@@ -95,6 +97,8 @@ export class TabSearchItemElement extends TabSearchItemBase {
   compact: boolean = false;
   hideUrl: boolean = false;
   closeButtonIcon: string = 'tab-search:close';
+  closeButtonAriaLabel: string = '';
+  closeButtonTooltip: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -230,16 +234,15 @@ export class TabSearchItemElement extends TabSearchItemBase {
   }
 
   protected ariaLabelForButton_(): string {
-    const title = this.data.tab.title;
-    if (this.inSuggestedGroup) {
-      return loadTimeData.getStringF('tabOrganizationCloseTabAriaLabel', title);
+    if (this.closeButtonAriaLabel) {
+      return this.closeButtonAriaLabel;
     }
-    return `${loadTimeData.getString('closeTab')} ${title}`;
+    return `${loadTimeData.getString('closeTab')} ${this.data.tab.title}`;
   }
 
   protected tooltipForButton_(): string {
-    if (this.inSuggestedGroup) {
-      return loadTimeData.getString('tabOrganizationCloseTabTooltip');
+    if (this.closeButtonTooltip) {
+      return this.closeButtonTooltip;
     }
     return loadTimeData.getString('closeTab');
   }

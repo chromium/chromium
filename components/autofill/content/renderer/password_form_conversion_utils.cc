@@ -4,6 +4,8 @@
 
 #include "components/autofill/content/renderer/password_form_conversion_utils.h"
 
+#include <optional>
+
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -118,6 +120,22 @@ bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form) {
   return should_skip_password == "1";
 }
 
+void ProcessFormDataAfterCreation(
+    FormData& form_data,
+    blink::WebFormElement web_form,
+    UsernameDetectorCache* username_detector_cache,
+    form_util::ButtonTitlesCache* button_titles_cache) {
+  if (web_form) {
+    form_data.set_is_gaia_with_skip_save_password_form(
+        IsGaiaWithSkipSavePasswordForm(web_form) ||
+        IsGaiaReauthenticationForm(web_form));
+    form_data.set_button_titles(
+        form_util::GetButtonTitles(web_form, button_titles_cache));
+  }
+  form_data.set_username_predictions(
+      GetUsernamePredictions(form_data, username_detector_cache));
+}
+
 std::optional<FormData> CreateFormDataFromWebForm(
     const WebFormElement& web_form,
     const FieldDataManager& field_data_manager,
@@ -132,14 +150,8 @@ std::optional<FormData> CreateFormDataFromWebForm(
   if (!form_data) {
     return std::nullopt;
   }
-  form_data->set_is_gaia_with_skip_save_password_form(
-      IsGaiaWithSkipSavePasswordForm(web_form) ||
-      IsGaiaReauthenticationForm(web_form));
-
-  form_data->set_username_predictions(
-      GetUsernamePredictions(*form_data, username_detector_cache));
-  form_data->set_button_titles(
-      form_util::GetButtonTitles(web_form, button_titles_cache));
+  ProcessFormDataAfterCreation(*form_data, web_form, username_detector_cache,
+                               button_titles_cache);
   return form_data;
 }
 
@@ -147,15 +159,15 @@ std::optional<FormData> CreateFormDataFromUnownedInputElements(
     const WebLocalFrame& frame,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
-    form_util::ButtonTitlesCache* button_titles_cache,
     const CallTimerState& timer_state) {
   std::optional<FormData> form_data = form_util::ExtractFormData(
       frame.GetDocument(), WebFormElement(), field_data_manager, timer_state);
   if (!form_data) {
     return std::nullopt;
   }
-  form_data->set_username_predictions(
-      GetUsernamePredictions(*form_data, username_detector_cache));
+  ProcessFormDataAfterCreation(*form_data, WebFormElement(),
+                               username_detector_cache,
+                               /*button_titles_cache=*/nullptr);
   return form_data;
 }
 

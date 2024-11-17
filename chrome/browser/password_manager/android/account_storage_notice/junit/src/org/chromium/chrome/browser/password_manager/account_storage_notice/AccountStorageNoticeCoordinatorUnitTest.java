@@ -25,9 +25,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -46,7 +43,6 @@ import java.lang.ref.WeakReference;
         shadows = {
             AccountStorageNoticeCoordinatorUnitTest.ShadowBottomSheetControllerProvider.class
         })
-@EnableFeatures(ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
 public class AccountStorageNoticeCoordinatorUnitTest {
     @Implements(BottomSheetControllerProvider.class)
     public static class ShadowBottomSheetControllerProvider {
@@ -127,23 +123,6 @@ public class AccountStorageNoticeCoordinatorUnitTest {
     @SmallTest
     public void testShouldNotCreateIfAlreadyShown() {
         when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(true);
-
-        boolean canShow =
-                AccountStorageNoticeCoordinator.canShow(
-                        /* hasSyncConsent= */ false,
-                        /* hasChosenToSyncPasswords= */ true,
-                        /* isGmsCoreUpdateRequired= */ false,
-                        mPrefService,
-                        mWindowAndroid);
-
-        Assert.assertFalse(canShow);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
-    public void testShouldNotCreateIfFlagDisabled() {
-        when(mPrefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)).thenReturn(false);
 
         boolean canShow =
                 AccountStorageNoticeCoordinator.canShow(

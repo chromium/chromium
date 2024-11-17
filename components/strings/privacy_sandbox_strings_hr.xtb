@@ -3,18 +3,25 @@
 <translationbundle lang="hr">
 <translation id="1444443021901415601">Chrome bilježi teme koje vas zanimaju na temelju vaše nedavne povijesti pregledavanja</translation>
 <translation id="2252052615723281030">Ako ste prijavljeni u Chrome, ova vam postavka pomaže zaštititi privatnost IP adrese. Ako Chrome posumnja da vas web-lokacija možda prati, dio vašeg prometa može se poslati putem poslužitelja privatnosti.</translation>
+<translation id="235789365079050412">Googleova pravila o privatnosti</translation>
 <translation id="2793385791865768072">Chrome bilježi teme koje vas zanimaju na temelju vaše nedavne povijesti pregledavanja</translation>
+<translation id="2979365474350987274">Kolačići treće strane su ograničeni</translation>
 <translation id="33479675708419823">Ako ste prijavljeni u Chrome, ova vam postavka pomaže zaštititi privatnost IP adrese. Ako Chrome posumnja da vas web-lokacija možda prati, dio vašeg prometa može se poslati putem poslužitelja privatnosti. Saznajte više o tome <ph name="LINK_BEGIN" />kako funkcionira IP Protection<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Saznajte više o skrivanju svoje IP adrese</translation>
+<translation id="385051799172605136">Natrag</translation>
 <translation id="4041687306270459969">Teme oglasa starije od četiri tjedna automatski se brišu. Teme uključuju sport, odjeću itd.</translation>
 <translation id="4177501066905053472">Teme oglasa</translation>
 <translation id="4301151630239508244">Teme oglasa samo su jedna od mnogih mogućnosti koje web-lokacija može upotrebljavati za personalizaciju oglasa. Čak i bez tema oglasa, web-lokacije vam i dalje mogu prikazivati oglase, no oni bi mogli biti manje personalizirani. Saznajte više o <ph name="BEGIN_LINK_1" />upravljanju zaštitom privatnosti u online oglašavanju<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Saznajte više o tome kako Google štiti vaše podatke u našim <ph name="BEGIN_LINK" />pravilima o privatnosti<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">U postavkama Chromiuma možete vidjeti svoje teme oglasa i blokirati one koje ne želite dijeliti s web-lokacijama</translation>
 <translation id="4598427486995631491">Sakrijte svoju IP adresu</translation>
 <translation id="4692439979815346597">U postavkama Chromea možete vidjeti svoje teme oglasa i blokirati one koje ne želite dijeliti s web-lokacijama</translation>
 <translation id="5413586988657235240">Web-lokacije koje posjećujete mogu od Chromiuma tražiti teme kako bi vam prikazivale relevantne oglase, dok se istovremeno štite vaša povijest pregledavanja i identitet</translation>
+<translation id="6053735090575989697">Saznajte više o tome kako Google štiti vaše podatke u našim pravilima o privatnosti.</translation>
 <translation id="6186536480878693792">Web-lokacije koje posjetite mogu od Chromea tražiti teme kako bi vam prikazivale relevantne oglase, dok se istovremeno štite vaša povijest pregledavanja i identitet</translation>
+<translation id="6195163219142236913">Kolačići treće strane su ograničeni</translation>
 <translation id="6371812158043974664">Ako ste prijavljeni u Chromium, ova vam postavka pomaže zaštititi privatnost IP adrese. Ako Chromium posumnja da vas web-lokacija možda prati, dio vašeg prometa može se poslati putem poslužitelja privatnosti. Saznajte više o tome <ph name="LINK_BEGIN" />kako funkcionira IP Protection<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Saznajte više o tome kako Google štiti vaše podatke u našim <ph name="BEGIN_LINK1" />pravilima o privatnosti<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Saznajte <ph name="BEGIN_LINK" />kako funkcionira IP Protection<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Pregledajte postavku tema oglasa</translation>
 </translationbundle>

@@ -6,7 +6,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chrome/browser/ash/app_restore/arc_app_single_restore_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
@@ -28,12 +27,6 @@ constexpr LauncherTag kFullRestoreLaunchHandlerTag = {
     LauncherType::kFullRestore, 0};
 
 }  // namespace
-
-// static
-AppRestoreArcTaskHandler* AppRestoreArcTaskHandler::GetForProfile(
-    Profile* profile) {
-  return AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
-}
 
 AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(Profile* profile) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);

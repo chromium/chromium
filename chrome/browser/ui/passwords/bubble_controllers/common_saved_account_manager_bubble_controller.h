@@ -33,7 +33,7 @@ class CommonSavedAccountManagerBubbleController
   // Called by the view code when the "Google Password Manager" link in the
   // bubble footer in clicked by the user.
   void OnGooglePasswordManagerLinkClicked(
-      password_manager::ManagePasswordsReferrer refferer);
+      password_manager::ManagePasswordsReferrer referrer);
 
   // Returns the email of current primary account. Returns empty string if no
   // account is signed in.

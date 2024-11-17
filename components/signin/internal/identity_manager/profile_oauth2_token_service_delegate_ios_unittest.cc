@@ -9,13 +9,11 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/ios/fake_device_accounts_provider.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -388,10 +386,8 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest,
 }
 
 // Tests that ProfileOAuth2TokenServiceIOSDelegate loads credentials when there
-// is no primary account. kAlwaysLoadDeviceAccounts flag is enabled.
+// is no primary account.
 TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest, LoadCredentialWhenSignedOut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(switches::kAlwaysLoadDeviceAccounts);
   ProviderAccount account1 = fake_provider_->AddAccount("gaia_1", "email_1@x");
   ProviderAccount account2 = fake_provider_->AddAccount("gaia_2", "email_2@x");
   oauth2_delegate_->LoadCredentials(CoreAccountId(), /*is_syncing=*/false);

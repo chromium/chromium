@@ -158,6 +158,7 @@ function sortProcessData(
 
 export interface HealthdInternalsProcessElement {
   $: {
+    pageSizeSelector: HTMLSelectElement,
     sortColumnSelector: HTMLSelectElement,
     sortOrderSelector: HTMLSelectElement,
   };
@@ -178,12 +179,13 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
       displayedHeaders: {type: Array},
       processData: {type: Array},
       filterQuery: {type: String},
+      pageSize: {type: Number},
       sortColumn: {type: String},
       sortOrder: {type: String},
       displayedData: {
         type: Array,
-        computed:
-            'getDisplayedData(processData, filterQuery, sortColumn, sortOrder)',
+        computed: 'getDisplayedData(processData, ' +
+            'filterQuery, pageSize, sortColumn, sortOrder)',
       },
       lastUpdateTime: {type: String},
     };
@@ -242,6 +244,9 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
   // Sorting order.
   private sortOrder: SortOrderEnum = SortOrderEnum.ASCEND;
 
+  // Number of processes displayed in the table.
+  private pageSize: number = 100;
+
   // Data displayed in the process table.
   private displayedData: DisplayedProcessInfo[] = [];
 
@@ -260,12 +265,18 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
   }
 
   private getDisplayedData(
-      data: HealthdApiProcessInfo[], filterQuery: string,
+      data: HealthdApiProcessInfo[], filterQuery: string, pageSize: number,
       sortColumn: SortColumnEnum,
       sortOrder: SortOrderEnum): DisplayedProcessInfo[] {
     return sortProcessData(
-        convertProcessData(filterProcessData(data, filterQuery)), sortColumn,
-        sortOrder);
+               convertProcessData(filterProcessData(data, filterQuery)),
+               sortColumn, sortOrder)
+        .slice(0, pageSize);
+    ;
+  }
+
+  private onPageSizeChanged() {
+    this.pageSize = parseInt(this.$.pageSizeSelector.value);
   }
 
   private onSortColumnChanged() {

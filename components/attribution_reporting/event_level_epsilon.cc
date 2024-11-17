@@ -44,11 +44,6 @@ EventLevelEpsilon::Parse(const base::Value::Dict& dict) {
   return EventLevelEpsilon(*d);
 }
 
-// static
-double EventLevelEpsilon::max() {
-  return g_max_event_level_epsilon;
-}
-
 EventLevelEpsilon::EventLevelEpsilon()
     : EventLevelEpsilon(g_max_event_level_epsilon) {}
 

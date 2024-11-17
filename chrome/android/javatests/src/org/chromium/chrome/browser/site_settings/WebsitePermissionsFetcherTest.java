@@ -478,7 +478,7 @@ public class WebsitePermissionsFetcherTest {
         waiter.waitForCallback(0, 1, 1000L, TimeUnit.MILLISECONDS);
     }
 
-    class FakeWebsitePreferenceBridge extends WebsitePreferenceBridge {
+    static class FakeWebsitePreferenceBridge extends WebsitePreferenceBridge {
         public List<PermissionInfo> mPermissionInfos;
         public List<ContentSettingException> mContentSettingExceptions;
         public List<ChosenObjectInfo> mChosenObjectInfos;
@@ -601,8 +601,8 @@ public class WebsitePermissionsFetcherTest {
     @Test
     @SmallTest
     @UseMethodParameter(BrowsingDataModelEnabled.class)
-    public void testFetchAllPreferencesForSingleOrigin(boolean isBDMEnabled) {
-        Mockito.doReturn(isBDMEnabled)
+    public void testFetchAllPreferencesForSingleOrigin(boolean isBdmEnabled) {
+        Mockito.doReturn(isBdmEnabled)
                 .when(mSiteSettingsDelegate)
                 .isBrowsingDataModelFeatureEnabled();
         WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(mSiteSettingsDelegate);
@@ -707,7 +707,7 @@ public class WebsitePermissionsFetcherTest {
         // Otherwise, just update count in the assert.
         // TODO(https://b/332704817): Add test for Tracking Protection content setting after Android
         // integration.
-        assertEquals(113, ContentSettingsType.MAX_VALUE);
+        assertEquals(114, ContentSettingsType.MAX_VALUE);
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.COOKIES,
@@ -816,7 +816,7 @@ public class WebsitePermissionsFetcherTest {
 
         int storageSize = 256;
         int sharedDictionarySize = 12345;
-        if (isBDMEnabled) {
+        if (isBdmEnabled) {
             var map = new HashMap<Origin, BrowsingDataInfo>();
             var origin = Origin.create(new GURL(ORIGIN));
             map.put(
@@ -828,7 +828,7 @@ public class WebsitePermissionsFetcherTest {
                                     mSiteSettingsDelegate.getBrowserContextHandle(), false))
                     .thenReturn(map);
 
-            doAnswer(this::mockBDMCallback)
+            doAnswer(this::mockBdmCallback)
                     .when(mSiteSettingsDelegate)
                     .getBrowsingDataModel(any(Callback.class));
         } else {
@@ -943,7 +943,7 @@ public class WebsitePermissionsFetcherTest {
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.ANTI_ABUSE));
 
-                    if (isBDMEnabled) {
+                    if (isBdmEnabled) {
                         assertEquals(storageSize + sharedDictionarySize, site.getTotalUsage());
                     } else {
                         // Check storage info.
@@ -982,7 +982,7 @@ public class WebsitePermissionsFetcherTest {
                 });
     }
 
-    private Object mockBDMCallback(InvocationOnMock invocation) {
+    private Object mockBdmCallback(InvocationOnMock invocation) {
         var callback = (Callback<BrowsingDataModel>) invocation.getArguments()[0];
         callback.onResult(mBrowsingDataModel);
         return null;
@@ -1450,7 +1450,7 @@ public class WebsitePermissionsFetcherTest {
         Mockito.doReturn(true).when(mSiteSettingsDelegate).isRelatedWebsiteSetsDataAccessEnabled();
         Mockito.doReturn(true)
                 .when(mSiteSettingsDelegate)
-                .isPrivacySandboxFirstPartySetsUIFeatureEnabled();
+                .isPrivacySandboxFirstPartySetsUiFeatureEnabled();
 
         var fetcher =
                 new WebsitePermissionsFetcher(
@@ -1458,33 +1458,33 @@ public class WebsitePermissionsFetcherTest {
         FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
         fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
 
-        String googleDEOrigin = "https://google.de";
-        String googleITOrigin = "https://google.it";
-        String googleCHOrigin = "https://google.ch";
+        String googleDeOrigin = "https://google.de";
+        String googleItOrigin = "https://google.it";
+        String googleChOrigin = "https://google.ch";
         String youtubeOrigin = "https://youtube.com";
         String verizonConnectOrigin = "https://verizonconnect.com";
 
         String aolOrigin = "https://aol.com";
-        String noInRWSOrigin = "https://unknow.ch";
+        String noInRwsOrigin = "https://unknow.ch";
 
         Website expectedYoutubeWebsite =
                 new Website(WebsiteAddress.create(youtubeOrigin), WebsiteAddress.create(null));
         Website expectedVerizonConnectWebsite =
                 new Website(
                         WebsiteAddress.create(verizonConnectOrigin), WebsiteAddress.create(null));
-        Website expectedNoInRWSWebsite =
-                new Website(WebsiteAddress.create(noInRWSOrigin), WebsiteAddress.create(null));
+        Website expectedNoInRwsWebsite =
+                new Website(WebsiteAddress.create(noInRwsOrigin), WebsiteAddress.create(null));
 
         // Use a list of origins and create content settings exceptions.
         List<String> origins =
                 Arrays.asList(
-                        googleDEOrigin,
-                        googleITOrigin,
-                        googleCHOrigin,
+                        googleDeOrigin,
+                        googleItOrigin,
+                        googleChOrigin,
                         youtubeOrigin,
                         verizonConnectOrigin,
                         aolOrigin,
-                        noInRWSOrigin);
+                        noInRwsOrigin);
         // Adding content exceptions will generate websites data.
         for (String origin : origins) {
             websitePreferenceBridge.addContentSettingException(
@@ -1512,25 +1512,25 @@ public class WebsitePermissionsFetcherTest {
                                     // Verify youtube.com has google.com as RWS owner which has 4
                                     // members within the group of sites with data.
                                     if (site.compareByAddressTo(expectedYoutubeWebsite) == 0) {
-                                        Assert.assertNotNull(site.getRWSCookieInfo());
+                                        Assert.assertNotNull(site.getRwsCookieInfo());
                                         assertEquals(
-                                                "google.com", site.getRWSCookieInfo().getOwner());
-                                        assertEquals(4, site.getRWSCookieInfo().getMembersCount());
+                                                "google.com", site.getRwsCookieInfo().getOwner());
+                                        assertEquals(4, site.getRwsCookieInfo().getMembersCount());
                                     }
                                     // Verify verizonconnect.com has verizon.com as RWS owner which
                                     // has 2 members within the group of sites with data.
                                     if (site.compareByAddressTo(expectedVerizonConnectWebsite)
                                             == 0) {
-                                        Assert.assertNotNull(site.getRWSCookieInfo());
+                                        Assert.assertNotNull(site.getRwsCookieInfo());
                                         assertEquals(
-                                                "verizon.com", site.getRWSCookieInfo().getOwner());
-                                        assertEquals(2, site.getRWSCookieInfo().getMembersCount());
+                                                "verizon.com", site.getRwsCookieInfo().getOwner());
+                                        assertEquals(2, site.getRwsCookieInfo().getMembersCount());
                                     }
 
                                     // Verify a website with data which is not in a RWS has no RWS
                                     // data set.
-                                    if (site.compareByAddressTo(expectedNoInRWSWebsite) == 0) {
-                                        assertEquals(null, site.getRWSCookieInfo());
+                                    if (site.compareByAddressTo(expectedNoInRwsWebsite) == 0) {
+                                        assertEquals(null, site.getRwsCookieInfo());
                                     }
                                 }
                             });

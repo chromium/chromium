@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Unknown CSS property after 'or'
-  assert_equals: expected "style((--FOO: BAR) or ( prop: val ))" but got "style((--FOO: BAR) or ( prop: val  ))"
-Harness: the test ran to completion.
-

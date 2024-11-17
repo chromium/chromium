@@ -1549,7 +1549,7 @@ HttpHandler::PrepareStandardResponse(
       DCHECK(false);
       // Examples of unexpected codes:
       // * kChromeNotReachable: kSessionNotCreated must be returned instead;
-      // * kNavigationDetectedByRemoteEnd: kUnknownError must be returned
+      // * kAbortedByNavigation: kUnknownError must be returned
       //   instead.
       response = std::make_unique<net::HttpServerResponseInfo>(
           net::HTTP_INTERNAL_SERVER_ERROR);

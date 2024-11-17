@@ -57,11 +57,9 @@ class DropdownFieldView implements FieldView {
     /**
      * Builds a dropdown view.
      *
-     * @param context              The application context to use when creating widgets.
-     * @param root                 The object that provides a set of LayoutParams values for
-     *                             the view.
-     * @param fieldModel           The data model of the dropdown.
-     * @param hasRequiredIndicator Whether the required (*) indicator is visible.
+     * @param context The application context to use when creating widgets.
+     * @param root The object that provides a set of LayoutParams values for the view.
+     * @param fieldModel The data model of the dropdown.
      */
     public DropdownFieldView(Context context, ViewGroup root, final PropertyModel fieldModel) {
         mContext = context;

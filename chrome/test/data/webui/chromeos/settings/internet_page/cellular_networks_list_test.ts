@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {CellularNetworksListElement, NetworkListElement} from 'chrome://os-settings/lazy_load.js';
-import {LocalizedLinkElement, MultiDeviceBrowserProxyImpl, MultiDeviceFeatureState, PaperSpinnerLiteElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, LocalizedLinkElement, MultiDeviceBrowserProxyImpl, MultiDeviceFeatureState, PaperSpinnerLiteElement, Router} from 'chrome://os-settings/os_settings.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
@@ -14,8 +14,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DeviceStateProperties, GlobalPolicy, InhibitReason, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeESimManagerRemote} from 'chrome://webui-test/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -569,4 +569,20 @@ suite('<cellular-networks-list>', () => {
             cellularNetworkList.i18n('cellularNetworkInstallingProfile')));
         assertTrue(inhibitedSpinner.active);
       });
+
+  test('Should not call getPageContentData in guest mode', async () => {
+    loadTimeData.overrideValues({isGuest: true});
+
+    // Reinitialize Router and routes based on load time data. Some routes
+    // should not exist in guest mode, including the route that determines
+    // whether the multi-device page is available.
+    Router.resetInstanceForTesting(createRouterForTesting());
+    browserProxy = new TestMultideviceBrowserProxy();
+    MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
+
+    await init();
+    const numGetPageContentDataCalls =
+        browserProxy.getCallCount('getPageContentData');
+    assertEquals(0, numGetPageContentDataCalls);
+  })
 });

@@ -29,6 +29,8 @@ export enum ToolbarEvent {
   VOICE = 'select-voice',
   LANGUAGE_TOGGLE = 'voice-language-toggle',
   PLAY_PREVIEW = 'preview-voice',
+  LANGUAGE_MENU_OPEN = 'language-menu-open',
+  LANGUAGE_MENU_CLOSE = 'language-menu-close',
 }
 
 // The user settings stored in preferences and restored on re-opening Reading

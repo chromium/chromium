@@ -12,8 +12,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#import "ui/base/cocoa/menu_controller.h"
 #include "ui/gfx/image/image_skia.h"
+#import "ui/menus/cocoa/menu_controller.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 @interface StatusItemController : NSObject {

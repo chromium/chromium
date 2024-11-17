@@ -29,8 +29,10 @@
 #include "cc/base/math_util.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/slim/layer.h"
+#include "components/input/events_helper.h"
 #include "components/input/input_router.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/switches.h"
 #include "components/input/web_input_event_builders_android.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -59,9 +61,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
-#include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
-#include "content/common/input/events_helper.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -72,7 +72,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -81,7 +81,7 @@
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/events/android/gesture_event_android.h"
 #include "ui/events/android/gesture_event_type.h"
@@ -173,8 +173,9 @@ std::string CompressAndSaveBitmap(const std::string& dir,
                                   const SkBitmap& bitmap) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  std::vector<unsigned char> data;
-  if (!gfx::JPEGCodec::Encode(bitmap, 85, &data)) {
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/85);
+  if (!data) {
     LOG(ERROR) << "Failed to encode bitmap to JPEG";
     return std::string();
   }
@@ -195,12 +196,12 @@ std::string CompressAndSaveBitmap(const std::string& dir,
     return std::string();
   }
   unsigned int bytes_written =
-      fwrite(reinterpret_cast<const char*>(data.data()), 1, data.size(),
+      fwrite(reinterpret_cast<const char*>(data->data()), 1, data->size(),
              out_file.get());
   out_file.reset();  // Explicitly close before a possible Delete below.
 
   // If there were errors, don't leave a partial file around.
-  if (bytes_written != data.size()) {
+  if (bytes_written != data->size()) {
     base::DeleteFile(screenshot_path);
     LOG(ERROR) << "Error writing screenshot file to disk";
     return std::string();
@@ -596,7 +597,7 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
       selection_popup_controller_(nullptr),
       text_suggestion_host_(nullptr),
       gesture_listener_manager_(nullptr),
-      view_(ui::ViewAndroid::LayoutType::MATCH_PARENT),
+      view_(ui::ViewAndroid::LayoutType::kMatchParent),
       gesture_provider_(
           ui::GetGestureProviderConfig(
               ui::GestureProviderConfigType::CURRENT_PLATFORM,
@@ -627,6 +628,8 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
   // generate our initial LocalSurfaceId here.
   if (is_showing_)
     local_surface_id_allocator_.GenerateId();
+
+  input_helper_ = std::make_unique<input::AndroidInputHelper>(this, this);
 
   delegated_frame_host_client_ =
       std::make_unique<DelegatedFrameHostClientAndroid>(this);
@@ -1004,6 +1007,12 @@ void RenderWidgetHostViewAndroid::WriteContentBitmapToDiskAsync(
                   std::move(result_callback));
 }
 
+void RenderWidgetHostViewAndroid::OnResume(JNIEnv* env) {
+  // crbug.com/370000831. After activity resume, input state is not refreshed
+  // properly. Manually call update state.
+  OnUpdateTextInputStateCalled(text_input_manager_, this, true);
+}
+
 void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
   const cc::RenderFrameMetadata& metadata =
@@ -1187,7 +1196,7 @@ gfx::Size RenderWidgetHostViewAndroid::GetVisibleViewportSize() {
 }
 
 void RenderWidgetHostViewAndroid::SetInsets(const gfx::Insets& insets) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gfx::Size RenderWidgetHostViewAndroid::GetCompositorViewportPixelSize() {
@@ -1314,21 +1323,8 @@ bool RenderWidgetHostViewAndroid::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
     RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
-  if (target_view == this) {
-    *transformed_point = point;
-    return true;
-  }
-
-  auto frame_sink_id = GetFrameSinkId();
-  if (!frame_sink_id.is_valid()) {
-    return false;
-  }
-
-  // In TransformPointToLocalCoordSpace() there is a Point-to-Pixel conversion,
-  // but it is not necessary here because the final target view is responsible
-  // for converting before computing the final transform.
-  return target_view->TransformPointToLocalCoordSpace(point, frame_sink_id,
-                                                      transformed_point);
+  return input_helper_->TransformPointToCoordSpaceForView(point, target_view,
+                                                          transformed_point);
 }
 
 void RenderWidgetHostViewAndroid::SetGestureListenerManager(
@@ -1389,8 +1385,6 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
     }
     if (ime_adapter_android_)
       ime_adapter_android_->UpdateOnTouchDown();
-    if (gesture_listener_manager_)
-      gesture_listener_manager_->UpdateOnTouchDown();
   }
 
   if (event.for_touch_handle())
@@ -1563,17 +1557,12 @@ void RenderWidgetHostViewAndroid::OnStartStylusWriting() {
 }
 
 void RenderWidgetHostViewAndroid::OnEditElementFocusedForStylusWriting(
-    const gfx::Rect& focused_edit_bounds,
-    const gfx::Rect& caret_bounds) {
+    blink::mojom::StylusWritingFocusResultPtr focus_result) {
   if (ime_adapter_android_) {
     ime_adapter_android_->OnEditElementFocusedForStylusWriting(
-        focused_edit_bounds, caret_bounds);
+        focus_result ? focus_result->focused_edit_bounds : gfx::Rect(),
+        focus_result ? focus_result->caret_bounds : gfx::Rect());
   }
-}
-
-void RenderWidgetHostViewAndroid::OnEditElementFocusClearedForStylusWriting() {
-  // ImeAdapterAndroid expects empty bounds when focus could not be set.
-  OnEditElementFocusedForStylusWriting(gfx::Rect(), gfx::Rect());
 }
 
 void RenderWidgetHostViewAndroid::RenderProcessGone() {
@@ -1717,8 +1706,7 @@ RenderWidgetHostViewAndroid::CreateSyntheticGestureTarget() {
 }
 
 bool RenderWidgetHostViewAndroid::ShouldRouteEvents() const {
-  DCHECK(host());
-  return host()->delegate() && host()->delegate()->GetInputEventRouter();
+  return input_helper_->ShouldRouteEvents();
 }
 
 void RenderWidgetHostViewAndroid::UpdateWebViewBackgroundColorIfNecessary() {
@@ -1859,7 +1847,8 @@ void RenderWidgetHostViewAndroid::DidScroll() {}
 
 void RenderWidgetHostViewAndroid::ShowTouchSelectionContextMenu(
     const gfx::Point& location) {
-  host()->ShowContextMenuAtPoint(location, ui::MENU_SOURCE_TOUCH_HANDLE);
+  host()->ShowContextMenuAtPoint(location,
+                                 ui::mojom::MenuSourceType::kTouchHandle);
 }
 
 void RenderWidgetHostViewAndroid::SynchronousCopyContents(
@@ -2176,30 +2165,7 @@ void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
     const input::TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT0("input", "RenderWidgetHostViewAndroid::ProcessAckedTouchEvent");
-  const bool event_consumed =
-      ack_result == blink::mojom::InputEventResultState::kConsumed;
-  // |is_source_touch_event_set_non_blocking| defines a blocking behaviour of
-  // the future inputs.
-  const bool is_source_touch_event_set_non_blocking =
-      InputEventResultStateIsSetBlocking(ack_result);
-  // |was_touch_blocked| indicates whether the current event was dispatched
-  // blocking to the Renderer.
-  const bool was_touch_blocked =
-      ui::WebInputEventTraits::ShouldBlockEventStream(touch.event);
-  gesture_provider_.OnTouchEventAck(
-      touch.event.unique_touch_event_id, event_consumed,
-      is_source_touch_event_set_non_blocking,
-      was_touch_blocked
-          ? std::make_optional(touch.event.GetEventLatencyMetadata())
-          : std::nullopt);
-  if (touch.event.touch_start_or_first_touch_move && event_consumed &&
-      host()->delegate() && host()->delegate()->GetInputEventRouter()) {
-    host()
-        ->delegate()
-        ->GetInputEventRouter()
-        ->OnHandledTouchStartOrFirstTouchMove(
-            touch.event.unique_touch_event_id);
-  }
+  input_helper_->ProcessAckedTouchEvent(touch, ack_result);
 }
 
 void RenderWidgetHostViewAndroid::GestureEventAck(
@@ -2216,17 +2182,7 @@ void RenderWidgetHostViewAndroid::GestureEventAck(
   // but not consumed.
   StopFlingingIfNecessary(event, ack_result);
 
-  if (gesture_listener_manager_)
-    gesture_listener_manager_->GestureEventAck(event, ack_result);
-
   HandleSwipeToMoveCursorGestureAck(event);
-}
-
-void RenderWidgetHostViewAndroid::ChildDidAckGestureEvent(
-    const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
-  if (gesture_listener_manager_)
-    gesture_listener_manager_->GestureEventAck(event, ack_result);
 }
 
 blink::mojom::InputEventResultState
@@ -2443,6 +2399,10 @@ void RenderWidgetHostViewAndroid::SendGestureEvent(
   }
 }
 
+ui::FilteredGestureProvider& RenderWidgetHostViewAndroid::GetGestureProvider() {
+  return gesture_provider_;
+}
+
 bool RenderWidgetHostViewAndroid::ShowSelectionMenu(
     RenderFrameHost* render_frame_host,
     const ContextMenuParams& params) {
@@ -2487,12 +2447,6 @@ void RenderWidgetHostViewAndroid::DidOverscroll(
 
   if (overscroll_controller_)
     overscroll_controller_->OnOverscrolled(params);
-}
-
-void RenderWidgetHostViewAndroid::DidStopFlinging() {
-  if (!gesture_listener_manager_)
-    return;
-  gesture_listener_manager_->DidStopFlinging();
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewAndroid::GetFrameSinkId() const {
@@ -2653,28 +2607,11 @@ bool RenderWidgetHostViewAndroid::OnMouseWheelEvent(
 
 void RenderWidgetHostViewAndroid::OnGestureEvent(
     const ui::GestureEventData& gesture) {
-  if ((gesture.type() == ui::EventType::kGesturePinchBegin ||
-       gesture.type() == ui::EventType::kGesturePinchUpdate ||
-       gesture.type() == ui::EventType::kGesturePinchEnd) &&
-      !IsPinchToZoomEnabled()) {
-    return;
-  }
-
-  blink::WebGestureEvent web_gesture =
-      ui::CreateWebGestureEventFromGestureEventData(gesture);
-  // TODO(jdduke): Remove this workaround after Android fixes UiAutomator to
-  // stop providing shift meta values to synthetic MotionEvents. This prevents
-  // unintended shift+click interpretation of all accessibility clicks.
-  // See crbug.com/443247.
-  if (web_gesture.GetType() == blink::WebInputEvent::Type::kGestureTap &&
-      web_gesture.GetModifiers() == blink::WebInputEvent::kShiftKey) {
-    web_gesture.SetModifiers(blink::WebInputEvent::kNoModifiers);
-  }
-  SendGestureEvent(web_gesture);
+  input_helper_->OnGestureEvent(gesture);
 }
 
 bool RenderWidgetHostViewAndroid::RequiresDoubleTapGestureEvents() const {
-  return true;
+  return input_helper_->RequiresDoubleTapGestureEvents();
 }
 
 void RenderWidgetHostViewAndroid::OnSizeChanged() {

@@ -197,7 +197,7 @@ net::CacheType CodeCacheTypeToNetCacheType(
     case GeneratedCodeCache::CodeCacheType::kWebUIJavaScript:
       return net::GENERATED_WEBUI_BYTE_CODE_CACHE;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CollectStatisticsForEmbedderWebUIPages(

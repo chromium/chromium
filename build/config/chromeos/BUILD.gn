@@ -7,17 +7,21 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos)
 
 config("compiler_cpu_abi") {
-  # Lacros currently uses the *-generic-crosstoolchain.gni files generated
-  # by the simplechrome sdk in build/args/chromeos. These target triples
-  # match the target toolchain defaults in these directories. Passing them
-  # redundantly is harmless and prepares for using Chromium's toolchain.
-  # Non-Lacros Chrome OS builds use per-board toolchains, which might use
-  # different triples. So don't do this there.
-  if (is_chromeos_device && is_chromeos_lacros) {
+  # These flags are added by the Chrome OS toolchain compiler wrapper,
+  # or are implicitly passed by Chome OS's toolchain's clang due to
+  # the cmake flags that clang was built with. Passing them redundantly
+  # is harmless and prepares for using Chromium's toolchain.
+  if (is_chromeos_device) {
     if (current_cpu == "x64") {
       asmflags = [ "--target=x86_64-cros-linux-gnu" ]
-      cflags = [ "--target=x86_64-cros-linux-gnu" ]
-      ldflags = [ "--target=x86_64-cros-linux-gnu" ]
+      cflags = [
+        "--target=x86_64-cros-linux-gnu",
+        "-mno-movbe",
+      ]
+      ldflags = [
+        "--target=x86_64-cros-linux-gnu",
+        "-mno-movbe",
+      ]
     } else if (current_cpu == "arm") {
       asmflags = [ "--target=armv7a-cros-linux-gnueabihf" ]
       cflags = [ "--target=armv7a-cros-linux-gnueabihf" ]
@@ -34,10 +38,9 @@ config("compiler_cpu_abi") {
 
 config("runtime_library") {
   # These flags are added by the Chrome OS toolchain compiler wrapper,
-  # or are implicitly passed by Chome OS's toolchain's clang due to the cmake
-  # flags that clang was built with.
-  # Passing them redundantly is harmless and prepares for using Chromium's
-  # toolchain for Lacros.
+  # or are implicitly passed by Chome OS's toolchain's clang due to
+  # the cmake flags that clang was built with. Passing them redundantly
+  # is harmless and prepares for using Chromium's toolchain.
   if (is_chromeos_device) {
     ldflags = [
       "--rtlib=compiler-rt",

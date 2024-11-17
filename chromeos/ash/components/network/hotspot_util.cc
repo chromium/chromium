@@ -137,6 +137,9 @@ hotspot_config::mojom::DisableReason ShillTetheringIdleReasonToMojomState(
   if (idle_reason == shill::kTetheringIdleReasonUpstreamNotAvailable) {
     return DisableReason::kUpstreamNotAvailable;
   }
+  if (idle_reason == shill::kTetheringIdleReasonResourceBusy) {
+    return DisableReason::kResourceBusy;
+  }
 
   NET_LOG(ERROR) << "Unexpected idle reason: " << idle_reason;
   return DisableReason::kUnknownError;
@@ -260,6 +263,22 @@ hotspot_config::mojom::HotspotControlResult SetTetheringEnabledResultToMojom(
   }
   if (shill_enabled_result == shill::kTetheringEnableResultWrongState) {
     return HotspotControlResult::kAlreadyFulfilled;
+  }
+  if (shill_enabled_result == shill::kTetheringEnableResultAbort) {
+    return HotspotControlResult::kAborted;
+  }
+  if (shill_enabled_result == shill::kTetheringEnableResultNotAllowed) {
+    return HotspotControlResult::kNotAllowed;
+  }
+  if (shill_enabled_result == shill::kTetheringEnableResultBusy) {
+    return HotspotControlResult::kBusy;
+  }
+  if (shill_enabled_result ==
+      shill::kTetheringEnableResultConcurrencyNotSupported) {
+    return HotspotControlResult::kConcurrencyNotSupported;
+  }
+  if (shill_enabled_result == shill::kTetheringEnableResultFailure) {
+    return HotspotControlResult::kOperationFailure;
   }
 
   NET_LOG(ERROR) << "Unknown enable/disable tethering error: "

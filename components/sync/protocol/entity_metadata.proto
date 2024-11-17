@@ -74,7 +74,7 @@ message EntityMetadata {
   // representation.
   optional UniquePosition unique_position = 11;
 
-  // Used only for bookmarks. It's analogous to |specifics_hash| but it
+  // Used only for bookmarks. It's analogous to `specifics_hash` but it
   // exclusively hashes the content of the favicon image, as represented in
   // proto field BookmarkSpecifics.favicon, using base::PersistentHash().
   optional fixed32 bookmark_favicon_hash = 12;

@@ -20,6 +20,7 @@ source_set("commerce") {
     "//chrome/browser/commerce",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/webui/commerce",
     "//components/commerce/core:commerce_types",
     "//components/commerce/core:shopping_service",
     "//components/commerce/core/compare",
@@ -58,6 +59,7 @@ source_set("impl") {
     "//components/commerce/core:metrics",
     "//components/commerce/core:pref_names",
     "//components/commerce/core:utils",
+    "//components/commerce/core/mojom:mojo_bindings",
     "//components/vector_icons",
     "//services/metrics/public/cpp:gen_ukm_builders",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -79,7 +81,7 @@ source_set("test_support") {
   deps = [
     ":commerce",
     "//base",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//skia:skia_core_public_headers",
     "//testing/gmock",
     "//ui/views",
@@ -97,6 +99,7 @@ source_set("unit_tests") {
   deps = [
     ":commerce",
     "//base/test:test_support",
+    "//chrome/browser/ui/toasts:toasts",
     "//chrome/test:test_support",
     "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:feature_list",
@@ -118,5 +121,6 @@ source_set("browser_tests") {
     "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:shopping_service_test_support",
     "//components/commerce/core:utils",
+    "//components/commerce/core/mojom:mojo_bindings",
   ]
 }

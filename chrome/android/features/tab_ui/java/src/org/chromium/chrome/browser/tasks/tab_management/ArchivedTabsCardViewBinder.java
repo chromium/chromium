@@ -47,6 +47,11 @@ public class ArchivedTabsCardViewBinder {
                     v -> {
                         ((Runnable) model.get(ArchivedTabsCardViewProperties.CLICK_HANDLER)).run();
                     });
+        } else if (ArchivedTabsCardViewProperties.WIDTH == key) {
+            View card = view.findViewById(R.id.card);
+            var params = card.getLayoutParams();
+            params.width = model.get(ArchivedTabsCardViewProperties.WIDTH);
+            card.setLayoutParams(params);
         }
     }
 }

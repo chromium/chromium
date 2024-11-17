@@ -193,8 +193,7 @@ std::string ContextTypeToString(ContextType context_type) {
       return "service-worker";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string JsRequestTypeToString(JsRequestType request_type) {
@@ -205,8 +204,7 @@ std::string JsRequestTypeToString(JsRequestType request_type) {
       return "fetch";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Return a new URL with ?contextType=<context_type>&requestType=<request_type>
@@ -237,8 +235,7 @@ GURL ConstructJsRequestURL(const GURL& base_url, JsRequestType request_type) {
     case JsRequestType::kFetch:
       return base_url.Resolve(kMalwarePage);
   }
-  NOTREACHED_IN_MIGRATION();
-  return GURL();
+  NOTREACHED();
 }
 
 // Navigate |browser| to |url| and wait for the title to change to "NOT BLOCKED"
@@ -324,7 +321,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
                      public SafeBrowsingDatabaseManager::Client {
  public:
   TestSBClient()
-      : threat_type_(SB_THREAT_TYPE_SAFE),
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        threat_type_(SB_THREAT_TYPE_SAFE),
         safe_browsing_service_(g_browser_process->safe_browsing_service()) {}
 
   TestSBClient(const TestSBClient&) = delete;

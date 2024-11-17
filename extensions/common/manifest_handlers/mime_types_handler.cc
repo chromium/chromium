@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/pdf/common/pdf_util.h"
 #include "content/public/common/webplugininfo.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -52,7 +53,6 @@ static_assert(
         static_cast<size_t>(MimeHandlerType::kMaxValue) + 1,
     "MimeHandlerType enum is not in sync with kMIMETypeHandlersAllowlist.");
 
-constexpr SkColor kPdfExtensionBackgroundColor = SkColorSetRGB(82, 86, 89);
 constexpr SkColor kQuickOfficeExtensionBackgroundColor =
     SkColorSetRGB(241, 241, 241);
 
@@ -94,7 +94,7 @@ bool MimeTypesHandler::HasPlugin() const {
 
 SkColor MimeTypesHandler::GetBackgroundColor() const {
   if (extension_id_ == extension_misc::kPdfExtensionId) {
-    return kPdfExtensionBackgroundColor;
+    return GetPdfBackgroundColor();
   }
   if (extension_misc::IsQuickOfficeExtension(extension_id_)) {
     return kQuickOfficeExtensionBackgroundColor;

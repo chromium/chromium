@@ -182,7 +182,7 @@ void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
 
   auto new_frame = std::make_unique<web::WebFrameImpl>(
       message.frameInfo, frame_id, message.frameInfo.mainFrame,
-      message_frame_origin, web_state);
+      message_frame_origin, web_state, content_world_);
 
   web_frames_manager.AddFrame(std::move(new_frame));
 }

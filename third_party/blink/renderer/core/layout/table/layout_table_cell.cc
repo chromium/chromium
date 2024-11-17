@@ -195,8 +195,7 @@ unsigned LayoutTableCell::AbsoluteColumnIndex() const {
   if (PhysicalFragmentCount() > 0) {
     return GetPhysicalFragment(0)->TableCellColumnIndex();
   }
-  NOTREACHED_IN_MIGRATION() << "AbsoluteColumnIndex did not find cell";
-  return 0;
+  NOTREACHED() << "AbsoluteColumnIndex did not find cell";
 }
 
 unsigned LayoutTableCell::ColSpan() const {

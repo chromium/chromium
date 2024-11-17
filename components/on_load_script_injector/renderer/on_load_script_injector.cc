@@ -23,7 +23,7 @@ OnLoadScriptInjector::OnLoadScriptInjector(content::RenderFrame* frame)
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-OnLoadScriptInjector::~OnLoadScriptInjector() {}
+OnLoadScriptInjector::~OnLoadScriptInjector() = default;
 
 void OnLoadScriptInjector::BindToReceiver(
     mojo::PendingAssociatedReceiver<mojom::OnLoadScriptInjector> receiver) {

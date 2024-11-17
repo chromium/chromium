@@ -139,34 +139,22 @@ const FieldTrialTestingExperiment
     array_kEarlyBootFieldTrialConfig_experiments[] = {
         {/*name=*/"Enabled",
          /*platforms=*/array_kEarlyBootFieldTrialConfig_platforms,
-         /*platforms_size=*/
-         std::size(array_kEarlyBootFieldTrialConfig_platforms),
          /*form_factors=*/{},
-         /*form_factors_size=*/0,
          /*is_low_end_device=*/std::nullopt,
          /*min_os_version=*/nullptr,
          /*params=*/array_kEarlyBootFieldTrialConfig_params,
-         /*params_size=*/std::size(array_kEarlyBootFieldTrialConfig_params),
          /*enable_features=*/early_boot_enable_features,
-         /*enable_features_size=*/std::size(early_boot_enable_features),
-         /*disable_features=*/nullptr,
-         /*disable_features_size=*/0,
-         /*forcing_flag=*/nullptr,
-         /*override_ui_string=*/nullptr,
-         /*override_ui_string_size=*/0},
-};
+         /*disable_features=*/{},
+         /*forcing_flag=*/{},
+         /*override_ui_string=*/{}}};
 
 const FieldTrialTestingStudy array_kEarlyBootFieldTrialConfig_studies[] = {
     {/*name=*/"CrOSEarlyBootTestStudy",
-     /*experiments=*/array_kEarlyBootFieldTrialConfig_experiments,
-     /*experiments_size=*/
-     std::size(array_kEarlyBootFieldTrialConfig_experiments)},
+     /*experiments=*/array_kEarlyBootFieldTrialConfig_experiments},
 };
 
 const FieldTrialTestingConfig kEarlyBootTestingConfig = {
-    array_kEarlyBootFieldTrialConfig_studies,
-    std::size(array_kEarlyBootFieldTrialConfig_studies),
-};
+    array_kEarlyBootFieldTrialConfig_studies};
 
 std::unique_ptr<ClientFilterableState> GetBasicClientFilterableState() {
   CrosVariationsServiceClient client;
@@ -252,10 +240,12 @@ CreateTestCrOSVariationsFieldTrialCreator(
   // non-test signature.
   (void)safe_seed_details;
 
-  auto safe_seed =
-      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state);
-  auto seed_store =
-      std::make_unique<VariationsSeedStore>(local_state, std::move(safe_seed));
+  auto safe_seed = std::make_unique<VariationsSafeSeedStoreLocalState>(
+      local_state, client->GetVariationsSeedFileDir());
+  auto seed_store = std::make_unique<VariationsSeedStore>(
+      local_state, /*initial_seed=*/nullptr,
+      /*signature_verification_enabled=*/true, std::move(safe_seed),
+      client->GetChannelForVariations(), client->GetVariationsSeedFileDir());
   return std::make_unique<TestCrOSVariationsFieldTrialCreator>(
       client, std::move(seed_store));
 }
@@ -264,7 +254,12 @@ CreateTestCrOSVariationsFieldTrialCreator(
 
 using ::base::test::EqualsProto;
 
-TEST(VariationsCrosEvaluateSeed, GetClientFilterable_Enrolled) {
+class VariationsCrosEvaluateSeed : public ::testing::Test {
+ private:
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(VariationsCrosEvaluateSeed, GetClientFilterable_Enrolled) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       kEnterpriseEnrolledSwitch);
@@ -272,7 +267,7 @@ TEST(VariationsCrosEvaluateSeed, GetClientFilterable_Enrolled) {
   EXPECT_TRUE(client.IsEnterprise());
 }
 
-TEST(VariationsCrosEvaluateSeed, GetClientFilterable_NotEnrolled) {
+TEST_F(VariationsCrosEvaluateSeed, GetClientFilterable_NotEnrolled) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
   CrosVariationsServiceClient client;
   EXPECT_FALSE(client.IsEnterprise());
@@ -288,6 +283,9 @@ class VariationsCrosEvaluateSeedGetChannel
     : public ::testing::TestWithParam<Param> {
  protected:
   VariationsCrosEvaluateSeedGetChannel() = default;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_P(VariationsCrosEvaluateSeedGetChannel,
@@ -321,7 +319,8 @@ TEST_P(VariationsCrosEvaluateSeedGetChannel,
 
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Verify that we use unknown channel on non-branded builds.
-TEST(VariationsCrosEvaluateSeed, GetClientFilterableState_Channel_NotBranded) {
+TEST_F(VariationsCrosEvaluateSeed,
+       GetClientFilterableState_Channel_NotBranded) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
 
   std::unique_ptr<ClientFilterableState> state =
@@ -343,13 +342,13 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 #if BUILDFLAG(PLATFORM_CFM)
-TEST(VariationsCrosEvaluateSeed, GetClientFilterableState_FormFactor) {
+TEST_F(VariationsCrosEvaluateSeed, GetClientFilterableState_FormFactor) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
   CrosVariationsServiceClient client;
   EXPECT_EQ(Study::MEET_DEVICE, client.GetCurrentFormFactor());
 }
 #else   // BUILDFLAG(PLATFORM_CFM)
-TEST(VariationsCrosEvaluateSeed, GetClientFilterableState_FormFactor) {
+TEST_F(VariationsCrosEvaluateSeed, GetClientFilterableState_FormFactor) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
   CrosVariationsServiceClient client;
   EXPECT_EQ(Study::DESKTOP, client.GetCurrentFormFactor());
@@ -357,7 +356,7 @@ TEST(VariationsCrosEvaluateSeed, GetClientFilterableState_FormFactor) {
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
 // Should ignore data if flag is off.
-TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {
+TEST_F(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {
   featured::SeedDetails safe_seed;
   safe_seed.set_b64_compressed_data("some text");
   std::string text;
@@ -374,7 +373,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {
 }
 
 // Should return specified data via stream if flag is on.
-TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
+TEST_F(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
   featured::SeedDetails safe_seed;
   safe_seed.set_b64_compressed_data("some text");
   std::string text;
@@ -391,7 +390,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
 }
 
 // Should not attempt to read stream if flag is not on.
-TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off_FailRead) {
+TEST_F(VariationsCrosEvaluateSeed, GetSafeSeedData_Off_FailRead) {
   featured::SeedDetails safe_seed;
   safe_seed.set_b64_compressed_data("some text");
   std::string text;
@@ -408,7 +407,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off_FailRead) {
 }
 
 // If flag is on and reading fails, should return nullopt.
-TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead) {
+TEST_F(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead) {
   featured::SeedDetails safe_seed;
   safe_seed.set_b64_compressed_data("some text");
   std::string text;
@@ -423,7 +422,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead) {
 }
 
 // If flag is on and parsing input fails, should return nullopt.
-TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailParse) {
+TEST_F(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailParse) {
   std::string text("not a serialized proto");
   FILE* stream = fmemopen(text.data(), text.size(), "r");
   ASSERT_NE(stream, nullptr);
@@ -435,7 +434,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailParse) {
 }
 
 // If flag is on and reading fails, should return nullopt.
-TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead_Null) {
+TEST_F(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead_Null) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"evaluate_seed"});
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kSafeSeedSwitch);
   auto data = GetSafeSeedData(nullptr);
@@ -480,9 +479,9 @@ class VariationsCrosEvaluateSeedMainTest : public ::testing::Test {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempFile local_state_;
   base::ScopedTempFile out_file_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<PrefService> local_state_writer_;
 };
 

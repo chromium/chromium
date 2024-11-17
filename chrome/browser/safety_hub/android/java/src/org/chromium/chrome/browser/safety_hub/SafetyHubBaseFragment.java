@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
@@ -76,9 +76,8 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
         snackbarManager.showSnackbar(snackbar);
     }
 
-    protected void launchSettingsActivity(Class<? extends Fragment> fragment) {
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(getContext(), fragment);
+    protected void startSettings(Class<? extends Fragment> fragment) {
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext(), fragment);
     }
 
     protected void launchSiteSettingsActivity(@SiteSettingsCategory.Type int category) {
@@ -90,7 +89,7 @@ public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
                 SingleCategorySettings.EXTRA_TITLE,
                 getContext().getString(ContentSettingsResources.getTitleForCategory(category)));
 
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(getContext(), SingleCategorySettings.class, extras);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(getContext(), SingleCategorySettings.class, extras);
     }
 }

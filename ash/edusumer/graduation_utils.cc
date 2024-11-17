@@ -51,19 +51,65 @@ std::optional<base::Time> GetLocalMidnightTimeForDate(
   }
   return time.LocalMidnight();
 }
-}  // namespace
 
-bool IsEligibleForGraduation(PrefService* pref_service) {
-  CHECK(pref_service);
-  const base::Value::Dict& graduation_policy_pref =
-      pref_service->GetDict(prefs::kGraduationEnablementStatus);
+// Returns true if the `is_enabled` key in the policy is set to true.
+bool IsPolicyEnabled(const base::Value::Dict& graduation_policy_pref) {
   if (graduation_policy_pref.empty()) {
     return false;
   }
 
   bool is_enabled =
       graduation_policy_pref.FindBool(kIsEnabledKey).value_or(false);
-  if (!is_enabled) {
+  return is_enabled;
+}
+}  // namespace
+
+bool HasUpcomingGraduationEnablementChange(PrefService* pref_service) {
+  CHECK(pref_service);
+  const base::Value::Dict& graduation_policy_pref =
+      pref_service->GetDict(prefs::kGraduationEnablementStatus);
+  if (!IsPolicyEnabled(graduation_policy_pref)) {
+    return false;
+  }
+
+  base::Time current_time = base::Time::Now().LocalMidnight();
+
+  const base::Value::Dict* start_date_dict =
+      graduation_policy_pref.FindDict(kStartDateKey);
+  bool is_future_start_time = false;
+
+  if (start_date_dict) {
+    std::optional<base::Time> start_time =
+        GetLocalMidnightTimeForDate(start_date_dict);
+    if (!start_time) {
+      return false;
+    }
+    is_future_start_time = current_time < *start_time;
+  }
+
+  const base::Value::Dict* end_date_dict =
+      graduation_policy_pref.FindDict(kEndDateKey);
+  bool is_future_end_time = false;
+
+  if (end_date_dict) {
+    std::optional<base::Time> end_time =
+        GetLocalMidnightTimeForDate(end_date_dict);
+    if (!end_time) {
+      return false;
+    }
+    // Since the app availability period is inclusive of the end date, the app
+    // should be enabled until the day after the end date.
+    is_future_end_time = current_time <= *end_time;
+  }
+
+  return is_future_start_time || is_future_end_time;
+}
+
+bool IsEligibleForGraduation(PrefService* pref_service) {
+  CHECK(pref_service);
+  const base::Value::Dict& graduation_policy_pref =
+      pref_service->GetDict(prefs::kGraduationEnablementStatus);
+  if (!IsPolicyEnabled(graduation_policy_pref)) {
     return false;
   }
 

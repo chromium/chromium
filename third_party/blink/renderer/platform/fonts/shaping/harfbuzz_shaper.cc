@@ -129,7 +129,7 @@ void CheckShapeResultRange(const ShapeResult* result,
   log.Append(", result=");
   result->ToString(&log);
 
-  NOTREACHED_IN_MIGRATION() << log.ToString();
+  NOTREACHED() << log.ToString();
 }
 #endif
 
@@ -457,9 +457,8 @@ HarfBuzzShaper::FallbackFontStage ChangeStageToVS(
       return fallback_stage;
     default:
       // We should not call this function on the second fallback pass.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return fallback_stage;
 }
 
 void QueueCharacters(RangeContext* range_data,
@@ -753,8 +752,8 @@ bool HarfBuzzShaper::CollectFallbackHintChars(
 
     // !text_.Is8Bit()...
     UChar32 hint_char;
-    UTF16TextIterator iterator(text_.Characters16() + it->start_index_,
-                               it->num_characters_);
+    UTF16TextIterator iterator(
+        text_.Span16().subspan(it->start_index_, it->num_characters_));
     while (iterator.Consume(hint_char)) {
       hint.push_back(hint_char);
       num_chars_added++;
@@ -780,20 +779,19 @@ void SplitUntilNextCaseChange(
     blink::ReshapeQueueItem& current_queue_item,
     SmallCapsIterator::SmallCapsBehavior& small_caps_behavior) {
   // TODO(layout-dev): Add support for latin-1 to SmallCapsIterator.
-  const UChar* normalized_buffer;
+  base::span<const UChar> normalized_buffer;
   std::optional<String> utf16_text;
   if (text.Is8Bit()) {
     utf16_text.emplace(text);
     utf16_text->Ensure16Bit();
-    normalized_buffer = utf16_text->Characters16();
+    normalized_buffer = utf16_text->Span16();
   } else {
-    normalized_buffer = text.Characters16();
+    normalized_buffer = text.Span16();
   }
 
   unsigned num_characters_until_case_change = 0;
-  SmallCapsIterator small_caps_iterator(
-      normalized_buffer + current_queue_item.start_index_,
-      current_queue_item.num_characters_);
+  SmallCapsIterator small_caps_iterator(normalized_buffer.subspan(
+      current_queue_item.start_index_, current_queue_item.num_characters_));
   small_caps_iterator.Consume(&num_characters_until_case_change,
                               &small_caps_behavior);
   if (num_characters_until_case_change > 0 &&
@@ -1078,7 +1076,7 @@ ShapeResult* HarfBuzzShaper::Shape(const Font* font,
       MakeGarbageCollected<ShapeResult>(font, start, length, direction);
   RangeContext range_data(font, direction, start, end);
   if (text_.Is8Bit()) {
-    // 8-bit text is guaranteed to horizontal latin-1.
+    // 8-bit text is guaranteed to be horizontal latin-1.
     RunSegmenter::RunSegmenterRange segment_range = {
         start, end, USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
         FontFallbackPriority::kText};
@@ -1088,7 +1086,7 @@ ShapeResult* HarfBuzzShaper::Shape(const Font* font,
     // Run segmentation needs to operate on the entire string, regardless of the
     // shaping window (defined by the start and end parameters).
     DCHECK(!text_.Is8Bit());
-    RunSegmenter run_segmenter(text_.Characters16(), text_.length(),
+    RunSegmenter run_segmenter(text_.Span16(),
                                font->GetFontDescription().Orientation());
     RunSegmenter::RunSegmenterRange segment_range;
     while (run_segmenter.Consume(&segment_range)) {

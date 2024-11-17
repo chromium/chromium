@@ -179,13 +179,11 @@ void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
       }
       break;
     case SETUP:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "State SETUP invalid for synthetic scroll using touch input.";
-      break;
     case DONE:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "State DONE invalid for synthetic scroll using touch input.";
-      break;
   }
 }
 
@@ -238,19 +236,14 @@ void SyntheticSmoothMoveGesture::ForwardMouseWheelInputEvents(
       }
     } break;
     case SETUP:
-      NOTREACHED_IN_MIGRATION()
-          << "State SETUP invalid for synthetic scroll using mouse "
-             "wheel input.";
-      break;
+      NOTREACHED() << "State SETUP invalid for synthetic scroll using mouse "
+                      "wheel input.";
     case STOPPING:
-      NOTREACHED_IN_MIGRATION()
-          << "State STOPPING invalid for synthetic scroll using mouse "
-             "wheel input.";
-      break;
+      NOTREACHED() << "State STOPPING invalid for synthetic scroll using mouse "
+                      "wheel input.";
     case DONE:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "State DONE invalid for synthetic scroll using mouse wheel input.";
-      break;
   }
 }
 
@@ -295,17 +288,14 @@ void SyntheticSmoothMoveGesture::ForwardMouseClickInputEvents(
       }
     } break;
     case STOPPING:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "State STOPPING invalid for synthetic drag using mouse input.";
-      break;
     case SETUP:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "State SETUP invalid for synthetic drag using mouse input.";
-      break;
     case DONE:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "State DONE invalid for synthetic drag using mouse input.";
-      break;
   }
 }
 

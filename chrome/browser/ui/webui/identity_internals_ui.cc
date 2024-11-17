@@ -33,6 +33,10 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+IdentityInternalsUIConfig::IdentityInternalsUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIIdentityInternalsHost) {}
+
 namespace {
 
 // RevokeToken message parameter offsets.
@@ -206,8 +210,7 @@ std::string IdentityInternalsUIMessageHandler::GetStatus(
     case extensions::IdentityTokenCacheValue::CACHE_STATUS_TOKEN:
       return "Token Present";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::u16string IdentityInternalsUIMessageHandler::GetExpirationTime(

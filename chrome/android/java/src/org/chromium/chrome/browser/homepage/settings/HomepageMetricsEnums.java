@@ -17,7 +17,13 @@ public final class HomepageMetricsEnums {
      * Possible location type for homepage. Used for Histogram "Settings.Homepage.LocationType"
      * recorded in {@link HomepageManager#recordHomepageLocationType()}.
      *
-     * These values are persisted to logs, and should therefore never be renumbered nor reused.
+     * <p>These values are persisted to logs, and should therefore never be renumbered nor reused.
+     *
+     * <p>A single Homepage URL can be supplied by one of three sources (with precedence between
+     * them). That Homepage is then categorized as being The Chrome NTP, or some "OTHER" URL. E.g. A
+     * partner can provide their own custom Homepage URL, which will be PARTNER_PROVIDED_OTHER. Some
+     * users may want to use something else, e.g. Chrome's NTP which will be USER_CUSTOMIZED_NTP or
+     * their own custom URL which will be USER_CUSTOMIZED_NTP.
      */
     @IntDef({
         HomepageLocationType.POLICY_NTP,
@@ -30,14 +36,6 @@ public final class HomepageMetricsEnums {
         HomepageLocationType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
-
-    /**
-     * A single Homepage URL can be supplied by one of three sources (with precedence between them).
-     * That Homepage is then categorized as being The Chrome NTP, or some "OTHER" URL.
-     * E.g. A partner can provide their own custom Homepage URL, which will be
-     * PARTNER_PROVIDED_OTHER. Some users may want to use something else, e.g. Chrome's NTP which
-     * will be USER_CUSTOMIZED_NTP or their own custom URL which will be USER_CUSTOMIZED_NTP.
-     */
     public @interface HomepageLocationType {
         /** Enterprise policy provided New Tab Page. */
         int POLICY_NTP = 0;

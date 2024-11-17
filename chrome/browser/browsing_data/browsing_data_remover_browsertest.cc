@@ -153,7 +153,7 @@ std::vector<std::string> GetHistogramSuffixes(
 }
 
 void AppendRange(std::vector<std::string>& target,
-                 const std::vector<std::string_view> append) {
+                 const std::vector<std::string_view>& append) {
   // Use std append_range() when c++23 is available.
   target.insert(target.end(), append.begin(), append.end());
 }
@@ -168,10 +168,6 @@ class BrowsingDataRemoverBrowserTest
     std::vector<base::test::FeatureRef> disabled_features = {};
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
-    enabled_features.push_back(features::kCdmStorageDatabase);
-    // Refer to b/325351177 for more information on why this feature is
-    // disabled.
-    disabled_features.push_back(features::kCdmStorageDatabaseMigration);
 #endif
     // TODO(crbug.com/333756088): WebSQL is disabled everywhere by default as of
     // M119 (crbug/695592) except on Android WebView. This is enabled for

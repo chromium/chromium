@@ -6,11 +6,15 @@
 
 #include <optional>
 
+#include "base/apple/foundation_util.h"
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
@@ -69,6 +73,42 @@ bool RegisterInstallation(const base::FilePath& install_directory) {
   return true;
 }
 
+bool InstallToDir(const base::FilePath& install_directory) {
+  base::FilePath source_exe_path;
+  if (!base::PathService::Get(base::FILE_EXE, &source_exe_path)) {
+    LOG(ERROR) << "Failed to retrieve the current executable's path.";
+    return false;
+  }
+
+  base::FilePath source_app_bundle_path =
+      base::apple::GetInnermostAppBundlePath(source_exe_path);
+  if (source_app_bundle_path.empty()) {
+    LOG(ERROR)
+        << "Failed to determine the path to the app bundle containing "
+        << source_exe_path
+        << ". The installer must be run from within an application bundle.";
+    return false;
+  }
+
+  if (!base::CopyDirectory(source_app_bundle_path,
+                           install_directory.AppendASCII(
+                               base::StrCat({PRODUCT_FULLNAME_STRING, ".app"})),
+                           /*recursive=*/true)) {
+    LOG(ERROR)
+        << "Failed to copy the application bundle to the install directory.";
+    return false;
+  }
+
+  if (!base::SetPosixFilePermissions(install_directory,
+                                     kInstallDirPermissionsMask)) {
+    LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at"
+               << install_directory;
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool Install() {
@@ -78,13 +118,17 @@ bool Install() {
     return false;
   }
 
-  base::FilePath exe_path = install_directory->AppendASCII(kExecutableName);
-  base::FilePath backup_exe = exe_path.AddExtensionASCII("old");
-  if (base::PathExists(exe_path) && !base::CopyFile(exe_path, backup_exe)) {
+  base::FilePath app_path = install_directory->AppendASCII(
+      base::StrCat({PRODUCT_FULLNAME_STRING, ".app"}));
+  base::FilePath backup_path = app_path.AddExtensionASCII("old");
+  if (base::PathExists(app_path) &&
+      !base::CopyDirectory(app_path, backup_path, /*recursive=*/true)) {
     LOG(ERROR) << "Failed to backup existing installation.";
     return false;
   }
-  absl::Cleanup delete_backup_exe = [&] { base::DeleteFile(backup_exe); };
+  absl::Cleanup delete_backup = [&] {
+    base::DeletePathRecursively(backup_path);
+  };
 
   if (!InstallToDir(*install_directory)) {
     return false;
@@ -108,12 +152,12 @@ bool Install() {
 #endif
 
   if (!RegisterInstallation(*install_directory)) {
-    if (base::PathExists(backup_exe)) {
-      if (!base::Move(backup_exe, exe_path)) {
+    if (base::PathExists(backup_path)) {
+      if (!base::Move(backup_path, app_path)) {
         LOG(ERROR) << "Failed to restore installation backup.";
       }
     } else {
-      if (!base::DeleteFile(exe_path)) {
+      if (!base::DeletePathRecursively(app_path)) {
         LOG(ERROR) << "Failed to clean installation after failure";
       }
     }

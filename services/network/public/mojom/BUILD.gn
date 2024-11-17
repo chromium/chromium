@@ -222,6 +222,53 @@ mojom("mojom_network_isolation_key") {
   ]
 }
 
+mojom("mojom_shared_storage") {
+  generate_java = true
+  sources = [ "shared_storage.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_MODULES_EXPORT"
+    export_define_blink = "BLINK_MODULES_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.SharedStorageKeyArgument"
+          cpp = "::std::u16string"
+        },
+        {
+          mojom = "network.mojom.SharedStorageValueArgument"
+          cpp = "::std::u16string"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/shared_storage_mojom_traits.h" ]
+    },
+  ]
+
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.SharedStorageKeyArgument"
+          cpp = "::WTF::String"
+        },
+        {
+          mojom = "network.mojom.SharedStorageValueArgument"
+          cpp = "::WTF::String"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.h" ]
+      traits_sources = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.cc" ]
+    },
+  ]
+}
+
 mojom("mojom_shared_dictionary") {
   generate_java = true
   sources = [
@@ -274,10 +321,8 @@ mojom("mojom_shared_dictionary") {
 # As with mojom_ip_address, this is a separate target to avoid a circular
 # dependency, which comes from the fact that proxy_resolver service will use
 # this interface, and the network service uses the proxy_resolver service.
-# Separate from |mojom_ip_address| because a bunch of other consumers are
+# Separate from `mojom_ip_address` because a bunch of other consumers are
 # depending on that and don't need this.
-# This is not yet used by the proxy_resolver, but will be as a part of
-# crbug/1343856.
 mojom("mojom_network_anonymization_key") {
   generate_java = true
   sources = [ "network_anonymization_key.mojom" ]
@@ -434,6 +479,7 @@ mojom("url_loader_base") {
     "cross_origin_embedder_policy.mojom",
     "cross_origin_opener_policy.mojom",
     "data_pipe_getter.mojom",
+    "device_bound_sessions.mojom",
     "devtools_observer.mojom",
     "document_isolation_policy.mojom",
     "early_hints.mojom",
@@ -580,6 +626,11 @@ mojom("url_loader_base") {
           mojom = "network.mojom.URLRequest"
           cpp = "::network::ResourceRequest"
           forward_declaration = "namespace network { struct ResourceRequest; }"
+
+          # ResourceRequest is expensive to copy since it contains multiple mojo
+          # pipes that need to be cloned. Using a non-const ref allows moving
+          # instead of copying as an optimization.
+          non_const_ref = true
         },
         {
           mojom = "network.mojom.URLRequestBody"
@@ -627,6 +678,7 @@ mojom("url_loader_base") {
         "//services/network/public/mojom/devtools_observer.mojom.h",
         "//services/network/public/mojom/cookie_access_observer.mojom.h",
         "//services/network/public/mojom/trust_token_access_observer.mojom.h",
+        "//services/network/public/mojom/device_bound_sessions.mojom.h",
       ]
       traits_public_deps = [
         ":mojom_network_isolation_key",
@@ -771,6 +823,21 @@ mojom("url_loader_base") {
       ]
       traits_headers =
           [ "//services/network/public/cpp/load_timing_info_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.DeviceBoundSessionKey"
+          cpp = "::net::device_bound_sessions::SessionKey"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/device_bound_sessions_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//services/network/public/cpp/device_bound_sessions_mojom_traits.cc",
+      ]
       traits_public_deps = [ "//net" ]
     },
   ]
@@ -1438,11 +1505,13 @@ mojom("mojom") {
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
     ":mojom_shared_dictionary",
+    ":mojom_shared_storage",
     ":mojom_storage_access_api",
     ":mojom_structured_headers",
     ":url_loader_base",
     ":websocket_mojom",
     "//components/content_settings/core/common:mojo_bindings",
+    "//components/ip_protection/mojom",
     "//components/os_crypt/async/common:common_mojom",
     "//mojo/public/mojom/base",
     "//mojo/public/mojom/base:protobuf_support",
@@ -1630,22 +1699,6 @@ mojom("mojom") {
       traits_sources =
           [ "//services/network/public/cpp/hash_value_mojom_traits.cc" ]
       traits_public_deps = [ "//net" ]
-    },
-    {
-      types = [
-        {
-          mojom = "network.mojom.GeoHint"
-          cpp = "::ip_protection::GeoHint"
-        },
-        {
-          mojom = "network.mojom.BlindSignedAuthToken"
-          cpp = "::ip_protection::BlindSignedAuthToken"
-        },
-      ]
-      traits_headers = [
-        "//services/network/public/cpp/ip_protection_data_types_mojom_traits.h",
-      ]
-      traits_sources = [ "//services/network/public/cpp/ip_protection_data_types_mojom_traits.cc" ]
     },
   ]
 

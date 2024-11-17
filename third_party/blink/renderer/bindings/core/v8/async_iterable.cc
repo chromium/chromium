@@ -14,13 +14,15 @@ namespace blink::bindings {
 // Common implementation of
 // Run{Next,Fulfill,Reject,Return,ReturnFulfill}StepsCallable.
 class AsyncIterationSourceBase::CallableCommon
-    : public ScriptFunction::Callable {
+    : public ThenCallable<IDLAny, CallableCommon, IDLAny> {
  public:
   ~CallableCommon() override = default;
 
+  virtual ScriptValue React(ScriptState*, ScriptValue) = 0;
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(iteration_source_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, CallableCommon, IDLAny>::Trace(visitor);
   }
 
  protected:
@@ -36,7 +38,7 @@ class AsyncIterationSourceBase::RunNextStepsCallable final
   explicit RunNextStepsCallable(AsyncIterationSourceBase* iteration_source)
       : AsyncIterationSourceBase::CallableCommon(iteration_source) {}
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue) override {
+  ScriptValue React(ScriptState* script_state, ScriptValue) override {
     return ScriptValue(
         script_state->GetIsolate(),
         iteration_source_->RunNextSteps(script_state).V8Promise());
@@ -49,8 +51,8 @@ class AsyncIterationSourceBase::RunFulfillStepsCallable final
   explicit RunFulfillStepsCallable(AsyncIterationSourceBase* iteration_source)
       : AsyncIterationSourceBase::CallableCommon(iteration_source) {}
 
-  ScriptValue Call(ScriptState* script_state,
-                   ScriptValue iter_result_object_or_undefined) override {
+  ScriptValue React(ScriptState* script_state,
+                    ScriptValue iter_result_object_or_undefined) override {
     return iteration_source_->RunFulfillSteps(script_state,
                                               iter_result_object_or_undefined);
   }
@@ -62,7 +64,7 @@ class AsyncIterationSourceBase::RunRejectStepsCallable final
   explicit RunRejectStepsCallable(AsyncIterationSourceBase* iteration_source)
       : AsyncIterationSourceBase::CallableCommon(iteration_source) {}
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue reason) override {
+  ScriptValue React(ScriptState* script_state, ScriptValue reason) override {
     return iteration_source_->RunRejectSteps(script_state, reason);
   }
 };
@@ -75,7 +77,7 @@ class AsyncIterationSourceBase::RunReturnStepsCallable final
       : AsyncIterationSourceBase::CallableCommon(iteration_source),
         value_(std::move(value)) {}
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue) override {
+  ScriptValue React(ScriptState* script_state, ScriptValue) override {
     return ScriptValue(
         script_state->GetIsolate(),
         iteration_source_->RunReturnSteps(script_state, value_).V8Promise());
@@ -99,7 +101,7 @@ class AsyncIterationSourceBase::RunReturnFulfillStepsCallable final
       : AsyncIterationSourceBase::CallableCommon(iteration_source),
         value_(std::move(value)) {}
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue) override {
+  ScriptValue React(ScriptState* script_state, ScriptValue) override {
     return iteration_source_->RunReturnFulfillSteps(script_state, value_);
   }
 
@@ -116,68 +118,67 @@ AsyncIterationSourceBase::AsyncIterationSourceBase(ScriptState* script_state,
                                                    Kind kind)
     : AsyncIteratorBase::IterationSourceBase(kind),
       script_state_(script_state),
-      on_settled_function_(MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<RunNextStepsCallable>(this))),
-      on_fulfilled_function_(MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<RunFulfillStepsCallable>(this))),
-      on_rejected_function_(MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<RunRejectStepsCallable>(this))) {}
+      on_settled_function_(MakeGarbageCollected<RunNextStepsCallable>(this)),
+      on_fulfilled_function_(
+          MakeGarbageCollected<RunFulfillStepsCallable>(this)),
+      on_rejected_function_(
+          MakeGarbageCollected<RunRejectStepsCallable>(this)) {}
 
 v8::Local<v8::Promise> AsyncIterationSourceBase::Next(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  ScriptPromise<IDLAny> next_promise;
   if (!ongoing_promise_.IsEmpty()) {
     // step 10. If ongoingPromise is not null, then:
     // step 10.3. Perform PerformPromiseThen(ongoingPromise, onSettled,
     //     onSettled, afterOngoingPromiseCapability).
     // step 10.4. Set object's ongoing promise to
     //     afterOngoingPromiseCapability.[[Promise]].
-    ongoing_promise_ =
-        ongoing_promise_.Then(on_settled_function_, on_settled_function_);
+    next_promise = ongoing_promise_.Unwrap().Then(
+        script_state, on_settled_function_.Get(), on_settled_function_.Get());
   } else {
     // step 11. Otherwise:
     // step 11.1. Set object's ongoing promise to the result of running
     //     nextSteps.
-    ongoing_promise_ = RunNextSteps(script_state);
+    next_promise = RunNextSteps(script_state);
   }
+  ongoing_promise_ = next_promise;
   // step 12. Return object's ongoing promise.
-  return ongoing_promise_.V8Promise();
+  return next_promise.V8Promise();
 }
 
 v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
     ScriptState* script_state,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  ScriptPromiseUntyped return_steps_promise;
+  ScriptPromise<IDLAny> next_promise;
+  ScriptPromise<IDLAny> return_steps_promise;
   if (!ongoing_promise_.IsEmpty()) {
     // step 10. If ongoingPromise is not null, then:
     // step 10.2. Let onSettled be CreateBuiltinFunction(returnSteps, << >>).
-    ScriptFunction* on_settled = MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<RunReturnStepsCallable>(
-            this, ScriptValue(script_state->GetIsolate(), value)));
+    auto* on_settled = MakeGarbageCollected<RunReturnStepsCallable>(
+        this, ScriptValue(script_state->GetIsolate(), value));
     // step 10.3. Perform PerformPromiseThen(ongoingPromise, onSettled,
     //     onSettled, afterOngoingPromiseCapability).
     // step 11.4. Set object's ongoing promise to
     //     afterOngoingPromiseCapability.[[Promise]].
-    ongoing_promise_ = ongoing_promise_.Then(on_settled, on_settled);
+    next_promise =
+        ongoing_promise_.Unwrap().Then(script_state, on_settled, on_settled);
   } else {
     // step 11. Otherwise:
     // step 11.1. Set object's ongoing promise to the result of
     //     running returnSteps.
-    ongoing_promise_ = RunReturnSteps(
+    next_promise = RunReturnSteps(
         script_state, ScriptValue(script_state->GetIsolate(), value));
   }
+  ongoing_promise_ = next_promise;
+
   // step 13. Let onFulfilled be CreateBuiltinFunction(fulfillSteps, << >>).
-  ScriptFunction* on_fulfilled = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<RunReturnFulfillStepsCallable>(
-                        this, ScriptValue(script_state->GetIsolate(), value)));
+  auto* on_fulfilled = MakeGarbageCollected<RunReturnFulfillStepsCallable>(
+      this, ScriptValue(script_state->GetIsolate(), value));
   // step 14. Perform PerformPromiseThen(object's ongoing promise, onFulfilled,
   //     undefined, returnPromiseCapability).
-  return_steps_promise = ongoing_promise_.Then(on_fulfilled, nullptr);
+  return_steps_promise = next_promise.Then(script_state, on_fulfilled);
   // step 15. Return returnPromiseCapability.[[Promise]].
   return return_steps_promise.V8Promise();
 }
@@ -223,7 +224,8 @@ ScriptPromise<IDLAny> AsyncIterationSourceBase::RunNextSteps(
       MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
   auto promise = pending_promise_resolver_->Promise();
   GetNextIterationResult();
-  return promise.Then(on_fulfilled_function_, on_rejected_function_);
+  return promise.Then(script_state, on_fulfilled_function_.Get(),
+                      on_rejected_function_.Get());
 }
 
 // step 8.5. Let fulfillSteps be the following steps, given next:

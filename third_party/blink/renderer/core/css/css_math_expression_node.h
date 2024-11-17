@@ -27,12 +27,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MATH_EXPRESSION_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MATH_EXPRESSION_NODE_H_
 
@@ -72,9 +66,14 @@ enum CalculationResultCategory {
   kCalcNumber,
   kCalcLength,
   kCalcPercent,
-  // kCalcLengthFunction is used for calculated lengths that can't be resolved
-  // at style time.  This includes mixes of length and percent, and also
-  // anchor queries and intrinsic size keywords in calc-size().
+  // kCalcLengthFunction is used for expressions that can't be resolved
+  // before layout time, as they depend on calculated lengths.
+  // This includes mixes of length and percent (or other fractional units,
+  // such as vw), and also anchor queries and intrinsic size keywords
+  // in calc-size(). Note that even pure numerical, non-length values
+  // can fall into this category, due to functions like sign()
+  // (e.g. sign(1vw - 1px) returns a numerical value, but depends on
+  // a length that cannot be resolved until layout).
   kCalcLengthFunction,
   // kCalcIntrinsicSize is a special case of kCalcLengthFunction that is
   // forbidden within most expression contexts.
@@ -293,8 +292,7 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    NOTREACHED_IN_MIGRATION();
-    return *this;
+    NOTREACHED();
   }
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
@@ -368,8 +366,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    NOTREACHED_IN_MIGRATION();
-    return *this;
+    NOTREACHED();
   }
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
@@ -396,10 +393,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
       const CSSLengthResolver&) const final {
     return std::nullopt;
   }
-  double DoubleValue() const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  double DoubleValue() const final { NOTREACHED(); }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
@@ -408,8 +402,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
     NOTREACHED();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final {
@@ -436,8 +429,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
@@ -481,8 +473,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    NOTREACHED_IN_MIGRATION();
-    return *this;
+    NOTREACHED();
   }
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
@@ -502,15 +493,14 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
   CSSPrimitiveValue::BoolStatus IsNegative() const final {
     return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
-  String CustomCSSText() const final { return getValueName(keyword_); }
+  String CustomCSSText() const final {
+    return GetCSSValueNameAs<AtomicString>(keyword_);
+  }
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
-  double DoubleValue() const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  double DoubleValue() const final { NOTREACHED(); }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
@@ -519,8 +509,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
     NOTREACHED();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final {
@@ -738,7 +727,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
   // Helper for iterating from the 2nd to the last operands
   base::span<const Member<const CSSMathExpressionNode>> SecondToLastOperands()
       const {
-    return base::make_span(std::next(operands_.begin()), operands_.end());
+    return base::span(operands_).subspan(1);
   }
 
   Operands operands_;
@@ -798,10 +787,7 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
-  double DoubleValue() const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  double DoubleValue() const final { NOTREACHED(); }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
@@ -810,8 +796,7 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
     NOTREACHED();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final {
@@ -915,8 +900,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
       CSSPrimitiveValue::LengthTypeFlags& types) const final {
     // AccumulateLengthUnitTypes() is only used when interpolating the
     // 'transform' property, where anchor queries are not allowed.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   String CustomCSSText() const final;

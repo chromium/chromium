@@ -63,7 +63,7 @@ bool ConvertToUTF16WithSubstitutions(std::string_view text,
       text, charset, base::OnStringConversionError::SUBSTITUTE, output);
 }
 
-bool ToUpper(std::u16string_view str, std::u16string* output) {
+bool ToUpperUsingLocale(std::u16string_view str, std::u16string* output) {
   *output = base::i18n::ToUpper(str);
   return true;
 }

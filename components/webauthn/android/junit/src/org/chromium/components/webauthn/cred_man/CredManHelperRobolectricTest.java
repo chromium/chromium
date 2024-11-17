@@ -33,7 +33,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -45,7 +44,6 @@ import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -55,6 +53,8 @@ import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
+import org.chromium.components.webauthn.GetAssertionOutcome;
+import org.chromium.components.webauthn.MakeCredentialOutcome;
 import org.chromium.components.webauthn.ShadowWebContentStatics;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnModeProvider;
@@ -98,7 +98,7 @@ public class CredManHelperRobolectricTest {
     @Mock private WebContents mWebContents;
     @Mock private CredManMetricsHelper mMetricsHelper;
     @Mock private WebauthnBrowserBridge mBrowserBridge;
-    @Mock private Callback<Integer> mErrorCallback;
+    @Mock private CredManHelper.ErrorCallback mErrorCallback;
     @Mock private Barrier mBarrier;
     @Mock private CredManRequestDecorator mRequestDecorator;
     @Mock private WebauthnModeProvider mWebauthnModeProvider;
@@ -115,8 +115,6 @@ public class CredManHelperRobolectricTest {
                 }
             };
 
-    @Rule public JniMocker mMocker = new JniMocker();
-
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
@@ -126,8 +124,8 @@ public class CredManHelperRobolectricTest {
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
 
-        Fido2ApiTestHelper.mockFido2CredentialRequestJni(mMocker);
-        Fido2ApiTestHelper.mockClientDataJson(mMocker, "{}");
+        Fido2ApiTestHelper.mockFido2CredentialRequestJni();
+        Fido2ApiTestHelper.mockClientDataJson("{}");
 
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
 
@@ -234,7 +232,10 @@ public class CredManHelperRobolectricTest {
         shadowException.setType("android.credentials.CreateCredentialException.TYPE_USER_CANCELED");
         shadowCredentialManager.getCreateCredentialCallback().onError(exception);
 
-        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+        verify(mErrorCallback, times(1))
+                .onResult(
+                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                        MakeCredentialOutcome.USER_CANCELLATION);
         verify(mMetricsHelper, times(1))
                 .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.CANCELLED);
     }
@@ -260,7 +261,10 @@ public class CredManHelperRobolectricTest {
                 CredManHelper.CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR);
         shadowCredentialManager.getCreateCredentialCallback().onError(exception);
 
-        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.CREDENTIAL_EXCLUDED);
+        verify(mErrorCallback, times(1))
+                .onResult(
+                        AuthenticatorStatus.CREDENTIAL_EXCLUDED,
+                        MakeCredentialOutcome.CREDENTIAL_EXCLUDED);
         verify(mMetricsHelper, times(1))
                 .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.SUCCESS);
     }
@@ -285,7 +289,7 @@ public class CredManHelperRobolectricTest {
         shadowException.setType("android.credentials.CreateCredentialException.TYPE_UNKNOWN");
         shadowCredentialManager.getCreateCredentialCallback().onError(exception);
 
-        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
         verify(mMetricsHelper, times(1))
                 .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.FAILURE);
     }
@@ -391,7 +395,10 @@ public class CredManHelperRobolectricTest {
         GetCredentialException exception =
                 new GetCredentialException(GetCredentialException.TYPE_NO_CREDENTIAL, "Message");
         shadowCredentialManager.getGetCredentialCallback().onError(exception);
-        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+        verify(mErrorCallback, times(1))
+                .onResult(
+                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                        GetAssertionOutcome.CREDENTIAL_NOT_RECOGNIZED);
     }
 
     @Test
@@ -414,7 +421,10 @@ public class CredManHelperRobolectricTest {
                 new GetCredentialException(GetCredentialException.TYPE_USER_CANCELED, "Message");
         shadowCredentialManager.getGetCredentialCallback().onError(exception);
 
-        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+        verify(mErrorCallback, times(1))
+                .onResult(
+                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                        GetAssertionOutcome.USER_CANCELLATION);
         verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), any());
@@ -440,7 +450,7 @@ public class CredManHelperRobolectricTest {
                 new GetCredentialException(GetCredentialException.TYPE_UNKNOWN, "Message");
         shadowCredentialManager.getGetCredentialCallback().onError(exception);
 
-        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+        verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
         verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.FAILURE), any());

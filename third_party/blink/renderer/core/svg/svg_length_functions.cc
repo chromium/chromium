@@ -89,8 +89,7 @@ float SVGViewportResolver::ViewportDimension(SVGLengthMode mode) const {
               .LengthSquared() /
           2));
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 float ValueForLength(const Length& length, float zoom, float dimension) {

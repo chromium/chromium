@@ -137,8 +137,7 @@ class InputMethodEngineBrowserTest
         return LoadExtensionAsComponent(
             test_data_dir_.AppendASCII(extension_name));
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   raw_ptr<const extensions::Extension, DanglingUntriaged> extension_;

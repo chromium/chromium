@@ -234,6 +234,10 @@ ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetailsImpl(
       details.size_delta = gfx::PlatformFont::GetFontSizeDelta(13);
       details.weight = gfx::Font::Weight::BOLD;
       break;
+    case style::STYLE_LINK_3:
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(13);
+      details.weight = gfx::Font::Weight::NORMAL;
+      break;
     case style::STYLE_BODY_4:
       details.size_delta = gfx::PlatformFont::GetFontSizeDelta(12);
       details.weight = gfx::Font::Weight::NORMAL;
@@ -288,6 +292,7 @@ ui::ColorId TypographyProvider::GetColorIdImpl(int context, int style) const {
     case style::STYLE_DISABLED:
       return GetDisabledColorId(context);
     case style::STYLE_LINK:
+    case style::STYLE_LINK_3:
     case style::STYLE_LINK_5:
       return (context == style::CONTEXT_BUBBLE_FOOTER)
                  ? ui::kColorLinkForegroundOnBubbleFooter
@@ -313,6 +318,7 @@ ui::ColorId TypographyProvider::GetColorIdImpl(int context, int style) const {
     case style::CONTEXT_TEXTFIELD:
       return ui::kColorTextfieldForeground;
     case style::CONTEXT_TEXTFIELD_PLACEHOLDER:
+    case style::CONTEXT_TEXTFIELD_SUPPORTING_TEXT:
       return (style == style::STYLE_INVALID)
                  ? ui::kColorTextfieldForegroundPlaceholderInvalid
                  : ui::kColorTextfieldForegroundPlaceholder;
@@ -333,11 +339,11 @@ int TypographyProvider::GetLineHeightImpl(int context, int style) const {
       {style::STYLE_BODY_1_BOLD, 24},     {style::STYLE_BODY_2, 20},
       {style::STYLE_BODY_2_MEDIUM, 20},   {style::STYLE_BODY_2_BOLD, 20},
       {style::STYLE_BODY_3, 20},          {style::STYLE_BODY_3_MEDIUM, 20},
-      {style::STYLE_BODY_3_BOLD, 20},     {style::STYLE_BODY_4, 16},
-      {style::STYLE_BODY_4_MEDIUM, 16},   {style::STYLE_BODY_4_BOLD, 16},
+      {style::STYLE_BODY_3_BOLD, 20},     {style::STYLE_BODY_4, 18},
+      {style::STYLE_BODY_4_MEDIUM, 18},   {style::STYLE_BODY_4_BOLD, 18},
       {style::STYLE_BODY_5, 16},          {style::STYLE_BODY_5_MEDIUM, 16},
-      {style::STYLE_BODY_5_BOLD, 16},     {style::STYLE_LINK_5, 16},
-      {style::STYLE_CAPTION, 12},
+      {style::STYLE_BODY_5_BOLD, 16},     {style::STYLE_LINK_3, 20},
+      {style::STYLE_LINK_5, 16},          {style::STYLE_CAPTION, 12},
   });
   const auto it = kLineHeights.find(style);
   return (it == kLineHeights.end())

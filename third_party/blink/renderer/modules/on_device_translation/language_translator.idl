@@ -4,7 +4,7 @@
 
 [
   RuntimeEnabled=TranslationAPI,
-  Exposed=(Window,Worker)
+  Exposed=Window
 ]
 interface LanguageTranslator {
   [
@@ -13,4 +13,6 @@ interface LanguageTranslator {
     RaisesException
   ]
   Promise<DOMString> translate(DOMString input);
+
+  undefined destroy();
 };

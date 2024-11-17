@@ -19,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -40,11 +39,6 @@
 namespace media {
 
 namespace {
-
-// Allow MappableSI to be used for VideoEncoderAcceleratorAdapter.
-BASE_FEATURE(kUseMappableSIForVideoEncoderAcceleratorAdapter,
-             "UseMappableSIForVideoEncoderAcceleratorAdapter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // HW encoders expect a nonzero bitrate, so |kVEADefaultBitratePerPixel| is used
 // to estimate bits per second for ~30 fps with ~1/16 compression rate.
@@ -95,7 +89,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoPixelFormat format,
     VideoFrame::StorageType storage_type,
     VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes,
-    VideoEncodeAccelerator::Config::EncoderType required_encoder_type) {
+    VideoEncodeAccelerator::Config::EncoderType required_encoder_type,
+    bool is_gpu_supported_format) {
   Bitrate bitrate =
       CreateBitrate(opts.bitrate, opts.frame_size, supported_rc_modes);
   auto config = VideoEncodeAccelerator::Config(
@@ -136,9 +131,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
         num_temporal_layers = 3;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported SVC: "
-            << GetScalabilityModeName(opts.scalability_mode.value());
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(opts.scalability_mode.value());
     }
   }
   if (num_temporal_layers > 1) {
@@ -161,8 +155,9 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 
   // Override the provided format if incoming frames are RGB -- they'll be
   // converted to I420 or NV12 depending on the VEA configuration.
-  if (is_rgb)
+  if (is_rgb && !is_gpu_supported_format) {
     config.input_format = PIXEL_FORMAT_I420;
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (format != PIXEL_FORMAT_I420 ||
@@ -209,60 +204,34 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
 
     scoped_refptr<VideoFrame> video_frame;
     gpu::SyncToken sync_token;
-    if (base::FeatureList::IsEnabled(
-            kUseMappableSIForVideoEncoderAcceleratorAdapter)) {
-      if (available_shared_images_.empty()) {
-        auto* sii = gpu_factories_->SharedImageInterface();
-        if (!sii) {
-          LOG(ERROR) << "SharedImageInterface is null.";
-          return nullptr;
-        }
-
-        auto shared_image =
-            sii->CreateSharedImage({si_format, coded_size_, gfx::ColorSpace(),
-                                    gpu::SharedImageUsageSet(si_usage),
-                                    "VideoEncodeAcceleratorAdapter"},
-                                   gpu::kNullSurfaceHandle, buffer_usage);
-        if (!shared_image) {
-          LOG(ERROR) << "Unable to create a mappable shared image.";
-          return nullptr;
-        }
-        sync_token = sii->GenVerifiedSyncToken();
-        available_shared_images_.push_back(std::move(shared_image));
-      }
-
-      auto shared_image = std::move(available_shared_images_.back());
-      available_shared_images_.pop_back();
-
-      auto shared_image_release_cb =
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &GpuMemoryBufferVideoFramePool::ReuseFrame, this, shared_image));
-      video_frame = media::VideoFrame::WrapMappableSharedImage(
-          std::move(shared_image), sync_token, GL_TEXTURE_2D,
-          std::move(shared_image_release_cb), gfx::Rect(visible_size),
-          visible_size, base::TimeDelta());
-      return video_frame;
-    }
-
-    if (available_gmbs_.empty()) {
-      auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
-          coded_size_, buffer_format, buffer_usage);
-      if (!gmb) {
+    if (available_shared_images_.empty()) {
+      auto* sii = gpu_factories_->SharedImageInterface();
+      if (!sii) {
+        LOG(ERROR) << "SharedImageInterface is null.";
         return nullptr;
       }
-      available_gmbs_.push_back(std::move(gmb));
+
+      auto shared_image = sii->CreateSharedImage(
+          {si_format, coded_size_, gfx::ColorSpace(),
+           gpu::SharedImageUsageSet(si_usage), "VideoEncodeAcceleratorAdapter"},
+          gpu::kNullSurfaceHandle, buffer_usage);
+      if (!shared_image) {
+        LOG(ERROR) << "Unable to create a mappable shared image.";
+        return nullptr;
+      }
+      sync_token = sii->GenVerifiedSyncToken();
+      available_shared_images_.push_back(std::move(shared_image));
     }
 
-    auto gmb = std::move(available_gmbs_.back());
-    available_gmbs_.pop_back();
+    auto shared_image = std::move(available_shared_images_.back());
+    available_shared_images_.pop_back();
 
-    video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(visible_size), visible_size, std::move(gmb),
-        base::TimeDelta());
-    video_frame->SetReleaseMailboxAndGpuMemoryBufferCB(
-        base::BindPostTaskToCurrentDefault(
-            base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this,
-                           /*shared_image=*/nullptr)));
+    auto shared_image_release_cb =
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &GpuMemoryBufferVideoFramePool::ReuseFrame, this, shared_image));
+    video_frame = media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), sync_token, std::move(shared_image_release_cb),
+        gfx::Rect(visible_size), visible_size, base::TimeDelta());
     return video_frame;
   }
 
@@ -277,24 +246,13 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
                   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     constexpr size_t kMaxPooledFrames = 5;
-    if (shared_image) {
-      CHECK(base::FeatureList::IsEnabled(
-          kUseMappableSIForVideoEncoderAcceleratorAdapter));
-      CHECK(!gpu_memory_buffer);
-      if (available_shared_images_.size() < kMaxPooledFrames) {
-        available_shared_images_.push_back(std::move(shared_image));
-      }
-    } else {
-      if (available_gmbs_.size() < kMaxPooledFrames) {
-        available_gmbs_.push_back(std::move(gpu_memory_buffer));
-      }
+    if (shared_image && (available_shared_images_.size() < kMaxPooledFrames)) {
+      available_shared_images_.push_back(std::move(shared_image));
     }
   }
 
   const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
   const gfx::Size coded_size_;
-
-  std::vector<std::unique_ptr<gfx::GpuMemoryBuffer>> available_gmbs_;
 
   // Available mappable shared images.
   std::vector<scoped_refptr<gpu::ClientSharedImage>> available_shared_images_;
@@ -482,9 +440,12 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
 
   auto supported_rc_modes =
       VideoEncodeAccelerator::SupportedRateControlMode::kNoMode;
+  std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
   for (const auto& supported_profile : *supported_profiles) {
     if (supported_profile.profile == profile) {
       supported_rc_modes = supported_profile.rate_control_modes;
+      gpu_supported_pixel_formats =
+          supported_profile.gpu_supported_pixel_formats;
       break;
     }
   }
@@ -501,6 +462,7 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
 
   profile_ = profile;
   supported_rc_modes_ = supported_rc_modes;
+  gpu_supported_pixel_formats_ = std::move(gpu_supported_pixel_formats);
   options_ = options;
   info_cb_ = std::move(info_cb);
   output_cb_ = std::move(output_cb);
@@ -539,16 +501,22 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
       format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_ARGB;
   const bool supported_format =
       format == PIXEL_FORMAT_NV12 || format == PIXEL_FORMAT_I420 || is_rgb;
-  if (!supported_format) {
+  const bool is_gpu_frame =
+      first_frame->HasSharedImage() || first_frame->HasNativeGpuMemoryBuffer();
+  const bool is_gpu_supported_format =
+      is_gpu_frame &&
+      base::ranges::find(gpu_supported_pixel_formats_, format) !=
+          gpu_supported_pixel_formats_.end();
+  if (!supported_format && !is_gpu_supported_format) {
     InitCompleted(EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat,
                                 "Unexpected frame format.")
                       .WithData("frame", first_frame->AsHumanReadableString()));
     return;
   }
 
-  auto vea_config =
-      SetUpVeaConfig(profile_, options_, format, first_frame->storage_type(),
-                     supported_rc_modes_, required_encoder_type_);
+  auto vea_config = SetUpVeaConfig(
+      profile_, options_, format, first_frame->storage_type(),
+      supported_rc_modes_, required_encoder_type_, is_gpu_supported_format);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Linux/ChromeOS require a special configuration to use dmabuf storage.
@@ -857,10 +825,10 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
     result.temporal_id = metadata.vp9.value().temporal_idx;
   else if (metadata.vp8.has_value())
     result.temporal_id = metadata.vp8.value().temporal_idx;
-  else if (metadata.av1.has_value())
-    result.temporal_id = metadata.av1.value().temporal_idx;
-  else if (metadata.h265.has_value())
-    result.temporal_id = metadata.h265.value().temporal_idx;
+
+  if (metadata.svc_generic.has_value()) {
+    result.temporal_id = metadata.svc_generic->temporal_idx;
+  }
 
   if (metadata.encoded_size)
     result.encoded_size = metadata.encoded_size;
@@ -1126,7 +1094,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
                               : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
       PIXEL_FORMAT_I420, dest_coded_size, dest_visible_rect,
-      dest_visible_rect.size(), static_cast<uint8_t*>(mapping->memory()),
+      dest_visible_rect.size(), static_cast<const uint8_t*>(mapping->memory()),
       mapping->size(), src_frame->timestamp());
 
   if (!shared_frame || !mapped_src_frame)
@@ -1155,9 +1123,12 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 
   const auto dest_coded_size = input_coded_size_;
   const auto dest_visible_rect = gfx::Rect(options_.frame_size);
+  bool is_gpu_supported_format =
+      base::ranges::find(gpu_supported_pixel_formats_, src_frame->format()) !=
+      gpu_supported_pixel_formats_.end();
 
   if (src_frame->HasMappableGpuBuffer() &&
-      src_frame->format() == PIXEL_FORMAT_NV12 &&
+      (src_frame->format() == PIXEL_FORMAT_NV12 || is_gpu_supported_format) &&
       (gpu_resize_supported_ || src_frame->coded_size() == dest_coded_size)) {
     // Nothing to do here, the input frame is already what we need
     return src_frame;
@@ -1199,14 +1170,8 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   // |mapped_gpu_frame| has the color space respecting the color conversion in
   // ConvertAndScale().
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
-          kUseMappableSIForVideoEncoderAcceleratorAdapter)) {
-    gpu_frame->shared_image()->SetColorSpaceOnNativeBuffer(
-        mapped_gpu_frame->ColorSpace());
-  } else {
-    gpu_frame->GetGpuMemoryBuffer()->SetColorSpace(
-        mapped_gpu_frame->ColorSpace());
-  }
+  gpu_frame->shared_image()->SetColorSpaceOnNativeBuffer(
+      mapped_gpu_frame->ColorSpace());
 #endif
   gpu_frame->set_color_space(mapped_gpu_frame->ColorSpace());
 

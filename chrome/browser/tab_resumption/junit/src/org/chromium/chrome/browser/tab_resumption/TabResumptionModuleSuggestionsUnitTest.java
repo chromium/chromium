@@ -50,7 +50,7 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
 
     // Fake LargeIconBridge, which is explicitly faked for testing since it uses
     // a callback to pass results.
-    class FakeLargeIconBridge extends LargeIconBridge {
+    static class FakeLargeIconBridge extends LargeIconBridge {
         private static final int DEFAULT_FALLBACK_COLOR = 0xff0000ff;
 
         GURL mFakeCachedUrl;

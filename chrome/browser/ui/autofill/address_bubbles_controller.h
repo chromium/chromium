@@ -101,6 +101,10 @@ class AddressBubblesController
                           AutofillClient::AddressProfileSavePromptCallback
                               address_profile_save_prompt_callback);
 
+  // Maybe shows the iOS bubble promo after the user accepts to save their
+  // address information.
+  void MaybeShowIOSDektopAddressPromo();
+
   // Callback to run once the user makes a decision with respect to the saving
   // the address profile.
   AutofillClient::AddressProfileSavePromptCallback

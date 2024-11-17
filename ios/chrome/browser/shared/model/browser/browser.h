@@ -9,10 +9,10 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/supports_user_data.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class BrowserObserver;
 @class CommandDispatcher;
+class ProfileIOS;
 @class SceneState;
 class WebStateList;
 
@@ -31,16 +31,15 @@ class Browser : public base::SupportsUserData {
     kTemporary,
   };
 
-  // Creates a new Browser attached to `browser_state` and to `scene_state`.
-  static std::unique_ptr<Browser> Create(ChromeBrowserState* browser_state,
+  // Creates a new Browser attached to `profile` and to `scene_state`.
+  static std::unique_ptr<Browser> Create(ProfileIOS* profile,
                                          SceneState* scene_state);
 
-  // Creates a new temporary Browser attached to `browser_state`. It should
+  // Creates a new temporary Browser attached to `profile`. It should
   // not be presented to the user but can be used when there is a need to
   // store WebStates while supporting BrowserAgent (i.e. recording metrics,
   // reporting recently closed tabs, ...).
-  static std::unique_ptr<Browser> CreateTemporary(
-      ChromeBrowserState* browser_state);
+  static std::unique_ptr<Browser> CreateTemporary(ProfileIOS* profile);
 
   Browser(const Browser&) = delete;
   Browser& operator=(const Browser&) = delete;
@@ -50,13 +49,8 @@ class Browser : public base::SupportsUserData {
   // Returns the type of this browser.
   virtual Type type() const = 0;
 
-  // Accessor for the owning ChromeBrowserState.
-  // TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
-  // remove this method.
-  virtual ChromeBrowserState* GetBrowserState() = 0;
-
   // Accessor for the owning Profile.
-  virtual ChromeBrowserState* GetProfile() = 0;
+  virtual ProfileIOS* GetProfile() = 0;
 
   // Accessor for the WebStateList.
   virtual WebStateList* GetWebStateList() = 0;

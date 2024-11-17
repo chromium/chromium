@@ -192,10 +192,8 @@ public class ActionModeTest {
             onData(new MenuItemMatcher(equalTo(name))).inRoot(rootMatcher).perform(click());
         }
 
-        /**
-         * After select all action is clicked, the PopUp Menu may disappear
-         * briefly due to selection change, wait for the menu to reappear
-         */
+        // After select all action is clicked, the PopUp Menu may disappear briefly due to selection
+        // change, wait for the menu to reappear
         if (name.equals(SELECT_ALL_ACTION)) {
             assertTrue(mWebViewActivityRule.waitForActionBarPopup());
         }

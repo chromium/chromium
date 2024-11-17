@@ -25,6 +25,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 // UserEducationService is not implemented on Android.
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -56,6 +57,8 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kEditPredictionImprovementsInformation:
       return true;
     case SuggestionType::kFillEverythingFromAddressProfile:
       return features::
@@ -93,17 +96,16 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
-    case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
+    case SuggestionType::kBnplEntry:
       return false;
   }
 }
@@ -160,10 +162,10 @@ bool IsPointerLocked(content::WebContents* web_contents) {
          (rwhv = rfh->GetView()) && rwhv->IsPointerLocked();
 }
 
-void NotifyUserEducationAboutAcceptedSuggestion(
-    content::BrowserContext* browser_context,
-    const Suggestion& suggestion) {
-  if (suggestion.feature_for_iph) {
+void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
+                                                const Suggestion& suggestion) {
+#if BUILDFLAG(IS_ANDROID)
+  if (suggestion.iph_metadata.feature) {
     using IphEventPair = std::pair<const base::Feature*, const char*>;
     static const auto kIphFeatures = std::to_array<IphEventPair>(
         {IphEventPair{&feature_engagement::kIPHAutofillCreditCardBenefitFeature,
@@ -180,28 +182,31 @@ void NotifyUserEducationAboutAcceptedSuggestion(
          IphEventPair{
              &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature,
              "autofill_virtual_card_cvc_suggestion_accepted"}});
-    if (auto it = base::ranges::find(kIphFeatures, suggestion.feature_for_iph,
-                                     &IphEventPair::first);
+    if (auto it =
+            base::ranges::find(kIphFeatures, suggestion.iph_metadata.feature,
+                               &IphEventPair::first);
         it != kIphFeatures.end()) {
-      feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          contents->GetBrowserContext())
           ->NotifyEvent(it->second);
-    } else {
-#if !BUILDFLAG(IS_ANDROID)
-      // Otherwise, notify the new API for the user education service.
-      UserEducationService::MaybeNotifyPromoFeatureUsed(
-          browser_context, *suggestion.feature_for_iph);
-#endif
     }
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Notifications for the new badge system.
-  if (suggestion.feature_for_new_badge &&
-      suggestion.feature_for_new_badge != suggestion.feature_for_iph) {
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
-        browser_context, *suggestion.feature_for_new_badge);
+#else
+  if (suggestion.iph_metadata.feature) {
+    if (auto* interface =
+            BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+                contents)) {
+      interface->NotifyFeaturePromoFeatureUsed(
+          *suggestion.iph_metadata.feature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+  if (suggestion.feature_for_new_badge &&
+      suggestion.feature_for_new_badge != suggestion.iph_metadata.feature) {
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+        contents->GetBrowserContext(), *suggestion.feature_for_new_badge);
+  }
+#endif
 }
 
 std::vector<Suggestion> UpdateSuggestionsFromDataList(

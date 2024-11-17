@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 
@@ -105,8 +106,7 @@ String InitiatorFor(const StringImpl* tag_impl, bool link_is_modulepreload) {
     return html_names::kScriptTag.LocalName();
   if (Match(tag_impl, html_names::kVideoTag))
     return html_names::kVideoTag.LocalName();
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 bool MediaAttributeMatches(const MediaValuesCached& media_values,
@@ -663,8 +663,7 @@ class TokenPreloadScanner::StartTagScanner {
       return ResourceType::kCSSStyleSheet;
     if (link_is_preconnect_)
       return ResourceType::kRaw;
-    NOTREACHED_IN_MIGRATION();
-    return ResourceType::kRaw;
+    NOTREACHED();
   }
 
   bool ShouldPreconnect() const {
@@ -924,7 +923,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
                                PreloadRequestStream& requests,
                                MetaCHValues& meta_ch_values,
                                std::optional<ViewportDescription>* viewport,
-                               bool* is_csp_meta_tag) {
+                               int* csp_meta_tag_count) {
   if (!document_parameters_->do_html_preload_scanning)
     return;
 
@@ -1031,7 +1030,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
           String equiv_attribute_value(equiv_attribute->Value());
           if (EqualIgnoringASCIICase(equiv_attribute_value,
                                      "content-security-policy")) {
-            *is_csp_meta_tag = true;
+            ++(*csp_meta_tag_count);
           } else if (EqualIgnoringASCIICase(equiv_attribute_value,
                                             http_names::kAcceptCH)) {
             const HTMLToken::Attribute* content_attribute =
@@ -1155,7 +1154,7 @@ std::unique_ptr<HTMLPreloadScanner> HTMLPreloadScanner::Create(
       std::make_unique<CachedDocumentParameters>(&document),
       std::make_unique<MediaValuesCached::MediaValuesCachedData>(document),
       scanner_type, /* script_token_scanner=*/nullptr, TakePreloadFn(),
-      locators, skip_preload_scan);
+      std::move(locators), skip_preload_scan);
 }
 
 // static
@@ -1195,7 +1194,7 @@ HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
           std::make_unique<MediaValuesCached::MediaValuesCachedData>(*document),
           TokenPreloadScanner::ScannerType::kMainDocument,
           BackgroundHTMLScanner::ScriptTokenScanner::Create(parser),
-          std::move(take_preload), locators, skip_preload_scan),
+          std::move(take_preload), std::move(locators), skip_preload_scan),
       Deleter{task_runner});
 }
 
@@ -1264,24 +1263,29 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
   while (HTMLToken* token = tokenizer_->NextToken(source_)) {
     if (token->GetType() == HTMLToken::kStartTag)
       tokenizer_->UpdateStateFor(*token);
-    bool seen_csp_meta_tag = false;
+    int csp_meta_tag_count = 0;
     scanner_.Scan(*token, source_, pending_data->requests,
                   pending_data->meta_ch_values, &pending_data->viewport,
-                  &seen_csp_meta_tag);
+                  &csp_meta_tag_count);
     if (script_token_scanner_)
       script_token_scanner_->ScanToken(*token);
-    pending_data->has_csp_meta_tag |= seen_csp_meta_tag;
+    pending_data->csp_meta_tag_count += csp_meta_tag_count;
     token->Clear();
-    // Don't preload anything if a CSP meta tag is found. We should rarely find
-    // them here because the HTMLPreloadScanner is only used for the synchronous
-    // parsing path.
-    if (seen_csp_meta_tag) {
-      // Reset the tokenizer, to avoid re-scanning tokens that we are about to
-      // start parsing.
-      source_.Clear();
-      tokenizer_->Reset();
-      return pending_data;
+
+    if (!RuntimeEnabledFeatures::AllowPreloadingWithCSPMetaTagEnabled()) {
+      // Don't preload anything if a CSP meta tag is found. We should rarely
+      // find them here because the HTMLPreloadScanner is only used for the
+      // synchronous parsing path.
+      CHECK(csp_meta_tag_count >= 0);
+      if (csp_meta_tag_count) {
+        // Reset the tokenizer, to avoid re-scanning tokens that we are about to
+        // start parsing.
+        source_.Clear();
+        tokenizer_->Reset();
+        return pending_data;
+      }
     }
+
     // Incrementally add preloads when scanning in the background.
     if (take_preload_ && !pending_data->requests.empty()) {
       take_preload_.Run(std::move(pending_data));
@@ -1327,7 +1331,7 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   } else {
     lazy_load_image_setting = LocalFrame::LazyLoadImageSetting::kDisabled;
   }
-  static const features::LcppPreloadLazyLoadImageType
+  const features::LcppPreloadLazyLoadImageType
       kPreloadLazyLoadImageType =
           features::kLCPCriticalPathPredictorPreloadLazyLoadImageType.Get();
   preload_lazy_load_image_type =

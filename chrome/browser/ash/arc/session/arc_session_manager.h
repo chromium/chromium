@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/session/arc_stop_reason.h"
 #include "base/memory/raw_ptr.h"
@@ -25,11 +26,13 @@
 #include "chrome/browser/ash/arc/session/arc_activation_necessity_checker.h"
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
+#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/arc/session/arc_vm_data_migration_necessity_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -55,11 +58,11 @@ constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
 constexpr int kArcVmDataMigrationMaxAutoResumeCount = 3;
 
 class ArcDataRemover;
-class ArcDlcInstaller;
 class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
 class ArcProvisioningResult;
 class ArcUiAvailabilityReporter;
+class ArcRevenHardwareChecker;
 
 enum class ProvisioningStatus;
 enum class ArcStopReason;
@@ -393,9 +396,26 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     return is_activation_delayed_.value_or(false);
   }
 
+  // The unit test will use a mock hardware checker for testing.
+  void SetHardwareCheckerForTesting(
+      std::unique_ptr<ArcRevenHardwareChecker> hardware_checker) {
+    hardware_checker_ = std::move(hardware_checker);
+  }
+
  private:
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;
+
+  // Handles the completion of the hardware compatibility check for ARC on a
+  // reven device. If the device is compatible with ARC, the DLC service client
+  // starts to install the Android DLC image.
+  void OnEnableArcOnReven(std::deque<JobDesc> jobs, bool is_compatible);
+
+  // Handles the completion of the arcvm DLC installation. If the installation
+  // succeeds, adds a job to mount the DLC directory to the arc root directory.
+  void OnDlcInstalled(
+      std::deque<JobDesc> jobs,
+      const ash::DlcserviceClient::InstallResult& install_result);
 
   // Requests to disable ARC session and allows to optionally remove ARC data.
   // If ARC is already disabled, no-op.
@@ -550,6 +570,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcPaiStarter> pai_starter_;
   std::unique_ptr<ArcFastAppReinstallStarter> fast_app_reinstall_starter_;
   std::unique_ptr<ArcUiAvailabilityReporter> arc_ui_availability_reporter_;
+  std::unique_ptr<ArcRevenHardwareChecker> hardware_checker_ =
+      std::make_unique<arc::ArcRevenHardwareChecker>();
 
   // The time when the sign in process started.
   base::TimeTicks sign_in_start_time_;
@@ -578,8 +600,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::optional<std::string> arc_salt_on_disk_;
 
   std::optional<bool> property_files_expansion_result_;
-
-  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 
   std::optional<guest_os::GuestOsMountProviderRegistry::Id>
       arcvm_mount_provider_id_;

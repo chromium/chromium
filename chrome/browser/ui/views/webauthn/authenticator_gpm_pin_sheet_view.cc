@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 AuthenticatorGpmPinSheetView::AuthenticatorGpmPinSheetView(
@@ -55,3 +56,6 @@ void AuthenticatorGpmPinSheetView::PinCharTyped(bool is_digit) {
 std::u16string AuthenticatorGpmPinSheetView::GetPinAccessibleName() {
   return gpm_pin_sheet_model()->GetAccessibleName();
 }
+
+BEGIN_METADATA(AuthenticatorGpmPinSheetView)
+END_METADATA

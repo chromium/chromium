@@ -71,21 +71,19 @@ void ReadDataFromSpeechFile(char* data, int length) {
              .Append(FILE_PATH_LITERAL("data"))
              .Append(FILE_PATH_LITERAL("speech_16b_stereo_48kHz.raw"));
   DCHECK(base::PathExists(file));
-  int64_t data_file_size64 = 0;
-  DCHECK(base::GetFileSize(file, &data_file_size64));
+  std::optional<int64_t> data_file_size64 = base::GetFileSize(file);
+  DCHECK(data_file_size64.has_value());
   EXPECT_EQ(length, base::ReadFile(file, data, length));
-  DCHECK(data_file_size64 > length);
+  DCHECK(data_file_size64.value() > length);
 }
 
 void DisableDefaultSettings(AudioProcessingSettings& settings) {
   settings.echo_cancellation = false;
   settings.noise_suppression = false;
-  settings.transient_noise_suppression = false;
   settings.automatic_gain_control = false;
   settings.high_pass_filter = false;
   settings.multi_channel_capture_processing = false;
   settings.stereo_mirroring = false;
-  settings.force_apm_creation = false;
 }
 
 }  // namespace
@@ -144,7 +142,7 @@ class AudioProcessorTest : public ::testing::Test {
             EXPECT_EQ(audio_capture_time, input_capture_time);
           });
       audio_processor.ProcessCapturedAudio(*data_bus, input_capture_time,
-                                           num_preferred_channels, 1.0, false);
+                                           num_preferred_channels, 1.0);
 
       data_ptr += input_params.frames_per_buffer() * input_params.channels();
 
@@ -407,8 +405,8 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
         SCOPED_TRACE(testing::Message() << "packet index i=" << i);
         EXPECT_CALL(mock_capture_callback_, Run(_, _, _)).Times(1);
         // Pass audio for processing.
-        audio_processor->ProcessCapturedAudio(
-            *data_bus, pushed_capture_time, num_preferred_channels, 0.0, false);
+        audio_processor->ProcessCapturedAudio(*data_bus, pushed_capture_time,
+                                              num_preferred_channels, 0.0);
       }
       // At this point, the audio processing algorithms have gotten past any
       // initial buffer silence generated from resamplers, FFTs, and whatnot.
@@ -443,7 +441,7 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
           });
       // Process one more frame of audio.
       audio_processor->ProcessCapturedAudio(*data_bus, pushed_capture_time,
-                                            num_preferred_channels, 0.0, false);
+                                            num_preferred_channels, 0.0);
     }
   }
 }
@@ -616,27 +614,27 @@ TEST(AudioProcessorCallbackTest,
   // 4 ms of data: Not enough to process.
   EXPECT_CALL(mock_capture_callback, Run(_, _, _)).Times(0);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
   // 8 ms of data: Not enough to process.
   EXPECT_CALL(mock_capture_callback, Run(_, _, _)).Times(0);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
   // 12 ms of data: Should trigger callback, with 2 ms left in the processor.
   EXPECT_CALL(mock_capture_callback, Run(_, _, _))
       .Times(1)
       .WillOnce(check_audio_length);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
   // 2 + 4 ms of data: Not enough to process.
   EXPECT_CALL(mock_capture_callback, Run(_, _, _)).Times(0);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
   // 10 ms of data: Should trigger callback.
   EXPECT_CALL(mock_capture_callback, Run(_, _, _))
       .Times(1)
       .WillOnce(check_audio_length);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
 }
 
 // When audio processing is performed, input containing 10 ms several times over
@@ -668,13 +666,13 @@ TEST(AudioProcessorCallbackTest,
       .Times(3)
       .WillRepeatedly(check_audio_length);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
   // 5 + 35 ms of audio --> 4 chunks of 10 ms.
   EXPECT_CALL(mock_capture_callback, Run(_, _, _))
       .Times(4)
       .WillRepeatedly(check_audio_length);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
 }
 
 // When no audio processing is performed, audio is delivered immediately. Note
@@ -707,12 +705,12 @@ TEST(AudioProcessorCallbackTest,
       .Times(1)
       .WillOnce(check_audio_length);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
   EXPECT_CALL(mock_capture_callback, Run(_, _, _))
       .Times(1)
       .WillOnce(check_audio_length);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
 }
 
 // When no audio processing is performed, audio is delivered immediately. Chunks
@@ -745,13 +743,13 @@ TEST(AudioProcessorCallbackTest,
       .Times(3)
       .WillRepeatedly(check_audio_length);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
   // 5 + 35 ms of audio --> 4 chunks of 10 ms.
   EXPECT_CALL(mock_capture_callback, Run(_, _, _))
       .Times(4)
       .WillRepeatedly(check_audio_length);
   audio_processor->ProcessCapturedAudio(*data_bus, base::TimeTicks::Now(), -1,
-                                        1.0, false);
+                                        1.0);
 }
 
 class ApmTellsIfPlayoutReferenceIsNeededParametrizedTest

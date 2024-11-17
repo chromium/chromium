@@ -47,8 +47,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
  public:
   using RequestCallback = base::RepeatingCallback<void(const std::string&)>;
 
-  using AuthenticatorMap =
-      std::map<std::string, FidoAuthenticator*, std::less<>>;
+  using AuthenticatorMap = std::map<std::string,
+                                    raw_ptr<FidoAuthenticator, CtnExperimental>,
+                                    std::less<>>;
 
   // BLE adapter status.
   enum class BleStatus {

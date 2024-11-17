@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://github.com/flackr/carousel/tree/main/fragmentation">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<style>
+  #scrollable {
+    overflow: hidden;
+    scroll-snap-type: both mandatory;
+    border-left: 10px solid green;
+    border-top: 10px solid green;
+    width: 90px;
+    height: 90px;
+    background: green;
+  }
+  #multicol {
+    columns: 3;
+    column-fill: auto;
+    gap: 0;
+    width: 270px;
+    height: 80px;
+    padding-left: 10px;
+    padding-top: 10px;
+  }
+  #multicol::column {
+    scroll-snap-align: start;
+  }
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div id="scrollable">
+  <div id="multicol">
+    <div style="height:80px; background:red;"></div>
+    <div style="height:80px; background:green;"></div>
+    <div style="height:80px; background:red;"></div>
+  </div>
+</div>
+<script>
+  scrollable.scrollLeft = 56;
+</script>

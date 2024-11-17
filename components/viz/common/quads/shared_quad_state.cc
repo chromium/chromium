@@ -38,7 +38,8 @@ bool SharedQuadState::Equals(const SharedQuadState& other) const {
          opacity == other.opacity && blend_mode == other.blend_mode &&
          sorting_context_id == other.sorting_context_id &&
          layer_id == other.layer_id &&
-         layer_namespace_id == other.layer_namespace_id;
+         layer_namespace_id == other.layer_namespace_id &&
+         offset_tag == other.offset_tag;
 }
 
 void SharedQuadState::SetAll(const SharedQuadState& other) {
@@ -54,6 +55,7 @@ void SharedQuadState::SetAll(const SharedQuadState& other) {
   layer_id = other.layer_id;
   layer_namespace_id = other.layer_namespace_id;
   is_fast_rounded_corner = other.is_fast_rounded_corner;
+  offset_tag = other.offset_tag;
 }
 
 void SharedQuadState::SetAll(const gfx::Transform& transform,
@@ -109,6 +111,10 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("layer_id", layer_id);
   value->SetInteger("layer_namespace_id", layer_id);
   value->SetBoolean("is_fast_rounded_corner", is_fast_rounded_corner);
+  if (offset_tag) {
+    value->SetString("offset_tag", offset_tag.ToString());
+  }
+
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "viz::SharedQuadState",
       this);

@@ -59,6 +59,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profiles",
     "//chrome/browser/sync:sync",
     "//chrome/browser/ui:ui",
+    "//chrome/browser/ui/webui:webui_util",
     "//components/metrics_services_manager:metrics_services_manager",
     "//components/no_state_prefetch/browser:browser",
     "//components/user_prefs:user_prefs",
@@ -69,6 +70,8 @@ source_set("impl") {
       "//base",
       "//chrome/browser/optimization_guide/android:jni_headers",
     ]
+  } else {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
   }
 }
 
@@ -84,6 +87,7 @@ source_set("test_support") {
     ":optimization_guide",
     "//base",
     "//chrome/browser",
+    "//chrome/browser/prefs",
     "//chrome/test:test_support",
     "//components/metrics:content",
     "//components/optimization_guide/core",

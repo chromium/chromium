@@ -109,7 +109,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
 #endif
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   struct VIZ_HOST_EXPORT InitParams {
@@ -135,6 +135,9 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
 
     // Whether this GPU process is used for GPU info collection only.
     bool info_collection_gpu_process = false;
+
+    // Whether the GPU service is running in the host process.
+    bool gpu_service_running_in_process = false;
   };
 
   enum class EstablishChannelStatus {

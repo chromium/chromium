@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
@@ -194,10 +195,7 @@ void RendererStartupHelper::InitializeProcess(
   // Extensions need to know the channel and the session type for API
   // restrictions. The values are sent to all renderers, as the non-extension
   // renderers may have content scripts.
-  bool is_lock_screen_context =
-      client->IsLockScreenContext(process->GetBrowserContext());
-  renderer->SetSessionInfo(GetCurrentChannel(), GetCurrentFeatureSessionType(),
-                           is_lock_screen_context);
+  renderer->SetSessionInfo(GetCurrentChannel(), GetCurrentFeatureSessionType());
 
   // Platform apps need to know the system font.
   // TODO(dbeam): this is not the system font in all cases.
@@ -294,13 +292,9 @@ void RendererStartupHelper::ActivateExtensionInProcess(
   // The extension should have been loaded already. Dump without crashing to
   // debug crbug.com/528026.
   if (!base::Contains(extension_process_map_, extension.id())) {
-#if DCHECK_IS_ON()
-    NOTREACHED_IN_MIGRATION()
+    DUMP_WILL_BE_NOTREACHED()
         << "Extension " << extension.id() << " activated before loading";
-#else
-    base::debug::DumpWithoutCrashing();
     return;
-#endif
   }
 
   if (!util::IsExtensionVisibleToContext(extension,
@@ -576,9 +570,7 @@ void RendererStartupHelper::GetMessageBundle(
     const Extension* imported_extension =
         extension_set.GetByID(import.extension_id);
     if (!imported_extension) {
-      NOTREACHED_IN_MIGRATION()
-          << "Missing shared module " << import.extension_id;
-      continue;
+      NOTREACHED() << "Missing shared module " << import.extension_id;
     }
     paths_to_load.push_back(imported_extension->path());
   }
@@ -637,7 +629,7 @@ BrowserContext* RendererStartupHelperFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
   // Redirected in incognito.
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context, /*force_guest_profile=*/true);
+      context);
 }
 
 bool RendererStartupHelperFactory::ServiceIsCreatedWithBrowserContext() const {

@@ -120,7 +120,7 @@ const bookmarks::BookmarkNode* PrepareSubscription(
 class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
  public:
   PriceNotificationsPriceTrackingMediatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -129,12 +129,11 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
-    TestChromeBrowserState* test_chrome_browser_state =
+    TestProfileIOS* test_profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(test_chrome_browser_state);
-    browser_ = std::make_unique<TestBrowser>(test_chrome_browser_state);
+    browser_list_ = BrowserListFactory::GetForProfile(test_profile);
+    browser_ = std::make_unique<TestBrowser>(test_profile);
     browser_list_->AddBrowser(browser_.get());
     web_state_ = std::make_unique<web::FakeWebState>();
     std::unique_ptr<web::FakeNavigationManager> navigation_manager =
@@ -143,20 +142,18 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
     navigation_manager->SetLastCommittedItem(
         navigation_manager->GetItemAtIndex(0));
     web_state_->SetNavigationManager(std::move(navigation_manager));
-    web_state_->SetBrowserState(test_chrome_browser_state);
+    web_state_->SetBrowserState(test_profile);
     web_state_->SetNavigationItemCount(1);
     web_state_->SetCurrentURL(GURL(kTestUrl));
     image_fetcher_ = std::make_unique<image_fetcher::ImageDataFetcher>(
-        test_chrome_browser_state->GetSharedURLLoaderFactory());
+        test_profile->GetSharedURLLoaderFactory());
 
-    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-        test_chrome_browser_state);
+    bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(test_profile);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     bookmark_model_->CreateAccountPermanentFolders();
 
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetForBrowserState(
-            test_chrome_browser_state));
+        commerce::ShoppingServiceFactory::GetForProfile(test_profile));
     shopping_service_->SetupPermissiveMock();
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     mediator_ = [[PriceNotificationsPriceTrackingMediator alloc]
@@ -491,6 +488,37 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
   ASSERT_FALSE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^bool {
         base::RunLoop().RunUntilIdle();
+        return price_insights_consumer_.didPriceTrack;
+      }));
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       TrackWhenNotificationAuthorizationAuthorized) {
+  SetupMockNotificationCenter();
+  id settings = OCMClassMock([UNNotificationSettings class]);
+  OCMStub([mock_notification_center_
+      getNotificationSettingsWithCompletionHandler:
+          ([OCMArg invokeBlockWithArgs:settings, nil])]);
+  OCMStub([settings authorizationStatus])
+      .andReturn(UNAuthorizationStatusAuthorized);
+
+  commerce::ProductInfo product_info;
+  product_info.title = kBookmarkTitle;
+  product_info.product_cluster_id = std::make_optional(kClusterId);
+  std::optional<commerce::ProductInfo> optional_product_info;
+  optional_product_info.emplace(product_info);
+  shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);
+
+  price_insights_consumer_.didPriceTrack = NO;
+  price_insights_consumer_.didPresentPushNotificationPermissionAlertForItem =
+      NO;
+  mediator_.priceInsightsConsumer = price_insights_consumer_;
+  [mediator_ tryPriceInsightsTrackItem:GetPriceInsightsItem()];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^bool {
         return price_insights_consumer_.didPriceTrack;
       }));
 

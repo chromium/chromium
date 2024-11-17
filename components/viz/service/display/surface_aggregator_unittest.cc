@@ -327,7 +327,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                            desc.to_target_transform);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -375,8 +375,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -489,8 +488,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
   FrameSinkManagerImpl manager_{
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   DisplayResourceProviderSoftware resource_provider_{
-      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
-      &gpu_scheduler_};
+      &shared_bitmap_manager_, &shared_image_manager_, &gpu_scheduler_};
   FakeSurfaceObserver observer_{manager_.surface_manager(), false};
   FakeCompositorFrameSinkClient fake_client_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;
@@ -8872,7 +8870,7 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
     // - The root pass embeds each of the first four render passes and then
     //   underneath them embeds the child surface.
     const gfx::Rect render_pass_rect(30, 30);
-    for (int i = 1; i < 5; ++i) {
+    for (uint64_t i = 1; i < 5; ++i) {
       root_pass_list.push_back(
           RenderPassBuilder(CompositorRenderPassId{i}, render_pass_rect)
               .AddSolidColorQuad(render_pass_rect, SkColors::kGreen)
@@ -9037,7 +9035,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
   CompositorFrame child_frame = MakeEmptyCompositorFrame();
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(100, 100), 1.5, SK_ColorRED, base::TimeTicks::Now(),
-      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now(), /*hovering*/ true);
+      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now(), /*hovering*/ true,
+      /*render_pass_id=*/0);
   child_frame.metadata.delegated_ink_metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&child_frame.render_pass_list, child_passes,
@@ -9076,7 +9075,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
           ->quad_to_target_transform.MapRect(metadata.presentation_area());
   metadata = gfx::DelegatedInkMetadata(
       pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
-      metadata.frame_time(), metadata.is_hovering());
+      metadata.frame_time(), metadata.is_hovering(), /*render_pass_id=*/0);
 
   root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
                                     std::move(root_frame));
@@ -9111,10 +9110,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RepeatedDelegatedInkMetadataTest) {
       Pass(child_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
   CompositorFrame child_frame = MakeEmptyCompositorFrame();
-  gfx::DelegatedInkMetadata metadata(gfx::PointF(100, 100), /*diameter=*/1.5,
-                                     SK_ColorRED, base::TimeTicks::Now(),
-                                     gfx::RectF(10, 10, 200, 200),
-                                     base::TimeTicks::Now(), /*hovering=*/true);
+  gfx::DelegatedInkMetadata metadata(
+      gfx::PointF(100, 100), /*diameter=*/1.5, SK_ColorRED,
+      base::TimeTicks::Now(), gfx::RectF(10, 10, 200, 200),
+      base::TimeTicks::Now(), /*hovering=*/true, /*render_pass_id=*/1);
   child_frame.metadata.delegated_ink_metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&child_frame.render_pass_list, child_passes,
@@ -9153,7 +9152,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RepeatedDelegatedInkMetadataTest) {
           ->quad_to_target_transform.MapRect(metadata.presentation_area());
   metadata = gfx::DelegatedInkMetadata(
       pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
-      metadata.frame_time(), metadata.is_hovering());
+      metadata.frame_time(), metadata.is_hovering(), /*render_pass_id=*/1);
 
   root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
                                     std::move(root_frame));
@@ -9195,7 +9194,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(100, 100), 1.5, SK_ColorRED, base::TimeTicks::Now(),
-      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now(), /*hovering*/ false);
+      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now(), /*hovering*/ false,
+      /*render_pass_id=*/0);
   CompositorFrame greatgrandchild_frame = MakeEmptyCompositorFrame();
   greatgrandchild_frame.metadata.delegated_ink_metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(metadata);
@@ -9301,7 +9301,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   metadata = gfx::DelegatedInkMetadata(
       pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
-      metadata.frame_time(), metadata.is_hovering());
+      metadata.frame_time(), metadata.is_hovering(), /*render_pass_id=*/0);
 
   std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
@@ -9350,7 +9350,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(88, 34), 1.8, SK_ColorBLACK, base::TimeTicks::Now(),
-      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now(), /*hovering*/ true);
+      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now(), /*hovering*/ true,
+      /*render_pass_id=*/0);
   CompositorFrame child_2_frame = MakeEmptyCompositorFrame();
   child_2_frame.metadata.delegated_ink_metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(metadata);
@@ -9422,7 +9423,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   metadata = gfx::DelegatedInkMetadata(
       pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
-      metadata.frame_time(), metadata.is_hovering());
+      metadata.frame_time(), metadata.is_hovering(), /*render_pass_id=*/0);
 
   std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
@@ -9476,13 +9477,14 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // issues with both metadatas sometimes having the same time in Release.
   gfx::DelegatedInkMetadata early_metadata(
       gfx::PointF(88, 34), 1.8, SK_ColorBLACK, base::TimeTicks::Now(),
-      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now(), /*hovering*/ false);
+      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now(), /*hovering*/ false,
+      /*render_pass_id=*/0);
   gfx::DelegatedInkMetadata later_metadata(
       gfx::PointF(92, 35), 0.08, SK_ColorYELLOW,
       base::TimeTicks::Now() + base::Microseconds(50),
       gfx::RectF(35, 55, 128, 256),
       base::TimeTicks::Now() + base::Microseconds(52),
-      /*hovering*/ true);
+      /*hovering*/ true, /*render_pass_id=*/0);
 
   CompositorFrame child_2_frame = MakeEmptyCompositorFrame();
   child_2_frame.metadata.delegated_ink_metadata =
@@ -9560,7 +9562,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   gfx::DelegatedInkMetadata expected_metadata(
       pt, later_metadata.diameter(), later_metadata.color(),
       later_metadata.timestamp(), area, later_metadata.frame_time(),
-      later_metadata.is_hovering());
+      later_metadata.is_hovering(), later_metadata.render_pass_id());
 
   std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
@@ -9606,7 +9608,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(34, 89), 1.597, SK_ColorBLUE, base::TimeTicks::Now(),
       gfx::RectF(2.3, 3.2, 177, 212), base::TimeTicks::Now(),
-      /*hovering*/ false);
+      /*hovering*/ false, /*render_pass_id=*/0);
   child_frame.metadata.delegated_ink_metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&child_frame.render_pass_list, child_passes,

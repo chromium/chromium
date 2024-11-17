@@ -48,10 +48,25 @@ class ASH_EXPORT PipController : public aura::WindowObserver {
   views::Widget* GetTuckHandleWidget();
   void SetDimOpacity(float opacity);
 
+  bool HandleDoubleTap(const ui::Event& event);
+  bool HandleKeyboardShortcut();
+
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
+  class PipSizeSwitchHandler {
+     public:
+      // Do not call these Process~() functions directly.
+      // These should be called using PipController::Handle~() functions.
+      bool ProcessDoubleTapEvent(const ui::Event& event);
+      bool ProcessShortcutEvent(aura::Window* pip_window);
+
+     private:
+      bool ResizePip(WindowState* window_state);
+      gfx::Rect prev_bounds_;
+  };
+
   friend class PipControllerTestAPI;
 
   // The `pip_window` this controller is managing.
@@ -69,6 +84,8 @@ class ASH_EXPORT PipController : public aura::WindowObserver {
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       pip_window_observation_{this};
+
+  PipSizeSwitchHandler pip_size_switch_handler_;
 
   base::WeakPtrFactory<PipController> weak_ptr_factory_{this};
 };

@@ -24,10 +24,7 @@ void VerifyHeaderNameAndValue(net::HttpResponseHeaders* headers,
                               std::string header_name,
                               std::string header_value) {
   EXPECT_TRUE(headers->HasHeader(header_name));
-  std::string actual_header_value;
-  EXPECT_TRUE(
-      headers->EnumerateHeader(NULL, header_name, &actual_header_value));
-  EXPECT_EQ(header_value, actual_header_value);
+  EXPECT_EQ(header_value, headers->EnumerateHeader(nullptr, header_name));
 }
 
 }  // namespace
@@ -41,7 +38,7 @@ class FakeInputStream : public embedder_support::InputStream {
       : contents_(contents), nb_reads_(1) {}
   explicit FakeInputStream(std::string contents, int nb_reads)
       : contents_(contents), nb_reads_(nb_reads) {}
-  ~FakeInputStream() override {}
+  ~FakeInputStream() override = default;
 
   bool BytesAvailable(int* bytes_available) const override { return true; }
 
@@ -72,8 +69,8 @@ class FakeInputStream : public embedder_support::InputStream {
 // Stream that always fails
 class FakeFailingInputStream : public embedder_support::InputStream {
  public:
-  FakeFailingInputStream() {}
-  ~FakeFailingInputStream() override {}
+  FakeFailingInputStream() = default;
+  ~FakeFailingInputStream() override = default;
   bool BytesAvailable(int* bytes_available) const override { return false; }
   bool Skip(int64_t n, int64_t* bytes_skipped) override { return false; }
   bool Read(net::IOBuffer* dest, int length, int* bytes_read) override {
@@ -101,7 +98,7 @@ class TestResponseDelegate
         custom_status_(custom_status),
         custom_header_name_(custom_header_name),
         custom_header_value_(custom_header_value) {}
-  ~TestResponseDelegate() override {}
+  ~TestResponseDelegate() override = default;
 
   std::unique_ptr<InputStream> OpenInputStream(JNIEnv* env) override {
     return std::move(input_stream_);
@@ -157,7 +154,7 @@ class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
       const AndroidStreamReaderURLLoaderTest&) = delete;
 
  protected:
-  AndroidStreamReaderURLLoaderTest() {}
+  AndroidStreamReaderURLLoaderTest() = default;
   ~AndroidStreamReaderURLLoaderTest() override = default;
 
   void SetUp() override { mojo::core::Init(); }

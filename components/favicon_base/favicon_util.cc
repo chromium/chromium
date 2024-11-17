@@ -179,43 +179,45 @@ gfx::Image SelectFaviconFramesFromPNGs(
   //   significant performance hit if a user has many bookmarks.
   // TODO(pkotwicz): Move the decoding off the UI thread.
   std::vector<gfx::ImagePNGRep> png_reps =
-      SelectFaviconFramesFromPNGsWithoutResizing(
-          png_data, favicon_scales, favicon_size);
+      SelectFaviconFramesFromPNGsWithoutResizing(png_data, favicon_scales,
+                                                 favicon_size);
 
   // SelectFaviconFramesFromPNGsWithoutResizing() should have selected the
   // largest favicon if |favicon_size| == 0.
-  if (favicon_size == 0)
+  if (favicon_size == 0) {
     return gfx::Image(png_reps);
-
-  std::vector<float> favicon_scales_to_generate = favicon_scales;
-  for (size_t i = 0; i < png_reps.size(); ++i) {
-    auto iter =
-        base::ranges::find(favicon_scales_to_generate, png_reps[i].scale);
-    if (iter != favicon_scales_to_generate.end())
-      favicon_scales_to_generate.erase(iter);
   }
 
-  if (favicon_scales_to_generate.empty())
+  std::vector<float> favicon_scales_to_generate = favicon_scales;
+  for (auto& png_rep : png_reps) {
+    auto iter = base::ranges::find(favicon_scales_to_generate, png_rep.scale);
+    if (iter != favicon_scales_to_generate.end()) {
+      favicon_scales_to_generate.erase(iter);
+    }
+  }
+
+  if (favicon_scales_to_generate.empty()) {
     return gfx::Image(png_reps);
+  }
 
   std::vector<SkBitmap> bitmaps;
-  for (size_t i = 0; i < png_data.size(); ++i) {
-    if (!png_data[i].is_valid())
+  for (const auto& data : png_data) {
+    if (!data.is_valid()) {
       continue;
+    }
 
-    SkBitmap bitmap;
-    if (gfx::PNGCodec::Decode(png_data[i].bitmap_data->data(),
-                              png_data[i].bitmap_data->size(), &bitmap)) {
+    SkBitmap bitmap = gfx::PNGCodec::Decode(*data.bitmap_data);
+    if (!bitmap.isNull()) {
       bitmaps.push_back(bitmap);
     }
   }
 
-  if (bitmaps.empty())
+  if (bitmaps.empty()) {
     return gfx::Image();
+  }
 
   gfx::ImageSkia resized_image_skia;
-  for (size_t i = 0; i < favicon_scales_to_generate.size(); ++i) {
-    float scale = favicon_scales_to_generate[i];
+  for (float scale : favicon_scales_to_generate) {
     int desired_size_in_pixel =
         static_cast<int>(std::ceil(favicon_size * scale));
     SkBitmap bitmap =
@@ -223,17 +225,20 @@ gfx::Image SelectFaviconFramesFromPNGs(
     resized_image_skia.AddRepresentation(gfx::ImageSkiaRep(bitmap, scale));
   }
 
-  if (png_reps.empty())
+  if (png_reps.empty()) {
     return gfx::Image(resized_image_skia);
+  }
 
   std::vector<gfx::ImageSkiaRep> resized_image_skia_reps =
       resized_image_skia.image_reps();
-  for (size_t i = 0; i < resized_image_skia_reps.size(); ++i) {
-    scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
-    if (gfx::PNGCodec::EncodeBGRASkBitmap(
-            resized_image_skia_reps[i].GetBitmap(), false,
-            &png_bytes->as_vector())) {
-      png_reps.emplace_back(png_bytes, resized_image_skia_reps[i].scale());
+  for (const auto& resized_image_skia_rep : resized_image_skia_reps) {
+    if (std::optional<std::vector<uint8_t>> encoded =
+            gfx::PNGCodec::EncodeBGRASkBitmap(
+                resized_image_skia_rep.GetBitmap(),
+                /*discard_transparency=*/false)) {
+      auto png_bytes = base::MakeRefCounted<base::RefCountedBytes>(
+          std::move(encoded.value()));
+      png_reps.emplace_back(png_bytes, resized_image_skia_rep.scale());
     }
   }
 
@@ -271,14 +276,15 @@ favicon_base::FaviconRawBitmapResult ResizeFaviconBitmapResult(
   gfx::Image resized_image = favicon_base::SelectFaviconFramesFromPNGs(
       favicon_bitmap_results, desired_favicon_scales, desired_size_in_pixel);
 
-  std::vector<unsigned char> resized_bitmap_data;
-  if (!gfx::PNGCodec::EncodeBGRASkBitmap(resized_image.AsBitmap(), false,
-                                         &resized_bitmap_data)) {
+  std::optional<std::vector<uint8_t>> resized_bitmap_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(resized_image.AsBitmap(),
+                                        /*discard_transparency=*/false);
+  if (!resized_bitmap_data) {
     return favicon_base::FaviconRawBitmapResult();
   }
 
-  bitmap_result.bitmap_data = base::RefCountedBytes::TakeVector(
-      &resized_bitmap_data);
+  bitmap_result.bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(
+      std::move(resized_bitmap_data).value());
   bitmap_result.pixel_size =
       gfx::Size(desired_size_in_pixel, desired_size_in_pixel);
 

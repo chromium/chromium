@@ -6,6 +6,8 @@
 #define IOS_WEB_CONTENT_NAVIGATION_CONTENT_NAVIGATION_ITEM_H_
 
 #import <Foundation/Foundation.h>
+
+#import "base/memory/raw_ptr.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/https_upgrade_type.h"
@@ -76,7 +78,7 @@ class ContentNavigationItem : public NavigationItem {
   friend class NavigationItemHolder;
 
   explicit ContentNavigationItem(content::NavigationEntry* entry);
-  content::NavigationEntry* entry_ = nullptr;
+  raw_ptr<content::NavigationEntry> entry_ = nullptr;
 
   // We lazily update these in the corresponding getter. Since the value on
   // NavigationEntry isn't changed, the functions are still semantically

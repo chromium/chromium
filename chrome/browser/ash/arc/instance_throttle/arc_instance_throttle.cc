@@ -300,7 +300,7 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   // This one is controlled by ash::ArcPowerControlHandler.
   AddObserver(std::make_unique<ash::ThrottleObserver>(
       kChromeArcPowerControlPageObserver));
-  if (base::FeatureList::IsEnabled(arc::kUnthrottleOnActiveAudio)) {
+  if (base::FeatureList::IsEnabled(arc::kUnthrottleOnActiveAudioV2)) {
     AddObserver(std::make_unique<ArcActiveAudioThrottleObserver>());
   }
 
@@ -342,7 +342,7 @@ void ArcInstanceThrottle::OnBootTypeRetrieved(mojom::BootType boot_type) {
       never_enforce_quota_ = true;
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {

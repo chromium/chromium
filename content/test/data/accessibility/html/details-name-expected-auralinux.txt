@@ -1,6 +1,6 @@
 [document web] focusable focused
 ++[panel]
-++++[toggle button] name='the summary' expandable focusable
+++++[toggle button] name='the summary' expandable focusable posinset:1 setsize:1
 ++++++[static] name='the summary'
 ++[section]
 ++++[panel]

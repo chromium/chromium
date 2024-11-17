@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/state_machines/state_machine_util.h"
+
+#include <array>
 
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -20,21 +17,19 @@ namespace {
 // The list of code points which has Indic_Syllabic_Category=Virama property.
 // Must be sorted.
 // See http://www.unicode.org/Public/9.0.0/ucd/IndicSyllabicCategory-9.0.0d2.txt
-const uint32_t kIndicSyllabicCategoryViramaList[] = {
+const auto kIndicSyllabicCategoryViramaList = std::to_array<uint32_t>({
     // Do not include 0+0BCD TAMIL SIGN VIRAMA as Tamil works differently from
     // other Indic languages. See crbug.com/693687.
     0x094D,  0x09CD,  0x0A4D,  0x0ACD,  0x0B4D,  0x0C4D,  0x0CCD,  0x0D4D,
     0x0DCA,  0x1B44,  0xA8C4,  0xA9C0,  0x11046, 0x110B9, 0x111C0, 0x11235,
     0x1134D, 0x11442, 0x114C2, 0x115BF, 0x1163F, 0x116B6, 0x11C3F,
-};
+});
 
 // Returns true if the code point has Indic_Syllabic_Category=Virama property.
 // See http://www.unicode.org/Public/9.0.0/ucd/IndicSyllabicCategory-9.0.0d2.txt
 bool IsIndicSyllabicCategoryVirama(uint32_t code_point) {
-  const int length = std::size(kIndicSyllabicCategoryViramaList);
-  return std::binary_search(kIndicSyllabicCategoryViramaList,
-                            kIndicSyllabicCategoryViramaList + length,
-                            code_point);
+  return std::ranges::binary_search(kIndicSyllabicCategoryViramaList,
+                                    code_point);
 }
 
 }  // namespace
@@ -85,9 +80,9 @@ bool IsGraphemeBreak(UChar32 prev_code_point, UChar32 next_code_point) {
   // [^RI] (RI RI)* RI x RI
   //                RI ÷ RI
   if (Character::IsRegionalIndicator(prev_code_point) &&
-      Character::IsRegionalIndicator(next_code_point))
-    NOTREACHED_IN_MIGRATION()
-        << "Do not use this function for regional indicators.";
+      Character::IsRegionalIndicator(next_code_point)) {
+    NOTREACHED() << "Do not use this function for regional indicators.";
+  }
 
   // Rule GB9, x (Extend | ZWJ)
   // Rule GB9a, x SpacingMark

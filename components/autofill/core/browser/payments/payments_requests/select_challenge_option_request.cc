@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
 
 namespace autofill {
 namespace payments {
@@ -18,8 +17,7 @@ const char kSelectChallengeOptionRequestPath[] =
 }  // namespace
 
 SelectChallengeOptionRequest::SelectChallengeOptionRequest(
-    PaymentsNetworkInterface::SelectChallengeOptionRequestDetails
-        request_details,
+    SelectChallengeOptionRequestDetails request_details,
     base::OnceCallback<void(payments::PaymentsAutofillClient::PaymentsRpcResult,
                             const std::string&)> callback)
     : request_details_(request_details), callback_(std::move(callback)) {}

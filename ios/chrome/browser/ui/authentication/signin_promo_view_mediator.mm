@@ -42,6 +42,11 @@ namespace {
 // Number of times the sign-in promo should be displayed until it is
 // automatically dismissed.
 constexpr int kAutomaticSigninPromoViewDismissCount = 20;
+
+// Number of times the top-of-feed sync promo is shown before being
+// automatically dismissed.
+constexpr int kFeedSyncPromoAutodismissCount = 6;
+
 // User defaults key to get the last logged impression of the top-of-feed promo.
 NSString* const kLastSigninImpressionTopOfFeedKey =
     @"last_signin_impression_top_of_feed";
@@ -131,7 +136,12 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+
       return false;
   }
 }
@@ -230,10 +240,13 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
-                                << static_cast<int>(access_point);
-      break;
+      NOTREACHED() << "Unexpected value for access point "
+                   << static_cast<int>(access_point);
   }
 }
 
@@ -331,10 +344,13 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
-                                << static_cast<int>(access_point);
-      break;
+      NOTREACHED() << "Unexpected value for access point "
+                   << static_cast<int>(access_point);
   }
 }
 
@@ -432,10 +448,13 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_IN_MIGRATION() << "Unexpected value for access point "
-                                << static_cast<int>(access_point);
-      break;
+      NOTREACHED() << "Unexpected value for access point "
+                   << static_cast<int>(access_point);
   }
 }
 
@@ -522,6 +541,10 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
@@ -610,6 +633,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
     case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
@@ -707,7 +734,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
 }
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // Bookmarks
   registry->RegisterBooleanPref(prefs::kIosBookmarkPromoAlreadySeen, false);
   registry->RegisterBooleanPref(prefs::kIosBookmarkSettingsPromoAlreadySeen,
@@ -759,7 +786,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     const int maxDisplayedCount =
         accessPoint ==
                 signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
-            ? FeedSyncPromoAutodismissCount()
+            ? kFeedSyncPromoAutodismissCount
             : kAutomaticSigninPromoViewDismissCount;
     const char* displayedCountPreferenceKey =
         DisplayedCountPreferenceKey(accessPoint);
@@ -775,8 +802,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   if (accessPoint ==
           signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO &&
       (![[NSUserDefaults standardUserDefaults]
-           boolForKey:kEngagedWithFeedKey] ||
-       ShouldIgnoreFeedEngagementConditionForTopSyncPromo())) {
+          boolForKey:kEngagedWithFeedKey])) {
     return NO;
   }
 
@@ -1123,7 +1149,7 @@ id<SystemIdentity> GetDisplayedIdentity(
                                           identity:identity
                                        accessPoint:self.accessPoint
                                        promoAction:promoAction
-                                          callback:completion];
+                                        completion:completion];
   [self.signinPresenter showSignin:command];
 }
 
@@ -1238,9 +1264,7 @@ id<SystemIdentity> GetDisplayedIdentity(
                        promoAction:promoAction];
       return;
     case SigninPromoAction::kReviewAccountSettings:
-      NOTREACHED_IN_MIGRATION()
-          << "This action is only valid for a signed in account.";
-      return;
+      NOTREACHED() << "This action is only valid for a signed in account.";
   }
 }
 
@@ -1306,14 +1330,10 @@ id<SystemIdentity> GetDisplayedIdentity(
                                        PROMO_ACTION_NOT_DEFAULT];
       return;
     case SigninPromoAction::kReviewAccountSettings:
-      NOTREACHED_IN_MIGRATION()
-          << "This action is only valid for a signed in account.";
-      return;
+      NOTREACHED() << "This action is only valid for a signed in account.";
     case SigninPromoAction::kSigninWithNoDefaultIdentity:
-      NOTREACHED_IN_MIGRATION()
-          << "The user should not be able to explicitly select "
-             "\"other account\".";
-      return;
+      NOTREACHED() << "The user should not be able to explicitly select "
+                      "\"other account\".";
   }
 }
 

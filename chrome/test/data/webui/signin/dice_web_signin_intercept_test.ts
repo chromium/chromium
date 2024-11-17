@@ -80,10 +80,9 @@ suite('DiceWebSigninInterceptTest', function() {
 
   test('ClickAccept', async function() {
     assertTrue(isChildVisible(app, '#acceptButton'));
-    const spinner = app.shadowRoot!.querySelector('paper-spinner-lite')!;
     const acceptButton = app.$.acceptButton;
     const cancelButton = app.$.cancelButton;
-    assertFalse(spinner.active);
+    assertFalse(!!app.shadowRoot!.querySelector('.spinner'));
     assertFalse(acceptButton.disabled);
     assertFalse(cancelButton.disabled);
 
@@ -93,7 +92,7 @@ suite('DiceWebSigninInterceptTest', function() {
     // Buttons are disabled and the spinner is active.
     assertTrue(acceptButton.disabled);
     assertTrue(cancelButton.disabled);
-    assertTrue(spinner.active);
+    assertTrue(!!app.shadowRoot!.querySelector('.spinner'));
     return browserProxy.whenCalled('accept');
   });
 

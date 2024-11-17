@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+  <head>
+    <title>View transitions: page scale factor should not distort capture</title>
+    <meta name="viewport" content="width=400">
+    <script src="/common/reftest-wait.js"></script>
+    <style>
+      body {
+        background-color: cornflowerblue;
+      }
+      #wideElement {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        /* Double the width of the initial-containing-block  */
+        width: 800px;
+        height: 100px;
+        background-color: limegreen;
+      }
+      .corner {
+        position: fixed;
+        width: 100px;
+        height: 100px;
+        background-color: coral;
+      }
+      .transitioned .corner {
+        background-color: darkseagreen;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wideElement"></div>
+    <div class="corner" style="top: 0; right: 0;"></div>
+    <script>
+        internals.setBrowserControlsState(20, 0, true);
+        requestAnimationFrame(() => {
+            takeScreenshot();
+        });
+      </script>
+  </body>
+</html>

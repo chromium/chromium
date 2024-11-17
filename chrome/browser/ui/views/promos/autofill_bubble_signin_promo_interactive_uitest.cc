@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -21,6 +22,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -139,6 +141,7 @@ void AutofillBubbleSignInPromoInteractiveUITest::ExtendAccountInfo(
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                        SignInPromoNoAccountPresent) {
+  base::HistogramTester histogram_tester;
   // Set up password and password stores.
   GetController()->OnPasswordSubmitted(CreateFormManager(
       local_password_store_.get(), account_password_store_.get()));
@@ -191,10 +194,28 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       test_form()->signon_realm);
   EXPECT_NE(account_password_store_->stored_passwords().end(), found);
   EXPECT_THAT(found->second, testing::ElementsAre(FormMatches(*test_form())));
+
+  // Signin metrics - Offered/Started/Completed are recorded, but no values for
+  // WebSignin (WithDefault).
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                        SignInPromoWithWebSignedInAccount) {
+  base::HistogramTester histogram_tester;
   // Sign in with an account, but only on the web. The primary account is not
   // set.
   AccountInfo info = signin::MakeAccountAvailable(
@@ -251,6 +272,26 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       test_form()->signon_realm);
   EXPECT_NE(account_password_store_->stored_passwords().end(), found);
   EXPECT_THAT(found->second, testing::ElementsAre(FormMatches(*test_form())));
+
+  // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.WithDefault",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.WebSignin.SourceToChromeSignin",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
@@ -267,6 +308,9 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   // Set up password and password stores.
   GetController()->OnPasswordSubmitted(CreateFormManager(
       local_password_store_.get(), account_password_store_.get()));
+
+  // Start recording metrics after signing in.
+  base::HistogramTester histogram_tester;
 
   // Save the password and check that it was properly saved to profile store.
   SavePassword();
@@ -323,6 +367,15 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
       test_form()->signon_realm);
   EXPECT_NE(account_password_store_->stored_passwords().end(), found);
   EXPECT_THAT(found->second, testing::ElementsAre(FormMatches(*test_form())));
+
+  // Signin metrics - nothing should be recorded for reauth.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
 }
 
 }  // namespace

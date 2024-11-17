@@ -334,7 +334,7 @@ void PnaclTranslationCache::OpComplete(PnaclTranslationCacheEntry* entry) {
 // Construction and cache backend initialization
 PnaclTranslationCache::PnaclTranslationCache() : in_memory_(false) {}
 
-PnaclTranslationCache::~PnaclTranslationCache() {}
+PnaclTranslationCache::~PnaclTranslationCache() = default;
 
 int PnaclTranslationCache::Init(net::CacheType cache_type,
                                 const base::FilePath& cache_dir,

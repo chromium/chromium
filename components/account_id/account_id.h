@@ -13,6 +13,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/component_export.h"
+
 enum class AccountType {
   // Unspecified account (eg. other domains)
   UNKNOWN,
@@ -29,7 +31,7 @@ enum class AccountType {
 //
 // TODO(alemate): Rename functions and fields to reflect different types of
 // accounts. (see crbug.com/672253)
-class AccountId {
+class COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID) AccountId {
  public:
   // Creates an empty account id.
   //
@@ -100,6 +102,7 @@ class AccountId {
   static std::optional<AccountId> Deserialize(std::string_view serialized);
 
  private:
+  COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID)
   friend std::ostream& operator<<(std::ostream&, const AccountId&);
 
   AccountId(std::string_view id,
@@ -112,9 +115,11 @@ class AccountId {
 };
 
 // Overload << operator to allow logging of AccountIds.
+COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID)
 std::ostream& operator<<(std::ostream& stream, const AccountId& account_id);
 
 // Returns a reference to a singleton.
+COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID)
 const AccountId& EmptyAccountId();
 
 namespace std {
@@ -122,6 +127,7 @@ namespace std {
 // Implement hashing of AccountId, so it can be used as a key in STL containers.
 template <>
 struct hash<AccountId> {
+  COMPONENT_EXPORT(COMPONENTS_ACCOUNT_ID)
   std::size_t operator()(const AccountId& user_id) const;
 };
 

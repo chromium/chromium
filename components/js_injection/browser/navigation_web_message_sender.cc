@@ -182,6 +182,10 @@ const char NavigationWebMessageSender::kNavigationRedirectedMessage[] =
 const char NavigationWebMessageSender::kNavigationCompletedMessage[] =
     "NAVIGATION_COMPLETED";
 const char NavigationWebMessageSender::kPageLoadEndMessage[] = "PAGE_LOAD_END";
+const char NavigationWebMessageSender::kDOMContentLoadedMessage[] =
+    "DOM_CONTENT_LOADED";
+const char NavigationWebMessageSender::kFirstContentfulPaintMessage[] =
+    "FIRST_CONTENTFUL_PAINT";
 const char NavigationWebMessageSender::kPageDeletedMessage[] = "PAGE_DELETED";
 
 // static
@@ -236,21 +240,38 @@ NavigationWebMessageSender::~NavigationWebMessageSender() {
 void NavigationWebMessageSender::DispatchOptInMessage() {
   CHECK(page().IsPrimary());
 
-  base::Value::Dict message_dict = base::Value::Dict()
-                                       .Set("type", kOptedInMessage)
-                                       .Set("supports_start_and_redirect", true)
-                                       .Set("supports_history_details", true);
+  base::Value::Dict message_dict =
+      base::Value::Dict()
+          .Set("type", kOptedInMessage)
+          .Set("supports_start_and_redirect", true)
+          .Set("supports_history_details", true)
+          .Set("supports_dom_content_loaded", true)
+          .Set("supports_first_contentful_paint", true);
   PostMessage(std::move(message_dict));
+}
+
+void NavigationWebMessageSender::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
+  if (!ShouldSendMessageForRenderFrameHost(render_frame_host)) {
+    return;
+  }
+  PostMessageWithType(kDOMContentLoadedMessage);
 }
 
 void NavigationWebMessageSender::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (!page().IsPrimary() || render_frame_host != &page().GetMainDocument()) {
-    // Only send the load notifications for the primary main frame.
+  if (!ShouldSendMessageForRenderFrameHost(render_frame_host)) {
     return;
   }
   PostMessageWithType(kPageLoadEndMessage);
+}
+
+void NavigationWebMessageSender::OnFirstContentfulPaintInPrimaryMainFrame() {
+  if (!page().IsPrimary()) {
+    return;
+  }
+  PostMessageWithType(kFirstContentfulPaintMessage);
 }
 
 bool NavigationWebMessageSender::ShouldSendMessageForNavigation(
@@ -261,6 +282,11 @@ bool NavigationWebMessageSender::ShouldSendMessageForNavigation(
   // commit / create a new page, it means that the messages for those
   // navigations will be fired on the sender of the current primary page.
   return page().IsPrimary() && navigation_handle->IsInPrimaryMainFrame();
+}
+
+bool NavigationWebMessageSender::ShouldSendMessageForRenderFrameHost(
+    content::RenderFrameHost* render_frame_host) {
+  return page().IsPrimary() && render_frame_host == &page().GetMainDocument();
 }
 
 void NavigationWebMessageSender::DidStartNavigation(

@@ -22,6 +22,7 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -87,6 +88,10 @@ public class AccountSelectionIntegrationTestBase {
                 IdentityRequestDialogDisclosureField.EMAIL,
                 IdentityRequestDialogDisclosureField.PICTURE
             };
+
+    protected static final String TEST_ERROR_CODE = "invalid_request";
+    protected static final IdentityCredentialTokenError TOKEN_ERROR =
+            new IdentityCredentialTokenError(TEST_ERROR_CODE, TEST_URL);
 
     AccountSelectionCoordinator mAccountSelection;
 

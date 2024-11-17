@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-var request = null;
+let request = null;
 
 /**
  * Create an instance of PaymentRequest.

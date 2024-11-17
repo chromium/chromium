@@ -123,7 +123,7 @@ base::android::ScopedJavaLocalRef<jobject> CompositorView::GetResourceManager(
 
 void CompositorView::RecreateSurface() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  compositor_->SetSurface(nullptr, false);
+  compositor_->SetSurface(nullptr, false, nullptr);
   Java_CompositorView_recreateSurface(env, obj_);
 }
 
@@ -164,28 +164,33 @@ void CompositorView::SurfaceCreated(JNIEnv* env,
 
 void CompositorView::SurfaceDestroyed(JNIEnv* env,
                                       const JavaParamRef<jobject>& object) {
-  compositor_->SetSurface(nullptr, false);
+  compositor_->SetSurface(nullptr, false, nullptr);
   current_surface_format_ = 0;
   tab_content_manager_->OnUIResourcesWereEvicted();
 }
 
-void CompositorView::SurfaceChanged(JNIEnv* env,
-                                    const JavaParamRef<jobject>& object,
-                                    jint format,
-                                    jint width,
-                                    jint height,
-                                    bool can_be_used_with_surface_control,
-                                    const JavaParamRef<jobject>& surface) {
+std::optional<int> CompositorView::SurfaceChanged(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& object,
+    jint format,
+    jint width,
+    jint height,
+    bool can_be_used_with_surface_control,
+    const JavaParamRef<jobject>& surface,
+    const JavaParamRef<jobject>& browser_input_token) {
+  std::optional<int> surface_handle = std::nullopt;
   DCHECK(surface);
   if (current_surface_format_ != format) {
     current_surface_format_ = format;
-    compositor_->SetSurface(surface, can_be_used_with_surface_control);
+    surface_handle = compositor_->SetSurface(
+        surface, can_be_used_with_surface_control, browser_input_token);
   }
   gfx::Size size = gfx::Size(width, height);
   compositor_->SetWindowBounds(size);
   content_width_ = size.width();
   content_height_ = size.height();
   root_layer_->SetBounds(gfx::Size(content_width_, content_height_));
+  return surface_handle;
 }
 
 void CompositorView::OnPhysicalBackingSizeChanged(
@@ -347,7 +352,7 @@ void CompositorView::BrowserChildProcessKilled(
           base::android::SDK_VERSION_R &&
       data.process_type == content::PROCESS_TYPE_GPU) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    compositor_->SetSurface(nullptr, false);
+    compositor_->SetSurface(nullptr, false, nullptr);
     Java_CompositorView_recreateSurface(env, obj_);
   }
 }

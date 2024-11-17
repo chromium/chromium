@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_error_dialog.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -40,16 +41,27 @@ class PlusAddressErrorDialogInteractiveUiTest : public InteractiveBrowserTest {
     });
   }
 
+  InteractiveTestApi::StepBuilder CheckUserAction(std::string_view user_action,
+                                                  int expected_count) {
+    return Do([this, user_action, expected_count]() {
+      EXPECT_EQ(user_action_tester_.GetActionCount(user_action),
+                expected_count);
+    });
+  }
+
  private:
+  base::UserActionTester user_action_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
                        ShowAndAcceptAffiliationErrorDialog) {
   base::test::TestFuture<void> on_accepted;
-  RunTestSequence(ShowAffiliationErrorDialog(on_accepted.GetCallback()),
-                  EnsurePresent(kPlusAddressErrorDialogAcceptButton),
-                  PressButton(kPlusAddressErrorDialogAcceptButton),
-                  Check([&]() { return on_accepted.IsReady(); }));
+  RunTestSequence(
+      ShowAffiliationErrorDialog(on_accepted.GetCallback()),
+      EnsurePresent(kPlusAddressErrorDialogAcceptButton),
+      PressButton(kPlusAddressErrorDialogAcceptButton),
+      Check([&]() { return on_accepted.IsReady(); }),
+      CheckUserAction("PlusAddresses.AffiliationErrorFilledExisting", 1));
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
@@ -58,17 +70,31 @@ IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
   RunTestSequence(ShowAffiliationErrorDialog(on_accepted.GetCallback()),
                   EnsurePresent(kPlusAddressErrorDialogCancelButton),
                   PressButton(kPlusAddressErrorDialogCancelButton),
-                  Check([&]() { return !on_accepted.IsReady(); }));
+                  Check([&]() { return !on_accepted.IsReady(); }),
+                  CheckUserAction("PlusAddresses.AffiliationErrorCanceled", 1));
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
                        ShowAndAcceptTimeoutErrorDialog) {
   base::test::TestFuture<void> on_accepted;
-  RunTestSequence(ShowErrorDialog(PlusAddressErrorDialogType::kTimeout,
+  RunTestSequence(
+      ShowErrorDialog(PlusAddressErrorDialogType::kTimeout,
+                      on_accepted.GetCallback()),
+      EnsurePresent(kPlusAddressErrorDialogCancelButton),
+      PressButton(kPlusAddressErrorDialogAcceptButton),
+      Check([&]() { return on_accepted.IsReady(); }),
+      CheckUserAction("PlusAddresses.CreateErrorTryAgainClicked", 1));
+}
+
+IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
+                       ShowAndCancelGenericErrorDialog) {
+  base::test::TestFuture<void> on_accepted;
+  RunTestSequence(ShowErrorDialog(PlusAddressErrorDialogType::kGenericError,
                                   on_accepted.GetCallback()),
                   EnsurePresent(kPlusAddressErrorDialogCancelButton),
-                  PressButton(kPlusAddressErrorDialogAcceptButton),
-                  Check([&]() { return on_accepted.IsReady(); }));
+                  PressButton(kPlusAddressErrorDialogCancelButton),
+                  Check([&]() { return !on_accepted.IsReady(); }),
+                  CheckUserAction("PlusAddresses.CreateErrorCanceled", 1));
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
@@ -79,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressErrorDialogInteractiveUiTest,
                                   on_accepted.GetCallback()),
                   EnsureNotPresent(kPlusAddressErrorDialogCancelButton),
                   PressButton(kPlusAddressErrorDialogAcceptButton),
-                  Check([&]() { return on_accepted.IsReady(); }));
+                  Check([&]() { return on_accepted.IsReady(); }),
+                  CheckUserAction("PlusAddresses.QuotaErrorAccepted", 1));
 }
 
 }  // namespace

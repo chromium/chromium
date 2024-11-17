@@ -26,22 +26,39 @@ class DeskTemplate;
 }  // namespace ash
 
 // The DesksTemplatesAppLaunchHandler class is passed a profile, and will launch
-// apps and web pages based on the template. Note that a new handler should be
-// created for each template launch.
+// apps and web pages based on the template or coral group. Note that a new
+// handler should be created for each launch.
+// TODO(sammiequon): Rename this to `DeskAppLaunchHandler`.
 class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
  public:
-  explicit DesksTemplatesAppLaunchHandler(Profile* profile);
+  enum class Type {
+    kTemplate = 0,
+    kCoral,
+  };
+
+  DesksTemplatesAppLaunchHandler(Profile* profile, Type type);
   DesksTemplatesAppLaunchHandler(const DesksTemplatesAppLaunchHandler&) =
       delete;
   DesksTemplatesAppLaunchHandler& operator=(
       const DesksTemplatesAppLaunchHandler&) = delete;
   ~DesksTemplatesAppLaunchHandler() override;
 
+  // Returns a unique ID for desk launch. These IDs are used so the read handler
+  // knows which launch to associate with. Call this before calling
+  // `LaunchTemplate()` or `LaunchCoralGroup()`.
+  static int32_t GetNextLaunchId();
+
   // Launch the given template.
-  void LaunchTemplate(const ash::DeskTemplate& desk_template);
+  void LaunchTemplate(const ash::DeskTemplate& desk_template,
+                      int32_t launch_id);
+
+  // Launch the given group.
+  void LaunchCoralGroup(std::unique_ptr<app_restore::RestoreData> restore_data,
+                        int32_t launch_id);
 
  protected:
   // chromeos::AppLaunchHandler:
+  void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
   bool ShouldLaunchSystemWebAppOrChromeApp(
       const std::string& app_id,
       const app_restore::RestoreData::LaunchList& launch_list) override;
@@ -61,11 +78,10 @@ class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
   // Notifies observers that a single instance app has moved.
   void NotifyMovedSingleInstanceApp(int32_t window_id);
 
-  // chromeos::AppLaunchHandler:
-  void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
-
   // Checks to see if the browser app with `app_name` is installed.
   bool IsBrowserAppInstalled(const std::string& app_name);
+
+  const Type type_;
 
   // Cached convenience pointer to the desk template read handler.
   const raw_ptr<app_restore::DeskTemplateReadHandler> read_handler_;

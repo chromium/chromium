@@ -16,8 +16,6 @@ def Generate(jni_objs, *, gen_jni_class, script_name):
 package {gen_jni_class.package_with_dots};
 
 public class {gen_jni_class.name} {{
-  public static boolean TESTING_ENABLED;
-  public static boolean REQUIRE_MOCK;
 """)
 
   for jni_obj in jni_objs:

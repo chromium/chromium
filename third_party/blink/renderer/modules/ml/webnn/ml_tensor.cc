@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
@@ -16,6 +17,15 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 
 namespace blink {
+
+namespace {
+
+void RecordReadTensorTime(base::ElapsedTimer read_tensor_timer) {
+  base::UmaHistogramMediumTimes("WebNN.MLTensor.TimingMs.Read",
+                                read_tensor_timer.Elapsed());
+}
+
+}  // namespace
 
 MLTensor::MLTensor(
     ExecutionContext* execution_context,
@@ -54,13 +64,21 @@ Vector<uint32_t> MLTensor::shape() const {
   return Vector<uint32_t>(descriptor_.shape());
 }
 
-uint32_t MLTensor::usage() const {
-  return static_cast<uint32_t>(usage_.ToEnumBitmask());
+bool MLTensor::importableToWebGPU() const {
+  return usage_.Has(webnn::MLTensorUsageFlags::kWebGpuInterop);
+}
+
+bool MLTensor::readable() const {
+  return usage_.Has(webnn::MLTensorUsageFlags::kRead);
+}
+
+bool MLTensor::writable() const {
+  return usage_.Has(webnn::MLTensorUsageFlags::kWrite);
 }
 
 void MLTensor::destroy() {
-  // Calling OnConnectionError() will disconnect and destroy the buffer in
-  // the service. The remote buffer must remain unbound after calling
+  // Calling OnConnectionError() will disconnect and destroy the tensor in
+  // the service. The remote tensor must remain unbound after calling
   // OnConnectionError() because it is valid to call destroy() multiple times.
   OnConnectionError();
 }
@@ -94,7 +112,7 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
   if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Buffer has been destroyed or context is lost.");
+        "Tensor has been destroyed or context is lost.");
     return EmptyPromise();
   }
 
@@ -102,9 +120,10 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
       script_state, exception_state.GetContext());
   pending_resolvers_.insert(resolver);
 
-  remote_tensor_->ReadTensor(
-      WTF::BindOnce(&MLTensor::OnDidReadTensor, WrapPersistent(this),
-                    std::move(scoped_trace), WrapPersistent(resolver)));
+  base::ElapsedTimer read_tensor_timer;
+  remote_tensor_->ReadTensor(WTF::BindOnce(
+      &MLTensor::OnDidReadTensor, WrapPersistent(this), std::move(scoped_trace),
+      WrapPersistent(resolver), std::move(read_tensor_timer)));
 
   return resolver->Promise();
 }
@@ -118,12 +137,12 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
   // destructs.
   if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid buffer state");
+                                      "Invalid tensor state");
     return EmptyPromise();
   }
 
   if (dst_data->ByteLength() < PackedByteLength()) {
-    exception_state.ThrowTypeError("The destination buffer is too small.");
+    exception_state.ThrowTypeError("The destination tensor is too small.");
     return EmptyPromise();
   }
 
@@ -131,10 +150,11 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
       script_state, exception_state.GetContext());
   pending_byob_resolvers_.insert(resolver);
 
+  base::ElapsedTimer read_tensor_timer;
   remote_tensor_->ReadTensor(
       WTF::BindOnce(&MLTensor::OnDidReadTensorByob, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
-                    WrapPersistent(dst_data)));
+                    WrapPersistent(dst_data), std::move(read_tensor_timer)));
   return resolver->Promise();
 }
 
@@ -147,12 +167,12 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
   // destructs.
   if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid buffer state");
+                                      "Invalid tensor state");
     return EmptyPromise();
   }
 
   if (dst_data->byteLength() < PackedByteLength()) {
-    exception_state.ThrowTypeError("The destination buffer is too small.");
+    exception_state.ThrowTypeError("The destination tensor is too small.");
     return EmptyPromise();
   }
 
@@ -160,41 +180,46 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
       script_state, exception_state.GetContext());
   pending_byob_resolvers_.insert(resolver);
 
+  base::ElapsedTimer read_tensor_timer;
   remote_tensor_->ReadTensor(
       WTF::BindOnce(&MLTensor::OnDidReadTensorByobView, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
-                    WrapPersistent(dst_data)));
+                    WrapPersistent(dst_data), std::move(read_tensor_timer)));
   return resolver->Promise();
 }
 
 void MLTensor::OnDidReadTensor(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<DOMArrayBuffer>* resolver,
+    base::ElapsedTimer read_tensor_timer,
     webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_resolvers_.erase(resolver);
 
   if (result->is_error()) {
-    const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
+    const webnn::mojom::blink::Error& read_tensor_error = *result->get_error();
     resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
-        read_buffer_error.message);
+        WebNNErrorCodeToDOMExceptionCode(read_tensor_error.code),
+        read_tensor_error.message);
     return;
   }
   resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
+
+  RecordReadTensorTime(std::move(read_tensor_timer));
 }
 
 void MLTensor::OnDidReadTensorByob(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferBase* dst_data,
+    base::ElapsedTimer read_tensor_timer,
     webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_byob_resolvers_.erase(resolver);
 
   if (result->is_error()) {
-    const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
+    const webnn::mojom::blink::Error& read_tensor_error = *result->get_error();
     resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
-        read_buffer_error.message);
+        WebNNErrorCodeToDOMExceptionCode(read_tensor_error.code),
+        read_tensor_error.message);
     return;
   }
 
@@ -207,22 +232,25 @@ void MLTensor::OnDidReadTensorByob(
   // because this method is called in a task which runs on same thread where
   // script executes, so script can't observe a partially written state (unless
   // `dst_data` is a SharedArrayBuffer).
-  dst_data->ByteSpan().copy_prefix_from(result->get_buffer());
+  dst_data->ByteSpanMaybeShared().copy_prefix_from(result->get_buffer());
   resolver->Resolve();
+
+  RecordReadTensorTime(std::move(read_tensor_timer));
 }
 
 void MLTensor::OnDidReadTensorByobView(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
     DOMArrayBufferView* dst_data,
+    base::ElapsedTimer read_tensor_timer,
     webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_byob_resolvers_.erase(resolver);
 
   if (result->is_error()) {
-    const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
+    const webnn::mojom::blink::Error& read_tensor_error = *result->get_error();
     resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
-        read_buffer_error.message);
+        WebNNErrorCodeToDOMExceptionCode(read_tensor_error.code),
+        read_tensor_error.message);
     return;
   }
 
@@ -235,8 +263,10 @@ void MLTensor::OnDidReadTensorByobView(
   // because this method is called in a task which runs on same thread where
   // script executes, so script can't observe a partially written state (unless
   // `dst_data` is a SharedArrayBuffer).
-  dst_data->ByteSpan().copy_prefix_from(result->get_buffer());
+  dst_data->ByteSpanMaybeShared().copy_prefix_from(result->get_buffer());
   resolver->Resolve();
+
+  RecordReadTensorTime(std::move(read_tensor_timer));
 }
 
 void MLTensor::WriteTensorImpl(base::span<const uint8_t> src_data,
@@ -246,7 +276,7 @@ void MLTensor::WriteTensorImpl(base::span<const uint8_t> src_data,
   if (!remote_tensor_.is_bound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Buffer has been destroyed or context is lost.");
+        "Tensor has been destroyed or context is lost.");
     return;
   }
 
@@ -266,14 +296,14 @@ void MLTensor::OnConnectionError() {
   for (const auto& resolver : pending_resolvers_) {
     resolver->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Buffer has been destroyed or context is lost.");
+        "Tensor has been destroyed or context is lost.");
   }
   pending_resolvers_.clear();
 
   for (const auto& resolver : pending_byob_resolvers_) {
     resolver->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Buffer has been destroyed or context is lost.");
+        "Tensor has been destroyed or context is lost.");
   }
   pending_byob_resolvers_.clear();
 }

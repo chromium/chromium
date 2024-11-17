@@ -11,10 +11,13 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace content {
 class DevToolsAgentHost;
@@ -22,7 +25,18 @@ class DevToolsAgentHost;
 
 class Browser;
 class DevToolsTargetsUIHandler;
+class InspectUI;
 class PortForwardingStatusSerializer;
+
+// chrome://inspect isn't supported on Android nor iOS. Page debugging is
+// handled by a remote devtools on the host machine, and other elements, i.e.
+// extensions aren't supported.
+class InspectUIConfig : public content::DefaultWebUIConfig<InspectUI> {
+ public:
+  InspectUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIInspectHost) {}
+};
 
 class InspectUI : public content::WebUIController,
                   public content::WebContentsObserver {

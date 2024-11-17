@@ -405,8 +405,9 @@ void WebViewPlugin::WebViewHelper::DidClearWindowObject() {
       .Check();
 }
 
-void WebViewPlugin::WebViewHelper::FrameDetached() {
-  frame_->Close();
+void WebViewPlugin::WebViewHelper::FrameDetached(
+    blink::DetachReason detach_reason) {
+  frame_->Close(detach_reason);
   frame_ = nullptr;
 }
 

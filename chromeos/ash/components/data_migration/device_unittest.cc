@@ -104,10 +104,10 @@ class DeviceTest : public ::testing::Test {
 
   bool FileIsReady(int64_t payload_id) {
     base::FilePath file_path = BuildFilePayloadPath(payload_id);
-    int64_t file_size_in_bytes = 0;
-    return base::PathExists(file_path) &&
-           base::GetFileSize(file_path, &file_size_in_bytes) &&
-           file_size_in_bytes >=
+    std::optional<int64_t> file_size_in_bytes = base::GetFileSize(file_path);
+
+    return file_size_in_bytes.has_value() &&
+           file_size_in_bytes.value() >=
                nearby_process_manager_.fake_nearby_connections()
                    .test_file_size_in_bytes();
   }

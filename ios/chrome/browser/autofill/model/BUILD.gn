@@ -27,6 +27,7 @@ source_set("model") {
     "validation_rules_storage_factory.h",
   ]
   deps = [
+    ":features",
     ":model_shared",
     "//base",
     "//base:i18n",
@@ -111,7 +112,6 @@ source_set("model_internal") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands:commands",
-    "//ios/chrome/browser/signin/model",
     "//third_party/leveldatabase",
     "//ui/gfx/geometry",
     "//url",
@@ -124,6 +124,14 @@ source_set("constants") {
     "form_suggestion_constants.h",
     "form_suggestion_constants.mm",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 # This file defines the autofill_test_files list, which contains all input
@@ -158,6 +166,7 @@ source_set("unit_tests") {
     "suggestion_controller_java_script_feature_unittest.mm",
   ]
   deps = [
+    ":features",
     ":model",
     ":model_internal",
     ":model_shared",
@@ -173,8 +182,10 @@ source_set("unit_tests") {
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:autofill_form_features",
     "//components/autofill/ios/form_util:child_frame_registration_test_ts",
     "//components/autofill/ios/form_util:form_util_feature",
+    "//components/autofill/ios/form_util:frame_registration_feature",
     "//components/autofill/ios/form_util:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",

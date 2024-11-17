@@ -84,13 +84,15 @@ bool WebKioskBrowserControllerBase::IsInstalled() const {
 void WebKioskBrowserControllerBase::OnTabInserted(
     content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
-  web_app::WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(true);
+  web_app::WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(
+      app_id());
 }
 
 void WebKioskBrowserControllerBase::OnTabRemoved(
     content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
-  web_app::WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(false);
+  web_app::WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(
+      /*window_app_id=*/std::nullopt);
 }
 
 web_app::WebAppRegistrar& WebKioskBrowserControllerBase::registrar() const {

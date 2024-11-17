@@ -155,21 +155,16 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
         [](v8::Local<v8::Value>& v8_return_value,
            String& result_for_beforeunload, ScriptState* script_state) {
           v8::Isolate* isolate = script_state->GetIsolate();
-
-          ExceptionState exception_state(isolate,
-                                         v8::ExceptionContext::kOperation,
-                                         "BeforeUnload", "toString");
+          v8::TryCatch try_catch(isolate);
           String result =
               NativeValueTraits<IDLNullable<IDLString>>::NativeValue(
-                  isolate, v8_return_value, exception_state);
-          if (exception_state.HadException()) [[unlikely]] {
+                  isolate, v8_return_value, PassThroughException(isolate));
+          if (try_catch.HasCaught()) [[unlikely]] {
             // TODO(crbug.com/1480485): Understand why we need to explicitly
             // report the exception. The TryCatch handler that is on the call
             // stack has setVerbose(true) but doesn't end up dispatching an
             // ErrorEvent.
-            V8ScriptRunner::ReportException(isolate,
-                                            exception_state.GetException());
-            exception_state.ClearException();
+            V8ScriptRunner::ReportException(isolate, try_catch.Exception());
             return;
           }
           result_for_beforeunload = result;

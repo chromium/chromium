@@ -10,4 +10,4 @@ IosComponentsTestInitializer::IosComponentsTestInitializer()
     : network_connection_tracker_(
           network::TestNetworkConnectionTracker::CreateInstance()) {}
 
-IosComponentsTestInitializer::~IosComponentsTestInitializer() {}
+IosComponentsTestInitializer::~IosComponentsTestInitializer() = default;

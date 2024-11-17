@@ -153,7 +153,8 @@ class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
   raw_ptr<views::View> container_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> placeholder_ = nullptr;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
-  std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
+  std::map<std::string, raw_ptr<HoldingSpaceItemView, CtnExperimental>>
+      views_by_item_id_;
 
   // Bit flag representation of current `AnimationState`. Note that it is
   // briefly possible to be both `kAnimatingIn` and `kAnimatingOut` when one

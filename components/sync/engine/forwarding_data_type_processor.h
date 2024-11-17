@@ -19,7 +19,7 @@ namespace syncer {
 // implementation, and can guarantee the lifetime constraints.
 class ForwardingDataTypeProcessor : public DataTypeProcessor {
  public:
-  // |processor| must not be null and must outlive this object.
+  // `processor` must not be null and must outlive this object.
   explicit ForwardingDataTypeProcessor(DataTypeProcessor* processor);
 
   ForwardingDataTypeProcessor(const ForwardingDataTypeProcessor&) = delete;

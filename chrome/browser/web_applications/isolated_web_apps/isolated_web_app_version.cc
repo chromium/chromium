@@ -17,8 +17,8 @@ namespace web_app {
 
 // This parser validates that the given version matches `<version core>` in the
 // Semantic Versioning specification: https://semver.org.
-base::expected<std::vector<uint32_t>, IwaVersionParseError>
-ParseIwaVersionIntoComponents(std::string_view version_string) {
+base::expected<base::Version, IwaVersionParseError> ParseIwaVersion(
+    std::string_view version_string) {
   std::vector<uint32_t> components;
 
   std::vector<std::string_view> component_strings = base::SplitStringPiece(
@@ -52,7 +52,7 @@ ParseIwaVersionIntoComponents(std::string_view version_string) {
 
     components.push_back(number);
   }
-  return components;
+  return base::Version(std::move(components));
 }
 
 std::string IwaVersionParseErrorToString(IwaVersionParseError error) {

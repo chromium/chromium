@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -87,23 +87,23 @@ public class PermissionInfoTest {
                 (Callable<Profile>) () -> ProfileManager.getLastUsedRegularProfile());
     }
 
-    private static Profile getNonPrimaryOTRProfile() {
+    private static Profile getNonPrimaryOtrProfile() {
         return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () -> {
-                            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+                            OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
                             return ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
-                                            otrProfileID, /* createIfNeeded= */ true);
+                                            otrProfileId, /* createIfNeeded= */ true);
                         });
     }
 
-    private static Profile getPrimaryOTRProfile() {
+    private static Profile getPrimaryOtrProfile() {
         return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () ->
                                 ProfileManager.getLastUsedRegularProfile()
-                                        .getPrimaryOTRProfile(/* createIfNeeded= */ true));
+                                        .getPrimaryOtrProfile(/* createIfNeeded= */ true));
     }
 
     private void setSettingAndExpectValue(
@@ -137,44 +137,44 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSEGeolocation_InPrimaryOTRProfile_DefaultsToAskFromBlock()
+    public void testResetDSEGeolocation_InPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
-        Profile primaryOTRProfile = getPrimaryOTRProfile();
+        Profile primaryOtrProfile = getPrimaryOtrProfile();
         setSettingAndExpectValue(
                 ContentSettingsType.GEOLOCATION,
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.BLOCK,
-                primaryOTRProfile,
+                primaryOtrProfile,
                 ContentSettingValues.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.GEOLOCATION,
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.DEFAULT,
-                primaryOTRProfile,
+                primaryOtrProfile,
                 ContentSettingValues.ASK);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSEGeolocation_InNonPrimaryOTRProfile_DefaultsToAskFromBlock()
+    public void testResetDSEGeolocation_InNonPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
-        Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfile();
+        Profile nonPrimaryOtrProfile = getNonPrimaryOtrProfile();
         setSettingAndExpectValue(
                 ContentSettingsType.GEOLOCATION,
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.BLOCK,
-                nonPrimaryOTRProfile,
+                nonPrimaryOtrProfile,
                 ContentSettingValues.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.GEOLOCATION,
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.DEFAULT,
-                nonPrimaryOTRProfile,
+                nonPrimaryOtrProfile,
                 ContentSettingValues.ASK);
     }
 
@@ -202,9 +202,9 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSENotification_InPrimaryOTRProfile_DefaultsToAskFromBlock()
+    public void testResetDSENotification_InPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
-        Profile primaryOTRProfile = getPrimaryOTRProfile();
+        Profile primaryOtrProfile = getPrimaryOtrProfile();
 
         // Resetting in incognito should not have the same behavior.
         resetNotificationsSettingsForTest();
@@ -213,23 +213,23 @@ public class PermissionInfoTest {
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.BLOCK,
-                primaryOTRProfile,
+                primaryOtrProfile,
                 ContentSettingValues.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.DEFAULT,
-                primaryOTRProfile,
+                primaryOtrProfile,
                 ContentSettingValues.ASK);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSENotification_InNonPrimaryOTRProfile_DefaultsToAskFromBlock()
+    public void testResetDSENotification_InNonPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
-        Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfile();
+        Profile nonPrimaryOtrProfile = getNonPrimaryOtrProfile();
 
         // Resetting in incognito should not have the same behavior.
         resetNotificationsSettingsForTest();
@@ -238,14 +238,14 @@ public class PermissionInfoTest {
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.BLOCK,
-                nonPrimaryOTRProfile,
+                nonPrimaryOtrProfile,
                 ContentSettingValues.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
                 ContentSettingValues.DEFAULT,
-                nonPrimaryOTRProfile,
+                nonPrimaryOtrProfile,
                 ContentSettingValues.ASK);
     }
 

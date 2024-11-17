@@ -34,6 +34,7 @@
 #include "encrypted_media_utils.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_exception.h"
@@ -108,8 +109,7 @@ static bool IsPersistentSessionType(WebEncryptedMediaSessionType session_type) {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 V8MediaKeySessionClosedReason::Enum ConvertSessionClosedReason(
@@ -954,7 +954,7 @@ void MediaKeySession::ActionTimerFired(TimerBase*) {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -1093,6 +1093,9 @@ void MediaKeySession::OnSessionKeysChange(
   // 4.1 Empty statuses.
   key_statuses_map_->Clear();
 
+  auto* ukm_recorder = GetExecutionContext()->UkmRecorder();
+  const ukm::SourceId source_id = GetExecutionContext()->UkmSourceID();
+
   // 4.2 For each pair in input statuses.
   for (size_t i = 0; i < keys.size(); ++i) {
     // 4.2.1 Let pair be the pair.
@@ -1101,6 +1104,10 @@ void MediaKeySession::OnSessionKeysChange(
     //       value of pair's MediaKeyStatus value.
     key_statuses_map_->AddEntry(
         key.Id(), EncryptedMediaUtils::ConvertKeyStatusToString(key.Status()));
+
+    ukm::builders::Media_EME_CdmSystemCode(source_id)
+        .SetCdmSystemCode(key.SystemCode())
+        .Record(ukm_recorder);
   }
 
   // 5. Queue a task to fire a simple event named keystatuseschange

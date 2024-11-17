@@ -20,7 +20,6 @@ class AXPlatformTreeManagerDelegate;
 
 namespace content {
 
-
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.browser.accessibility
 enum ScrollDirection { FORWARD, BACKWARD, UP, DOWN, LEFT, RIGHT };
@@ -104,7 +103,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // BrowserAccessibilityManager overrides.
   ui::BrowserAccessibility* GetFocus() const override;
   void SendLocationChangeEvents(
-      const std::vector<ui::AXLocationChanges>& changes) override;
+      const std::vector<ui::AXLocationChange>& changes) override;
   ui::AXNode* RetargetForEvents(ui::AXNode* node,
                                 RetargetEventType type) const override;
   void FireBlinkEvent(ax::mojom::Event event_type,

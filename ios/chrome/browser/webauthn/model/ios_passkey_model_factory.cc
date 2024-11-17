@@ -18,15 +18,9 @@
 #include "ios/web/public/browser_state.h"
 
 // static
-webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForProfile(
     ProfileIOS* profile) {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
     return nullptr;
   }
   return static_cast<webauthn::PasskeyModel*>(
@@ -59,7 +53,7 @@ std::unique_ptr<KeyedService> IOSPasskeyModelFactory::BuildServiceInstanceFor(
       std::make_unique<password_manager::PasskeyAffiliationSourceAdapter>(
           sync_bridge.get());
 
-  IOSChromeAffiliationServiceFactory::GetForBrowserState(profile)
-      ->RegisterSource(std::move(adapter));
+  IOSChromeAffiliationServiceFactory::GetForProfile(profile)->RegisterSource(
+      std::move(adapter));
   return sync_bridge;
 }

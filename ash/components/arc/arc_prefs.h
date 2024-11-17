@@ -35,6 +35,7 @@ ARC_EXPORT extern const char kArcInitialLocationSettingSyncRequired[];
 ARC_EXPORT extern const char kArcLastSetAppLocale[];
 ARC_EXPORT extern const char kArcLocationServiceEnabled[];
 ARC_EXPORT extern const char kArcManagementTransition[];
+ARC_EXPORT extern const char kArcOpenLinksInBrowserByDefault[];
 ARC_EXPORT extern const char kArcPackages[];
 ARC_EXPORT extern const char kArcPackagesIsUpToDate[];
 ARC_EXPORT extern const char kArcPaiStarted[];

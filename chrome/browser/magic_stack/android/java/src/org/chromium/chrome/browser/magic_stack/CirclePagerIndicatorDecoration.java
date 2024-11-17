@@ -116,6 +116,20 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
         assert activePosition != RecyclerView.NO_POSITION;
 
         final View activeChild = layoutManager.findViewByPosition(activePosition);
+        // It is possible that the activeChild is null, see b/363959953.
+        if (activeChild == null) {
+            StringBuilder message =
+                    new StringBuilder("The activePosition of the RecyclerView is :");
+            message.append(activePosition);
+            message.append(", the original item count is :");
+            message.append(itemCount);
+            message.append(", the current item count is:");
+            message.append(parent.getAdapter().getItemCount());
+
+            assert false : message.toString();
+            return;
+        }
+
         // The left offset of the first visible view. We always track the first visible view to get
         // a consistent offset.
         int left = activeChild.getLeft() - mStartMarginPx;

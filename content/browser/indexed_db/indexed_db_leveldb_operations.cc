@@ -4,12 +4,16 @@
 
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 
+#include <atomic>
+#include <optional>
 #include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
+#include "base/rand_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
@@ -25,9 +29,9 @@
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 using blink::IndexedDBKeyPath;
-using leveldb::Status;
 
 namespace content::indexed_db {
 
@@ -47,6 +51,35 @@ class LDBComparator : public leveldb::Comparator {
                              const leveldb::Slice& limit) const override {}
   void FindShortSuccessor(std::string* key) const override {}
 };
+
+static std::atomic<base::Time> g_earliest_global_sweep = base::Time::Min();
+static std::atomic<base::Time> g_earliest_global_compaction = base::Time::Min();
+
+base::Time GenerateNextBucketSweepTime() {
+  constexpr base::TimeDelta kMin = base::Days(1);
+  static_assert(kMin < kMaxBucketSweepDelay);
+  return base::Time::Now() + base::RandTimeDelta(kMin, kMaxBucketSweepDelay);
+}
+
+base::Time GenerateNextGlobalSweepTime() {
+  constexpr base::TimeDelta kMin = base::Minutes(5);
+  static_assert(kMin < kMaxGlobalSweepDelay);
+  return base::Time::Now() + base::RandTimeDelta(kMin, kMaxGlobalSweepDelay);
+}
+
+base::Time GenerateNextBucketCompactionTime() {
+  constexpr base::TimeDelta kMin = base::Days(1);
+  static_assert(kMin < kMaxBucketCompactionDelay);
+  return base::Time::Now() +
+         base::RandTimeDelta(kMin, kMaxBucketCompactionDelay);
+}
+
+base::Time GenerateNextGlobalCompactionTime() {
+  constexpr base::TimeDelta kMin = base::Minutes(5);
+  static_assert(kMin < kMaxGlobalCompactionDelay);
+  return base::Time::Now() +
+         base::RandTimeDelta(kMin, kMaxGlobalCompactionDelay);
+}
 
 }  // namespace
 
@@ -97,24 +130,24 @@ std::string ReadCorruptionInfo(const base::FilePath& path_base,
   return message;
 }
 
-leveldb::Status InternalInconsistencyStatus() {
-  return leveldb::Status::Corruption("Internal inconsistency");
+Status InternalInconsistencyStatus() {
+  return Status::Corruption("Internal inconsistency");
 }
 
-leveldb::Status InvalidDBKeyStatus() {
-  return leveldb::Status::InvalidArgument("Invalid database key ID");
+Status InvalidDBKeyStatus() {
+  return Status::InvalidArgument("Invalid database key ID");
 }
 
-leveldb::Status IOErrorStatus() {
-  return leveldb::Status::IOError("IO Error");
+Status IOErrorStatus() {
+  return Status::IOError("IO Error");
 }
 
-leveldb::Status PutBool(TransactionalLevelDBTransaction* transaction,
-                        std::string_view key,
-                        bool value) {
+Status PutBool(TransactionalLevelDBTransaction* transaction,
+               std::string_view key,
+               bool value) {
   std::string buffer;
   EncodeBool(value, &buffer);
-  return transaction->Put(key, &buffer);
+  return Status(transaction->Put(key, &buffer));
 }
 
 template <typename DBOrTransaction>
@@ -123,7 +156,7 @@ Status GetVarInt(DBOrTransaction* db,
                  int64_t* found_int,
                  bool* found) {
   std::string result;
-  Status s = db->Get(key, &result, found);
+  Status s(db->Get(key, &result, found));
   if (!s.ok())
     return s;
   if (!*found)
@@ -145,25 +178,24 @@ template Status GetVarInt<TransactionalLevelDBDatabase>(
     bool* found);
 
 template <typename TransactionOrWriteBatch>
-leveldb::Status PutVarInt(TransactionOrWriteBatch* transaction_or_write_batch,
-                          std::string_view key,
-                          int64_t value) {
+Status PutVarInt(TransactionOrWriteBatch* transaction_or_write_batch,
+                 std::string_view key,
+                 int64_t value) {
   std::string buffer;
   EncodeVarInt(value, &buffer);
   return PutValue(transaction_or_write_batch, key, &buffer);
 }
-template leveldb::Status PutVarInt<TransactionalLevelDBTransaction>(
+template Status PutVarInt<TransactionalLevelDBTransaction>(
     TransactionalLevelDBTransaction* transaction,
     std::string_view key,
     int64_t value);
-template leveldb::Status PutVarInt<LevelDBDirectTransaction>(
+template Status PutVarInt<LevelDBDirectTransaction>(
     LevelDBDirectTransaction* transaction,
     std::string_view key,
     int64_t value);
-template leveldb::Status PutVarInt<LevelDBWriteBatch>(
-    LevelDBWriteBatch* transaction,
-    std::string_view key,
-    int64_t value);
+template Status PutVarInt<LevelDBWriteBatch>(LevelDBWriteBatch* transaction,
+                                             std::string_view key,
+                                             int64_t value);
 
 template <typename DBOrTransaction>
 Status GetString(DBOrTransaction* db,
@@ -172,7 +204,7 @@ Status GetString(DBOrTransaction* db,
                  bool* found) {
   std::string result;
   *found = false;
-  Status s = db->Get(key, &result, found);
+  Status s(db->Get(key, &result, found));
   if (!s.ok())
     return s;
   if (!*found)
@@ -194,20 +226,20 @@ template Status GetString<TransactionalLevelDBDatabase>(
     std::u16string* found_string,
     bool* found);
 
-leveldb::Status PutString(TransactionalLevelDBTransaction* transaction,
-                          std::string_view key,
-                          const std::u16string& value) {
+Status PutString(TransactionalLevelDBTransaction* transaction,
+                 std::string_view key,
+                 const std::u16string& value) {
   std::string buffer;
   EncodeString(value, &buffer);
-  return transaction->Put(key, &buffer);
+  return Status(transaction->Put(key, &buffer));
 }
 
-leveldb::Status PutIDBKeyPath(TransactionalLevelDBTransaction* transaction,
-                              std::string_view key,
-                              const IndexedDBKeyPath& value) {
+Status PutIDBKeyPath(TransactionalLevelDBTransaction* transaction,
+                     std::string_view key,
+                     const IndexedDBKeyPath& value) {
   std::string buffer;
   EncodeIDBKeyPath(value, &buffer);
-  return transaction->Put(key, &buffer);
+  return Status(transaction->Put(key, &buffer));
 }
 
 template <typename DBOrTransaction>
@@ -332,7 +364,7 @@ Status VersionExists(TransactionalLevelDBTransaction* transaction,
       ExistsEntryKey::Encode(database_id, object_store_id, encoded_primary_key);
   std::string data;
 
-  Status s = transaction->Get(key, &data, exists);
+  Status s(transaction->Get(key, &data, exists));
   if (!s.ok()) {
     INTERNAL_READ_ERROR(VERSION_EXISTS);
     return s;
@@ -424,8 +456,10 @@ bool FindGreatestKeyLessThanOrEqual(
     const std::string& target,
     std::string* found_key,
     Status* s) {
+  leveldb::Status status_out;
   std::unique_ptr<TransactionalLevelDBIterator> it =
-      transaction->CreateIterator(*s);
+      transaction->CreateIterator(status_out);
+  *s = status_out;
   if (!s->ok()) {
     INTERNAL_WRITE_ERROR(CREATE_ITERATOR);
     return false;
@@ -502,77 +536,62 @@ bool UpdateBlobNumberGeneratorCurrentNumber(
   const std::string key = DatabaseMetaDataKey::Encode(
       database_id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER);
 
-  leveldb::Status s =
+  Status s =
       PutVarInt(leveldb_transaction, key, blob_number_generator_current_number);
   return s.ok();
 }
 
-Status GetEarliestSweepTime(TransactionalLevelDBDatabase* db,
-                            base::Time* earliest_sweep) {
-  const std::string earliest_sweep_time_key = EarliestSweepKey::Encode();
-  *earliest_sweep = base::Time();
+base::Time GetEarliestSweepTime(TransactionalLevelDBDatabase* db) {
+  base::Time earliest = g_earliest_global_sweep.load();
   bool found = false;
-  int64_t time_micros = 0;
-  Status s = GetInt(db, earliest_sweep_time_key, &time_micros, &found);
-  if (!s.ok())
-    return s;
-  if (!found)
-    time_micros = 0;
-
-  DCHECK_GE(time_micros, 0);
-  *earliest_sweep += base::Microseconds(time_micros);
-
-  return s;
+  int64_t micros = 0;
+  Status s = GetInt(db, EarliestSweepKey::Encode(), &micros, &found);
+  if (s.ok() && found && micros > 0) {
+    return std::max(earliest, base::Time::FromDeltaSinceWindowsEpoch(
+                                  base::Microseconds(micros)));
+  }
+  return earliest;
 }
 
-template leveldb::Status SetEarliestSweepTime<TransactionalLevelDBTransaction>(
-    TransactionalLevelDBTransaction* db,
-    base::Time earliest_sweep);
-template leveldb::Status SetEarliestSweepTime<LevelDBDirectTransaction>(
-    LevelDBDirectTransaction* db,
-    base::Time earliest_sweep);
-
-template <typename Transaction>
-leveldb::Status SetEarliestSweepTime(Transaction* txn,
-                                     base::Time earliest_sweep) {
-  const std::string earliest_sweep_time_key = EarliestSweepKey::Encode();
-  int64_t time_micros = (earliest_sweep - base::Time()).InMicroseconds();
-  return PutInt(txn, earliest_sweep_time_key, time_micros);
+Status UpdateEarliestSweepTime(LevelDBDirectTransaction* txn) {
+  g_earliest_global_sweep = GenerateNextGlobalSweepTime();
+  return PutInt(txn, EarliestSweepKey::Encode(),
+                GenerateNextBucketSweepTime()
+                    .ToDeltaSinceWindowsEpoch()
+                    .InMicroseconds());
 }
 
-Status GetEarliestCompactionTime(TransactionalLevelDBDatabase* db,
-                                 base::Time* earliest_compaction) {
-  const std::string earliest_compaction_time_key =
-      EarliestCompactionKey::Encode();
-  *earliest_compaction = base::Time();
+base::Time GetEarliestCompactionTime(TransactionalLevelDBDatabase* db) {
+  base::Time earliest = g_earliest_global_compaction.load();
   bool found = false;
-  int64_t time_micros = 0;
-  Status s = GetInt(db, earliest_compaction_time_key, &time_micros, &found);
-  if (!s.ok())
-    return s;
-  if (!found)
-    time_micros = 0;
-
-  DCHECK_GE(time_micros, 0);
-  *earliest_compaction += base::Microseconds(time_micros);
-
-  return s;
+  int64_t micros = 0;
+  Status s = GetInt(db, EarliestCompactionKey::Encode(), &micros, &found);
+  if (s.ok() && found && micros > 0) {
+    return std::max(earliest, base::Time::FromDeltaSinceWindowsEpoch(
+                                  base::Microseconds(micros)));
+  }
+  return earliest;
 }
 
-template leveldb::Status SetEarliestCompactionTime<
-    TransactionalLevelDBTransaction>(TransactionalLevelDBTransaction* db,
-                                     base::Time earliest_compaction);
-template leveldb::Status SetEarliestCompactionTime<LevelDBDirectTransaction>(
-    LevelDBDirectTransaction* db,
-    base::Time earliest_compaction);
+Status UpdateEarliestCompactionTime(LevelDBDirectTransaction* txn) {
+  g_earliest_global_compaction = GenerateNextGlobalCompactionTime();
+  return PutInt(txn, EarliestCompactionKey::Encode(),
+                GenerateNextBucketCompactionTime()
+                    .ToDeltaSinceWindowsEpoch()
+                    .InMicroseconds());
+}
 
-template <typename Transaction>
-leveldb::Status SetEarliestCompactionTime(Transaction* txn,
-                                          base::Time earliest_compaction) {
-  const std::string earliest_compaction_time_key =
-      EarliestCompactionKey::Encode();
-  int64_t time_micros = (earliest_compaction - base::Time()).InMicroseconds();
-  return PutInt(txn, earliest_compaction_time_key, time_micros);
+void InitializeGlobalSweepAndCompactionTimes() {
+  base::Time sweep_min = base::Time::Min(), compaction_min = base::Time::Min();
+  g_earliest_global_sweep.compare_exchange_strong(
+      sweep_min, GenerateNextGlobalSweepTime());
+  g_earliest_global_compaction.compare_exchange_strong(
+      compaction_min, GenerateNextGlobalCompactionTime());
+}
+
+void ResetGlobalSweepAndCompactionTimesForTest() {
+  g_earliest_global_sweep = base::Time::Min();
+  g_earliest_global_compaction = base::Time::Min();
 }
 
 const leveldb::Comparator* GetDefaultLevelDBComparator() {

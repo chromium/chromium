@@ -45,7 +45,7 @@ using protocol::Response;
 
 namespace {
 
-std::optional<std::pair<FormData, FormFieldData>> FindFieldWithFormData(
+std::optional<FormData> FindFormDataWithField(
     autofill::ContentAutofillDriver* driver,
     autofill::FieldGlobalId id) {
   if (!driver) {
@@ -55,7 +55,7 @@ std::optional<std::pair<FormData, FormFieldData>> FindFieldWithFormData(
        driver->GetAutofillManager().form_structures()) {
     for (const auto& field : form->fields()) {
       if (field->global_id() == id) {
-        return std::make_pair(form->ToFormData(), FormFieldData(*field));
+        return form->ToFormData();
       }
     }
   }
@@ -124,7 +124,7 @@ protocol::Response AutofillHandler::Trigger(
       frame_token, autofill::FieldRendererId(field_id)};
 
   autofill::ContentAutofillDriver* autofill_driver = nullptr;
-  std::optional<std::pair<FormData, FormFieldData>> field_data;
+  std::optional<FormData> form;
   while (frame_rfh) {
     autofill_driver =
         autofill::ContentAutofillDriver::GetForRenderFrameHost(frame_rfh);
@@ -133,15 +133,15 @@ protocol::Response AutofillHandler::Trigger(
     // between the real Autofill flow triggered manually and Autofill triggered
     // over CDP. We should change how we find the form data and use the same
     // logic as used by AutofillDriverRouter.
-    if (std::optional<std::pair<FormData, FormFieldData>> rfh_field_data =
-            FindFieldWithFormData(autofill_driver, global_field_id)) {
-      field_data = std::move(rfh_field_data);
+    if (std::optional<FormData> rfh_form_data =
+            FindFormDataWithField(autofill_driver, global_field_id)) {
+      form = std::move(rfh_form_data);
     }
 
     frame_rfh = frame_rfh->GetParent();
   }
 
-  if (!field_data.has_value()) {
+  if (!form.has_value()) {
     return Response::InvalidRequest("Field not found");
   }
 
@@ -164,10 +164,8 @@ protocol::Response AutofillHandler::Trigger(
   static_cast<autofill::BrowserAutofillManager&>(
       autofill_driver->GetAutofillManager())
       .FillOrPreviewCreditCardForm(
-          autofill::mojom::ActionPersistence::kFill, field_data->first,
-          field_data->second, tmp_autofill_card,
-          base::UTF8ToUTF16(card->GetCvc()),
-          {.trigger_source = AutofillTriggerSource::kPopup});
+          autofill::mojom::ActionPersistence::kFill, *form, global_field_id,
+          tmp_autofill_card, {.trigger_source = AutofillTriggerSource::kPopup});
 
   return Response::Success();
 }

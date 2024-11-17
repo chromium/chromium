@@ -4,6 +4,8 @@
 
 #include "third_party/jni_zero/jni_zero.h"
 #ifdef JNI_ZERO_ENABLE_TYPE_CONVERSIONS
+#include <memory>
+
 #include "third_party/jni_zero/default_conversions.h"
 
 namespace jni_zero {

@@ -1,0 +1,25 @@
+<!--
+@AURALINUX-ALLOW:actions*
+@BLINK-ALLOW:actions*
+@BLINK-ALLOW:hasActions*
+@WIN-ALLOW:has-actions*
+@UIA-WIN-ALLOW:*hasactions=true*
+@EXECUTE-AND-WAIT-FOR:changeAriaActionsId()
+-->
+<div role="textbox" id="my-textbox" aria-actions="edit open delete">
+  your-file-name.pdf
+  <button id="edit">Edit</button>
+  <button id="open">Open</button>
+  <button id="close">Close</button>
+</div>
+<!-- aria-actions can point to non-descendant. -->
+<button id="delete">Delete</button>
+<script>
+  function changeAriaActionsId() {
+    const option = document.getElementById("my-textbox");
+    option.setAttribute('aria-actions', 'close');
+    document.title = "change-aria-action-id";
+    return "change-aria-action-id";
+  }
+</script>
+

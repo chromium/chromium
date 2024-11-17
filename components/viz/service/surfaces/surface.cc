@@ -484,7 +484,11 @@ std::optional<uint64_t> Surface::GetUncommitedFrameIndexNewerThan(
 void Surface::ResetPendingCopySurfaceId() {
   CHECK(pending_copy_surface_id_.is_valid());
   pending_copy_surface_id_ = SurfaceId();
-  RecomputeActiveReferencedSurfaces();
+  // It's an error to compute the surface references if the current surface does
+  // not have an active frame.
+  if (HasActiveFrame()) {
+    RecomputeActiveReferencedSurfaces();
+  }
 }
 
 void Surface::UpdateReferencedAllocationGroups(
@@ -817,11 +821,11 @@ bool Surface::IsVideoCaptureOnFromClient() {
   return surface_client_->IsVideoCaptureStarted();
 }
 
-base::flat_set<base::PlatformThreadId> Surface::GetThreadIds() {
+std::vector<Thread> Surface::GetThreads() {
   if (!surface_client_)
     return {};
 
-  return surface_client_->GetThreadIds();
+  return surface_client_->GetThreads();
 }
 
 void Surface::UnrefFrameResourcesAndRunCallbacks(

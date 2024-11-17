@@ -67,20 +67,18 @@
 #       Extra flags passed to the plugin. See cc_generator_options.
 #
 #   deps (optional)
-#       DEPRECATED: use proto_deps or link_deps instead (crbug.com/938011).
-#       Additional dependencies.
+#       This is used to specify deps to other proto_library targets containing
+#       imported proto files as sources from proto files in this target.
 #
 #   link_deps (optional)
-#       Additional dependencies linked to library.
+#       Additional deps for the generated C++ library.
+#
+#   link_public_deps (optional)
+#       Additional public_deps for the generated C++ library.
 #
 #   proto_deps (optional)
 #       Additional dependencies required before running protoc.
 #       e.g. proto file generating action.
-#
-#   proto_data_sources (optional)
-#       Additional proto sources that will only be used for references
-#       and will not be compiled.
-#       This should be used in conjunction with import_dirs.
 #
 #   use_protobuf_full (optional)
 #       If adding protobuf library would be required, adds protobuf_full to deps
@@ -353,9 +351,14 @@ template("proto_library") {
   }
 
   action_name = "${target_name}_gen"
+  input_config_name = "${target_name}_input_config"
   source_set_name = target_name
   javascript_name = "${target_name}_js"
   py_runtime_name = "${target_name}_py_runtime"
+
+  config(input_config_name) {
+    inputs = proto_sources
+  }
 
   # Generate protobuf stubs.
   action(action_name) {
@@ -455,10 +458,6 @@ template("proto_library") {
         rel_depfile,
       ]
     }
-    inputs = []
-    if (defined(invoker.proto_data_sources)) {
-      inputs += invoker.proto_data_sources
-    }
 
     if (defined(invoker.import_dirs)) {
       foreach(path, invoker.import_dirs) {
@@ -467,7 +466,7 @@ template("proto_library") {
     }
 
     # System protoc is not used so it's necessary to build a chromium one.
-    inputs += [ _protoc_path ]
+    inputs = [ _protoc_path ]
     deps = [ _protoc_label ]
 
     if (enable_js_protobuf) {
@@ -487,12 +486,21 @@ template("proto_library") {
       }
     }
 
+    public_configs = [ ":${input_config_name}" ]
+    public_deps = []
+
     # The deps may have steps that have to run before running protoc.
     if (defined(invoker.proto_deps)) {
-      deps += invoker.proto_deps
+      public_deps += invoker.proto_deps
     }
     if (defined(invoker.deps)) {
-      deps += invoker.deps
+      public_deps += invoker.deps
+
+      # This is to propagate input deps for imported proto to ancestor targets.
+      foreach(dep, invoker.deps) {
+        canonicalized_dep = get_label_info(dep, "label_no_toolchain")
+        public_configs += [ "${canonicalized_dep}_input_config" ]
+      }
     }
   }
 
@@ -626,6 +634,9 @@ template("proto_library") {
     }
     if (defined(invoker.link_deps)) {
       deps += invoker.link_deps
+    }
+    if (defined(invoker.link_public_deps)) {
+      public_deps += invoker.link_public_deps
     }
   }
 

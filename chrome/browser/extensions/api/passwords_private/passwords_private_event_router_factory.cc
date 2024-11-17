@@ -44,9 +44,10 @@ PasswordsPrivateEventRouterFactory::PasswordsPrivateEventRouterFactory()
 PasswordsPrivateEventRouterFactory::~PasswordsPrivateEventRouterFactory() =
     default;
 
-KeyedService* PasswordsPrivateEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PasswordsPrivateEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new PasswordsPrivateEventRouter(context);
+  return std::make_unique<PasswordsPrivateEventRouter>(context);
 }
 
 bool PasswordsPrivateEventRouterFactory::

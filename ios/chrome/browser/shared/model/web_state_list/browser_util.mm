@@ -78,13 +78,11 @@ void MoveTabToBrowser(web::WebStateID tab_id,
                       Browser* destination_browser,
                       WebStateList::InsertionParams params) {
   DCHECK(tab_id.valid());
-  ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
+  ProfileIOS* profile = destination_browser->GetProfile();
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   const BrowserList::BrowserType browser_types =
-      browser_state->IsOffTheRecord()
-          ? BrowserList::BrowserType::kIncognito
-          : BrowserList::BrowserType::kRegularAndInactive;
+      profile->IsOffTheRecord() ? BrowserList::BrowserType::kIncognito
+                                : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   BrowserAndIndex tab_info = FindBrowserAndIndex(tab_id, browsers);

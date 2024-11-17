@@ -982,14 +982,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*matches_all_origins*/ false,
             {std::string(kTopLevelUrl), std::string(kCrossOriginFrameUrl)},
             PermissionHeaderPolicyForUMA::
-                FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN},
-
-        PermissionsDelegationTestConfig{
-            ContentSettingsType::ACCESSIBILITY_EVENTS, PermissionAction::DENIED,
-            /*feature_overriden*/ std::nullopt,
-            /*matches_all_origins*/ true,
-            /*origins*/ {},
-            /*expected_configuration*/ std::nullopt}));
+                FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN}));
 
 class UkmRecorderPermissionUmaUtilTest
     : public content::RenderViewHostTestHarness {

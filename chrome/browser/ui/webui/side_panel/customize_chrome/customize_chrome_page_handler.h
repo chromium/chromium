@@ -107,6 +107,9 @@ class CustomizeChromePageHandler
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;
   void GetBackgroundCollections(
       GetBackgroundCollectionsCallback callback) override;
+  void GetReplacementCollectionPreviewImage(
+      const std::string& collection_id,
+      GetReplacementCollectionPreviewImageCallback callback) override;
   void GetBackgroundImages(const std::string& collection_id,
                            GetBackgroundImagesCallback callback) override;
   void ChooseLocalCustomBackground(

@@ -233,13 +233,14 @@ bool WriteJPEGFile(const base::FilePath& path,
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(color);
-  std::vector<unsigned char> output;
-  if (!gfx::JPEGCodec::Encode(bitmap, 80 /*quality*/, &output)) {
+  std::optional<std::vector<uint8_t>> output =
+      gfx::JPEGCodec::Encode(bitmap, 80 /*quality*/);
+  if (!output) {
     LOG(ERROR) << "Unable to encode " << width << "x" << height << " bitmap";
     return false;
   }
 
-  if (!base::WriteFile(path, output)) {
+  if (!base::WriteFile(path, output.value())) {
     LOG(ERROR) << "Writing to " << path.value() << " failed.";
     return false;
   }
@@ -1096,7 +1097,7 @@ TEST_P(WallpaperControllerTest, Client) {
   EXPECT_EQ(1u, client_.open_count());
 }
 
-TEST_P(WallpaperControllerTest, BasicReparenting) {
+TEST_P(WallpaperControllerTest, BasicReparentingAndLayerOpacity) {
   WallpaperControllerImpl* controller = Shell::Get()->wallpaper_controller();
   controller->CreateEmptyWallpaperForTesting();
 
@@ -1104,18 +1105,22 @@ TEST_P(WallpaperControllerTest, BasicReparenting) {
   // the lock screen wallpaper container.
   EXPECT_EQ(1, ChildCountForContainer(kWallpaperId));
   EXPECT_EQ(0, ChildCountForContainer(kLockScreenWallpaperId));
+  EXPECT_TRUE(wallpaper_view()->layer()->fills_bounds_opaquely());
 
   controller->OnSessionStateChanged(session_manager::SessionState::LOCKED);
 
   // One window is moved from desktop to lock container.
   EXPECT_EQ(0, ChildCountForContainer(kWallpaperId));
   EXPECT_EQ(1, ChildCountForContainer(kLockScreenWallpaperId));
+  // The wallpaper's layer should be non opaque in locked state.
+  EXPECT_FALSE(wallpaper_view()->layer()->fills_bounds_opaquely());
 
   controller->OnSessionStateChanged(session_manager::SessionState::ACTIVE);
 
   // One window is moved from lock to desktop container.
   EXPECT_EQ(1, ChildCountForContainer(kWallpaperId));
   EXPECT_EQ(0, ChildCountForContainer(kLockScreenWallpaperId));
+  EXPECT_TRUE(wallpaper_view()->layer()->fills_bounds_opaquely());
 }
 
 TEST_P(WallpaperControllerTest, SwitchWallpapersWhenNewWallpaperAnimationEnds) {
@@ -2282,31 +2287,29 @@ TEST_P(WallpaperControllerTest, ShowSeaPenWallpaperOnLogin) {
 }
 
 TEST_P(WallpaperControllerTest, LoadsSeaPenWallpaperWithInvalidUserFilePath) {
+  SimulateUserLogin(kAccountId1);
+
+  gfx::ImageSkia expected_image;
+  SetSeaPenWallpaper(kAccountId1, SK_ColorBLUE, 888u, /*preview_mode=*/false,
+                     &expected_image);
+
+  WallpaperInfo wallpaper_info;
+  EXPECT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+
   // info.user_file_path should be ignored, but older versions may have invalid
   // strings in it. Write an older WallpaperInfo to prefs.
   ASSERT_TRUE(pref_manager_->SetUserWallpaperInfo(
-      kAccountId1, WallpaperInfo("1", WALLPAPER_LAYOUT_CENTER_CROPPED,
+      kAccountId1, WallpaperInfo(wallpaper_info.location, wallpaper_info.layout,
                                  WallpaperType::kSeaPen, base::Time::Now(),
-                                 "invalid_user_file_path.jpg")));
-
-  gfx::ImageSkia created_image;
-  {
-    // Write a corresponding jpg to disk in the correct place.
-    std::string jpg_bytes = CreateEncodedImageForTesting(
-        {1, 1}, SK_ColorBLUE, data_decoder::mojom::ImageCodec::kDefault,
-        &created_image);
-    ASSERT_FALSE(jpg_bytes.empty());
-
-    base::test::TestFuture<bool> save_sea_pen_image_future;
-    SeaPenWallpaperManager::GetInstance()->SaveSeaPenImage(
-        kAccountId1, {std::move(jpg_bytes), 1u},
-        personalization_app::mojom::SeaPenQuery::NewTextQuery("search_query"),
-        save_sea_pen_image_future.GetCallback());
-
-    ASSERT_TRUE(save_sea_pen_image_future.Get());
-  }
+                                 "invalid_user_file_path")));
 
   {
+    // Simulates device reboot.
+    controller_->ReloadWallpaperForTesting(/*clear_cache=*/true);
+    ClearWallpaper();
+    ClearLogin();
+
     // Log in.
     SimulateUserLogin(kAccountId1);
     controller_->ShowUserWallpaper(kAccountId1);
@@ -2314,7 +2317,7 @@ TEST_P(WallpaperControllerTest, LoadsSeaPenWallpaperWithInvalidUserFilePath) {
   }
 
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      *created_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
+      *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
       /*max_deviation=*/1));
 }
 
@@ -2433,103 +2436,6 @@ TEST_P(WallpaperControllerTest, ConfirmSetSeaPenWallpaperInTabletMode) {
                      .Append("777")
                      .AddExtension(".jpg")}),
             wallpaper_files);
-}
-
-TEST_P(WallpaperControllerTest, SeaPenMigrateFiles) {
-  constexpr std::array<uint32_t, 2> kImageIds = {888, 999};
-
-  const auto global_sea_pen_dir =
-      online_wallpaper_dir_.GetPath()
-          .Append(wallpaper_constants::kSeaPenWallpaperDirName)
-          .Append(kAccountId1.GetAccountIdKey());
-  ASSERT_TRUE(base::CreateDirectory(global_sea_pen_dir));
-
-  {
-    // Write files to the global SeaPen directory.
-    for (const auto id : kImageIds) {
-      ResizeAndSaveWallpaper(
-          gfx::test::CreateImageSkia(2),
-          global_sea_pen_dir.Append(base::NumberToString(id))
-              .AddExtension(".jpg"),
-          WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, {2, 2},
-          QueryDictToXmpString(SeaPenQueryToDict(
-              personalization_app::mojom::SeaPenQuery::NewTextQuery(
-                  "testing query"))));
-    }
-
-    // Set the first one as the user's wallpaper info.
-    ASSERT_TRUE(pref_manager_->SetUserWallpaperInfo(
-        kAccountId1, WallpaperInfo(base::NumberToString(kImageIds.front()),
-                                   WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                   WallpaperType::kSeaPen, base::Time::Now())));
-  }
-
-  {
-    // SeaPenWallpaperManager sees no files since they are not yet migrated.
-    base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
-    SeaPenWallpaperManager::GetInstance()->GetImageIds(
-        kAccountId1, get_image_ids_future.GetCallback());
-    ASSERT_TRUE(get_image_ids_future.Get().empty());
-  }
-
-  ASSERT_TRUE(
-      SeaPenWallpaperManager::GetInstance()->ShouldMigrate(kAccountId1));
-
-  PrefChangeRegistrar pref_change_registrar;
-  auto* pref_service = SeaPenWallpaperManager::GetInstance()
-                           ->session_delegate_for_testing()
-                           ->GetPrefService(kAccountId1);
-  pref_change_registrar.Init(pref_service);
-  base::test::RepeatingTestFuture<const std::string&> pref_changed_future;
-  pref_change_registrar.Add(prefs::kWallpaperSeaPenMigrationStatus,
-                            pref_changed_future.GetCallback());
-
-  SimulateUserLogin(kAccountId1);
-
-  {
-    // Writes kCrashed first.
-    ASSERT_EQ(prefs::kWallpaperSeaPenMigrationStatus,
-              pref_changed_future.Take());
-    EXPECT_FALSE(
-        SeaPenWallpaperManager::GetInstance()->ShouldMigrate(kAccountId1));
-    EXPECT_EQ(
-        SeaPenWallpaperManager::MigrationStatus::kCrashed,
-        static_cast<SeaPenWallpaperManager::MigrationStatus>(
-            pref_service->GetInteger(prefs::kWallpaperSeaPenMigrationStatus)));
-
-    // Performs migration and then writes kSuccess.
-    ASSERT_EQ(prefs::kWallpaperSeaPenMigrationStatus,
-              pref_changed_future.Take());
-    EXPECT_FALSE(
-        SeaPenWallpaperManager::GetInstance()->ShouldMigrate(kAccountId1));
-    EXPECT_EQ(
-        SeaPenWallpaperManager::MigrationStatus::kSuccess,
-        static_cast<SeaPenWallpaperManager::MigrationStatus>(
-            pref_service->GetInteger(prefs::kWallpaperSeaPenMigrationStatus)));
-  }
-
-  {
-    // SeaPenWallpaperManager sees files since they have been migrated;
-    base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
-    SeaPenWallpaperManager::GetInstance()->GetImageIds(
-        kAccountId1, get_image_ids_future.GetCallback());
-    EXPECT_THAT(get_image_ids_future.Get(),
-                testing::UnorderedElementsAreArray(kImageIds));
-  }
-
-  RunAllTasksUntilIdle();
-
-  {
-    // The active wallpaper is copied back to the global directory.
-    EXPECT_TRUE(base::PathExists(
-        global_sea_pen_dir.Append(base::NumberToString(kImageIds.front()))
-            .AddExtension(".jpg")));
-
-    // The inactive file is not copied back.
-    EXPECT_FALSE(base::PathExists(
-        global_sea_pen_dir.Append(base::NumberToString(kImageIds.back()))
-            .AddExtension(".jpg")));
-  }
 }
 
 TEST_P(WallpaperControllerTest, SetSeaPenWallpaperForPublicAccount) {

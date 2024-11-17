@@ -6,7 +6,6 @@
 #include "chrome/browser/ui/chromeos/test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -104,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(NonClientFrameViewTest,
   // entering tablet mode so that there isn't a delay.
   ASSERT_TRUE(base::test::RunUntil([&]() { return widget()->IsActive(); }));
 
-  SnapWindow(window(), crosapi::mojom::SnapPosition::kPrimary);
+  SnapWindow(window(), ash::SnapPosition::kPrimary);
 
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             window()->GetProperty(chromeos::kWindowStateTypeKey));

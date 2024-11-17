@@ -43,7 +43,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -51,6 +50,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.PassthroughTabUngrouper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo;
@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileI
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
+import org.chromium.chrome.browser.tabmodel.TabUngrouperFactory;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
@@ -415,6 +416,7 @@ public class CustomTabTabPersistencePolicyTest {
                     // This is intended to pretend we've started the activity, so we can attach a
                     // base context to the activity.
                     @Override
+                    @SuppressWarnings("MissingSuperCall")
                     public void onStart() {
                         attachBaseContext(mAppContext);
                     }
@@ -435,15 +437,18 @@ public class CustomTabTabPersistencePolicyTest {
 
         CustomTabsTabModelOrchestrator orchestrator = new CustomTabsTabModelOrchestrator();
         orchestrator.createTabModels(
+                mAppContext,
                 profileProviderSupplier,
                 customTabActivity,
-                new ChromeTabModelFilterFactory(customTabActivity),
                 buildTestPersistencePolicy(),
                 ActivityType.CUSTOM_TAB,
                 AsyncTabParamsManagerSingleton.getInstance(),
                 new CipherFactory());
         TabModelSelectorImpl selector = (TabModelSelectorImpl) orchestrator.getTabModelSelector();
-        selector.initializeForTesting(normalTabModel, incognitoTabModel);
+        TabUngrouperFactory factory =
+                (isIncognitoBranded, tabGroupModelFilterSupplier) ->
+                        new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
+        selector.initializeForTesting(normalTabModel, incognitoTabModel, factory);
         ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.DESTROYED);
         ApplicationStatus.unregisterActivityStateListener(stateListener);
         return selector;

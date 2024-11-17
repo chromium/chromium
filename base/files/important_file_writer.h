@@ -11,6 +11,8 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -103,7 +105,7 @@ class BASE_EXPORT ImportantFileWriter {
   // of destruction.
   ~ImportantFileWriter();
 
-  const FilePath& path() const { return path_; }
+  const FilePath& path() const LIFETIME_BOUND { return path_; }
 
   // Returns true if there is a scheduled write pending which has not yet
   // been started.
@@ -154,11 +156,18 @@ class BASE_EXPORT ImportantFileWriter {
     previous_data_size_ = previous_data_size;
   }
 
+  // Allows tests to call the given callback instead of ReplaceFile().
+  using ReplaceFileCallback =
+      RepeatingCallback<bool(const FilePath&, const FilePath&, File::Error*)>;
+  void SetReplaceFileCallbackForTesting(ReplaceFileCallback callback);
+
  private:
-  const OneShotTimer& timer() const {
+  const OneShotTimer& timer() const LIFETIME_BOUND {
     return timer_override_ ? *timer_override_ : timer_;
   }
-  OneShotTimer& timer() { return timer_override_ ? *timer_override_ : timer_; }
+  OneShotTimer& timer() LIFETIME_BOUND {
+    return timer_override_ ? *timer_override_ : timer_;
+  }
 
   // Same as WriteNow() but it uses a promise-like signature that allows running
   // custom logic in the background sequence.
@@ -172,6 +181,7 @@ class BASE_EXPORT ImportantFileWriter {
       BackgroundDataProducerCallback data_producer_for_background_sequence,
       OnceClosure before_write_callback,
       OnceCallback<void(bool success)> after_write_callback,
+      ReplaceFileCallback replace_file_callback,
       const std::string& histogram_suffix);
 
   // Writes |data| to |path|, recording histograms with an optional
@@ -179,10 +189,12 @@ class BASE_EXPORT ImportantFileWriter {
   // from an instance of ImportantFileWriter or a direct call to
   // WriteFileAtomically. When false, the directory containing |path| is added
   // to the set cleaned by the ImportantFileWriterCleaner (Windows only).
-  static bool WriteFileAtomicallyImpl(const FilePath& path,
-                                      std::string_view data,
-                                      std::string_view histogram_suffix,
-                                      bool from_instance);
+  static bool WriteFileAtomicallyImpl(
+      const FilePath& path,
+      std::string_view data,
+      std::string_view histogram_suffix,
+      bool from_instance,
+      ReplaceFileCallback replace_file_callback);
 
   void ClearPendingWrite();
 
@@ -216,6 +228,8 @@ class BASE_EXPORT ImportantFileWriter {
   // preallocating memory for the data serialization. It is only used for
   // scheduled writes.
   size_t previous_data_size_ = 0;
+
+  ReplaceFileCallback replace_file_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

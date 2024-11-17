@@ -17,7 +17,7 @@
 #include "base/functional/function_ref.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
-#include "base/types/optional_util.h"
+#include "base/types/optional_ref.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/addition_overlaps_union_find.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -165,15 +165,12 @@ GlobalFirstPartySets::FindEntries(
 
 FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
     const SchemefulSite& site,
-    const SchemefulSite* top_frame_site,
+    base::optional_ref<const SchemefulSite> top_frame_site,
     const FirstPartySetsContextConfig& fps_context_config) const {
-  std::optional<FirstPartySetEntry> top_frame_entry =
-      top_frame_site ? FindEntry(*top_frame_site, fps_context_config)
-                     : std::nullopt;
-
   return FirstPartySetMetadata(
-      base::OptionalToPtr(FindEntry(site, fps_context_config)),
-      base::OptionalToPtr(top_frame_entry));
+      FindEntry(site, fps_context_config),
+      top_frame_site ? FindEntry(*top_frame_site, fps_context_config)
+                     : std::nullopt);
 }
 
 void GlobalFirstPartySets::ApplyManuallySpecifiedSet(

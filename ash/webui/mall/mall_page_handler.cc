@@ -16,8 +16,9 @@ MallPageHandler::MallPageHandler(
 
 MallPageHandler::~MallPageHandler() = default;
 
-void MallPageHandler::GetMallEmbedUrl(GetMallEmbedUrlCallback callback) {
-  delegate_.get().GetMallEmbedUrl(std::move(callback));
+void MallPageHandler::GetMallEmbedUrl(const std::string& path,
+                                      GetMallEmbedUrlCallback callback) {
+  delegate_.get().GetMallEmbedUrl(path, std::move(callback));
 }
 
 }  // namespace ash

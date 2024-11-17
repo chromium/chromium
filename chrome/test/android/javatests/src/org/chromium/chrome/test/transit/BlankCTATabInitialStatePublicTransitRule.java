@@ -49,7 +49,7 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
      */
     public WebPageStation startOnBlankPage() {
         // Null in the first test, non-null from the second test onwards.
-        Station homeStation = mBatchedRule.getHomeStation();
+        Station<?> homeStation = mBatchedRule.getHomeStation();
         if (homeStation == null) {
             EntryPointSentinelStation entryPoint = new EntryPointSentinelStation();
             entryPoint.setAsEntryPoint();

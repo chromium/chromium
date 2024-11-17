@@ -4,8 +4,9 @@
 
 import './app.js';
 
-export {BrowserProxyImpl as ShoppingBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-export {PageCallbackRouter as ShoppingPageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+export {PageCallbackRouter as ProductSpecificationsCallbackRouter} from 'chrome://resources/cr_components/commerce/product_specifications.mojom-webui.js';
+export {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+export {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 export {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 export {ClusterAction, PageCallbackRouter, PageHandlerRemote, RelatedSearchAction, VisitAction, VisitType} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 export {MetricsProxy, MetricsProxyImpl} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';
@@ -22,7 +23,7 @@ export {ensureLazyLoaded, HistoryAppElement, listenForPrivilegedLinkClicks} from
 export {BrowserService, BrowserServiceImpl, QueryResult, RemoveVisitsRequest} from './browser_service.js';
 export {HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 export {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryEntry, HistoryQuery} from './externs.js';
-export {HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, HistoryEmbeddingsPromoElement} from './history_embeddings_promo.js';
+export {HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY, HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, HistoryEmbeddingsPromoElement} from './history_embeddings_promo.js';
 export {HistoryItemElement} from './history_item.js';
 export {ActionMenuModel, HistoryListElement} from './history_list.js';
 export {HistoryToolbarElement} from './history_toolbar.js';

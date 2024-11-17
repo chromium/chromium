@@ -145,7 +145,7 @@ public final class BrowsingDataBridge {
         BrowsingDataBridgeJni.get()
                 .clearBrowsingData(
                         BrowsingDataBridge.this,
-                        mProfile.getPrimaryOTRProfile(/* createIfNeeded= */ true),
+                        mProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true),
                         listener,
                         dataTypes,
                         timePeriod,

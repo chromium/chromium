@@ -53,13 +53,6 @@ void SupervisedUserService::Init() {
       prefs::kSupervisedUserId,
       base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
                           base::Unretained(this)));
-  FirstTimeInterstitialBannerState banner_state =
-      static_cast<FirstTimeInterstitialBannerState>(
-          user_prefs_->GetInteger(prefs::kFirstTimeInterstitialBannerState));
-  banner_state = GetUpdatedBannerState(banner_state);
-
-  user_prefs_->SetInteger(prefs::kFirstTimeInterstitialBannerState,
-                          static_cast<int>(banner_state));
   SetActive(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
 }
 
@@ -134,35 +127,15 @@ SupervisedUserService::SupervisedUserService(
     SupervisedUserSettingsService& settings_service,
     syncer::SyncService* sync_service,
     std::unique_ptr<SupervisedUserURLFilter::Delegate> url_filter_delegate,
-    std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate,
-    bool can_show_first_time_interstitial_banner)
+    std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate)
     : user_prefs_(user_prefs),
       settings_service_(settings_service),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
-      platform_delegate_(std::move(platform_delegate)),
-      can_show_first_time_interstitial_banner_(
-          can_show_first_time_interstitial_banner) {
+      platform_delegate_(std::move(platform_delegate)) {
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
       user_prefs, std::move(url_filter_delegate));
-}
-
-FirstTimeInterstitialBannerState SupervisedUserService::GetUpdatedBannerState(
-    const FirstTimeInterstitialBannerState original_state) {
-  FirstTimeInterstitialBannerState target_state = original_state;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_IOS)
-  if (original_state != FirstTimeInterstitialBannerState::kSetupComplete &&
-      can_show_first_time_interstitial_banner_) {
-    target_state = FirstTimeInterstitialBannerState::kNeedToShow;
-  } else {
-    target_state = FirstTimeInterstitialBannerState::kSetupComplete;
-  }
-#else
-  target_state = FirstTimeInterstitialBannerState::kSetupComplete;
-#endif
-  return target_state;
 }
 
 void SupervisedUserService::SetActive(bool active) {
@@ -345,18 +318,4 @@ void SupervisedUserService::Shutdown() {
   SetActive(false);
 }
 
-void SupervisedUserService::MarkFirstTimeInterstitialBannerShown() const {
-  if (ShouldShowFirstTimeInterstitialBanner()) {
-    user_prefs_->SetInteger(
-        prefs::kFirstTimeInterstitialBannerState,
-        static_cast<int>(FirstTimeInterstitialBannerState::kSetupComplete));
-  }
-}
-
-bool SupervisedUserService::ShouldShowFirstTimeInterstitialBanner() const {
-  FirstTimeInterstitialBannerState banner_state =
-      static_cast<FirstTimeInterstitialBannerState>(
-          user_prefs_->GetInteger(prefs::kFirstTimeInterstitialBannerState));
-  return banner_state == FirstTimeInterstitialBannerState::kNeedToShow;
-}
 }  // namespace supervised_user

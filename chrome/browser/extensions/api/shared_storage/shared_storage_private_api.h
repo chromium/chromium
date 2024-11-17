@@ -5,30 +5,19 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_SHARED_STORAGE_SHARED_STORAGE_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_SHARED_STORAGE_SHARED_STORAGE_PRIVATE_API_H_
 
-#include <string>
-#include <vector>
-
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_function.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include <optional>
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PrefRegistrySimple;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace shared_storage {
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 }  // namespace shared_storage
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Used by gnubbyd in ash and lacros.  Stores small amounts of data in ash prefs
+// Used by gnubbyd in ChromeOS.  Stores small amounts of data in ash prefs
 // which is shared by ash and lacros versions of the extension.
 // TODO(b/231890240): Once Terminal SWA runs in lacros rather than ash, we can
 // migrate gnubbyd back to using chrome.storage.local and remove this private
@@ -49,9 +38,6 @@ class SharedStoragePrivateGetFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGet(std::optional<base::Value> storage);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 class SharedStoragePrivateSetFunction : public ExtensionFunction {
@@ -70,10 +56,6 @@ class SharedStoragePrivateSetFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGet(base::Value::Dict to_add, std::optional<base::Value> items);
-  void OnSet();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 class SharedStoragePrivateRemoveFunction : public ExtensionFunction {
@@ -92,10 +74,6 @@ class SharedStoragePrivateRemoveFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGet(std::vector<std::string> keys, std::optional<base::Value> storage);
-  void OnSet();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 }  // namespace extensions

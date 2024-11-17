@@ -18,7 +18,7 @@ class AutofillWebDataServiceObserverOnDBSequence;
 // Sync, mostly), without fully exposing the AutofillWebDataBackend to clients.
 class AutofillWebDataBackend {
  public:
-  virtual ~AutofillWebDataBackend() {}
+  virtual ~AutofillWebDataBackend() = default;
 
   // Get a raw pointer to the WebDatabase.
   virtual WebDatabase* GetDatabase() = 0;

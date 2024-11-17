@@ -35,7 +35,7 @@ public class WakeLockTest {
         try {
             mActivityTestRule.launchContentShellWithUrlSync(TEST_PATH);
         } catch (Throwable t) {
-            Assert.fail("Couldn't load test page.");
+            throw new AssertionError("Couldn't load test page.", t);
         }
     }
 

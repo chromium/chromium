@@ -60,9 +60,7 @@ class ProtobufHttpClient final {
 
   void DoExecuteRequest(std::unique_ptr<ProtobufHttpRequestBase> request,
                         OAuthTokenGetter::Status status,
-                        const std::string& user_email,
-                        const std::string& access_token,
-                        const std::string& scopes);
+                        const OAuthTokenInfo& token_info);
 
   void CancelRequest(const PendingRequestListIterator& request_iterator);
 

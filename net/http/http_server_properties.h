@@ -31,11 +31,11 @@
 #include "net/base/privacy_mode.h"
 #include "net/http/alternative_service.h"
 #include "net/http/broken_alternative_services.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_framer.h"  // TODO(willchan): Reconsider this.
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_bandwidth.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"  // TODO(willchan): Reconsider this.
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "url/scheme_host_port.h"
 
 namespace base {

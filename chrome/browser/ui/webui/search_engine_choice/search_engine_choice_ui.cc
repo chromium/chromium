@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
@@ -39,13 +38,11 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace {
-std::string GetChoiceListJSON(Profile& profile) {
+std::string GetChoiceListJSON(
+    SearchEngineChoiceDialogService& search_engine_choice_dialog_service) {
   base::Value::List choice_value_list;
-  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile);
-  CHECK(search_engine_choice_dialog_service);
   const TemplateURL::TemplateURLVector choices =
-      search_engine_choice_dialog_service->GetSearchEngines();
+      search_engine_choice_dialog_service.GetSearchEngines();
 
   for (const auto& choice : choices) {
     base::Value::Dict choice_value;
@@ -69,6 +66,12 @@ std::string GetChoiceListJSON(Profile& profile) {
   return json_choice_list;
 }
 }  // namespace
+
+bool SearchEngineChoiceUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
+}
 
 SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true),
@@ -117,15 +120,22 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddResourcePath("images/right_illustration_dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
   source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
-  source->AddResourcePath("tangible_sync_style_shared_lit.css.js",
-                          IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_LIT_CSS_JS);
+  source->AddResourcePath("tangible_sync_style_shared.css.js",
+                          IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
-  source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
-  source->AddBoolean("showGuestCheckbox",
-                     base::FeatureList::IsEnabled(
-                         switches::kSearchEngineChoiceGuestExperience) &&
-                         profile_->IsGuestSession());
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile_.get());
+  source->AddString(
+      "choiceList",
+      GetChoiceListJSON(CHECK_DEREF(search_engine_choice_dialog_service)));
+
+  search_engines::SearchEngineChoiceService* search_engine_choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          &profile_.get());
+  source->AddBoolean(
+      "showGuestCheckbox",
+      search_engine_choice_service->IsProfileEligibleForDseGuestPropagation());
 
   webui::SetupWebUIDataSource(
       source,

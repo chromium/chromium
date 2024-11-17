@@ -109,9 +109,6 @@ bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   PasswordFeatureManager* feature_manager =
       delegate_->GetPasswordFeatureManager();
-  if (!feature_manager->ShouldShowAccountStorageBubbleUi()) {
-    return false;
-  }
   if (!feature_manager->IsOptedInForAccountStorage()) {
     return false;
   }

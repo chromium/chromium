@@ -86,43 +86,19 @@ const int64_t kSecondsPerMinute = 60;
 
 constexpr int kDefaultPrioritizeCompositingAfterDelayMs = 100;
 
-v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
-  switch (rail_mode) {
-    case RAILMode::kResponse:
-      return v8::RAILMode::PERFORMANCE_RESPONSE;
-    case RAILMode::kAnimation:
-      return v8::RAILMode::PERFORMANCE_ANIMATION;
-    case RAILMode::kIdle:
-      return v8::RAILMode::PERFORMANCE_IDLE;
-    case RAILMode::kLoad:
-      return v8::RAILMode::PERFORMANCE_LOAD;
-    default:
-      NOTREACHED_IN_MIGRATION();
-  }
-}
-
 void AddRAILModeToProto(perfetto::protos::pbzero::TrackEvent* event,
                         RAILMode mode) {
-  perfetto::protos::pbzero::ChromeRAILMode proto_mode;
+  using perfetto::protos::pbzero::ChromeRAILMode;
+  auto* scheduler_state = event->set_chrome_renderer_scheduler_state();
   switch (mode) {
-    case RAILMode::kResponse:
-      proto_mode = perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_RESPONSE;
-      break;
-    case RAILMode::kAnimation:
-      proto_mode =
-          perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_ANIMATION;
-      break;
-    case RAILMode::kIdle:
-      proto_mode = perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_IDLE;
-      break;
+    case RAILMode::kDefault:
+      scheduler_state->set_rail_mode(ChromeRAILMode::RAIL_MODE_IDLE);
+      return;
     case RAILMode::kLoad:
-      proto_mode = perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_LOAD;
-      break;
-    default:
-      proto_mode = perfetto::protos::pbzero::ChromeRAILMode::RAIL_MODE_NONE;
-      break;
+      scheduler_state->set_rail_mode(ChromeRAILMode::RAIL_MODE_LOAD);
+      return;
   }
-  event->set_chrome_renderer_scheduler_state()->set_rail_mode(proto_mode);
+  NOTREACHED();
 }
 
 void AddBackgroundedToProto(perfetto::protos::pbzero::TrackEvent* event,
@@ -151,8 +127,7 @@ const char* RendererProcessTypeToString(WebRendererProcessType process_type) {
     case WebRendererProcessType::kExtensionRenderer:
       return "extension";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";  // MSVC needs that.
+  NOTREACHED();
 }
 
 const char* OptionalTaskDescriptionToString(
@@ -199,8 +174,7 @@ const char* InputEventStateToString(
     case WidgetScheduler::InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD:
       return "event_forwarded_to_main_thread";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -817,19 +791,6 @@ void MainThreadSchedulerImpl::ShutdownEmptyDetachedTaskQueues() {
   }
 }
 
-// TODO(sreejakshetty): Cleanup NewLoadingTaskQueue.
-scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewLoadingTaskQueue(
-    MainThreadTaskQueue::QueueType queue_type,
-    FrameSchedulerImpl* frame_scheduler) {
-  DCHECK(queue_type == MainThreadTaskQueue::QueueType::kFrameLoading ||
-         queue_type == MainThreadTaskQueue::QueueType::kFrameLoadingControl);
-  return NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(queue_type)
-                          .SetCanBePaused(true)
-                          .SetCanBeFrozen(true)
-                          .SetCanBeDeferred(true)
-                          .SetFrameScheduler(frame_scheduler));
-}
-
 scoped_refptr<MainThreadTaskQueue>
 MainThreadSchedulerImpl::NewThrottleableTaskQueueForTest(
     FrameSchedulerImpl* frame_scheduler) {
@@ -1105,12 +1066,6 @@ void MainThreadSchedulerImpl::EndIdlePeriodForTesting(
 
 bool MainThreadSchedulerImpl::PolicyNeedsUpdateForTesting() {
   return policy_may_need_update_.IsSet();
-}
-
-void MainThreadSchedulerImpl::SetHaveSeenABlockingGestureForTesting(
-    bool status) {
-  base::AutoLock lock(any_thread_lock_);
-  any_thread().have_seen_a_blocking_gesture = status;
 }
 
 void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
@@ -1523,7 +1478,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   main_thread_only().rail_mode_for_tracing = new_policy.rail_mode;
   if (new_policy.rail_mode != main_thread_only().current_policy.rail_mode) {
     if (isolate()) {
-      isolate()->SetRAILMode(RAILModeToV8RAILMode(new_policy.rail_mode));
+      isolate()->SetIsLoading(new_policy.rail_mode == RAILMode::kLoad);
     }
     for (auto& observer : main_thread_only().rail_mode_observers) {
       observer.OnRAILModeChanged(new_policy.rail_mode);
@@ -1538,49 +1493,28 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 
 RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
     UseCase use_case) const {
-  // TODO(skyostil): Add an idle state for foreground tabs too.
-  if (main_thread_only().renderer_hidden.get()) {
-    return RAILMode::kIdle;
-  }
-
   switch (use_case) {
-    case UseCase::kTouchstart:
-      return RAILMode::kResponse;
-
     case UseCase::kDiscreteInputResponse:
-      // TODO(crbug.com/350540984): This really should be `RAILMode::kResponse`,
+      // TODO(crbug.com/350540984): This really should be `RAILMode::kDefault`,
       // but switching out of the loading mode affects GC and causes some
       // benchmark regressions. For now, don't change the `RAILMode` for this
       // experimental `UseCase`.
       return main_thread_only().current_policy.rail_mode;
 
+    case UseCase::kTouchstart:
     case UseCase::kCompositorGesture:
     case UseCase::kSynchronizedGesture:
     case UseCase::kMainThreadGesture:
-      if (main_thread_only().blocking_input_expected_soon) {
-        return RAILMode::kResponse;
-      }
-      break;
-
     case UseCase::kNone:
-      // It's only safe to block tasks if we are expecting a compositor
-      // driven gesture.
-      if (main_thread_only().blocking_input_expected_soon &&
-          any_thread().last_gesture_was_compositor_driven) {
-        return RAILMode::kResponse;
-      }
-      break;
-
     case UseCase::kMainThreadCustomInputHandling:
-      break;
+      return RAILMode::kDefault;
 
     case UseCase::kEarlyLoading:
     case UseCase::kLoading:
-      // TODO(skyostil): Experiment with throttling rendering frame rate.
-      return RAILMode::kLoad;
+      return main_thread_only().renderer_hidden.get() ? RAILMode::kDefault
+                                                      : RAILMode::kLoad;
   }
-
-  return RAILMode::kAnimation;
+  NOTREACHED();
 }
 
 void MainThreadSchedulerImpl::UpdateStateForAllTaskQueues(
@@ -2013,8 +1947,12 @@ void MainThreadSchedulerImpl::DidCommitProvisionalLoad(
       ResetForNavigationLocked();
       new_rail_mode = main_thread_only().current_policy.rail_mode;
     }
-    if (old_rail_mode == new_rail_mode && isolate())
-      isolate()->UpdateLoadStartTime();
+    if (old_rail_mode == RAILMode::kLoad && new_rail_mode == RAILMode::kLoad &&
+        isolate()) {
+      // V8 was already informed that the load started, but now that the load is
+      // committed, update the start timestamp.
+      isolate()->SetIsLoading(true);
+    }
   }
 }
 
@@ -2530,8 +2468,7 @@ TaskPriority MainThreadSchedulerImpl::ComputePriority(
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kLow:
       return TaskPriority::kLowPriority;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return TaskPriority::kNormalPriority;
+      NOTREACHED();
   }
 }
 
@@ -2620,14 +2557,14 @@ TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
   // scrolling is to deprioritize compositor TQ tasks (low priority) and not
   // apply delay-based anti-starvation. This can lead to degraded user
   // experience due to increased checkerboarding or scrolling blank content.
-  // When `kThreadedScrollPreventRenderingStarvation` is enabled, we use a
-  // configurable value to control the delay-based anti-starvation to mitigate
-  // these issues.
+  // When `features::kThreadedScrollPreventRenderingStarvation` is enabled, we
+  // use a configurable value to control the delay-based anti-starvation to
+  // mitigate these issues.
   //
   // Note: for other use cases, the computed priority is higher, so they are
   // not prone to rendering starvation in the same way.
   if (!base::FeatureList::IsEnabled(
-          kThreadedScrollPreventRenderingStarvation)) {
+          features::kThreadedScrollPreventRenderingStarvation)) {
     return *use_case_priority;
   } else {
     CHECK_LE(*targeted_main_frame_priority, *use_case_priority);
@@ -2711,11 +2648,12 @@ void MainThreadSchedulerImpl::UpdateRenderingPrioritizationStateOnTaskCompleted(
         task_timing.wall_duration();
   }
 
-  // With `kThreadedScrollPreventRenderingStarvation` enabled, no rendering
-  // anti-starvation policy should kick in until the configurable threshold is
-  // reached when in `UseCase::kCompositorGesture`.
+  // With `features::kThreadedScrollPreventRenderingStarvation` enabled, no
+  // rendering anti-starvation policy should kick in until the configurable
+  // threshold is reached when in `UseCase::kCompositorGesture`.
   base::TimeDelta render_blocking_starvation_threshold =
-      base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation) &&
+      base::FeatureList::IsEnabled(
+          features::kThreadedScrollPreventRenderingStarvation) &&
               current_use_case() == UseCase::kCompositorGesture &&
               kRenderBlockingStarvationThreshold <
                   scheduling_settings_
@@ -2854,18 +2792,12 @@ bool MainThreadSchedulerImpl::AllPagesFrozen() const {
 // static
 const char* MainThreadSchedulerImpl::RAILModeToString(RAILMode rail_mode) {
   switch (rail_mode) {
-    case RAILMode::kResponse:
-      return "response";
-    case RAILMode::kAnimation:
-      return "animation";
-    case RAILMode::kIdle:
+    case RAILMode::kDefault:
       return "idle";
     case RAILMode::kLoad:
       return "load";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
   }
+  NOTREACHED();
 }
 
 // static
@@ -2877,8 +2809,7 @@ const char* MainThreadSchedulerImpl::TimeDomainTypeToString(
     case TimeDomainType::kVirtual:
       return "virtual";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

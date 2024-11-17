@@ -592,6 +592,36 @@
   return action;
 }
 
+- (UIAction*)actionToShareTabGroupWithBlock:(ProceduralBlock)block {
+  CHECK(IsTabGroupInGridEnabled());
+  CHECK(IsTabGroupSyncEnabled());
+
+  UIImage* image =
+      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP)
+                      image:image
+                       type:MenuActionType::ShareLocalTabGroup
+                      block:block];
+  return action;
+}
+
+- (UIAction*)actionToManageTabGroupWithBlock:(ProceduralBlock)block {
+  CHECK(IsTabGroupInGridEnabled());
+  CHECK(IsTabGroupSyncEnabled());
+
+  UIImage* image =
+      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP)
+                      image:image
+                       type:MenuActionType::ManageSharedTabGroup
+                      block:block];
+  return action;
+}
+
 #pragma mark - Private
 
 // Creates a UIAction instance for closing a tab with a provided `title`.
@@ -743,6 +773,16 @@
                                    IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB)
                          image:image
                           type:MenuActionType::ManageInNewTab
+                         block:block];
+}
+
+- (UIAction*)actionToShowRecentActivity:(ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kHistorySymbol, kSymbolActionPointSize);
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY)
+                         image:image
+                          type:MenuActionType::RecentActivityInSharedTabGroup
                          block:block];
 }
 

@@ -130,13 +130,11 @@ class MarketingOptInScreen : public BaseScreen {
   // Default country list.
   const base::flat_set<std::string_view> default_countries_{"us", "ca", "gb"};
 
-  // Extended country list. Protected behind the flag:
-  // - kOobeMarketingAdditionalCountriesSupported (DEFAULT_ON)
+  // Extended country list.
   const base::flat_set<std::string_view> additional_countries_{
       "fr", "nl", "fi", "se", "no", "dk", "es", "it", "jp", "au"};
 
-  // Countries with double opt-in.  Behind the flag:
-  // - kOobeMarketingDoubleOptInCountriesSupported (DEFAULT_OFF)
+  // Countries with double opt-in.
   const base::flat_set<std::string_view> double_opt_in_countries_{"de"};
 
   // Countries in which the toggle will be enabled by default.

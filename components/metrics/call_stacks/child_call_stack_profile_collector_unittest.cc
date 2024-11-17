@@ -36,7 +36,7 @@ class ChildCallStackProfileCollectorTest : public ::testing::Test {
     Receiver(const Receiver&) = delete;
     Receiver& operator=(const Receiver&) = delete;
 
-    ~Receiver() override {}
+    ~Receiver() override = default;
 
     void Collect(base::TimeTicks start_timestamp,
                  mojom::ProfileType profile_type,

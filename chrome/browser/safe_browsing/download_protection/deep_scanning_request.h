@@ -23,6 +23,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 
 namespace download {
 class DownloadItem;
@@ -190,6 +191,14 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   bool IsEnterpriseTriggered() const;
   bool IsConsumerTriggered() const;
+
+  // Callback for when deobfuscation of the file is completed.
+  void OnDeobfuscationComplete(
+      DownloadCheckResult download_result,
+      base::expected<void, enterprise_obfuscation::Error> result);
+
+  // Provides scan result to `callback_` and clean up.
+  void CallbackAndCleanup(DownloadCheckResult result);
 
   // The download item to scan. This is unowned, and could become nullptr if the
   // download is destroyed.

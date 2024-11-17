@@ -92,10 +92,8 @@ void SVGMaskElement::SvgAttributeChanged(
   if (is_length_attr || attr_name == svg_names::kMaskUnitsAttr ||
       attr_name == svg_names::kMaskContentUnitsAttr ||
       SVGTests::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     if (is_length_attr) {
-      UpdatePresentationAttributeStyle(attr_name);
+      UpdatePresentationAttributeStyle(params.property);
       UpdateRelativeLengthsInformation();
     }
 

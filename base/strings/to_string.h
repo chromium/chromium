@@ -46,7 +46,11 @@ concept WillBeIncorrectlyStreamedAsBool =
 template <typename T>
 struct ToStringHelper {
   static void Stringify(const T& v, std::ostringstream& ss) {
-    ss << "[" << sizeof(v) << "-byte object at 0x" << std::addressof(v) << "]";
+    // We cast to `void*` to avoid converting a char-like type to char-like*
+    // which operator<< treats as a string but does not support for multi-byte
+    // char-like types.
+    ss << "[" << sizeof(v) << "-byte object at 0x"
+       << static_cast<const void*>(std::addressof(v)) << "]";
   }
 };
 
@@ -66,6 +70,21 @@ struct ToStringHelper<T> {
   static void Stringify(const T& v, std::ostringstream& ss) {
     ToStringHelper<const void*>::Stringify(reinterpret_cast<const void*>(v),
                                            ss);
+  }
+};
+
+// Integral types that can't stream, like char16_t.
+template <typename T>
+  requires(!SupportsOstreamOperator<const T&> && std::is_integral_v<T>)
+struct ToStringHelper<T> {
+  static void Stringify(const T& v, std::ostringstream& ss) {
+    if constexpr (std::is_signed_v<T>) {
+      static_assert(sizeof(T) <= 8);
+      ss << static_cast<int64_t>(v);
+    } else {
+      static_assert(sizeof(T) <= 8);
+      ss << static_cast<uint64_t>(v);
+    }
   }
 };
 

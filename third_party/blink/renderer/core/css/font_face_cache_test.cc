@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,8 +69,8 @@ void FontFaceCacheTest::AppendTestFaceForCapabilities(const CSSValue& stretch,
       CSSPropertyValue(CSSPropertyName(CSSPropertyID::kFontFamily),
                        *family_name),
       CSSPropertyValue(CSSPropertyName(CSSPropertyID::kSrc), *src_value_list)};
-  auto* font_face_descriptor = MakeGarbageCollected<MutableCSSPropertyValueSet>(
-      properties, static_cast<wtf_size_t>(std::size(properties)));
+  auto* font_face_descriptor =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(properties);
 
   font_face_descriptor->SetProperty(CSSPropertyID::kFontStretch, stretch);
   font_face_descriptor->SetProperty(CSSPropertyID::kFontStyle, style);
@@ -196,7 +191,7 @@ TEST_F(FontFaceCacheTest, SimpleWeightMatch) {
 // have only one of them.
 static HeapVector<Member<CSSValue>> AvailableCapabilitiesChoices(
     size_t choice,
-    CSSValue* available_values[2]) {
+    base::span<CSSValue*> available_values) {
   HeapVector<Member<CSSValue>> available_ones;
   switch (choice) {
     case 0:

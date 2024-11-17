@@ -26,7 +26,7 @@ class PrefService;
 @property(nonatomic, assign) BOOL openedFromPromoInteraction;
 
 // Designated initializer. All the parameters should not be null.
-// `userPrefService`: preference service from the browser state.
+// `userPrefService`: preference service from the profile.
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
     NS_DESIGNATED_INITIALIZER;
 

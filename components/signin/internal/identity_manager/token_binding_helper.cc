@@ -135,6 +135,17 @@ std::vector<uint8_t> TokenBindingHelper::GetWrappedBindingKey(
   return it->second.wrapped_key;
 }
 
+size_t TokenBindingHelper::GetBoundTokenCount() const {
+  return binding_keys_.size();
+}
+
+bool TokenBindingHelper::AreAllBindingKeysSame() const {
+  return std::ranges::all_of(binding_keys_, [this](const auto& kv_pair) {
+    return kv_pair.second.wrapped_key ==
+           binding_keys_.begin()->second.wrapped_key;
+  });
+}
+
 TokenBindingHelper::BindingKeyData::BindingKeyData(
     std::vector<uint8_t> in_wrapped_key)
     : wrapped_key(in_wrapped_key) {}

@@ -11,15 +11,14 @@
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
+#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/plus_address_ui_utils.h"
-#include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/AllPlusAddressesBottomSheetBridge_jni.h"
-#include "chrome/browser/ui/android/plus_addresses/jni_headers/AllPlusAddressesBottomSheetUIInfo_jni.h"
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusProfile_jni.h"
 
 namespace plus_addresses {
@@ -53,25 +52,8 @@ void AllPlusAddressesBottomSheetView::Show(
         profile.facet.canonical_spec()));
   }
 
-  base::android::ScopedJavaLocalRef<jobject> ui_info =
-      Java_AllPlusAddressesBottomSheetUIInfo_Constructor(env);
-  Java_AllPlusAddressesBottomSheetUIInfo_setTitle(
-      env, ui_info,
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_TITLE_ANDROID));
-  Java_AllPlusAddressesBottomSheetUIInfo_setWarning(
-      env, ui_info,
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_WARNING_ANDROID));
-  Java_AllPlusAddressesBottomSheetUIInfo_setQueryHint(
-      env, ui_info,
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_QUERY_HINT_ANDROID));
-  Java_AllPlusAddressesBottomSheetUIInfo_setPlusProfiles(env, ui_info,
-                                                         java_profiles);
-
   Java_AllPlusAddressesBottomSheetBridge_showPlusAddresses(env, java_object,
-                                                           ui_info);
+                                                           java_profiles);
 }
 
 void AllPlusAddressesBottomSheetView::OnPlusAddressSelected(

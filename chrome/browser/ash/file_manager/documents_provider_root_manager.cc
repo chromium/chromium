@@ -54,10 +54,10 @@ bool IsAuthorityToExclude(const std::string& authority) {
 GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
   // Root icons are resized to 32px*32px in the ARC container. We use the given
   // bitmaps without resizing in Chrome side.
-  std::vector<unsigned char> output;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
-  std::string encoded = base::Base64Encode(std::string_view(
-      reinterpret_cast<const char*>(output.data()), output.size()));
+  std::optional<std::vector<uint8_t>> output =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  std::string encoded =
+      base::Base64Encode(output.value_or(std::vector<uint8_t>()));
   return GURL("data:image/png;base64," + encoded);
 }
 

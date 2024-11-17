@@ -16,6 +16,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
@@ -110,22 +111,19 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
   struct Partition {
     Partition();
     // Create a new partition for bidding signals based on interest group's
-    // name, bidding keys, hostname, experiment group id and slot size
-    // parameter.
+    // name, bidding keys, experiment group id and slot size parameter.
     Partition(int partition_id,
               const std::string& interest_group_name,
               const std::set<std::string>& bidding_keys,
-              const std::string& hostname,
               const std::optional<int>& experiment_group_id,
-              std::pair<std::string, std::string>
+              const std::optional<std::pair<std::string, std::string>>&
                   trusted_bidding_signals_slot_size_param);
 
     // Create a new partition for scoring signals based on render url
-    // name, ad component render urls, hostname and experiment group id.
+    // name, ad component render urls and experiment group id.
     Partition(int partition_id,
               const std::string& render_url,
               const std::set<std::string>& ad_component_render_urls,
-              const std::string& hostname,
               const std::optional<int>& experiment_group_id);
     Partition(Partition&&);
     ~Partition();
@@ -141,8 +139,8 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
     std::set<std::string> render_urls;
     std::set<std::string> ad_component_render_urls;
 
-    // Valid keys are "hostname", "experimentGroupId",
-    // "slotSize", and "allSlotsRequestedSizes".
+    // Valid keys are "experimentGroupId", "slotSize", and
+    // "allSlotsRequestedSizes".
     base::Value::Dict additional_params;
   };
 
@@ -220,8 +218,8 @@ class CONTENT_EXPORT TrustedBiddingSignalsKVv2RequestHelperBuilder
     return join_origin_compression_id_map_;
   }
 
-  const std::pair<std::string, std::string>&
-  trusted_bidding_signals_slot_size_param() {
+  const std::optional<std::pair<std::string, std::string>>&
+  trusted_bidding_signals_slot_size_param() const {
     return trusted_bidding_signals_slot_size_param_;
   }
 
@@ -236,7 +234,8 @@ class CONTENT_EXPORT TrustedBiddingSignalsKVv2RequestHelperBuilder
   // Using a pair to store key and value for a trusted bidding signals slot
   // size parameter. Valid parameter key are "slotSize" or
   // "allSlotsRequestedSizes".
-  std::pair<std::string, std::string> trusted_bidding_signals_slot_size_param_;
+  std::optional<std::pair<std::string, std::string>>
+      trusted_bidding_signals_slot_size_param_;
 };
 
 class CONTENT_EXPORT TrustedScoringSignalsKVv2RequestHelperBuilder
@@ -363,6 +362,38 @@ class CONTENT_EXPORT TrustedSignalsKVv2ResponseParser {
       const std::set<std::string>& render_urls,
       const std::set<std::string>& ad_component_render_urls,
       const CompressionGroupResultMap& compression_group_result_map);
+
+  // Code below this point is for use by the TrustedSignalsKVv2Manager, which
+  // gets KVv2 responses on a per-compression group basis through the
+  // mojom::TrustedSignalsCache API, instead of making network requests itself.
+
+  enum class SignalsType {
+    kBidding,
+    kScoring,
+  };
+
+  // A map of partition IDs to the result of parsing each partition.
+  using PartitionMap = std::map<int, scoped_refptr<TrustedSignals::Result>>;
+
+  // The result of trying to parse a compression group. Failures are global, so
+  // either there's a PartitionMap or a single global error string.
+  using PartitionMapOrError = base::expected<PartitionMap, std::string>;
+
+  // Parses a compression group. Unlike
+  // ParseBiddingSignalsFetchResultToResultMap(), parses all fields of all
+  // partitions, so if requests for the compression group arrive after it's
+  // already been parsed, there's no need to parse the data again.
+  //
+  // TODO(https://crbug.com/368241694): Consider only parsing the portion of the
+  // compression group that's needed, while keeping the rest around in case it's
+  // needed down the line. Parsing on a per-partition basis may be the best
+  // balance of practicality and compatibility in the case of multiple V8
+  // threads.
+  static PartitionMapOrError ParseEntireCompressionGroup(
+      AuctionV8Helper* v8_helper,
+      SignalsType signals_type,
+      mojom::TrustedSignalsCompressionScheme compression_scheme,
+      base::span<const uint8_t> compression_group_bytes);
 };
 
 }  // namespace auction_worklet

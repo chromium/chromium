@@ -9,6 +9,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -310,7 +312,7 @@ class ScriptRunIteratorTest : public testing::Test {
       text.Append(String::FromUTF8(run.text));
       expect.push_back(ScriptExpectedRun(text.length(), run.code));
     }
-    ScriptRunIterator script_run_iterator(text.Characters16(), text.length());
+    ScriptRunIterator script_run_iterator(text.Span16());
     VerifyRuns(&script_run_iterator, expect);
   }
 
@@ -325,7 +327,7 @@ class ScriptRunIteratorTest : public testing::Test {
       expect.push_back(ScriptExpectedRun(text.length(), run.code));
     }
 
-    ScriptRunIterator script_run_iterator(text.Characters16(), text.length(),
+    ScriptRunIterator script_run_iterator(text.Span16(),
                                           MockScriptData::Instance());
     VerifyRuns(&script_run_iterator, expect);
   }
@@ -343,7 +345,7 @@ class ScriptRunIteratorTest : public testing::Test {
 
 TEST_F(ScriptRunIteratorTest, Empty) {
   String empty(g_empty_string16_bit);
-  ScriptRunIterator script_run_iterator(empty.Characters16(), empty.length());
+  ScriptRunIterator script_run_iterator(empty.Span16());
   unsigned limit = 0;
   UScriptCode code = USCRIPT_INVALID_CODE;
   DCHECK(!script_run_iterator.Consume(&limit, &code));
@@ -784,22 +786,34 @@ TEST_F(ScriptRunIteratorTest, CommonMalayalam) {
   CHECK_SCRIPT_RUNS({{"100-ാം", USCRIPT_MALAYALAM}});
 }
 
+std::pair<int, UChar32> MaximumScriptExtensions() {
+  int max_extensions = 0;
+  UChar32 max_extensionscp = 0;
+  for (UChar32 cp = 0; cp < 0x11000; ++cp) {
+    UErrorCode status = U_ZERO_ERROR;
+    int count = uscript_getScriptExtensions(cp, nullptr, 0, &status);
+    if (count > max_extensions) {
+      max_extensions = count;
+      max_extensionscp = cp;
+    }
+  }
+  return std::make_pair(max_extensions, max_extensionscp);
+}
+
+TEST_F(ScriptRunIteratorTest, MaxUnicodeScriptExtensions) {
+  int max_extensions = 0;
+  UChar32 max_extensionscp = 0;
+  std::tie(max_extensions, max_extensionscp) = MaximumScriptExtensions();
+  // If this test fails (as a result of an ICU update, most likely), it means
+  // we need to change kMaxUnicodeScriptExtensions.
+  EXPECT_EQ(max_extensions, ScriptRunIterator::kMaxUnicodeScriptExtensions);
+}
+
 class ScriptRunIteratorICUDataTest : public testing::Test {
  public:
-  ScriptRunIteratorICUDataTest()
-      : max_extensions_(0), max_extensions_codepoint_(0xffff) {
-    int max_extensions = 0;
-    UChar32 max_extensionscp = 0;
-    for (UChar32 cp = 0; cp < 0x11000; ++cp) {
-      UErrorCode status = U_ZERO_ERROR;
-      int count = uscript_getScriptExtensions(cp, nullptr, 0, &status);
-      if (count > max_extensions) {
-        max_extensions = count;
-        max_extensionscp = cp;
-      }
-    }
-    max_extensions_ = max_extensions;
-    max_extensions_codepoint_ = max_extensionscp;
+  ScriptRunIteratorICUDataTest() {
+    std::tie(max_extensions_, max_extensions_codepoint_) =
+        MaximumScriptExtensions();
   }
 
  protected:

@@ -12,10 +12,3 @@ include_rules = [
   # details.
   "-chrome",
 ]
-
-specific_include_rules = {
-  # TODO(b:365464070): Remove once the test is moved.
-  'proxy_config_service_impl_unittest.cc': [
-    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
-  ]
-}

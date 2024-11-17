@@ -33,23 +33,10 @@ bool DidDisplayBenefitForCard(
               .empty();
 }
 
-bool VirtualCardFeatureEnabled() {
-#if BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards);
-#else
-  return true;
-#endif
-}
-
 bool IsVcn3dsEnabled() {
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableVcn3dsAuthentication) &&
          !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
-}
-
-bool IsSaveCardLoadingAndConfirmationEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSaveCardLoadingAndConfirmation);
 }
 
 }  // namespace autofill

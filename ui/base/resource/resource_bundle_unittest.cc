@@ -21,6 +21,7 @@
 
 #include "base/base_paths.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -29,7 +30,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -73,7 +73,7 @@ constexpr char kLottieData[] = "LOTTIEtest";
 // The contents after the prefix has been removed.
 constexpr uint8_t kLottieExpected[] = {'t', 'e', 's', 't'};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Mock of |lottie::ParseLottieAsStillImage|. Checks that |kLottieData| is
 // properly stripped of the "LOTTIE" prefix.
 gfx::ImageSkia ParseLottieAsStillImageForTesting(std::vector<uint8_t> data) {
@@ -124,15 +124,16 @@ void CreateDataPackWithSingleBitmap(const base::FilePath& path,
   SkBitmap bitmap;
   bitmap.allocN32Pixels(edge_size, edge_size);
   bitmap.eraseColor(SK_ColorWHITE);
-  std::vector<unsigned char> bitmap_data;
-  EXPECT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bitmap_data));
+  std::optional<std::vector<uint8_t>> bitmap_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  ASSERT_TRUE(bitmap_data);
 
-  if (custom_chunk.size() > 0)
-    AddCustomChunk(custom_chunk, &bitmap_data);
+  if (custom_chunk.size() > 0) {
+    AddCustomChunk(custom_chunk, &bitmap_data.value());
+  }
 
   std::map<uint16_t, std::string_view> resources;
-  resources[3u] = std::string_view(
-      reinterpret_cast<const char*>(&bitmap_data[0]), bitmap_data.size());
+  resources[3u] = base::as_string_view(bitmap_data.value());
   DataPack::WritePack(path, resources, ui::DataPack::BINARY);
 }
 
@@ -240,6 +241,19 @@ TEST_F(ResourceBundleTest, DelegateGetNativeImageNamed) {
 
   gfx::Image result = resource_bundle->GetNativeImageNamed(resource_id);
   EXPECT_EQ(empty_image.ToSkBitmap(), result.ToSkBitmap());
+}
+
+TEST_F(ResourceBundleTest, DelegateHasDataResource) {
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
+
+  int resource_id = 5;
+
+  EXPECT_CALL(delegate_, HasDataResource(resource_id))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  bool result = resource_bundle->HasDataResource(resource_id);
+  EXPECT_EQ(result, true);
 }
 
 TEST_F(ResourceBundleTest, DelegateLoadDataResourceBytes) {
@@ -423,6 +437,24 @@ class ResourceBundleImageTest : public ResourceBundleTest {
   std::unique_ptr<DataPack> locale_pack_;
 };
 
+TEST_F(ResourceBundleImageTest, HasDataResource) {
+  base::FilePath data_path = dir_path().Append(FILE_PATH_LITERAL("sample.pak"));
+
+  // Dump content into pak file.
+  ASSERT_TRUE(base::WriteFile(
+      data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5}));
+
+  // Load pak file.
+  ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
+  resource_bundle->AddDataPackFromPath(data_path, kScaleFactorNone);
+
+  EXPECT_FALSE(resource_bundle->HasDataResource(1));
+  EXPECT_TRUE(resource_bundle->HasDataResource(4));
+  EXPECT_TRUE(resource_bundle->HasDataResource(6));
+  EXPECT_TRUE(resource_bundle->HasDataResource(8));
+  EXPECT_FALSE(resource_bundle->HasDataResource(200));
+}
+
 TEST_F(ResourceBundleImageTest, LoadDataResourceBytes) {
   base::FilePath data_path = dir_path().Append(FILE_PATH_LITERAL("sample.pak"));
 
@@ -586,7 +618,7 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
 
   gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // ChromeOS/Windows load highest scale factor first.
   EXPECT_EQ(ui::k200Percent, GetSupportedResourceScaleFactor(
                                  image_skia->image_reps()[0].scale()));
@@ -691,7 +723,7 @@ TEST_F(ResourceBundleImageTest, Lottie) {
   ASSERT_TRUE(data.has_value());
   EXPECT_TRUE(base::ranges::equal(*data, kLottieExpected));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ui::ResourceBundle::SetLottieParsingFunctions(
       &ParseLottieAsStillImageForTesting,
       /*parse_lottie_as_themed_still_image=*/nullptr);

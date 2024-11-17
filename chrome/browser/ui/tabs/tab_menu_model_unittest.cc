@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -18,8 +20,14 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/mock_account_checker.h"
+#include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/shopping_service.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
@@ -59,151 +67,6 @@ TEST_F(TabMenuModelTest, OrganizeTabs) {
   // Verify that CommandOrganizeTabs is in the menu.
   EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandOrganizeTabs)
                   .has_value());
-}
-
-TEST_F(TabMenuModelTest, CommerceProductSpecs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-
-  std::unique_ptr<content::WebContents> https_web_content =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  content::WebContentsTester::For(https_web_content.get())
-      ->NavigateAndCommit(GURL("https://www.example.com"));
-
-  tab_strip->AppendWebContents(std::move(https_web_content), true);
-  chrome::NewTab(browser());
-
-  tab_strip->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  tab_strip->AddSelectionFromAnchorTo(1);
-
-  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
-                     browser()->tab_strip_model(), 0);
-  EXPECT_TRUE(model
-                  .GetIndexOfCommandId(
-                      TabStripModel::CommandCommerceProductSpecifications)
-                  .has_value());
-}
-
-TEST_F(TabMenuModelTest, CommerceProductSpecsIncognito) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
-
-  TestingProfile::Builder incognito_profile_builder;
-  auto* incognito_profile = incognito_profile_builder.BuildIncognito(profile());
-
-  Browser::CreateParams native_params(incognito_profile, true);
-  native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
-  std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(native_params);
-  Browser* incognito_browser = browser.get();
-
-  AddTab(incognito_browser, GURL("https://example.com"));
-  AddTab(incognito_browser, GURL("https://example2.com"));
-
-  TabStripModel* tab_strip = incognito_browser->tab_strip_model();
-  tab_strip->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  tab_strip->AddSelectionFromAnchorTo(1);
-
-  TabMenuModel model(&delegate_, incognito_browser->tab_menu_model_delegate(),
-                     incognito_browser->tab_strip_model(), 0);
-  EXPECT_FALSE(model
-                   .GetIndexOfCommandId(
-                       TabStripModel::CommandCommerceProductSpecifications)
-                   .has_value());
-
-  // All tabs must be closed before the object is destroyed.
-  incognito_browser->tab_strip_model()->CloseAllTabs();
-}
-
-TEST_F(TabMenuModelTest, CommerceProductSpecsInvalidScheme) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-
-  std::unique_ptr<content::WebContents> chrome_web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-
-  content::WebContentsTester::For(chrome_web_contents.get())
-      ->NavigateAndCommit(GURL("chrome://bookmarks"));
-
-  tab_strip->AppendWebContents(std::move(chrome_web_contents), true);
-  chrome::NewTab(browser());
-
-  tab_strip->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  tab_strip->AddSelectionFromAnchorTo(1);
-  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
-                     browser()->tab_strip_model(), 0);
-
-  EXPECT_FALSE(model
-                   .GetIndexOfCommandId(
-                       TabStripModel::CommandCommerceProductSpecifications)
-                   .has_value());
-}
-
-TEST_F(TabMenuModelTest, CommerceProductSpecsHttp) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-
-  std::unique_ptr<content::WebContents> http_web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  content::WebContentsTester::For(http_web_contents.get())
-      ->NavigateAndCommit(GURL("http://example.com"));
-
-  tab_strip->AppendWebContents(std::move(http_web_contents), true);
-  chrome::NewTab(browser());
-
-  tab_strip->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-
-  tab_strip->AddSelectionFromAnchorTo(1);
-  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
-                     browser()->tab_strip_model(), 0);
-
-  EXPECT_TRUE(model
-                  .GetIndexOfCommandId(
-                      TabStripModel::CommandCommerceProductSpecifications)
-                  .has_value());
-}
-
-TEST_F(TabMenuModelTest, CommerceProductSpecsFeatureCheck) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {commerce::kProductSpecifications});
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-
-  tab_strip->AddSelectionFromAnchorTo(1);
-  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
-                     browser()->tab_strip_model(), 0);
-
-  EXPECT_FALSE(model
-                   .GetIndexOfCommandId(
-                       TabStripModel::CommandCommerceProductSpecifications)
-                   .has_value());
-}
-
-TEST_F(TabMenuModelTest, CommerceProductSpecsInsuffcientSelection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-
-  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
-                     browser()->tab_strip_model(), 0);
-
-  EXPECT_FALSE(model
-                   .GetIndexOfCommandId(
-                       TabStripModel::CommandCommerceProductSpecifications)
-                   .has_value());
 }
 
 TEST_F(TabMenuModelTest, MoveToNewWindow) {
@@ -421,4 +284,220 @@ TEST_F(TabMenuModelTest, TabbedWebAppHomeTab) {
   EXPECT_TRUE(
       regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandCloseAllTabs)
           .has_value());
+}
+
+class TabMenuModelCommerceProductSpecsTest : public TabMenuModelTest {
+ public:
+  TabMenuModelCommerceProductSpecsTest()
+      : account_checker_(std::make_unique<commerce::MockAccountChecker>()),
+        prefs_(std::make_unique<TestingPrefServiceSimple>()) {}
+
+  void SetUp() override {
+    TabMenuModelTest::SetUp();
+    commerce::RegisterCommercePrefs(prefs_->registry());
+    account_checker_->SetPrefs(prefs_.get());
+    auto* shopping_service = static_cast<commerce::MockShoppingService*>(
+        commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
+    shopping_service->SetAccountChecker(account_checker_.get());
+    // By default, the account checker and prefs are set up to enable product
+    // specifications.
+    commerce::EnableProductSpecificationsDataFetch(account_checker_.get(),
+                                                   prefs_.get());
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                commerce::ShoppingServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* context) {
+                  return commerce::MockShoppingService::Build();
+                })}});
+  }
+
+ protected:
+  std::unique_ptr<commerce::MockAccountChecker> account_checker_;
+
+ private:
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
+};
+
+TEST_F(TabMenuModelCommerceProductSpecsTest, MenuShowForNormalWindow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  ASSERT_TRUE(
+      commerce::CanFetchProductSpecificationsData(account_checker_.get()));
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+
+  std::unique_ptr<content::WebContents> https_web_content =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(https_web_content.get())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+
+  tab_strip->AppendWebContents(std::move(https_web_content), true);
+  chrome::NewTab(browser());
+
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip->AddSelectionFromAnchorTo(1);
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+  EXPECT_TRUE(model
+                  .GetIndexOfCommandId(
+                      TabStripModel::CommandCommerceProductSpecifications)
+                  .has_value());
+}
+
+TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForIncognitoWindow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  ASSERT_TRUE(
+      commerce::CanFetchProductSpecificationsData(account_checker_.get()));
+
+  TestingProfile::Builder incognito_profile_builder;
+  auto* incognito_profile = incognito_profile_builder.BuildIncognito(profile());
+
+  Browser::CreateParams native_params(incognito_profile, true);
+  native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
+  std::unique_ptr<Browser> browser =
+      CreateBrowserWithTestWindowForParams(native_params);
+  Browser* incognito_browser = browser.get();
+
+  AddTab(incognito_browser, GURL("https://example.com"));
+  AddTab(incognito_browser, GURL("https://example2.com"));
+
+  TabStripModel* tab_strip = incognito_browser->tab_strip_model();
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip->AddSelectionFromAnchorTo(1);
+
+  TabMenuModel model(&delegate_, incognito_browser->tab_menu_model_delegate(),
+                     incognito_browser->tab_strip_model(), 0);
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
+
+  // All tabs must be closed before the object is destroyed.
+  incognito_browser->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForInvalidScheme) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  ASSERT_TRUE(
+      commerce::CanFetchProductSpecificationsData(account_checker_.get()));
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+
+  std::unique_ptr<content::WebContents> chrome_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  content::WebContentsTester::For(chrome_web_contents.get())
+      ->NavigateAndCommit(GURL("chrome://bookmarks"));
+
+  tab_strip->AppendWebContents(std::move(chrome_web_contents), true);
+  chrome::NewTab(browser());
+
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip->AddSelectionFromAnchorTo(1);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
+}
+
+TEST_F(TabMenuModelCommerceProductSpecsTest, MenuShowForHttp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  ASSERT_TRUE(
+      commerce::CanFetchProductSpecificationsData(account_checker_.get()));
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+
+  std::unique_ptr<content::WebContents> http_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(http_web_contents.get())
+      ->NavigateAndCommit(GURL("http://example.com"));
+
+  tab_strip->AppendWebContents(std::move(http_web_contents), true);
+  chrome::NewTab(browser());
+
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  tab_strip->AddSelectionFromAnchorTo(1);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  EXPECT_TRUE(model
+                  .GetIndexOfCommandId(
+                      TabStripModel::CommandCommerceProductSpecifications)
+                  .has_value());
+}
+
+TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForFeatureDisable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({}, {commerce::kProductSpecifications});
+  ASSERT_FALSE(
+      commerce::CanFetchProductSpecificationsData(account_checker_.get()));
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+
+  tab_strip->AddSelectionFromAnchorTo(1);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
+}
+
+TEST_F(TabMenuModelCommerceProductSpecsTest, MenuNotShowForFetchDisable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  // Update account checker to disable product specifications data fetch.
+  account_checker_->SetIsSubjectToParentalControls(true);
+  ASSERT_FALSE(
+      commerce::CanFetchProductSpecificationsData(account_checker_.get()));
+
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+
+  tab_strip->AddSelectionFromAnchorTo(1);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
+}
+
+TEST_F(TabMenuModelCommerceProductSpecsTest,
+       MenuNotShowForInsuffcientSelection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  ASSERT_TRUE(
+      commerce::CanFetchProductSpecificationsData(account_checker_.get()));
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
 }

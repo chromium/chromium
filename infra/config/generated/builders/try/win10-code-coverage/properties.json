@@ -41,7 +41,8 @@
           "builder": "win10-code-coverage",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win10-code-coverage/targets"
     }
   },
   "$build/reclient": {

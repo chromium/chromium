@@ -8,6 +8,7 @@
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
+#include <linux-drm-syncobj-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
@@ -18,6 +19,7 @@
 
 #include "base/check_op.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
@@ -41,9 +43,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
+#include "ui/ozone/platform/wayland/host/wayland_syncobj_timeline.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
@@ -78,7 +79,7 @@ const wl_fixed_t kMinusOne = wl_fixed_from_int(-1);
 
 }  // namespace
 
-WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
+WaylandSurface::ExplicitReleaseInfoLegacy::ExplicitReleaseInfoLegacy(
     wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
     wl_buffer* buffer,
     ExplicitReleaseCallback explicit_release_callback)
@@ -86,23 +87,23 @@ WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
       buffer(buffer),
       explicit_release_callback(std::move(explicit_release_callback)) {}
 
-WaylandSurface::ExplicitReleaseInfo::~ExplicitReleaseInfo() = default;
+WaylandSurface::ExplicitReleaseInfoLegacy::~ExplicitReleaseInfoLegacy() =
+    default;
 
-WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
-    ExplicitReleaseInfo&&) = default;
+WaylandSurface::ExplicitReleaseInfoLegacy::ExplicitReleaseInfoLegacy(
+    ExplicitReleaseInfoLegacy&&) = default;
 
-WaylandSurface::ExplicitReleaseInfo&
-WaylandSurface::ExplicitReleaseInfo::operator=(ExplicitReleaseInfo&&) = default;
+WaylandSurface::ExplicitReleaseInfoLegacy&
+WaylandSurface::ExplicitReleaseInfoLegacy::operator=(
+    ExplicitReleaseInfoLegacy&&) = default;
 
 WaylandSurface::WaylandSurface(WaylandConnection* connection,
                                WaylandWindow* root_window)
     : connection_(connection),
       root_window_(root_window),
       surface_(connection->CreateSurface()),
-      surface_submission_in_pixel_coordinates_(
-          connection->surface_submission_in_pixel_coordinates()),
       use_viewporter_surface_scaling_(
-          connection->UseViewporterSurfaceScaling()) {
+          connection->supports_viewporter_surface_scaling()) {
   // Inherit per-surface preferred scale when owned by non-toplevel windows.
   // See https://wayland.app/protocols/fractional-scale-v1.
   if (root_window_ && root_window_->parent_window()) {
@@ -112,24 +113,11 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
 }
 
 WaylandSurface::~WaylandSurface() {
-  for (auto& release : linux_buffer_releases_) {
+  for (auto& release : linux_buffer_releases_legacy_) {
     DCHECK(release.second.explicit_release_callback);
     std::move(release.second.explicit_release_callback)
         .Run(release.second.buffer.get(), base::ScopedFD());
   }
-}
-
-WaylandZAuraSurface* WaylandSurface::CreateZAuraSurface() {
-  auto* zaura_shell = connection_->zaura_shell();
-  if (!zaura_surface_ && zaura_shell) {
-    zaura_surface_ = std::make_unique<WaylandZAuraSurface>(
-        zaura_shell->wl_object(), surface(), connection_);
-  }
-  return zaura_surface_.get();
-}
-
-void WaylandSurface::ResetZAuraSurface() {
-  zaura_surface_.reset();
 }
 
 void WaylandSurface::RequestExplicitRelease(ExplicitReleaseCallback callback) {
@@ -279,9 +267,12 @@ void WaylandSurface::set_acquire_fence(gfx::GpuFenceHandle acquire_fence) {
   // WaylandBufferManagerGPU knows if the synchronization is not available and
   // must disallow clients to use explicit synchronization.
   DCHECK(!apply_state_immediately_);
-  DCHECK(connection_->linux_explicit_synchronization_v1() ||
+  DCHECK(connection_->SupportsExplicitSync() ||
          connection_->UseImplicitSyncInterop());
-  if (!acquire_fence.is_null()) {
+  if (!acquire_fence.is_null() &&
+      // linux-drm-syncobj explicit sync expects that a fence is always set,
+      // even if it has been signaled already.
+      !connection_->linux_drm_syncobj_manager_v1()) {
     base::TimeTicks ticks;
     auto status =
         gfx::GpuFence::GetStatusChangeTime(acquire_fence.Peek(), &ticks);
@@ -323,6 +314,21 @@ void WaylandSurface::Commit(bool flush) {
   wl_surface_commit(surface_.get());
   if (flush)
     connection_->Flush();
+
+  if (surface_sync_ && acquire_timeline_ &&
+      !next_explicit_release_request_.is_null()) {
+    auto* buffer_handle = connection_->buffer_manager_host()->GetBufferHandle(
+        this, state_.buffer_id);
+    CHECK(buffer_handle);
+    auto* release_timeline = buffer_handle->release_timeline();
+    if (!release_timeline) {
+      VLOG(4) << "no release timeline";
+      return;
+    }
+    release_timeline->WaitForFenceAvailableAtCurrentSyncPoint(base::BindOnce(
+        &WaylandSurface::OnFenceAvailable, weak_factory_.GetWeakPtr(),
+        state_.buffer_id, std::move(next_explicit_release_request_)));
+  }
 }
 
 void WaylandSurface::set_surface_buffer_scale(float scale) {
@@ -330,17 +336,13 @@ void WaylandSurface::set_surface_buffer_scale(float scale) {
 
   if (apply_state_immediately_) {
     state_.buffer_scale_float = pending_state_.buffer_scale_float;
-    if (!(surface_submission_in_pixel_coordinates_ ||
-          use_viewporter_surface_scaling_)) {
+    if (!use_viewporter_surface_scaling_) {
       // It's safe to cast the result of GetWaylandScale to an integer here
-      // because the buffer scale should always be integer when both surface
-      // submission in pixel coordinates and viewporter surface scaling is
-      // disabled.
+      // because the buffer scale should always be integer when viewporter
+      // surface scaling is disabled.
       wl_surface_set_buffer_scale(
           surface_.get(), static_cast<int32_t>(GetWaylandScale(state_)));
     }
-    if (root_window_)
-      root_window_->PropagateBufferScale(scale);
   }
 }
 
@@ -390,9 +392,6 @@ void WaylandSurface::set_input_region(
 }
 
 float WaylandSurface::GetWaylandScale(const State& state) {
-  if (surface_submission_in_pixel_coordinates_) {
-    return 1;
-  }
   return wl::ClampScale(use_viewporter_surface_scaling_
                             ? state.buffer_scale_float
                             : std::ceil(state.buffer_scale_float));
@@ -423,8 +422,6 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
     const std::vector<gfx::Rect>& region_px,
     float buffer_scale) {
   DCHECK(root_window_);
-  DCHECK(!surface_submission_in_pixel_coordinates_ || buffer_scale == 1.f);
-
   wl::Object<wl_region> region(
       wl_compositor_create_region(connection_->compositor()));
 
@@ -437,19 +434,143 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
   return region;
 }
 
-zwp_linux_surface_synchronization_v1* WaylandSurface::GetOrCreateSurfaceSync() {
+bool WaylandSurface::SetExplicitSyncLegacy() {
   // The server needs to support the linux_explicit_synchronization protocol.
   if (!connection_->linux_explicit_synchronization_v1()) {
     NOTIMPLEMENTED_LOG_ONCE();
-    return nullptr;
+    return false;
   }
 
-  if (!surface_sync_) {
-    surface_sync_.reset(
+  if (!surface_sync_legacy_) {
+    surface_sync_legacy_.reset(
         zwp_linux_explicit_synchronization_v1_get_synchronization(
             connection_->linux_explicit_synchronization_v1(), surface_.get()));
   }
-  return surface_sync_.get();
+  auto* surface_sync = surface_sync_legacy_.get();
+  if (!surface_sync) {
+    return false;
+  }
+
+  if (!pending_state_.acquire_fence.is_null()) {
+    zwp_linux_surface_synchronization_v1_set_acquire_fence(
+        surface_sync, pending_state_.acquire_fence.Peek());
+  }
+
+  if (!next_explicit_release_request_.is_null()) {
+    auto* linux_buffer_release =
+        zwp_linux_surface_synchronization_v1_get_release(surface_sync);
+    // This must be very unlikely to happen, but there is a bug for this.
+    // Thus, add a check for this object to ensure it's not null. See
+    // https://crbug.com/1382976
+    LOG_IF(FATAL, !linux_buffer_release)
+        << "Unable to get an explicit release object.";
+
+    static constexpr zwp_linux_buffer_release_v1_listener
+        kBufferReleaseListener = {
+            .fenced_release = &OnFencedRelease,
+            .immediate_release = &OnImmediateRelease,
+        };
+    zwp_linux_buffer_release_v1_add_listener(linux_buffer_release,
+                                             &kBufferReleaseListener, this);
+
+    linux_buffer_releases_legacy_.emplace(
+        linux_buffer_release,
+        ExplicitReleaseInfoLegacy(
+            wl::Object<zwp_linux_buffer_release_v1>(linux_buffer_release),
+            pending_state_.buffer, std::move(next_explicit_release_request_)));
+  }
+  return true;
+}
+
+void WaylandSurface::EnsureSurfaceSync() {
+  if (!surface_sync_) {
+    surface_sync_.reset(wp_linux_drm_syncobj_manager_v1_get_surface(
+        connection_->linux_drm_syncobj_manager_v1(), surface_.get()));
+  }
+}
+
+void WaylandSurface::EnsureAcquireTimeline() {
+  if (!acquire_timeline_) {
+    acquire_timeline_ = WaylandSyncobjAcquireTimeline::Create(connection_);
+  }
+}
+
+std::optional<bool> WaylandSurface::SetExplicitSync() {
+  if (!connection_->linux_drm_syncobj_manager_v1()) {
+    NOTIMPLEMENTED_LOG_ONCE();
+    return false;
+  }
+  EnsureAcquireTimeline();
+  auto* buffer_handle = connection_->buffer_manager_host()->GetBufferHandle(
+      this, pending_state_.buffer_id);
+  CHECK(buffer_handle);
+  auto* release_timeline = buffer_handle->release_timeline();
+  if (!acquire_timeline_ || !release_timeline) {
+    // Cannot use explicit sync without an acquire or release timeline.
+    next_explicit_release_request_.Reset();
+    return false;
+  }
+
+  constexpr unsigned kPointHiShift = 32;
+  constexpr unsigned kPointLoMask = 0xffffffff;
+  auto* acquire_syncobj = acquire_timeline_.get();
+
+  // This check is needed to ensure no graphics freeze occurs if there are
+  // subsequent buffer attachments without an acquire fence. This is because
+  // wl_buffer.release is never called after using explicit sync once, even if
+  // we delete the wp_linux_drm_syncobj_surface_v1 after using it once.  So we
+  // need to continue setting the acquire and release points even in that
+  // case, without incrementing the former.
+  if (!pending_state_.acquire_fence.is_null()) {
+    acquire_syncobj->IncrementSyncPoint();
+    if (!acquire_syncobj->ImportSyncFdAtCurrentSyncPoint(
+            pending_state_.acquire_fence.Peek())) {
+      DLOG(ERROR) << "Could not import sync fd at current sync point";
+      acquire_syncobj->DecrementSyncPoint();
+      if (acquire_syncobj->sync_point() > 0) {
+        // If we have set a sync point that means we have started using
+        // explicit sync already, and so we need to discard this frame as it
+        // is not possible to set explicit sync for this frame.
+        next_explicit_release_request_.Reset();
+        return std::nullopt;
+      }
+    }
+  } else {
+    VLOG(1) << "no acquire fence";
+  }
+
+  auto acquire_sync_point = acquire_syncobj->sync_point();
+  if (acquire_sync_point == 0) {
+    // No acquire fence has been set yet. So we cannot use explicit sync.
+    next_explicit_release_request_.Reset();
+    return false;
+  }
+
+  EnsureSurfaceSync();
+  wp_linux_drm_syncobj_surface_v1_set_acquire_point(
+      surface_sync_.get(), acquire_timeline_->timeline(),
+      acquire_sync_point >> kPointHiShift, acquire_sync_point & kPointLoMask);
+
+  release_timeline->IncrementSyncPoint();
+  auto release_sync_point = release_timeline->sync_point();
+  wp_linux_drm_syncobj_surface_v1_set_release_point(
+      surface_sync_.get(), release_timeline->timeline(),
+      release_sync_point >> kPointHiShift, release_sync_point & kPointLoMask);
+
+  return true;
+}
+
+void WaylandSurface::OnFenceAvailable(uint32_t buffer_id,
+                                      ExplicitReleaseCallback callback,
+                                      base::ScopedFD fd) {
+  auto* buffer_handle =
+      connection_->buffer_manager_host()->GetBufferHandle(this, buffer_id);
+  DVLOG(3) << __func__ << " surface=" << surface_.id() << " buffer="
+           << wl_proxy_get_id(
+                  reinterpret_cast<wl_proxy*>(buffer_handle->buffer()))
+           << " fence fd=" << fd.get();
+  CHECK(buffer_handle);
+  std::move(callback).Run(buffer_handle->buffer(), std::move(fd));
 }
 
 wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
@@ -462,18 +583,30 @@ wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
   return subsurface;
 }
 
-bool WaylandSurface::ApplyPendingState() {
+std::optional<bool> WaylandSurface::ApplyPendingState() {
   DCHECK(!apply_state_immediately_);
   bool needs_commit = false;
 
   if (pending_state_.buffer_id != state_.buffer_id) {
+    std::optional<bool> explicit_sync_success;
+    if (pending_state_.buffer) {
+      // We need to try setting explicit sync first so that we don't attach the
+      // buffer if there is a failure when setting explicit sync.
+      explicit_sync_success = SetExplicitSync();
+      if (!explicit_sync_success.has_value()) {
+        // There was a failure while trying to set explicit sync. So we need
+        // to early-out and discard this frame and show the previous frame.
+        AttachBuffer(nullptr);
+        pending_state_.damage_px.clear();
+        return std::nullopt;
+      }
+    }
     // The logic in DamageBuffer currently relies on attachment coordinates of
     // (0, 0). If this changes, then the calculation in DamageBuffer will also
     // need to be updated.
     // Note: should the offset be non-zero, use wl_surface_offset() to set it.
     wl_surface_attach(surface_.get(), pending_state_.buffer, 0, 0);
     needs_commit = true;
-
     // Do not call GetOrCreateSurfaceSync() if the buffer management doesn't
     // happen with WaylandBufferManagerHost. That is, if Wayland EGL
     // implementation is used, buffers are attached/swapped via eglSwapBuffers,
@@ -481,44 +614,11 @@ bool WaylandSurface::ApplyPendingState() {
     // surface sync. Creating a surface sync in this case is not necessary.
     // Moreover, a Wayland protocol error will be raised as only one surface
     // sync can exist.
-    if (pending_state_.buffer) {
-      auto* surface_sync = GetOrCreateSurfaceSync();
-      if (surface_sync) {
-        if (!pending_state_.acquire_fence.is_null()) {
-          zwp_linux_surface_synchronization_v1_set_acquire_fence(
-              surface_sync, pending_state_.acquire_fence.Peek());
-        }
-
-        if (!next_explicit_release_request_.is_null()) {
-          auto* linux_buffer_release =
-              zwp_linux_surface_synchronization_v1_get_release(surface_sync);
-          // This must be very unlikely to happen, but there is a bug for this.
-          // Thus, add a check for this object to ensure it's not null. See
-          // https://crbug.com/1382976
-          LOG_IF(FATAL, !linux_buffer_release)
-              << "Unable to get an explicit release object.";
-
-          static constexpr zwp_linux_buffer_release_v1_listener
-              kBufferReleaseListener = {
-                  .fenced_release = &OnFencedRelease,
-                  .immediate_release = &OnImmediateRelease,
-              };
-          zwp_linux_buffer_release_v1_add_listener(
-              linux_buffer_release, &kBufferReleaseListener, this);
-
-          linux_buffer_releases_.emplace(
-              linux_buffer_release,
-              ExplicitReleaseInfo(
-                  wl::Object<zwp_linux_buffer_release_v1>(linux_buffer_release),
-                  pending_state_.buffer,
-                  std::move(next_explicit_release_request_)));
-        }
-      } else if (connection_->UseImplicitSyncInterop()) {
-        if (!pending_state_.acquire_fence.is_null()) {
-          connection_->buffer_manager_host()->InsertAcquireFence(
-              pending_state_.buffer_id, pending_state_.acquire_fence.Peek());
-        }
-      }
+    if (pending_state_.buffer && !explicit_sync_success.value() &&
+        !SetExplicitSyncLegacy() && connection_->UseImplicitSyncInterop() &&
+        !pending_state_.acquire_fence.is_null()) {
+      connection_->buffer_manager_host()->InsertAcquireFence(
+          pending_state_.buffer_id, pending_state_.acquire_fence.Peek());
     }
   }
   pending_state_.acquire_fence = gfx::GpuFenceHandle();
@@ -694,13 +794,11 @@ bool WaylandSurface::ApplyPendingState() {
   gfx::RectF crop = pending_state_.crop;
   gfx::SizeF viewport_px = pending_state_.viewport_px;
 
-  // If this is the root surface, no viewport scaling is requested, surface
-  // submission in pixel coordinates is disabled and fractional_scale_v1 is in
-  // use, then crop the buffer in accordance with the protocol specification to
-  // ensure that a pixel on the window will correspond to a pixel on the
-  // physical display.
-  if (!surface_submission_in_pixel_coordinates_ &&
-      connection_->fractional_scale_manager_v1() && root_window_ &&
+  // If this is the root surface, no viewport scaling is requested, and
+  // fractional_scale_v1 is in use, then crop the buffer in accordance with the
+  // protocol specification to ensure that a pixel on the window will correspond
+  // to a pixel on the physical display.
+  if (connection_->fractional_scale_manager_v1() && root_window_ &&
       root_window_->root_surface() == this &&
       !IsViewportScaled(pending_state_)) {
     gfx::Size old_size_px =
@@ -741,18 +839,13 @@ bool WaylandSurface::ApplyPendingState() {
     applying_surface_scale = GetWaylandScale(pending_state_);
     bounds = gfx::ScaleSize(bounds, 1.f / GetWaylandScale(pending_state_));
   }
-  if (!(surface_submission_in_pixel_coordinates_ ||
-        use_viewporter_surface_scaling_) &&
+  if (!use_viewporter_surface_scaling_ &&
       surface_scale_set_ != applying_surface_scale) {
     wl_surface_set_buffer_scale(surface_.get(), applying_surface_scale);
     surface_scale_set_ = applying_surface_scale;
     needs_commit = true;
   }
   DCHECK_GE(surface_scale_set_, 1);
-
-  // If this is not a subsurface, propagate the buffer scale.
-  if (root_window_ && root_window_->root_surface() == this)
-    root_window_->PropagateBufferScale(pending_state_.buffer_scale_float);
 
   gfx::RectF viewport_src_dip;
   wl_fixed_t src_to_set[4] = {wl_fixed_from_int(-1), wl_fixed_from_int(-1),
@@ -920,12 +1013,12 @@ void WaylandSurface::EnableTrustedDamageIfPossible() {
 void WaylandSurface::ExplicitRelease(
     zwp_linux_buffer_release_v1* linux_buffer_release,
     base::ScopedFD fence) {
-  auto iter = linux_buffer_releases_.find(linux_buffer_release);
-  CHECK(iter != linux_buffer_releases_.end(), base::NotFatalUntil::M130);
+  auto iter = linux_buffer_releases_legacy_.find(linux_buffer_release);
+  CHECK(iter != linux_buffer_releases_legacy_.end(), base::NotFatalUntil::M130);
   DCHECK(iter->second.buffer);
   std::move(iter->second.explicit_release_callback)
       .Run(iter->second.buffer.get(), std::move(fence));
-  linux_buffer_releases_.erase(iter);
+  linux_buffer_releases_legacy_.erase(iter);
 }
 
 WaylandSurface::State::State() = default;

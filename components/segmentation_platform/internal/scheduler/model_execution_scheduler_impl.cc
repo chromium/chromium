@@ -35,7 +35,7 @@ ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
       signal_storage_config_(signal_storage_config),
       model_manager_(model_manager),
       model_executor_(model_executor),
-      legacy_output_segment_ids_(segment_ids),
+      legacy_output_segment_ids_(std::move(segment_ids)),
       clock_(clock),
       platform_options_(platform_options) {}
 

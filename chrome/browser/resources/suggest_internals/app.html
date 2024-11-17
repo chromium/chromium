@@ -6,7 +6,8 @@
   }
 
   cr-button {
-    width: 100%;
+    width: 95%;
+    margin: 3%;
   }
 
   cr-toolbar {
@@ -21,20 +22,6 @@
   [slot='header'] {
     padding: 0 var(--cr-section-padding) var(--cr-section-padding);
   }
-
-  .upload-container {
-    position: relative;
-  }
-
-  .upload-container input[type=file] {
-    position: absolute;
-    top:0;
-    left:0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-  }
 </style>
 <cr-toolbar page-name="Suggest Debug Tool" search-prompt="Filter requests"
     clear-label="Clear filter" on-search-changed="onFilterChanged_"
@@ -42,26 +29,16 @@
 </cr-toolbar>
 <cr-drawer id="drawer" heading="Output controls">
   <div slot="body">
-        <cr-button title="export requests to clipboard" on-click="onCopyClick_">
-          Copy
-          <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
-        </cr-button>
-        <cr-button title="Download requests in JSON format." on-click="onDownloadClick_">
-          Download
+        <cr-button title="Export requests in JSON format" on-click="onExportClick_">
+          Export
           <cr-icon icon="cr:file-download" slot="suffix-icon"></cr-icon>
         </cr-button>
-        <cr-button title="Import requests from clipboard." on-click="onPasteClick_">
-          Paste
-          <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
+        <cr-button title="Import requests in JSON format" on-click="onImportClick_">
+          Import
+          <cr-icon icon="suggest:file-upload" slot="suffix-icon"></cr-icon>
         </cr-button>
-        <div class="upload-container">
-          <cr-button>
-            Upload
-            <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
-          </cr-button>
-          <input placeholder="Upload previously downloaded requests to load them." on-change="onImportFile_" type="file" accept=".json">
-        </div>
-        <cr-button title="Clears the result list" on-click="onClearClick_">
+        <input id="fileInput" type="file" accept=".json" style="display: none;" on-change="onImportFile_">
+        <cr-button title="Clear the result list" on-click="onClearClick_">
           Clear
           <cr-icon icon="cr:delete" slot="suffix-icon"></cr-icon>
         </cr-button>
@@ -89,6 +66,12 @@
     Confirm to hardcode the following response for all Suggest requests.
   </div>
   <div slot="body">
+    <cr-input type="text" label="Delay" value="{{responseDelay_}}"
+      placeholder="optional delay in milliseconds"
+      pattern="[0-9]+"
+      error-message="must be a positive integer"
+      auto-validate>
+    </cr-input>
     <cr-textarea label="Response" value="{{responseText_}}" autogrow>
     </cr-textarea>
   </div>

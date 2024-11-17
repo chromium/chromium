@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+source_set("delegate") {
+  sources = [
+    "empty_tab_group_sync_delegate.cc",
+    "empty_tab_group_sync_delegate.h",
+    "tab_group_sync_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//components/tab_groups",
+    "//ui/gfx",
+    "//url",
+  ]
+  public_deps = [ "//components/saved_tab_groups/public" ]
+}

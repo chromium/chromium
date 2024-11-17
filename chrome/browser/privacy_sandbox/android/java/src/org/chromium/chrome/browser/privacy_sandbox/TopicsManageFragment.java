@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 
@@ -34,8 +33,6 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     private static final String MANAGE_TOPICS_PREFERENCE = "topics_list";
 
     private PreferenceCategory mTopicsCategory;
-
-    private Dialog mConfirmationDialog;
 
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
@@ -89,7 +86,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     }
 
     private boolean onToggleChange(Preference preference, Object newValue) {
-        var topicPreference = (TopicSwitchPreference) (preference);
+        var topicPreference = (TopicSwitchPreference) preference;
         if (!((boolean) newValue)) {
             return handleBlockTopic(topicPreference);
         }

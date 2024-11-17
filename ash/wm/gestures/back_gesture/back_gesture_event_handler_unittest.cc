@@ -26,6 +26,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -967,6 +968,25 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, NonMinimizeableApp) {
   // Make the top window non minimizeable.
   top_window()->SetProperty(aura::client::kResizeBehaviorKey,
                             aura::client::kResizeBehaviorNone);
+  GenerateBackSequence();
+  EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
+}
+
+TEST_F(BackGestureEventHandlerTestCantGoBack, LockedFullscreen) {
+  RecreateTopWindow(chromeos::AppType::SYSTEM_APP);
+  PinWindow(top_window(), /*trusted=*/true);
+  GenerateBackSequence();
+  ASSERT_FALSE(WindowState::Get(top_window())->IsMinimized());
+
+  // Verify that the back gesture will minimize the window once it is unpinned.
+  UnpinWindow(top_window());
+  GenerateBackSequence();
+  EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
+}
+
+TEST_F(BackGestureEventHandlerTestCantGoBack, PinnedWindow) {
+  RecreateTopWindow(chromeos::AppType::SYSTEM_APP);
+  PinWindow(top_window(), /*trusted=*/false);
   GenerateBackSequence();
   EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
 }

@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/variations_safe_seed_store.h"
 
 class PrefService;
@@ -22,7 +23,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
  public:
   // |local_state| should generally be the same value that VariationsSeedStore
   // uses.
-  explicit VariationsSafeSeedStoreLocalState(PrefService* local_state);
+  // |seed_file_dir| is the file path to the seed file directory. If empty, the
+  // seed is not stored in a separate seed file, only in |local_state_|.
+  explicit VariationsSafeSeedStoreLocalState(
+      PrefService* local_state,
+      const base::FilePath& seed_file_dir);
 
   VariationsSafeSeedStoreLocalState(const VariationsSafeSeedStoreLocalState&) =
       delete;
@@ -41,8 +46,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
   base::Time GetTimeForStudyDateChecks() const override;
   void SetTimeForStudyDateChecks(const base::Time& safe_seed_time) override;
 
-  std::string GetCompressedSeed() const override;
-  void SetCompressedSeed(const std::string& safe_compressed) override;
+  StoredSeed GetCompressedSeed() const override;
+  void SetCompressedSeed(const std::string& safe_compressed,
+                         const std::string& base64_safe_compressed) override;
 
   std::string GetSignature() const override;
   void SetSignature(const std::string& safe_seed_signature) override;
@@ -58,6 +64,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
   void SetSessionConsistencyCountry(
       const std::string& session_consistency_country) override;
 
+  SeedReaderWriter* GetSeedReaderWriterForTesting() override;
+
+  void SetSeedReaderWriterForTesting(
+      std::unique_ptr<SeedReaderWriter> seed_reader_writer) override;
+
   void ClearState() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -66,6 +77,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
   // Local State accessor, which should be the same as the one in
   // VariationsSeedStore.
   raw_ptr<PrefService> local_state_;
+
+  // Handles reads and writes to seed files.
+  std::unique_ptr<SeedReaderWriter> seed_reader_writer_;
 };
 
 }  // namespace variations

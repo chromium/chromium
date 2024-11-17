@@ -58,11 +58,10 @@ public class CustomTabNightModeStateControllerTest {
                 .when(mSystemNightModeMonitor)
                 .addObserver(mSystemNightModeObserverCaptor.capture());
         doNothing().when(mPowerSavingModeMonitor).addObserver(mPowerSavingObserverCaptor.capture());
+        SystemNightModeMonitor.setInstanceForTesting(mSystemNightModeMonitor);
         mNightModeController =
                 new CustomTabNightModeStateController(
-                        mActivityLifecycleDispatcher,
-                        mSystemNightModeMonitor,
-                        mPowerSavingModeMonitor);
+                        mActivityLifecycleDispatcher, mPowerSavingModeMonitor);
     }
 
     @Test

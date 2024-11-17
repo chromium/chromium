@@ -60,6 +60,41 @@ void RenderPassInternal::ReplaceExistingQuadWithSolidColor(
       /*force_anti_aliasing_off=*/true);
 }
 
+void RenderPassInternal::ReplaceExistingQuadWithHolePunch(
+    QuadList::Iterator quad,
+    bool* quad_was_opaque) {
+  // If the `quad` is translucent and uses SrcOver blend mode, we can achieve
+  // the same result as compositing with `quad` on top, if we replace `quad`
+  // with a solid color quad with DstOut blend mode, and rely on SrcOver
+  // blending of the root surface with video on bottom. Essentially,
+  //
+  // SrcOver_quad(V, B, V_alpha) = SrcOver_premul(DstOut(BLACK, B, V_alpha), V)
+  // where
+  //    V is the video quad
+  //    B is the background
+  //    SrcOver_quad uses opacity of source quad (V_alpha)
+  //    SrcOver_premul uses alpha channel and assumes premultipled alpha
+  //
+  // This also applies to quads with a mask filter for rounded corners.
+  if (quad->ShouldDrawWithBlending() &&
+      quad->shared_quad_state->blend_mode == SkBlendMode::kSrcOver) {
+    ReplaceExistingQuadWithSolidColor(quad, SkColors::kBlack,
+                                      SkBlendMode::kDstOut);
+    if (quad_was_opaque) {
+      *quad_was_opaque = false;
+    }
+  } else {
+    // When the opacity == 1.0, drawing with transparent will be done without
+    // blending and will have the proper effect of completely clearing the
+    // layer.
+    ReplaceExistingQuadWithSolidColor(quad, SkColors::kTransparent,
+                                      SkBlendMode::kSrcOver);
+    if (quad_was_opaque) {
+      *quad_was_opaque = true;
+    }
+  }
+}
+
 void RenderPassInternal::AsValueInto(
     base::trace_event::TracedValue* value) const {
   cc::MathUtil::AddToTracedValue("output_rect", output_rect, value);

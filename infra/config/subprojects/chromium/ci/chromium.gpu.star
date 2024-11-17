@@ -7,10 +7,11 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "gardener_rotations", "siso")
+load("//lib/builders.star", "cpu", "gardener_rotations", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -30,6 +31,18 @@ ci.defaults.set(
     tree_closing_notifiers = ci.gpu.TREE_CLOSING_NOTIFIERS,
 )
 
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+        "swarming_containment_auto",
+        "timeout_30m",
+    ],
+)
+
+targets.settings_defaults.set(
+    allow_script_tests = False,
+)
+
 consoles.console_view(
     name = "chromium.gpu",
     branch_selector = [
@@ -37,7 +50,11 @@ consoles.console_view(
         branches.selector.DESKTOP_BRANCHES,
     ],
     ordering = {
-        None: ["Windows", "Mac", "Linux"],
+        None: [
+            "Windows",
+            "Mac",
+            "Linux",
+        ],
     },
 )
 
@@ -76,6 +93,26 @@ ci.gpu.linux_builder(
             "static_angle",
             "android_fastbuild",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_common_android_telemetry_tests",
+        ],
+        mixins = [
+            "chromium_nexus_5x_oreo",
+        ],
+        per_test_modifications = {
+            "trace_test": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.ANDROID_CHROMIUM,
+        os_type = targets.os_type.ANDROID,
+        use_android_merge_script_by_default = False,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android",
@@ -122,6 +159,19 @@ ci.gpu.linux_builder(
             "android_fastbuild",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_common_android_telemetry_tests",
+        ],
+        mixins = [
+            "chromium_pixel_2_pie",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.ANDROID_CHROMIUM,
+        os_type = targets.os_type.ANDROID,
+        use_android_merge_script_by_default = False,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android",
         short_name = "P2",
@@ -164,6 +214,7 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
     ),
@@ -196,6 +247,7 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(),
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -239,6 +291,7 @@ ci.gpu.mac_builder(
             "mac",
         ],
     ),
+    targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
@@ -271,6 +324,9 @@ ci.gpu.mac_builder(
             "mac",
         ],
     ),
+    targets = targets.bundle(),
+    cores = None,
+    cpu = cpu.ARM64,
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -374,6 +430,26 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_desktop_passthrough_gtests",
+            "gpu_common_linux_telemetry_tests",
+        ],
+        mixins = [
+            "linux_nvidia_gtx_1660_stable",
+            # TODO(crbug.com/331756538): Specify the puppet_production mixin
+            # once testing is moved to Ubuntu 22.
+        ],
+        per_test_modifications = {
+            "tab_capture_end2end_tests": targets.remove(
+                reason = "Run these only on Release bots.",
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.DEBUG,
+        os_type = targets.os_type.LINUX,
+    ),
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -404,6 +480,26 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_desktop_passthrough_gtests",
+            "gpu_common_linux_telemetry_tests",
+        ],
+        mixins = [
+            "linux_nvidia_gtx_1660_stable",
+            # TODO(crbug.com/331756538): Specify the puppet_production mixin
+            # once testing is moved to Ubuntu 22.
+        ],
+        per_test_modifications = {
+            "tab_capture_end2end_tests": targets.remove(
+                reason = "Disabled due to dbus crashes crbug.com/927465",
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
     ),
@@ -428,6 +524,25 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-gpu-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_desktop_passthrough_gtests",
+            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+        ],
+        mixins = [
+            "mac_mini_intel_gpu_stable",
+            "puppet_production",
+        ],
+        per_test_modifications = {
+            "tab_capture_end2end_tests": targets.remove(
+                reason = "Run these only on Release bots.",
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.DEBUG,
+        os_type = targets.os_type.MAC,
     ),
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
@@ -456,6 +571,20 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_desktop_passthrough_gtests",
+            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+        ],
+        mixins = [
+            "mac_mini_intel_gpu_stable",
+            "puppet_production",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.MAC,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
@@ -480,6 +609,25 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-gpu-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_desktop_passthrough_gtests",
+            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+        ],
+        mixins = [
+            "mac_retina_amd_gpu_stable",
+            "puppet_production",
+        ],
+        per_test_modifications = {
+            "tab_capture_end2end_tests": targets.remove(
+                reason = "Run these only on Release bots.",
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.DEBUG,
+        os_type = targets.os_type.MAC,
     ),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -507,6 +655,20 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_desktop_passthrough_gtests",
+            "gpu_common_metal_passthrough_graphite_telemetry_tests",
+        ],
+        mixins = [
+            "mac_retina_amd_gpu_stable",
+            "puppet_production",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.MAC,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
@@ -531,6 +693,20 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-gpu-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_win_gtests",
+            "gpu_common_win_telemetry_tests",
+        ],
+        mixins = [
+            "win10_nvidia_gtx_1660_stable",
+            "puppet_production",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.DEBUG_X64,
+        os_type = targets.os_type.WINDOWS,
     ),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -560,6 +736,20 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-gpu-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_win_gtests",
+            "gpu_common_win_telemetry_tests",
+        ],
+        mixins = [
+            "win10_nvidia_gtx_1660_stable",
+            "puppet_production",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows",

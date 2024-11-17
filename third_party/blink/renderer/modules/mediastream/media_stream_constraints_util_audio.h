@@ -138,10 +138,9 @@ using AudioDeviceCaptureCapabilities = Vector<AudioDeviceCaptureCapability>;
 //    constraints. Constraints are an input to SelectSettings, while properties
 //    are part of the output. The value for most boolean properties comes
 //    directly from a corresponding boolean constraint, but this is not true for
-//    all constraints and properties. For example, the echo_cancellation and
-//    goog_echo_cancellation constraints  are not directly mapped to any
-//    property, but they, together with hardware characteristics, influence the
-//    selection of echo cancellation type.
+//    all constraints and properties. For example, the echo_cancellation is not
+//    directly mapped to any property, but, together with hardware
+//    characteristics, influence the selection of echo cancellation type.
 //    Moreover, the echo_cancellation constraint influences most other
 //    audio-processing properties for which no explicit value is provided in
 //    their corresponding constraints.

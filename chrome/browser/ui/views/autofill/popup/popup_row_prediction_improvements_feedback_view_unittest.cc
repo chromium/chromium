@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_feedback_view.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -14,23 +15,42 @@
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace autofill {
 
+namespace {
+bool IsA11ySelected(const views::View& view) {
+  ui::AXNodeData node_data;
+  view.GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+}
+}  // namespace
+
+using ::testing::InSequence;
+using ::testing::Mock;
+using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Ref;
+using ::testing::Return;
 using ::testing::VariantWith;
 
 class PopupRowPredictionImprovementsFeedbackViewTest
@@ -42,8 +62,9 @@ class PopupRowPredictionImprovementsFeedbackViewTest
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
-    controller_.set_suggestions(
-        {Suggestion(SuggestionType::kPredictionImprovementsFeedback)});
+    Suggestion suggestion(SuggestionType::kPredictionImprovementsFeedback);
+    suggestion.voice_over = u"Required a11y text";
+    controller_.set_suggestions({std::move(suggestion)});
   }
 
   void ShowView(
@@ -64,6 +85,15 @@ class PopupRowPredictionImprovementsFeedbackViewTest
         a11y_selection_delegate(), selection_delegate(),
         controller_.GetWeakPtr(), /*line_number=*/0);
     ShowView(std::move(row));
+  }
+
+  // Simulates the keyboard event and returns whether the event was handled.
+  bool SimulateKeyPress(int windows_key_code) {
+    input::NativeWebKeyboardEvent event(
+        blink::WebKeyboardEvent::Type::kRawKeyDown,
+        blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
+    event.windows_key_code = windows_key_code;
+    return view().HandleKeyPressEvent(event);
   }
 
  protected:
@@ -124,6 +154,32 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
 }
 
 TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       MouseSelectionIsSuppressed) {
+  EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
+      .WillOnce(Return(true));
+  CreateFeedbackRowAndGetButtons();
+
+  EXPECT_CALL(selection_delegate(),
+              SetSelectedCell(std::make_optional(PopupViewViews::CellIndex{
+                                  0, PopupRowView::CellType::kContent}),
+                              PopupCellSelectionSource::kMouse))
+      .Times(0);
+  generator().MoveMouseTo(
+      view().GetContentView().GetBoundsInScreen().CenterPoint());
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       FocusTriggersSelectionDelegate) {
+  CreateFeedbackRowAndGetButtons();
+
+  EXPECT_CALL(selection_delegate(),
+              SetSelectedCell(std::make_optional(PopupViewViews::CellIndex{
+                                  0, PopupRowView::CellType::kContent}),
+                              PopupCellSelectionSource::kKeyboard));
+  view().OnViewFocused(&view().GetContentView());
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
        LearnMoreClickTriggersCallback) {
   CreateFeedbackRowAndGetButtons();
   view().SetSelectedCell(PopupRowView::CellType::kContent);
@@ -140,4 +196,174 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   suggestion_text->ClickFirstLinkForTesting();
 }
 
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       LinkIsDefaultFocusableControlForSelectedRow) {
+  CreateFeedbackRowAndGetButtons();
+
+  EXPECT_EQ(view().focused_control_for_testing(), std::nullopt);
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kManagePredictionImprovementsLink);
+
+  view().SetSelectedCell(std::nullopt);
+  EXPECT_EQ(view().focused_control_for_testing(), std::nullopt);
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       LeftRightKeysUpdateFocusedControl) {
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(
+      view().focused_control_for_testing(),
+      PopupRowPredictionImprovementsFeedbackView::FocusableControl::kThumbsUp);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kManagePredictionImprovementsLink)
+      << "The list of controls wraps.";
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       LeftRightKeysUpdateFocusedControlRTL) {
+  base::i18n::SetRTLForTesting(true);
+
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(
+      view().focused_control_for_testing(),
+      PopupRowPredictionImprovementsFeedbackView::FocusableControl::kThumbsUp);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kManagePredictionImprovementsLink)
+      << "The list of controls wraps.";
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+  base::i18n::SetRTLForTesting(false);
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       EnterIsHandledForFocusedManagePredictionImprovementsLink) {
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  EXPECT_CALL(controller(),
+              PerformButtonActionForSuggestion(
+                  /*index=*/0,
+                  VariantWith<PredictionImprovementsButtonActions>(
+                      PredictionImprovementsButtonActions::kLearnMoreClicked)));
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       EnterIsHandledForFocusedThumbsUp) {
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  ASSERT_EQ(
+      view().focused_control_for_testing(),
+      PopupRowPredictionImprovementsFeedbackView::FocusableControl::kThumbsUp);
+
+  EXPECT_CALL(controller(),
+              PerformButtonActionForSuggestion(
+                  /*index=*/0,
+                  VariantWith<PredictionImprovementsButtonActions>(
+                      PredictionImprovementsButtonActions::kThumbsUpClicked)));
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       EnterIsHandledForFocusedThumbsDown) {
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  ASSERT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+
+  EXPECT_CALL(
+      controller(),
+      PerformButtonActionForSuggestion(
+          /*index=*/0,
+          VariantWith<PredictionImprovementsButtonActions>(
+              PredictionImprovementsButtonActions::kThumbsDownClicked)));
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       A11yFocusIsSetToFocusedControl) {
+  CreateFeedbackRowAndGetButtons();
+  MockFunction<void()> check;
+  {
+    InSequence s;
+
+    // Default content selection is not suppressed, but it makes no difference
+    // to the UX.
+    EXPECT_CALL(a11y_selection_delegate(),
+                NotifyAXSelection(Ref(view().GetContentView())));
+    EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(view())));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(a11y_selection_delegate(),
+                NotifyAXSelection(Ref(*view().GetThumbsUpButtonForTest())));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(a11y_selection_delegate(),
+                NotifyAXSelection(Ref(*view().GetThumbsDownButtonForTest())));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(view())));
+    EXPECT_CALL(check, Call);
+  }
+
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+  check.Call();
+  EXPECT_TRUE(IsA11ySelected(view()));
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  check.Call();
+  EXPECT_FALSE(IsA11ySelected(view()));
+  EXPECT_TRUE(IsA11ySelected(*view().GetThumbsUpButtonForTest()));
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  check.Call();
+  EXPECT_FALSE(IsA11ySelected(*view().GetThumbsUpButtonForTest()));
+  EXPECT_TRUE(IsA11ySelected(*view().GetThumbsDownButtonForTest()));
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  check.Call();
+  EXPECT_FALSE(IsA11ySelected(*view().GetThumbsDownButtonForTest()));
+  EXPECT_TRUE(IsA11ySelected(view()));
+}
 }  // namespace autofill

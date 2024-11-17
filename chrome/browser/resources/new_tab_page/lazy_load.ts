@@ -19,15 +19,14 @@ export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';
-export {FileProxy} from './modules/drive/file_module_proxy.js';
-export {driveDescriptor, DriveModuleElement} from './modules/drive/module.js';
+export {MobilePromoElement} from './mobile_promo.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';
 export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';
 export {ModuleWrapperElement} from './modules/module_wrapper.js';
-export {DisableModuleEvent, DismissModuleEvent, ModulesElement} from './modules/modules.js';
+export {microsoftAuthModuleDescriptor, MicrosoftAuthModuleElement} from './modules/v2/authentication/microsoft_auth_module.js';
 export {CalendarElement} from './modules/v2/calendar/calendar.js';
 export {CalendarEventElement} from './modules/v2/calendar/calendar_event.js';
 export {CalendarAction} from './modules/v2/calendar/common.js';
@@ -39,9 +38,12 @@ export {OutlookCalendarProxyImpl} from './modules/v2/calendar/outlook_calendar_p
 export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
 export {dummyV2Descriptor, ModuleElement as DummyModuleElement} from './modules/v2/dummy/module.js';
 // </if>
-export {fileSuggestionDescriptor, ModuleElement as FileSuggestionModuleElement} from './modules/v2/file_suggestion/module.js';
+export {DriveModuleElement as DriveModuleV2Element, driveModuleV2Descriptor} from './modules/v2/file_suggestion/drive_module.js';
+export {FileProxy} from './modules/v2/file_suggestion/file_module_proxy.js';
+export {FileSuggestionElement} from './modules/v2/file_suggestion/file_suggestion.js';
+export {sharepointModuleDescriptor, SharepointModuleElement} from './modules/v2/file_suggestion/sharepoint_module.js';
 export {ModuleHeaderElement as ModuleHeaderElementV2} from './modules/v2/module_header.js';
-export {DismissModuleElementEvent, DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
-export {mostRelevantTabResumptionDescriptor, MostRelevantTabResumptionModuleElement} from './modules/v2/most_relevant_tab_resumption/module.js';
+export {DisableModuleEvent, DismissModuleElementEvent, DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
+export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/v2/most_relevant_tab_resumption/module.js';
 export {MostRelevantTabResumptionProxyImpl} from './modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

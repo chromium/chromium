@@ -27,7 +27,6 @@ import android.view.textclassifier.TextLinks;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -261,16 +260,6 @@ public class ClipboardImpl extends Clipboard
                 mImageFileProvider.getLastCopiedImageMetadata();
         if (imageMetadata == null || imageMetadata.uri == null) return null;
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // ClipDescription#getTimestamp() only exist in O+, so we just check if getImageUri()
-            // same as the stored URI.
-            if (!imageMetadata.uri.equals(getImageUri())) {
-                mImageFileProvider.clearLastCopiedImageMetadata();
-                return null;
-            }
-            return imageMetadata.uri;
-        }
-
         long clipboardTimeStamp = getImageTimestamp();
         if (clipboardTimeStamp == ImageFileProvider.ClipboardFileMetadata.INVALID_TIMESTAMP
                 || mImageFileProvider == null) {
@@ -353,16 +342,8 @@ public class ClipboardImpl extends Clipboard
                                 && sSkipImageMimeTypeCheckForTesting));
     }
 
-    /**
-     * Return the timestamp for the content in the clipboard if the clipboard contains an image.
-     * return 0 on Android Pre O since the ClipDescription#getTimestamp() only exist in O+.
-     */
+    /** Return the timestamp for the content in the clipboard if the clipboard contains an image. */
     private long getImageTimestamp() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // ClipDescription#getTimestamp() only exist in O+, so we just return 0.
-            return ImageFileProvider.ClipboardFileMetadata.INVALID_TIMESTAMP;
-        }
-
         ClipDescription description = mClipboardManager.getPrimaryClipDescription();
         if (description == null || !description.hasMimeType("image/*")) {
             return ImageFileProvider.ClipboardFileMetadata.INVALID_TIMESTAMP;
@@ -617,7 +598,6 @@ public class ClipboardImpl extends Clipboard
         onPrimaryClipTimestampInvalidated();
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private void onPrimaryClipTimestampInvalidated() {
         ClipDescription clipDescription = mClipboardManager.getPrimaryClipDescription();
         if (clipDescription == null) return;
@@ -639,9 +619,7 @@ public class ClipboardImpl extends Clipboard
      */
     @SuppressWarnings("QueryPermissionsNeeded")
     private void grantUriPermission(@NonNull Uri uri) {
-        if ((Build.VERSION.SDK_INT != Build.VERSION_CODES.O
-                        && Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1)
-                || mImageFileProvider == null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P || mImageFileProvider == null) {
             return;
         }
 
@@ -657,8 +635,7 @@ public class ClipboardImpl extends Clipboard
      * Android O.
      */
     private void revokeUriPermissionForLastSharedImage() {
-        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O
-                && Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return;
         }
 
@@ -748,8 +725,6 @@ public class ClipboardImpl extends Clipboard
     /**
      * Conditionally show a toast to avoid duplicate notifications in Android 13+
      * https://developer.android.com/develop/ui/views/touch-and-input/copy-paste#duplicate-notifications
-     *
-     * @param stringId
      */
     private void showToastIfNeeded(@StringRes int stringId) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) return;

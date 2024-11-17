@@ -6,8 +6,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Some unit tests directly instantiate an in-process auction_worklet service.
-  ".*_unittest\.cc": [
+  "(.*_unittest\.cc|test_same_process_auction_process_manager.cc)": [
     "+content/services/auction_worklet",
   ],
   ".*_fuzzer.cc": [

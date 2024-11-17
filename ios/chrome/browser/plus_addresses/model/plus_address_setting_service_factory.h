@@ -6,8 +6,9 @@
 #define IOS_CHROME_BROWSER_PLUS_ADDRESSES_MODEL_PLUS_ADDRESS_SETTING_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace plus_addresses {
 class PlusAddressSettingService;

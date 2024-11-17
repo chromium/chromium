@@ -236,9 +236,7 @@ size_t FindRunBreakingCharacter(const std::u16string& text,
   base::i18n::BreakIterator grapheme_iterator(
       run_text, base::i18n::BreakIterator::BREAK_CHARACTER);
   if (!grapheme_iterator.Init() || !grapheme_iterator.Advance()) {
-    // In case of error, isolate the first character in a separate run.
-    NOTREACHED_IN_MIGRATION();
-    return run_start + 1;
+    NOTREACHED();
   }
 
   // Retrieve the first grapheme and its codepoint properties.
@@ -1135,7 +1133,7 @@ SkScalar TextRunHarfBuzz::GetGlyphWidthForCharRange(
   // colors for a single glyph). In this case it might cause the browser crash,
   // see crbug.com/526234.
   if (glyph_range.start() >= glyph_range.end()) {
-    NOTREACHED_IN_MIGRATION()
+    DUMP_WILL_BE_NOTREACHED()
         << "The glyph range is empty or invalid! Its char range: ["
         << char_range.start() << ", " << char_range.end()
         << "], and its glyph range: [" << glyph_range.start() << ", "

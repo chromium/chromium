@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/slim/frame_sink_impl.h"
 
 #include <string>
@@ -17,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
+#include "base/task/common/task_annotator.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -118,12 +114,13 @@ bool FrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
       viz::mojom::CompositorFrameSinkType::kLayerTree);
 
 #if BUILDFLAG(IS_ANDROID)
-  std::vector<int32_t> thread_ids;
-  thread_ids.push_back(base::PlatformThread::CurrentId());
+  std::vector<viz::Thread> threads;
+  threads.push_back(
+      {base::PlatformThread::CurrentId(), viz::Thread::Type::kMain});
   if (io_thread_id_ != base::kInvalidThreadId) {
-    thread_ids.push_back(io_thread_id_);
+    threads.push_back({io_thread_id_, viz::Thread::Type::kIO});
   }
-  frame_sink_->SetThreadIds(thread_ids);
+  frame_sink_->SetThreads(threads);
 #endif
   return true;
 }
@@ -179,11 +176,10 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   constexpr gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  uploaded_resource.shared_image = sii->CreateSharedImage(
-      {format, resource_bitmap.GetSize(), color_space, shared_image_usage,
-       "SlimCompositorUIResource"},
-      base::span<const uint8_t>(resource_bitmap.GetPixels(),
-                                resource_bitmap.SizeInBytes()));
+  uploaded_resource.shared_image =
+      sii->CreateSharedImage({format, resource_bitmap.GetSize(), color_space,
+                              shared_image_usage, "SlimCompositorUIResource"},
+                             resource_bitmap.GetPixels());
   CHECK(uploaded_resource.shared_image);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
@@ -304,49 +300,69 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
   }
 
   TRACE_EVENT0("cc", "slim::FrameSinkImpl::DoBeginFrame");
-  viz::CompositorFrame frame;
-  base::flat_set<viz::ResourceId> viz_resource_ids;
-  viz::HitTestRegionList hit_test_region_list;
-  if (!client_->BeginFrame(begin_frame_args, frame, viz_resource_ids,
-                           hit_test_region_list)) {
-    return false;
-  }
-
-  if (local_surface_id_ == last_submitted_local_surface_id_) {
-    DCHECK_EQ(last_submitted_device_scale_factor_, frame.device_scale_factor());
-    DCHECK_EQ(last_submitted_size_in_pixels_.height(),
-              frame.size_in_pixels().height());
-    DCHECK_EQ(last_submitted_size_in_pixels_.width(),
-              frame.size_in_pixels().width());
-  }
-
-  resource_provider_.PrepareSendToParent(std::move(viz_resource_ids).extract(),
-                                         &frame.resource_list,
-                                         context_provider_.get());
-
-  bool send_new_hit_test_region_list = false;
-  if (!hit_test_region_list_ ||
-      !viz::HitTestRegionList::IsEqual(*hit_test_region_list_,
-                                       hit_test_region_list)) {
-    send_new_hit_test_region_list = true;
-    hit_test_region_list_ = std::move(hit_test_region_list);
-  }
-
   {
     TRACE_EVENT(
         "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
         perfetto::Flow::Global(begin_frame_args.trace_id),
         [&](perfetto::EventContext ctx) {
+          base::TaskAnnotator::EmitTaskTimingDetails(ctx);
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
           auto* data = event->set_chrome_graphics_pipeline();
           data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                             StepName::STEP_SUBMIT_COMPOSITOR_FRAME);
-          data->set_display_trace_id(begin_frame_args.trace_id);
+                             StepName::STEP_GENERATE_COMPOSITOR_FRAME);
+          data->set_surface_frame_trace_id(begin_frame_args.trace_id);
         });
-    frame_sink_->SubmitCompositorFrame(
-        local_surface_id_, std::move(frame),
-        send_new_hit_test_region_list ? hit_test_region_list_ : std::nullopt,
-        0);
+
+    viz::CompositorFrame frame;
+    base::flat_set<viz::ResourceId> viz_resource_ids;
+    viz::HitTestRegionList hit_test_region_list;
+    if (!client_->BeginFrame(begin_frame_args, frame, viz_resource_ids,
+                             hit_test_region_list)) {
+      return false;
+    }
+
+    if (local_surface_id_ == last_submitted_local_surface_id_) {
+      DCHECK_EQ(last_submitted_device_scale_factor_,
+                frame.device_scale_factor());
+      DCHECK_EQ(last_submitted_size_in_pixels_.height(),
+                frame.size_in_pixels().height());
+      DCHECK_EQ(last_submitted_size_in_pixels_.width(),
+                frame.size_in_pixels().width());
+    }
+
+    resource_provider_.PrepareSendToParent(
+        std::move(viz_resource_ids).extract(), &frame.resource_list,
+        context_provider_.get());
+
+    bool send_new_hit_test_region_list = false;
+    if (!hit_test_region_list_ ||
+        !viz::HitTestRegionList::IsEqual(*hit_test_region_list_,
+                                         hit_test_region_list)) {
+      send_new_hit_test_region_list = true;
+      hit_test_region_list_ = std::move(hit_test_region_list);
+    }
+
+    {
+      TRACE_EVENT(
+          "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+          perfetto::Flow::Global(begin_frame_args.trace_id),
+          [&](perfetto::EventContext ctx) {
+            base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+            auto* event =
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+            auto* data = event->set_chrome_graphics_pipeline();
+            data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                               StepName::STEP_SUBMIT_COMPOSITOR_FRAME);
+            data->set_surface_frame_trace_id(begin_frame_args.trace_id);
+            for (const ui::LatencyInfo& latency : frame.metadata.latency_info) {
+              data->add_latency_ids(latency.trace_id());
+            }
+          });
+      frame_sink_->SubmitCompositorFrame(
+          local_surface_id_, std::move(frame),
+          send_new_hit_test_region_list ? hit_test_region_list_ : std::nullopt,
+          0);
+    }
   }
   num_unacked_frames_++;
   if (num_unacked_frames_ == 1) {
@@ -362,11 +378,12 @@ void FrameSinkImpl::SendDidNotProduceFrame(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(begin_frame_args.trace_id),
       [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                           StepName::STEP_DID_NOT_PRODUCE_FRAME);
-        data->set_display_trace_id(begin_frame_args.trace_id);
+                           StepName::STEP_DID_NOT_PRODUCE_COMPOSITOR_FRAME);
+        data->set_surface_frame_trace_id(begin_frame_args.trace_id);
       });
   frame_sink_->DidNotProduceFrame(viz::BeginFrameAck(begin_frame_args, false));
 }

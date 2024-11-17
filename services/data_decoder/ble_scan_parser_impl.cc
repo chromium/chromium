@@ -156,11 +156,10 @@ std::string BleScanParserImpl::ParseUuid(base::span<const uint8_t> bytes,
       uuid.insert(23, 1, '-');
       return uuid;
     case UuidFormat::kFormatInvalid:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 bool BleScanParserImpl::ParseServiceUuids(
@@ -179,8 +178,7 @@ bool BleScanParserImpl::ParseServiceUuids(
       uuid_length = 16;
       break;
     case UuidFormat::kFormatInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   if (bytes.size() % uuid_length != 0) {

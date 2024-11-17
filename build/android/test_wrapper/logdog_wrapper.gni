@@ -8,24 +8,25 @@ import("//build/util/generate_wrapper.gni")
 # itself wrapped by the logdog_wrapper.py tool, which will automatically stream
 # the device's logcats to logdog.
 template("logdog_wrapper_script_test") {
-  forward_variables_from(invoker,
-                         [
-                           "data_deps",
-                           "args",
-                         ])
   generate_wrapper(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "args",
+                             "data_deps",
+                           ])
     executable = "../../build/android/test_wrapper/logdog_wrapper.py"
     wrapper_script = "$root_out_dir/bin/run_${target_name}"
     testonly = true
 
-    if (!defined(args)) {
-      args = []
+    executable_args = []
+    if (defined(invoker.args)) {
+      executable_args += invoker.args
     }
-    executable_args = args
 
-    if (!defined(data_deps)) {
-      data_deps = []
+    data_deps = [ "//build/android:logdog_wrapper_py" ]
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
     }
-    data_deps += [ "//build/android:logdog_wrapper_py" ]
   }
 }

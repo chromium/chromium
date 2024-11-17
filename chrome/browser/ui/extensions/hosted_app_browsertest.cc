@@ -25,6 +25,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
@@ -427,6 +428,11 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
 #define MAYBE_CtrlClickLink CtrlClickLink
 #endif
 IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
+  if (apps::features::IsNavigationCapturingReimplEnabled() &&
+      GetParam() == AppType::WEB_APP) {
+    GTEST_SKIP() << "Ctrl-click tests for web apps are thoroughly handled in "
+                    "WebAppLinkCapturingParameterizedBrowserTest";
+  }
   WaitUntilBrowserBecomeActiveOrLastActive(browser());
   ExpectBrowserBecomesActiveOrLastActive(browser());
 
@@ -546,7 +552,10 @@ using HostedAppTest = HostedOrWebAppTest;
 // Tests that hosted apps are not web apps.
 IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
   SetupApp("app");
-  EXPECT_FALSE(registrar().IsInstalled(app_id_));
+  EXPECT_FALSE(registrar().IsInstallState(
+      app_id_, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   const Extension* app =
       ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(app_id_);
   EXPECT_TRUE(app->is_hosted_app());
@@ -613,9 +622,11 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering, EffectiveUrlOnTrigger) {
       GetAppWebContents()->StartPrerendering(
           prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
+          /*no_vary_search_expected=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           /*should_warm_up_compositor=*/false,
+          /*should_prepare_paint_tree=*/false,
           content::PreloadingHoldbackStatus::kUnspecified,
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
           /*prerender_navigation_handle_callback=*/{});
@@ -636,15 +647,11 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
   // Start prerendering for the app URL on the non-app's context. This should
   // fail as the app URL has the effective URL.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetNonAppWebContents()->StartPrerendering(
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
           app_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/false,
-          content::PreloadingHoldbackStatus::kUnspecified,
-          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_FALSE(prerender_handle);
 
   histogram_tester().ExpectUniqueSample(
@@ -664,15 +671,11 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
   // Start prerendering for the URL that redirected to the app URL on the
   // non-app's context. This should fail as the final URL has the effective URL.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetNonAppWebContents()->StartPrerendering(
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
           prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/false,
-          content::PreloadingHoldbackStatus::kUnspecified,
-          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
   content::FrameTreeNodeId host_id =
       prerender_helper().GetHostForUrl(prerendering_url);
@@ -691,15 +694,11 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
 
   // Start prerendering for the app URL on the non-app's context.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetNonAppWebContents()->StartPrerendering(
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
           app_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/false,
-          content::PreloadingHoldbackStatus::kUnspecified,
-          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-          /*prerender_navigation_handle_callback=*/{});
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
 
   // Start a hosted app. This makes the app URL have an effective URL.
@@ -1094,10 +1093,20 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
     EXPECT_EQ(expect_app_process,
               process_map_->Contains(subframe->GetProcess()->GetID()))
         << " for " << url << " from " << parent_rfh->GetLastCommittedURL();
-    EXPECT_EQ(expect_app_process,
-              subframe->GetSiteInstance()->GetSiteURL().SchemeIs(
-                  extensions::kExtensionScheme))
-        << " for " << url << " from " << parent_rfh->GetLastCommittedURL();
+    if (!base::FeatureList::IsEnabled(
+            features::kSiteInstanceGroupsForDataUrls)) {
+      // When SiteInstanceGroups are enabled, same-process subframes may be in a
+      // different SiteInstance from their parent.
+      EXPECT_EQ(expect_app_process,
+                subframe->GetSiteInstance()->GetSiteURL().SchemeIs(
+                    extensions::kExtensionScheme))
+          << " for " << url << " from " << parent_rfh->GetLastCommittedURL();
+    } else if (subframe->GetLastCommittedURL().SchemeIs(url::kDataScheme)) {
+      // If SiteInstanceGroups are enabled, expect subframe data: URLs to be in
+      // the same SiteInstanceGroup as their parent.
+      EXPECT_EQ(parent_rfh->GetSiteInstance()->GetSiteInstanceGroupId(),
+                subframe->GetSiteInstance()->GetSiteInstanceGroupId());
+    }
 
     return subframe;
   }
@@ -1482,7 +1491,10 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, MAYBE_FromOutsideHostedApp) {
 IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
                        AppRegistrarExcludesPackaged) {
   SetupApp("https_app");
-  EXPECT_FALSE(registrar().IsInstalled(app_id_));
+  EXPECT_FALSE(registrar().IsInstallState(
+      app_id_, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 // Check that we can successfully complete a navigation to an app URL with a

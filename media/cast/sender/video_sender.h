@@ -30,7 +30,6 @@ class VideoFrame;
 namespace media::cast {
 
 class VideoEncoder;
-class VideoFrameFactory;
 
 using PlayoutDelayChangeCB = base::RepeatingCallback<void(base::TimeDelta)>;
 
@@ -67,11 +66,6 @@ class VideoSender : public FrameSender::Client {
   virtual void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                                    base::TimeTicks reference_time);
 
-  // Creates a |VideoFrameFactory| object to vend |VideoFrame| object with
-  // encoder affinity (defined as offering some sort of performance benefit). If
-  // the encoder does not have any such capability, returns null.
-  std::unique_ptr<VideoFrameFactory> CreateVideoFrameFactory();
-
   void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay);
   base::TimeDelta GetTargetPlayoutDelay() const;
 
@@ -87,9 +81,7 @@ class VideoSender : public FrameSender::Client {
 
  private:
   // Called by the |video_encoder_| with the next EncodedFrame to send.
-  void OnEncodedVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
-                           const base::TimeTicks reference_time,
-                           std::unique_ptr<SenderEncodedFrame> encoded_frame);
+  void OnEncodedVideoFrame(std::unique_ptr<SenderEncodedFrame> encoded_frame);
 
   // The backing frame sender implementation.
   std::unique_ptr<FrameSender> frame_sender_;

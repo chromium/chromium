@@ -64,6 +64,10 @@ using DiscoveryDevice = chrome_browser_media::proto::DiscoveryDevice;
 static constexpr base::TimeDelta kRemoveRouteDelay =
     AccessCodeCastSinkService::kExpirationDelay * 2;
 
+static constexpr base::TimeDelta kNetworkChangeDelay =
+    AccessCodeCastSinkService::kExpirationDelay +
+    AccessCodeCastSinkService::kNetworkChangeBuffer;
+
 class AccessCodeCastSinkServiceTest : public testing::Test {
  public:
   AccessCodeCastSinkServiceTest()
@@ -548,6 +552,8 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksExpiration) {
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
 
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
+
   // 3 expiration timers should be set still.
   EXPECT_EQ(3u, current_session_expiration_timers().size());
 
@@ -598,7 +604,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworksNoExpiration) {
   // Connect to a new network with different sinks.
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
-  task_environment_.FastForwardBy(kRemoveRouteDelay);
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
   task_environment_.AdvanceClock(base::Seconds(75));
 
   // 3 expiration timers should be set still.
@@ -721,6 +727,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestResetExpirationTimersNetworkChange) {
   }
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
 
   task_environment_.AdvanceClock(base::Seconds(100));
 
@@ -812,7 +819,7 @@ TEST_F(AccessCodeCastSinkServiceTest, TestChangeNetworkWithRouteActive) {
 
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
-  task_environment_.FastForwardBy(kRemoveRouteDelay);
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
 
   // The sink should NOT now be removed from the media router since it was not
   // expired.
@@ -859,6 +866,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
 
   fake_network_info_ = fake_wifi_info_;
   ChangeConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
+  task_environment_.FastForwardBy(kNetworkChangeDelay);
 
   // The sink should now be removed from the media router.
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
@@ -1364,42 +1372,6 @@ TEST_F(AccessCodeCastSinkServiceTest, InitializePrefUpdater) {
   access_code_cast_sink_service_->ResetPrefUpdaterForTesting();
   access_code_cast_sink_service_->InitializePrefUpdaterForTesting();
   task_environment_.RunUntilIdle();
-
-  // There's no Ash instance when running unit_tests on Lacros and the Prefs
-  // crosapi is not available. So it is expected that Lacros's user prefs is
-  // used.
-  EXPECT_FALSE(access_code_cast_sink_service_
-                   ->IsAccessCodeCastLacrosSyncEnabledForTesting());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(AccessCodeCastSinkServiceTest, OnDevicesPrefChange) {
-  auto cast_sink = CreateCastSink(1);
-  base::Value::Dict devices_dict;
-  devices_dict.Set(cast_sink.id(),
-                   CreateValueDictFromMediaSinkInternal(cast_sink));
-  static_cast<MockAccessCodeCastPrefUpdater*>(pref_updater())
-      ->set_devices_dict(std::move(devices_dict));
-
-  ExpectOpenChannels({cast_sink}, 1);
-  ExpectHasSink({cast_sink}, 1);
-
-  // We don't need to actually store the devices in the pref service
-  // since we are using MockAccessCodeCastPrefUpdater, which does not use the
-  // pref service. We only need to modify the pref service so that
-  // AccessCodeCastSinkService is notified.
-  GetTestingPrefs()->SetDict(prefs::kAccessCodeCastDevices,
-                             base::Value::Dict());
-  task_environment_.RunUntilIdle();
-
-  // if there's no new device in the pref service, the access code cast sink
-  // service shouldn't attempt to open channels to existing sinks.
-  ExpectOpenChannels({cast_sink}, 0);
-  ExpectHasSink({cast_sink}, 0);
-  GetTestingPrefs()->SetDict(prefs::kAccessCodeCastDevices,
-                             base::Value::Dict());
-  task_environment_.RunUntilIdle();
-}
-#endif
 
 }  // namespace media_router

@@ -20,7 +20,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "storage/browser/quota/quota_manager.h"
 
 namespace storage {
@@ -183,7 +183,7 @@ class StorageHandler
   CacheStorageObserver* GetCacheStorageObserver();
   IndexedDBObserver* GetIndexedDBObserver();
 
-  SharedStorageWorkletHostManager* GetSharedStorageWorkletHostManager();
+  SharedStorageRuntimeManager* GetSharedStorageRuntimeManager();
   absl::variant<protocol::Response, storage::SharedStorageManager*>
   GetSharedStorageManager();
   storage::QuotaManagerProxy* GetQuotaManagerProxy();
@@ -211,8 +211,8 @@ class StorageHandler
 
   void NotifySharedStorageAccessed(
       const base::Time& access_time,
-      SharedStorageWorkletHostManager::SharedStorageObserverInterface::
-          AccessType type,
+      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType
+          type,
       FrameTreeNodeId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);

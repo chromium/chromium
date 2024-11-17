@@ -46,11 +46,7 @@ public class Both<A, B> {
 
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append(this.first.toString())
-                .append(", ")
-                .append(this.second.toString())
-                .toString();
+        return this.first + ", " + this.second;
     }
 
     @Override

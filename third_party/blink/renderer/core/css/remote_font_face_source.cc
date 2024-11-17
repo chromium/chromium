@@ -40,10 +40,6 @@ namespace blink {
 
 bool RemoteFontFaceSource::NeedsInterventionToAlignWithLCPGoal() const {
   DCHECK_EQ(display_, FontDisplay::kAuto);
-  if (!base::FeatureList::IsEnabled(
-          features::kAlignFontDisplayAutoTimeoutWithLCPGoal)) {
-    return false;
-  }
   if (!GetDocument() ||
       !FontFaceSetDocument::From(*GetDocument())->HasReachedLCPLimit()) {
     return false;
@@ -61,16 +57,6 @@ RemoteFontFaceSource::DisplayPeriod
 RemoteFontFaceSource::ComputeFontDisplayAutoPeriod() const {
   DCHECK_EQ(display_, FontDisplay::kAuto);
   if (NeedsInterventionToAlignWithLCPGoal()) {
-    using Mode = features::AlignFontDisplayAutoTimeoutWithLCPGoalMode;
-    Mode mode =
-        features::kAlignFontDisplayAutoTimeoutWithLCPGoalModeParam.Get();
-    if (mode == Mode::kToSwapPeriod) {
-      return kSwapPeriod;
-    }
-    DCHECK_EQ(Mode::kToFailurePeriod, mode);
-    if (custom_font_data_ && !custom_font_data_->MayBeIconFont()) {
-      return kFailurePeriod;
-    }
     return kSwapPeriod;
   }
 
@@ -140,8 +126,7 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
       return kSwapPeriod;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return kSwapPeriod;
+  NOTREACHED();
 }
 
 RemoteFontFaceSource::RemoteFontFaceSource(
@@ -197,25 +182,24 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   auto* font = To<FontResource>(resource);
   histograms_.RecordRemoteFont(font);
 
-  // Refer to the comments in classic_pending_script.cc for the reason why
+  // Refer to the comments in `Resource::ForceIntegrityChecks()`:
   // SRI checks should be done here in ResourceClient instead of
   // ResourceFetcher. SRI failure should behave as network error
   // (ErrorOccurred()). PreloadCache even caches network errors.
   // Font fetch itself doesn't support SRI but font preload does.
   // So, if the resource was preloaded we need to check
   // SRI failure and simulate network error if it happens.
-
-  if (resource->IsLinkPreload()) {
+  bool force_integrity_checks = resource->ForceIntegrityChecks();
+  if (force_integrity_checks) {
     SubresourceIntegrityHelper::DoReport(*execution_context,
                                          resource->IntegrityReportInfo());
   }
 
-  DCHECK(!custom_font_data_);
   // font->GetCustomFontData() returns nullptr if network error happened
   // (ErrorOccurred() is true). To simulate network error we don't update
   // custom_font_data_ to keep the nullptr value in case of SRI failures.
-  if (!resource->IsLinkPreload() || resource->IntegrityDisposition() !=
-                                        ResourceIntegrityDisposition::kFailed) {
+  DCHECK(!custom_font_data_);
+  if (resource->PassedIntegrityChecks() || !force_integrity_checks) {
     custom_font_data_ = font->GetCustomFontData();
   }
   url_ = resource->Url().GetString();
@@ -541,8 +525,7 @@ RemoteFontFaceSource::FontLoadHistograms::DataSourceMetricsValue() {
     case kFromUnknown:
       return CacheHitMetrics::kMiss;
   }
-  NOTREACHED_IN_MIGRATION();
-  return CacheHitMetrics::kMiss;
+  NOTREACHED();
 }
 
 }  // namespace blink

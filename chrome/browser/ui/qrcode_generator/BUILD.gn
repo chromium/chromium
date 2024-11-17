@@ -1,0 +1,59 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+assert(toolkit_views)
+
+source_set("qrcode_generator") {
+  sources = [
+    "qrcode_generator_bubble_controller.h",
+    "qrcode_generator_bubble_view.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "qrcode_generator_bubble_controller.cc" ]
+  deps = [
+    ":qrcode_generator",
+    "//chrome/browser:browser_process",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//url",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "qrcode_generator_bubble_controller_policy_browsertest.cc" ]
+  deps = [
+    ":qrcode_generator",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/policy:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "qrcode_generator_bubble_controller_unittest.cc" ]
+  deps = [
+    ":qrcode_generator",
+    "//base/test:test_support",
+    "//components/sharing_message",
+  ]
+}

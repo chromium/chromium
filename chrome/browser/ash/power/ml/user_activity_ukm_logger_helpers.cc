@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger_helpers.h"
 
 #include <array>
+#include <cmath>
 
 namespace ash {
 namespace power {

@@ -97,17 +97,17 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
   [self openFindInPage];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Disabled for iOS 16.1.1+.
   if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
-    [super tearDown];
+    [super tearDownHelper];
     return;
   }
 
   // Close find in page view.
   [self closeFindInPage];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests.
@@ -185,13 +185,7 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
   if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
     return;
   }
-  if (@available(iOS 16, *)) {
-    [self typeFindInPageText:@"find"];
-  } else {
-    // On iOS 15, the keyboard is not passing the accessibility test. Press
-    // enter to dismiss it.
-    [self typeFindInPageText:@"find\n"];
-  }
+  [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];

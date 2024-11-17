@@ -12,6 +12,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -137,7 +138,8 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
                                  .value_or(event->location_f());
       gfx::Point location_in_screen = gfx::ToRoundedPoint(location);
       views::View::ConvertPointToScreen(view, &location_in_screen);
-      view->ShowContextMenu(location_in_screen, ui::MENU_SOURCE_MOUSE);
+      view->ShowContextMenu(location_in_screen,
+                            ui::mojom::MenuSourceType::kMouse);
       event->SetHandled();
       break;
   }

@@ -4,6 +4,49 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 
+#include "net/traffic_annotation/network_traffic_annotation.h"
+
+// static
+// TODO(b/273920907): Update the `traffic_annotation` setting once a mechanism
+// allowing the user to disable the feature is implemented.
+const net::NetworkTrafficAnnotationTag
+    BoundSessionRefreshCookieFetcher::kTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("gaia_auth_rotate_bound_cookies",
+                                            R"(
+        semantics {
+          sender: "Chrome - Google authentication API"
+          description:
+            "This request is used to rotate bound Google authentication "
+            "cookies."
+          trigger:
+            "This request is triggered in a bound session when the bound Google"
+            " authentication cookies are soon to expire."
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          data: "Request includes cookies and a signed token proving that a"
+                " request comes from the same device as was registered before."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+                email: "chrome-signin-team@google.com"
+            }
+          }
+          last_reviewed: "2024-05-30"
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting:
+             "This feature cannot be disabled in settings, but this request "
+             "won't be made unless the user signs in to google.com."
+          chrome_policy: {
+            BoundSessionCredentialsEnabled {
+              BoundSessionCredentialsEnabled: false
+            }
+          }
+        })");
+
 // static
 bool BoundSessionRefreshCookieFetcher::IsPersistentError(Result result) {
   switch (result) {
@@ -15,6 +58,7 @@ bool BoundSessionRefreshCookieFetcher::IsPersistentError(Result result) {
     case Result::kServerUnexepectedResponse:
     case Result::kChallengeRequiredUnexpectedFormat:
     case Result::kChallengeRequiredLimitExceeded:
+    case Result::kChallengeRequiredSessionIdMismatch:
     case Result::kSignChallengeFailed:
       return true;
   }
@@ -50,5 +94,8 @@ std::ostream& operator<<(
       return os << "Challenge required limit exceeded.";
     case BoundSessionRefreshCookieFetcher::Result::kSignChallengeFailed:
       return os << "Sign challenge failed on cookie rotation request.";
+    case BoundSessionRefreshCookieFetcher::Result::
+        kChallengeRequiredSessionIdMismatch:
+      return os << "Challenge required session ID mismatch.";
   }
 }

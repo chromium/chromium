@@ -137,6 +137,8 @@ public class ChromeTabCreator extends TabCreator {
                 return "SyncBackground";
             case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
                 return "RecentTabsForeground";
+            case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
+                return "CollaborationBackgroundInGroup";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -346,7 +348,11 @@ public class ChromeTabCreator extends TabCreator {
                                 .setInitiallyHidden(!openInForeground)
                                 .build();
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
-            } else if (WarmupManager.getInstance().hasSpareTab(getProfile())) {
+                // TODO(http://crbug.com/375621886): Multi-network CCT might not be restoring tabs
+                // from disk correctly since we're passing targetsNetwork = false. Investigate and
+                // consider what should be done about this.
+            } else if (WarmupManager.getInstance()
+                    .hasSpareTab(getProfile(), /* targetsNetwork= */ false)) {
                 // Load URL using spare tab if available. This occurs only if a spare tab has been
                 // created beforehand. The creation of a spare tab is a costly operation that should
                 // not be performed without testing. Spare tab is only used for navigations in the
@@ -492,7 +498,6 @@ public class ChromeTabCreator extends TabCreator {
      * several link from the same application, we reuse the same tab so as to not open too many
      * tabs.
      *
-     * @param url the URL to open
      * @param appId the ID of the application that triggered that URL navigation.
      * @param forceNewTab whether the URL should be opened in a new tab. If false, an existing tab
      *     already opened by the same app will be reused.

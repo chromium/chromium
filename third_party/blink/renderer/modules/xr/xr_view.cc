@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_eye.h"
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"
 #include "third_party/blink/renderer/modules/xr/xr_depth_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
@@ -35,16 +37,6 @@ XRView::XRView(XRFrame* frame,
                XRViewData* view_data,
                const gfx::Transform& ref_space_from_mojo)
     : eye_(view_data->Eye()), frame_(frame), view_data_(view_data) {
-  switch (eye_) {
-    case device::mojom::blink::XREye::kLeft:
-      eye_string_ = "left";
-      break;
-    case device::mojom::blink::XREye::kRight:
-      eye_string_ = "right";
-      break;
-    default:
-      eye_string_ = "none";
-  }
   ref_space_from_view_ = MakeGarbageCollected<XRRigidTransform>(
       ref_space_from_mojo * view_data->MojoFromView());
   projection_matrix_ =
@@ -62,6 +54,18 @@ XRViewport* XRView::Viewport(double framebuffer_scale) {
   }
 
   return viewport_.Get();
+}
+
+V8XREye XRView::eye() const {
+  switch (eye_) {
+    case device::mojom::blink::XREye::kLeft:
+      return V8XREye(V8XREye::Enum::kLeft);
+    case device::mojom::blink::XREye::kRight:
+      return V8XREye(V8XREye::Enum::kRight);
+    case device::mojom::blink::XREye::kNone:
+      return V8XREye(V8XREye::Enum::kNone);
+  }
+  NOTREACHED();
 }
 
 XRFrame* XRView::frame() const {
@@ -99,8 +103,12 @@ XRViewData::XRViewData(
     double depth_near,
     double depth_far,
     const device::mojom::blink::XRSessionDeviceConfig& device_config,
-    const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set)
-    : index_(index), eye_(view->eye), viewport_(view->viewport) {
+    const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set,
+    XRGraphicsBinding::Api graphics_api)
+    : index_(index),
+      eye_(view->eye),
+      graphics_api_(graphics_api),
+      viewport_(view->viewport) {
   if (base::Contains(enabled_feature_set,
                      device::mojom::XRSessionFeature::DEPTH)) {
     if (!device_config.depth_configuration) {
@@ -149,11 +157,24 @@ void XRViewData::UpdateProjectionMatrixFromFoV(float up_rad,
   float y_scale = 2.0f / (up_tan + down_tan);
   float inv_nf = 1.0f / (near_depth - far_depth);
 
-  projection_matrix_ = gfx::Transform::ColMajor(
-      x_scale, 0.0f, 0.0f, 0.0f, 0.0f, y_scale, 0.0f, 0.0f,
-      -((left_tan - right_tan) * x_scale * 0.5),
-      ((up_tan - down_tan) * y_scale * 0.5), (near_depth + far_depth) * inv_nf,
-      -1.0f, 0.0f, 0.0f, (2.0f * far_depth * near_depth) * inv_nf, 0.0f);
+  // Compute the appropriate matrix for the graphics API being used.
+  // WebGPU uses a clip space with a depth range of [0, 1], which requires a
+  // different projection matrix than WebGL, which uses a clip space with a
+  // depth range of [-1, 1].
+  if (graphics_api_ == XRGraphicsBinding::Api::kWebGPU) {
+    projection_matrix_ = gfx::Transform::ColMajor(
+        x_scale, 0.0f, 0.0f, 0.0f, 0.0f, y_scale, 0.0f, 0.0f,
+        -((left_tan - right_tan) * x_scale * 0.5),
+        ((up_tan - down_tan) * y_scale * 0.5), far_depth * inv_nf, -1.0f, 0.0f,
+        0.0f, far_depth * near_depth * inv_nf, 0.0f);
+  } else {
+    projection_matrix_ = gfx::Transform::ColMajor(
+        x_scale, 0.0f, 0.0f, 0.0f, 0.0f, y_scale, 0.0f, 0.0f,
+        -((left_tan - right_tan) * x_scale * 0.5),
+        ((up_tan - down_tan) * y_scale * 0.5),
+        (near_depth + far_depth) * inv_nf, -1.0f, 0.0f, 0.0f,
+        (2.0f * far_depth * near_depth) * inv_nf, 0.0f);
+  }
 }
 
 void XRViewData::UpdateProjectionMatrixFromAspect(float fovy,
@@ -163,10 +184,17 @@ void XRViewData::UpdateProjectionMatrixFromAspect(float fovy,
   float f = 1.0f / tanf(fovy / 2);
   float inv_nf = 1.0f / (near_depth - far_depth);
 
-  projection_matrix_ = gfx::Transform::ColMajor(
-      f / aspect, 0.0f, 0.0f, 0.0f, 0.0f, f, 0.0f, 0.0f, 0.0f, 0.0f,
-      (far_depth + near_depth) * inv_nf, -1.0f, 0.0f, 0.0f,
-      (2.0f * far_depth * near_depth) * inv_nf, 0.0f);
+  if (graphics_api_ == XRGraphicsBinding::Api::kWebGPU) {
+    projection_matrix_ = gfx::Transform::ColMajor(
+        f / aspect, 0.0f, 0.0f, 0.0f, 0.0f, f, 0.0f, 0.0f, 0.0f, 0.0f,
+        far_depth * inv_nf, -1.0f, 0.0f, 0.0f, far_depth * near_depth * inv_nf,
+        0.0f);
+  } else {
+    projection_matrix_ = gfx::Transform::ColMajor(
+        f / aspect, 0.0f, 0.0f, 0.0f, 0.0f, f, 0.0f, 0.0f, 0.0f, 0.0f,
+        (far_depth + near_depth) * inv_nf, -1.0f, 0.0f, 0.0f,
+        (2.0f * far_depth * near_depth) * inv_nf, 0.0f);
+  }
 
   inv_projection_dirty_ = true;
 }
@@ -306,6 +334,24 @@ void XRViewData::requestViewportScale(std::optional<double> scale) {
     return;
 
   requested_viewport_scale_ = std::clamp(*scale, kMinViewportScale, 1.0);
+}
+
+bool XRViewData::ApplyViewportScaleForFrame() {
+  bool changed = false;
+
+  // Dynamic viewport scaling, see steps 6 and 7 in
+  // https://immersive-web.github.io/webxr/#dom-xrwebgllayer-getviewport
+  if (ViewportModifiable() &&
+      CurrentViewportScale() != RequestedViewportScale()) {
+    DVLOG(2) << __func__
+             << ": apply ViewportScale=" << RequestedViewportScale();
+    SetCurrentViewportScale(RequestedViewportScale());
+    changed = true;
+  }
+  TRACE_COUNTER1("xr", "XR viewport scale (%)", CurrentViewportScale() * 100);
+  SetViewportModifiable(false);
+
+  return changed;
 }
 
 void XRViewData::Trace(Visitor* visitor) const {

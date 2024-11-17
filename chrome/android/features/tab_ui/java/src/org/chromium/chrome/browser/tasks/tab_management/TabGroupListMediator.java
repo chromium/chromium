@@ -10,15 +10,15 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -30,6 +30,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -194,6 +195,7 @@ public class TabGroupListMediator {
 
     /** Clean up observers used by this class. */
     public void destroy() {
+        destroyAndClearAllRows();
         mFilter.removeObserver(mTabModelObserver);
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
@@ -245,7 +247,7 @@ public class TabGroupListMediator {
     }
 
     private void repopulateModelList() {
-        mModelList.clear();
+        destroyAndClearAllRows();
         LazyOneshotSupplier<CoreAccountInfo> accountInfoSupplier =
                 LazyOneshotSupplier.fromSupplier(this::getAccountInfo);
 
@@ -269,6 +271,16 @@ public class TabGroupListMediator {
         }
         boolean empty = mModelList.isEmpty();
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
+    }
+
+    private void destroyAndClearAllRows() {
+        for (ListItem listItem : mModelList) {
+            Destroyable destroyable = listItem.model.get(TabGroupRowProperties.DESTROYABLE);
+            if (destroyable != null) {
+                destroyable.destroy();
+            }
+        }
+        mModelList.clear();
     }
 
     private CoreAccountInfo getAccountInfo() {

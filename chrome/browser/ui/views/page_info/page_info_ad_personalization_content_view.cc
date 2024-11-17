@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -43,19 +44,25 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
   AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
-  AddChildView(std::make_unique<RichHoverButton>(
-      base::BindRepeating(
-          [](PageInfoAdPersonalizationContentView* view) {
-            view->presenter_->RecordPageInfoAction(
-                page_info::PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
-            view->ui_delegate_->ShowPrivacySandboxSettings();
-          },
-          this),
-      PageInfoViewFactory::GetSiteSettingsIcon(),
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON),
-      std::u16string(),
-      /*tooltip_text=*/std::u16string(), std::u16string(),
-      PageInfoViewFactory::GetLaunchIcon()));
+  auto* manage_ad_privacy_button =
+      AddChildView(std::make_unique<RichHoverButton>(
+          base::BindRepeating(
+              [](PageInfoAdPersonalizationContentView* view) {
+                view->presenter_->RecordPageInfoAction(
+                    page_info::PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
+                view->ui_delegate_->ShowPrivacySandboxSettings();
+              },
+              this),
+          PageInfoViewFactory::GetSiteSettingsIcon(),
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON),
+          std::u16string(),
+          /*tooltip_text=*/std::u16string(), std::u16string(),
+          PageInfoViewFactory::GetLaunchIcon()));
+  manage_ad_privacy_button->title()->SetTextStyle(
+      views::style::STYLE_BODY_3_MEDIUM);
+  manage_ad_privacy_button->title()->SetEnabledColorId(
+      kColorPageInfoForeground);
 
   presenter_->InitializeUiState(this, base::DoNothing());
 }
@@ -79,8 +86,9 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
   auto* description_label =
       info_container_->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(message_id), views::style::CONTEXT_LABEL,
-          views::style::STYLE_SECONDARY));
+          views::style::STYLE_BODY_3));
   description_label->SetMultiLine(true);
+  description_label->SetEnabledColorId(kColorPageInfoForeground);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // TODO(crbug.com/40244046): Figure out why without additional horizontal
   // margin the size is being calculated incorrectly and the topics labels are
@@ -99,8 +107,9 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
       auto* topic_label =
           info_container_->AddChildView(std::make_unique<views::Label>(
               topic.GetLocalizedRepresentation(), views::style::CONTEXT_LABEL,
-              views::style::STYLE_PRIMARY));
+              views::style::STYLE_BODY_4));
       topic_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      topic_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
     }
   }
 

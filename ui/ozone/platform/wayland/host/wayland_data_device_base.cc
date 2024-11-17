@@ -47,7 +47,7 @@ PlatformClipboard::Data WaylandDataDeviceBase::ReadSelectionData(
 
   std::vector<uint8_t> contents;
   wl::ReadDataFromFD(std::move(fd), &contents);
-  return base::RefCountedBytes::TakeVector(&contents);
+  return base::MakeRefCounted<base::RefCountedBytes>(std::move(contents));
 }
 
 void WaylandDataDeviceBase::ResetDataOffer() {

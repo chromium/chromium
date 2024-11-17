@@ -47,7 +47,9 @@ ChromeSigninClientFactory* ChromeSigninClientFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* ChromeSigninClientFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ChromeSigninClientFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ChromeSigninClient(Profile::FromBrowserContext(context));
+  return std::make_unique<ChromeSigninClient>(
+      Profile::FromBrowserContext(context));
 }

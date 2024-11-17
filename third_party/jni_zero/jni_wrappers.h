@@ -7,6 +7,9 @@
 
 #include <jni.h>
 
+#include <iterator>
+#include <string_view>
+
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/logging.h"
 

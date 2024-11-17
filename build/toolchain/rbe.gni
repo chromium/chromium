@@ -24,9 +24,6 @@ declare_args() {
 
   # Set to true to enable remote executions.
   use_remoteexec = false
-
-  # Set to true to enable remote linking using reclient.
-  use_reclient_links = false
 }
 
 declare_args() {
@@ -72,7 +69,6 @@ declare_args() {
   # Configuration file selection based on operating system.
   if (!use_reclient) {
     reclient_cc_cfg_file = ""
-    reclient_link_cfg_file = ""
     reclient_py_cfg_file = ""
     reclient_py_large_cfg_file = ""
   } else if (host_os == "linux") {
@@ -82,8 +78,6 @@ declare_args() {
                                  "/python/rewrapper_linux_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_linux.cfg"
-    reclient_link_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                             "/chromium-browser-clang/rewrapper_linux_link.cfg"
   } else if (host_os == "win") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_windows.cfg"
@@ -91,7 +85,6 @@ declare_args() {
                                  "/python/rewrapper_windows_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_windows.cfg"
-    reclient_link_cfg_file = ""
   } else if (host_os == "mac") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_mac.cfg"
@@ -99,10 +92,8 @@ declare_args() {
                                  "/python/rewrapper_mac_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_mac.cfg"
-    reclient_link_cfg_file = ""
   } else {
     reclient_cc_cfg_file = ""
-    reclient_link_cfg_file = ""
     reclient_py_cfg_file = ""
     reclient_py_large_cfg_file = ""
   }
@@ -132,19 +123,6 @@ if (use_reclient && current_toolchain == default_toolchain) {
               [ reclient_cc_cfg_file ],
               "",
               [ rebase_path(reclient_cc_cfg_file, ".", root_build_dir) ])
-}
-
-if (is_win) {
-  if (use_reclient_links) {
-    print("For now, remote linking is not available for Windows.")
-    use_reclient_links = false
-  }
-}
-if (is_mac || is_ios) {
-  if (use_reclient_links) {
-    print("For now, remote linking is not available on Macs.")
-    use_reclient_links = false
-  }
 }
 
 # TODO(crbug.com/326584510): Reclient does not upload `inputs` from C/C++

@@ -114,7 +114,8 @@
           "builder": "Dawn Mac x64 DEPS Release (Intel)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-mac-x64-deps-rel/targets"
     }
   },
   "$build/reclient": {

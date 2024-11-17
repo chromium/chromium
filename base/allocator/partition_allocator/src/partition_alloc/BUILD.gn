@@ -29,9 +29,6 @@ record_alloc_info = false
 # GWP-ASan is tied to BRP's enablement.
 enable_gwp_asan_support = enable_backup_ref_ptr_support
 
-# Pools are a logical concept when address space is 32-bit.
-glue_core_pools = glue_core_pools && has_64_bit_pointers
-
 # Pointer compression requires 64-bit pointers.
 enable_pointer_compression =
     enable_pointer_compression_support && has_64_bit_pointers
@@ -138,15 +135,16 @@ pa_buildflag_header("buildflags") {
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
     "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
     "ENABLE_GWP_ASAN_SUPPORT=$enable_gwp_asan_support",
+    "ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=$enable_partition_lock_reentrancy_check",
     "ENABLE_PKEYS=$enable_pkeys",
     "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
     "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression",
     "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
+    "FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=$force_disable_backup_ref_ptr_feature",
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
     "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
-    "GLUE_CORE_POOLS=$glue_core_pools",
     "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
     "HAS_MEMORY_TAGGING=$has_memory_tagging",
     "IS_ANDROID=$is_android",
@@ -158,6 +156,7 @@ pa_buildflag_header("buildflags") {
     "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
     "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
     "RECORD_ALLOC_INFO=$record_alloc_info",
+    "SMALLER_PARTITION_COOKIE=$smaller_partition_cookie",
     "STACK_SCAN_SUPPORTED=$stack_scan_supported",
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
@@ -167,6 +166,7 @@ pa_buildflag_header("buildflags") {
     "USE_LARGE_EMPTY_SLOT_SPAN_RING=$use_large_empty_slot_span_ring",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
     "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
+    "USE_PARTITION_COOKIE=$use_partition_cookie",
     "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
     "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
@@ -427,6 +427,7 @@ if (is_clang_or_gcc) {
       "partition_bucket.cc",
       "partition_bucket.h",
       "partition_bucket_lookup.h",
+      "partition_cookie.cc",
       "partition_cookie.h",
       "partition_dcheck_helper.cc",
       "partition_dcheck_helper.h",
@@ -648,6 +649,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/win/win_handle_types_list.inc",
       "partition_alloc_base/win/windows_types.h",
     ]
+    libs = []
 
     if (is_win) {
       sources += [
@@ -658,6 +660,9 @@ if (is_clang_or_gcc) {
         "partition_alloc_base/scoped_clear_last_error_win.cc",
         "partition_alloc_base/threading/platform_thread_win.cc",
         "partition_alloc_base/time/time_win.cc",
+      ]
+      libs += [
+        "winmm.lib",  # For timeGetTime.
       ]
     }
 

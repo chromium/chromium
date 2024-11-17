@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -86,11 +85,11 @@ std::string GetStringFromValue(const std::string& value) {
   return value;
 }
 
-std::string GetStringFromValue(const int& value) {
+std::string GetStringFromValue(int value) {
   return base::NumberToString(value);
 }
 
-std::string GetStringFromValue(const bool& value) {
+std::string GetStringFromValue(bool value) {
   return value ? "true" : "false";
 }
 

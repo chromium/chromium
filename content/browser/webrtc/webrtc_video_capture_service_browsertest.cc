@@ -323,7 +323,7 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
     info->metadata = metadata;
     info->strides = strides_.Clone();
 
-    const base::WritableSharedMemoryMapping& outgoing_buffer =
+    base::WritableSharedMemoryMapping& outgoing_buffer =
         outgoing_buffer_id_to_buffer_map_.at(buffer_id);
 
     static int frame_count = 0;

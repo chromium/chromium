@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// WARNING: do not add new entries here. If a feature is only used in one
+// translation unit it should be inlined in that translation unit. If a feature
+// is referenced in multiple places, it should be scoped to that module, e.g.
+// //chrome/browser/<foo_module>/features.h
+
 // This file defines the browser-specific base::FeatureList features that are
 // not shared with other process types.
 
@@ -16,6 +21,10 @@
 
 namespace features {
 
+// WARNING: do not add new entries here. If a feature is only used in one
+// translation unit it should be inlined in that translation unit. If a feature
+// is referenced in multiple places, it should be scoped to that module, e.g.
+// //chrome/browser/<foo_module>/features.h
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
@@ -27,7 +36,6 @@ BASE_DECLARE_FEATURE(kBookmarksTreeView);
 BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
 BASE_DECLARE_FEATURE(kCertificateTransparencyAskBeforeEnabling);
 BASE_DECLARE_FEATURE(kCertVerificationNetworkTime);
-BASE_DECLARE_FEATURE(kClosedTabCache);
 
 #if BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kDbusSecretPortal);
@@ -36,56 +44,16 @@ BASE_DECLARE_FEATURE(kDbusSecretPortal);
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
-BASE_DECLARE_FEATURE(kDevToolsConsoleInsights);
-extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
-extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
-extern const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn;
-
-BASE_DECLARE_FEATURE(kDevToolsFreestylerDogfood);
-extern const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId;
-extern const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature;
-
-enum class DevToolsFreestylerUserTier {
-  // Users who are internal testers or validators.
-  // AIDA does not log these users in product usage metrics.
-  // In future, the data from these users will be excluded from training data
-  // when logging is enabled.
-  kTesters,
-  // Users who are early adopters.
-  kBeta,
-  // Users in the general public.
-  kPublic
-};
-
-extern const base::FeatureParam<DevToolsFreestylerUserTier> kDevToolsFreestylerDogfoodUserTier;
-
-BASE_DECLARE_FEATURE(kDevToolsExplainThisResourceDogfood);
-extern const base::FeatureParam<std::string>
-    kDevToolsExplainThisResourceDogfoodModelId;
-extern const base::FeatureParam<double>
-    kDevToolsExplainThisResourceDogfoodTemperature;
-
-BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
-BASE_DECLARE_FEATURE(kDevToolsTabTarget);
-BASE_DECLARE_FEATURE(kDevToolsVeLogging);
-extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
 #if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kRegisterAppBoundEncryptionProvider);
 BASE_DECLARE_FEATURE(kUseAppBoundEncryptionProviderForEncryption);
 #endif
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);
-BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
-
-#if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
@@ -113,21 +81,12 @@ const base::FeatureParam<bool> kPrerenderNewTabPageOnMouseHoverTrigger{
     &features::kNewTabPageTriggerForPrerender2,
     "prerender_new_tab_page_on_mouse_hover_trigger", false};
 
-#if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kNoPreReadMainDll);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
 extern base::FeatureParam<bool>
     kNotificationOneTapUnsubscribeUseServiceIntentParam;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_DECLARE_FEATURE(kPlatformKeysAesEncryption);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-BASE_DECLARE_FEATURE(kPrerenderDSEHoldback);
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
 
@@ -153,27 +112,38 @@ BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
 
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kTaskManagerDesktopRefresh);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
 #endif
 
-BASE_DECLARE_FEATURE(kUseOsCryptAsyncForCookieEncryption);
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kWebUIJSErrorReportingExtended);
+#endif
+
 BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
+
+BASE_DECLARE_FEATURE(kNoPreReadMainDll);
+BASE_DECLARE_FEATURE(kNoPreReadMainDllIfSsd);
+BASE_DECLARE_FEATURE(kNoPreReadMainDllStartup);
+extern const base::FeatureParam<base::TimeDelta>
+    kNoPreReadMainDllStartup_StartupDuration;
 #endif
 
 BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
 
 BASE_DECLARE_FEATURE(kRemovalOfIWAsFromTabCapture);
 
+// WARNING: do not add new entries here. If a feature is only used in one
+// translation unit it should be inlined in that translation unit. If a
+// feature is referenced in multiple places, it should be scoped to that
+// module, e.g.
+// //chrome/browser/<foo_module>/features.h
+//
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

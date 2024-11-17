@@ -5,10 +5,13 @@
 #include "cc/layers/surface_layer_impl.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
+#include "cc/base/features.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -369,6 +372,48 @@ TEST(SurfaceLayerImplTest, WillDrawNotifiesAsynchronously) {
   surface_layer_impl->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   // We should have called the callback, which would set `updated` to true.
   EXPECT_TRUE(updated);
+}
+
+class SurfaceLayerImplAlignToPixelGridTest : public testing::Test {
+ public:
+  SurfaceLayerImplAlignToPixelGridTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAlignSurfaceLayerImplToPixelGrid}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SurfaceLayerImplAlignToPixelGridTest, FractionalOffsetSnapsToPixelGrid) {
+  gfx::Size layer_size(200, 200);
+  gfx::Size viewport_size(1000, 1000);
+  LayerTreeImplTestBase impl;
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>();
+  surface_layer_impl->SetBounds(layer_size);
+  surface_layer_impl->SetDrawsContent(true);
+  CopyProperties(impl.root_layer(), surface_layer_impl);
+
+  // Create transform with fractional translation.
+  gfx::Transform transform;
+  transform.PostTranslate(0.3, 0.7);
+  EXPECT_FALSE(transform.IsIdentityOrIntegerTranslation());
+
+  impl.CalcDrawProps(viewport_size);
+  surface_layer_impl->draw_properties().target_space_transform = transform;
+
+  // Compute RenderPass, with DrawQuads for SurfaceLayer.
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  surface_layer_impl->AppendQuads(render_pass.get(), &data);
+
+  // Verify that the DrawQuads for the SurfaceLayer have an integral offset.
+  ASSERT_EQ(1U, render_pass->shared_quad_state_list.size());
+  viz::SharedQuadState* state =
+      render_pass->shared_quad_state_list.ElementAt(0);
+  gfx::Transform quad_to_target_transform = state->quad_to_target_transform;
+  EXPECT_TRUE(quad_to_target_transform.IsIdentityOrIntegerTranslation());
 }
 
 }  // namespace

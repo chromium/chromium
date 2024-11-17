@@ -39,7 +39,6 @@ void TrustedTypesCheckForHTMLThrows(const String& string) {
   ASSERT_FALSE(exception_state.HadException());
   String s1 = TrustedTypesCheckForHTML(string, window, "", "", exception_state);
   EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
 }
 
 void TrustedTypesCheckForScriptThrows(const String& string) {
@@ -62,7 +61,6 @@ void TrustedTypesCheckForScriptThrows(const String& string) {
   String s1 =
       TrustedTypesCheckForScript(string, window, "", "", exception_state);
   EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
 }
 
 void TrustedTypesCheckForScriptURLThrows(const String& string) {
@@ -85,7 +83,6 @@ void TrustedTypesCheckForScriptURLThrows(const String& string) {
   String s1 =
       TrustedTypesCheckForScriptURL(string, window, "", "", exception_state);
   EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
 }
 
 void TrustedTypesCheckForScriptWorks(

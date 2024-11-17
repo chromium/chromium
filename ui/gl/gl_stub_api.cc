@@ -6,7 +6,7 @@
 
 namespace gl {
 
-GLStubApi::GLStubApi() {}
+GLStubApi::GLStubApi() = default;
 
 GLStubApi::~GLStubApi() = default;
 

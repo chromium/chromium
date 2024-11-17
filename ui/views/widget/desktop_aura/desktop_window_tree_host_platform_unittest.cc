@@ -10,12 +10,14 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_switches.h"
@@ -49,19 +51,15 @@ class TestWidgetObserver : public WidgetObserver {
     kDestroying,
   };
 
-  explicit TestWidgetObserver(Widget* widget) : widget_(widget) {
-    DCHECK(widget_);
-    widget_->AddObserver(this);
+  explicit TestWidgetObserver(Widget* widget) {
+    DCHECK(widget);
+    widget_observation_.Observe(widget);
   }
 
   TestWidgetObserver(const TestWidgetObserver&) = delete;
   TestWidgetObserver& operator=(const TestWidgetObserver&) = delete;
 
-  ~TestWidgetObserver() override {
-    // This might have been destroyed by the widget destroying delegate call.
-    if (widget_)
-      widget_->RemoveObserver(this);
-  }
+  ~TestWidgetObserver() override = default;
 
   // Waits for notification changes for the |change|. |old_value| must be
   // provided to be sure that this is not called after the change has already
@@ -87,14 +85,13 @@ class TestWidgetObserver : public WidgetObserver {
  private:
   // views::WidgetObserver overrides:
   void OnWidgetDestroying(Widget* widget) override {
-    DCHECK_EQ(widget_, widget);
-    widget_->RemoveObserver(this);
-    widget_ = nullptr;
+    DCHECK(widget_observation_.IsObservingSource(widget));
+    widget_observation_.Reset();
     on_widget_destroying_ = true;
     StopWaiting();
   }
   void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
-    DCHECK_EQ(widget_, widget);
+    DCHECK(widget_observation_.IsObservingSource(widget));
     visible_ = visible;
     StopWaiting();
   }
@@ -113,7 +110,7 @@ class TestWidgetObserver : public WidgetObserver {
     run_loop_->Quit();
   }
 
-  raw_ptr<Widget> widget_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
   std::unique_ptr<base::RunLoop> run_loop_;
   bool on_widget_destroying_ = false;
   bool visible_ = false;
@@ -539,7 +536,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
   params.delegate = nullptr;
   params.remove_standard_frame = true;
   params.bounds = gfx::Rect(100, 100, 100, 100);
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   std::unique_ptr<ScopedPlatformWindowFactoryDelegate>
       scoped_platform_window_factory_delegate(
           new ScopedPlatformWindowFactoryDelegate);
@@ -555,7 +552,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
   // to pass to the native widget and window tree host. Essentially this is
   // testing that `DesktopWindowTreeHostPlatform` does not get activated if
   // `DesktopWindowTreeHostPlatform::Show()` is called with
-  // `ui::SHOW_STATE_MINIMIZED`.
+  // `ui::mojom::WindowShowState::kMinimized`.
   widget->Show();
   EXPECT_FALSE(widget->IsActive());
 

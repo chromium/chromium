@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
@@ -25,7 +24,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -91,13 +89,6 @@ std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> CreateAssignments(
 
 class GlanceablesClassroomStudentViewTest : public AshTestBase {
  public:
-  GlanceablesClassroomStudentViewTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlanceablesTimeManagementClassroomStudentView},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     AshTestBase::SetUp();
     SimulateUserLogin(account_id_);
@@ -201,7 +192,6 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
   const GlanceablesTestNewWindowDelegate new_window_delegate_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
 };
 

@@ -61,6 +61,7 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/shortcuts/chrome_webloc_file.h"
+#include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -768,7 +769,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 }
 
 - (void)dealloc {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (NSMenu*)fileMenu {
@@ -1442,7 +1443,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
         case IDC_NEW_WINDOW:
           enable = canOpenNewBrowser;
           break;
-        case IDC_TASK_MANAGER:
+        case IDC_TASK_MANAGER_MAIN_MENU:
           enable = YES;
           break;
         case IDC_NEW_INCOGNITO_WINDOW:
@@ -1512,8 +1513,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   NSInteger tag = [sender tag];
   // The task manager can be shown without profile.
-  if (tag == IDC_TASK_MANAGER) {
-    chrome::OpenTaskManager(nullptr);
+  if (tag == IDC_TASK_MANAGER_MAIN_MENU) {
+    chrome::OpenTaskManager(nullptr, task_manager::StartAction::kMainMenu);
     return;
   }
 
@@ -1731,7 +1732,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   _menuState->UpdateCommandEnabled(IDC_FEEDBACK, true);
 #endif
-  _menuState->UpdateCommandEnabled(IDC_TASK_MANAGER, true);
+  _menuState->UpdateCommandEnabled(IDC_TASK_MANAGER_MAIN_MENU, true);
 }
 
 // Conditionally adds the Profile menu to the main menu bar.

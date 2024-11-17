@@ -1,4 +1,5 @@
 bazel
+/copybara
 /luci-go
 /resultdb
 /catapult_bisect_dep

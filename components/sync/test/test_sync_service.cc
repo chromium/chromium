@@ -340,8 +340,9 @@ SyncCycleSnapshot TestSyncService::GetLastCycleSnapshotForDebugging() const {
   return last_cycle_snapshot_;
 }
 
-base::Value::List TestSyncService::GetTypeStatusMapForDebugging() const {
-  return base::Value::List();
+TypeStatusMapForDebugging TestSyncService::GetTypeStatusMapForDebugging()
+    const {
+  return TypeStatusMapForDebugging();
 }
 
 void TestSyncService::GetEntityCountsForDebugging(
@@ -427,6 +428,10 @@ void TestSyncService::GetLocalDataDescriptions(
 }
 
 void TestSyncService::TriggerLocalDataMigration(DataTypeSet types) {}
+
+void TestSyncService::TriggerLocalDataMigration(
+    std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
+}
 
 void TestSyncService::SetTriggerRefreshCallback(
     const base::RepeatingCallback<void(syncer::DataTypeSet)>&

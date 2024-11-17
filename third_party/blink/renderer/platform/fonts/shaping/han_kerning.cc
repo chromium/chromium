@@ -348,7 +348,7 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   // OpenType features such as `calt`. In vertical flow, some glyphs change,
   // which is done by OpenType features such as `vert`. Shaping is needed to
   // apply these features.
-  HarfBuzzShaper shaper(String(kChars, std::size(kChars)));
+  HarfBuzzShaper shaper{String(base::span(kChars))};
   HarfBuzzShaper::GlyphDataList glyph_data_list;
   shaper.GetGlyphData(font, locale, locale.GetScriptForHan(), is_horizontal,
                       glyph_data_list);

@@ -21,12 +21,15 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/gfx/geometry/rect.h"
 
-OmniboxController::OmniboxController(OmniboxView* view,
-                                     std::unique_ptr<OmniboxClient> client)
+OmniboxController::OmniboxController(
+    OmniboxView* view,
+    std::unique_ptr<OmniboxClient> client,
+    base::TimeDelta autocomplete_stop_timer_duration)
     : client_(std::move(client)),
       autocomplete_controller_(std::make_unique<AutocompleteController>(
           client_->CreateAutocompleteProviderClient(),
-          AutocompleteClassifier::DefaultOmniboxProviders())),
+          AutocompleteClassifier::DefaultOmniboxProviders(),
+          autocomplete_stop_timer_duration)),
       edit_model_(std::make_unique<OmniboxEditModel>(
           /*omnibox_controller=*/this,
           view)) {
@@ -52,6 +55,8 @@ OmniboxController::OmniboxController(OmniboxView* view,
             base::Unretained(this)));
   }
 }
+
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
 
 OmniboxController::~OmniboxController() = default;
 
@@ -79,23 +84,17 @@ void OmniboxController::StartZeroSuggestPrefetch() {
     return;
   }
 
-  const bool is_ntp_page = omnibox::IsNTPPage(page_classification);
-  const bool interaction_clobber_focus_type = base::FeatureList::IsEnabled(
-      omnibox::kOmniboxOnClobberFocusTypeOnContent);
-
   GURL current_url = client_->GetURL();
   std::u16string text = base::UTF8ToUTF16(current_url.spec());
 
-  if (is_ntp_page || interaction_clobber_focus_type) {
+  if (omnibox::IsNTPPage(page_classification) || !is_ios) {
     text.clear();
   }
 
   AutocompleteInput input(text, page_classification,
                           client_->GetSchemeClassifier());
   input.set_current_url(current_url);
-  input.set_focus_type(interaction_clobber_focus_type && !is_ntp_page
-                           ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
-                           : metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   autocomplete_controller_->StartPrefetch(input);
 }
 
@@ -184,7 +183,7 @@ bool OmniboxController::IsSuggestionHidden(
 
 bool OmniboxController::IsSuggestionGroupHidden(
     omnibox::GroupId suggestion_group_id) const {
-  PrefService* prefs = client_->GetPrefs();
+  const PrefService* prefs = client_->GetPrefs();
   return prefs && autocomplete_controller_->result().IsSuggestionGroupHidden(
                       prefs, suggestion_group_id);
 }

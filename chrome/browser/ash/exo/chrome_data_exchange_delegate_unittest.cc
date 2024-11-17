@@ -129,9 +129,6 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
       ui::EndpointType::kCrostini,
       data_exchange_delegate.GetDataTransferEndpointType(crostini_window));
 
-  EXPECT_EQ(ui::EndpointType::kLacros,
-            data_exchange_delegate.GetDataTransferEndpointType(lacros_window));
-
   EXPECT_EQ(
       ui::EndpointType::kPluginVm,
       data_exchange_delegate.GetDataTransferEndpointType(plugin_vm_window));

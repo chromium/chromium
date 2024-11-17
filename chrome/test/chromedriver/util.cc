@@ -614,7 +614,7 @@ bool GetOptionalSafeInt(const base::Value::Dict& dict,
 }
 
 bool SetSafeInt(base::Value::Dict& dict,
-                const std::string_view path,
+                std::string_view path,
                 int64_t in_value_64) {
   int int_value = static_cast<int>(in_value_64);
   if (in_value_64 == int_value)

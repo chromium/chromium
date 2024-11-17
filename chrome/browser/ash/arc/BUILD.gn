@@ -23,8 +23,6 @@ static_library("arc") {
     "arc_support_host.h",
     "arc_ui_availability_reporter.cc",
     "arc_ui_availability_reporter.h",
-    "arc_util.cc",
-    "arc_util.h",
     "icon_decode_request.cc",
     "icon_decode_request.h",
   ]
@@ -32,8 +30,10 @@ static_library("arc") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    ":arc_util",
     "//ash",
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/public/cpp",
@@ -79,6 +79,7 @@ static_library("arc") {
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/settings",
     "//chromeos/components/mgs",
@@ -149,6 +150,7 @@ source_set("unit_tests") {
 
   deps = [
     ":arc",
+    ":arc_util",
     "//ash/components/arc",
     "//ash/components/arc:arc_test_support",
     "//base",
@@ -234,4 +236,51 @@ if (is_chromeos_device && is_chrome_branded) {
       "//ui/aura",
     ]
   }
+}
+
+source_set("arc_util") {
+  sources = [ "arc_util.h" ]
+
+  public_deps = [
+    "//ash/components/arc/session:arc_base_enums",
+    "//base",
+    "//storage/browser",
+  ]
+}
+source_set("arc_util_impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [ "arc_util.cc" ]
+
+  deps = [
+    ":arc_util",
+    "//ash/components/arc:arc_base_utils",
+    "//ash/components/arc:arc_features",
+    "//ash/components/arc:prefs",
+    "//ash/constants",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/arc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/shelf",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/settings",
+    "//chromeos/components/mgs",
+    "//components/embedder_support:browser_util",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/aura",
+    "//ui/base",
+    "//url",
+  ]
 }

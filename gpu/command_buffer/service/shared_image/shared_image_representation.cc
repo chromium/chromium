@@ -271,10 +271,9 @@ SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
 SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
     ~ScopedGaneshWriteAccess() {
   if (end_state_) {
-    NOTREACHED_IN_MIGRATION()
-        << "Before ending write access TakeEndState() must be called "
-           "and the result passed to skia to make sure all layout and "
-           "ownership transitions are done.";
+    NOTREACHED() << "Before ending write access TakeEndState() must be called "
+                    "and the result passed to skia to make sure all layout and "
+                    "ownership transitions are done.";
   }
 }
 
@@ -396,10 +395,9 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::ScopedGaneshReadAccess(
 SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
     ~ScopedGaneshReadAccess() {
   if (end_state_) {
-    NOTREACHED_IN_MIGRATION()
-        << "Before ending read access TakeEndState() must be called "
-           "and the result passed to skia to make sure all layout and "
-           "ownership transitions are done.";
+    NOTREACHED() << "Before ending read access TakeEndState() must be called "
+                    "and the result passed to skia to make sure all layout and "
+                    "ownership transitions are done.";
   }
 }
 
@@ -763,13 +761,11 @@ std::string SkiaGraphiteImageRepresentation::WrappedTextureDebugLabel(
 
 #if BUILDFLAG(IS_ANDROID)
 AHardwareBuffer* OverlayImageRepresentation::GetAHardwareBuffer() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 OverlayImageRepresentation::GetAHardwareBufferFenceSync() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 #elif BUILDFLAG(IS_OZONE)
 scoped_refptr<gfx::NativePixmap> OverlayImageRepresentation::GetNativePixmap() {
@@ -778,8 +774,7 @@ scoped_refptr<gfx::NativePixmap> OverlayImageRepresentation::GetNativePixmap() {
 #elif BUILDFLAG(IS_WIN)
 std::optional<gl::DCLayerOverlayImage>
 OverlayImageRepresentation::GetDCLayerOverlayImage() {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 #elif BUILDFLAG(IS_APPLE)
 gfx::ScopedIOSurface OverlayImageRepresentation::GetIOSurface() const {

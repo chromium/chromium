@@ -16,8 +16,8 @@
 #include "gpu/config/gpu_control_list.h"
 
 namespace gpu {
-extern const std::array<GpuControlList::Entry, 81>
-    kGpuControlListTestingEntries;
+extern const std::array<GpuControlList::Entry, 82>&
+GetGpuControlListTestingEntries();
 }  // namespace gpu
 
 #endif  // GPU_CONFIG_GPU_CONTROL_LIST_TESTING_AUTOGEN_H_

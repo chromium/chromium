@@ -29,6 +29,7 @@
 #include "components/security_state/core/security_state.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font.h"
@@ -358,7 +359,7 @@ class LocationBarView
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void ShowContextMenu(const gfx::Point& p,
-                       ui::MenuSourceType source_type) override;
+                       ui::mojom::MenuSourceType source_type) override;
 
   // views::DragController:
   void WriteDragDataForView(View* sender,
@@ -385,9 +386,6 @@ class LocationBarView
   // Determines whether the location icon should be overridden while a chip is
   // being displayed
   bool ShouldChipOverrideLocationIcon();
-
-  // Called with an async fetched for the keyword view.
-  void OnKeywordFaviconFetched(const gfx::Image& icon);
 
   // Updates the visibility of the QR Code Generator icon.
   void UpdateQRCodeGeneratorIcon();

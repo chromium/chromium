@@ -118,4 +118,9 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
     public boolean isTrustedWebActivity(WebContents webContents) {
         return false;
     }
+
+    /** Return if dynamically change safe area insets as browser controls scroll. */
+    protected boolean isDynamicSafeAreaInsetsEnabled() {
+        return false;
+    }
 }

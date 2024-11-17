@@ -23,8 +23,7 @@ EnumTraits<blink::mojom::CredentialType, password_manager::CredentialType>::
       return blink::mojom::CredentialType::FEDERATED;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::CredentialType::EMPTY;
+  NOTREACHED();
 }
 
 // static
@@ -44,8 +43,7 @@ bool EnumTraits<blink::mojom::CredentialType,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -64,8 +62,7 @@ EnumTraits<blink::mojom::CredentialManagerError,
       return blink::mojom::CredentialManagerError::UNKNOWN;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::CredentialManagerError::UNKNOWN;
+  NOTREACHED();
 }
 
 // static
@@ -89,8 +86,7 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -107,8 +103,7 @@ EnumTraits<blink::mojom::CredentialMediationRequirement,
       return blink::mojom::CredentialMediationRequirement::kRequired;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::CredentialMediationRequirement::kOptional;
+  NOTREACHED();
 }
 
 // static
@@ -128,8 +123,7 @@ bool EnumTraits<blink::mojom::CredentialMediationRequirement,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

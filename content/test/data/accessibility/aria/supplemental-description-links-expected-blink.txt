@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='Seminole tax hike: Seminole city managers are proposing a 75% increase in property taxes for the coming fiscal year. '
+++++++++++inlineTextBox name='Seminole tax hike: Seminole city managers are proposing a 75% increase in property taxes for the coming fiscal year. '
+++++++++link name='Read more about Seminole tax hike'
+++++++++++staticText name='[Read more...]'
+++++++++++++inlineTextBox name='[Read '
+++++++++++++inlineTextBox name='more...]'

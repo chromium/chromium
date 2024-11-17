@@ -250,20 +250,6 @@ TEST_F(MediaHostTest, ShouldSetTitleWhenCallingSetExternalPlaybackState) {
   EXPECT_EQ(actual_state->metadata->title, "the title");
 }
 
-TEST_F(MediaHostTest, ShouldDropSensitiveSessions) {
-  SetRelatedInfoEnabled(true);
-  StartMediaSession();
-
-  auto session_info = MediaSessionInfo::New();
-  session_info->is_sensitive = true;
-  MediaSessionInfoChanged(std::move(session_info));
-
-  EXPECT_NO_CALLS(libassistant_controller_mock(), SetExternalPlaybackState);
-
-  media_session::MediaMetadata meta_data;
-  MediaSessionMetadataChanged(meta_data);
-}
-
 TEST_F(MediaHostTest, ShouldDropInvalidStates) {
   SetRelatedInfoEnabled(true);
   StartMediaSession();

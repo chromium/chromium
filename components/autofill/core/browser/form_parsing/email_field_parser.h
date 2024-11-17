@@ -19,7 +19,7 @@ class EmailFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
-  explicit EmailFieldParser(const AutofillField* field);
+  explicit EmailFieldParser(FieldAndMatchInfo match);
 
   EmailFieldParser(const EmailFieldParser&) = delete;
   EmailFieldParser& operator=(const EmailFieldParser&) = delete;
@@ -28,7 +28,7 @@ class EmailFieldParser : public FormFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  raw_ptr<const AutofillField> field_;
+  FieldAndMatchInfo match_;
 };
 
 }  // namespace autofill

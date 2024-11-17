@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/pin.h"
 
 namespace gfx {
@@ -296,20 +298,6 @@ class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
   void OnManageDevices() override;
 };
 
-class AuthenticatorAndroidAccessorySheetModel
-    : public AuthenticatorSheetModelBase {
- public:
-  explicit AuthenticatorAndroidAccessorySheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
-  ~AuthenticatorAndroidAccessorySheetModel() override;
-
- private:
-  // AuthenticatorSheetModelBase:
-  bool IsActivityIndicatorVisible() const override;
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-};
-
 class AuthenticatorClientPinEntrySheetModel
     : public AuthenticatorSheetModelBase {
  public:
@@ -512,6 +500,23 @@ class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
   // AuthenticatorSheetModelBase:
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
+};
+
+class AuthenticatorHybridAndSecurityKeySheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorHybridAndSecurityKeySheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorHybridAndSecurityKeySheetModel() override;
+
+  // Returns the attestation warning for the security key.
+  std::optional<std::u16string> GetAttestationWarning() const;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  std::u16string GetOtherMechanismButtonLabel() const override;
 };
 
 class AuthenticatorConnectingSheetModel : public AuthenticatorSheetModelBase {

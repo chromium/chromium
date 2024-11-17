@@ -62,7 +62,7 @@ class CrxUpdateService : public ComponentUpdateService,
       const std::string& app_id) override;
 
   // Overrides for Observer.
-  void OnEvent(Events event, const std::string& id) override;
+  void OnEvent(const CrxUpdateItem& item) override;
 
   // Overrides for OnDemandUpdater.
   void OnDemandUpdate(const std::string& id,

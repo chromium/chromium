@@ -64,15 +64,6 @@ ASH_PUBLIC_EXPORT extern const AcceleratorData
 ASH_PUBLIC_EXPORT extern const size_t
     kEnableWithSameAppWindowCycleAcceleratorDataLength;
 
-// Accelerators that are enabled with the game dashboard feature.
-ASH_PUBLIC_EXPORT extern const AcceleratorData
-    kToggleGameDashboardAcceleratorData[];
-ASH_PUBLIC_EXPORT extern const size_t kToggleGameDashboardAcceleratorDataLength;
-
-// Accelerators that are enabled with the Picker feature.
-ASH_PUBLIC_EXPORT extern const AcceleratorData kTogglePickerAcceleratorData[];
-ASH_PUBLIC_EXPORT extern const size_t kTogglePickerAcceleratorDataLength;
-
 ASH_PUBLIC_EXPORT extern const AcceleratorData
     kTilingWindowResizeAcceleratorData[];
 ASH_PUBLIC_EXPORT extern const size_t kTilingWindowResizeAcceleratorDataLength;

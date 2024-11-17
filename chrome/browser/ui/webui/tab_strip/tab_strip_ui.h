@@ -9,7 +9,10 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/thumbnail_tracker.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,6 +32,14 @@ constexpr char16_t kWebUITabIdDataType[] = u"application/vnd.chromium.tab";
 constexpr char16_t kWebUITabGroupIdDataType[] =
     u"application/vnd.chromium.tabgroup";
 
+class TabStripUI;
+
+class TabStripUIConfig : public content::DefaultWebUIConfig<TabStripUI> {
+ public:
+  TabStripUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUITabStripHost) {}
+};
 
 // The WebUI version of the tab strip in the browser. It is currently only
 // supported on ChromeOS in tablet mode.

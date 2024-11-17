@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+if (is_chrome_branded) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "gemini_app_interactive_uitest.cc" ]
+
+    deps = [
+      "//ash",
+      "//ash/app_list",
+      "//ash/public/cpp",
+      "//ash/webui/settings/public/constants",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/app_restore",
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/chromeos/echo",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chromeos/ash/components/file_manager:constants",
+      "//chromeos/components/libsegmentation:buildflags",
+      "//chromeos/constants",
+      "//components/app_constants",
+      "//components/session_manager/core",
+      "//components/sync",
+      "//content/test:test_support",
+      "//ui/events:test_support",
+      "//ui/views",
+    ]
+  }
+}

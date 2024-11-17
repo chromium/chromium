@@ -7,6 +7,7 @@ desc: |-
         Setting the policy controls the presentation of the welcome pages that help users sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, set <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> as users' default browser, or otherwise inform them of product features.
 
         This is deprecated - use <ph name="PROMOTIONS_ENABLED_POLICY_NAME">PromotionsEnabled</ph> instead.
+deprecated: true
 example_value: false
 features:
   dynamic_refresh: true

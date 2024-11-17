@@ -1,0 +1,35 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='target1'
+++++++++++inlineTextBox name='target1'
+++++++button name='anchor1' detailsFrom=cssAnchor detailsIds=paragraph
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++heading name='anchor2'
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+=== Start Continuation ===
+rootWebArea name='addAdditionalAnchor() done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='target1'
+++++++++++inlineTextBox name='target1'
+++++++button name='anchor1'
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++heading name='anchor2'
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+=== Start Continuation ===
+rootWebArea name='removeAnchor() done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='target1'
+++++++++++inlineTextBox name='target1'
+++++++heading name='anchor2' detailsFrom=cssAnchor detailsIds=paragraph
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'

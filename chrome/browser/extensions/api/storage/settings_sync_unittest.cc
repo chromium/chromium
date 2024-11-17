@@ -179,21 +179,21 @@ class ExtensionSettingsSyncTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    profile_ = std::make_unique<TestingProfile>(temp_dir_.GetPath());
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        ExtensionsBrowserClient::Get()->GetExtensionSystemFactory(),
+        base::BindRepeating(&MockExtensionSystemFactoryFunction));
+    profile_builder.AddTestingFactory(EventRouterFactory::GetInstance(),
+                                      base::BindRepeating(&BuildEventRouter));
+
+    profile_builder.SetPath(temp_dir_.GetPath());
+    profile_ = profile_builder.Build();
+
     content::RunAllTasksUntilIdle();
 
     storage_factory_->Reset();
     frontend_ =
         StorageFrontend::CreateForTesting(storage_factory_, profile_.get());
-
-    ExtensionsBrowserClient::Get()
-        ->GetExtensionSystemFactory()
-        ->SetTestingFactoryAndUse(
-            profile_.get(),
-            base::BindRepeating(&MockExtensionSystemFactoryFunction));
-
-    EventRouterFactory::GetInstance()->SetTestingFactory(
-        profile_.get(), base::BindRepeating(&BuildEventRouter));
 
     // Hold a pointer to SyncValueStoreCache in the main thread, such that
     // GetSyncableService() can be called from the backend sequence.
@@ -261,8 +261,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
         data_type = value_store_util::ModelType::EXTENSION;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
     value_store_dir = value_store_util::GetValueStoreDir(
         settings_namespace::SYNC, data_type, extension_id);

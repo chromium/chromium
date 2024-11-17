@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/time/time.h"
@@ -55,6 +56,9 @@ class LocalFilesMigrationDialogTest : public InProcessBrowserTest {
       const LocalFilesMigrationDialogTest&) = delete;
   ~LocalFilesMigrationDialogTest() override = default;
 
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -96,18 +100,43 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_Dismiss) {
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   ASSERT_TRUE(widget->IsStackedAbove(dialog->GetDialogWindowForTesting()));
 
-  // Show dialog again - the same instance should just be shown on top.
-  ASSERT_FALSE(LocalFilesMigrationDialog::Show(
+  content::TestNavigationObserver navigation_observer_dialog_2(
+      (GURL(chrome::kChromeUILocalFilesMigrationURL)));
+  navigation_observer_dialog_2.StartWatchingNewWebContents();
+
+  // Show dialog again - should be shown on top.
+  ASSERT_TRUE(LocalFilesMigrationDialog::Show(
       CloudProvider::kOneDrive, base::Time::Now() + delay, base::DoNothing()));
-  ASSERT_FALSE(widget->IsStackedAbove(dialog->GetDialogWindowForTesting()));
+
+  // Wait for chrome://local-files-migration to load.
+  navigation_observer_dialog_2.Wait();
+  ASSERT_TRUE(navigation_observer_dialog_2.last_navigation_succeeded());
+  content::WebContents* web_contents_2 = GetDialogWebContents();
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return content::EvalJs(
+               web_contents_2,
+               "!!document.querySelector('local-files-migration-dialog')")
+        .ExtractBool();
+  }));
+
+  auto* dialog_2 = LocalFilesMigrationDialog::GetDialog();
+  EXPECT_TRUE(dialog_2);
+
+  ASSERT_FALSE(widget->IsStackedAbove(dialog_2->GetDialogWindowForTesting()));
 
   // Click the OK button and wait for the dialog to close.
-  content::WebContentsDestroyedWatcher watcher(web_contents);
+  content::WebContentsDestroyedWatcher watcher(web_contents_2);
   EXPECT_TRUE(
-      content::ExecJs(web_contents,
+      content::ExecJs(web_contents_2,
                       "document.querySelector('local-files-migration-dialog')"
                       ".$('#dismiss-button').click()"));
   watcher.Wait();
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.OneDrive.DialogShown", true, 2);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.SkyVault.Migration.OneDrive.DialogAction",
+      DialogAction::kUploadLater, 1);
 }
 
 // Tests that clicking the dialog's Upload now button invokes the migration
@@ -144,6 +173,12 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_UploadNow) {
                       "document.querySelector('local-files-migration-dialog')"
                       ".$('#upload-now-button').click()"));
   watcher.Wait();
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DialogShown", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DialogAction",
+      DialogAction::kUploadNow, 1);
 }
 
 }  // namespace policy::local_user_files

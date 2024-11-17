@@ -36,6 +36,7 @@ class CertificateManagerPageHandler
         base::WeakPtr<content::WebContents> web_contents,
         CertificateManagerPageHandler::ImportCertificateCallback callback);
     virtual void DeleteCertificate(
+        const std::string& display_name,
         const std::string& sha256hash_hex,
         CertificateManagerPageHandler::DeleteCertificateCallback callback);
     virtual void ExportCertificates(
@@ -71,6 +72,7 @@ class CertificateManagerPageHandler
       ImportCertificateCallback callback) override;
   void DeleteCertificate(
       certificate_manager_v2::mojom::CertificateSource source_id,
+      const std::string& display_name,
       const std::string& sha256hash_hex,
       DeleteCertificateCallback callback) override;
   void ExportCertificates(
@@ -81,6 +83,10 @@ class CertificateManagerPageHandler
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void ShowNativeManageCertificates() override;
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  void SetIncludeSystemTrustStore(bool include) override;
 #endif
 
  private:

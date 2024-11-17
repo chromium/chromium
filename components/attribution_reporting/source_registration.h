@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
@@ -81,6 +82,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   SourceAggregatableDebugReportingConfig aggregatable_debug_reporting_config;
   int64_t destination_limit_priority = 0;
   std::optional<AttributionScopesData> attribution_scopes_data;
+  AggregatableNamedBudgetDefs aggregatable_named_budget_defs;
 };
 
 }  // namespace attribution_reporting

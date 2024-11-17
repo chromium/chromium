@@ -17,7 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/api/identity/launch_web_auth_flow_delegate_ash.h"
 #endif
 
@@ -43,18 +43,15 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
       return IdentityLaunchWebAuthFlowFunction::Error::kCannotCreateWindow;
 
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected error from web auth flow: " << failure;
-      return IdentityLaunchWebAuthFlowFunction::Error::kUnexpectedError;
+      NOTREACHED() << "Unexpected error from web auth flow: " << failure;
   }
 }
 
 std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
   switch (error) {
     case IdentityLaunchWebAuthFlowFunction::Error::kNone:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "This function is not expected to be called with no error";
-      return std::string();
     case IdentityLaunchWebAuthFlowFunction::Error::kOffTheRecord:
       return identity_constants::kOffTheRecord;
     case IdentityLaunchWebAuthFlowFunction::Error::kUserRejected:
@@ -84,12 +81,8 @@ void RecordHistogramFunctionResult(
 
 }  // namespace
 
-BASE_FEATURE(kNonInteractiveTimeoutForWebAuthFlow,
-             "NonInteractiveTimeoutForWebAuthFlow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 IdentityLaunchWebAuthFlowFunction::IdentityLaunchWebAuthFlowFunction() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   delegate_ = std::make_unique<LaunchWebAuthFlowDelegateAsh>();
 #endif
 }
@@ -125,18 +118,15 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
           ? WebAuthFlow::INTERACTIVE
           : WebAuthFlow::SILENT;
 
-  auto abort_on_load_for_non_interactive = WebAuthFlow::AbortOnLoad::kYes;
-  std::optional<base::TimeDelta> timeout_for_non_interactive = std::nullopt;
-  if (base::FeatureList::IsEnabled(kNonInteractiveTimeoutForWebAuthFlow)) {
-    abort_on_load_for_non_interactive =
-        params->details.abort_on_load_for_non_interactive.value_or(true)
-            ? WebAuthFlow::AbortOnLoad::kYes
-            : WebAuthFlow::AbortOnLoad::kNo;
-    if (params->details.timeout_ms_for_non_interactive) {
-      timeout_for_non_interactive = std::clamp(
-          base::Milliseconds(*params->details.timeout_ms_for_non_interactive),
-          base::TimeDelta(), WebAuthFlow::kNonInteractiveMaxTimeout);
-    }
+  std::optional<base::TimeDelta> timeout_for_non_interactive;
+  auto abort_on_load_for_non_interactive =
+      params->details.abort_on_load_for_non_interactive.value_or(true)
+          ? WebAuthFlow::AbortOnLoad::kYes
+          : WebAuthFlow::AbortOnLoad::kNo;
+  if (params->details.timeout_ms_for_non_interactive) {
+    timeout_for_non_interactive = std::clamp(
+        base::Milliseconds(*params->details.timeout_ms_for_non_interactive),
+        base::TimeDelta(), WebAuthFlow::kNonInteractiveMaxTimeout);
   }
 
   // Set up acceptable target URLs. (Does not include chrome-extension

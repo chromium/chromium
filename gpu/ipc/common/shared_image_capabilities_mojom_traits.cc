@@ -12,6 +12,12 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
     Read(gpu::mojom::SharedImageCapabilitiesDataView data,
          gpu::SharedImageCapabilities* out) {
   out->supports_scanout_shared_images = data.supports_scanout_shared_images();
+
+#if BUILDFLAG(IS_WIN)
+  out->supports_scanout_shared_images_for_software_video_frames =
+      data.supports_scanout_shared_images_for_software_video_frames();
+#endif
+
   out->supports_luminance_shared_images =
       data.supports_luminance_shared_images();
   out->supports_r16_shared_images = data.supports_r16_shared_images();

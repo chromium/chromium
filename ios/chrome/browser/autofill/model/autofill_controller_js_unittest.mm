@@ -9,6 +9,8 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/common/autofill_constants.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
@@ -811,8 +813,7 @@ class AutofillControllerJsTest : public PlatformTest {
     __block web::WebFrame* main_frame = nullptr;
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
       web::WebFramesManager* frames_manager =
-          autofill::FormUtilJavaScriptFeature::GetInstance()
-              ->GetWebFramesManager(web_state());
+          autofill::GetWebFramesManagerForAutofill(web_state());
       main_frame = frames_manager->GetMainWebFrame();
       return main_frame != nullptr;
     }));
@@ -1924,8 +1925,8 @@ TEST_F(AutofillControllerJsTest,
                     "</body></html>";
   web::test::LoadHtml(html, web_state());
 
-  autofill::FormUtilJavaScriptFeature::GetInstance()->SetAutofillAcrossIframes(
-      WaitForMainFrame(), /*enabled=*/true);
+  autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillAcrossIframes(WaitForMainFrame(), /*enabled=*/true);
 
   // Verify that the form with child frames was extracted.
   NSString* verifying_javascript =
@@ -1972,8 +1973,8 @@ TEST_F(AutofillControllerJsTest,
                     "</body></html>";
   web::test::LoadHtml(html, web_state());
 
-  autofill::FormUtilJavaScriptFeature::GetInstance()->SetAutofillAcrossIframes(
-      WaitForMainFrame(), /*enabled=*/true);
+  autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillAcrossIframes(WaitForMainFrame(), /*enabled=*/true);
 
   // Verify that the form with child frames was extracted.
   NSString* verifying_javascript =

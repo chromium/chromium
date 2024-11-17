@@ -36,7 +36,7 @@ const char kEventTitle[] = "CPU Frequency";
 
 }  // namespace
 
-CPUFreqMonitorDelegate::CPUFreqMonitorDelegate() {}
+CPUFreqMonitorDelegate::CPUFreqMonitorDelegate() = default;
 
 std::string CPUFreqMonitorDelegate::GetScalingCurFreqPathString(
     unsigned int cpu_id) const {

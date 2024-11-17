@@ -37,6 +37,8 @@ class PLATFORM_EXPORT Digestor {
  public:
   explicit Digestor(HashAlgorithm);
   ~Digestor();
+  Digestor(Digestor&& other) = default;
+  Digestor& operator=(Digestor&& other) = default;
 
   bool has_failed() const { return has_failed_; }
 

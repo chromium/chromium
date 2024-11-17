@@ -71,6 +71,7 @@ build_webui("build") {
     "internal_plugin.ts",
     "local_storage_proxy.ts",
     "main.ts",
+    "message_converter.ts",
     "metrics.ts",
     "navigator.ts",
     "open_pdf_params_parser.ts",
@@ -108,8 +109,18 @@ build_webui("build") {
 
   if (enable_pdf_ink2) {
     non_web_component_files += [
+      "elements/viewer_bottom_toolbar.html.ts",
+      "elements/viewer_bottom_toolbar.ts",
+      "elements/viewer_bottom_toolbar_dropdown.html.ts",
+      "elements/viewer_bottom_toolbar_dropdown.ts",
       "elements/viewer_side_panel.html.ts",
       "elements/viewer_side_panel.ts",
+      "elements/ink_brush_selector.html.ts",
+      "elements/ink_brush_selector.ts",
+      "elements/ink_color_selector.html.ts",
+      "elements/ink_color_selector.ts",
+      "elements/ink_size_selector.html.ts",
+      "elements/ink_size_selector.ts",
     ]
   }
 
@@ -139,7 +150,14 @@ build_webui("build") {
   ]
 
   if (enable_pdf_ink2) {
-    css_files += [ "elements/viewer_side_panel.css" ]
+    css_files += [
+      "elements/viewer_bottom_toolbar.css",
+      "elements/viewer_bottom_toolbar_dropdown.css",
+      "elements/viewer_side_panel.css",
+      "elements/ink_brush_selector.css",
+      "elements/ink_color_selector.css",
+      "elements/ink_size_selector.css",
+    ]
   }
 
   icons_html_files = [ "elements/icons.html" ]

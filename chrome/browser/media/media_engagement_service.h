@@ -111,7 +111,8 @@ class MediaEngagementService : public KeyedService,
   // engagement is only earned for HTTP and HTTPS.
   bool ShouldRecordEngagement(const url::Origin& origin) const;
 
-  base::flat_map<content::WebContents*, MediaEngagementContentsObserver*>
+  base::flat_map<content::WebContents*,
+                 raw_ptr<MediaEngagementContentsObserver, CtnExperimental>>
       contents_observers_;
 
   raw_ptr<Profile, DanglingUntriaged> profile_;

@@ -28,12 +28,12 @@ namespace safe_browsing {
 // Mock ThreatDetails class that makes FinishCollection a no-op.
 class MockThreatDetails : public ThreatDetails {
  public:
-  MockThreatDetails() {}
+  MockThreatDetails() = default;
 
   MockThreatDetails(const MockThreatDetails&) = delete;
   MockThreatDetails& operator=(const MockThreatDetails&) = delete;
 
-  ~MockThreatDetails() override {}
+  ~MockThreatDetails() override = default;
   MOCK_METHOD4(
       FinishCollection,
       void(bool did_proceed,
@@ -45,7 +45,7 @@ class MockThreatDetails : public ThreatDetails {
 
 class MockThreatDetailsFactory : public ThreatDetailsFactory {
  public:
-  ~MockThreatDetailsFactory() override {}
+  ~MockThreatDetailsFactory() override = default;
 
   std::unique_ptr<ThreatDetails> CreateThreatDetails(
       BaseUIManager* ui_manager,
@@ -73,7 +73,7 @@ class TriggerManagerTest : public ::testing::Test {
   TriggerManagerTest(const TriggerManagerTest&) = delete;
   TriggerManagerTest& operator=(const TriggerManagerTest&) = delete;
 
-  ~TriggerManagerTest() override {}
+  ~TriggerManagerTest() override = default;
 
   void SetUp() override {
     ThreatDetails::RegisterFactory(&mock_threat_details_factory_);
@@ -158,6 +158,9 @@ class TriggerManagerTest : public ::testing::Test {
   const DataCollectorsMap& data_collectors_map() {
     return trigger_manager_.data_collectors_map_;
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   TriggerManager trigger_manager_;
@@ -497,5 +500,57 @@ TEST_F(TriggerManagerTest, AdSamplerTrigger_Incognito) {
   // all triggers have quota), but the incognito window prevents it from firing.
   EXPECT_FALSE(
       StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
+}
+
+TEST_F(TriggerManagerTest,
+       CollectionWhenExtendedReportingDeprecationEnabledAllowOptinEnabled) {
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+}
+
+TEST_F(TriggerManagerTest,
+       CollectionWhenExtendedReportingDeprecationEnabledAllowOptinDisabled) {
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+}
+
+TEST_F(TriggerManagerTest,
+       CollectionWhenExtendedReportingDeprecationDisabledAllowOptinEnabled) {
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
+  scoped_feature_list_.InitAndDisableFeature(
+      kExtendedReportingRemovePrefDependency);
+
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+}
+
+TEST_F(TriggerManagerTest,
+       NoCollectionWhenExtendedReportingDeprecationDisabledAllowOptinDisabled) {
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
+  scoped_feature_list_.InitAndDisableFeature(
+      kExtendedReportingRemovePrefDependency);
+
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_FALSE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents));
+  EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                             web_contents, false));
 }
 }  // namespace safe_browsing

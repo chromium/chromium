@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel=stylesheet href="resources/customizable-select-styles.css">
+
+<style>
+.optgroup {
+  padding-inline: 2px;
+}
+.legend {
+  padding: 0 2px 1px;
+  min-height: 1.2em;
+  font-weight: bolder;
+}
+.optgroup .customizable-select-option {
+  padding-inline-start: 20px;
+}
+</style>
+
+<div class=customizable-select-button popovertarget=popover id=button>
+  <span class=customizable-select-selectedcontent>one</span>
+</div>
+<div id=popover popover=auto anchor=button class=customizable-select-popover>
+  <div class="customizable-select-option selected">one</div>
+  <div class=optgroup>
+    <div class=legend>legend</div>
+    <div class=customizable-select-option>two</div>
+  </div>
+</div>
+
+<script>
+document.getElementById('popover').showPopover();
+</script>

@@ -39,11 +39,11 @@ namespace blink {
 template <>
 CORE_EXPORT const SVGEnumerationMap&
 GetEnumerationMap<FEConvolveMatrix::EdgeModeType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {FEConvolveMatrix::EDGEMODE_DUPLICATE, "duplicate"},
-      {FEConvolveMatrix::EDGEMODE_WRAP, "wrap"},
-      {FEConvolveMatrix::EDGEMODE_NONE, "none"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "duplicate",
+      "wrap",
+      "none",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
@@ -204,14 +204,12 @@ void SVGFEConvolveMatrixElement::SvgAttributeChanged(
       attr_name == svg_names::kTargetXAttr ||
       attr_name == svg_names::kTargetYAttr ||
       attr_name == svg_names::kPreserveAlphaAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
   if (attr_name == svg_names::kInAttr || attr_name == svg_names::kOrderAttr ||
       attr_name == svg_names::kKernelMatrixAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

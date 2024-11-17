@@ -85,7 +85,7 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
   auto type = c.type_name();
   DCHECK(type == "host" || type == "srflx" || type == "prflx" ||
          type == "relay");
-  type_ = String(type.data(), type.size());
+  type_ = String(type);
   if (!c.tcptype().empty()) {
     tcp_type_ = String::FromUTF8(c.tcptype());
   }

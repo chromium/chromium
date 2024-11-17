@@ -23,6 +23,7 @@ src/common/framework/data_cache.ts
 src/common/framework/metadata.ts
 src/common/framework/params_builder.ts
 src/common/framework/resources.ts
+src/common/util/collect_garbage.ts
 src/common/internal/websocket_logger.ts
 src/common/internal/test_group.ts
 src/common/framework/test_group.ts
@@ -57,7 +58,6 @@ src/common/tools/merge_listing_times.ts
 src/common/tools/run_wpt_ref_tests.ts
 src/common/tools/validate.ts
 src/common/tools/version.ts
-src/common/util/collect_garbage.ts
 src/common/util/preprocessor.ts
 src/common/util/wpt_reftest_wait.ts
 src/unittests/unit_test.ts
@@ -244,6 +244,7 @@ src/webgpu/util/color_space_conversion.ts
 src/webgpu/web_platform/util.ts
 src/webgpu/api/validation/gpu_external_texture_expiration.spec.ts
 src/webgpu/api/validation/layout_shader_compat.spec.ts
+src/webgpu/api/validation/non_filterable_texture.spec.ts
 src/webgpu/api/validation/buffer/create.spec.ts
 src/webgpu/api/validation/buffer/destroy.spec.ts
 src/webgpu/api/validation/buffer/mapping.spec.ts
@@ -331,6 +332,7 @@ src/webgpu/api/validation/render_pass/render_pass_descriptor.spec.ts
 src/webgpu/api/validation/render_pass/resolve.spec.ts
 src/webgpu/api/validation/render_pipeline/common.ts
 src/webgpu/api/validation/render_pipeline/depth_stencil_state.spec.ts
+src/webgpu/api/validation/render_pipeline/float32_blendable.spec.ts
 src/webgpu/api/validation/render_pipeline/fragment_state.spec.ts
 src/webgpu/api/validation/render_pipeline/inter_stage.spec.ts
 src/webgpu/api/validation/render_pipeline/misc.spec.ts
@@ -577,6 +579,9 @@ src/webgpu/shader/execution/expression/call/builtin/pack4xU8.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/pack4xU8Clamp.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/pow.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/pow.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroup_util.ts
+src/webgpu/shader/execution/expression/call/builtin/quadBroadcast.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/quadSwap.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/quantizeToF16.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/quantizeToF16.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/radians.cache.ts
@@ -604,26 +609,26 @@ src/webgpu/shader/execution/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/step.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/step.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/storageBarrier.spec.ts
-src/webgpu/shader/execution/expression/call/builtin/subgroup_util.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupAdd.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupAll.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupAny.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBallot.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroupBitwise.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBroadcast.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupMul.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.spec.ts
-src/webgpu/shader/execution/expression/call/builtin/textureDimensions.spec.ts
+src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
+src/webgpu/shader/execution/expression/call/builtin/textureDimensions.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGather.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGatherCompare.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureLoad.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureNumLayers.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureNumLevels.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureNumSamples.spec.ts
-src/webgpu/shader/execution/expression/call/builtin/utils.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSample.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleBaseClampToEdge.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleBias.spec.ts
@@ -632,6 +637,7 @@ src/webgpu/shader/execution/expression/call/builtin/textureSampleCompareLevel.sp
 src/webgpu/shader/execution/expression/call/builtin/textureSampleGrad.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleLevel.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureStore.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/texture_utils.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/transpose.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/transpose.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/trunc.cache.ts
@@ -648,6 +654,7 @@ src/webgpu/shader/execution/expression/call/builtin/unpack4x8unorm.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/unpack4x8unorm.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/unpack4xI8.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/unpack4xU8.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/utils.ts
 src/webgpu/shader/execution/expression/call/builtin/workgroupBarrier.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/workgroupUniformLoad.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/harness.ts
@@ -730,7 +737,6 @@ src/webgpu/shader/validation/decl/const.spec.ts
 src/webgpu/shader/validation/decl/context_dependent_resolution.spec.ts
 src/webgpu/shader/validation/decl/let.spec.ts
 src/webgpu/shader/validation/decl/override.spec.ts
-src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/validation/decl/var.spec.ts
 src/webgpu/shader/validation/expression/early_evaluation.spec.ts
 src/webgpu/shader/validation/expression/overload_resolution.spec.ts

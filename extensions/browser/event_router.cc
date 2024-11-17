@@ -1148,7 +1148,15 @@ void EventRouter::DispatchEventToProcess(
           CheckAliasStatus::ALLOWED,
           util::GetBrowserContextId(browser_context_),
           BrowserProcessContextData(process));
-  bool feature_available_to_context = availability.is_available();
+  if (!availability.is_available()) {
+    // TODO(crbug.com/40255138): Ideally it shouldn't be possible to reach here,
+    // because access is checked on registration. However, we don't always
+    // refresh the list of events an extension has registered when other factors
+    // which affect availability change (e.g. API allowlists changing). Those
+    // situations should be identified and addressed.
+    return;
+  }
+
   if (target_context == mojom::ContextType::kWebPage) {
     // |url| can only be null for service workers, so should never be null here.
     CHECK(url);
@@ -1158,21 +1166,11 @@ void EventRouter::DispatchEventToProcess(
     const Feature* feature =
         ExtensionAPI::GetSharedInstance()->GetFeatureDependency(
             event.event_name);
-    bool feature_available_to_web_page_context =
-        feature_available_to_context &&
-        feature->RequiresDelegatedAvailabilityCheck();
 
-    CHECK(feature_available_to_web_page_context || is_new_webstore_origin)
+    CHECK(feature->RequiresDelegatedAvailabilityCheck() ||
+          is_new_webstore_origin)
         << "Trying to dispatch event " << event.event_name << " to a webpage,"
         << " but this shouldn't be possible";
-  }
-  if (!feature_available_to_context) {
-    // TODO(crbug.com/40255138): Ideally it shouldn't be possible to reach here,
-    // because access is checked on registration. However, we don't always
-    // refresh the list of events an extension has registered when other factors
-    // which affect availability change (e.g. API allowlists changing). Those
-    // situations should be identified and addressed.
-    return;
   }
 
   std::optional<base::Value::List> modified_event_args;

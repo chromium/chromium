@@ -25,8 +25,7 @@ float TextAutoSpace::GetSpacingWidth(const Font* font) {
                font_data->PlatformData().size()) /
            8;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // static

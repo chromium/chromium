@@ -55,8 +55,8 @@
         prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
 
     // Use InactiveTabsTimeThreshold() instead of reading the pref value
-    // directly as this function also manage flag and default value.
-    int currentThreshold = IsInactiveTabsExplictlyDisabledByUser()
+    // directly as this function also manages the flag and the default value.
+    int currentThreshold = IsInactiveTabsExplicitlyDisabledByUser()
                                ? kInactiveTabsDisabledByUser
                                : InactiveTabsTimeThreshold().InDays();
     [_consumer updateCheckedStateWithDaysThreshold:currentThreshold];

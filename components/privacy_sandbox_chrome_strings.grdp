@@ -183,26 +183,17 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL" desc="The label for a new setting." formatter_data="android_java">
     Ad topics
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL" desc="A description of the new Ad topics setting. This text appears beneath the name of the new setting, 'Ad topics', and is associated with the control that a user can turn on or off. * 'browsing history': This help-center article explains 'browsing history' to users: https://support.google.com/chrome/answer/95589. * Ad topics are published at https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md * 'used by sites': Chrome estimates a user's topics of interest. As the user continues browsing, a site can ask Chrome for up to 3 of the user's topics to personalize ads for that user. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an “Ad privacy” page in Chrome settings. For an equivalent structure, see “Security” on chrome://settings/privacy that opens chrome://settings/security. Likewise, “Ad privacy” on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
-    Topics of interest are based on your recent browsing history and are used by sites to show you personalized ads
-  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2" desc="A description of the new Ad topics setting page. This sits under the toggle to turn on the topics API." formatter_data="android_java">
     Topics are based on your recent browsing history and are used by sites to show you personalized ads while protecting your identity
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER_DESKTOP" desc="Desktop - Disclaimer of the new Ad topics setting. This text appears beneath the sublabel.">
     Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less personalized. Learn more about <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>managing your ad privacy<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING" desc="A label above a list of the user's topics of interest. Ad topics are published at https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md">
-    Your topics
-  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL" desc="A description that appear beneath the 'Your topics' label. * 'You can block': There is a 'Block' button (or an X on mobile) that appears next to each topic in the list. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly. The link opens a dialog box that provides more information about Ad topics.">
    You can block topics you don’t want shared with sites. Chrome also auto-deletes your topics older than 4 weeks. Learn more
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED" desc="A description that appear beneath the 'Your topics' title. If this setting is off, no interests appear." formatter_data="android_java">
     When on, a list of topics appears here based on your recent browsing history
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" desc="A description that appear beneath the 'Your topics' title. This setting could be on but no topics appear in the list. This text explains why.">
-    No topics to show right now
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_V2" desc="A description that appear beneath the 'Active topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why." formatter_data="android_java">
     You don't have any active topics yet
@@ -222,15 +213,6 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC_A11Y_LABEL" desc="A button label read by screen readers that indicates which topic will get blocked. The full 'pool of topics' is published at https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md">
     Block <ph name="TOPIC">$1<ex>Movies</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING" desc="A label that serves as a button to open the 'Topics you blocked' page.">
-    Topics you blocked
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION" desc="A description that appear beneath the 'Topics you blocked' title. * 'Add' is also the name used on the button that allows users to remove a topic from the blocked list.  * 'an item' could be replaced by 'a topic'. We didn't so as not to repeat 'topic' in the same sentence. * 'pool of topics': We want to express that by clicking 'Add', the user is making a topic eligible again for consideration. The full 'pool of topics' is published at https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md">
-    Add an item back if you want it in the pool of topics that Chrome can choose from when estimating your interests
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY" desc="A description that appear beneath the 'Topics you blocked' title. This string is used if the user doesn't have any topics on the 'Topics you blocked' list.">
-    Blocked topics appear here
-  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC" desc="A button associated with each of the user's topics. When the user clicks 'Add', it makes that topic eligible in the 'pool of topics' that Chrome can use to estimate the user's topics of interest. Clicking 'Add' doesn't automatically put the added topic back onto the list of 'Your topics'. For that to happen, a user would have to browse sites associated with the 'Add'ed topic and Chrome would have to estimate the topic as relevant to that user.">
     Add
   </message>
@@ -239,18 +221,6 @@
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_UNBLOCK_TOPIC_A11Y_LABEL" desc="A button label read by screen readers that indicates which topic will get unblocked back to the pool of potential topics.">
     Unblock <ph name="TOPIC">$1<ex>Movies</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" desc="The title of a dialog box that offers more information about the Topics setting." formatter_data="android_java">
-    More about ad topics
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1" desc="Paragraph 1 of 3 on the Learn more about ad topics page. * 'Chrome notes...': This user uses Chrome to browse the web, so Chrome already has a notion of their browsing history. With this setting on, Chrome considers the recent browsing history to make a list of topics of interest.  * 'browsing history': This help-center article explains 'browsing history' to users: https://support.google.com/chrome/answer/95589." formatter_data="android_java">
-    Chrome notes topics of interest based on your browsing history from the last few weeks.
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2" desc="Paragraph 2 of 3 on the Learn more about ad topics page. * 'Later' helps the user understand that there are 2 stages relative to this setting. In the first stage, Chrome can estimate the user's interests based on their browsing history. Later, as the user continues browsing, a site can ask Chrome for topics of interest used to personalize ads. It's not instantaneous.  Link 'full list of possible topics' points to https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md" formatter_data="android_java">
-    Later, a site you visit can ask Chrome for your topics to personalize the ads you see. Chrome shares up to 3 topics while protecting your browsing history and identity.
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL" desc="Paragraph 3 of 3 on the Learn more about ad topics page. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
-    Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics you don’t want Chrome to share with sites. Learn more about managing your ad privacy in Chrome.
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
        As you browse, whether an ad you see is personalized depends on this setting, Site-suggested ads, your cookie settings, and if the site you’re viewing personalizes ads
@@ -278,7 +248,7 @@
   <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_LEARN_MORE_LINK" desc="Learn more text for the Manage Topics Page">
     <ph name="BEGIN_LINK1">&lt;a href="$1" aria-label="$2" aria-description="$3" target="_blank"&gt;</ph>Learn more<ph name="LINK_END1">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the manage topics page description." translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the manage topics page description.">
     Learn more about managing your ad privacy in Chrome.
   </message>
   <message name="IDS_SETTINGS_UNBLOCK_TOPIC_TOAST_BODY" desc="When a user unblocks a topic, a toast appears explaining what they did and and how that can make the topic active. The toast appears for at most 10 seconds." formatter_data="android_java">

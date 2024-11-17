@@ -48,6 +48,8 @@ source_set("wayland") {
     "gpu/wayland_surface_factory.cc",
     "gpu/wayland_surface_factory.h",
     "gpu/wayland_surface_gpu.h",
+    "host/drm_syncobj_ioctl_wrapper.cc",
+    "host/drm_syncobj_ioctl_wrapper.h",
     "host/dump_util.h",
     "host/fractional_scale_manager.cc",
     "host/fractional_scale_manager.h",
@@ -161,6 +163,8 @@ source_set("wayland") {
     "host/wayland_subsurface.h",
     "host/wayland_surface.cc",
     "host/wayland_surface.h",
+    "host/wayland_syncobj_timeline.cc",
+    "host/wayland_syncobj_timeline.h",
     "host/wayland_toplevel_window.cc",
     "host/wayland_toplevel_window.h",
     "host/wayland_touch.cc",
@@ -174,12 +178,6 @@ source_set("wayland") {
     "host/wayland_window_manager.h",
     "host/wayland_window_observer.cc",
     "host/wayland_window_observer.h",
-    "host/wayland_zaura_output_manager_v2.cc",
-    "host/wayland_zaura_output_manager_v2.h",
-    "host/wayland_zaura_shell.cc",
-    "host/wayland_zaura_shell.h",
-    "host/wayland_zaura_surface.cc",
-    "host/wayland_zaura_surface.h",
     "host/wayland_zcr_color_management_output.cc",
     "host/wayland_zcr_color_management_output.h",
     "host/wayland_zcr_color_management_surface.cc",
@@ -244,11 +242,10 @@ source_set("wayland") {
     ":common",
     "//base",
     "//build:chromeos_buildflags",
+    "//build/config/linux/dbus:buildflags",
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
     "//components/device_event_log",
-    "//components/exo/wayland/protocol:aura_output_management_protocol",
-    "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//components/exo/wayland/protocol:surface_augmenter_protocol",
@@ -274,6 +271,7 @@ source_set("wayland") {
     "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    "//third_party/wayland-protocols:linux_drm_syncobj_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:org_kde_kwin_idle",
     "//third_party/wayland-protocols:pointer_constraints_protocol",
@@ -344,7 +342,6 @@ source_set("wayland") {
       "host/org_gnome_mutter_idle_monitor.h",
     ]
     deps += [ "//dbus" ]
-    defines += [ "USE_DBUS" ]
   }
 
   if (is_chromeos_lacros) {
@@ -368,10 +365,10 @@ source_set("wayland") {
   if (use_wayland_gbm) {
     defines += [ "WAYLAND_GBM" ]
     sources += [
-      "gpu/drm_render_node_handle.cc",
-      "gpu/drm_render_node_handle.h",
-      "gpu/drm_render_node_path_finder.cc",
-      "gpu/drm_render_node_path_finder.h",
+      "common/drm_render_node_handle.cc",
+      "common/drm_render_node_handle.h",
+      "common/drm_render_node_path_finder.cc",
+      "common/drm_render_node_path_finder.h",
       "gpu/gbm_pixmap_wayland.cc",
       "gpu/gbm_pixmap_wayland.h",
       "gpu/gbm_surfaceless_wayland.cc",
@@ -415,6 +412,8 @@ source_set("test_support") {
   sources = [
     "test/global_object.cc",
     "test/global_object.h",
+    "test/mock_drm_syncobj_ioctl_wrapper.cc",
+    "test/mock_drm_syncobj_ioctl_wrapper.h",
     "test/mock_pointer.cc",
     "test/mock_pointer.h",
     "test/mock_surface.cc",
@@ -465,6 +464,8 @@ source_set("test_support") {
     "test/test_data_offer.h",
     "test/test_data_source.cc",
     "test/test_data_source.h",
+    "test/test_fd_factory.cc",
+    "test/test_fd_factory.h",
     "test/test_fractional_scale.cc",
     "test/test_fractional_scale.h",
     "test/test_gtk_primary_selection.cc",
@@ -509,24 +510,12 @@ source_set("test_support") {
     "test/test_wayland_zcr_color_space.h",
     "test/test_wayland_zcr_color_space_creator.cc",
     "test/test_wayland_zcr_color_space_creator.h",
+    "test/test_wp_linux_drm_syncobj.cc",
+    "test/test_wp_linux_drm_syncobj.h",
     "test/test_wp_pointer_gestures.cc",
     "test/test_wp_pointer_gestures.h",
     "test/test_xdg_popup.cc",
     "test/test_xdg_popup.h",
-    "test/test_zaura_output.cc",
-    "test/test_zaura_output.h",
-    "test/test_zaura_output_manager.cc",
-    "test/test_zaura_output_manager.h",
-    "test/test_zaura_output_manager_v2.cc",
-    "test/test_zaura_output_manager_v2.h",
-    "test/test_zaura_popup.cc",
-    "test/test_zaura_popup.h",
-    "test/test_zaura_shell.cc",
-    "test/test_zaura_shell.h",
-    "test/test_zaura_surface.cc",
-    "test/test_zaura_surface.h",
-    "test/test_zaura_toplevel.cc",
-    "test/test_zaura_toplevel.h",
     "test/test_zcr_pointer_stylus.cc",
     "test/test_zcr_pointer_stylus.h",
     "test/test_zcr_stylus.cc",
@@ -549,6 +538,7 @@ source_set("test_support") {
     "test/test_zxdg_output_manager.h",
     "test/wayland_connection_test_api.cc",
     "test/wayland_connection_test_api.h",
+    "test/wayland_window_drag_controller_test_api.h",
   ]
 
   deps = [
@@ -571,6 +561,7 @@ source_set("test_support") {
     "//third_party/wayland-protocols:fractional_scale_protocol",
     "//third_party/wayland-protocols:gtk_primary_selection_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    "//third_party/wayland-protocols:linux_drm_syncobj_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:pointer_gestures_protocol",
     "//third_party/wayland-protocols:presentation_time_protocol",
@@ -600,6 +591,7 @@ source_set("wayland_unittests") {
     "host/wayland_event_source_unittest.cc",
     "host/wayland_event_watcher_unittest.cc",
     "host/wayland_exchange_data_provider_unittest.cc",
+    "host/wayland_frame_manager_unittest.cc",
     "host/wayland_input_method_context_unittest.cc",
     "host/wayland_keyboard_unittest.cc",
     "host/wayland_output_unittest.cc",
@@ -608,6 +600,7 @@ source_set("wayland_unittests") {
     "host/wayland_seat_unittest.cc",
     "host/wayland_serial_tracker_unittest.cc",
     "host/wayland_surface_unittest.cc",
+    "host/wayland_syncobj_timeline_unittest.cc",
     "host/wayland_touch_unittest.cc",
     "host/wayland_window_drag_controller_unittest.cc",
     "host/wayland_window_manager_unittests.cc",
@@ -633,8 +626,6 @@ source_set("wayland_unittests") {
     "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
-    "//components/exo/wayland/protocol:aura_output_management_protocol",
-    "//components/exo/wayland/protocol:aura_shell_protocol",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/wayland:wayland_server",
@@ -663,12 +654,6 @@ source_set("wayland_unittests") {
 
   if (is_linux) {
     sources += [ "host/wayland_cursor_factory_unittest.cc" ]
-  }
-  if (is_chromeos_lacros) {
-    sources += [
-      "host/wayland_zaura_output_manager_v2_unittest.cc",
-      "host/wayland_zaura_shell_unittest.cc",
-    ]
   }
   import("//ui/base/ui_features.gni")
   if (use_xkbcommon) {

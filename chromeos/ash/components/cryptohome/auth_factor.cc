@@ -38,9 +38,11 @@ AuthFactorCommonMetadata::AuthFactorCommonMetadata()
           ComponentVersion(std::string(version_info::GetVersionNumber()))) {}
 
 AuthFactorCommonMetadata::AuthFactorCommonMetadata(ComponentVersion chrome,
-                                                   ComponentVersion chromeos)
+                                                   ComponentVersion chromeos,
+                                                   LockoutPolicy lockout_policy)
     : chrome_version_last_updated_(std::move(chrome)),
-      chromeos_version_last_updated_(std::move(chromeos)) {}
+      chromeos_version_last_updated_(std::move(chromeos)),
+      lockout_policy_(lockout_policy) {}
 
 AuthFactorCommonMetadata::AuthFactorCommonMetadata(
     AuthFactorCommonMetadata&&) noexcept = default;

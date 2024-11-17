@@ -15,6 +15,7 @@ import subprocess
 import shutil
 import time
 
+from devil import base_error
 from devil.android import crash_handler
 from devil.android import device_errors
 from devil.android import device_temp_file
@@ -23,8 +24,10 @@ from devil.android import ports
 from devil.android.sdk import version_codes
 from devil.utils import reraiser_thread
 from incremental_install import installer
+from lib.proto import exception_recorder
 from pylib import constants
 from pylib.base import base_test_result
+from pylib.base import test_exception
 from pylib.gtest import gtest_test_instance
 from pylib.local import local_test_server_spawner
 from pylib.local.device import local_device_environment
@@ -287,13 +290,20 @@ class _ApkDelegate:
       try:
         device.StartInstrumentation(
             self._component, extras=extras, raw=False, **kwargs)
-      except device_errors.CommandFailedError:
+      except device_errors.CommandFailedError as e:
         logging.exception('gtest shard failed.')
-      except device_errors.CommandTimeoutError:
+        exception_recorder.register(
+            test_exception.StartInstrumentationFailedError(e))
+      except device_errors.CommandTimeoutError as e:
         logging.exception('gtest shard timed out.')
-      except device_errors.DeviceUnreachableError:
+        exception_recorder.register(
+            test_exception.StartInstrumentationTimeoutError(e))
+      except device_errors.DeviceUnreachableError as e:
+        exception_recorder.register(e)
         logging.exception('gtest shard device unreachable.')
       except Exception:
+        exception_recorder.register(
+            test_exception.StartInstrumentationError(e))
         device.ForceStop(self._package)
         raise
       finally:
@@ -307,8 +317,14 @@ class _ApkDelegate:
       stdout_file_path = stdout_file.name
       if self._env.force_main_user:
         stdout_file_path = device.ResolveSpecialPath(stdout_file_path)
-      stdout_file_content = device.ReadFile(stdout_file_path,
-                                            as_root=self._env.force_main_user)
+      try:
+        stdout_file_content = device.ReadFile(stdout_file_path,
+                                              as_root=self._env.force_main_user)
+      except device_errors.AdbCommandFailedError as e:
+        exception_recorder.register(
+            test_exception.StartInstrumentationStdoutError(e))
+        raise
+
       return stdout_file_content.splitlines()
 
   def PullAppFiles(self, device, files, directory):
@@ -448,7 +464,14 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     def individual_device_set_up(device, host_device_tuples):
       def install_apk(dev):
         # Install test APK.
-        self._delegate.Install(dev)
+        try:
+          self._delegate.Install(dev)
+        except device_errors.CommandFailedError as e:
+          raise test_exception.InstallationFailedError(e) from e
+        except device_errors.CommandTimeoutError as e:
+          raise test_exception.InstallationTimeoutError(e) from e
+        except base_error.BaseError as e:
+          raise test_exception.InstallationError(e) from e
 
       def push_test_data(dev):
         if self._test_instance.use_existing_test_data:

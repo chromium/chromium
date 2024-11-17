@@ -37,7 +37,7 @@ public class AccountCapabilities {
     }
 
     @VisibleForTesting
-    public AccountCapabilities(HashMap<String, Boolean> accountCapabilities) {
+    public AccountCapabilities(Map<String, Boolean> accountCapabilities) {
         mAccountCapabilities = accountCapabilities;
     }
 
@@ -49,7 +49,7 @@ public class AccountCapabilities {
             Map<String, Integer> capabilityResponses) {
         assert capabilityResponses.size()
                 == AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES.size();
-        HashMap<String, Boolean> capabilities = new HashMap<>();
+        Map<String, Boolean> capabilities = new HashMap<>();
         for (String capabilityName :
                 AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
             assert capabilityResponses.containsKey(capabilityName);
@@ -122,6 +122,13 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canUseCopyeditorFeature capability value.
+     */
+    public @Tribool int canUseCopyeditorFeature() {
+        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_COPYEDITOR_FEATURE_NAME);
+    }
+
+    /**
      * @return canUseDevToolsGenerativeAiFeatures capability value.
      */
     public @Tribool int canUseDevToolsGenerativeAiFeatures() {
@@ -184,6 +191,22 @@ public class AccountCapabilities {
     public @Tribool int isSubjectToParentalControls() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
+    }
+
+    /**
+     * @return canUseSpeakerLabelInRecorderApp capability value.
+     */
+    public @Tribool int canUseSpeakerLabelInRecorderApp() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP);
+    }
+
+    /**
+     * @return canUseGenerativeAiInRecorderApp capability value.
+     */
+    public @Tribool int canUseGenerativeAiInRecorderApp() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_IN_RECORDER_APP);
     }
 
     /**

@@ -26,6 +26,9 @@ class SystemIdentityManagerObserver : public base::CheckedObserver {
   // have been updated.
   virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
 
+  // Called when refresh token for `identity` is updated.
+  virtual void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) {}
+
   // Called when refreshing access token for `identity` fails with `error`.
   // The error can be handled by calling `HandleMDMNotification`.
   virtual void OnIdentityAccessTokenRefreshFailed(

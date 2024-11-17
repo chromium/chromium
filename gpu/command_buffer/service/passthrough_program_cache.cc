@@ -88,8 +88,7 @@ ProgramCache::ProgramLoadResult PassthroughProgramCache::LoadLinkedProgram(
     const std::vector<std::string>& transform_feedback_varyings,
     GLenum transform_feedback_buffer_mode,
     DecoderClient* client) {
-  NOTREACHED_IN_MIGRATION();
-  return PROGRAM_LOAD_FAILURE;
+  NOTREACHED();
 }
 
 void PassthroughProgramCache::SaveLinkedProgram(
@@ -100,7 +99,7 @@ void PassthroughProgramCache::SaveLinkedProgram(
     const std::vector<std::string>& transform_feedback_varyings,
     GLenum transform_feedback_buffer_mode,
     DecoderClient* client) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PassthroughProgramCache::LoadProgram(const std::string& key,
@@ -135,7 +134,9 @@ bool PassthroughProgramCache::CacheEnabled() const {
   return !disable_gpu_shader_disk_cache_;
 }
 
-void PassthroughProgramCache::Set(Key&& key, Value&& value) {
+void PassthroughProgramCache::Set(Key&& key,
+                                  Value&& value,
+                                  CacheProgramCallback callback) {
   {
     base::AutoLock auto_lock(lock_);
     // If the value is so big it will never fit in the cache, throw it away.
@@ -153,22 +154,25 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
     // If the cache is overflowing, remove some old entries.
     DCHECK(max_size_bytes() >= value.size());
   }
+
   Trim(max_size_bytes() - value.size());
-  {
-    base::AutoLock auto_lock(lock_);
+
     // If callback is set, notify that there was a new/updated blob entry so it
     // can be stored in disk.  Note that this is done before the Put() call as
     // that consumes `value`.
-    if (cache_program_callback_) {
-      // Convert the key and binary to string form.
-      std::string_view key_string(reinterpret_cast<const char*>(key.data()),
-                                  key.size());
-      std::string_view value_string(reinterpret_cast<const char*>(value.data()),
-                                    value.size());
-      std::string key_string_64 = base::Base64Encode(key_string);
-      std::string value_string_64 = base::Base64Encode(value_string);
-      cache_program_callback_.Run(key_string_64, value_string_64);
-    }
+  if (callback) {
+    // Convert the key and binary to string form.
+    std::string_view key_string(reinterpret_cast<const char*>(key.data()),
+                                key.size());
+    std::string_view value_string(reinterpret_cast<const char*>(value.data()),
+                                  value.size());
+    std::string key_string_64 = base::Base64Encode(key_string);
+    std::string value_string_64 = base::Base64Encode(value_string);
+    callback.Run(key_string_64, value_string_64);
+  }
+
+  {
+    base::AutoLock auto_lock(lock_);
 
     if (value_added_hook_) {
       value_added_hook_->OnValueAddedToCache(key, value);
@@ -178,11 +182,31 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
   }
 }
 
-const PassthroughProgramCache::ProgramCacheValue* PassthroughProgramCache::Get(
-    const Key& key) {
-  lock_.AssertAcquired();
+size_t PassthroughProgramCache::Get(const Key& key,
+                                    void* out_value,
+                                    size_t value_size) {
+  // Note that the |lock_| should be held during whole time ProgramCacheValue is
+  // being accessed below.
+  base::AutoLock auto_lock(lock_);
+
   ProgramLRUCache::iterator found = store_.Get(key);
-  return found == store_.end() ? nullptr : &found->second;
+
+  UMA_HISTOGRAM_BOOLEAN("Gpu.PassthroughProgramCacheLoadHitInCache",
+                        found != store_.end());
+
+  if (found == store_.end()) {
+    return 0;
+  }
+
+  const PassthroughProgramCache::Value& entry_value = found->second.data();
+
+  if (value_size > 0) {
+    if (static_cast<size_t>(value_size) >= entry_value.size()) {
+      memcpy(out_value, entry_value.data(), entry_value.size());
+    }
+  }
+
+  return entry_value.size();
 }
 
 EGLsizeiANDROID PassthroughProgramCache::BlobCacheGetImpl(
@@ -197,28 +221,31 @@ EGLsizeiANDROID PassthroughProgramCache::BlobCacheGetImpl(
   const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
   PassthroughProgramCache::Key entry_key(key_begin, key_begin + key_size);
 
-  // Note that the |lock_| should be held during whole time ProgramCacheValue is
-  // being accessed below.
-  base::AutoLock auto_lock(lock_);
-  const PassthroughProgramCache::ProgramCacheValue* cache_value =
-      g_program_cache->Get(std::move(entry_key));
+  return Get(entry_key, value, value_size);
+}
 
-  UMA_HISTOGRAM_BOOLEAN("Gpu.PassthroughProgramCacheLoadHitInCache",
-                        cache_value != nullptr);
-
-  if (!cache_value) {
-    return 0;
+void PassthroughProgramCache::BlobCacheSetImpl(const void* key,
+                                               EGLsizeiANDROID key_size,
+                                               const void* value,
+                                               EGLsizeiANDROID value_size) {
+  if (key_size < 0 || value_size < 0) {
+    return;
   }
 
-  const PassthroughProgramCache::Value& entry_value = cache_value->data();
+  const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
+  PassthroughProgramCache::Key entry_key(key_begin, key_begin + key_size);
 
-  if (value_size > 0) {
-    if (static_cast<size_t>(value_size) >= entry_value.size()) {
-      memcpy(value, entry_value.data(), entry_value.size());
-    }
+  const uint8_t* value_begin = reinterpret_cast<const uint8_t*>(value);
+  PassthroughProgramCache::Value entry_value(value_begin,
+                                             value_begin + value_size);
+
+  CacheProgramCallback callback;
+  {
+    base::AutoLock auto_lock(lock_);
+    callback = cache_program_callback_;
   }
 
-  return entry_value.size();
+  Set(std::move(entry_key), std::move(entry_value), callback);
 }
 
 void PassthroughProgramCache::BlobCacheSet(const void* key,
@@ -228,17 +255,7 @@ void PassthroughProgramCache::BlobCacheSet(const void* key,
   if (!g_program_cache)
     return;
 
-  if (key_size < 0 || value_size < 0)
-    return;
-
-  const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
-  PassthroughProgramCache::Key entry_key(key_begin, key_begin + key_size);
-
-  const uint8_t* value_begin = reinterpret_cast<const uint8_t*>(value);
-  PassthroughProgramCache::Value entry_value(value_begin,
-                                             value_begin + value_size);
-
-  g_program_cache->Set(std::move(entry_key), std::move(entry_value));
+  g_program_cache->BlobCacheSetImpl(key, key_size, value, value_size);
 }
 
 EGLsizeiANDROID PassthroughProgramCache::BlobCacheGet(

@@ -89,29 +89,6 @@ InstallableParams ParamsToGetManifest() {
   return params;
 }
 
-// Logs installable status codes to the console.
-class ConsoleStatusReporter : public AppBannerManager::StatusReporter {
- public:
-  // Constructs a ConsoleStatusReporter which logs to the devtools console
-  // attached to |web_contents|.
-  explicit ConsoleStatusReporter(content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
-
-  // Logs an error message corresponding to |code| to the devtools console.
-  void ReportStatus(InstallableStatusCode code) override {
-    LogToConsole(web_contents_, code,
-                 blink::mojom::ConsoleMessageLevel::kError);
-  }
-
-  WebappInstallSource GetInstallSource(content::WebContents* web_contents,
-                                       InstallTrigger trigger) override {
-    return WebappInstallSource::DEVTOOLS;
-  }
-
- private:
-  raw_ptr<content::WebContents> web_contents_;
-};
-
 // Tracks installable status codes via an UMA histogram.
 class TrackingStatusReporter : public AppBannerManager::StatusReporter {
  public:
@@ -152,8 +129,7 @@ class NullStatusReporter : public AppBannerManager::StatusReporter {
 
   WebappInstallSource GetInstallSource(content::WebContents* web_contents,
                                        InstallTrigger trigger) override {
-    NOTREACHED_IN_MIGRATION();
-    return WebappInstallSource::COUNT;
+    NOTREACHED();
   }
 };
 
@@ -248,10 +224,7 @@ void AppBannerManager::RequestAppBanner() {
     has_sufficient_engagement_ = true;
   }
 
-  if (ShouldBypassEngagementChecks())
-    status_reporter_ = std::make_unique<ConsoleStatusReporter>(web_contents());
-  else
-    status_reporter_ = std::make_unique<TrackingStatusReporter>();
+  status_reporter_ = std::make_unique<TrackingStatusReporter>();
 
   UpdateState(State::FETCHING_MANIFEST);
   manager_->GetData(ParamsToGetManifest(),
@@ -386,8 +359,8 @@ bool AppBannerManager::HasSufficientEngagement() const {
 }
 
 bool AppBannerManager::ShouldBypassEngagementChecks() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kBypassAppBannerEngagementChecks);
+  return base::FeatureList::IsEnabled(
+      webapps::features::kBypassAppBannerEngagementChecks);
 }
 
 void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
@@ -412,25 +385,6 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
                         data.web_page_metadata->Clone(), *(data.manifest_url));
   WebappsClient::Get()->OnManifestSeen(web_contents()->GetBrowserContext(),
                                        *data.manifest);
-
-  // Skip checks for PasswordManager WebUI page.
-  if (content::HasWebUIScheme(validated_url_) &&
-      (validated_url_.host() ==
-       password_manager::kChromeUIPasswordManagerHost)) {
-    if (WebappsClient::Get()->DoesNewWebAppConflictWithExistingInstallation(
-            web_contents()->GetBrowserContext(),
-            web_app_data_->manifest().start_url, web_app_data_->manifest_id)) {
-      TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
-      SetInstallableWebAppCheckResult(
-          InstallableWebAppCheckResult::kNo_AlreadyInstalled);
-      Stop(InstallableStatusCode::ALREADY_INSTALLED);
-    } else {
-      SetInstallableWebAppCheckResult(
-          InstallableWebAppCheckResult::kYes_Promotable);
-      Stop(InstallableStatusCode::NO_ERROR_DETECTED);
-    }
-    return;
-  }
 
   PerformInstallableChecks();
 }
@@ -828,7 +782,7 @@ void AppBannerManager::OnEngagementEvent(
     double old_score,
     site_engagement::EngagementType /*type*/,
     const std::optional<webapps::AppId>& /*app_id*/) {
-  if (TriggeringDisabledForTesting()) {
+  if (TriggeringDisabledForTesting() || ShouldBypassEngagementChecks()) {
     return;
   }
 

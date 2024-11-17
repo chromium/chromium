@@ -416,6 +416,48 @@ var testUsingTCPSocketOnUDPMethods = function() {
   }
 };
 
+var testWriteQuota = function() {
+  console.log("calling create, protoocol=", protocol);
+  chrome.socket.create(protocol, {}, onCreate);
+
+  function onCreate(createInfo) {
+    chrome.test.assertTrue(createInfo.socketId > 0, "failed to create socket");
+    socketId = createInfo.socketId;
+    if (protocol == "tcp") {
+      console.log("calling connect");
+      chrome.socket.connect(socketId, address, port, onConnectOrBindComplete);
+    } else {
+      console.log("calling bind");
+      socket.bind(socketId, "0.0.0.0", 0, onConnectOrBindComplete);
+    }
+  }
+
+  function onConnectOrBindComplete(result) {
+    chrome.test.assertEq(0, result, "failed to connect");
+    console.log("Socket connect: result=" + result, chrome.runtime.lastError);
+
+    string2ArrayBuffer(request, function (arrayBuffer) {
+      if (protocol == "tcp") {
+        chrome.socket.write(socketId, arrayBuffer, onComplete);
+      } else {
+        socket.sendTo(socketId, arrayBuffer, address, port,
+                      onComplete);
+      }
+    });
+  }
+
+  function onComplete(result) {
+    console.log("onComplete: result=" + result, chrome.runtime.lastError);
+    if (chrome.runtime.lastError &&
+        chrome.runtime.lastError.message == "Exceeded write quota.") {
+      chrome.test.succeed();
+      return;
+    }
+
+    chrome.test.fail('Write quota not enforced');
+  }
+}
+
 var onMessageReply = function(message) {
   var parts = message.split(":");
   var test_type = parts[0];
@@ -431,6 +473,14 @@ var onMessageReply = function(message) {
   } else if (test_type == 'multicast') {
     console.log("Running multicast tests");
     chrome.test.runTests([ testMulticast ]);
+  } else if (test_type == 'tcp_write_quota') {
+    console.log("Running TCP write quota tests");
+    protocol = "tcp";
+    chrome.test.runTests([ testWriteQuota ]);
+  } else if (test_type == 'udp_sendTo_quota') {
+    console.log("Running UDP sendTo write quota tests");
+    protocol = "udp";
+    chrome.test.runTests([ testWriteQuota ]);
   } else {
     protocol = test_type;
     if (protocol == "udp") {

@@ -12,6 +12,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -208,6 +210,24 @@ InteractionSequence::StepBuilder InteractiveTestApi::Confirm(
   return builder;
 }
 
+InteractionSequence::StepBuilder InteractiveTestApi::DumpElements() {
+  return WithElement(kInteractiveTestPivotElementId,
+                     [this](ui::TrackedElement* el) {
+                       private_test_impl()
+                           .DebugDumpElements(el->context())
+                           .PrintTo(COMPACT_GOOGLE_LOG_INFO.stream());
+                     });
+}
+
+InteractionSequence::StepBuilder InteractiveTestApi::DumpElementsInContext() {
+  return WithElement(kInteractiveTestPivotElementId,
+                     [this](ui::TrackedElement* el) {
+                       private_test_impl()
+                           .DebugDumpContext(el->context())
+                           .PrintTo(COMPACT_GOOGLE_LOG_INFO.stream());
+                     });
+}
+
 // static
 InteractionSequence::StepBuilder InteractiveTestApi::WaitForShow(
     ElementSpecifier element,
@@ -329,6 +349,18 @@ InteractiveTestApi::MultiStep InteractiveTestApi::InContext(
 }
 
 // static
+InteractiveTestApi::MultiStep InteractiveTestApi::InSameContextAs(
+    ElementSpecifier element,
+    MultiStep steps) {
+  return Steps(
+      std::move(
+          WithElement(element, base::DoNothing())
+              .SetContext(InteractionSequence::ContextMode::kAny)
+              .SetDescription("InSameContextAs() - locate reference element")),
+      InSameContext(std::move(steps)));
+}
+
+// static
 InteractiveTestApi::MultiStep InteractiveTestApi::WithoutDelay(
     MultiStep steps) {
   for (auto& step : steps) {
@@ -404,21 +436,26 @@ bool InteractiveTestApi::RunTestSequenceImpl(
     base::test::ScopedRunLoopTimeout timeout(
         FROM_HERE, std::nullopt,
         base::BindRepeating(
-            [](base::WeakPtr<InteractionSequence> sequence) {
+            [](base::WeakPtr<InteractionSequence> sequence,
+               base::WeakPtr<internal::InteractiveTestPrivate> impl) {
               std::ostringstream oss;
+              ui::ElementContext context;
               if (sequence) {
-                oss << internal::kInteractiveTestFailedMessagePrefix
-                    << sequence->BuildAbortedData(
-                           InteractionSequence::AbortedReason::
-                               kSequenceTimedOut);
+                const auto data = sequence->BuildAbortedData(
+                    InteractionSequence::AbortedReason::kSequenceTimedOut);
+                oss << internal::kInteractiveTestFailedMessagePrefix << data;
+                context = data.context;
               } else {
                 oss << "Interactive test: timeout after test sequence "
                        "destroyed; a failure message may already have been "
                        "logged.";
               }
+              if (impl) {
+                impl->DebugDumpElements(context).PrintTo(oss);
+              }
               return oss.str();
             },
-            sequence->AsWeakPtr()));
+            sequence->AsWeakPtr(), private_test_impl().GetAsWeakPtr()));
     sequence->RunSynchronouslyForTesting();
   }
 

@@ -11,8 +11,7 @@
 #include "third_party/nearby/src/connections/payload.h"
 #include "third_party/nearby/src/internal/platform/byte_array.h"
 
-namespace nearby {
-namespace connections {
+namespace nearby::connections {
 
 // Manages payloads with type "stream" received over Nearby Connections. Streams
 // over a certain size are delivered in chunks and need to be reassembled upon
@@ -65,7 +64,6 @@ class NearbyConnectionsStreamBufferManager {
       id_to_payload_with_buffer_map_;
 };
 
-}  // namespace connections
-}  // namespace nearby
+}  // namespace nearby::connections
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_NEARBY_CONNECTIONS_STREAM_BUFFER_MANAGER_H_

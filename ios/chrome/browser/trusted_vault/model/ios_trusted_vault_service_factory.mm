@@ -17,12 +17,6 @@
 
 // static
 trusted_vault::TrustedVaultService*
-IOSTrustedVaultServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-trusted_vault::TrustedVaultService*
 IOSTrustedVaultServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<trusted_vault::TrustedVaultService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

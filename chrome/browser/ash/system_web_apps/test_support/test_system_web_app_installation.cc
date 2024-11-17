@@ -49,8 +49,7 @@ WebUIType GetWebUIType(const GURL& url) {
     return WebUIType::kChrome;
   if (url.SchemeIs(content::kChromeUIUntrustedScheme))
     return WebUIType::kChromeUntrusted;
-  NOTREACHED_IN_MIGRATION();
-  return WebUIType::kChrome;
+  NOTREACHED();
 }
 
 // Assumes url is like "chrome://web-app/index.html". Returns "web-app";
@@ -422,7 +421,7 @@ TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp() {
           SystemWebAppType::SETTINGS, "OSSettings",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
-  delegate->SetUrlInSystemAppScope(GURL("http://example.com/in-scope"));
+  delegate->SetUrlInSystemAppScope(GURL("https://example.com/in-scope"));
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));

@@ -3,27 +3,35 @@
 // found in the LICENSE file.
 
 #include <cstddef>
+#include <optional>
 #include <string_view>
 #include <tuple>
 
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
+#include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -62,29 +70,25 @@ class MockAnchorElementInteractionHost
     is_mouse_pointer_ = mouse_data->is_mouse_pointer;
     mouse_velocity_ = mouse_data->mouse_velocity;
   }
+  void OnViewportHeuristicTriggered(const KURL& target) override {
+    url_received_ = target;
+    event_type_ = PointerEventType::kNone;
+  }
 
  private:
   mojo::Receiver<mojom::blink::AnchorElementInteractionHost> receiver_{this};
 };
 
 class AnchorElementInteractionTest : public SimTest {
- public:
  protected:
   void SetUp() override {
     SimTest::SetUp();
-
-    SetFeatureList();
 
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::AnchorElementInteractionHost::Name_,
         WTF::BindRepeating(&AnchorElementInteractionTest::Bind,
                            WTF::Unretained(this)));
     WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
-  }
-
-  virtual void SetFeatureList() {
-    feature_list_.InitWithFeatures(
-        {features::kSpeculationRulesPointerHoverHeuristics}, {});
   }
 
   void TearDown() override {
@@ -111,7 +115,6 @@ class AnchorElementInteractionTest : public SimTest {
   }
 
   std::vector<std::unique_ptr<MockAnchorElementInteractionHost>> hosts_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AnchorElementInteractionTest, SingleAnchor) {
@@ -557,6 +560,293 @@ TEST_F(AnchorElementInteractionTest, MouseVelocitySent) {
   EXPECT_EQ(PointerEventType::kOnPointerHover, hosts_[0]->event_type_);
   EXPECT_TRUE(hosts_[0]->is_mouse_pointer_);
   EXPECT_NEAR(50.0, hosts_[0]->mouse_velocity_, 0.5);
+}
+
+class AnchorElementInteractionViewportHeuristicsTest
+    : public AnchorElementInteractionTest {
+ public:
+  AnchorElementInteractionViewportHeuristicsTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kNavigationPredictor,
+          {{"random_anchor_sampling_period", "1"}}},
+         {features::kNavigationPredictorNewViewportFeatures, {}},
+         {features::kPreloadingViewportHeuristics,
+          {{"delay", "100ms"},
+           {"distance_from_ptr_down_low", "-0.3"},
+           {"distance_from_ptr_down_hi", "0"},
+           {"largest_anchor_threshold", "0.5"}}}},
+        {});
+  }
+
+  static constexpr int kViewportWidth = 400;
+  static constexpr int kViewportHeight = 400;
+
+  void DispatchPointerDown(gfx::PointF coordinates) {
+    GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+        WebMouseEvent(WebInputEvent::Type::kMouseDown, coordinates, coordinates,
+                      WebPointerProperties::Button::kLeft, 0,
+                      WebInputEvent::kLeftButtonDown,
+                      WebInputEvent::GetStaticTimeStampForTests()));
+  }
+
+  void DispatchPointerDownAndVerticalScroll(gfx::PointF coordinates, float dy) {
+    DispatchPointerDown(coordinates);
+    GetWebFrameWidget().DispatchThroughCcInputHandler(
+        SyntheticWebGestureEventBuilder::BuildScrollBegin(
+            /*dx_hint=*/0.0f, /*dy_hint=*/0.0f,
+            WebGestureDevice::kTouchscreen));
+    GetWebFrameWidget().DispatchThroughCcInputHandler(
+        SyntheticWebGestureEventBuilder::BuildScrollUpdate(
+            /*dx=*/0.0f, dy, WebInputEvent::kNoModifiers,
+            WebGestureDevice::kTouchscreen));
+    GetWebFrameWidget().DispatchThroughCcInputHandler(
+        SyntheticWebGestureEventBuilder::Build(
+            WebInputEvent::Type::kGestureScrollEnd,
+            WebGestureDevice::kTouchscreen));
+    Compositor().BeginFrame();
+  }
+
+  void ProcessPositionUpdates() {
+    platform_->RunForPeriodSeconds(ConvertDOMHighResTimeStampToSeconds(
+        AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
+            ->GetIntersectionObserverForTesting()
+            ->delay()));
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  struct TestFixtureParams {
+    KURL main_frame_url = KURL("https://example.com/");
+    String main_resource_body;
+    gfx::PointF pointer_down_location;
+    // Vertical scroll delta; positive value will scroll up.
+    int scroll_delta;
+  };
+  // Runs test steps used by most tests in the suite:
+  // 1) Load a document (contents specified with `main_resource_body`).
+  // 2) Pointer down at `pointer_down_location` and scroll vertically with by
+  //    `scroll delta`.
+  // 3) Process position updates.
+  void RunBasicTestFixture(const TestFixtureParams& params) {
+    String source(params.main_frame_url);
+    SimRequest main_resource(source, "text/html");
+    LoadURL(source);
+    main_resource.Complete(params.main_resource_body);
+
+    Compositor().BeginFrame();
+    DispatchPointerDownAndVerticalScroll(params.pointer_down_location,
+                                         params.scroll_delta);
+    ProcessPositionUpdates();
+
+    // The 100ms matches the delay param set for kPreloadingViewportHeuristic.
+    platform_->RunForPeriodSeconds(0.1);
+    base::RunLoop().RunUntilIdle();
+  }
+
+ protected:
+  void SetUp() override {
+    AnchorElementInteractionTest::SetUp();
+
+    // Allows WidgetInputHandlerManager::InitOnInputHandlingThread() to run.
+    platform_->RunForPeriod(base::Milliseconds(1));
+  }
+
+  frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
+      base::PassKey<WebLocalFrame> pass_key,
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
+          frame_widget,
+      CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+          widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+          widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const viz::FrameSinkId& frame_sink_id,
+      bool hidden,
+      bool never_composited,
+      bool is_for_child_local_root,
+      bool is_for_nested_main_frame,
+      bool is_for_scalable_page) override {
+    auto* test_web_frame_widget =
+        MakeGarbageCollected<frame_test_helpers::TestWebFrameWidget>(
+            std::move(pass_key), std::move(frame_widget_host),
+            std::move(frame_widget), std::move(widget_host), std::move(widget),
+            std::move(task_runner), frame_sink_id, hidden, never_composited,
+            is_for_child_local_root, is_for_nested_main_frame,
+            is_for_scalable_page);
+    display::ScreenInfo screen_info;
+    screen_info.rect = gfx::Rect(kViewportWidth, kViewportHeight);
+    test_web_frame_widget->SetInitialScreenInfo(screen_info);
+    return test_web_frame_widget;
+  }
+
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
+      platform_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest, BasicTest) {
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 180),
+                       .scroll_delta = -100});
+  EXPECT_EQ(hosts_[0]->event_type_, PointerEventType::kNone);
+  EXPECT_EQ(hosts_[0]->url_received_, KURL("https://example.com/foo"));
+}
+
+// Tests scenario where an anchor's distance_from_pointer_down_ratio after a
+// scroll is not in [-0.3, 0].
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       NotNearPreviousPointerDown) {
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 350),
+                       .scroll_delta = -100});
+
+  EXPECT_EQ(hosts_[0]->event_type_, PointerEventType::kNone);
+  EXPECT_FALSE(hosts_[0]->url_received_.has_value());
+}
+
+// Test scenario with two anchors where one anchor is < 50% larger than the
+// other.
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       TwoSimilarlySizedAnchors) {
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 100px"></div>
+      <a href="https://example.com/foo"
+        style="display: block; height: 30px;">foo</a>
+      <a href="https://example.com/bar"
+        style="display: block; height: 25px;">bar</a>
+      <div style="height: 400px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 200),
+                       .scroll_delta = -25});
+
+  EXPECT_EQ(hosts_[0]->event_type_, PointerEventType::kNone);
+  EXPECT_FALSE(hosts_[0]->url_received_.has_value());
+}
+
+// Test scenario with two anchors where one anchor is > 50% larger than the
+// other.
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       TwoDifferentlySizedAnchors) {
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 100px"></div>
+      <a href="https://example.com/foo"
+        style="display: block; height: 40px;">foo</a>
+      <a href="https://example.com/bar"
+        style="display: block; height: 20px;">bar</a>
+      <div style="height: 400px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 150),
+                       .scroll_delta = -25});
+
+  EXPECT_EQ(hosts_[0]->event_type_, PointerEventType::kNone);
+  EXPECT_EQ(hosts_[0]->url_received_, KURL("https://example.com/foo"));
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest, MultipleAnchors) {
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 100px"></div>
+      <a href="https://example.com/one"
+        style="display: block; height: 30px;">one</a>
+      <a href="https://example.com/two"
+        style="display: block; height: 40px;">two</a>
+      <a href="https://example.com/three"
+        style="display: block; height: 20px;">three</a>
+      <a href="https://example.com/four"
+        style="display: block; height: 20px;">four</a>
+      <a href="https://example.com/five"
+        style="display: block; height: 100px;">five</a>
+      <div style="height: 400px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 220),
+                       .scroll_delta = -25});
+
+  EXPECT_EQ(hosts_[0]->event_type_, PointerEventType::kNone);
+  // One and five are too far away from the ptr down, two is much bigger than
+  // three and four.
+  EXPECT_EQ(hosts_[0]->url_received_, KURL("https://example.com/two"));
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       PointerDownImmediatelyAfterScroll) {
+  String source(KURL("https://example.com"));
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+    <div style="height: 300px"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  DispatchPointerDownAndVerticalScroll(gfx::PointF(100, 200), -100);
+  ProcessPositionUpdates();
+
+  platform_->RunForPeriodSeconds(0.01);
+  // Second pointerdown happens 10ms after the scroll end, which is within the
+  // configured delay period of 100ms.
+  DispatchPointerDown(gfx::PointF(200, 375));
+  // Ensure we go past the configured delay period.
+  platform_->RunForPeriodSeconds(0.1);
+  base::RunLoop().RunUntilIdle();
+
+  // Second pointerdown happening during the delay period should prevent the
+  // anchor from being selected.
+  EXPECT_EQ(hosts_[0]->event_type_, PointerEventType::kNone);
+  EXPECT_FALSE(hosts_[0]->url_received_.has_value());
+}
+
+TEST_F(AnchorElementInteractionViewportHeuristicsTest,
+       PredictorDisabledIfAllAnchorsNotSampledIn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor, {{"random_anchor_sampling_period", "2"}});
+
+  String body = R"HTML(
+    <body style="margin: 0px">
+      <div style="height: 200px"></div>
+      <a href="https://example.com/foo"
+         style="height: 100px; display: block;">link</a>
+      <div style="height: 300px"></div>
+    </body>
+  )HTML";
+  RunBasicTestFixture({.main_resource_body = body,
+                       .pointer_down_location = gfx::PointF(100, 180),
+                       .scroll_delta = -100});
+
+  // A prediction should not have been made because the sampling rate is not
+  // 1 (not all anchors are sampled in).
+  EXPECT_EQ(hosts_[0]->event_type_, PointerEventType::kNone);
+  EXPECT_EQ(hosts_[0]->url_received_, std::nullopt);
 }
 
 }  // namespace

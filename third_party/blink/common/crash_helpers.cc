@@ -11,8 +11,8 @@ namespace blink {
 namespace internal {
 
 NOINLINE void CrashIntentionally() {
-  // NOTE(shess): Crash directly rather than using NOTREACHED_IN_MIGRATION() so
-  // that the signature is easier to triage in crash reports.
+  // NOTE(shess): Crash directly rather than using NOTREACHED() so that the
+  // signature is easier to triage in crash reports.
   //
   // Linker's ICF feature may merge this function with other functions with the
   // same definition and it may confuse the crash report processing system.

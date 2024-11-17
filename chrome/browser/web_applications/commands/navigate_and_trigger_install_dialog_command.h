@@ -75,7 +75,7 @@ class NavigateAndTriggerInstallDialogCommand
   void OnInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
                                bool valid_manifest_for_web_app,
                                webapps::InstallableStatusCode error_code);
-  void OnAppLockGranted(std::unique_ptr<AppLock> app_lock);
+  void OnAppLockGranted();
 
   std::unique_ptr<AppLock> app_lock_;
   std::unique_ptr<NoopLock> noop_lock_;

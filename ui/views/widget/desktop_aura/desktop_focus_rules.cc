@@ -7,6 +7,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/wm/core/window_util.h"
 
 namespace views {
@@ -23,7 +24,8 @@ bool DesktopFocusRules::CanActivateWindow(const aura::Window* window) const {
     return false;
   if (window && IsToplevelWindow(window) &&
       content_window_->GetRootWindow()->Contains(window) &&
-      wm::WindowStateIs(window->GetRootWindow(), ui::SHOW_STATE_MINIMIZED)) {
+      wm::WindowStateIs(window->GetRootWindow(),
+                        ui::mojom::WindowShowState::kMinimized)) {
     return true;
   }
   if (!BaseFocusRules::CanActivateWindow(window))
@@ -36,7 +38,8 @@ bool DesktopFocusRules::CanActivateWindow(const aura::Window* window) const {
 bool DesktopFocusRules::CanFocusWindow(const aura::Window* window,
                                        const ui::Event* event) const {
   return BaseFocusRules::CanFocusWindow(window, event) ||
-         wm::WindowStateIs(window->GetRootWindow(), ui::SHOW_STATE_MINIMIZED);
+         wm::WindowStateIs(window->GetRootWindow(),
+                           ui::mojom::WindowShowState::kMinimized);
 }
 
 bool DesktopFocusRules::SupportsChildActivation(

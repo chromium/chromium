@@ -33,7 +33,7 @@ class OfflineEventLogger {
   // to the event logger instance.
   class Client {
    public:
-    virtual ~Client() {}
+    virtual ~Client() = default;
     virtual void CustomLog(const std::string& message) = 0;
   };
 

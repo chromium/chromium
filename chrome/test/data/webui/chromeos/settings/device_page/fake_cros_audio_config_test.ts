@@ -55,6 +55,8 @@ suite('FakeCrosAudioConfig', () => {
       inputGainPercent: 0,
       inputDevices: [],
       inputMuteState: crosAudioConfigMojom.MuteState.MIN_VALUE,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
     crosAudioConfig.setAudioSystemProperties(updatedProperties);
 

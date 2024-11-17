@@ -22,6 +22,8 @@ using javascript_dialogs::TabModalDialogViewIOS;
 
 @interface JavascriptDialogViewCoordinator : NSObject
 
+@property(nonatomic, readonly) UIAlertController* alertController;
+
 // Initializer.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                 dialogView:
@@ -31,6 +33,8 @@ using javascript_dialogs::TabModalDialogViewIOS;
                                      title:(NSString*)title
                                messageText:(NSString*)messageText
                          defaultPromptText:(NSString*)defaultPromptText;
+
+- (std::u16string)promptText;
 
 @end
 

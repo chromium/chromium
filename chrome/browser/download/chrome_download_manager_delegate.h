@@ -25,6 +25,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/download_target_info.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "content/public/browser/download_manager.h"
@@ -302,6 +303,13 @@ class ChromeDownloadManagerDelegate
       base::OnceClosure internal_complete_callback);
   void ShouldCompleteDownloadInternal(uint32_t download_id,
                                       base::OnceClosure user_complete_callback);
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  // Called when obfuscated download files are deobfuscated.
+  void OnDeobfuscationComplete(
+      base::OnceClosure callback,
+      base::expected<void, enterprise_obfuscation::Error> deobfuscation_result);
+#endif
 
   // Sets the next download id based on download database records, and runs all
   // cached id callbacks.

@@ -5,9 +5,9 @@
 #include "chrome/browser/tpcd/support/trial_test_utils.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/dips/dips_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -68,6 +68,23 @@ URLCookieAccessObserver::URLCookieAccessObserver(WebContents* web_contents,
 void URLCookieAccessObserver::Wait() {
   run_loop_.Run();
 }
+
+namespace {
+// Returns `True` iff the `navigation_handle` represents a navigation happening
+// in any frame of the primary page.
+// NOTE: This does not include fenced frames.
+inline bool IsInPrimaryPage(content::NavigationHandle* navigation_handle) {
+  return navigation_handle && navigation_handle->GetParentFrame()
+             ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
+             : navigation_handle->IsInPrimaryMainFrame();
+}
+
+// Returns `True` iff the 'rfh' exists and represents a frame in the primary
+// page.
+inline bool IsInPrimaryPage(content::RenderFrameHost* rfh) {
+  return rfh && rfh->GetPage().IsPrimary();
+}
+}  // namespace
 
 void URLCookieAccessObserver::OnCookiesAccessed(
     RenderFrameHost* render_frame_host,

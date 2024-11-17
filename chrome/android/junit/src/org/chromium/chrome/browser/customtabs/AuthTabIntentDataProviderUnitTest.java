@@ -8,6 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.CCT_FEATURE_USAGE;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,14 +28,19 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures(CCT_FEATURE_USAGE)
 public class AuthTabIntentDataProviderUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenario =
@@ -41,6 +49,8 @@ public class AuthTabIntentDataProviderUnitTest {
     private static final String PACKAGE = "com.example.package.app";
     private static final String URL = "https://www.google.com";
     private static final String SCHEME = "myscheme";
+    private static final String HOST = "www.host.com";
+    private static final String PATH = "/path/auth";
 
     private Activity mActivity;
     private Intent mIntent;
@@ -52,16 +62,15 @@ public class AuthTabIntentDataProviderUnitTest {
         mIntent = new Intent(Intent.ACTION_VIEW);
         mIntent.setData(Uri.parse(URL));
         mIntent.putExtra(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, true);
-        mIntent.putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, SCHEME);
         mIntent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, PACKAGE);
         Bundle bundle = new Bundle();
         bundle.putBinder(CustomTabsIntent.EXTRA_SESSION, null);
         mIntent.putExtras(bundle);
-        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
     }
 
     @Test
     public void testOverriddenDefaults() {
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
         assertEquals(
                 "ActivityType should be AUTH_TAB.",
                 ActivityType.AUTH_TAB,
@@ -86,9 +95,78 @@ public class AuthTabIntentDataProviderUnitTest {
 
     @Test
     public void testIntentData() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM,
+                                CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_LAUNCH_AUTH_TAB)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+
         assertEquals("Intent doesn't match expectation.", mIntent, mIntentDataProvider.getIntent());
         assertEquals("Wrong package name", PACKAGE, mIntentDataProvider.getClientPackageName());
         assertEquals("Wrong URL", URL, mIntentDataProvider.getUrlToLoad());
+        assertEquals(
+                "CustomTabMode should be regular.",
+                CustomTabProfileType.REGULAR,
+                mIntentDataProvider.getCustomTabMode());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testIntentData_customScheme() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM,
+                                CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_REDIRECT_SCHEME)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+        mIntent.putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, SCHEME);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+
         assertEquals("Wrong redirect scheme.", SCHEME, mIntentDataProvider.getAuthRedirectScheme());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testIntentData_https() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM,
+                                CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_HTTPS_REDIRECT_HOST,
+                                CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_HTTPS_REDIRECT_PATH)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+        mIntent.putExtra(AuthTabIntent.EXTRA_HTTPS_REDIRECT_HOST, HOST);
+        mIntent.putExtra(AuthTabIntent.EXTRA_HTTPS_REDIRECT_PATH, PATH);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+
+        assertEquals("Wrong https redirect host.", HOST, mIntentDataProvider.getAuthRedirectHost());
+        assertEquals("Wrong https redirect path.", PATH, mIntentDataProvider.getAuthRedirectPath());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
+    public void testIntentData_ephemeralBrowsing() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM,
+                                CustomTabsFeatureUsage.CustomTabsFeature
+                                        .EXTRA_ENABLE_EPHEMERAL_BROWSING)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+        mIntent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+
+        assertEquals(
+                "CustomTabMode should be ephemeral.",
+                CustomTabProfileType.EPHEMERAL,
+                mIntentDataProvider.getCustomTabMode());
+        histogramWatcher.assertExpected();
     }
 }

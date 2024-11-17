@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.impl.CronetLogger;
 
@@ -45,23 +46,27 @@ public class CronetLoggerImpl extends CronetLogger {
 
     @Override
     public void logCronetEngineBuilderInitializedInfo(CronetEngineBuilderInitializedInfo info) {
-        CronetStatsLog.write(
-                CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED,
-                info.cronetInitializationRef,
-                convertToProtoCronetEngineBuilderInitializedAuthor(info.author),
-                info.engineBuilderCreatedLatencyMillis,
-                convertToProtoCronetEngineBuilderInitializedSource(info.source),
-                OptionalBoolean.fromBoolean(info.creationSuccessful).getValue(),
-                info.apiVersion.getMajorVersion(),
-                info.apiVersion.getMinorVersion(),
-                info.apiVersion.getBuildVersion(),
-                info.apiVersion.getPatchVersion(),
-                // These null checks actually matter. See b/329601514.
-                info.implVersion == null ? -1 : info.implVersion.getMajorVersion(),
-                info.implVersion == null ? -1 : info.implVersion.getMinorVersion(),
-                info.implVersion == null ? -1 : info.implVersion.getBuildVersion(),
-                info.implVersion == null ? -1 : info.implVersion.getPatchVersion(),
-                info.uid);
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped(
+                        "CronetLoggerImpl#logCronetEngineBuilderInitializedInfo")) {
+            CronetStatsLog.write(
+                    CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED,
+                    info.cronetInitializationRef,
+                    convertToProtoCronetEngineBuilderInitializedAuthor(info.author),
+                    info.engineBuilderCreatedLatencyMillis,
+                    convertToProtoCronetEngineBuilderInitializedSource(info.source),
+                    OptionalBoolean.fromBoolean(info.creationSuccessful).getValue(),
+                    info.apiVersion.getMajorVersion(),
+                    info.apiVersion.getMinorVersion(),
+                    info.apiVersion.getBuildVersion(),
+                    info.apiVersion.getPatchVersion(),
+                    // These null checks actually matter. See b/329601514.
+                    info.implVersion == null ? -1 : info.implVersion.getMajorVersion(),
+                    info.implVersion == null ? -1 : info.implVersion.getMinorVersion(),
+                    info.implVersion == null ? -1 : info.implVersion.getBuildVersion(),
+                    info.implVersion == null ? -1 : info.implVersion.getPatchVersion(),
+                    info.uid);
+        }
     }
 
     @Override
@@ -72,15 +77,18 @@ public class CronetLoggerImpl extends CronetLogger {
         // join against.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return;
 
-        CronetStatsLog.write(
-                CronetStatsLog.CRONET_INITIALIZED,
-                info.cronetInitializationRef,
-                info.engineCreationLatencyMillis,
-                info.engineAsyncLatencyMillis,
-                info.httpFlagsLatencyMillis,
-                OptionalBoolean.fromBoolean(info.httpFlagsSuccessful).getValue(),
-                longListToLongArray(info.httpFlagsNames),
-                longListToLongArray(info.httpFlagsValues));
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetLoggerImpl#logCronetInitializedInfo")) {
+            CronetStatsLog.write(
+                    CronetStatsLog.CRONET_INITIALIZED,
+                    info.cronetInitializationRef,
+                    info.engineCreationLatencyMillis,
+                    info.engineAsyncLatencyMillis,
+                    info.httpFlagsLatencyMillis,
+                    OptionalBoolean.fromBoolean(info.httpFlagsSuccessful).getValue(),
+                    longListToLongArray(info.httpFlagsNames),
+                    longListToLongArray(info.httpFlagsValues));
+        }
     }
 
     @Override
@@ -116,7 +124,8 @@ public class CronetLoggerImpl extends CronetLogger {
             CronetEngineBuilderInfo builder,
             CronetVersion version,
             CronetSource source) {
-        try {
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetLoggerImpl#writeCronetEngineCreation")) {
             // Parse experimental Options
             ExperimentalOptions experimentalOptions =
                     new ExperimentalOptions(builder.getExperimentalOptions());
@@ -177,7 +186,8 @@ public class CronetLoggerImpl extends CronetLogger {
     @VisibleForTesting
     public void writeCronetTrafficReported(
             long cronetEngineId, CronetTrafficInfo trafficInfo, int samplesRateLimitedCount) {
-        try {
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetLoggerImpl#writeCronetTrafficReported")) {
             CronetStatsLog.write(
                     CronetStatsLog.CRONET_TRAFFIC_REPORTED,
                     cronetEngineId,

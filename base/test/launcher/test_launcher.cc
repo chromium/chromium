@@ -22,6 +22,7 @@
 #include "base/at_exit.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/environment.h"
@@ -39,6 +40,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -47,7 +49,6 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
@@ -962,7 +963,7 @@ int CountItemsInDirectory(const FilePath& dir) {
 
 // Truncates a snippet in the middle to the given byte limit. byte_limit should
 // be at least 30.
-std::string TruncateSnippet(const std::string_view snippet, size_t byte_limit) {
+std::string TruncateSnippet(std::string_view snippet, size_t byte_limit) {
   if (snippet.length() <= byte_limit) {
     return std::string(snippet);
   }
@@ -1015,9 +1016,11 @@ class TestLauncher::TestInfo {
   // Returns test name excluding DISABLED_ and PRE_ prefixes.
   std::string GetPrefixStrippedName() const;
 
-  const std::string& test_case_name() const { return test_case_name_; }
-  const std::string& test_name() const { return test_name_; }
-  const std::string& file() const { return file_; }
+  const std::string& test_case_name() const LIFETIME_BOUND {
+    return test_case_name_;
+  }
+  const std::string& test_name() const LIFETIME_BOUND { return test_name_; }
+  const std::string& file() const LIFETIME_BOUND { return file_; }
   int line() const { return line_; }
   bool disabled() const { return disabled_; }
   bool pre_test() const { return pre_test_; }
@@ -1411,7 +1414,7 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
     status_line.append("(UNKNOWN)");
   } else {
     // Fail very loudly so it's not ignored.
-    CHECK(false) << "Unhandled test result status: " << result.status;
+    NOTREACHED() << "Unhandled test result status: " << result.status;
   }
   fprintf(stdout, "%s\n", status_line.c_str());
   fflush(stdout);
@@ -2385,7 +2388,7 @@ std::string GetTestOutputSnippet(const TestResult& result,
   return snippet;
 }
 
-std::string TruncateSnippetFocused(const std::string_view snippet,
+std::string TruncateSnippetFocused(std::string_view snippet,
                                    size_t byte_limit) {
   // Find the start of anything that looks like a fatal log message.
   // We want to preferentially preserve these from truncation as we

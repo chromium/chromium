@@ -8,6 +8,7 @@
 #include <lib/inspect/cpp/vmo/types.h>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 

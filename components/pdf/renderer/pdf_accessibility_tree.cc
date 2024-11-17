@@ -30,10 +30,10 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "pdf/pdf_accessibility_action_handler.h"
+#include "pdf/pdf_features.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -243,6 +243,12 @@ gfx::Transform MakeTransformForImage(const gfx::RectF image_screen_size,
 
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
+// When PDF Searchify is enabled, inaccessible PDFs are made accessible in
+// PDFium by sending their images to the OCR service and adding the recognized
+// text to the PDF. Hence they don't need extra work here.
+bool PdfOcrInRenderer() {
+  return !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify);
+}
 }  // namespace
 
 PdfAccessibilityTree::PdfAccessibilityTree(
@@ -546,6 +552,18 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
     return;
   }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  did_searchify_run_ |= page_info.is_searchified;
+  if (!was_text_converted_from_image_) {
+    for (const auto& text_run : text_runs) {
+      if (text_run.is_searchified) {
+        was_text_converted_from_image_ = true;
+        break;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
   // If unsanitized data is found, don't trust it and stop creation of the
   // accessibility tree. Now that we already created the initial tree with the
   // root node and the status node, destroy the existing tree as well.
@@ -576,7 +594,7 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // TODO(crbug.com/40267312): Use a more explicit flag indicating whether any
   // image was sent to the OCR model in `AddRemainingAnnotations()`.
-  if (features::IsPdfOcrEnabled() && !did_get_a_text_run_ && has_image) {
+  if (PdfOcrInRenderer() && !did_get_a_text_run_ && has_image) {
     if (ocr_helper_) {
       // Notify users via the status node that PDF OCR is about to run since
       // the AXMode was set for PDF OCR.
@@ -592,8 +610,23 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   if (page_index == page_count_ - 1) {
-    if (!features::IsPdfOcrEnabled() || did_get_a_text_run_ ||
-        !did_have_an_image_) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+      if (did_searchify_run_) {
+        SetStatusMessage(was_text_converted_from_image_
+                             ? IDS_PDF_OCR_COMPLETED
+                             : IDS_PDF_OCR_NO_RESULT);
+        UnserializeNodes();
+        return;
+      }
+      if (!did_get_a_text_run_ && did_have_an_image_) {
+        SetStatusMessage(IDS_PDF_OCR_FEATURE_ALERT);
+        UnserializeNodes();
+        return;
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    if (!PdfOcrInRenderer() || did_get_a_text_run_ || !did_have_an_image_) {
       // In this case, PDF OCR doesn't run. Thus, set the status node to notify
       // users that the PDF content has been loaded into an accessibility tree.
       SetStatusMessage(IDS_PDF_LOADED_TO_A11Y_TREE);
@@ -684,7 +717,7 @@ void PdfAccessibilityTree::UnserializeNodes() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     // TODO(crbug.com/40070182): Update this and other cases with a
     // `IsAccessiblePDF` function.
-    if (features::IsPdfOcrEnabled() && !did_get_a_text_run_) {
+    if (PdfOcrInRenderer() && !did_get_a_text_run_) {
       base::UmaHistogramBoolean(
           "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
           ocr_helper_ != nullptr);

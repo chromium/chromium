@@ -44,6 +44,7 @@ def parse_args(args):
                         help="Path to the directory containing the build logs.")
     parser.add_argument("-o",
                         "--output",
+                        required=True,
                         type=str,
                         help="Where the collected warning information should "
                         "go. This should be either the string 'stdout', a dash "
@@ -117,7 +118,7 @@ def collect_warning(summarize, log_name, log_file, collection, warning_info):
     # 1. The next (nonempty) line, and
     # 2. the name of the log that the warning occurred in
     next_line = next(log_file)
-    while not (next_line.strip()):
+    while "|" not in next_line:
         next_line = next(log_file)
 
     log_name = os.path.basename(log_name)
@@ -171,14 +172,7 @@ def log_output(summarize, collection, output):
 
     output_to_stdout = (output == "-" or output.lower() == "stdout")
 
-    if not output:
-        extension = ".txt" if summarize else ".json"
-        output_file = tempfile.NamedTemporaryFile(mode="w",
-                                                  prefix="collected_warnings_",
-                                                  suffix=extension,
-                                                  delete=False)
-        print("Writing output to " + output_file.name)
-    elif output_to_stdout:
+    if output_to_stdout:
         output_file = sys.stdout
     else:
         output_file = open(output, "w")
@@ -199,7 +193,7 @@ def log_output(summarize, collection, output):
     output_file.write("\nTotal Files: {}, Total Hits: {}".format(
         len(keys), hits))
 
-    if not output or not output_to_stdout:
+    if not output_to_stdout:
         output_file.close()
 
 

@@ -15,13 +15,18 @@
 namespace nearby::chrome {
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Keep in sync with the
+// NearbyConnectionsWifiDirectSocketError UMA enum defined in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyConnectionsWifiDirectSocketError)
 enum class WifiDirectServerSocketError {
   kSocketClosed = 0,
   kFirewallHoleDisconnected = 1,
   kSocketFailure = 2,
   kMaxValue = kSocketFailure,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyConnectionsWifiDirectSocketError)
 
 class WifiDirectServerSocket : public api::WifiDirectServerSocket {
  public:

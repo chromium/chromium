@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/group_data.h"
-#include "components/data_sharing/public/service_status.h"
+#include "components/data_sharing/public/share_url_interception_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 
@@ -25,6 +25,7 @@
 
 namespace data_sharing {
 class DataSharingNetworkLoader;
+class DataSharingSDKDelegate;
 
 // The core class for managing data sharing.
 class DataSharingService : public KeyedService, public base::SupportsUserData {
@@ -48,7 +49,7 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
 
   // GENERATED_JAVA_ENUM_PACKAGE: (
   //   org.chromium.components.data_sharing)
-  enum class ParseURLStatus {
+  enum class ParseUrlStatus {
     kUnknown = 0,
     kSuccess = 1,
     kHostOrPathMismatchFailure = 2,
@@ -62,23 +63,30 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     Observer& operator=(const Observer&) = delete;
     ~Observer() override = default;
 
-    virtual void OnGroupChanged(const GroupData& group_data) {}
+    // Called when the group data model has been loaded. Use
+    // DataSharingService::IsGroupDataModelLoaded() to check if the model has
+    // been already loaded before starting to observe the service.
+    virtual void OnGroupDataModelLoaded() {}
+
+    // Called when the group data model has been changed.
+    virtual void OnGroupChanged(const GroupData& group_data,
+                               const base::Time& event_time) {}
     // User either created a new group or has been invited to the existing one.
-    virtual void OnGroupAdded(const GroupData& group_data) {}
+    virtual void OnGroupAdded(const GroupData& group_data,
+                             const base::Time& event_time) {}
     // Either group has been deleted or user has been removed from the group.
-    virtual void OnGroupRemoved(const GroupId& group_id) {}
+    virtual void OnGroupRemoved(const GroupId& group_id,
+                                const base::Time& event_time) {}
 
-    // The update details of a service's collaboration status.
-    struct ServiceStatusUpdate {
-      ServiceStatus old_status;
-      ServiceStatus new_status;
-
-      // Add helper functions as needed here.
-    };
-
-    // The service status has been changed.
-    virtual void OnServiceStatusChanged(
-        const ServiceStatusUpdate& status_update) {}
+    // Two methods below are called in addition to OnGroupChanged().
+    // Called when a new member has been added to the group.
+    virtual void OnGroupMemberAdded(const GroupId& group_id,
+                                    const std::string& member_gaia_id,
+                                    const base::Time& event_time) {}
+    // Called when a member has been removed from the group.
+    virtual void OnGroupMemberRemoved(const GroupId& group_id,
+                                      const std::string& member_gaia_id,
+                                      const base::Time& event_time) {}
   };
 
   using GroupDataOrFailureOutcome =
@@ -87,7 +95,7 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       base::expected<std::set<GroupData>, PeopleGroupActionFailure>;
   using SharedDataPreviewOrFailureOutcome =
       base::expected<SharedDataPreview, PeopleGroupActionFailure>;
-  using ParseURLResult = base::expected<GroupToken, ParseURLStatus>;
+  using ParseUrlResult = base::expected<GroupToken, ParseUrlStatus>;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type DataSharingService for the given
@@ -119,8 +127,31 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   GetCollaborationGroupControllerDelegate() = 0;
 
   // People Group API.
+  // Returns true if the group data model has been loaded. Read APIs will return
+  // empty results if the model is not loaded.
+  virtual bool IsGroupDataModelLoaded() = 0;
+
+  // Synchronously reads a group from the local storage. Returns nullopt if the
+  // group doesn't exist, it has not been fetched from the server yet, or the
+  // model is not loaded yet.
+  virtual std::optional<GroupData> ReadGroup(const GroupId& group_id) = 0;
+
+  // Synchronously reads all groups from the local storage. Returns empty set
+  // if the groups haven't been fetched from the server yet, or the model is not
+  // loaded yet.
+  virtual std::set<GroupData> ReadAllGroups() = 0;
+
+  // Synchronously reads partial group member data either from the group store
+  // or from the special database that stores partial data of removed members.
+  // Returns nullopt if no data is found.
+  virtual std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
+      const GroupId& group_id,
+      const std::string& member_gaia_id) = 0;
+
   // Refreshes data if necessary. On success passes to the `callback` a set of
   // all groups known to the client (ordered by id).
+  // TODO(crbug.com/370897286): Deprecate and eventually remove asynchronous
+  // ReadAllGroups() and ReadGroup() methods.
   virtual void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>
           callback) = 0;
@@ -159,27 +190,39 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
 
+  // Attempts to leave a group the current user has joined before.
+  virtual void LeaveGroup(
+      const GroupId& group_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
+
+  // Returns group events since the DataSharingService was started. This is
+  // similar to events exposed to Observers, but allows to collect changes by
+  // observer that were created after DataSharingService was started.
+  virtual std::vector<GroupEvent> GetGroupEventsSinceStartup() = 0;
+
   // Check if the given URL should be intercepted.
   virtual bool ShouldInterceptNavigationForShareURL(const GURL& url) = 0;
 
   // Called when a data sharing type URL has been intercepted.
-  virtual void HandleShareURLNavigationIntercepted(const GURL& url) = 0;
+  virtual void HandleShareURLNavigationIntercepted(
+      const GURL& url,
+      std::unique_ptr<ShareURLInterceptionContext> context) = 0;
 
   // Create a data sharing URL used for sharing. This does not validate if the
   // group is still active nor guarantee that the URL is not expired. The caller
   // needs to get the valid group info from the other APIs above. Make sure
   // EnsureGroupVisibility API is called before getting the URL for the group.
-  virtual std::unique_ptr<GURL> GetDataSharingURL(
+  virtual std::unique_ptr<GURL> GetDataSharingUrl(
       const GroupData& group_data) = 0;
 
   // Parse and validate a data sharing URL. This simply parses the url. The
   // returned group may not be valid, the caller needs to check ReadGroup or
   // other apis to validate the group.
-  virtual ParseURLResult ParseDataSharingURL(const GURL& url) = 0;
+  virtual ParseUrlResult ParseDataSharingUrl(const GURL& url) = 0;
 
   // This ensures that the group is open for new members to join. Only owner can
   // call this API. The owner must always call this API before
-  // GetDataSharingURL().
+  // GetDataSharingUrl().
   virtual void EnsureGroupVisibility(
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) = 0;
@@ -191,11 +234,16 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) = 0;
 
-  // Get the current DataSharingUIDelegate instance.
-  virtual DataSharingUIDelegate* GetUIDelegate() = 0;
+  // Sets the current DataSharingSDKDelegate instance.
+  virtual void SetSDKDelegate(
+      std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) = 0;
 
-  // Get the current ServiceStatus.
-  virtual ServiceStatus GetServiceStatus() = 0;
+  // Sets the current DataSharingUIDelegate instance.
+  virtual void SetUIDelegate(
+      std::unique_ptr<DataSharingUIDelegate> ui_delegate) = 0;
+
+  // Get the current DataSharingUIDelegate instance.
+  virtual DataSharingUIDelegate* GetUiDelegate() = 0;
 };
 
 }  // namespace data_sharing

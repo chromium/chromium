@@ -827,6 +827,14 @@
 // group.
 + (id<GREYMatcher>)closeGroupButton;
 
+// Returns the matcher for `Share Group` button in the context menu of a tab
+// group.
++ (id<GREYMatcher>)shareGroupButton;
+
+// Returns the matcher for `Manage Group` button in the context menu of a tab
+// group.
++ (id<GREYMatcher>)manageGroupButton;
+
 #pragma mark - Tab Groups Panel
 
 // Returns the matcher for the tab groups panel view.

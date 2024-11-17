@@ -3,18 +3,25 @@
 <translationbundle lang="no">
 <translation id="1444443021901415601">Chrome merker seg interessante emner basert på den nylige nettleserloggen din</translation>
 <translation id="2252052615723281030">Når du er logget på Chrome, bidrar denne innstillingen til å holde IP-adressen din privat. Hvis Chrome mistenker at et nettsted sporer deg, kan noe av trafikken din sendes gjennom personverntjenere.</translation>
+<translation id="235789365079050412">Googles personvernregler</translation>
 <translation id="2793385791865768072">Chromium merker seg interessante emner basert på den nylige nettleserloggen din</translation>
+<translation id="2979365474350987274">Informasjonskapsler fra tredjeparter er begrenset</translation>
 <translation id="33479675708419823">Når du er logget på Chrome, bidrar denne innstillingen til å holde IP-adressen din privat. Hvis Chrome mistenker at et nettsted sporer deg, kan noe av trafikken din sendes gjennom personverntjenere. Finn ut mer om <ph name="LINK_BEGIN" />hvordan IP-beskyttelse fungerer<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Finn ut mer om å skjule IP-adressen din</translation>
+<translation id="385051799172605136">Tilbake</translation>
 <translation id="4041687306270459969">Annonseemner som er eldre enn fire uker, slettes automatisk. Emner kan for eksempel være sport og klær.</translation>
 <translation id="4177501066905053472">Annonseemner</translation>
 <translation id="4301151630239508244">Annonseemner er bare én av mange måter nettsteder kan levere personlig tilpassede annonser på. Selv uten annonseemner kan nettsteder vise deg annonser, men de er kanskje mindre personlig tilpasset. Finn ut mer om hvordan du <ph name="BEGIN_LINK_1" />administrerer annonsepersonvernet ditt<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Finn ut mer om hvordan Google beskytter dataene dine, i <ph name="BEGIN_LINK" />personvernreglene våre<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">Du kan se annonseemnene dine i Chromium-innstillingene og blokkere dem du ikke vil dele med nettsteder</translation>
 <translation id="4598427486995631491">Skjul IP-adressen din</translation>
 <translation id="4692439979815346597">Du kan se annonseemnene dine i Chrome-innstillingene og blokkere dem du ikke vil dele med nettsteder</translation>
 <translation id="5413586988657235240">Nettsteder du besøker, kan be Chromium om emner for å vise deg relevante annonser, samtidig som nettleserloggen og identiteten din beskyttes</translation>
+<translation id="6053735090575989697">Finn ut mer om hvordan Google beskytter dataene dine, i personvernreglene våre.</translation>
 <translation id="6186536480878693792">Nettsteder du besøker, kan be Chrome om emner for å vise deg relevante annonser, samtidig som nettleserloggen og identiteten din beskyttes</translation>
+<translation id="6195163219142236913">Informasjonskapsler fra tredjeparter er begrenset</translation>
 <translation id="6371812158043974664">Når du er logget på Chromium, bidrar denne innstillingen til å holde IP-adressen din privat. Hvis Chromium mistenker at et nettsted sporer deg, kan noe av trafikken din sendes gjennom personverntjenere. Finn ut mer om <ph name="LINK_BEGIN" />hvordan IP-beskyttelse fungerer<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Finn ut mer om hvordan Google beskytter dataene dine, i <ph name="BEGIN_LINK1" />personvernreglene våre<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Finn ut <ph name="BEGIN_LINK" />hvordan IP-beskyttelse fungerer<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Gjennomgå innstillingen for annonseemner</translation>
 </translationbundle>

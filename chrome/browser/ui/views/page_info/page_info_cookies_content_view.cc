@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
@@ -102,9 +103,9 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
   cookies_description_label_->SetProperty(views::kMarginsKey, button_insets);
   cookies_description_label_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL);
-  cookies_description_label_->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+  cookies_description_label_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
   cookies_description_label_->SetDefaultEnabledColorId(
-      ui::kColorLabelForegroundSecondary);
+      kColorPageInfoForeground);
   cookies_description_label_->SizeToFit(PageInfoViewFactory::kMinBubbleWidth -
                                         button_insets.width());
 
@@ -166,6 +167,12 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
   cookies_dialog_button_->SetProperty(views::kElementIdentifierKey,
                                       kCookieDialogButton);
+  cookies_dialog_button_->title()->SetTextStyle(
+      views::style::STYLE_BODY_3_MEDIUM);
+  cookies_dialog_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
+  cookies_dialog_button_->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
+  cookies_dialog_button_->subtitle()->SetEnabledColorId(
+      kColorPageInfoSubtitleForeground);
 }
 
 void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
@@ -176,7 +183,7 @@ void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
 void PageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
   SetDescriptionLabel(cookie_info.blocking_status, cookie_info.enforcement,
-                      cookie_info.is_otr);
+                      cookie_info.is_incognito);
 
   for (const auto& feature : cookie_info.features) {
     switch (feature.feature_type) {
@@ -251,35 +258,32 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
   third_party_cookies_toggle_->GetViewAccessibility().SetName(subtitle);
   third_party_cookies_toggle_subtitle_->SetText(subtitle);
-  third_party_cookies_toggle_subtitle_->SetTextStyle(
-      views::style::STYLE_BODY_5);
-  third_party_cookies_toggle_subtitle_->SetEnabledColorId(
-      ui::kColorLabelForegroundSecondary);
 }
 
 void PageInfoCookiesContentView::SetDescriptionLabel(
     CookieBlocking3pcdStatus blocking_status,
     CookieControlsEnforcement enforcement,
-    bool is_otr) {
+    bool is_incognito) {
   // Text on cookies description label has an embedded link to cookies settings.
   std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
-      blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd
-          ? IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK
-          : IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
+      IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK);
 
   size_t offset;
   int description;
-  if (blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd) {
+  if (blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd &&
+      !(base::FeatureList::IsEnabled(
+            privacy_sandbox::kAlwaysBlock3pcsIncognito) &&
+        is_incognito)) {
     description = IDS_PAGE_INFO_COOKIES_DESCRIPTION;
+    settings_text_for_link =
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
   } else if (enforcement == CookieControlsEnforcement::kEnforcedByTpcdGrant) {
     description = IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION;
   } else if (blocking_status == CookieBlocking3pcdStatus::kLimited) {
     description = IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION;
   } else {
-    // Since prefs are set to default in Guest, we won't ever end up in this
-    // branch, so `is_otr` means incognito here.
     description =
-        is_otr
+        is_incognito
             ? IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION
             : IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION;
   }
@@ -291,7 +295,7 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &PageInfoCookiesContentView::CookiesSettingsLinkClicked,
           base::Unretained(this)));
-  link_style.text_style = views::style::STYLE_LINK_5;
+  link_style.text_style = views::style::STYLE_LINK_3;
   cookies_description_label_->AddStyleRange(link_range, link_style);
 }
 
@@ -395,6 +399,10 @@ void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
                      : std::nullopt));
   rws_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
+  rws_button_->title()->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+  rws_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
+  rws_button_->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
+  rws_button_->subtitle()->SetEnabledColorId(kColorPageInfoSubtitleForeground);
 }
 
 void PageInfoCookiesContentView::RwsSettingsButtonClicked(ui::Event const&) {
@@ -417,6 +425,7 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
                   .CopyAddressTo(&third_party_cookies_title_)
                   .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
                   .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
+                  .SetEnabledColorId(kColorPageInfoForeground)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .Build()));
 
@@ -424,9 +433,9 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
       third_party_cookies_label_wrapper_->AddChildView(
           std::make_unique<views::Label>());
   third_party_cookies_description_->SetTextContext(views::style::CONTEXT_LABEL);
-  third_party_cookies_description_->SetTextStyle(views::style::STYLE_BODY_5);
+  third_party_cookies_description_->SetTextStyle(views::style::STYLE_BODY_4);
   third_party_cookies_description_->SetEnabledColorId(
-      ui::kColorLabelForegroundSecondary);
+      kColorPageInfoSubtitleForeground);
   third_party_cookies_description_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
   third_party_cookies_description_->SetMultiLine(true);
@@ -437,9 +446,17 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
       IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL));
   third_party_cookies_row_->SetIcon(
       PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon());
+  third_party_cookies_row_->title()->SetTextStyle(
+      views::style::STYLE_BODY_3_MEDIUM);
+  third_party_cookies_row_->title()->SetEnabledColorId(
+      kColorPageInfoForeground);
 
   third_party_cookies_toggle_subtitle_ =
       third_party_cookies_row_->AddSecondaryLabel(std::u16string());
+  third_party_cookies_toggle_subtitle_->SetTextStyle(
+      views::style::STYLE_BODY_4);
+  third_party_cookies_toggle_subtitle_->SetEnabledColorId(
+      kColorPageInfoSubtitleForeground);
 
   third_party_cookies_toggle_ = third_party_cookies_row_->AddControl(
       std::make_unique<views::ToggleButton>(base::BindRepeating(

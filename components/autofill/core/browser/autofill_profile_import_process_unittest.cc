@@ -11,13 +11,9 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
-#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,6 +59,10 @@ class AutofillProfileImportProcessTest : public testing::Test {
     return profiles;
   }
 
+  void AdvanceClock(base::TimeDelta delta) {
+    task_environment_.AdvanceClock(delta);
+  }
+
   TestAddressDataManager& address_data_manager() {
     return address_data_manager_;
   }
@@ -70,20 +70,19 @@ class AutofillProfileImportProcessTest : public testing::Test {
   GURL url_{"https://www.import.me/now.html"};
 
  private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestAddressDataManager address_data_manager_;
 };
 
 // Tests the import process for the scenario, that the user accepts the import
 // of their first profile.
 TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
-  TestAutofillClock test_clock;
-
   AutofillProfile observed_profile = test::StandardProfile();
 
   // Advance the test clock to make sure that the modification date of the new
   // profile gets updated.
-  test_clock.Advance(base::Days(1));
-  base::Time current_time = AutofillClock::Now();
+  AdvanceClock(base::Days(1));
 
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
@@ -104,7 +103,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(observed_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
 }
 
 // Tests the import process for the scenario, that the import of a new profile
@@ -370,16 +369,13 @@ TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
 // Tests the accepted import of a profile that is mergeable with an already
 // existing profile.
 TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
-  TestAutofillClock test_clock;
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  mergeable_profile.set_modification_date(AutofillClock::Now());
-  test_clock.Advance(base::Days(1));
-  base::Time current_time = AutofillClock::Now();
+  mergeable_profile.set_modification_date(base::Time::Now());
+  AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(mergeable_profile);
 
@@ -414,23 +410,20 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
       ApplyImportAndGetProfiles(import_data);
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles, testing::UnorderedElementsAre(final_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
 }
 
 // Tests the accepted import of a profile that is mergeable with an already
 // existing profile for the scenario that the user introduced additional edits.
 TEST_F(AutofillProfileImportProcessTest,
        MergeWithExistingProfile_AcceptWithEdits) {
-  TestAutofillClock test_clock;
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  mergeable_profile.set_modification_date(AutofillClock::Now());
-  test_clock.Advance(base::Days(1));
-  base::Time current_time = AutofillClock::Now();
+  mergeable_profile.set_modification_date(base::Time::Now());
+  AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(mergeable_profile);
 
@@ -462,7 +455,7 @@ TEST_F(AutofillProfileImportProcessTest,
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(edited_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
 }
 
 // Tests the accepted import of a profile that is mergeable with an already
@@ -509,8 +502,6 @@ TEST_F(AutofillProfileImportProcessTest,
 // Tests the rejection of the merge of the observed profile with an already
 // existing one.
 TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
-  TestAutofillClock test_clock;
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
@@ -518,9 +509,9 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   // Set a modification date and subsequently advance the test clock.
   // Since the merge is not accepted, the `modification_date` should not be
   // changed.
-  mergeable_profile.set_modification_date(AutofillClock::Now());
-  base::Time earlier_time = AutofillClock::Now();
-  test_clock.Advance(base::Days(1));
+  mergeable_profile.set_modification_date(base::Time::Now());
+  const base::Time earlier_time = base::Time::Now();
+  AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(mergeable_profile);
 
@@ -557,16 +548,13 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
 // Tests the scenario in which the observed profile results in a silent update
 // of the only already existing profile.
 TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
-  TestAutofillClock test_clock;
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  updateable_profile.set_modification_date(AutofillClock::Now());
-  test_clock.Advance(base::Days(1));
-  base::Time current_time = AutofillClock::Now();
+  updateable_profile.set_modification_date(base::Time::Now());
+  AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(updateable_profile);
 
@@ -599,7 +587,7 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(updated_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
 }
 
 // Tests the scenario in which an observed profile can be merged with an
@@ -768,16 +756,13 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
 // silent updates.
 TEST_F(AutofillProfileImportProcessTest,
        SilentlyUpdateProfile_WithIncompleteProfile) {
-  TestAutofillClock test_clock;
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  updateable_profile.set_modification_date(AutofillClock::Now());
-  test_clock.Advance(base::Days(1));
-  base::Time current_time = AutofillClock::Now();
+  updateable_profile.set_modification_date(base::Time::Now());
+  AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(updateable_profile);
 
@@ -810,14 +795,12 @@ TEST_F(AutofillProfileImportProcessTest,
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(updated_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), current_time);
+  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
 }
 
 // Tests the scenario in which the observed profile is not imported since the
 // import process only silent updates.
 TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile_WithNewProfile) {
-  TestAutofillClock test_clock;
-
   AutofillProfile observed_profile = test::StandardProfile();
 
   // Create the import process for the scenario that there is an existing
@@ -1018,90 +1001,6 @@ TEST_F(AutofillProfileImportProcessTest,
       /*allow_only_silent_updates=*/false);
   EXPECT_EQ(import_data.import_type(),
             AutofillProfileImportType::kDuplicateImport);
-}
-
-// Tests around the behavior of new/update profile prompts when a profile is
-// autofilled and some autofilled values are manually edited by the user.
-class QuasiDuplicateUpdateTest : public AutofillProfileImportProcessTest {
- public:
-  // Adds observations for `type` in `profile`, such that it qualifies as
-  // `AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes()`.
-  void MakeTokenLowQuality(FieldType type, AutofillProfile& profile) {
-    for (int i = 0; i < 5; ++i) {
-      test_api(profile.token_quality())
-          .AddObservation(
-              type, ProfileTokenQuality::ObservationType::kEditedFallback);
-    }
-  }
-
-  // Constructs a profile and import metadata as if `FormDataImporter` observed
-  // a form with `types`, that was autofilled with `existing_profile`.
-  std::pair<AutofillProfile, ProfileImportMetadata>
-  ConstructFilledObservedProfile(const AutofillProfile& existing_profile,
-                                 std::vector<FieldType> types) {
-    AutofillProfile observed_profile(existing_profile.GetAddressCountryCode());
-    ProfileImportMetadata metadata;
-    for (FieldType type : types) {
-      observed_profile.SetRawInfo(type, existing_profile.GetRawInfo(type));
-      metadata.filled_types_to_autofill_guid.insert_or_assign(
-          type, existing_profile.guid());
-    }
-    observed_profile.FinalizeAfterImport();
-    return {observed_profile, metadata};
-  }
-
-  // Modifies the result of `ConstructFilledObservedProfile()`, as if the
-  // field for `type` was manually edited by the user.
-  void SimulateManuallyEditingValue(FieldType type,
-                                    AutofillProfile& observed_profile,
-                                    ProfileImportMetadata& metadata) {
-    observed_profile.SetRawInfo(
-        type, u"corrected-" + observed_profile.GetRawInfo(type));
-    metadata.filled_types_to_autofill_guid.insert_or_assign(type, std::nullopt);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillUpdateLowQualityTokenOnImport};
-};
-
-TEST_F(QuasiDuplicateUpdateTest, NonLowQualityTokenEdited) {
-  AutofillProfile profile = test::GetFullProfile();
-  address_data_manager().AddProfile(profile);
-  auto [observed_profile, metadata] = ConstructFilledObservedProfile(
-      profile, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS});
-  SimulateManuallyEditingValue(EMAIL_ADDRESS, observed_profile, metadata);
-  // The `observed_profile` is a subset of the existing `profile`, except for
-  // the email address. Since EMAIL_ADDRESS is not considered a low quality
-  // token, expect that the creation of a new profile is offered.
-  ProfileImportProcess import_process(
-      observed_profile, "en_US", url_, &address_data_manager(),
-      /*allow_only_silent_updates=*/false, metadata);
-  EXPECT_EQ(import_process.import_type(),
-            AutofillProfileImportType::kNewProfile);
-  EXPECT_EQ(import_process.import_candidate(), observed_profile);
-}
-
-TEST_F(QuasiDuplicateUpdateTest, LowQualityTokenEdited) {
-  AutofillProfile profile = test::GetFullProfile();
-  MakeTokenLowQuality(EMAIL_ADDRESS, profile);
-  address_data_manager().AddProfile(profile);
-  auto [observed_profile, metadata] = ConstructFilledObservedProfile(
-      profile, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS});
-  SimulateManuallyEditingValue(EMAIL_ADDRESS, observed_profile, metadata);
-  // The `observed_profile` is a subset of the existing `profile`, except for
-  // the email address. Since EMAIL_ADDRESS is a low quality token, expect that
-  // updating the existing profile with the observed email address is offered.
-  ProfileImportProcess import_process(
-      observed_profile, "en_US", url_, &address_data_manager(),
-      /*allow_only_silent_updates=*/false, metadata);
-  EXPECT_EQ(import_process.import_type(),
-            AutofillProfileImportType::kConfirmableMerge);
-  EXPECT_EQ(import_process.merge_candidate(), profile);
-  AutofillProfile import_candidate = profile;
-  import_candidate.SetRawInfo(EMAIL_ADDRESS,
-                              observed_profile.GetRawInfo(EMAIL_ADDRESS));
-  EXPECT_EQ(import_process.import_candidate(), import_candidate);
 }
 
 }  // namespace

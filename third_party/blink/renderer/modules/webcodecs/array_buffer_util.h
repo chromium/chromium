@@ -11,6 +11,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ARRAY_BUFFER_UTIL_H_
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "media/base/decoder_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
@@ -78,7 +79,8 @@ class ArrayBufferContentsExternalMemory
 
  private:
   ArrayBufferContents contents_;
-  const base::span<const uint8_t> span_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION const base::span<const uint8_t> span_;
 };
 
 }  // namespace blink

@@ -17,16 +17,14 @@ std::string_view CallSiteToString(CallTimerState::CallSite call_site) {
   switch (call_site) {
     case kApplyFieldsAction:
       return "ApplyFieldsAction";
-    case kBatchSelectOrSelectListOptionChange:
-      return "BatchSelectOrSelectListOptionChange";
+    case kBatchSelectOptionChange:
+      return "BatchSelectOptionChange";
     case kDidChangeScrollOffsetImpl:
       return "DidChangeScrollOffsetImpl";
     case kExtractForm:
       return "ExtractForm";
     case kFocusedElementChanged:
       return "FocusedElementChanged";
-    case kFocusedElementChangedDeprecated:
-      return "FocusedElementChangedDeprecated";
     case kGetFormDataFromUnownedInputElements:
       return "GetFormDataFromUnownedInputElements";
     case kGetFormDataFromWebForm:

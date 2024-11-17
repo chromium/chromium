@@ -380,5 +380,41 @@ TEST(CompositorRenderPassTest,
   EXPECT_EQ(quad_state, quad->shared_quad_state);
 }
 
+TEST(CompositorRenderPassTest, HolePunchedQuadsShouldntBeOpaque) {
+  auto pass = CompositorRenderPass::Create();
+  SharedQuadState* quad_state = pass->CreateAndAppendSharedQuadState();
+  auto* quad = pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  gfx::Rect quad_rect(1, 2, 3, 4);
+  quad->SetNew(quad_state, quad_rect, quad_rect, SkColors::kRed, false);
+  bool quad_was_opaque = false;
+  pass->ReplaceExistingQuadWithHolePunch(pass->quad_list.begin(),
+                                         &quad_was_opaque);
+  EXPECT_TRUE(quad_was_opaque);
+  EXPECT_FALSE(pass->quad_list.begin()->shared_quad_state->are_contents_opaque);
+  EXPECT_EQ(SkBlendMode::kSrcOver, quad->shared_quad_state->blend_mode);
+  EXPECT_EQ(SolidColorDrawQuad::MaterialCast(quad)->color,
+            SkColors::kTransparent);
+}
+
+TEST(CompositorRenderPassTest, HolePunchedQuadsGetBlendMode) {
+  auto pass = CompositorRenderPass::Create();
+  SharedQuadState* quad_state = pass->CreateAndAppendSharedQuadState();
+  // Make |are_contents_opaque| already false, to test that the blend mode is
+  // recognized as a reason for needing a new |SharedQuadState|.
+  quad_state->are_contents_opaque = false;
+  auto* quad = pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  const gfx::Rect quad_rect(1, 2, 3, 4);
+  quad->SetNew(quad_state, quad_rect, quad_rect, SkColor4f(), false);
+  // Forcing (kSrcOver) blending causes the resulting quad to be kBlack
+  // with kDstOut blending.
+  quad->needs_blending = true;
+  bool quad_was_opaque = true;
+  pass->ReplaceExistingQuadWithHolePunch(pass->quad_list.begin(),
+                                         &quad_was_opaque);
+  EXPECT_FALSE(quad_was_opaque);
+  EXPECT_EQ(SkBlendMode::kDstOut, quad->shared_quad_state->blend_mode);
+  EXPECT_EQ(SolidColorDrawQuad::MaterialCast(quad)->color, SkColors::kBlack);
+}
+
 }  // namespace
 }  // namespace viz

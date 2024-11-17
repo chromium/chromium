@@ -49,8 +49,7 @@ class AppFirewallHoleManagerFactory : public BrowserContextKeyedServiceFactory {
 
   BrowserContext* GetBrowserContextToUse(
       BrowserContext* context) const override {
-    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-        context, /*force_guest_profile=*/true);
+    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
   }
 };
 
@@ -139,7 +138,7 @@ void AppFirewallHoleManager::Close(AppFirewallHole* hole) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppFirewallHoleManager::OnAppWindowRemoved(AppWindow* app_window) {

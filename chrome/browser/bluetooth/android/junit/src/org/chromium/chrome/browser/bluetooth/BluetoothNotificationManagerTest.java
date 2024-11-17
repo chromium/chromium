@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -55,7 +56,7 @@ public class BluetoothNotificationManagerTest {
                 }
             };
 
-    private class FakeService {}
+    private static class FakeService {}
 
     private BluetoothNotificationManager mManager;
     private boolean mServiceStopped;
@@ -95,7 +96,8 @@ public class BluetoothNotificationManagerTest {
         MockitoAnnotations.initMocks(this);
 
         mMockNotificationManager = new MockNotificationManagerProxy();
-        mManager = new BluetoothNotificationManager(mMockNotificationManager, mDelegate);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
+        mManager = new BluetoothNotificationManager(mDelegate);
     }
 
     @Test

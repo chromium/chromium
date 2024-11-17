@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
+#include "build/buildflag.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace remoting {
@@ -18,10 +19,7 @@ extern const base::FilePath::CharType kHostBinaryName[];
 // Name of the desktop process binary.
 extern const base::FilePath::CharType kDesktopBinaryName[];
 
-// Message pipe ID used for ChromotingHostServices. Currently only used on
-// Linux.
-// TODO(crbug.com/40244097): Make Windows hosts work with non-isolated
-// connections.
+// Message pipe ID used for ChromotingHostServices.
 extern const uint64_t kChromotingHostServicesMessagePipeId;
 
 // Returns the full path to an installed |binary| in |full_path|.
@@ -31,6 +29,14 @@ bool GetInstalledBinaryPath(const base::FilePath::StringType& binary,
 // Returns the server name for chromoting host services.
 const mojo::NamedPlatformChannel::ServerName&
 GetChromotingHostServicesServerName();
+
+#if BUILDFLAG(IS_MAC)
+// Message pipe ID used for AgentProcessBroker.
+extern const char kAgentProcessBrokerMessagePipeId[];
+
+// Returns the server name for AgentProcessBroker.
+const mojo::NamedPlatformChannel::ServerName& GetAgentProcessBrokerServerName();
+#endif
 
 }  // namespace remoting
 

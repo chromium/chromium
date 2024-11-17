@@ -77,6 +77,11 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
 
         if (!extras.containsKey(NotificationConstants.EXTRA_NOTIFICATION_ID)
                 || !extras.containsKey(NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN)) {
+            if (extras.containsKey(NotificationConstants.EXTRA_NOTIFICATION_ID)) {
+                TrampolineActivityTracker.getInstance()
+                        .onIntentCompleted(
+                                extras.getString(NotificationConstants.EXTRA_NOTIFICATION_ID));
+            }
             return false;
         }
 
@@ -84,7 +89,7 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
         intent.putExtras(new Bundle(extras));
 
         ThreadUtils.assertOnUiThread();
-        NotificationServiceImpl.dispatchIntentOnUIThread(intent);
+        NotificationServiceImpl.dispatchIntentOnUiThread(intent);
 
         // TODO(crbug.com/40503455): Return true here and call jobFinished to release the wake
         // lock only after the event has been completely handled by the service worker.

@@ -165,8 +165,7 @@ TEST_F(PlusAddressSubmissionLoggerTest, NoMetricForSignedOutUsers) {
       /*plus_address_count=*/1);
 
   test_api(form).field(0).set_value(kSamplePlusAddress_U16);
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
-                                     kSubmissionSource);
+  autofill_manager().OnFormSubmitted(form, kSubmissionSource);
   EXPECT_THAT(GetUkmMetrics(), IsEmpty());
 }
 
@@ -260,8 +259,7 @@ TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
       input.plus_address_count);
 
   test_api(form).field(0).set_value(input.submitted_value);
-  autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
-                                     kSubmissionSource);
+  autofill_manager().OnFormSubmitted(form, kSubmissionSource);
   EXPECT_THAT(GetUkmMetrics(), ElementsAreArray(GetParam().ukms));
 
   auto check_boolean_histogram = [&](std::string_view histogram_suffix,

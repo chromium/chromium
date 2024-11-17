@@ -28,8 +28,7 @@ class PipeMessagingChannel : public extensions::NativeMessagingChannel {
  public:
   typedef extensions::NativeMessagingChannel::EventHandler EventHandler;
 
-  // Constructs an object taking the ownership of |input| and |output|. Closes
-  // |input| and |output| to prevent the caller from using them.
+  // Constructs an object taking the ownership of |input| and |output|.
   PipeMessagingChannel(base::File input, base::File output);
 
   PipeMessagingChannel(const PipeMessagingChannel&) = delete;
@@ -37,15 +36,15 @@ class PipeMessagingChannel : public extensions::NativeMessagingChannel {
 
   ~PipeMessagingChannel() override;
 
-  // If the ctor is called with |input| and |output| set to stdin/stdout,
-  // it will close those file-descriptors. In that case, this helper function
-  // should be used to recreate stdin/stdout as open files. This is needed on
-  // POSIX because a later call to open() will return the lowest available
-  // descriptors, and stdin or stdout could end up pointing at some random file,
-  // which could cause an issue when, say, launching a child process.
-  // This is POSIX-only (a no-op on other platforms) and is thread-unsafe, as it
-  // calls open() twice, expecting it to return 0 then 1.
-  static void ReopenStdinStdout();
+#if BUILDFLAG(IS_POSIX)
+  // Opens `stdin_file` and `stdout_file` with stdin and stdout respectively,
+  // which will NOT be assigned file descriptors 0 (STDIN_FILENO) and 1
+  // (STDOUT_FILENO), then points file descriptors 0 and 1 to /dev/null, so that
+  // child processes can't inherit stdin and stdout from this process and
+  // potentially corrupt the native messaging stream.
+  static void OpenAndBlockStdio(base::File& stdin_file,
+                                base::File& stdout_file);
+#endif  // BUILDFLAG(IS_POSIX)
 
   // extensions::NativeMessagingChannel implementation.
   void Start(EventHandler* event_handler) override;

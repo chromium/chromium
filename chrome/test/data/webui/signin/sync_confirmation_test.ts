@@ -7,7 +7,8 @@ import 'chrome://sync-confirmation/sync_confirmation_app.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
-import {ScreenMode, SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
+import {ScreenMode} from 'chrome://sync-confirmation/sync_confirmation_app.js';
+import {SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -22,17 +23,16 @@ suite(`SigninSyncConfirmationTest`, function() {
         Array.from(app.shadowRoot!.querySelectorAll('cr-button'));
     const actionButton =
         app.shadowRoot!.querySelector<HTMLElement>(buttonSelector);
-    const spinner = app.shadowRoot!.querySelector('paper-spinner-lite');
 
     allButtons.forEach(button => assertFalse(button.disabled));
-    assertFalse(spinner!.active);
+    assertFalse(!!app.shadowRoot!.querySelector('.spinner'));
 
     assertTrue(!!actionButton);
     actionButton.click();
     await microtasksFinished();
 
     allButtons.forEach(button => assertTrue(button.disabled));
-    assertTrue(spinner!.active);
+    assertTrue(!!app.shadowRoot!.querySelector('.spinner'));
   }
 
   setup(async function() {
@@ -123,12 +123,11 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
     webUIListenerCallback('screen-mode-changed', ScreenMode.RESTRICTED);
 
     app.shadowRoot!.querySelector<HTMLElement>('#confirmButton')!.click();
-    const [description, confirmation, screenMode] =
+    const [description, confirmation] =
         await browserProxy.whenCalled('confirm');
 
     assertEquals(i18n('syncConfirmationConfirmLabel'), confirmation);
     assertArrayEquals(getConsentDescriptionTexts(i18n), description);
-    assertEquals(ScreenMode.RESTRICTED, screenMode);
   });
 
   // Tests that the expected strings are recorded when clicking the
@@ -138,22 +137,10 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
     webUIListenerCallback('screen-mode-changed', ScreenMode.RESTRICTED);
 
     app.shadowRoot!.querySelector<HTMLElement>('#settingsButton')!.click();
-    const [description, confirmation, screenMode] =
+    const [description, confirmation] =
         await browserProxy.whenCalled('goToSettings');
 
     assertEquals(i18n('syncConfirmationSettingsLabel'), confirmation);
     assertArrayEquals(getConsentDescriptionTexts(i18n), description);
-    assertEquals(ScreenMode.RESTRICTED, screenMode);
-  });
-
-  // Tests that the expected strings are recorded when clicking the
-  // Settings button.
-  test('passScreenModeOnUndo', async function() {
-    webUIListenerCallback('screen-mode-changed', ScreenMode.RESTRICTED);
-
-    app.shadowRoot!.querySelector<HTMLElement>('#notNowButton')!.click();
-    const [screenMode] = await browserProxy.whenCalled('undo');
-
-    assertEquals(ScreenMode.RESTRICTED, screenMode);
   });
 });

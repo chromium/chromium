@@ -32,6 +32,7 @@ source_set("save_to_photos") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols:buildflags",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/ui/authentication/signin:constants",

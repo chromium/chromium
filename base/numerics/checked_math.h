@@ -6,6 +6,7 @@
 #define BASE_NUMERICS_CHECKED_MATH_H_
 
 #include <stdint.h>
+
 #include <limits>
 #include <type_traits>
 
@@ -17,14 +18,9 @@ namespace base {
 namespace internal {
 
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class CheckedNumeric {
-  static_assert(std::is_arithmetic_v<T>,
-                "CheckedNumeric<T>: T must be a numeric type.");
-
  public:
-  template <typename Src>
-  friend class CheckedNumeric;
-
   using type = T;
 
   constexpr CheckedNumeric() = default;
@@ -33,12 +29,6 @@ class CheckedNumeric {
   template <typename Src>
   constexpr CheckedNumeric(const CheckedNumeric<Src>& rhs)
       : state_(rhs.state_.value(), rhs.IsValid()) {}
-
-  // Strictly speaking, this is not necessary, but declaring this allows class
-  // template argument deduction to be used so that it is possible to simply
-  // write `CheckedNumeric(777)` instead of `CheckedNumeric<int>(777)`.
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr CheckedNumeric(T value) : state_(value) {}
 
   // This is not an explicit constructor because we implicitly upgrade regular
   // numerics to CheckedNumerics to make them easier to use.
@@ -104,7 +94,7 @@ class CheckedNumeric {
   // parameter. WARNING: This function may fail to compile or CHECK at runtime
   // if the supplied default_value is not within range of the destination type.
   template <typename Dst = T, typename Src>
-  constexpr StrictNumeric<Dst> ValueOrDefault(const Src default_value) const {
+  constexpr StrictNumeric<Dst> ValueOrDefault(Src default_value) const {
     if (IsValid<Dst>()) [[likely]] {
       return static_cast<Dst>(state_.value());
     }
@@ -149,7 +139,7 @@ class CheckedNumeric {
 
   constexpr CheckedNumeric operator-() const {
     // Use an optimized code path for a known run-time variable.
-    if (!IsConstantEvaluated() && std::is_signed_v<T> &&
+    if (!std::is_constant_evaluated() && std::is_signed_v<T> &&
         std::is_floating_point_v<T>) {
       return FastRuntimeNegate();
     }
@@ -172,13 +162,13 @@ class CheckedNumeric {
 
   template <typename U>
   constexpr CheckedNumeric<typename MathWrapper<CheckedMaxOp, T, U>::type> Max(
-      const U rhs) const {
+      U rhs) const {
     return CheckMax(*this, rhs);
   }
 
   template <typename U>
   constexpr CheckedNumeric<typename MathWrapper<CheckedMinOp, T, U>::type> Min(
-      const U rhs) const {
+      U rhs) const {
     return CheckMin(*this, rhs);
   }
 
@@ -197,8 +187,8 @@ class CheckedNumeric {
   }
 
   constexpr CheckedNumeric operator++(int) {
-    CheckedNumeric value = *this;
-    *this += 1;
+    const CheckedNumeric value = *this;
+    ++*this;
     return value;
   }
 
@@ -208,16 +198,15 @@ class CheckedNumeric {
   }
 
   constexpr CheckedNumeric operator--(int) {
-    // TODO(pkasting): Consider std::exchange() once it's constexpr in C++20.
     const CheckedNumeric value = *this;
-    *this -= 1;
+    --*this;
     return value;
   }
 
   // These perform the actual math operations on the CheckedNumerics.
   // Binary arithmetic operations.
   template <template <typename, typename> class M, typename L, typename R>
-  static constexpr CheckedNumeric MathOp(const L lhs, const R rhs) {
+  static constexpr CheckedNumeric MathOp(L lhs, R rhs) {
     using Math = typename MathWrapper<M, L, R>::math;
     T result = 0;
     const bool is_valid =
@@ -228,7 +217,7 @@ class CheckedNumeric {
 
   // Assignment arithmetic operations.
   template <template <typename, typename> class M, typename R>
-  constexpr CheckedNumeric& MathOp(const R rhs) {
+  constexpr CheckedNumeric& MathOp(R rhs) {
     using Math = typename MathWrapper<M, T, R>::math;
     T result = 0;  // Using T as the destination saves a range check.
     const bool is_valid =
@@ -239,6 +228,10 @@ class CheckedNumeric {
   }
 
  private:
+  template <typename U>
+    requires std::is_arithmetic_v<U>
+  friend class CheckedNumeric;
+
   CheckedNumericState<T> state_;
 
   CheckedNumeric FastRuntimeNegate() const {
@@ -261,22 +254,25 @@ class CheckedNumeric {
 
   template <typename Src>
   struct Wrapper<CheckedNumeric<Src>> {
-    static constexpr bool is_valid(const CheckedNumeric<Src> v) {
+    static constexpr bool is_valid(CheckedNumeric<Src> v) {
       return v.IsValid();
     }
-    static constexpr Src value(const CheckedNumeric<Src> v) {
+    static constexpr Src value(CheckedNumeric<Src> v) {
       return v.state_.value();
     }
   };
 
   template <typename Src>
   struct Wrapper<StrictNumeric<Src>> {
-    static constexpr bool is_valid(const StrictNumeric<Src>) { return true; }
-    static constexpr Src value(const StrictNumeric<Src> v) {
+    static constexpr bool is_valid(StrictNumeric<Src>) { return true; }
+    static constexpr Src value(StrictNumeric<Src> v) {
       return static_cast<Src>(v);
     }
   };
 };
+
+template <typename T>
+CheckedNumeric(T) -> CheckedNumeric<T>;
 
 // Convenience functions to avoid the ugly template disambiguator syntax.
 template <typename Dst, typename Src>
@@ -291,9 +287,8 @@ constexpr StrictNumeric<Dst> ValueOrDieForType(
 }
 
 template <typename Dst, typename Src, typename Default>
-constexpr StrictNumeric<Dst> ValueOrDefaultForType(
-    const CheckedNumeric<Src> value,
-    const Default default_value) {
+constexpr StrictNumeric<Dst> ValueOrDefaultForType(CheckedNumeric<Src> value,
+                                                   Default default_value) {
   return value.template ValueOrDefault<Dst>(default_value);
 }
 
@@ -301,15 +296,15 @@ constexpr StrictNumeric<Dst> ValueOrDefaultForType(
 // arithmetic or CheckedNumericType.
 template <typename T>
 constexpr CheckedNumeric<typename UnderlyingType<T>::type> MakeCheckedNum(
-    const T value) {
+    T value) {
   return value;
 }
 
 // These implement the variadic wrapper for the math operations.
 template <template <typename, typename> class M, typename L, typename R>
 constexpr CheckedNumeric<typename MathWrapper<M, L, R>::type> CheckMathOp(
-    const L lhs,
-    const R rhs) {
+    L lhs,
+    R rhs) {
   using Math = typename MathWrapper<M, L, R>::math;
   return CheckedNumeric<typename Math::result_type>::template MathOp<M>(lhs,
                                                                         rhs);
@@ -320,7 +315,7 @@ template <template <typename, typename> class M,
           typename L,
           typename R,
           typename... Args>
-constexpr auto CheckMathOp(const L lhs, const R rhs, const Args... args) {
+constexpr auto CheckMathOp(L lhs, R rhs, Args... args) {
   return CheckMathOp<M>(CheckMathOp<M>(lhs, rhs), args...);
 }
 
@@ -341,7 +336,7 @@ BASE_NUMERIC_ARITHMETIC_VARIADIC(Checked, Check, Min)
 // arithmetic with our result types. Since wrapping on a pointer is always
 // bad, we trigger the CHECK condition here.
 template <typename L, typename R>
-L* operator+(L* lhs, const StrictNumeric<R> rhs) {
+L* operator+(L* lhs, StrictNumeric<R> rhs) {
   const uintptr_t result = CheckAdd(reinterpret_cast<uintptr_t>(lhs),
                                     CheckMul(sizeof(L), static_cast<R>(rhs)))
                                .template ValueOrDie<uintptr_t>();
@@ -349,7 +344,7 @@ L* operator+(L* lhs, const StrictNumeric<R> rhs) {
 }
 
 template <typename L, typename R>
-L* operator-(L* lhs, const StrictNumeric<R> rhs) {
+L* operator-(L* lhs, StrictNumeric<R> rhs) {
   const uintptr_t result = CheckSub(reinterpret_cast<uintptr_t>(lhs),
                                     CheckMul(sizeof(L), static_cast<R>(rhs)))
                                .template ValueOrDie<uintptr_t>();

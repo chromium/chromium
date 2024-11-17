@@ -74,7 +74,7 @@ bool ActionTypeAllowsMultipleActions(flat::ActionType action_type) {
     case flat::ActionType_modify_headers:
       return true;
     case flat::ActionType_count:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return true;
 }
@@ -356,8 +356,7 @@ std::optional<RequestAction> RegexRulesMatcher::CreateActionFromInfo(
       return CreateAllowAllRequestsAction(params, rule);
     case flat::ActionType_modify_headers:
     case flat::ActionType_count:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return std::nullopt;
@@ -410,8 +409,7 @@ const RegexRulesMatcher::MatchHelper& RegexRulesMatcher::GetMatcherForStage(
       return headers_received_matcher_;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return before_request_matcher_;
+  NOTREACHED();
 }
 
 }  // namespace extensions::declarative_net_request

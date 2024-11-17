@@ -46,9 +46,7 @@ class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
   void MockRiskBasedAuthSucceedsWithoutPanReturned(
       const CreditCard* card,
       std::string context_token = "fake_context_token") {
-    credit_card_access_manager().FetchCreditCard(
-        card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                             accessor_->GetWeakPtr()));
+    FetchCreditCard(card);
 
     // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
     // invoked.
@@ -84,9 +82,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, test_number, kTestServerId);
 
-  credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+  FetchCreditCard(masked_server_card);
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -132,9 +128,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
 
-  credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+  FetchCreditCard(masked_server_card);
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -169,9 +163,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
 
-  credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+  FetchCreditCard(masked_server_card);
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -208,9 +200,7 @@ TEST_F(
   const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
-  credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+  FetchCreditCard(masked_server_card);
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
   ASSERT_FALSE(autofill_client_.GetPaymentsAutofillClient()
@@ -277,9 +267,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   test_api(credit_card_access_manager()).set_is_user_verifiable(true);
   fido_authenticator().set_is_user_opted_in(true);
 
-  credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+  FetchCreditCard(masked_server_card);
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -337,8 +325,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   payments_network_interface().ShouldReturnUnmaskDetailsImmediately(true);
   payments_network_interface().SetFidoRequestOptionsInUnmaskDetails(
       kCredentialId, kGooglePaymentsRpid);
-  credit_card_access_manager().PrepareToFetchCreditCard();
-  WaitForCallbacks();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
 
   MockRiskBasedAuthSucceedsWithoutPanReturned(masked_server_card);
 
@@ -423,9 +410,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   masked_server_card->set_cvc(kTestCvc16);
 
-  credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+  FetchCreditCard(masked_server_card);
 
   // Mock CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse to
   // successfully return the valid card number.
@@ -456,9 +441,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   masked_server_card->set_cvc(u"");
 
-  credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+  FetchCreditCard(masked_server_card);
 
   // Mock CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse to
   // successfully return the valid card number.
@@ -489,9 +472,7 @@ TEST_F(
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   masked_server_card->SetExpirationYearFromString(u"2010");
 
-  credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+  FetchCreditCard(masked_server_card);
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
   ASSERT_FALSE(autofill_client_.GetPaymentsAutofillClient()
@@ -544,9 +525,7 @@ TEST_P(
   histogram_name += "ServerCard";
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor_->GetWeakPtr()));
+  FetchCreditCard(masked_server_card);
   WaitForCallbacks();
 
   histogram_tester.ExpectUniqueSample(

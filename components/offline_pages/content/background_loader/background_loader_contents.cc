@@ -28,7 +28,7 @@ BackgroundLoaderContents::BackgroundLoaderContents(
   web_contents_->SetDelegate(this);
 }
 
-BackgroundLoaderContents::~BackgroundLoaderContents() {}
+BackgroundLoaderContents::~BackgroundLoaderContents() = default;
 
 void BackgroundLoaderContents::LoadPage(const GURL& url) {
   web_contents_->GetController().LoadURL(
@@ -54,7 +54,7 @@ bool BackgroundLoaderContents::IsNeverComposited(
 
 void BackgroundLoaderContents::CloseContents(content::WebContents* source) {
   // Do nothing. Other pages should not be able to close a background page.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED(base::NotFatalUntil::M132);
 }
 
 bool BackgroundLoaderContents::ShouldSuppressDialogs(

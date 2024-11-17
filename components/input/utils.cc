@@ -18,7 +18,7 @@ using blink::WebInputEvent;
 using blink::mojom::InputEventResultState;
 using perfetto::protos::pbzero::ChromeLatencyInfo2;
 
-bool TransferInputToViz() {
+bool IsTransferInputToVizSupported() {
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(input::features::kInputOnViz) &&
       (base::android::BuildInfo::GetInstance()->sdk_int() >=

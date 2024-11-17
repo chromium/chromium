@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stacks/call_stack_profile_encoding.h"
+#include "components/sampling_profiler/call_stack_profile_params.h"
 
 namespace metrics {
 
@@ -56,7 +57,7 @@ uint64_t HashModuleFilename(const base::FilePath& filename) {
 }  // namespace
 
 CallStackProfileBuilder::CallStackProfileBuilder(
-    const base::CallStackProfileParams& profile_params,
+    const sampling_profiler::CallStackProfileParams& profile_params,
     const WorkIdRecorder* work_id_recorder,
     base::OnceClosure completed_callback)
     : work_id_recorder_(work_id_recorder) {

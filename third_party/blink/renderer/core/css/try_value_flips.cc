@@ -121,9 +121,7 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
   add(CSSPropertyID::kJustifySelf, transform.FlippedStart()
                                        ? CSSPropertyID::kAlignSelf
                                        : CSSPropertyID::kJustifySelf);
-  if (RuntimeEnabledFeatures::CSSPositionAreaPropertyEnabled()) {
-    add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
-  }
+  add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
   if (RuntimeEnabledFeatures::CSSInsetAreaPropertyEnabled()) {
     add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
   }
@@ -139,8 +137,7 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
 
   // Consider updating `kMaxDeclarations` when new properties are added.
 
-  return ImmutableCSSPropertyValueSet::Create(
-      declarations.data(), declarations.size(), kHTMLStandardMode);
+  return ImmutableCSSPropertyValueSet::Create(declarations, kHTMLStandardMode);
 }
 
 namespace {
@@ -176,8 +173,7 @@ LogicalAxis DeterminePropertyAxis(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return LogicalAxis::kInline;
+  NOTREACHED();
 }
 
 std::optional<LogicalAxis> DetermineValueAxis(

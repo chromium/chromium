@@ -147,7 +147,7 @@ TEST_F(ClipboardNonBackedTest, PlainText) {
 
   // Validate reading back the text.
   std::u16string text;
-  clipboard()->ReadText(ClipboardBuffer::kCopyPaste, /*dat_dist=*/nullptr,
+  clipboard()->ReadText(ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
                         &text);
   EXPECT_EQ(u"hello", text);
 }
@@ -181,11 +181,11 @@ TEST_F(ClipboardNonBackedTest, BookmarkURL) {
   // Validate reading back the bookmark.
   std::u16string title;
   std::string url;
-  clipboard()->ReadBookmark(/*dat_dist=*/nullptr, &title, &url);
+  clipboard()->ReadBookmark(/*data_dst=*/nullptr, &title, &url);
   EXPECT_EQ(u"Example Page", title);
   EXPECT_EQ("http://example.com", url);
   std::u16string text;
-  clipboard()->ReadText(ClipboardBuffer::kCopyPaste, /*dat_dist=*/nullptr,
+  clipboard()->ReadText(ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
                         &text);
   EXPECT_EQ(u"http://example.com", text);
 }
@@ -255,8 +255,8 @@ TEST_F(ClipboardNonBackedTest, ImageEncoding) {
       }));
   loop.Run();
 
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png.data(), png.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
 }
 
@@ -308,8 +308,8 @@ TEST_F(ClipboardNonBackedTest, EncodeImageOnce) {
   // The bitmap should only have been encoded once.
   EXPECT_EQ(clipboard()->NumImagesEncodedForTesting(), 1);
 
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(pngs[0].data(), pngs[0].size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(pngs[0]);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
 }
 
@@ -372,10 +372,11 @@ TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
   // should have been encoded separately.
   EXPECT_EQ(clipboard()->NumImagesEncodedForTesting(), 2);
 
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(pngs[0].data(), pngs[0].size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(pngs[0]);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
-  gfx::PNGCodec::Decode(pngs[2].data(), pngs[2].size(), &bitmap);
+  bitmap = gfx::PNGCodec::Decode(pngs[2]);
+  ASSERT_FALSE(bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap2));
 }
 

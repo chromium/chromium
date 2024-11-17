@@ -29,10 +29,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS) && \
-    !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#error "Extensions must be enabled"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS) ||
+              BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
 
 namespace extensions {
 class HashedExtensionId;
@@ -188,14 +186,14 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // be invalid() or a child of |extension_url|.
   // NOTE: Static so that it can be used from multiple threads.
   static GURL GetResourceURL(const GURL& extension_url,
-                             const std::string& relative_path);
-  GURL GetResourceURL(const std::string& relative_path) const {
+                             std::string_view relative_path);
+  GURL GetResourceURL(std::string_view relative_path) const {
     return GetResourceURL(url(), relative_path);
   }
 
   // Returns true if the resource matches a pattern in the pattern_set.
   bool ResourceMatches(const URLPatternSet& pattern_set,
-                       const std::string& resource) const;
+                       std::string_view resource) const;
 
   // Returns an extension resource object. |relative_path| should be UTF8
   // encoded.
@@ -208,14 +206,14 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // tolerates the presence or absence of bracking header/footer like this:
   //     -----(BEGIN|END) [RSA PUBLIC/PRIVATE] KEY-----
   // and may contain newlines.
-  static bool ParsePEMKeyBytes(const std::string& input, std::string* output);
+  static bool ParsePEMKeyBytes(std::string_view input, std::string* output);
 
   // Does a simple base64 encoding of |input| into |output|.
-  static bool ProducePEM(const std::string& input, std::string* output);
+  static bool ProducePEM(std::string_view input, std::string* output);
 
   // Expects base64 encoded |input| and formats into |output| including
   // the appropriate header & footer.
-  static bool FormatPEMForFileOutput(const std::string& input,
+  static bool FormatPEMForFileOutput(std::string_view input,
                                      std::string* output,
                                      bool is_public);
 
@@ -237,12 +235,12 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   // Get the manifest data associated with the key, or NULL if there is none.
   // Can only be called after InitFromValue is finished.
-  ManifestData* GetManifestData(const std::string& key) const;
+  ManifestData* GetManifestData(std::string_view key) const;
 
   // Sets |data| to be associated with the key.
   // Can only be called before InitFromValue is finished. Not thread-safe;
   // all SetManifestData calls should be on only one thread.
-  void SetManifestData(const std::string& key,
+  void SetManifestData(std::string_view key,
                        std::unique_ptr<ManifestData> data);
 
   // Sets the GUID for this extension. Note: this should *only* be used when
@@ -441,7 +439,8 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   std::unique_ptr<Manifest> manifest_;
 
   // Stored parsed manifest data.
-  using ManifestDataMap = std::map<std::string, std::unique_ptr<ManifestData>>;
+  using ManifestDataMap =
+      std::map<std::string, std::unique_ptr<ManifestData>, std::less<>>;
   ManifestDataMap manifest_data_;
 
   // Set to true at the end of InitFromValue when initialization is finished.

@@ -20,7 +20,7 @@ function buy() {
  */
 function buyWithMethods(methodData) {
   try {
-    var details = {
+    const details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
       displayItems: [
         {
@@ -32,8 +32,8 @@ function buyWithMethods(methodData) {
       ],
     };
 
-    var request = new PaymentRequest(
-        methodData, details, {requestShipping: true});
+    const request =
+        new PaymentRequest(methodData, details, {requestShipping: true});
 
     request.addEventListener('shippingaddresschange', function(evt) {
       evt.updateWith({});

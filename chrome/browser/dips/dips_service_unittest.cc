@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/dips/dips_service.h"
-
 #include <optional>
 
 #include "base/files/file_util.h"
@@ -16,6 +14,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_file_util.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -40,6 +40,7 @@
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +59,8 @@ bool Has3pcException(content::BrowserContext* browser_context,
                      const GURL& final_url) {
   auto redirect = std::make_unique<DIPSRedirectInfo>(
       UrlAndSourceId(url, ukm::kInvalidSourceId), DIPSRedirectType::kServer,
-      SiteDataAccessType::kWrite, base::Time::Now());
+      SiteDataAccessType::kWrite, base::Time::Now(), false, net::HTTP_FOUND,
+      base::TimeDelta());
   dips::Populate3PcExceptions(browser_context, web_contents, initial_url,
                               final_url, base::span_from_ref(redirect));
   return redirect->has_3pc_exception.value();
@@ -340,7 +342,10 @@ TEST_F(DIPSServiceStateRemovalTest,
       /*url=*/MakeUrlAndId("http://b.test/"),
       /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/SiteDataAccessType::kNone,
-      /*time=*/Now()));
+      /*time=*/Now(),
+      /*was_response_cached=*/false,
+      /*response_code=*/net::HTTP_FOUND,
+      /*server_bounce_delay=*/base::TimeDelta()));
   auto complete_chain = std::make_unique<DIPSRedirectChainInfo>(
       /*initial_url=*/MakeUrlAndId("http://a.test/"),
       /*final_url=*/MakeUrlAndId("http://c.test/"),
@@ -368,7 +373,10 @@ TEST_F(DIPSServiceStateRemovalTest,
       /*url=*/MakeUrlAndId("http://b.test/"),
       /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/SiteDataAccessType::kNone,
-      /*time=*/Now()));
+      /*time=*/Now(),
+      /*was_response_cached=*/false,
+      /*response_code=*/net::HTTP_FOUND,
+      /*server_bounce_delay=*/base::TimeDelta()));
   auto partial_chain = std::make_unique<DIPSRedirectChainInfo>(
       /*initial_url=*/MakeUrlAndId("http://a.test/"),
       /*final_url=*/MakeUrlAndId("http://c.test/"),
@@ -848,6 +856,14 @@ class DIPSServiceHistogramTest : public DIPSServiceStateRemovalTest {
  protected:
   const std::string kBlock3PC = "Block3PC";
   const std::string kUmaHistogramDeletionPrefix = "Privacy.DIPS.Deletion.";
+  const std::string kServerRedirectsDelayHist =
+      "Privacy.DIPS.ServerBounceDelay";
+  const std::string kServerRedirectsChainDelayHist =
+      "Privacy.DIPS.ServerBounceChainDelay";
+  const std::string kServerRedirectsStatusCodePrefix =
+      "Privacy.DIPS.BounceStatusCode.";
+  const std::string kNoCache = "NoCache";
+  const std::string kCached = "Cached";
 
   base::HistogramTester histogram_tester_;
 };
@@ -1027,6 +1043,71 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Enforced) {
   EXPECT_TRUE(GetDIPSState(GetService(), url).has_value());
 }
 
+TEST_F(DIPSServiceHistogramTest, ServerBounceDelay) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDIPS, {{"delete", "false"}, {"triggering_action", "bounce"}});
+
+  // Verify that the histograms start empty.
+  histograms().ExpectTotalCount(kServerRedirectsDelayHist, 0);
+  histograms().ExpectTotalCount(kServerRedirectsChainDelayHist, 0);
+  EXPECT_TRUE(histograms()
+                  .GetTotalCountsForPrefix(kServerRedirectsStatusCodePrefix)
+                  .empty());
+
+  TestingProfile profile;
+  DIPSServiceImpl* service = DIPSServiceImpl::Get(&profile);
+
+  UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
+  UrlAndSourceId first_redirect_url = MakeUrlAndId("http://b.test/");
+  UrlAndSourceId second_redirect_url = MakeUrlAndId("http://c.test/");
+
+  RedirectChainObserver observer(service, GURL());
+  std::vector<DIPSRedirectInfoPtr> redirects;
+  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+      first_redirect_url,
+      /*redirect_type=*/DIPSRedirectType::kServer,
+      /*access_type=*/SiteDataAccessType::kNone,
+      /*time=*/base::Time::Now(),
+      /*was_response_cached=*/true,
+      /*response_code=*/net::HTTP_MOVED_PERMANENTLY,
+      /*server_bounce_delay=*/base::Milliseconds(100)));
+  redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+      second_redirect_url,
+      /*redirect_type=*/DIPSRedirectType::kServer,
+      /*access_type=*/SiteDataAccessType::kNone,
+      /*time=*/base::Time::Now(),
+      /*was_response_cached=*/false,
+      /*response_code=*/net::HTTP_FOUND,
+      /*server_bounce_delay=*/base::Milliseconds(100)));
+  DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
+      initial_url, UrlAndSourceId(), redirects.size(),
+      /*is_partial_chain=*/false);
+  dips::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
+                              chain->initial_url.url, chain->final_url.url,
+                              redirects);
+  service->HandleRedirectChain(std::move(redirects), std::move(chain),
+                               base::DoNothing());
+  observer.Wait();
+
+  histograms().ExpectTotalCount(kServerRedirectsDelayHist, 2);
+  histograms().ExpectTotalCount(kServerRedirectsChainDelayHist, 1);
+  base::HistogramTester::CountsMap expected_counts = {
+      {kServerRedirectsStatusCodePrefix + kNoCache, 1},
+      {kServerRedirectsStatusCodePrefix + kCached, 1},
+  };
+  EXPECT_THAT(
+      histograms().GetTotalCountsForPrefix(kServerRedirectsStatusCodePrefix),
+      testing::ContainerEq(expected_counts));
+
+  histograms().ExpectUniqueSample(kServerRedirectsStatusCodePrefix + kNoCache,
+                                  net::HTTP_FOUND, 1);
+  histograms().ExpectUniqueSample(kServerRedirectsStatusCodePrefix + kCached,
+                                  net::HTTP_MOVED_PERMANENTLY, 1);
+  histograms().ExpectUniqueSample(kServerRedirectsDelayHist, 100, 2);
+  histograms().ExpectUniqueSample(kServerRedirectsChainDelayHist, 200, 1);
+}
+
 MATCHER_P(HasSourceId, id, "") {
   *result_listener << "where the source id is " << arg.source_id;
   return arg.source_id == id;
@@ -1054,12 +1135,18 @@ TEST_F(DIPSServiceUkmTest, BothChainBeginAndChainEnd) {
       redirect_url1,
       /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/SiteDataAccessType::kNone,
-      /*time=*/base::Time::Now()));
+      /*time=*/base::Time::Now(),
+      /*was_response_cached=*/false,
+      /*response_code=*/net::HTTP_FOUND,
+      /*server_bounce_delay=*/base::TimeDelta()));
   redirects.push_back(std::make_unique<DIPSRedirectInfo>(
       redirect_url2,
       /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/SiteDataAccessType::kNone,
-      /*time=*/base::Time::Now()));
+      /*time=*/base::Time::Now(),
+      /*was_response_cached=*/false,
+      /*response_code=*/net::HTTP_FOUND,
+      /*server_bounce_delay=*/base::TimeDelta()));
   DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
       initial_url, final_url,
       /*length=*/2, /*is_partial_chain=*/false);
@@ -1111,7 +1198,10 @@ TEST_F(DIPSServiceUkmTest, InitialAndFinalSitesSame_True) {
       redirect_url,
       /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/SiteDataAccessType::kNone,
-      /*time=*/base::Time::Now()));
+      /*time=*/base::Time::Now(),
+      /*was_response_cached=*/false,
+      /*response_code=*/net::HTTP_FOUND,
+      /*server_bounce_delay=*/base::TimeDelta()));
   DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
       initial_url, final_url,
       /*length=*/1, /*is_partial_chain=*/false);
@@ -1176,7 +1266,10 @@ TEST_F(DIPSServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
       redirect_url,
       /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/SiteDataAccessType::kNone,
-      /*time=*/base::Time::Now()));
+      /*time=*/base::Time::Now(),
+      /*was_response_cached=*/false,
+      /*response_code=*/net::HTTP_FOUND,
+      /*server_bounce_delay=*/base::TimeDelta()));
   DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
       UrlAndSourceId(), final_url,
       /*length=*/1, /*is_partial_chain=*/false);
@@ -1210,7 +1303,10 @@ TEST_F(DIPSServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
       redirect_url,
       /*redirect_type=*/DIPSRedirectType::kServer,
       /*access_type=*/SiteDataAccessType::kNone,
-      /*time=*/base::Time::Now()));
+      /*time=*/base::Time::Now(),
+      /*was_response_cached=*/false,
+      /*response_code=*/net::HTTP_FOUND,
+      /*server_bounce_delay=*/base::TimeDelta()));
   DIPSRedirectChainInfoPtr chain = std::make_unique<DIPSRedirectChainInfo>(
       initial_url, UrlAndSourceId(),
       /*length=*/1, /*is_partial_chain=*/false);

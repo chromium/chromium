@@ -1105,8 +1105,7 @@ const char* ServiceWorkerDatabase::StatusToString(
     case ServiceWorkerDatabase::Status::kErrorStorageDisconnected:
       return "Storage is disconnected";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Database unknown error";
+  NOTREACHED();
 }
 
 ServiceWorkerDatabase::ServiceWorkerDatabase(const base::FilePath& path)
@@ -2413,8 +2412,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::LazyOpen(
       return Status::kOk;
     default:
       // Other cases should be handled in ReadDatabaseVersion.
-      NOTREACHED_IN_MIGRATION();
-      return Status::kErrorCorrupted;
+      NOTREACHED();
   }
 }
 
@@ -2918,7 +2916,7 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
             ServiceWorkerRegistrationData::SKIPPABLE_EMPTY_FETCH_HANDLER);
         break;
       case blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   data.set_last_update_check_time(

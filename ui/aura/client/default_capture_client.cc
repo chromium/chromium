@@ -56,8 +56,8 @@ void DefaultCaptureClient::SetCapture(Window* window) {
 
   capture_delegate->UpdateCapture(old_capture_window, capture_window_);
 
-  for (CaptureClientObserver& observer : observers_)
-    observer.OnCaptureChanged(old_capture_window, capture_window_);
+  observers_.Notify(&CaptureClientObserver::OnCaptureChanged,
+                    old_capture_window, capture_window_);
 }
 
 void DefaultCaptureClient::ReleaseCapture(Window* window) {

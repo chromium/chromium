@@ -23,7 +23,7 @@ class GURL;
 namespace content {
 
 class RenderFrameHost;
-class SharedStorageWorkletHostManager;
+class SharedStorageRuntimeManager;
 class StoragePartition;
 class TestSharedStorageHeaderObserver;
 
@@ -32,9 +32,12 @@ using OperationResult = storage::SharedStorageManager::OperationResult;
 using OperationType = network::mojom::SharedStorageOperationType;
 using OperationPtr = network::mojom::SharedStorageOperationPtr;
 
-SharedStorageWorkletHostManager*
-GetSharedStorageWorkletHostManagerForStoragePartition(
+SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
     StoragePartition* storage_partition);
+
+std::string GetFencedStorageReadDisabledMessage();
+
+std::string GetFencedStorageReadWithoutRevokeNetworkMessage();
 
 std::string GetSharedStorageDisabledMessage();
 

@@ -20,6 +20,8 @@ namespace ui {
 std::string_view NATIVE_THEME_EXPORT
 NativeThemeColorSchemeName(NativeTheme::ColorScheme color_scheme);
 
+NATIVE_THEME_EXPORT bool IsOverlayScrollbarEnabled();
+
 }  // namespace ui
 
 #endif  // UI_NATIVE_THEME_NATIVE_THEME_UTILS_H_

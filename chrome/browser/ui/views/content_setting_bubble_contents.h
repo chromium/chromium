@@ -19,7 +19,6 @@
 
 namespace views {
 class Combobox;
-class ImageButton;
 class RadioButton;
 class LabelButton;
 }  // namespace views
@@ -69,6 +68,10 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
     content_setting_bubble_model_->OnLearnMoreClicked();
   }
 
+  std::u16string get_message_for_test() const {
+    return content_setting_bubble_model_->bubble_content().message;
+  }
+
  protected:
   // views::WidgetDelegate:
   std::u16string GetWindowTitle() const override;
@@ -76,13 +79,9 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
 
   // views::BubbleDialogDelegateView:
   void Init() override;
-  void OnThemeChanged() override;
 
  private:
   class ListItemContainer;
-
-  // Applies coloring to the learn more button.
-  void StyleLearnMoreButton();
 
   // Create the extra view for this dialog, which contains any subset of: a
   // "learn more" button and a "manage" button.
@@ -108,7 +107,6 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
   RadioGroup radio_group_;
   raw_ptr<views::LabelButton, DanglingUntriaged> manage_button_ = nullptr;
   raw_ptr<views::Checkbox, DanglingUntriaged> manage_checkbox_ = nullptr;
-  raw_ptr<views::ImageButton, DanglingUntriaged> learn_more_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CONTENT_SETTING_BUBBLE_CONTENTS_H_

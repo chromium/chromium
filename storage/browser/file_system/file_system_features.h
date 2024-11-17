@@ -11,10 +11,9 @@
 namespace storage::features {
 
 COMPONENT_EXPORT(STORAGE_BROWSER)
-BASE_DECLARE_FEATURE(kEnablePersistentFilesystemInIncognito);
-
-COMPONENT_EXPORT(STORAGE_BROWSER)
 BASE_DECLARE_FEATURE(kIncognitoFileSystemContextForTesting);
+
+COMPONENT_EXPORT(STORAGE_BROWSER) BASE_DECLARE_FEATURE(kDisableSyncableQuota);
 
 }  // namespace storage::features
 

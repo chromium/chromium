@@ -217,8 +217,7 @@ property.
 
 Accepted values are a list of strings from `privileged_extension`,
 `privileged_web_page`, `content_script`, `extension_service_worker`,
-`lock_screen_extension`, `web_page`, `webui`, `webui_untrusted`, and
-`unprivileged_extension`.
+`web_page`, `webui`, `webui_untrusted`, and `unprivileged_extension`.
 
 The `lock_screen_extension` context is used instead of `privileged_extension`
 context for extensions on the Chrome OS lock screen. Other extensions related
@@ -314,8 +313,8 @@ The only accepted value is the bool `true`.
 The `platforms` property specifies the properties the feature should be
 available on.
 
-The accepted values are lists of strings from `chromeos`, `lacros`, `linux`,
-`mac`, and `win`.
+The accepted values are lists of strings from `chromeos`, `linux`, `mac`, and
+`win`.
 
 ### requires\_delegated\_availability\_check
 

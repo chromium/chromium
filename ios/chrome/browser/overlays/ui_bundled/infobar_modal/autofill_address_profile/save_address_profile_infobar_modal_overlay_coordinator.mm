@@ -11,11 +11,11 @@
 #import "components/autofill/ios/common/features.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_country_selection_table_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
@@ -108,8 +108,8 @@ using autofill_address_profile_infobar_overlays::
   _autofillProfile =
       std::make_unique<autofill::AutofillProfile>(*(self.config->GetProfile()));
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          self.browser->GetProfile()->GetOriginalProfile());
   self.sharedEditViewMediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:personalDataManager
@@ -156,10 +156,11 @@ using autofill_address_profile_infobar_overlays::
   AutofillCountrySelectionTableViewController*
       autofillCountrySelectionTableViewController =
           [[AutofillCountrySelectionTableViewController alloc]
-              initWithDelegate:self
-               selectedCountry:country
-                  allCountries:allCountries
-                  settingsView:NO];
+                         initWithDelegate:self
+                          selectedCountry:country
+                             allCountries:allCountries
+                             settingsView:NO
+              previousViewControllerTitle:nil];
 
   [self.modalViewController.navigationController
       pushViewController:autofillCountrySelectionTableViewController
@@ -180,6 +181,10 @@ using autofill_address_profile_infobar_overlays::
   [self.modalViewController.navigationController popViewControllerAnimated:YES];
   CHECK(self.sharedEditViewMediator);
   [self.sharedEditViewMediator didSelectCountry:selectedCountry];
+}
+
+- (void)dismissCountryViewController {
+  NOTREACHED();
 }
 
 @end

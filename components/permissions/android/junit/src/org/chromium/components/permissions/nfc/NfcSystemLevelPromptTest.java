@@ -44,7 +44,7 @@ public class NfcSystemLevelPromptTest {
     private CallbackHelper mIntentCallback = new CallbackHelper();
     private MockModalDialogManager mModalDialogManager = new MockModalDialogManager();
 
-    private class MockModalDialogManager extends ModalDialogManager {
+    private static class MockModalDialogManager extends ModalDialogManager {
         private PropertyModel mShownDialogModel;
 
         public MockModalDialogManager() {

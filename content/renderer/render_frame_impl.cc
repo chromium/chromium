@@ -47,6 +47,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
@@ -82,7 +83,6 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/public/renderer/window_features_converter.h"
-#include "content/renderer/accessibility/aom_content_ax_tree.h"
 #include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
@@ -204,7 +204,6 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
-#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -698,8 +697,7 @@ WebFrameLoadType NavigationTypeToLoadType(
                  : WebFrameLoadType::kStandard;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return WebFrameLoadType::kStandard;
+      NOTREACHED();
   }
 }
 
@@ -778,62 +776,6 @@ class LinkRewritingDelegate : public WebFrameSerializer::LinkRewritingDelegate {
   const raw_ref<const base::flat_map<GURL, base::FilePath>> url_to_local_path_;
   const raw_ref<const base::flat_map<blink::FrameToken, base::FilePath>>
       frame_token_to_local_path_;
-};
-
-// Implementation of WebFrameSerializer::MHTMLPartsGenerationDelegate that
-// 1. Bases shouldSkipResource and getContentID responses on contents of
-//    SerializeAsMHTMLParams.
-// 2. Stores digests of urls of serialized resources (i.e. urls reported via
-//    shouldSkipResource) into |serialized_resources_uri_digests| passed
-//    to the constructor.
-class MHTMLPartsGenerationDelegate
-    : public WebFrameSerializer::MHTMLPartsGenerationDelegate {
- public:
-  MHTMLPartsGenerationDelegate(
-      const mojom::SerializeAsMHTMLParams& params,
-      std::unordered_set<std::string>* serialized_resources_uri_digests)
-      : params_(params),
-        serialized_resources_uri_digests_(serialized_resources_uri_digests) {
-    DCHECK(serialized_resources_uri_digests_);
-    // Digests must be sorted for binary search.
-    DCHECK(std::is_sorted(params_->digests_of_uris_to_skip.begin(),
-                          params_->digests_of_uris_to_skip.end()));
-    // URLs are not duplicated.
-    DCHECK(base::ranges::adjacent_find(params_->digests_of_uris_to_skip) ==
-           params_->digests_of_uris_to_skip.end());
-  }
-
-  MHTMLPartsGenerationDelegate(const MHTMLPartsGenerationDelegate&) = delete;
-  MHTMLPartsGenerationDelegate& operator=(const MHTMLPartsGenerationDelegate&) =
-      delete;
-
-  bool ShouldSkipResource(const WebURL& url) override {
-    std::string digest =
-        crypto::SHA256HashString(params_->salt + GURL(url).spec());
-
-    // Skip if the |url| already covered by serialization of an *earlier* frame.
-    if (std::binary_search(params_->digests_of_uris_to_skip.begin(),
-                           params_->digests_of_uris_to_skip.end(), digest)) {
-      return true;
-    }
-
-    // Let's record |url| as being serialized for the *current* frame.
-    auto pair = serialized_resources_uri_digests_->insert(digest);
-    bool insertion_took_place = pair.second;
-    DCHECK(insertion_took_place);  // Blink should dedupe within a frame.
-
-    return false;
-  }
-
-  bool UseBinaryEncoding() override { return params_->mhtml_binary_encoding; }
-
-  bool RemovePopupOverlay() override {
-    return params_->mhtml_popup_overlay_removal;
-  }
-
- private:
-  const raw_ref<const mojom::SerializeAsMHTMLParams> params_;
-  raw_ptr<std::unordered_set<std::string>> serialized_resources_uri_digests_;
 };
 
 bool IsHttpPost(const blink::WebURLRequest& request) {
@@ -1161,6 +1103,8 @@ void FillMiscNavigationParams(
     navigation_params->cookie_deprecation_label =
         WebString::FromASCII(*commit_params.cookie_deprecation_label);
   }
+  navigation_params->initial_permission_statuses =
+      std::move(commit_params.initial_permission_statuses);
 }
 
 std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {
@@ -1184,8 +1128,7 @@ perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
           FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_NAVIGATION_CANCELLED;
   }
   // All cases should've been handled by the switch case above.
-  NOTREACHED_IN_MIGRATION();
-  return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
+  NOTREACHED();
 }
 
 void CallClientDeferMediaLoad(base::WeakPtr<RenderFrameImpl> frame,
@@ -1282,11 +1225,11 @@ WindowOpenDisposition NavigationPolicyToDisposition(
     case blink::kWebNavigationPolicyPictureInPicture:
       return WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected WebNavigationPolicy";
-  return WindowOpenDisposition::IGNORE_ACTION;
+  NOTREACHED() << "Unexpected WebNavigationPolicy";
 }
 
-bool ShouldNotifySubresourceResponseStarted(blink::RendererPreferences pref) {
+bool ShouldNotifySubresourceResponseStarted(
+    const blink::RendererPreferences& pref) {
   if (!base::FeatureList::IsEnabled(
           features::kReduceSubresourceResponseStartedIPC)) {
     return true;
@@ -1343,6 +1286,66 @@ void InitializeFrameWidgetForFrame(
 }
 
 }  // namespace
+
+// Implementation of WebFrameSerializer::MHTMLPartsGenerationDelegate that
+// 1. Bases shouldSkipResource and getContentID responses on contents of
+//    SerializeAsMHTMLParams.
+// 2. Stores digests of urls of serialized resources (i.e. urls reported via
+//    shouldSkipResource) into |serialized_resources_uri_digests| passed
+//    to the constructor.
+class MHTMLPartsGenerationDelegateImpl final
+    : public WebFrameSerializer::MHTMLPartsGenerationDelegate {
+ public:
+  explicit MHTMLPartsGenerationDelegateImpl(
+      mojom::SerializeAsMHTMLParamsPtr params)
+      : params_(std::move(params)) {
+    // Digests must be sorted for binary search.
+    DCHECK(std::is_sorted(params_->digests_of_uris_to_skip.begin(),
+                          params_->digests_of_uris_to_skip.end()));
+    // URLs are not duplicated.
+    DCHECK(base::ranges::adjacent_find(params_->digests_of_uris_to_skip) ==
+           params_->digests_of_uris_to_skip.end());
+  }
+
+  MHTMLPartsGenerationDelegateImpl(const MHTMLPartsGenerationDelegateImpl&) =
+      delete;
+  MHTMLPartsGenerationDelegateImpl& operator=(
+      const MHTMLPartsGenerationDelegateImpl&) = delete;
+
+  bool ShouldSkipResource(const WebURL& url) override {
+    std::string digest =
+        crypto::SHA256HashString(params_->salt + GURL(url).spec());
+
+    // Skip if the |url| already covered by serialization of an *earlier* frame.
+    if (std::binary_search(params_->digests_of_uris_to_skip.begin(),
+                           params_->digests_of_uris_to_skip.end(), digest)) {
+      return true;
+    }
+
+    // Let's record |url| as being serialized for the *current* frame.
+    auto pair = serialized_resources_uri_digests_.insert(digest);
+    bool insertion_took_place = pair.second;
+    DCHECK(insertion_took_place);  // Blink should dedupe within a frame.
+
+    return false;
+  }
+
+  bool UseBinaryEncoding() override { return params_->mhtml_binary_encoding; }
+
+  bool RemovePopupOverlay() override {
+    return params_->mhtml_popup_overlay_removal;
+  }
+
+  std::unordered_set<std::string> TakeSerializedResourcesUriDigests() {
+    return std::move(serialized_resources_uri_digests_);
+  }
+  mojom::SerializeAsMHTMLParamsPtr TakeParams() { return std::move(params_); }
+
+ private:
+  std::vector<std::string> digests_of_uris_to_skip_;
+  mojom::SerializeAsMHTMLParamsPtr params_;
+  std::unordered_set<std::string> serialized_resources_uri_digests_;
+};
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
     RenderFrameImpl* frame)
@@ -1620,7 +1623,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   if (!params->is_on_initial_empty_document)
     render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
-  CHECK(!params->widget_params->previous_frame_token_for_compositor_reuse);
+  CHECK(!params->widget_params->reuse_compositor);
 
   // Non-owning pointer that is self-referencing and destroyed by calling
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
@@ -1694,10 +1697,10 @@ void RenderFrameImpl::CreateFrame(
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         associated_interface_provider,
     blink::WebView* web_view,
-    const std::optional<blink::FrameToken>& previous_frame_token,
-    const std::optional<blink::FrameToken>& opener_frame_token,
-    const std::optional<blink::FrameToken>& parent_frame_token,
-    const std::optional<blink::FrameToken>& previous_sibling_frame_token,
+    base::optional_ref<const blink::FrameToken> previous_frame_token,
+    base::optional_ref<const blink::FrameToken> opener_frame_token,
+    base::optional_ref<const blink::FrameToken> parent_frame_token,
+    base::optional_ref<const blink::FrameToken> previous_sibling_frame_token,
     const base::UnguessableToken& devtools_frame_token,
     blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
@@ -2185,7 +2188,18 @@ void RenderFrameImpl::BindFrameBindingsControl(
 
 void RenderFrameImpl::BindNavigationClient(
     mojo::PendingAssociatedReceiver<mojom::NavigationClient> receiver) {
-  navigation_client_impl_ = std::make_unique<NavigationClient>(this);
+  // If the provisional owner frame is a local frame and it has a non-null
+  // `navigation_client_impl_`, it began the navigation. Some properties need
+  // to be copied over from the original `NavigationClient` to preserve
+  // behaviour.
+  NavigationClient* initiator_navigation_client = nullptr;
+  WebFrame* initiator_frame = GetWebFrame()->GetProvisionalOwnerFrame();
+  if (initiator_frame && initiator_frame->IsWebLocalFrame()) {
+    initiator_navigation_client = RenderFrameImpl::FromWebFrame(initiator_frame)
+                                      ->navigation_client_impl_.get();
+  }
+  navigation_client_impl_ =
+      std::make_unique<NavigationClient>(this, initiator_navigation_client);
   navigation_client_impl_->Bind(std::move(receiver));
 }
 
@@ -2300,9 +2314,11 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
       // TODO(dcheng): This is the case of https://crbug.com/838348.
       DCHECK(is_main_frame_);
 #if !BUILDFLAG(IS_ANDROID)
-      // This check is not enabled on Android, since it seems like it's much
-      // easier to trigger data races there.
       CHECK(!in_frame_tree_);
+#else
+      // Previously this CHECK() was disabled on Android because it was much
+      // easier to hit the race there.
+      CHECK(!in_frame_tree_, base::NotFatalUntil::M135);
 #endif  // !BUILDFLAG(IS_ANDROID)
       break;
   }
@@ -2729,9 +2745,10 @@ void RenderFrameImpl::CommitNavigation(
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
   // `origin_to_commit` must only be set on failed navigations or  data: URL
-  // navigations.
+  // navigations, except when kUseBrowserCalculatedOrigin is enabled.
   CHECK(!commit_params->origin_to_commit ||
-        common_params->url.SchemeIs(url::kDataScheme));
+        common_params->url.SchemeIs(url::kDataScheme) ||
+        base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin));
   LogCommitHistograms(commit_params->commit_sent, is_main_frame_,
                       common_params->url);
 
@@ -3805,12 +3822,7 @@ blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
 
 void RenderFrameImpl::MaybeInitializeWidget(
     mojom::CreateFrameWidgetParamsPtr widget_params) {
-  if (!PreviousWidgetForLazyCompositorInitialization(
-          widget_params->previous_frame_token_for_compositor_reuse)) {
-    InitializeFrameWidgetForFrame(*frame_, /*previous_widget=*/nullptr,
-                                  std::move(widget_params),
-                                  is_for_nested_main_frame_);
-  } else {
+  if (widget_params->reuse_compositor) {
     // Initializing the widget is deferred until commit if this RenderFrame
     // will be replacing a previous RenderFrame. This enables reuse of the
     // compositing setup which is expensive.
@@ -3824,45 +3836,23 @@ void RenderFrameImpl::MaybeInitializeWidget(
     // the GPU process) is not done until the frame is made visible, which
     // happens at commit.
     widget_params_for_lazy_widget_creation_ = std::move(widget_params);
-  }
-}
-
-void RenderFrameImpl::EnsureWidgetInitialized() {
-  if (!widget_params_for_lazy_widget_creation_) {
-    CHECK(GetLocalRootWebFrameWidget());
     return;
   }
 
-  auto* previous_widget = PreviousWidgetForLazyCompositorInitialization(
-      widget_params_for_lazy_widget_creation_
-          ->previous_frame_token_for_compositor_reuse);
-  CHECK(previous_widget);
-
-  InitializeFrameWidgetForFrame(
-      *frame_, previous_widget,
-      std::move(widget_params_for_lazy_widget_creation_),
-      is_for_nested_main_frame_);
+  InitializeFrameWidgetForFrame(*frame_, /*previous_widget=*/nullptr,
+                                std::move(widget_params),
+                                is_for_nested_main_frame_);
 }
 
-blink::WebFrameWidget*
-RenderFrameImpl::PreviousWidgetForLazyCompositorInitialization(
-    const std::optional<blink::FrameToken>& previous_frame_token) const {
-  if (!previous_frame_token) {
-    return nullptr;
-  }
+void RenderFrameImpl::InitializeWidgetAtSwap(
+    blink::WebLocalFrame& frame_for_compositor_reuse) {
+  CHECK(widget_params_for_lazy_widget_creation_);
+  DCHECK(widget_params_for_lazy_widget_creation_->reuse_compositor);
 
-  auto* previous_web_frame = WebFrame::FromFrameToken(*previous_frame_token);
-
-  CHECK(previous_web_frame);
-  CHECK(previous_web_frame->IsWebLocalFrame());
-
-  auto* previous_render_frame =
-      RenderFrameImpl::FromWebFrame(previous_web_frame);
-  CHECK(previous_render_frame);
-  CHECK_EQ(previous_render_frame->is_for_nested_main_frame_,
-           is_for_nested_main_frame_);
-
-  return previous_web_frame->ToWebLocalFrame()->FrameWidget();
+  InitializeFrameWidgetForFrame(
+      *frame_, frame_for_compositor_reuse.FrameWidget(),
+      std::move(widget_params_for_lazy_widget_creation_),
+      is_for_nested_main_frame_);
 }
 
 void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
@@ -3872,11 +3862,19 @@ void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
       navigation_client_impl_->ResetWithoutCancelling();
     }
 
-    // Defer initializing the new widget until the previous Document has been
-    // torn down. Script handles like unload dispatched during tear down can
-    // access the compositor.
+    // If `provisional_frame_for_local_root_swap_` is set by `Swap()`, the
+    // widget for the frame being swapped in needs to be initialized now. At
+    // this point, the compositor can be passed off safely since the `Document`
+    // has already been torn down.
+    //
+    // TODO(dcheng): This mechanism could probably be used for passing off the
+    // unique name as well...
     if (provisional_frame_for_local_root_swap_) {
-      provisional_frame_for_local_root_swap_->EnsureWidgetInitialized();
+      CHECK_EQ(
+          provisional_frame_for_local_root_swap_->is_for_nested_main_frame_,
+          is_for_nested_main_frame_);
+      provisional_frame_for_local_root_swap_->InitializeWidgetAtSwap(
+          CHECK_DEREF(GetWebFrame()));
       provisional_frame_for_local_root_swap_ = nullptr;
     }
   }
@@ -3893,7 +3891,10 @@ void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
   SendUpdateState();
 }
 
-void RenderFrameImpl::FrameDetached() {
+void RenderFrameImpl::FrameDetached(blink::DetachReason detach_reason) {
+  TRACE_EVENT0("navigation", "RenderFrameImpl::FrameDetached");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.RenderFrameImpl.FrameDetached");
   // We need to clean up subframes by removing them from the map and deleting
   // the RenderFrameImpl.  In contrast, the main frame is owned by its
   // containing RenderViewHost (so that they have the same lifetime), so only
@@ -3911,7 +3912,7 @@ void RenderFrameImpl::FrameDetached() {
   // |frame_| may not be referenced after this, so clear the pointer since
   // the actual WebLocalFrame may not be deleted immediately and other methods
   // may try to access it.
-  frame_->Close();
+  frame_->Close(detach_reason);
   frame_ = nullptr;
 
   if (mhtml_body_loader_client_) {
@@ -4195,8 +4196,9 @@ void RenderFrameImpl::DidClearWindowObject() {
   if (command_line.HasSwitch(switches::kStatsCollectionController))
     StatsCollectionController::Install(frame_);
 
-  if (command_line.HasSwitch(cc::switches::kEnableGpuBenchmarking))
+  if (command_line.HasSwitch(switches::kEnableGpuBenchmarking)) {
     GpuBenchmarking::Install(weak_factory_.GetWeakPtr());
+  }
 
   if (command_line.HasSwitch(switches::kEnableSkiaBenchmarking))
     SkiaBenchmarking::Install(frame_);
@@ -4457,7 +4459,7 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
     // The swap can fail when the frame is detached during swap (this can
     // happen while running the unload handlers). When that happens, delete
     // the proxy.
-    remote_frame->Close();
+    remote_frame->Close(blink::DetachReason::kFrameDeletion);
     return false;
   }
 
@@ -4879,12 +4881,14 @@ void RenderFrameImpl::PostAccessibilityEvent(const ui::AXEvent& event) {
 bool RenderFrameImpl::SendAccessibilitySerialization(
     std::vector<ui::AXTreeUpdate> updates,
     std::vector<ui::AXEvent> events,
+    ui::AXLocationAndScrollUpdates location_and_scroll_updates,
     bool had_load_complete_messages) {
   // This function should never be called from a11y unless it's enabled.
   CHECK(IsAccessibilityEnabled());
 
   return render_accessibility_manager_->GetRenderAccessibilityImpl()
       ->SendAccessibilitySerialization(std::move(updates), std::move(events),
+                                       std::move(location_and_scroll_updates),
                                        had_load_complete_messages);
 }
 
@@ -5417,7 +5421,16 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
   // Swapping out a frame can dispatch JS event handlers, causing `this` to be
   // deleted.
   bool is_main_frame = is_main_frame_;
-  if (auto* render_frame = RenderFrameImpl::FromWebFrame(previous_web_frame)) {
+  if (auto* render_frame = RenderFrameImpl::FromWebFrame(previous_web_frame);
+      render_frame && widget_params_for_lazy_widget_creation_) {
+    // For local -> local swaps that lazily initialize the widget, tell the
+    // previous RenderFrame (i.e. the frame being swapped out) about `this`
+    // (i.e. the frame being swapped in), so `WillDetach()` on the previous
+    // RenderFrame can pass off its compositor to `this` for reuse.
+    //
+    // TODO(dcheng): Blink should already know the provisional frame internally;
+    // consider exposing that through the public API to avoid having to plumb
+    // state at a distance like this.
     render_frame->provisional_frame_for_local_root_swap_ = GetWeakPtr();
   }
   if (!previous_web_frame->Swap(frame_)) {
@@ -5426,6 +5439,12 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
     DCHECK(!is_main_frame);
     return false;
   }
+
+  // For local roots, whether the frame widget is created eagerly or lazily, it
+  // must be initialized by this point.
+  //
+  // For non local roots, they must have a local root ancestor which already has
+  // a frame widget.
   CHECK(GetLocalRootWebFrameWidget());
 
   // `previous_web_frame` is now detached, and should no longer be referenced.
@@ -5794,12 +5813,8 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
   // Holds WebThreadSafeData instances for some or all of header, contents and
   // footer.
   std::vector<WebThreadSafeData> mhtml_contents;
-  std::unordered_set<std::string> serialized_resources_uri_digests;
-  MHTMLPartsGenerationDelegate delegate(*params,
-                                        &serialized_resources_uri_digests);
-
-  mojom::MhtmlSaveStatus save_status = mojom::MhtmlSaveStatus::kSuccess;
-  bool has_some_data = false;
+  auto delegate =
+      std::make_unique<MHTMLPartsGenerationDelegateImpl>(std::move(params));
 
   // Generate MHTML header if needed.
   if (IsMainFrame()) {
@@ -5808,37 +5823,54 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
     // The returned data can be empty if the main frame should be skipped. If
     // the main frame is skipped, then the whole archive is bad.
     mhtml_contents.emplace_back(WebFrameSerializer::GenerateMHTMLHeader(
-        mhtml_boundary, GetWebFrame(), &delegate));
-    has_some_data = true;
+        mhtml_boundary, GetWebFrame(), delegate.get()));
   }
 
   // Generate MHTML parts.  Note that if this is not the main frame, then even
   // skipping the whole parts generation step is not an error - it simply
   // results in an omitted resource in the final file.
-  if (save_status == mojom::MhtmlSaveStatus::kSuccess) {
-    TRACE_EVENT0("page-serialization",
-                 "RenderFrameImpl::SerializeAsMHTML parts serialization");
-    // The returned data can be empty if the frame should be skipped, but this
-    // is OK.
-    mhtml_contents.emplace_back(WebFrameSerializer::GenerateMHTMLParts(
-        mhtml_boundary, GetWebFrame(), &delegate));
-    has_some_data |= !mhtml_contents.back().IsEmpty();
+  TRACE_EVENT0("page-serialization",
+               "RenderFrameImpl::SerializeAsMHTML parts serialization");
+  MHTMLPartsGenerationDelegateImpl* delegate_ptr = delegate.get();
+  WebFrameSerializer::GenerateMHTMLParts(
+      mhtml_boundary, GetWebFrame(), delegate_ptr,
+      base::BindOnce(&RenderFrameImpl::OnSerializeMHTMLComplete,
+                     weak_factory_.GetWeakPtr(), std::move(delegate),
+                     std::move(callback), std::move(mhtml_contents)));
+}
+
+void RenderFrameImpl::OnSerializeMHTMLComplete(
+    std::unique_ptr<MHTMLPartsGenerationDelegateImpl> delegate,
+    SerializeAsMHTMLCallback callback,
+    std::vector<blink::WebThreadSafeData> mhtml_contents,
+    blink::WebThreadSafeData frame_mhtml_data) {
+  TRACE_EVENT0("page-serialization",
+               "RenderFrameImpl::SerializeAsMHTML parts serialization");
+  // The returned data can be empty if the frame should be skipped, but this
+  // is OK.
+  mhtml_contents.emplace_back(frame_mhtml_data);
+  bool has_some_data = false;
+  for (const auto& c : mhtml_contents) {
+    if (!c.IsEmpty()) {
+      has_some_data = true;
+      break;
+    }
   }
 
   // Note: the MHTML footer is written by the browser process, after the last
   // frame is serialized by a renderer process.
 
   MHTMLHandleWriterDelegate handle_delegate(
-      *params,
+      *delegate->TakeParams(),
       base::BindOnce(&RenderFrameImpl::OnWriteMHTMLComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(serialized_resources_uri_digests)),
+                     delegate->TakeSerializedResourcesUriDigests()),
       GetTaskRunner(blink::TaskType::kInternalDefault));
 
-  if (save_status == mojom::MhtmlSaveStatus::kSuccess && has_some_data) {
+  if (has_some_data) {
     handle_delegate.WriteContents(mhtml_contents);
   } else {
-    handle_delegate.Finish(save_status);
+    handle_delegate.Finish(mojom::MhtmlSaveStatus::kSuccess);
   }
 }
 
@@ -6134,6 +6166,9 @@ void RenderFrameImpl::BeginNavigationInternal(
     bool is_history_navigation_in_new_child_frame,
     base::TimeTicks renderer_before_unload_start,
     base::TimeTicks renderer_before_unload_end) {
+  // Provisional frames shouldn't initiate navigations.
+  CHECK(!GetWebFrame()->IsProvisional());
+
   if (!frame_->WillStartNavigation(*info))
     return;
 
@@ -6463,19 +6498,6 @@ void RenderFrameImpl::BindMhtmlFileWriter(
       std::move(receiver), GetTaskRunner(blink::TaskType::kInternalDefault));
 }
 
-// TODO(crbug.com/40550966): Move this method to Blink, and eliminate
-// the plumbing logic through blink::WebLocalFrameClient.
-void RenderFrameImpl::CheckIfAudioSinkExistsAndIsAuthorized(
-    const blink::WebString& sink_id,
-    blink::WebSetSinkIdCompleteCallback completion_callback) {
-  std::move(
-      blink::ConvertToOutputDeviceStatusCB(std::move(completion_callback)))
-      .Run(blink::AudioDeviceFactory::GetInstance()
-               ->GetOutputDeviceInfo(GetWebFrame()->GetLocalFrameToken(),
-                                     sink_id.Utf8())
-               .device_status());
-}
-
 scoped_refptr<network::SharedURLLoaderFactory>
 RenderFrameImpl::GetURLLoaderFactory() {
   if (!RenderThreadImpl::current()) {
@@ -6656,12 +6678,6 @@ void RenderFrameImpl::PepperFocusChanged(PepperPluginInstanceImpl* instance,
 }
 
 #endif  // BUILDFLAG(ENABLE_PPAPI)
-
-blink::WebComputedAXTree* RenderFrameImpl::GetOrCreateWebComputedAXTree() {
-  if (!computed_ax_tree_)
-    computed_ax_tree_ = std::make_unique<AomContentAxTree>(this);
-  return computed_ax_tree_.get();
-}
 
 std::unique_ptr<blink::WebSocketHandshakeThrottle>
 RenderFrameImpl::CreateWebSocketHandshakeThrottle() {

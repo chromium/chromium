@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 66
+version_id: 67
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -2459,6 +2459,19 @@ file_types {
   extension: "job"
   uma_value: 163
   ping_setting: SAMPLED_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  # Windows Library Description Schema. This is a shell extension that can
+  # cause information to be leaked to remote file shares.
+  # https://learn.microsoft.com/en-us/windows/win32/shell/library-schema-entry
+  extension: "library-ms"
+  uma_value: 414
+  ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_TYPE_WINDOWS
     danger_level: ALLOW_ON_USER_GESTURE

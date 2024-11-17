@@ -31,7 +31,7 @@ CurrencyFormatterAndroid::CurrencyFormatterAndroid(
       ConvertJavaStringToUTF8(env, locale_name));
 }
 
-CurrencyFormatterAndroid::~CurrencyFormatterAndroid() {}
+CurrencyFormatterAndroid::~CurrencyFormatterAndroid() = default;
 
 void CurrencyFormatterAndroid::Destroy(JNIEnv* env,
                                        const JavaParamRef<jobject>& jcaller) {

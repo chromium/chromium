@@ -90,7 +90,7 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
   // Reset the parser state in chunk demuxer.
   virtual void ResetParserState(std::string_view role,
                                 base::TimeDelta end,
-                                base::TimeDelta* offset);
+                                base::TimeDelta* offset) = 0;
 
   // Allow seeking from within an implementation.
   virtual void RequestSeek(base::TimeDelta time) = 0;

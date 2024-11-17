@@ -82,6 +82,8 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_frame_builder.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_encrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
@@ -92,8 +94,6 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_spdy_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request.h"
@@ -134,14 +134,11 @@ const char kHttpRespData[] = "hello world";
 
 struct TestParams {
   quic::ParsedQuicVersion version;
-  bool priority_header_enabled;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
-                       p.priority_header_enabled ? "PriorityHeaderEnabled"
-                                                 : "PriorityHeaderDisabled"});
+  return ParsedQuicVersionToString(p.version);
 }
 
 // Run QuicNetworkTransactionWithDestinationTest instances with all value
@@ -207,8 +204,7 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const quic::ParsedQuicVersion& version : all_supported_versions) {
-    params.push_back(TestParams{version, true});
-    params.push_back(TestParams{version, false});
+    params.push_back(TestParams{version});
   }
   return params;
 }
@@ -333,11 +329,6 @@ class QuicNetworkTransactionTest
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         ssl_data_(ASYNC, OK) {
-    if (GetParam().priority_header_enabled) {
-      feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);
-    } else {
-      feature_list_.InitAndDisableFeature(net::features::kPriorityHeader);
-    }
     FLAGS_quic_enable_http3_grease_randomness = false;
     request_.method = "GET";
     std::string url("https://");
@@ -652,7 +643,7 @@ class QuicNetworkTransactionTest
 
     session_ =
         std::make_unique<HttpNetworkSession>(session_params_, session_context_);
-    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+    session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
         true);
     SpdySessionPoolPeer spdy_pool_peer(session_->spdy_session_pool());
     spdy_pool_peer.SetEnableSendingInitialData(false);
@@ -1059,7 +1050,6 @@ class QuicNetworkTransactionTest
   std::vector<std::unique_ptr<StaticSocketDataProvider>> hanging_data_;
   SSLSocketDataProvider ssl_data_;
   std::unique_ptr<ScopedMockNetworkChangeNotifier> scoped_mock_change_notifier_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -3609,8 +3599,6 @@ TEST_P(QuicNetworkTransactionTest, RemoteAltSvcWorkingWhileLocalAltSvcBroken) {
   mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
-  MockQuicData mock_quic_data2(version_);
-  mock_quic_data2.AddSocketDataToFactory(&socket_factory_);
   AddHangingNonAlternateProtocolSocketData();
 
   CreateSession();
@@ -4738,7 +4726,7 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithConfirmationRequired) {
                                            "");
 
   CreateSession();
-  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -4952,7 +4940,7 @@ TEST_P(QuicNetworkTransactionTest,
                                            "");
 
   CreateSession();
-  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -5016,7 +5004,7 @@ TEST_P(QuicNetworkTransactionTest,
                                            "");
 
   CreateSession();
-  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -5083,7 +5071,7 @@ TEST_P(QuicNetworkTransactionTest, RstStreamErrorHandling) {
                                            "");
 
   CreateSession();
-  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -5155,7 +5143,7 @@ TEST_P(QuicNetworkTransactionTest, RstStreamBeforeHeaders) {
                                            "");
 
   CreateSession();
-  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -5349,7 +5337,7 @@ TEST_P(QuicNetworkTransactionTest, DelayTCPOnStartWithQuicSupportOnSameIP) {
 
   CreateSession();
   // QuicSessionPool by default requires confirmation on construction.
-  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
       false);
 
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
@@ -5419,7 +5407,7 @@ TEST_P(QuicNetworkTransactionTest,
   // No HTTP data is mocked as TCP job will be delayed and never starts.
 
   CreateSession();
-  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
       false);
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::ZERO_RTT);
 
@@ -5471,7 +5459,7 @@ TEST_P(QuicNetworkTransactionTest, NetErrorDetailsSetBeforeHandshake) {
   // Require handshake confirmation to ensure that no QUIC streams are
   // created, and to ensure that the TCP job does not wait for the QUIC
   // job to fail before it starts.
-  session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+  session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
       false);
 
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::COLD_START);
@@ -6196,7 +6184,7 @@ class QuicNetworkTransactionWithDestinationTest
 
     session_ =
         std::make_unique<HttpNetworkSession>(session_params, session_context);
-    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+    session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
         false);
   }
 
@@ -7446,7 +7434,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectNoReuseDifferentChains) {
       context_.clock(), kQuicProxyServer.GetHost(),
       quic::Perspective::IS_CLIENT,
       /*client_priority_uses_incremental=*/true,
-      /*use_priority_header=*/GetParam().priority_header_enabled);
+      /*use_priority_header=*/true);
 
   QuicTestPacketMaker server_maker2(
       version_,
@@ -8700,8 +8688,18 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   socket_data->Resume();
-  base::RunLoop().RunUntilIdle();
-  CheckResponseData(&trans, kQuicRespData);
+  rv = callback.WaitForResult();
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // This test depends heavily on the internal behavior of
+    // HttpStreamFactory's JobController and Jobs, which aren't used when
+    // the HappyEyeballsV3 is enabled, and when the HappyEyeballsV3 is enabled
+    // we create an HttpStream on HTTP/1.1 for the request. Just check we get
+    // an appropriate error.
+    EXPECT_THAT(rv, IsError(ERR_H2_OR_QUIC_REQUIRED));
+  } else {
+    EXPECT_THAT(rv, IsOk());
+    CheckResponseData(&trans, kQuicRespData);
+  }
 }
 
 TEST_P(QuicNetworkTransactionTest, IncorrectHttp3GoAway) {

@@ -248,6 +248,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Failed YUV video quad hdr non fullscreen"/>
   <int value="22" label="Failed YUV video quad hdr non p010"/>
   <int value="23" label="Failed YUV video quad unsupported colorspace"/>
+  <int value="24" label="Failed YUV video quad hdr non pq10"/>
 </enum>
 
 <enum name="DelegatedStatus">
@@ -1340,6 +1341,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="GraphiteDawnMetal"/>
   <int value="6" label="GraphiteDawnD3D11"/>
   <int value="7" label="GraphiteDawnD3D12"/>
+</enum>
+
+<enum name="SkiaPipelineCreationRace">
+  <int value="0" label="Normal compilation won a race with Normal compilation"/>
+  <int value="1" label="Normal compilation won a race with Precompilation"/>
+  <int value="2" label="Precompilation won a race with Normal compilation"/>
+  <int value="3" label="Precompilation won a race with Precompilation"/>
 </enum>
 
 <enum name="UnderlayDamageRect">

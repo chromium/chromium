@@ -193,8 +193,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
             .SetPageScheduler(throtting_exempt_view_.get());
         break;
       case FrameStatus::kCount:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
     return builder.Build();
   }
@@ -229,6 +228,7 @@ TEST_F(MainThreadMetricsHelperTest, GetFrameStatusTest) {
 }
 
 TEST_F(MainThreadMetricsHelperTest, TaskQueueingDelay) {
+  metrics_helper_->DisableMetricsSubsamplingForTesting();
   base::TimeTicks queue_time = Now();
   base::TimeDelta queue_duration = base::Microseconds(11);
   base::TimeDelta task_duration = base::Microseconds(97);

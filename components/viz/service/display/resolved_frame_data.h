@@ -387,7 +387,9 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   std::vector<std::unique_ptr<CompositorRenderPass>> offset_tag_render_passes_;
 
   std::vector<ResolvedPassData> resolved_passes_;
-  base::flat_map<CompositorRenderPassId, ResolvedPassData*> render_pass_id_map_;
+  base::flat_map<CompositorRenderPassId,
+                 raw_ptr<ResolvedPassData, CtnExperimental>>
+      render_pass_id_map_;
   base::flat_map<CompositorRenderPassId, AggregatedRenderPassId>
       aggregated_id_map_;
 

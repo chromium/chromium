@@ -72,7 +72,7 @@ class PlaylistTestBuilder {
 
     if (!result.has_value()) {
       EXPECT_TRUE(result.has_value())
-          << MediaSerialize(std::move(result).error())
+          << MediaSerializeForTesting(std::move(result).error())
           << "\nFrom: " << from.ToString();
       return nullptr;
     } else {

@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/media_router/media_router_internals_webui_message_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -24,6 +25,12 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace media_router {
+
+bool MediaRouterInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return MediaRouterEnabled(profile);
+}
 
 MediaRouterInternalsUI::MediaRouterInternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {

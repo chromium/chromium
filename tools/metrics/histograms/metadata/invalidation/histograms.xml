@@ -36,14 +36,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.FailedSubscriptionsErrorCode"
-    enum="NetErrorCodes" expires_after="2025-02-01">
+    enum="NetErrorCodes" expires_after="2025-04-06">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>Net error codes for failed subscription requests.</summary>
 </histogram>
 
 <histogram name="FCMInvalidations.FCMMessageStatus{FCMInvalidationSenders}"
-    enum="FCMInvalidationMessageStatus" expires_after="2025-02-01">
+    enum="FCMInvalidationMessageStatus" expires_after="2025-04-06">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.InitialTokenRetrievalStatus"
-    enum="InstanceIDResult" expires_after="2025-02-01">
+    enum="InstanceIDResult" expires_after="2025-04-06">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.SubscriptionRequestStatus"
-    enum="FCMInvalidationSubscriptionStatus" expires_after="2025-02-01">
+    enum="FCMInvalidationSubscriptionStatus" expires_after="2025-04-06">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.SubscriptionResponseCode"
-    enum="HttpResponseCode" expires_after="2025-02-01">
+    enum="HttpResponseCode" expires_after="2025-04-06">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.TokenStateOnRegistrationRequest2"
-    enum="TokenStateOnRegistrationRequest" expires_after="2025-02-01">
+    enum="TokenStateOnRegistrationRequest" expires_after="2025-04-06">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>

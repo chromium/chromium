@@ -137,7 +137,7 @@ void RemoteAppsImpl::DeleteApp(const std::string& app_id,
     case RemoteAppsError::kFailedToPinAnApp:
     case RemoteAppsError::kPinningMultipleAppsNotSupported:
       // Errors specific to other methods.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -164,7 +164,7 @@ void RemoteAppsImpl::SetPinnedApps(const std::vector<std::string>& app_ids,
     case RemoteAppsError::kFolderIdDoesNotExist:
     case RemoteAppsError::kNotReady:
       // Errors specific to other methods.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -208,7 +208,7 @@ void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
     case RemoteAppsError::kFailedToPinAnApp:
     case RemoteAppsError::kPinningMultipleAppsNotSupported:
       // Errors specific to other methods.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

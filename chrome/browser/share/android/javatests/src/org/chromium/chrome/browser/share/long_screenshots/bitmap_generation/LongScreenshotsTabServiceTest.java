@@ -40,7 +40,7 @@ public class LongScreenshotsTabServiceTest {
     private LongScreenshotsTabService mLongScreenshotsTabService;
     private TestCaptureProcessor mProcessor;
 
-    class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
+    static class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
         @Status private int mActualStatus;
         private boolean mProcessCapturedTabCalled;
         private long mNativeCaptureResultPtr;

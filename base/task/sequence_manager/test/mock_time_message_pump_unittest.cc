@@ -68,7 +68,7 @@ TEST(MockMessagePumpTest, AdvancesTimeAsAllowed) {
 
   pump.SetAllowTimeToAutoAdvanceUntil(kEndTime);
   pump.SetStopWhenMessagePumpIsIdle(true);
-  EXPECT_CALL(delegate, DoWork).Times(3).WillRepeatedly(Invoke([&]() {
+  EXPECT_CALL(delegate, DoWork).Times(3).WillRepeatedly(Invoke([&] {
     return NextWorkInfo(mock_clock.NowTicks() + Seconds(1));
   }));
   EXPECT_CALL(delegate, DoIdleWork).Times(3);

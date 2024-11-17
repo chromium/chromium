@@ -81,9 +81,10 @@
         <a role="menuitem" href="/ai"
             hidden="[[!showExperimentalMenuItem_(
                 showAdvancedFeaturesMainControl_, pageVisibility.ai)]]"
+            on-click="onAiPageClick_"
             class="cr-nav-menu-item">
-          <cr-icon icon="settings20:ai"></cr-icon>
-          $i18n{aiPageTitle}
+          <cr-icon icon="[[aiPageIcon_]]"></cr-icon>
+          [[aiPageTitle_]]
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="appearance" href="/appearance"

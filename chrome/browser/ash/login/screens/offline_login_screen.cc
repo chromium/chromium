@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -77,6 +78,7 @@ std::string OfflineLoginScreen::GetResultString(Result result) {
 OfflineLoginScreen::OfflineLoginScreen(base::WeakPtr<OfflineLoginView> view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(OfflineLoginView::kScreenId, OobeScreenPriority::DEFAULT),
+      auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
@@ -112,6 +114,7 @@ void OfflineLoginScreen::ShowImpl() {
 void OfflineLoginScreen::HideImpl() {
   scoped_observer_.reset();
   idle_detector_.reset();
+  authenticate_by_pin_ = false;
   if (view_)
     view_->Hide();
 }
@@ -155,11 +158,13 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
 
   UserContext user_context(*user);
   user_context.SetKey(Key(password));
-  user_context.SetLocalPasswordInput(LocalPasswordInput{password});
-  // Save the user's plaintext password for possible authentication to a
-  // network. See https://crbug.com/386606 for details.
-  user_context.SetPasswordKey(Key(password));
-  user_context.SetIsUsingPin(false);
+  if (!authenticate_by_pin_) {
+    user_context.SetLocalPasswordInput(LocalPasswordInput{password});
+    // Save the user's plaintext password for possible authentication to a
+    // network. See https://crbug.com/386606 for details.
+    user_context.SetPasswordKey(Key(password));
+  }
+  user_context.SetIsUsingPin(authenticate_by_pin_);
   CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY)
       << "Incorrect Active Directory user type " << user_context.GetUserType();
   user_context.SetIsUsingOAuth(false);
@@ -203,14 +208,42 @@ void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  if (user && user->force_online_signin()) {
-    RecordEvent(OfflineLoginEvent::kOfflineLoginBlockedByInvalidToken);
-    view_->ShowPasswordPage();
+
+  // Shows the password page when no user is found. Error message is shown
+  // after entering the password.
+  if (!user) {
+    RecordEvent(OfflineLoginEvent::kOfflineLoginEnabled);
+    view_->ShowPasswordPage(/*authenticate_by_pin_=*/false);
     return;
   }
 
+  if (user->force_online_signin()) {
+    RecordEvent(OfflineLoginEvent::kOfflineLoginBlockedByInvalidToken);
+    view_->ShowOnlineRequiredDialog();
+    return;
+  }
+
+  auth_factor_editor_.GetAuthFactorsConfiguration(
+      std::make_unique<UserContext>(*user),
+      base::BindOnce(&OfflineLoginScreen::OnGetAuthFactorsConfiguration,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OfflineLoginScreen::OnGetAuthFactorsConfiguration(
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Failed to get auth factors configuration, code "
+               << error->get_cryptohome_error();
+  } else {
+    const auto& config = user_context->GetAuthFactorsConfiguration();
+    // Allow authentication by PIN if that is the user's only auth factor.
+    authenticate_by_pin_ =
+        !config.HasConfiguredFactor(cryptohome::AuthFactorType::kPassword) &&
+        config.HasConfiguredFactor(cryptohome::AuthFactorType::kPin);
+  }
   RecordEvent(OfflineLoginEvent::kOfflineLoginEnabled);
-  view_->ShowPasswordPage();
+  view_->ShowPasswordPage(authenticate_by_pin_);
 }
 
 void OfflineLoginScreen::StartIdleDetection() {

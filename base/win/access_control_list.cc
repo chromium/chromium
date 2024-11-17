@@ -7,11 +7,14 @@
 #include <windows.h>
 
 #include <aclapi.h>
+#include <stdint.h>
 
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -21,18 +24,22 @@ namespace base::win {
 
 namespace {
 
-std::unique_ptr<uint8_t[]> AclToBuffer(const ACL* acl) {
+base::HeapArray<uint8_t> AclToBuffer(const ACL* acl) {
   if (!acl) {
-    return nullptr;
+    return {};
   }
-  size_t size = acl->AclSize;
-  DCHECK(size >= sizeof(*acl));
-  std::unique_ptr<uint8_t[]> ptr = std::make_unique<uint8_t[]>(size);
-  memcpy(ptr.get(), acl, size);
-  return ptr;
+  const size_t size = acl->AclSize;
+  CHECK_GE(size, sizeof(*acl));
+  // SAFETY: ACL structure is followed in memory by ACEs. The size of the ACL
+  // struct and all the data related to it is placed in `acl->AclSize`, thus it
+  // is safe to copy `acl->AclSize` bytes starting at address of `acl`. The fact
+  // that the data pertaining to ACL is placed after the ACL structure in memory
+  // is also the reason why we cannot use `base::span_from_ref()` here.
+  return base::HeapArray<uint8_t>::CopiedFrom(
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<const uint8_t*>(acl), size)));
 }
 
-std::unique_ptr<uint8_t[]> EmptyAclToBuffer() {
+base::HeapArray<uint8_t> EmptyAclToBuffer() {
   ACL acl = {};
   acl.AclRevision = ACL_REVISION;
   acl.AclSize = static_cast<WORD>(sizeof(acl));
@@ -52,7 +59,10 @@ ACCESS_MODE ConvertAccessMode(SecurityAccessMode access_mode) {
   }
 }
 
-std::unique_ptr<uint8_t[]> AddACEToAcl(
+// Note: on error, this function returns an empty heap array. If such an array
+// were placed inside `AccessControlList::acl_`, it would cause the access
+// control list to become a null ACL (allowing everyone access!).
+base::HeapArray<uint8_t> AddACEToAcl(
     ACL* old_acl,
     const std::vector<ExplicitAccessEntry>& entries) {
   std::vector<EXPLICIT_ACCESS> access_entries(entries.size());
@@ -71,7 +81,7 @@ std::unique_ptr<uint8_t[]> AddACEToAcl(
   if (error != ERROR_SUCCESS) {
     ::SetLastError(error);
     DPLOG(ERROR) << "Failed adding ACEs to ACL";
-    return nullptr;
+    return {};
   }
   auto new_acl_ptr = TakeLocalAlloc(new_acl);
   return AclToBuffer(new_acl_ptr.get());
@@ -120,8 +130,8 @@ std::optional<AccessControlList> AccessControlList::FromMandatoryLabel(
   // of the SID so remove it from total.
   DWORD length = sizeof(ACL) + sizeof(SYSTEM_MANDATORY_LABEL_ACE) +
                  ::GetLengthSid(sid.GetPSID()) - sizeof(DWORD);
-  std::unique_ptr<uint8_t[]> sacl_ptr = std::make_unique<uint8_t[]>(length);
-  PACL sacl = reinterpret_cast<PACL>(sacl_ptr.get());
+  auto sacl_ptr = base::HeapArray<uint8_t>::Uninit(length);
+  PACL sacl = reinterpret_cast<PACL>(sacl_ptr.data());
 
   if (!::InitializeAcl(sacl, length, ACL_REVISION)) {
     return std::nullopt;
@@ -148,9 +158,10 @@ bool AccessControlList::SetEntries(
   if (entries.empty())
     return true;
 
-  std::unique_ptr<uint8_t[]> acl = AddACEToAcl(get(), entries);
-  if (!acl)
+  base::HeapArray<uint8_t> acl = AddACEToAcl(get(), entries);
+  if (acl.empty()) {
     return false;
+  }
 
   acl_ = std::move(acl);
   return true;

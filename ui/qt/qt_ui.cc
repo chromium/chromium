@@ -110,8 +110,7 @@ int Qt5WeightToCssWeight(int weight) {
              lo.css_weight;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return kMapping[std::size(kMapping) - 1].css_weight;
+  NOTREACHED();
 }
 
 gfx::FontRenderParams::Hinting QtHintingToGfxHinting(
@@ -662,10 +661,8 @@ void QtUi::ScaleFactorMaybeChangedImpl() {
   }
   if (display_config() != new_config) {
     display_config() = std::move(new_config);
-    for (ui::DeviceScaleFactorObserver& observer :
-         device_scale_factor_observer_list()) {
-      observer.OnDeviceScaleFactorChanged();
-    }
+    device_scale_factor_observer_list().Notify(
+        &ui::DeviceScaleFactorObserver::OnDeviceScaleFactorChanged);
   }
 }
 

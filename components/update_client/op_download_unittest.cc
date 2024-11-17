@@ -37,7 +37,7 @@ namespace {
 class FakeDownloader : public CrxDownloader {
  public:
   FakeDownloader(const base::FilePath& dest,
-                 const base::expected<std::string, int>& result,
+                 base::expected<std::string, int> result,
                  const CrxDownloader::DownloadMetrics& metrics)
       : CrxDownloader(nullptr),
         dest_(dest),
@@ -66,7 +66,7 @@ class FakeDownloader : public CrxDownloader {
 class FakeFactory : public CrxDownloaderFactory {
  public:
   FakeFactory(const base::FilePath dest,
-              const base::expected<std::string, int>& result,
+              base::expected<std::string, int> result,
               const CrxDownloader::DownloadMetrics& metrics)
       : dest_(dest), result_(result), metrics_(metrics) {}
 
@@ -94,22 +94,15 @@ class OpDownloadTest : public testing::Test {
   // Overrides from testing::Test.
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
-  scoped_refptr<UpdateContext> MakeUpdateContext(
-      const base::expected<std::string, int>& result,
+  scoped_refptr<TestConfigurator> MakeConfigurator(
+      base::expected<std::string, int> result,
       const CrxDownloader::DownloadMetrics& metrics) {
     scoped_refptr<TestConfigurator> config =
         base::MakeRefCounted<TestConfigurator>(pref_.get());
     config->SetCrxDownloaderFactory(base::MakeRefCounted<FakeFactory>(
         temp_dir_.GetPath().AppendASCII("OpDownloadTest_File"), result,
         metrics));
-    return base::MakeRefCounted<UpdateContext>(
-        config,
-        base::MakeRefCounted<CrxCache>(CrxCache::Options(temp_dir_.GetPath())),
-        false, false, std::vector<std::string>(),
-        UpdateClient::CrxStateChangeCallback(),
-        UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
-        nullptr,
-        /*is_update_check_only=*/false);
+    return config;
   }
 
   CrxDownloader::ProgressCallback MakeProgressCallback() {
@@ -121,22 +114,24 @@ class OpDownloadTest : public testing::Test {
         [&](base::Value::Dict ping) { pings_.push_back(std::move(ping)); });
   }
 
-  base::OnceCallback<
-      void(const base::expected<base::FilePath, CategorizedError>&)>
+  base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
   MakeDoneCallback() {
     return base::BindLambdaForTesting(
-        [&](const base::expected<base::FilePath, CategorizedError>& outcome) {
+        [&](base::expected<base::FilePath, CategorizedError> outcome) {
           outcome_ = outcome;
           runloop_.Quit();
         });
   }
 
-  void Download(scoped_refptr<UpdateContext> context,
+  void Download(scoped_refptr<Configurator> config,
                 int64_t length,
                 const std::string& hash) {
-    DownloadOperation(context, {GURL("http://localhost:111")}, length, hash,
-                      MakePingCallback(), MakeProgressCallback(),
-                      MakeDoneCallback());
+    DownloadOperation(
+        config, base::BindRepeating([](const base::FilePath&) -> int64_t {
+          return 100'000'000;  // 100 MiB
+        }),
+        /*is_foreground=*/false, {GURL("http://localhost:111")}, length, hash,
+        MakePingCallback(), MakeProgressCallback(), MakeDoneCallback());
     runloop_.Run();
   }
 
@@ -153,7 +148,7 @@ class OpDownloadTest : public testing::Test {
 TEST_F(OpDownloadTest, DownloadSuccess) {
   const std::string data = "data";
   Download(
-      MakeUpdateContext(
+      MakeConfigurator(
           data, {.url = GURL("http://test"),
                  .downloader =
                      CrxDownloader::DownloadMetrics::Downloader::kUrlFetcher,
@@ -177,7 +172,7 @@ TEST_F(OpDownloadTest, DownloadSuccess) {
 
 TEST_F(OpDownloadTest, DownloadFailure) {
   const std::string data = "data";
-  Download(MakeUpdateContext(
+  Download(MakeConfigurator(
                base::unexpected(404),
                {.url = GURL("http://test"),
                 .downloader =

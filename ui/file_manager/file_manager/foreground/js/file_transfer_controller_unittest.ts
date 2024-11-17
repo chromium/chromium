@@ -122,8 +122,7 @@ export function setUp() {
   } as A11yAnnounce;
 
   // Setup FileTable.
-  const table =
-      document.querySelector('#detail-table')! as unknown as FileTable;
+  const table = document.querySelector<FileTable>('#detail-table')!;
   FileTable.decorate(
       table as unknown as HTMLElement, metadataModel, volumeManager, a11y,
       true /* fullPage */);
@@ -131,7 +130,7 @@ export function setUp() {
   table.list.dataModel = dataModel;
 
   // Setup FileGrid.
-  const grid = document.querySelector('#file-grid') as unknown as FileGrid;
+  const grid = document.querySelector<FileGrid>('#file-grid')!;
   FileGrid.decorate(grid, metadataModel, volumeManager, a11y);
 
   // Setup the ListContainer and its dependencies
@@ -143,11 +142,9 @@ export function setUp() {
   listContainer.setCurrentListType(ListType.DETAIL);
 
   // Setup DirectoryTree elements.
-  directoryTree =
-      document.querySelector('#directory-tree') as unknown as XfTree;
+  directoryTree = document.querySelector<XfTree>('#directory-tree')!;
 
-  const filesToast =
-      document.querySelector('files-toast') as unknown as FilesToast;
+  const filesToast = document.querySelector<FilesToast>('files-toast')!;
 
   // Initialize FileTransferController.
   fileTransferController = new TestFileTransferController(

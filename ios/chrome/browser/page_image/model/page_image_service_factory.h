@@ -9,7 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace page_image_service {
 class ImageService;
@@ -18,10 +19,6 @@ class ImageService;
 // Factory for the components ImageService service which fetches salient images.
 class PageImageServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static page_image_service::ImageService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static page_image_service::ImageService* GetForProfile(ProfileIOS* profile);
   static PageImageServiceFactory* GetInstance();
 

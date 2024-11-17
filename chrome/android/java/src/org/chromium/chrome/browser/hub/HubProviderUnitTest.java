@@ -41,7 +41,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.base.TestActivity;
 
@@ -63,6 +65,8 @@ public class HubProviderUnitTest {
             new ObservableSupplierImpl<>();
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
 
     @Mock private Callback<HubManager> mHubManagerCallback;
     @Mock private DisplayButtonData mReferenceButtonData;
@@ -75,6 +79,7 @@ public class HubProviderUnitTest {
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
+    @Mock private SearchActivityClient mSearchActivityClient;
 
     private Activity mActivity;
     private HubProvider mHubProvider;
@@ -115,7 +120,9 @@ public class HubProviderUnitTest {
                         mMenuOrKeyboardActionController,
                         () -> mSnackbarManager,
                         () -> mTabModelSelector,
-                        () -> mMenuButtonCoordinator);
+                        () -> mMenuButtonCoordinator,
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient);
     }
 
     @Test

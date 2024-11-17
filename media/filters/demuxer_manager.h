@@ -77,9 +77,10 @@ class MEDIA_EXPORT DemuxerManager {
 
     virtual bool IsSecurityOriginCryptographic() const = 0;
 
-#if BUILDFLAG(ENABLE_FFMPEG)
+#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
     virtual void AddMediaTrack(const media::MediaTrack&) = 0;
-#endif  // BUILDFLAG(ENABLE_FFMPEG)
+    virtual void RemoveMediaTrack(const media::MediaTrack&) = 0;
+#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
     virtual base::SequenceBound<HlsDataSourceProvider>
@@ -186,9 +187,14 @@ class MEDIA_EXPORT DemuxerManager {
   CreateHlsDemuxer();
 #endif
 
+#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+  void AddMediaTrack(const media::MediaTrack&);
+  void RemoveMediaTrack(const media::MediaTrack&);
+#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<media::Demuxer> CreateMediaUrlDemuxer(
-      bool hls_content, 
+      bool hls_content,
       base::flat_map<std::string, std::string> headers);
 #endif  // BUILDFLAG(IS_ANDROID)
 

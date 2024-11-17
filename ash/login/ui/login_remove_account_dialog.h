@@ -59,7 +59,6 @@ class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
   // views::View:
   void RequestFocus() override;
   bool HasFocus() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
 
   // views::FocusTraversable:

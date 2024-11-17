@@ -324,14 +324,24 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
   return enterButton;
 }
 
+// Returns the string to display as passkey creation date.
 - (NSString*)creationDate {
+  NSString* formattedDate =
+      [self formattedDateForPasskeyCreationDate:self.credential.creationDate];
   NSString* baseLocalizedString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_CREATION_DATE", @"00/00/00");
-  // TODO(crbug.com/330355124): Format the date properly.
-  NSString* date =
-      [NSString stringWithFormat:@"%lld", self.credential.creationTime];
-  return [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
-                                                        withString:date];
+
+  return
+      [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
+                                                     withString:formattedDate];
+  ;
+}
+
+// Formats and returns the passkey creation date to be displayed in the UI.
+- (NSString*)formattedDateForPasskeyCreationDate:(NSDate*)creationDate {
+  return [NSDateFormatter localizedStringFromDate:creationDate
+                                        dateStyle:NSDateFormatterMediumStyle
+                                        timeStyle:NSDateFormatterNoStyle];
 }
 
 // Returns the string to display as password.

@@ -30,6 +30,12 @@ struct FullNameTestCase {
   std::string family_name_output;
 };
 
+struct FullAlternativeNameTestCase {
+  std::u16string full_name_input;
+  std::u16string given_name_output;
+  std::u16string family_name_output;
+};
+
 class SetFullNameTest : public testing::TestWithParam<FullNameTestCase> {};
 
 TEST_P(SetFullNameTest, SetFullName) {
@@ -48,6 +54,36 @@ TEST_P(SetFullNameTest, SetFullName) {
   EXPECT_EQ(ASCIIToUTF16(test_case.full_name_input),
             name.GetInfo(NAME_FULL, "en-US"));
 }
+
+class SetFullAlternativeNameTest
+    : public testing::TestWithParam<FullAlternativeNameTestCase> {};
+
+TEST_P(SetFullAlternativeNameTest, SetFullAlternativeName) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSupportPhoneticNameForJP);
+
+  auto test_case = GetParam();
+  SCOPED_TRACE(test_case.full_name_input);
+
+  NameInfo name;
+  name.SetInfo(ALTERNATIVE_FULL_NAME, test_case.full_name_input, "ja");
+  EXPECT_TRUE(name.FinalizeAfterImport());
+  EXPECT_EQ(test_case.given_name_output,
+            name.GetInfo(ALTERNATIVE_GIVEN_NAME, "ja"));
+  EXPECT_EQ(test_case.family_name_output,
+            name.GetInfo(ALTERNATIVE_FAMILY_NAME, "ja"));
+  EXPECT_EQ(test_case.full_name_input,
+            name.GetInfo(ALTERNATIVE_FULL_NAME, "ja"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SetFullAlternativeName,
+    SetFullAlternativeNameTest,
+    testing::Values(FullAlternativeNameTestCase{u"", u"", u""},
+                    FullAlternativeNameTestCase{u"John Smith", u"John",
+                                                u"Smith"},
+                    FullAlternativeNameTestCase{u"やまもと あおい", u"あおい",
+                                                u"やまもと"}));
 
 TEST(NameInfoTest, GetMatchingTypes) {
   NameInfo name;
@@ -90,6 +126,55 @@ TEST(NameInfoTest, GetMatchingTypes) {
   name.GetMatchingTypesWithProfileSources(u"Mr.", "US", &matching_types,
                                           nullptr);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
+}
+
+TEST(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSupportPhoneticNameForJP);
+  NameInfo name;
+
+  test::FormGroupValues name_values = {
+      {.type = NAME_FULL,
+       .value = "山本 葵",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = ALTERNATIVE_FULL_NAME,
+       .value = "やまもと あおい",
+       .verification_status = VerificationStatus::kObserved}};
+  test::SetFormGroupValues(name, name_values);
+  name.FinalizeAfterImport();
+
+  test::FormGroupValues expectation = {
+      {.type = NAME_FIRST,
+       .value = "葵",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST,
+       .value = "山本",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_FIRST,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_SECOND,
+       .value = "山本",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_GIVEN_NAME,
+       .value = "あおい",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = ALTERNATIVE_FAMILY_NAME,
+       .value = "やまもと",
+       .verification_status = VerificationStatus::kParsed}};
+
+  test::VerifyFormGroupValues(name, expectation);
+
+  FieldTypeSet matching_types;
+  name.GetMatchingTypesWithProfileSources(u"あおい", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
 }
 
 INSTANTIATE_TEST_SUITE_P(

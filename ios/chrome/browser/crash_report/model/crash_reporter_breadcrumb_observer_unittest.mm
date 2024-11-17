@@ -34,8 +34,8 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
     // and registered.
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
 
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
-    chrome_browser_state_2_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
+    profile_2_ = TestProfileIOS::Builder().Build();
   }
 
   void TearDown() override {
@@ -74,16 +74,15 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_2_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestProfileIOS> profile_2_;
 };
 
 // Tests that breadcrumb events logged to a single BreadcrumbManagerKeyedService
 // are collected by the CrashReporterBreadcrumbObserver and attached to crash
 // reports.
 TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
-  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-      chrome_browser_state_.get())
+  BreadcrumbManagerKeyedServiceFactory::GetForProfile(profile_.get())
       ->AddEvent("Breadcrumb Event");
   const auto& events =
       breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
@@ -106,8 +105,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   [breadcrumbs appendString:@"12:01 Fake Breadcrumb Event/n"];
   ASSERT_GT([breadcrumbs length], breadcrumbs::kMaxDataLength);
 
-  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-      chrome_browser_state_.get())
+  BreadcrumbManagerKeyedServiceFactory::GetForProfile(profile_.get())
       ->AddEvent(base::SysNSStringToUTF8(breadcrumbs));
   EXPECT_EQ(BreadcrumbAnnotations().size(), breadcrumbs::kMaxDataLength);
 }
@@ -121,18 +119,16 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
 
   const std::string event = "Breadcrumb Event";
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
+      BreadcrumbManagerKeyedServiceFactory::GetForProfile(profile_.get());
   breadcrumb_service->AddEvent(event);
 
   breadcrumbs::BreadcrumbManagerKeyedService* otr_breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+      BreadcrumbManagerKeyedServiceFactory::GetForProfile(
+          profile_->GetOffTheRecordProfile());
   otr_breadcrumb_service->AddEvent(event);
 
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_2 =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          chrome_browser_state_2_.get());
+      BreadcrumbManagerKeyedServiceFactory::GetForProfile(profile_2_.get());
   breadcrumb_service_2->AddEvent(event);
 
   std::string breadcrumbs = BreadcrumbAnnotations();

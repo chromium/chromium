@@ -97,7 +97,7 @@ class SearchEngineTableViewControllerTest
                                         ConditionBlock condition);
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   base::HistogramTester histogram_tester_;
   raw_ptr<TemplateURLService> template_url_service_;  // weak
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;

@@ -120,6 +120,7 @@ class MockConnectCompleter {
  private:
   friend class MockTCPClientSocket;
   friend class MockSSLClientSocket;
+  friend class MockUDPClientSocket;
 
   // Sets a completion callback that is passed to Connect(). Called by
   // MockClientSocket implementations.

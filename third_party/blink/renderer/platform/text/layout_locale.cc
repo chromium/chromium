@@ -94,8 +94,7 @@ inline const char* LbValueFromStrictness(LineBreakStrictness strictness) {
     case LineBreakStrictness::kLoose:
       return "loose";
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -401,8 +400,7 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
       (!use_phrase || builder.SetKeywordValue("lw", "phrase"))) {
     return builder.ToAtomicString();
   }
-  NOTREACHED_IN_MIGRATION();
-  return string_;
+  NOTREACHED();
 }
 
 // static

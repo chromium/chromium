@@ -70,27 +70,29 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   const AtomicString& FastGetAttribute(const QualifiedName&) const;
   void setAttribute(const QualifiedName& attribute, const AtomicString& value);
 
-  void SetElementAttribute(const QualifiedName& name, Element* element);
-  Element* GetElementAttribute(const QualifiedName& name);
+  // These methods are used in the implementation of the DOM API setters/getters
+  // for Element/FrozenArray<Element> attributes.
+  void SetElementAttribute(const QualifiedName& attribute, Element* element);
+  Element* GetElementAttribute(const QualifiedName& attribute) const;
   void SetElementArrayAttribute(
-      const QualifiedName& name,
+      const QualifiedName& attribute,
       const HeapVector<Member<Element>>* given_elements);
   const FrozenArray<Element>* GetElementArrayAttribute(
-      const QualifiedName& name);
+      const QualifiedName& attribute) const;
 
-  const FrozenArray<Element>* ariaControlsElements();
+  const FrozenArray<Element>* ariaControlsElements() const;
   void setAriaControlsElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaDescribedByElements();
+  const FrozenArray<Element>* ariaDescribedByElements() const;
   void setAriaDescribedByElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaDetailsElements();
+  const FrozenArray<Element>* ariaDetailsElements() const;
   void setAriaDetailsElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaErrorMessageElements();
+  const FrozenArray<Element>* ariaErrorMessageElements() const;
   void setAriaErrorMessageElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaFlowToElements();
+  const FrozenArray<Element>* ariaFlowToElements() const;
   void setAriaFlowToElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaLabelledByElements();
+  const FrozenArray<Element>* ariaLabelledByElements() const;
   void setAriaLabelledByElements(HeapVector<Member<Element>>* given_elements);
-  const FrozenArray<Element>* ariaOwnsElements();
+  const FrozenArray<Element>* ariaOwnsElements() const;
   void setAriaOwnsElements(HeapVector<Member<Element>>* given_elements);
 
   bool HasAttribute(const QualifiedName& attribute) const;
@@ -100,7 +102,6 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   bool IsTargetFormAssociated() const;
 
   // ListedElement overrides:
-  bool IsFormControlElement() const override;
   bool IsElementInternals() const override;
   bool IsEnumeratable() const override;
   void AppendToFormData(FormData& form_data) override;

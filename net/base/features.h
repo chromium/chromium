@@ -197,19 +197,17 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCodeCacheByNetworkIsolationKey);
 // See https://github.com/MattMenke2/Explainer---Partition-Network-State.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
 
-// Enables sending TLS 1.3 Key Update messages on TLS 1.3 connections in order
-// to ensure that this corner of the spec is exercised. This is currently
-// disabled by default because we discovered incompatibilities with some
-// servers.
-NET_EXPORT BASE_DECLARE_FEATURE(kTLS13KeyUpdate);
-
 // Enables post-quantum key-agreements in TLS 1.3 connections. kUseMLKEM
-// controls whether ML-KEM or Kyber is used.
+// controls whether ML-KEM or Kyber (its predecessor) is used. The flag is named
+// after Kyber because it was originally introduced for Kyber.
 NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
 
 // Causes TLS 1.3 connections to use the ML-KEM standard instead of the Kyber
 // draft standard for post-quantum key-agreement. Post-quantum key-agreement
 // must be enabled (e.g. via kPostQuantumKyber) for this to have an effect.
+//
+// TODO(crbug.com/40910498): Remove this flag sometime after M131 has reached
+// stable without issues.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseMLKEM);
 
 // Changes the timeout after which unused sockets idle sockets are cleaned up.
@@ -230,12 +228,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShortLaxAllowUnsafeThreshold);
 // methods will not be allowed at all for top-level cross-site navigations.
 // This only has an effect if the cookie defaults to SameSite=Lax.
 NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
-
-// Turns off streaming media caching to disk when on battery power.
-NET_EXPORT BASE_DECLARE_FEATURE(kTurnOffStreamingMediaCachingOnBattery);
-
-// Turns off streaming media caching to disk always.
-NET_EXPORT BASE_DECLARE_FEATURE(kTurnOffStreamingMediaCachingAlways);
 
 // When enabled this feature will cause same-site calculations to take into
 // account the scheme of the site-for-cookies and the request/response url.
@@ -287,6 +279,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDocumentReporting);
 // site-for-cookies).
 // See spec changes in https://github.com/httpwg/http-extensions/pull/1348
 NET_EXPORT BASE_DECLARE_FEATURE(kCookieSameSiteConsidersRedirectChain);
+
+// When this feature is enabled, servers can include an
+// allow-same-site-none-cookies value that notifies the browser that same-site
+// SameSite=None cookies should be allowed in sandboxed contexts with 3PC
+// restrictions.
+NET_EXPORT BASE_DECLARE_FEATURE(kAllowSameSiteNoneCookiesInSandbox);
 
 // When this feature is enabled, the network service will wait until First-Party
 // Sets are initialized before issuing requests that use the HTTP cache or
@@ -484,6 +482,21 @@ NET_EXPORT extern const base::FeatureParam<int> kIpPrivacyDebugExperimentArm;
 // behavior by default.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo;
 
+// When enabled and an IP protection delegate can be be created in the
+// `NetworkContext`, a `IpProtectionProxyDelegate` will ALWAYS be created even
+// for `NetworkContexts` that do not participate in IP protection. This is
+// necessary for the WebView traffic experiment. By default, this feature param
+// is false and will not create a delegate when IP protection is not enabled.
+// Further, this also prevents the unnecessary instantiation of the
+// `IpProtectionCore` for a `NetworkContext` that does not participate in IP
+// protection.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyAlwaysCreateCore;
+
+// Enables IP protection incognito mode. The default value of this feature is
+// false which maintains existing behavior by default. When set to true, the
+// main profile Network Context won't proxy traffic using IP Protection.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).
@@ -525,10 +538,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kZstdContentEncoding);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault);
 
-// Enables the HTTP extensible priorities "priority" header.
-// RFC 9218
-NET_EXPORT BASE_DECLARE_FEATURE(kPriorityHeader);
-
 // Enables a more efficient implementation of SpdyHeadersToHttpResponse().
 NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder);
 
@@ -562,6 +571,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kReduceIPAddressChangeNotification);
 // This feature will enable the Device Bound Session Credentials protocol to let
 // the server assert sessions (and cookies) are bound to a specific device.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessions);
+// This feature will enable the browser to persist Device Bound Session data
+// across restarts. This feature is only valid if `kDeviceBoundSessions` is
+// enabled.
+NET_EXPORT BASE_DECLARE_FEATURE(kPersistDeviceBoundSessions);
 
 // Enables storing connection subtype in NetworkChangeNotifierDelegateAndroid to
 // save the cost of the JNI call for future access.
@@ -611,6 +624,27 @@ NET_EXPORT BASE_DECLARE_FEATURE(kKeepWhitespaceForDataUrls);
 // If enabled, unrecognized keys in a No-Vary-Search header will be ignored.
 // Otherwise, unrecognized keys are treated as if the header was invalid.
 NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys);
+
+// If enabled, then a cookie entry containing both encrypted and plaintext
+// values is considered invalid, and the entire eTLD group will be dropped.
+NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedAndPlaintextValuesAreInvalid);
+
+// Kill switch for Static CT Log (aka Tiled Log aka Sunlight)
+// enforcements in Certificate Transparency policy checks. If disabled, SCTs
+// from Static CT Logs will simply be ignored.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableStaticCTAPIEnforcement);
+
+// Finch experiment to select a disk cache backend.
+enum class DiskCacheBackend {
+  kSimple,
+  kBlockfile,
+};
+NET_EXPORT BASE_DECLARE_FEATURE(kDiskCacheBackendExperiment);
+NET_EXPORT extern const base::FeatureParam<DiskCacheBackend>
+    kDiskCacheBackendParam;
+
+// If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.
+NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreHSTSForLocalhost);
 
 }  // namespace net::features
 

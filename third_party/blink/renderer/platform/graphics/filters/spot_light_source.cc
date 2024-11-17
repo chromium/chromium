@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/spot_light_source.h"
 
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -65,8 +65,8 @@ bool SpotLightSource::SetLimitingConeAngle(float limiting_cone_angle) {
   return true;
 }
 
-WTF::TextStream& SpotLightSource::ExternalRepresentation(
-    WTF::TextStream& ts) const {
+StringBuilder& SpotLightSource::ExternalRepresentation(
+    StringBuilder& ts) const {
   ts << "[type=SPOT-LIGHT] ";
   ts << "[position=\"" << GetPosition().ToString() << "\"]";
   ts << "[pointsAt=\"" << PointsAt().ToString() << "\"]";

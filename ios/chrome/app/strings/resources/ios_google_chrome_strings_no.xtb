@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1066101356081285416">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Google, slik at Google kan levere denne funksjonen og gjøre Google Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Søk med Google Lens</translation>
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Åpne en ny fane i Chrome</translation>
 <translation id="1166460004393506534">Slett nettlesingsdata i Chrome</translation>
@@ -38,7 +39,9 @@ Du bør tenke på følgende:
 <translation id="1670609221633730681">Chrome-tips: Velg plassering for adressefeltet</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Legger til de angitte nettadressene i bokmerkene dine i Chrome.</translation>
+<translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1830634592642484976">Denne adressen er for øyeblikket lagret i Chrome. For å bruke den i alle Google-produkter må du lagre den i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
+<translation id="1891812034154776216">Skjul åpne inkognitofaner når du går ut av Chrome</translation>
 <translation id="1917964099031477364">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chrome og andre Google-apper på enheten.</translation>
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
 <translation id="1965935827552890526">Gjør deg ferdig med det du holdt på med i det andre åpne Chrome-vinduet.</translation>
@@ -70,6 +73,7 @@ Du bør tenke på følgende:
 <translation id="2689064829982324496">For å logge av Google-kontoen din på alle nettsteder, <ph name="BEGIN_LINK" />logg av Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
 <translation id="2703746758996815929">For å få nyttige Chrome-tips, slå på varsler i iOS-innstillingene.</translation>
+<translation id="2728851697704606655">Oversett med Google Lens</translation>
 <translation id="2736805085127235148">Chrome-varsler er nå slått av i enhetsinnstillingene.</translation>
 <translation id="2754428955276778271">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
 
@@ -247,6 +251,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7581063337314642333">Gå til fanerutenettet i Chrome</translation>
 <translation id="7599894504325210080">Utvidet autofyllvisning i Chrome</translation>
 <translation id="7642373780953416937">Motta varsler om eventuelle personvern- eller sikkerhetsproblemer som Chrome automatisk oppdager for deg.</translation>
+<translation id="7660356333829433649">Kom tilbake hit for å se flere nyttige tips og få mest mulig ut av Chrome.</translation>
 <translation id="7662994914830945754">For å se fanene dine overalt hvor du bruker Chrome, logg på og slå på synkronisering</translation>
 <translation id="7693590760643069321">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>
@@ -261,6 +266,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7948283758957877064">Dette er nytt i Chrome</translation>
 <translation id="8000174216052461231">Chrome-tips: Få den sterkeste sikkerheten i Chrome</translation>
 <translation id="8006014511203279255">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
+<translation id="8014670471808569312">Chrome tilbyr å lagre passordet ditt.</translation>
 <translation id="8018153653741938705">Hold deg trygg med Google Chrome</translation>
 <translation id="8022947259858476807">Bruk Chrome som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="804638182476029347">Tillat at Chrome-varsler mottar varsler om prisavslag</translation>
@@ -292,6 +298,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8558480467877843976">Nå kan du bruke Chrome når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="8603022514504485810">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Slå på «Lås inkognitofaner når du lukker Chrome».</translation>
+<translation id="8673726683583791503">Kjøp ting med Google Lens</translation>
 <translation id="8727043961453758442">Få mest mulig ut av Chrome</translation>
 <translation id="8765470054473112089">Når du skriver i adressefeltet eller søkefeltet, sender Chrome det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="8772179140489533211">Viser vinduer som ber deg logge på Chrome.</translation>

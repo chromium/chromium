@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1066101356081285416">A Chrome észleli a nyomon követési számokat az Ön által felkeresett webhelyeken, és csomagokkal kapcsolatos friss információkat jelenít meg az Új lap oldalon. A csomagkövetési számot és a webhely nevét elküldi a rendszer a Google-nak a funkció biztosítása, valamint a Google vásárlási funkcióinak minden felhasználó számára való továbbfejlesztése érdekében. Ezt bármikor módosíthatja a <ph name="BEGIN_LINK" />csomagkövetési beállítások<ph name="END_LINK" /> között.</translation>
+<translation id="1086486568852410168">Keresés a Google Lens segítségével</translation>
 <translation id="1143896152279775643">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
 <translation id="1146503048444965320">Új lap megnyitása a Chrome-ban</translation>
 <translation id="1166460004393506534">A Chrome-ban tárolt böngészési adatok törlése</translation>
@@ -38,7 +39,9 @@ Megjegyzések:
 <translation id="1670609221633730681">Chrome-tipp: Válassza ki a címsáv helyét</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">A bevitt URL-eket felveszi a könyvjelzők közé a Chrome-ban.</translation>
+<translation id="1799920918471566157">Chrome-tippek</translation>
 <translation id="1830634592642484976">A címet jelenleg a Chrome-ba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
+<translation id="1891812034154776216">Nyitott inkognitó lapok elrejtése a Chrome elhagyásakor</translation>
 <translation id="1917964099031477364">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chrome-ból és az eszközön lévő többi Google-alkalmazásból.</translation>
 <translation id="1919130412786645364">Chrome-bejelentkezés engedélyezése</translation>
 <translation id="1965935827552890526">A másik megnyitott Chrome-ablakban fejezze be, amit csinál.</translation>
@@ -70,6 +73,7 @@ Megjegyzések:
 <translation id="2689064829982324496">Ha az összes webhelyen ki szeretne jelentkezni Google-fiókjából, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">A Chrome nem tudott frissítéseket keresni. Próbálja újra később.</translation>
 <translation id="2703746758996815929">Ha hasznos tippeket szeretne kapni a Chrome-ra vonatkozóan, kapcsolja be az értesítéseket az iOS beállításai között</translation>
+<translation id="2728851697704606655">Fordítás a Google Lens segítségével</translation>
 <translation id="2736805085127235148">A Chrome-értesítések jelenleg ki vannak kapcsolva az eszköz beállításaiban.</translation>
 <translation id="2754428955276778271">Az Ön bizonyos Chrome-adatait még nem mentette a rendszer a Google-fiókjába.
 
@@ -247,6 +251,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7581063337314642333">A laprács megnyitása a Chrome-ban</translation>
 <translation id="7599894504325210080">A Chrome automatikus kitöltés funkciójának kibontott nézete</translation>
 <translation id="7642373780953416937">Értesítéseket kaphat a Chrome által automatikusan észlelt adatvédelmi és biztonsági problémákról.</translation>
+<translation id="7660356333829433649">Térjen vissza ide, ha további hasznos tippeket szeretne kapni arról, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
 <translation id="7662994914830945754">Jelentkezzen be, és kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
 <translation id="7693590760643069321">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="7698568245838009292">A Chrome hozzá szeretne férni a kamerához</translation>
@@ -261,6 +266,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="7948283758957877064">A Chrome újdonságai</translation>
 <translation id="8000174216052461231">Chrome-tipp: A Chrome legerősebb védelmét élvezheti</translation>
 <translation id="8006014511203279255">Bármikor használhatja a Chrome-ot, amikor üzenetekben vagy más alkalmazásokban linkekre kattint.</translation>
+<translation id="8014670471808569312">A Chrome felkínálja a jelszó mentését.</translation>
 <translation id="8018153653741938705">Gondoskodjon biztonságáról a Google Chrome-mal</translation>
 <translation id="8022947259858476807">A Chrome-ot alapértelmezett böngészőként használva linkek nyithatók meg, modulokban lehet keresni, és jelszavak tölthetők be automatikusan az egyéb alkalmazásokban</translation>
 <translation id="804638182476029347">Annak engedélyezése a Chrome-értesítések számára, hogy értesítést küldjenek az árcsökkenésekről</translation>
@@ -292,6 +298,7 @@ Adatai titkosítva lettek összetett jelszavával a következő időpontban: <ph
 <translation id="8558480467877843976">Mostantól mindig a Chrome-ot használhatja, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint (illetve böngészik köztük).</translation>
 <translation id="8603022514504485810">A Google Jelszókezelő nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
+<translation id="8673726683583791503">Vásárlás a Google Lens segítségével</translation>
 <translation id="8727043961453758442">Hozza ki a legtöbbet a Chrome-ból</translation>
 <translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>

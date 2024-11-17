@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../account_manager_shared.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {getImage} from '//resources/js/icon.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

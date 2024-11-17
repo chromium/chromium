@@ -435,7 +435,7 @@ void KeywordProvider::Stop(bool clear_cached_results,
     extensions_delegate_->MaybeEndExtensionKeywordMode();
 }
 
-KeywordProvider::~KeywordProvider() {}
+KeywordProvider::~KeywordProvider() = default;
 
 // static
 bool KeywordProvider::ExtractKeywordFromInput(
@@ -617,7 +617,7 @@ std::u16string KeywordProvider::CleanUserInputKeyword(
   constexpr std::u16string_view kWww(u"www.");
   result = base::StartsWith(result, kWww, base::CompareCase::SENSITIVE)
                ? result.substr(kWww.length())
-               : result;
+               : std::move(result);
   if (template_url_service->GetTemplateURLForKeyword(result) != nullptr)
     return result;
 

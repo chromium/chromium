@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import androidx.annotation.IntDef;
+
 import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
 import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
@@ -27,28 +29,35 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content.browser.sms.Wrappers.WebOTPServiceContext;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
- * Encapsulates logic to retrieve OTP code via SMS Browser Code API.
- * See also:
+ * Encapsulates logic to retrieve OTP code via SMS Browser Code API. See also:
  * https://developers.google.com/android/reference/com/google/android/gms/auth/api/phone/SmsCodeBrowserClient
  *
- * TODO(majidvp): rename legacy Verification name to more appropriate name (
- *  e.g., BrowserCode.
+ * <p>TODO(majidvp): rename legacy Verification name to more appropriate name ( e.g., BrowserCode.
  */
 public class SmsVerificationReceiver extends BroadcastReceiver {
-    private static final int CODE_PERMISSION_REQUEST = 1;
     private static final String TAG = "SmsVerification";
     private static final boolean DEBUG = false;
     private final SmsProviderGms mProvider;
     private boolean mDestroyed;
     private Wrappers.WebOTPServiceContext mContext;
 
-    private enum BackendAvailability {
-        AVAILABLE,
-        API_NOT_CONNECTED,
-        PLATFORM_NOT_SUPPORTED,
-        API_NOT_AVAILABLE,
-        NUM_ENTRIES
+    @IntDef({
+        BackendAvailability.AVAILABLE,
+        BackendAvailability.API_NOT_CONNECTED,
+        BackendAvailability.PLATFORM_NOT_SUPPORTED,
+        BackendAvailability.API_NOT_AVAILABLE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BackendAvailability {
+        int AVAILABLE = 0;
+        int API_NOT_CONNECTED = 1;
+        int PLATFORM_NOT_SUPPORTED = 2;
+        int API_NOT_AVAILABLE = 3;
+        int NUM_ENTRIES = 4;
     }
 
     public SmsVerificationReceiver(SmsProviderGms provider, WebOTPServiceContext context) {
@@ -210,12 +219,10 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         if (DEBUG) Log.d(TAG, "Installed task");
     }
 
-    public void reportBackendAvailability(BackendAvailability availability) {
-        if (DEBUG) Log.d(TAG, "Backend availability: %d", availability.ordinal());
+    public void reportBackendAvailability(@BackendAvailability int availability) {
+        if (DEBUG) Log.d(TAG, "Backend availability: %d", availability);
         RecordHistogram.recordEnumeratedHistogram(
-                "Blink.Sms.BackendAvailability",
-                availability.ordinal(),
-                BackendAvailability.NUM_ENTRIES.ordinal());
+                "Blink.Sms.BackendAvailability", availability, BackendAvailability.NUM_ENTRIES);
     }
 
     // Handles the case when the backend is available but user has previously denied to grant the

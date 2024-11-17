@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-var request;
+let request;
 
 const bobPayMethod = Object.freeze({
   supportedMethods: 'https://bobpay.test',
@@ -37,7 +37,7 @@ function ccBuy() {
  */
  function buyWithMethods(methods) {
   try {
-    var details = {
+    const details = {
       total: {
         label: 'Total',
         amount: {

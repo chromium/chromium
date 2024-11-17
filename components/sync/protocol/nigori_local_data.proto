@@ -83,7 +83,7 @@ message NigoriModel {
   optional int64 custom_passphrase_time = 6;
 
   // Params used for deriving keys from custom passphrase. Should be set iff
-  // |passphrase_type| is CUSTOM_PASSPHRASE.
+  // `passphrase_type` is CUSTOM_PASSPHRASE.
   optional CustomPassphraseKeyDerivationParams
       custom_passphrase_key_derivation_params = 7;
 

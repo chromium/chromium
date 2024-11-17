@@ -31,17 +31,19 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.DoubleConsumer;
@@ -53,7 +55,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull Activity activity,
             @NonNull ViewGroup parentView,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull IncognitoStateProvider incognitoStateProvider,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @NonNull BottomSheetController bottomSheetController,
@@ -62,12 +63,12 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @NonNull ModalDialogManager modalDialogManager) {
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull ThemeColorProvider themeColorProvider) {
         return new TabGroupUiCoordinator(
                 activity,
                 parentView,
                 browserControlsStateProvider,
-                incognitoStateProvider,
                 scrimCoordinator,
                 omniboxFocusStateSupplier,
                 bottomSheetController,
@@ -76,7 +77,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabContentManager,
                 tabCreatorManager,
                 layoutStateProviderSupplier,
-                modalDialogManager);
+                modalDialogManager,
+                themeColorProvider);
     }
 
     @Override
@@ -98,7 +100,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull BackPressManager backPressManager) {
+            @NonNull BackPressManager backPressManager,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
         TabSwitcherPaneCoordinatorFactory factory =
@@ -116,7 +120,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         modalDialogManager,
                         bottomSheetController,
                         dataSharingTabManager,
-                        backPressManager);
+                        backPressManager,
+                        desktopWindowStateManager);
         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
         Handler handler = new Handler();
         profileProviderSupplier.onAvailable(
@@ -126,32 +131,40 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
 
         TabSwitcherPaneBase pane;
         if (isIncognito) {
-            Supplier<TabModelFilter> incongitorTabModelFilterSupplier =
-                    () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(true);
+            Supplier<TabGroupModelFilter> incongitorTabGroupModelFilterSupplier =
+                    () ->
+                            tabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(true);
             pane =
                     new IncognitoTabSwitcherPane(
                             activity,
                             profileProviderSupplier,
                             factory,
-                            incongitorTabModelFilterSupplier,
+                            incongitorTabGroupModelFilterSupplier,
                             newTabButtonOnClickListener,
                             incognitoReauthControllerSupplier,
                             onToolbarAlphaChange,
-                            userEducationHelper);
+                            userEducationHelper,
+                            edgeToEdgeSupplier);
         } else {
-            Supplier<TabModelFilter> tabModelFilterSupplier =
-                    () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
+                    () ->
+                            tabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(false);
             pane =
                     new TabSwitcherPane(
                             activity,
                             ContextUtils.getAppSharedPreferences(),
                             profileProviderSupplier,
                             factory,
-                            tabModelFilterSupplier,
+                            tabGroupModelFilterSupplier,
                             newTabButtonOnClickListener,
                             new TabSwitcherPaneDrawableCoordinator(activity, tabModelSelector),
                             onToolbarAlphaChange,
-                            userEducationHelper);
+                            userEducationHelper,
+                            edgeToEdgeSupplier);
         }
         return Pair.create(pane, pane);
     }
@@ -164,20 +177,22 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
-        LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier =
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+        LazyOneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () ->
                                 tabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getTabModelFilter(false));
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(false));
         return new TabGroupsPane(
                 context,
-                tabModelFilterSupplier,
+                tabGroupModelFilterSupplier,
                 onToolbarAlphaChange,
                 profileProviderSupplier,
                 () -> hubManagerSupplier.get().getPaneManager(),
                 tabGroupUiActionHandlerSupplier,
-                modalDialogManagerSupplier);
+                modalDialogManagerSupplier,
+                edgeToEdgeSupplier);
     }
 }

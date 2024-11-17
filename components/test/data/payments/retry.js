@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-var gPaymentResponse = null;
-var gRetryPromise = null;
+let gPaymentResponse = null;
+let gRetryPromise = null;
 
 /**
  * Launches the PaymentRequest UI
@@ -29,7 +29,7 @@ function buyWithUrlMethod() {
  * @param {string} method The payment method to request
  */
 function buyWithMethod(method) {
-  var options = {
+  const options = {
     requestPayerEmail: true,
     requestPayerName: true,
     requestPayerPhone: true,
@@ -38,7 +38,7 @@ function buyWithMethod(method) {
   getPaymentResponseWithMethod(options, method)
       .then(function(response) {
         gPaymentResponse = response;
-        var eventPromise = new Promise(function(resolve) {
+        const eventPromise = new Promise(function(resolve) {
           gPaymentResponse.addEventListener('payerdetailchange', resolve);
         });
         eventPromise.then(function() {

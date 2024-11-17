@@ -3,18 +3,25 @@
 <translationbundle lang="en-GB">
 <translation id="1444443021901415601">Chrome notes topics of interest based on your recent browsing history</translation>
 <translation id="2252052615723281030">When you're signed in to Chrome, this setting helps to keep your IP address private. If Chrome suspects that a site may be tracking you, some of your traffic may be sent through privacy servers.</translation>
+<translation id="235789365079050412">Google Privacy Policy</translation>
 <translation id="2793385791865768072">Chromium notes topics of interest based on your recent browsing history</translation>
+<translation id="2979365474350987274">Third-party cookies are limited</translation>
 <translation id="33479675708419823">When you're signed in to Chrome, this setting helps to keep your IP address private. If Chrome suspects that a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN" />how IP Protection works<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Learn more about hiding your IP address</translation>
+<translation id="385051799172605136">Back</translation>
 <translation id="4041687306270459969">Ad topics that are more than four weeks old are deleted automatically Topics include things like sports, apparel and more</translation>
 <translation id="4177501066905053472">Ad topics</translation>
 <translation id="4301151630239508244">Ad topics are just one of many things that a site can use to personalise ads. Even without ad topics, sites can still show you ads, but they may be less personalised. Learn more about <ph name="BEGIN_LINK_1" />managing your ads privacy<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Learn more about how Google protects your data in our <ph name="BEGIN_LINK" />Privacy Policy<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">You can see your ad topics in Chromium settings and block the ones that you don't want to be shared with sites</translation>
 <translation id="4598427486995631491">Hide your IP address</translation>
 <translation id="4692439979815346597">You can see your ad topics in Chrome settings and block the ones that you don't want to be shared with sites</translation>
 <translation id="5413586988657235240">Sites that you visit can ask Chromium for topics to show you relevant ads while protecting your browsing history and identity</translation>
+<translation id="6053735090575989697">Learn more about how Google protects your data in our Privacy Policy.</translation>
 <translation id="6186536480878693792">Sites that you visit can ask Chrome for topics to show you relevant ads while protecting your browsing history and identity</translation>
+<translation id="6195163219142236913">Third-party cookies limited</translation>
 <translation id="6371812158043974664">When you're signed in to Chromium, this setting helps to keep your IP address private. If Chromium suspects that a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN" />how IP Protection works<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Learn more about how Google protects your data in our <ph name="BEGIN_LINK1" />Privacy Policy<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Learn <ph name="BEGIN_LINK" />how IP protection works<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Review your ad topics setting</translation>
 </translationbundle>

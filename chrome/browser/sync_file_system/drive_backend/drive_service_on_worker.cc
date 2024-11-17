@@ -5,7 +5,9 @@
 #include "chrome/browser/sync_file_system/drive_backend/drive_service_on_worker.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -163,9 +165,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetRemainingChangeList(
 }
 
 std::string DriveServiceOnWorker::GetRootResourceId() const {
-  NOTREACHED_IN_MIGRATION();
-  // This method is expected to be called only on unit tests.
-  return "root";
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetRemainingTeamDriveList(
@@ -263,71 +263,64 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::SearchByTitle(
 }
 
 bool DriveServiceOnWorker::HasRefreshToken() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void DriveServiceOnWorker::Initialize(const CoreAccountId& account_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DriveServiceOnWorker::AddObserver(drive::DriveServiceObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DriveServiceOnWorker::RemoveObserver(
     drive::DriveServiceObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool DriveServiceOnWorker::CanSendRequest() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool DriveServiceOnWorker::HasAccessToken() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void DriveServiceOnWorker::RequestAccessToken(
     google_apis::AuthStatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DriveServiceOnWorker::ClearAccessToken() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DriveServiceOnWorker::ClearRefreshToken() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetAllTeamDriveList(
     google_apis::TeamDriveListCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetAllFileList(
     const std::string& team_drive_id,
     google_apis::FileListCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::Search(
     const std::string& search_query,
     google_apis::FileListCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::TrashResource(
     const std::string& resource_id,
     google_apis::EntryActionCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::CopyResource(
@@ -336,8 +329,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::CopyResource(
     const std::string& new_title,
     const base::Time& last_modified,
     google_apis::FileResourceCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::UpdateResource(
@@ -348,16 +340,14 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::UpdateResource(
     const base::Time& last_viewed_by_me,
     const google_apis::drive::Properties& properties,
     google_apis::FileResourceCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::AddResourceToDirectory(
     const std::string& parent_resource_id,
     const std::string& resource_id,
     google_apis::EntryActionCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::InitiateUploadNewFile(
@@ -367,8 +357,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::InitiateUploadNewFile(
     const std::string& title,
     const drive::UploadNewFileOptions& options,
     google_apis::InitiateUploadCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce
@@ -378,8 +367,7 @@ DriveServiceOnWorker::InitiateUploadExistingFile(
     const std::string& resource_id,
     const drive::UploadExistingFileOptions& options,
     google_apis::InitiateUploadCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::ResumeUpload(
@@ -391,20 +379,19 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::ResumeUpload(
     const base::FilePath& local_file_path,
     google_apis::drive::UploadRangeCallback callback,
     google_apis::ProgressCallback progress_callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::GetUploadStatus(
     const GURL& upload_url,
     int64_t content_length,
     google_apis::drive::UploadRangeCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::MultipartUploadNewFile(
     const std::string& content_type,
+    std::optional<std::string_view> converted_mime_type,
     int64_t content_length,
     const std::string& parent_resource_id,
     const std::string& title,
@@ -412,8 +399,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::MultipartUploadNewFile(
     const drive::UploadNewFileOptions& options,
     google_apis::FileResourceCallback callback,
     google_apis::ProgressCallback progress_callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce
@@ -425,14 +411,12 @@ DriveServiceOnWorker::MultipartUploadExistingFile(
     const drive::UploadExistingFileOptions& options,
     google_apis::FileResourceCallback callback,
     google_apis::ProgressCallback progress_callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 std::unique_ptr<drive::BatchRequestConfiguratorInterface>
 DriveServiceOnWorker::StartBatchRequest() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::AddPermission(
@@ -440,8 +424,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::AddPermission(
     const std::string& email,
     google_apis::drive::PermissionRole role,
     google_apis::EntryActionCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 }  // namespace drive_backend

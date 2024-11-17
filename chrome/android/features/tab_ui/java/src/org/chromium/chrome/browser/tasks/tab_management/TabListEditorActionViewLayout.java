@@ -38,7 +38,6 @@ public class TabListEditorActionViewLayout extends LinearLayout {
 
     private LinearLayout.LayoutParams mActionViewParams;
 
-    private Context mContext;
     private ActionViewLayoutDelegate mDelegate;
     private boolean mHasMenuOnlyItems;
 
@@ -59,7 +58,6 @@ public class TabListEditorActionViewLayout extends LinearLayout {
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         0.0f);
         mActionViewParams.gravity = Gravity.CENTER_VERTICAL;
-        mContext = context;
     }
 
     @Override

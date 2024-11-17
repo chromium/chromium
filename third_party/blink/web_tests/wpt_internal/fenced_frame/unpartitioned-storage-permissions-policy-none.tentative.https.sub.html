@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<title>Test fenced-unpartitioned-storage-read permissions policy with an empty allowlist</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/utils.js"></script>
+<script src="resources/unpartitioned_storage_permissions_policy_helper.js"></script>
+
+<body>
+<script>
+
+promise_setup(async () => {
+  await configureSharedStorageDataForTesting();
+});
+
+// Tests that only rely on the top-level page's Permissions-Policy header (which
+// is set in this page's corresponding `.headers` file).
+promise_test(async (t) => {
+  let get_result = await runUnpartitionedStoragePermissionsPolicyTestCase();
+  assert_equals(get_result, 'Permission denied');
+}, 'Test that an empty top-level allowlist prevents sharedStorage.get() from ' +
+   'succeeding in a same-origin fenced frame');
+
+
+promise_test(async (t) => {
+  let get_result = await runUnpartitionedStoragePermissionsPolicyTestCase(
+      get_host_info().HTTPS_REMOTE_ORIGIN);
+  assert_equals(get_result, 'Permission denied');
+}, 'Test that an empty top-level allowlist prevents sharedStorage.get() from ' +
+   'succeeding in a cross-origin fenced frame');
+
+
+// Test that the top-level empty allowlist can't be overwritten by the fenced
+// frame document's own header and `allow` attribute settings.
+promise_test(async (t) => {
+  let get_result = await runUnpartitionedStoragePermissionsPolicyTestCase(
+      get_host_info().HTTPS_REMOTE_ORIGIN,
+      'header', '("' + get_host_info().HTTPS_REMOTE_ORIGIN + '")');
+  assert_equals(get_result, 'Permission denied');
+}, 'Test that an allowlist set via header cannot override an inherited empty ' +
+   'allowlist');
+
+
+promise_test(async (t) => {
+  let get_result = await runUnpartitionedStoragePermissionsPolicyTestCase(
+      get_host_info().HTTPS_REMOTE_ORIGIN,
+     'allow', get_host_info().HTTPS_REMOTE_ORIGIN);
+  assert_equals(get_result, 'Permission denied');
+}, 'Test that an allowlist set via allow attribute cannot override an ' +
+   'inherited empty allowlist');
+
+</script>
+</body>

@@ -43,6 +43,12 @@ struct VectorIcon;
 struct AccountInfo;
 class Profile;
 
+enum class EnclaveEnabledStatus {
+  kDisabled,
+  kEnabled,
+  kEnabledAndReauthNeeded,
+};
+
 //                ┌───────┐
 //                │ View  │
 //                └───────┘ Events are
@@ -83,14 +89,11 @@ class Profile;
   /* powered. Valid action when at step: kBlePowerOnManual, */                \
   /* kBlePowerOnAutomatic. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(ContinueWithFlowAfterBleAdapterPowered)       \
-  /* Called when the enclave authenticator is available for a request. */     \
-  AUTHENTICATOR_REQUEST_EVENT_0(EnclaveEnabled)                               \
-  /* Called when the enclave authenticator needs a reauth before it is */     \
-  /* available for a request. */                                              \
-  AUTHENTICATOR_REQUEST_EVENT_0(EnclaveNeedsReauth)                           \
-  /* Called when the ChromeOS authenticator is ready to handle a pending */   \
+  /* Called when the enclave authenticator is available for a request or */   \
+  /* the enclave authenticator needs a reauth before it is available for a */ \
   /* request. */                                                              \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnChromeOSGPMRequestReady)                    \
+  AUTHENTICATOR_REQUEST_EVENT_1(EnclaveEnabledStatusChanged,                  \
+                                EnclaveEnabledStatus)                         \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBioEnrollmentDone)                          \
   /* Called when the power state of the Bluetooth adapter has changed. */     \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBluetoothPoweredStateChanged)               \
@@ -112,8 +115,7 @@ class Profile;
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMConfirmOffTheRecordCreate)               \
   /* Called when the user clicks "Forgot PIN" during UV. */                   \
   AUTHENTICATOR_REQUEST_EVENT_0(OnForgotGPMPinPressed)                        \
-  /* Called when the user clicks “Manage Devices” to manage their */      \
-  /* phones. */                                                               \
+  /* Called when the user clicks Manage Devices to manage their phones. */    \
   AUTHENTICATOR_REQUEST_EVENT_0(OnManageDevicesClicked)                       \
   /* OnOffTheRecordInterstitialAccepted is called when the user accepts */    \
   /* the interstitial that warns that platform/caBLE authenticators may */    \
@@ -145,8 +147,6 @@ class Profile;
   /* Turns on the BLE adapter automatically. Valid action when at step: */    \
   /* kBlePowerOnAutomatic. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(PowerOnBleAdapter)                            \
-  /* Show guidance about caBLE USB fallback. */                               \
-  AUTHENTICATOR_REQUEST_EVENT_0(ShowCableUsbFallback)                         \
   /* Called when loading the enclave times out. */                            \
   AUTHENTICATOR_REQUEST_EVENT_0(OnLoadingEnclaveTimeout)                      \
   /* Restarts the UX flow. */                                                 \
@@ -196,9 +196,10 @@ struct AuthenticatorRequestDialogModel
   enum class Step {
     // The UX flow has not started yet, the dialog should still be hidden.
     kNotStarted,
-    // Conditionally mediated UI. No dialog is shown, instead credentials are
-    // offered to the user on the password autofill prompt.
-    kConditionalMediation,
+    // Passkey autofill (i.e. WebAuthn get() with conditional mediation). No
+    // dialog is shown, instead credentials are offered to the user on the
+    // password autofill prompt.
+    kPasskeyAutofill,
     kMechanismSelection,
     // The request errored out before completing. Error will only be sent
     // after user interaction.
@@ -229,7 +230,6 @@ struct AuthenticatorRequestDialogModel
     // Phone as a security key.
     kPhoneConfirmationSheet,
     kCableActivate,
-    kAndroidAccessory,
     kCableV2QRCode,
     kCableV2Connecting,
     kCableV2Connected,
@@ -459,9 +459,7 @@ struct AuthenticatorRequestDialogModel
 
   // cable_ui_type contains the type of UI to display for a caBLE transaction.
   std::optional<CableUIType> cable_ui_type;
-  // cable_should_suggest_usb is true if the caBLE "v1" UI was triggered by
-  // a caBLEv2 server-linked request and attaching a USB cable is an option.
-  bool cable_should_suggest_usb = false;
+
   std::optional<std::string> cable_qr_string;
   // The name of the paired phone that was passed to `ContactPhone()`. It is
   // shown on the UI sheet that prompts the user to check their phone for

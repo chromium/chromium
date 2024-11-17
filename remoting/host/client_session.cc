@@ -158,7 +158,7 @@ void ClientSession::NotifyClientResolution(
   webrtc::DesktopVector dpi_vector{kDefaultDpi, kDefaultDpi};
 #if BUILDFLAG(IS_WIN)
   // Matching the client DPI is only supported on Windows when curtained.
-  if (desktop_environment_options_.enable_curtaining()) {
+  if (effective_policies_.curtain_required.value_or(false)) {
     dpi_vector.set(resolution.x_dpi(), resolution.y_dpi());
   }
 #elif BUILDFLAG(IS_LINUX)
@@ -526,6 +526,16 @@ void ClientSession::OnConnectionAuthenticated(
              << effective_policies_;
   }
 
+  std::optional<ErrorCode> validation_result =
+      event_handler_->OnSessionPoliciesReceived(effective_policies_);
+
+  if (validation_result.has_value()) {
+    LOG(ERROR) << "Session policies disallowed by validator. Error code: "
+               << static_cast<int>(*validation_result);
+    DisconnectSession(*validation_result);
+    return;
+  }
+
   base::TimeDelta max_duration =
       effective_policies_.maximum_session_duration.value_or(base::TimeDelta());
   if (max_duration.is_positive()) {
@@ -547,6 +557,9 @@ void ClientSession::OnConnectionAuthenticated(
 
   DesktopEnvironmentOptions options = desktop_environment_options_;
   options.ApplySessionOptions(session_options);
+  if (effective_policies_.curtain_required.has_value()) {
+    options.set_enable_curtaining(*effective_policies_.curtain_required);
+  }
   // Create the desktop environment. Drop the connection if it could not be
   // created for any reason (for instance the curtain could not initialize).
   desktop_environment_ = desktop_environment_factory_->Create(
@@ -1013,9 +1026,7 @@ void ClientSession::OnLocalSessionPoliciesChanged(
     const SessionPolicies& new_policies) {
   DCHECK(local_session_policy_update_subscription_);
   HOST_LOG << "Effective policies have changed. Terminating session.";
-  // TODO: crbug.com/359977809 - create a new error code for session policy
-  // changed.
-  DisconnectSession(ErrorCode::HOST_CONFIGURATION_ERROR);
+  DisconnectSession(ErrorCode::SESSION_POLICIES_CHANGED);
 }
 
 void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,

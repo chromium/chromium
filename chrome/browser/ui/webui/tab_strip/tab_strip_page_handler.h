@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_before_unload_tracker.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/thumbnail_tracker.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -49,7 +50,7 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override;
   void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
-                              tabs::TabModel* tab,
+                              tabs::TabInterface* tab,
                               int index) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -87,6 +88,10 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
                            RemoveTabIfInvalidContextMenu);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, SwitchTab);
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, UngroupTab);
+  FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest,
+                           NoopMoveGroupAcrossWindowsBreaksContiguity);
+  FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest,
+                           MoveTabAcrossWindowsInBetweenGroup);
 
   void OnLongPressTimer();
   tab_strip::mojom::TabPtr GetTabData(content::WebContents* contents,
@@ -135,6 +140,13 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
                                  uint32_t duration_ms) override;
   void ActivateTab(int32_t tab_id) override;
 
+  // Similar implementations present in
+  // chrome/browser/ui/views/tabs/tab_drag_controller.h. If logic  is updated in
+  // one, the other should also be updated.
+  void MaybePauseTrackingSavedTabGroup(Browser* browser,
+                                       const tab_groups::TabGroupId& group_id);
+  void MaybeResumeTrackingSavedTabGroup(Browser* browser);
+
   mojo::Receiver<tab_strip::mojom::PageHandler> receiver_;
   mojo::Remote<tab_strip::mojom::Page> page_;
 
@@ -144,6 +156,11 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   const raw_ptr<TabStripUIEmbedder> embedder_;
   ThumbnailTracker thumbnail_tracker_;
   tab_strip_ui::TabBeforeUnloadTracker tab_before_unload_tracker_;
+
+  // Used to pause observation of all open SavedTabGroups when a drag is
+  // occurring. This object is assigned when MaybePauseTrackingSavedTabGroup()
+  // is called and reset when MaybeResumeTrackingSavedTabGroup() is called.
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser_;
 
   // Tracks whether we are currently handling a gesture scroll event sequence.
   bool handling_gesture_scroll_ = false;

@@ -116,12 +116,12 @@ std::optional<base::Value> GetSettingsValue(proto::SettingsValue value,
 
 }  // namespace
 
-FileAction::FileAction(std::string launch_file_path)
+LaunchFile::LaunchFile(std::string launch_file_path)
     : launch_file_path(launch_file_path) {}
-FileAction::~FileAction() = default;
+LaunchFile::~LaunchFile() = default;
 
-FileAction::FileAction(const FileAction&) = default;
-FileAction& FileAction::operator=(const FileAction&) = default;
+LaunchFile::LaunchFile(const LaunchFile&) = default;
+LaunchFile& LaunchFile::operator=(const LaunchFile&) = default;
 
 ClickAction::ClickAction(int x_pos, int y_pos) : x_pos(x_pos), y_pos(y_pos) {}
 ClickAction::~ClickAction() = default;
@@ -137,8 +137,8 @@ Action::Action(bool all_done)
 Action::Action(ClickAction click)
     : click(std::make_optional(click)), type(ActionType::kClick) {}
 Action::Action(ActionType type) : type(type) {}
-Action::Action(FileAction file_action, ActionType type)
-    : file_action(std::make_optional(file_action)), type(type) {}
+Action::Action(LaunchFile launch_file, ActionType type)
+    : launch_file(std::make_optional(launch_file)), type(type) {}
 Action::~Action() = default;
 
 Action::Action(const Action&) = default;

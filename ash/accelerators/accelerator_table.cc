@@ -178,6 +178,16 @@ const AcceleratorAction kPreferredActions[] = {
     AcceleratorAction::kCycleForwardMru,              // Alt+Tab
     AcceleratorAction::kCycleSameAppWindowsBackward,  // Shift+Alt+Backtick
     AcceleratorAction::kCycleSameAppWindowsForward,   // Alt+Backtick
+    // Pass through debug shortcuts so that these works on Fullscreen Chrome
+    // Remote Desktop.
+    AcceleratorAction::kDebugPrintLayerHierarchy,
+    AcceleratorAction::kDebugPrintViewHierarchy,
+    AcceleratorAction::kDebugPrintWindowHierarchy,
+    AcceleratorAction::kDebugShowSystemNudge,
+    AcceleratorAction::kDebugToggleHudDisplay,
+    AcceleratorAction::kDebugToggleTouchPad,
+    AcceleratorAction::kDebugToggleTouchScreen,
+    AcceleratorAction::kDebugToggleTabletMode,
 };
 
 const size_t kPreferredActionsLength = std::size(kPreferredActions);

@@ -14,6 +14,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 
 namespace ash {
 
@@ -63,8 +64,17 @@ void ProfileUserManagerController::OnProfileAdded(Profile* profile) {
   // TODO(crbug.com/40225390): Use ash::AnnotatedAccountId::Get(), when
   // it gets fully ready for tests.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && user_manager_->OnUserProfileCreated(user->GetAccountId(),
-                                                  profile->GetPrefs())) {
+  if (!user) {
+    return;
+  }
+
+  // Guest users should use OTR profiles.
+  if (user->GetType() == user_manager::UserType::kGuest) {
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
+
+  if (user_manager_->OnUserProfileCreated(user->GetAccountId(),
+                                          profile->GetPrefs())) {
     // Add observer for graceful shutdown of User on Profile destruction.
     auto observation =
         std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(

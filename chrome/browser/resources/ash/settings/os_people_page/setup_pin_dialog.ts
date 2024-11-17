@@ -17,9 +17,9 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '../settings_shared.css.js';
 
-import {SetupPinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/setup_pin_keyboard.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {SetupPinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/setup_pin_keyboard.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './setup_pin_dialog.html.js';

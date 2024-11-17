@@ -39,18 +39,6 @@ struct AX_BASE_EXPORT AXUpdatesAndEvents {
   std::vector<AXEvent> events;
 };
 
-struct AX_BASE_EXPORT AXLocationChanges {
- public:
-  AXLocationChanges();
-  AXLocationChanges(
-      const AXLocationChanges& other);
-  ~AXLocationChanges();
-
-  int id;
-  AXTreeID ax_tree_id;
-  AXRelativeBounds new_location;
-};
-
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_AX_UPDATES_AND_EVENTS_H_

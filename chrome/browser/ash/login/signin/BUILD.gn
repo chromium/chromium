@@ -88,6 +88,7 @@ static_library("signin") {
     "//components/vector_icons",
     "//services/network/public/cpp",
     "//ui/base",
+    "//ui/base/idle",
     "//ui/message_center/public/cpp",
     "//url",
   ]

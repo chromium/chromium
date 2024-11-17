@@ -88,7 +88,7 @@ KeyRotationLookupResult LookupRotatedKey(
 
 // Provides the key rotation data associated with a particular IWA.
 struct KeyRotationData {
-  const raw_ref<const std::vector<uint8_t>> rotated_key;
+  base::raw_span<const uint8_t> rotated_key;
 
   // Tells whether the current app installation contains the rotated key
   // (`iwa.isolation_data.integrity_block_data`).
@@ -104,7 +104,7 @@ struct KeyRotationData {
 // `LookupRotatedKey()` has yielded `kKeyFound` (will CHECK otherwise).
 KeyRotationData GetKeyRotationData(
     const web_package::SignedWebBundleId& web_bundle_id,
-    const WebApp::IsolationData& isolation_data);
+    const IsolationData& isolation_data);
 
 // This is a helper class that contains methods which are shared between both
 // install and update commands.

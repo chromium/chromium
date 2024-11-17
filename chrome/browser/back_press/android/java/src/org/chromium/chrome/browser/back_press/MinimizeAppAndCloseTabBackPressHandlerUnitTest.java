@@ -31,11 +31,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -46,7 +43,6 @@ import java.util.function.Predicate;
 /** Unit tests for {@link MinimizeAppAndCloseTabBackPressHandler}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
 public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -142,31 +138,6 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
-    public void testMinimizeApp() {
-        var histogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
-                        MinimizeAppAndCloseTabType.MINIMIZE_APP);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTabSupplier.set(mTab);
-                });
-        Mockito.when(mShouldCloseTab.test(mTab)).thenReturn(false);
-        Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
-        mHandler.handleBackPress();
-
-        verify(
-                        mSendToBackground,
-                        Mockito.description("App should be minimized without closing any tab"))
-                .onResult(null);
-        histogram.assertExpected();
-        verify(mFinalCallback).run();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
     public void testMinimizeApp_SystemBack() {
         createBackPressHandler(true);
 
@@ -189,33 +160,6 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
-    public void testMinimizeApp_NoValidTab() {
-        var histogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
-                        MinimizeAppAndCloseTabType.MINIMIZE_APP);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTabSupplier.set(null);
-                });
-        Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mHandler.handleBackPress();
-                });
-
-        verify(mSendToBackground).onResult(null);
-        verify(
-                        mSendToBackground,
-                        Mockito.description("App should be minimized without closing any tab"))
-                .onResult(null);
-        histogram.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.BACK_TO_HOME_ANIMATION})
     public void testMinimizeApp_NoValidTab_SystemBack() {
         createBackPressHandler(true);
 

@@ -9,9 +9,9 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/no_destructor.h"
-#import "components/saved_tab_groups/saved_tab_group.h"
-#import "components/saved_tab_groups/tab_group_sync_delegate.h"
-#import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/types.h"
 
 class Browser;
 class BrowserList;
@@ -54,11 +54,14 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
   CreateScopedLocalObserverPauser() override;
   void CreateLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
   void CloseLocalTabGroup(const LocalTabGroupID& local_tab_group_id) override;
+  void ConnectLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
+  void DisconnectLocalTabGroup(const LocalTabGroupID& local_id) override;
   void UpdateLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
   std::vector<LocalTabGroupID> GetLocalTabGroupIds() override;
   std::vector<LocalTabID> GetLocalTabIdsForTabGroup(
       const LocalTabGroupID& local_tab_group_id) override;
-  void CreateRemoteTabGroup(const LocalTabGroupID& local_tab_group_id) override;
+  std::unique_ptr<SavedTabGroup> CreateSavedTabGroupFromLocalGroup(
+      const LocalTabGroupID& local_tab_group_id) override;
 
  private:
   // Retrieves the browser associated with the scene with the highest level of

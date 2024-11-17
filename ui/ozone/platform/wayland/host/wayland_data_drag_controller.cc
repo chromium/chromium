@@ -54,6 +54,16 @@ namespace {
 using mojom::DragEventSource;
 using mojom::DragOperation;
 
+// Used for compatibility between W3C and Wayland drag-and-drop specifications.
+// Since wl_data_offer version >= 3, Wayland dnd sessions with no accepted mime
+// type always end as cancelled. W3C drag-and-drop spec on the other hand does
+// not require drag data to be set in order to proceed with drop and drag-end
+// events. Thus, the special mime type below is used to ensure such behavior is
+// supported by the Wayland backend. Further context can be found at
+// https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API and
+// https://wayland.app/protocols/wayland#wl_data_offer:request:accept.
+constexpr char kMimeTypeEmptyDragData[] = "chromium/x-empty-drag-data";
+
 DragOperation DndActionToDragOperation(uint32_t action) {
   // Prevent the usage of this function for an operation mask.
   DCHECK_LE(std::bitset<32>(action).count(), 1u);
@@ -158,9 +168,17 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
           << ", serial tracker=" << connection_->serial_tracker().ToString();
 
   // Create new data source and offers |data|.
-  SetOfferedExchangeDataProvider(data);
+  offered_exchange_data_provider_ = data.provider().Clone();
+  auto mime_types = GetOfferedExchangeDataProvider()->BuildMimeTypesList();
+  if (mime_types.empty()) {
+    // Add placeholder mime type to ensure the drag-and-drop session can end
+    // successfully, even if no drag data was set by the application. See
+    // `kMimeTypeEmptyDragData` declaration for more details.
+    mime_types.push_back(kMimeTypeEmptyDragData);
+  }
+
   data_source_ = data_device_manager_->CreateSource(this);
-  data_source_->Offer(GetOfferedExchangeDataProvider()->BuildMimeTypesList());
+  data_source_->Offer(mime_types);
   data_source_->SetDndActions(DragOperationsToDndActions(operations));
 
   // Create drag icon surface (if any) and store the data to be exchanged.
@@ -168,9 +186,9 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   if (!icon_image_.isNull()) {
     icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
     if (icon_surface_->Initialize()) {
-      // Corresponds to actual scale factor of the origin surface. Use the
-      // latched state as that is what is currently displayed to the user and
-      // used as buffers in these surfaces.
+      // TODO(crbug.com/369219145): Revisit and double-check if latched state
+      // can be used here (as well as in UpdateDragImage) instead. Original
+      // reasoning: latched state is what is currently displayed to the user.
       icon_surface_buffer_scale_ = origin_window->applied_state().window_scale;
       icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
       // Icon surface do not need input.
@@ -360,7 +378,8 @@ void WaylandDataDragController::DrawIconInternal() {
                       pending_icon_offset_.x() - current_icon_offset_.x(),
                       pending_icon_offset_.y() - current_icon_offset_.y());
   }
-  if (connection_->UseViewporterSurfaceScaling() && icon_surface_->viewport()) {
+  if (connection_->supports_viewporter_surface_scaling() &&
+      icon_surface_->viewport()) {
     wp_viewport_set_destination(icon_surface_->viewport(), size_dip.width(),
                                 size_dip.height());
   }
@@ -549,10 +568,6 @@ void WaylandDataDragController::OnDataSourceDropPerformed(
   HandleDragEnd(DragResult::kCompleted, timestamp);
 }
 
-const WaylandWindow* WaylandDataDragController::GetDragTarget() const {
-  return window_;
-}
-
 void WaylandDataDragController::OnDataSourceSend(WaylandDataSource* source,
                                                  const std::string& mime_type,
                                                  std::string* buffer) {
@@ -649,8 +664,9 @@ void WaylandDataDragController::PostDataFetchingTask(
       }
 
       VLOG(1) << "did fetch " << contents.size() << " bytes.";
-      fetched_data->AddData(base::RefCountedBytes::TakeVector(&contents),
-                            mime_type);
+      fetched_data->AddData(
+          base::MakeRefCounted<base::RefCountedBytes>(std::move(contents)),
+          mime_type);
     }
 
     return std::make_unique<OSExchangeData>(std::move(fetched_data));
@@ -786,11 +802,6 @@ WaylandDataDragController::GetAndValidateSerialForDrag(DragEventSource source) {
   }
   return should_drag ? connection_->serial_tracker().GetSerial(serial_type)
                      : std::nullopt;
-}
-
-void WaylandDataDragController::SetOfferedExchangeDataProvider(
-    const OSExchangeData& data) {
-  offered_exchange_data_provider_ = data.provider().Clone();
 }
 
 const WaylandExchangeDataProvider*

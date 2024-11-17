@@ -11,11 +11,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.NotificationChannel;
-import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -33,7 +31,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -68,11 +66,8 @@ public class SiteChannelsManagerTest {
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
-        Context mContext = ApplicationProvider.getApplicationContext();
-        NotificationManagerProxy notificationManagerProxy =
-                new NotificationManagerProxyImpl(mContext);
-        clearExistingSiteChannels(notificationManagerProxy);
-        mSiteChannelsManager = new SiteChannelsManager(notificationManagerProxy);
+        clearExistingSiteChannels(NotificationManagerProxyImpl.getInstance());
+        mSiteChannelsManager = SiteChannelsManager.getInstance();
     }
 
     private static void clearExistingSiteChannels(
@@ -216,7 +211,7 @@ public class SiteChannelsManagerTest {
                 () -> {
                     info.setContentSetting(
                             ProfileManager.getLastUsedRegularProfile()
-                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true),
+                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true),
                             ContentSettingValues.BLOCK);
                 });
         assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
@@ -225,7 +220,7 @@ public class SiteChannelsManagerTest {
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @SmallTest
-    public void testBlockingPermissionInIncognitoCCTCreatesNoChannels() {
+    public void testBlockingPermissionInIncognitoCctCreatesNoChannels() {
         PermissionInfo info =
                 new PermissionInfo(
                         ContentSettingsType.NOTIFICATIONS,
@@ -235,14 +230,14 @@ public class SiteChannelsManagerTest {
                         SessionModel.DURABLE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
-                    Profile nonPrimaryOTRProfile =
+                    OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
+                    Profile nonPrimaryOtrProfile =
                             ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
-                                            otrProfileID, /* createIfNeeded= */ true);
-                    assertNotNull(nonPrimaryOTRProfile);
-                    assertTrue(nonPrimaryOTRProfile.isOffTheRecord());
-                    info.setContentSetting(nonPrimaryOTRProfile, ContentSettingValues.BLOCK);
+                                            otrProfileId, /* createIfNeeded= */ true);
+                    assertNotNull(nonPrimaryOtrProfile);
+                    assertTrue(nonPrimaryOtrProfile.isOffTheRecord());
+                    info.setContentSetting(nonPrimaryOtrProfile, ContentSettingValues.BLOCK);
                 });
         assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
     }

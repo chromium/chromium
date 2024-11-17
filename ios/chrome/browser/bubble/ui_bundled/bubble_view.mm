@@ -372,9 +372,9 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
     if (@available(iOS 17, *)) {
       __weak __typeof(self) weakSelf = self;
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-        UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
-        UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
-        UITraitUserInterfaceLevel.self
+        UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+        UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+        UITraitUserInterfaceLevel.class
       ]);
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                        UITraitCollection* previousCollection) {
@@ -720,9 +720,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
       offset = -alignmentOffset;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid bubble alignment " << self.alignment;
-      return nil;
+      NOTREACHED() << "Invalid bubble alignment " << self.alignment;
   }
   NSLayoutAnchor* centerAnchor =
       vertical ? (NSLayoutAnchor*)self.arrow.centerXAnchor

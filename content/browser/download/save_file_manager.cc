@@ -115,8 +115,9 @@ class SaveFileManager::SimpleURLLoaderHelper
                          const network::mojom::URLResponseHead& response_head) {
     std::string content_disposition;
     if (response_head.headers) {
-      response_head.headers->GetNormalizedHeader("Content-Disposition",
-                                                 &content_disposition);
+      content_disposition =
+          response_head.headers->GetNormalizedHeader("Content-Disposition")
+              .value_or(std::string());
     }
 
     auto info = std::make_unique<SaveFileCreateInfo>(
@@ -146,7 +147,7 @@ class SaveFileManager::SimpleURLLoaderHelper
 
   void OnRetry(base::OnceClosure start_retry) override {
     // Retries are not enabled.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   raw_ptr<SaveFileManager> save_file_manager_;

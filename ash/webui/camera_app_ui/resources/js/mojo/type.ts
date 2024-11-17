@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file contains many long export lines that exceed the max-len limit */
-/* eslint-disable max-len */
+// This file contains many long export lines that exceed the max-len limit
+/* eslint-disable @stylistic/max-len */
 
 export type {
   BigBuffer,

@@ -44,7 +44,8 @@ ProcessManagerFactory::ProcessManagerFactory()
 ProcessManagerFactory::~ProcessManagerFactory() {
 }
 
-KeyedService* ProcessManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ProcessManagerFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
   return ProcessManager::Create(context);
 }
@@ -53,8 +54,7 @@ BrowserContext* ProcessManagerFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
   // ProcessManager::Create handles guest and incognito profiles, returning an
   // IncognitoProcessManager in incognito mode.
-  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-      context, /*force_guest_profile=*/true);
+  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
 }
 
 }  // namespace extensions

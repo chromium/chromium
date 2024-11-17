@@ -10,6 +10,12 @@ InformedRestoreContentsData::InformedRestoreContentsData() = default;
 
 InformedRestoreContentsData::~InformedRestoreContentsData() = default;
 
+InformedRestoreContentsData::TabInfo::TabInfo() = default;
+
+InformedRestoreContentsData::TabInfo::TabInfo(const GURL& url,
+                                              const std::string& title)
+    : url(url), title(title) {}
+
 InformedRestoreContentsData::AppInfo::AppInfo(const std::string& app_id,
                                               const std::string& title,
                                               int window_id)
@@ -18,15 +24,11 @@ InformedRestoreContentsData::AppInfo::AppInfo(const std::string& app_id,
 InformedRestoreContentsData::AppInfo::AppInfo(const std::string& app_id,
                                               const std::string& title,
                                               int window_id,
-                                              const std::vector<GURL>& tab_urls,
-                                              const size_t tab_count,
-                                              uint64_t lacros_profile_id)
+                                              std::vector<TabInfo> tab_infos)
     : app_id(app_id),
       title(title),
       window_id(window_id),
-      tab_urls(tab_urls),
-      tab_count(tab_count),
-      lacros_profile_id(lacros_profile_id) {}
+      tab_infos(std::move(tab_infos)) {}
 
 InformedRestoreContentsData::AppInfo::AppInfo(const AppInfo&) = default;
 

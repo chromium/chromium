@@ -291,7 +291,7 @@ const char kEnablePotentiallyAnnoyingSecurityFeatures[] =
 const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
 
 // Name of the command line flag to allow the ai data collection extension API.
-const char kExtensionAiDataCollection[] = "extension-ai-data-collection";
+const char kExtensionAiDataCollection[] = "enable-extension-ai-data-collection";
 
 // Name of the command line flag to force content verification to be on in one
 // of various modes.
@@ -712,6 +712,9 @@ const char kWinJumplistAction[] = "win-jumplist-action";
 // Android authentication account type for SPNEGO authentication
 const char kAuthAndroidNegotiateAccountType[] = "auth-spnego-account-type";
 
+// Disable the default browser promo.
+const char kDisableDefaultBrowserPromo[] = "disable-default-browser-promo";
+
 // Forces the device to report being owned by an enterprise. This mimics the
 // presence of an app signaling device ownership.
 const char kForceDeviceOwnership[] = "force-device-ownership";
@@ -894,6 +897,14 @@ const char kEnableNewAppMenuIcon[] = "enable-new-app-menu-icon";
 
 // Causes the browser to launch directly in guest mode.
 const char kGuest[] = "guest";
+
+// Forces the NTP mobile promo to appear without any preconditions.
+const char kForceNtpMobilePromo[] = "force-ntp-mobile-promo";
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+// Overrides the glic guest URL.
+const char kGlicGuestURL[] = "glic-guest-url";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

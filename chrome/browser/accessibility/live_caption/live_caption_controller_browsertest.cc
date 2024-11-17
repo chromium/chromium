@@ -28,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/soda/constants.h"
 #include "components/soda/pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_test.h"
@@ -48,6 +49,14 @@ speech::LanguageCode fr_fr() {
   return speech::LanguageCode::kFrFr;
 }
 
+// Unused on builds that aren't ash. CQ fails
+// without this guard.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+speech::LanguageCode de_de() {
+  return speech::LanguageCode::kDeDe;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 Profile* CreateProfile() {
@@ -59,11 +68,7 @@ Profile* CreateProfile() {
 
 class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
  public:
-  LiveCaptionControllerTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitAndDisableFeature(ash::features::kConch);
-#endif
-  }
+  LiveCaptionControllerTest() = default;
   ~LiveCaptionControllerTest() override = default;
   LiveCaptionControllerTest(const LiveCaptionControllerTest&) = delete;
   LiveCaptionControllerTest& operator=(const LiveCaptionControllerTest&) =
@@ -158,9 +163,15 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
 #endif
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void ToggleLiveCaptionForBabelOrca(bool enabled) {
+    LiveCaptionControllerFactory::GetForProfile(browser()->profile())
+        ->ToggleLiveCaptionForBabelOrca(enabled);
+  }
+#endif
+
  private:
   std::unique_ptr<CaptionBubbleContextBrowser> caption_bubble_context_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, ProfilePrefsAreRegistered) {
@@ -449,7 +460,99 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
   ExpectIsWidgetVisibleOnProfile(false, profile1);
   ExpectIsWidgetVisibleOnProfile(false, profile2);
 }
-
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that live caption can be enabled for babel orca.
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
+                       ToggleLiveCaptionForBabelOrca) {
+  EXPECT_EQ(nullptr, GetBubbleController());
+  EXPECT_FALSE(HasBubbleController());
+
+  // This helper function doesn't notify Soda installed as oppposed to
+  // `SetLiveCaptionEnabled` so we manually invoke those methods below.
+  ToggleLiveCaptionForBabelOrca(true);
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
+  EXPECT_NE(nullptr, GetBubbleController());
+  EXPECT_TRUE(HasBubbleController());
+
+  ToggleLiveCaptionForBabelOrca(false);
+  EXPECT_EQ(nullptr, GetBubbleController());
+  EXPECT_FALSE(HasBubbleController());
+}
+
+// like the test above, but verifies that BabelOrca still works  with a
+// distinct language from live caption.
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
+                       ToggleBabelOrcaDistinctLanguage) {
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kUserMicrophoneCaptionLanguageCode,
+      speech::GetLanguageName(fr_fr()));
+
+  EXPECT_EQ(nullptr, GetBubbleController());
+  EXPECT_FALSE(HasBubbleController());
+
+  // This helper function doesn't notify Soda installed as oppposed to
+  // `SetLiveCaptionEnabled` so we manually invoke those methods below.
+  ToggleLiveCaptionForBabelOrca(true);
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(fr_fr());
+  EXPECT_NE(nullptr, GetBubbleController());
+  EXPECT_TRUE(HasBubbleController());
+
+  ToggleLiveCaptionForBabelOrca(false);
+  EXPECT_EQ(nullptr, GetBubbleController());
+  EXPECT_FALSE(HasBubbleController());
+}
+
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalledForBabelOrca) {
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kUserMicrophoneCaptionLanguageCode,
+      speech::GetLanguageName(fr_fr()));
+
+  // Toggle the feature.
+  EXPECT_FALSE(HasBubbleController());
+  ToggleLiveCaptionForBabelOrca(true);
+  EXPECT_FALSE(HasBubbleController());
+
+  // install a language and binary that is not either the live caption language
+  // or the language for BabelOrca.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(de_de());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_FALSE(HasBubbleController());
+
+  // Install the language for BabelOrca, live caption should be enabled.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(fr_fr());
+  EXPECT_TRUE(HasBubbleController());
+
+  // turn off Babel Orca, now we make sure that Live Caption still works.
+  ToggleLiveCaptionForBabelOrca(false);
+  EXPECT_FALSE(HasBubbleController());
+
+  // Toggle live caption, but the associated language is not currently
+  // installed. manually invoke rather than use the helper so that we
+  // can verify that we ignore irrelevant languages below.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
+                                               true);
+  EXPECT_FALSE(HasBubbleController());
+
+  // Once again install the neither nor language to verify we're handling
+  // preconditions correctly in both cases.  We have to invoke
+  // `UninstallSodaForTesting` in order to verify with the irrelevant
+  // language again.
+  speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(de_de());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_FALSE(HasBubbleController());
+
+  // Install the language for live caption, should be enabled.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
+  EXPECT_TRUE(HasBubbleController());
+
+  // Finally verify we can still turn it off.
+  SetLiveCaptionEnabled(false);
+  EXPECT_FALSE(HasBubbleController());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace captions

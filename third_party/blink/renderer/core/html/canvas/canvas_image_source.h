@@ -51,17 +51,6 @@ enum SourceImageStatus {
   kLayersOpenInCanvasSource,  // Source is a canvas with open layers
 };
 
-// This is the helper function to get the canvas image with a
-// specific alpha op requirements.
-// This function will be a no op if the image is opaque, or if the image was
-// already in the preferred state (if it was premultiplied and it is requested
-// to be premultiplied or if it was unpremultiplied and it is requested to be
-// unpremultiplied).
-scoped_refptr<StaticBitmapImage> GetImageWithAlphaDisposition(
-    FlushReason,
-    scoped_refptr<StaticBitmapImage>&&,
-    const AlphaDisposition);
-
 class CORE_EXPORT CanvasImageSource {
  public:
   virtual scoped_refptr<Image> GetSourceImageForCanvas(

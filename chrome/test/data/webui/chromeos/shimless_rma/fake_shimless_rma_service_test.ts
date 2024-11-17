@@ -300,9 +300,9 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assertEquals(RmadErrorCode.kRequestInvalid, result.stateResult.error);
   });
 
-  // Verify `chooseManuallyDisableWriteProtect()` can be called from the correct
+  // Verify `setManuallyDisableWriteProtect()` can be called from the correct
   // state.
-  test('ChooseManuallyDisableWriteProtectOk', async () => {
+  test('SetManuallyDisableWriteProtectOk', async () => {
     const states = [
       {
         state: State.kChooseWriteProtectDisableMethod,
@@ -320,14 +320,14 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.chooseManuallyDisableWriteProtect();
+    const result = await service.setManuallyDisableWriteProtect();
     assertEquals(State.kUpdateOs, result.stateResult.state);
     assertEquals(RmadErrorCode.kOk, result.stateResult.error);
   });
 
-  // Verify `chooseManuallyDisableWriteProtect()` can't be called from the wrong
+  // Verify `setManuallyDisableWriteProtect()` can't be called from the wrong
   // state.
-  test('ChooseManuallyDisableWriteProtectWrongStateFails', async () => {
+  test('SetManuallyDisableWriteProtectWrongStateFails', async () => {
     const states = [
       {
         state: State.kWelcomeScreen,
@@ -345,14 +345,14 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.chooseManuallyDisableWriteProtect();
+    const result = await service.setManuallyDisableWriteProtect();
     assertEquals(State.kWelcomeScreen, result.stateResult.state);
     assertEquals(RmadErrorCode.kRequestInvalid, result.stateResult.error);
   });
 
-  // Verify `chooseRsuDisableWriteProtect()` can be called from the correct
+  // Verify `setRsuDisableWriteProtect()` can be called from the correct
   // state.
-  test('ChooseRsuDisableWriteProtectOk', async () => {
+  test('SetRsuDisableWriteProtectOk', async () => {
     const states = [
       {
         state: State.kChooseWriteProtectDisableMethod,
@@ -370,14 +370,14 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.chooseRsuDisableWriteProtect();
+    const result = await service.setRsuDisableWriteProtect();
     assertEquals(State.kUpdateOs, result.stateResult.state);
     assertEquals(RmadErrorCode.kOk, result.stateResult.error);
   });
 
-  // Verify `chooseRsuDisableWriteProtect()` can't be called from the wrong
+  // Verify `setRsuDisableWriteProtect()` can't be called from the wrong
   // state.
-  test('ChooseRsuDisableWriteProtectWrongStateFails', async () => {
+  test('SetRsuDisableWriteProtectWrongStateFails', async () => {
     const states = [
       {
         state: State.kWelcomeScreen,
@@ -395,7 +395,7 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.chooseRsuDisableWriteProtect();
+    const result = await service.setRsuDisableWriteProtect();
     assertEquals(State.kWelcomeScreen, result.stateResult.state);
     assertEquals(RmadErrorCode.kRequestInvalid, result.stateResult.error);
   });

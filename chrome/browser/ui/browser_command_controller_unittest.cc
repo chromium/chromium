@@ -314,6 +314,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
       ExclusiveAccessBubbleHideCallback first_hide_callback) override {}
   bool IsExclusiveAccessBubbleDisplayed() const override { return false; }
   void OnExclusiveAccessUserInput() override {}
+  bool CanUserEnterFullscreen() const override { return true; }
   bool CanUserExitFullscreen() const override { return true; }
 
   void set_toolbar_showing(bool showing) { toolbar_showing_ = showing; }
@@ -514,7 +515,7 @@ TEST_F(BrowserCommandControllerTest,
   const CommandUpdater* command_updater = &command_controller;
 
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
-  profile()->GetPrefs()->SetInteger(prefs::kDownloadRestrictions,
+  profile()->GetPrefs()->SetInteger(policy::policy_prefs::kDownloadRestrictions,
                                     3 /*ALL_FILES*/);
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
 }

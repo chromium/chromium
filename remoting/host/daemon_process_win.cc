@@ -35,7 +35,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/breakpad.h"
+#include "remoting/base/crash/breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -224,12 +224,12 @@ void DaemonProcessWin::OnPermanentError(int exit_code) {
   DCHECK(kMinPermanentErrorExitCode <= exit_code &&
          exit_code <= kMaxPermanentErrorExitCode);
 
-  // Both kInvalidHostIdExitCode and kInvalidOauthCredentialsExitCode are
+  // Both kInvalidHostIdExitCode and kInvalidOAuthCredentialsExitCode are
   // errors that will never go away with the current config.
   // Disabling automatic service start until the host is re-enabled and config
   // updated.
   if (exit_code == kInvalidHostIdExitCode ||
-      exit_code == kInvalidOauthCredentialsExitCode) {
+      exit_code == kInvalidOAuthCredentialsExitCode) {
     DisableAutoStart();
   }
 

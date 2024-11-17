@@ -36,13 +36,12 @@ namespace autofill {
 class TestingAutofillManager : public BrowserAutofillManager {
  public:
   explicit TestingAutofillManager(AutofillDriverIOS* driver)
-      : BrowserAutofillManager(driver, "en-US") {}
+      : BrowserAutofillManager(driver) {}
 
   void OnFormSubmitted(const FormData& form,
-                       const bool known_success,
                        const mojom::SubmissionSource source) override {
     submitted_form_ = form;
-    BrowserAutofillManager::OnFormSubmitted(form, known_success, source);
+    BrowserAutofillManager::OnFormSubmitted(form, source);
   }
 
   const std::optional<FormData>& submitted_form() const {
@@ -74,8 +73,7 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
     // Driver factory needs to exist before any call to
     // `AutofillDriverIOS::FromWebStateAndWebFrame`, or we crash.
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        &web_state_, &autofill_client_, /*bridge=*/nil,
-        /*locale=*/"en");
+        &web_state_, &autofill_client_, /*bridge=*/nil);
 
     // Replace AutofillManager with the test implementation.
     autofill_manager_injector_ =

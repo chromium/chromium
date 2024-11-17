@@ -42,9 +42,10 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.Optional;
@@ -463,11 +464,11 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
+    @EnableFeatures(
+            OmniboxFeatureList.RICH_AUTOCOMPLETION
+                    + ":rich_autocomplete_full_url/true"
+                    + "/rich_autocomplete_minimum_characters/1")
     public void testAppendWithAdditionalText_CommitText() {
-        OmniboxFeatures.sRichInlineAutocomplete.setForTesting(true);
-        OmniboxFeatures.sRichInlineShowFullUrl.setForTesting(true);
-        OmniboxFeatures.sRichInlineMinimumInputChars.setForTesting(1);
-
         // User types "h".
         assertTrue(mInputConnection.commitText("h", 1));
         mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
@@ -609,11 +610,11 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
+    @EnableFeatures(
+            OmniboxFeatureList.RICH_AUTOCOMPLETION
+                    + ":rich_autocomplete_full_url/true"
+                    + "/rich_autocomplete_minimum_characters/1")
     public void testAdditionalTextColor() {
-        OmniboxFeatures.sRichInlineAutocomplete.setForTesting(true);
-        OmniboxFeatures.sRichInlineShowFullUrl.setForTesting(true);
-        OmniboxFeatures.sRichInlineMinimumInputChars.setForTesting(1);
-
         // User types "h".
         assertTrue(mInputConnection.commitText("h", 1));
         mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
@@ -653,11 +654,11 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
+    @EnableFeatures(
+            OmniboxFeatureList.RICH_AUTOCOMPLETION
+                    + ":rich_autocomplete_full_url/false"
+                    + "/rich_autocomplete_minimum_characters/1")
     public void testAppendWithAdditionalText_noFullUrl() {
-        OmniboxFeatures.sRichInlineAutocomplete.setForTesting(true);
-        OmniboxFeatures.sRichInlineShowFullUrl.setForTesting(false);
-        OmniboxFeatures.sRichInlineMinimumInputChars.setForTesting(1);
-
         // User types "h".
         assertTrue(mInputConnection.commitText("h", 1));
         mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
@@ -683,11 +684,11 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
+    @EnableFeatures(
+            OmniboxFeatureList.RICH_AUTOCOMPLETION
+                    + ":rich_autocomplete_full_url/true"
+                    + "/rich_autocomplete_minimum_characters/4")
     public void testAppendWithAdditionalText_minimumCharacters() {
-        OmniboxFeatures.sRichInlineAutocomplete.setForTesting(true);
-        OmniboxFeatures.sRichInlineShowFullUrl.setForTesting(true);
-        OmniboxFeatures.sRichInlineMinimumInputChars.setForTesting(4);
-
         // User types "h".
         assertTrue(mInputConnection.commitText("h", 1));
         mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
@@ -774,11 +775,11 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
+    @EnableFeatures(
+            OmniboxFeatureList.RICH_AUTOCOMPLETION
+                    + ":rich_autocomplete_full_url/true"
+                    + "/rich_autocomplete_minimum_characters/1")
     public void testAppendWithAdditionalText_onSelectionChanged() {
-        OmniboxFeatures.sRichInlineAutocomplete.setForTesting(true);
-        OmniboxFeatures.sRichInlineShowFullUrl.setForTesting(true);
-        OmniboxFeatures.sRichInlineMinimumInputChars.setForTesting(1);
-
         // User types "h".
         assertTrue(mInputConnection.commitText("h", 1));
         mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
@@ -836,11 +837,11 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
+    @EnableFeatures(
+            OmniboxFeatureList.RICH_AUTOCOMPLETION
+                    + ":rich_autocomplete_full_url/true"
+                    + "/rich_autocomplete_minimum_characters/1")
     public void testAppendWithAdditionalText_removeAutocompleteAndAddtionalText() {
-        OmniboxFeatures.sRichInlineAutocomplete.setForTesting(true);
-        OmniboxFeatures.sRichInlineShowFullUrl.setForTesting(true);
-        OmniboxFeatures.sRichInlineMinimumInputChars.setForTesting(1);
-
         // User types "hello".
         assertTrue(mInputConnection.commitText("hello", 1));
         mInOrder.verify(mVerifier).onUpdateSelection(5, 5);
@@ -1440,11 +1441,11 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
+    @EnableFeatures(
+            OmniboxFeatureList.RICH_AUTOCOMPLETION
+                    + ":rich_autocomplete_full_url/true"
+                    + "/rich_autocomplete_minimum_characters/3")
     public void testPerformEditorAction_withAdditionText() {
-        OmniboxFeatures.sRichInlineAutocomplete.setForTesting(true);
-        OmniboxFeatures.sRichInlineShowFullUrl.setForTesting(true);
-        OmniboxFeatures.sRichInlineMinimumInputChars.setForTesting(3);
-
         // User types "goo".
         assertTrue(mInputConnection.setComposingText("goo", 1));
         assertTrue(mAutocomplete.shouldAutocomplete());

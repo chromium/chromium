@@ -608,7 +608,7 @@ void TypingCommand::DoApply(EditingState* editing_state) {
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 InputEvent::InputType TypingCommand::GetInputType() const {
@@ -902,8 +902,7 @@ void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
   }
 
   if (!EndingSelection().IsCaret()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // After breaking out of an empty mail blockquote, we still want continue
@@ -1089,8 +1088,7 @@ void TypingCommand::ForwardDeleteKeyPressed(TextGranularity granularity,
   }
 
   if (!EndingSelection().IsCaret()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   smart_delete_ = false;
@@ -1225,8 +1223,7 @@ void TypingCommand::UpdatePreservesTypingStyle(CommandType command_type) {
       preserves_typing_style_ = false;
       return;
   }
-  NOTREACHED_IN_MIGRATION();
-  preserves_typing_style_ = false;
+  NOTREACHED();
 }
 
 bool TypingCommand::IsTypingCommand() const {

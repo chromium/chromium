@@ -33,7 +33,7 @@ class WEBDATA_EXPORT WebDatabase {
   // Note: when changing the current version number, corresponding changes must
   // happen in the unit tests, and new migration test added to
   // `WebDatabaseMigrationTest`.
-  static constexpr int kCurrentVersionNumber = 134;
+  static constexpr int kCurrentVersionNumber = 135;
 
   // To support users who are upgrading from older versions of Chrome, we enable
   // migrating from any database version newer than `kDeprecatedVersionNumber`.

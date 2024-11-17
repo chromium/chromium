@@ -260,6 +260,7 @@ enum class FaceGazeNotificationType {
 enum class AccessibilityToastType {
   kDictationMicMuted,
   kDictationNoFocusedTextField,
+  kTouchpadDisabled,
 };
 
 // Dominant hand for mouse keys.  This determines which keys to use for the
@@ -278,9 +279,9 @@ enum class AccessibilityScrollDirection {
   kRight,
 };
 
-// The different modes in which the internal trackpad can be disabled.
+// The different modes in which the internal touchpad can be disabled.
 // These values are written to prefs so should not be changed.
-enum class DisableTrackpadMode {
+enum class DisableTouchpadMode {
   kNever = 0,
   kAlways = 1,
   kOnExternalMouseConnected = 2,

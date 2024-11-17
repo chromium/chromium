@@ -196,6 +196,10 @@ sk_sp<GrGLInterface> CreateGLES2InterfaceBindings(
       gles_bind(&GLES2Interface::GetQueryivEXT, impl, context_support);
   functions->fGetQueryObjectuiv =
       gles_bind(&GLES2Interface::GetQueryObjectuivEXT, impl, context_support);
+  functions->fGetQueryObjecti64v =
+      gles_bind(&GLES2Interface::GetQueryObjecti64vEXT, impl, context_support);
+  functions->fGetQueryObjectui64v =
+      gles_bind(&GLES2Interface::GetQueryObjectui64vEXT, impl, context_support);
   functions->fGetShaderInfoLog =
       gles_bind(&GLES2Interface::GetShaderInfoLog, impl, context_support);
   functions->fGetShaderiv =
@@ -366,6 +370,8 @@ sk_sp<GrGLInterface> CreateGLES2InterfaceBindings(
       &GLES2Interface::GetRenderbufferParameteriv, impl, context_support);
   functions->fGenQueries =
       gles_bind(&GLES2Interface::GenQueriesEXT, impl, context_support);
+  functions->fQueryCounter =
+      gles_bind(&GLES2Interface::QueryCounterEXT, impl, context_support);
   functions->fRenderbufferStorage =
       gles_bind(&GLES2Interface::RenderbufferStorage, impl, context_support);
   functions->fRenderbufferStorageMultisample =

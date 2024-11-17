@@ -88,24 +88,8 @@ suite('ShareAppTest', function() {
           assertTrue(isPageActive('discovery'));
         });
 
-    test('renders onboarding page when disabled', async function() {
-      sharedSetup(/*enabled=*/ false, /*isOnboardingComplete=*/ false);
-      loadTimeData.overrideValues({
-        'isOnePageOnboardingEnabled': false,
-      });
-      assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
-      assertEquals(null, shareAppElement.shadowRoot.querySelector('.active'));
-      // We have to wait for settings to return from the mojo after which
-      // the app will route to the correct page.
-      await waitAfterNextRender(shareAppElement);
-      assertTrue(isPageActive('onboarding'));
-    });
-
     test('renders one-page onboarding page when disabled', async function() {
       sharedSetup(/*enabled=*/ false, /*isOnboardingComplete=*/ false);
-      loadTimeData.overrideValues({
-        'isOnePageOnboardingEnabled': true,
-      });
       assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
       assertEquals(null, shareAppElement.shadowRoot.querySelector('.active'));
       // We have to wait for settings to return from the mojo after which

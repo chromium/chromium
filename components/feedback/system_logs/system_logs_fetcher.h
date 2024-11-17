@@ -75,14 +75,6 @@ class SystemLogsFetcher {
   void AddResponse(const std::string& source_name,
                    std::unique_ptr<SystemLogsResponse> response);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Merges the log entries of crash report ids of Ash and Lacros in
-  // |response_|, so that lacros crash ids could be processed by the feedback
-  // pre-processor at the server side in the same way it does for ash crash ids.
-  // See details in crbug.com/1129051.
-  void MergeAshAndLacrosCrashReportIdsInReponse();
-#endif
-
   // Runs the callback provided to Fetch and posts a task to delete |this|.
   void RunCallbackAndDeleteSoon();
 

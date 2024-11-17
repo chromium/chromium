@@ -143,7 +143,7 @@ class WindowConfig {
       case Mode::kSlideshow:
         return kFrameSlideshow.ToCGRect();
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

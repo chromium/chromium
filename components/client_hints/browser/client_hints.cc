@@ -149,11 +149,6 @@ bool ClientHints::IsJavaScriptAllowed(const GURL& url,
              url, ContentSettingsType::JAVASCRIPT) != CONTENT_SETTING_BLOCK;
 }
 
-bool ClientHints::AreThirdPartyCookiesBlocked(const GURL& url,
-                                              content::RenderFrameHost* rfh) {
-  return !cookie_settings_->IsThirdPartyAccessAllowed(url);
-}
-
 blink::UserAgentMetadata ClientHints::GetUserAgentMetadata() {
   return embedder_support::GetUserAgentMetadata(pref_service_);
 }

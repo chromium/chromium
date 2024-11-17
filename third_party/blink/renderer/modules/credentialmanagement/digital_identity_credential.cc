@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_utils.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/digital_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential.h"
+#include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_blink_string.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -88,8 +89,8 @@ String ValidateAndStringifyObject(
 
 void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                        std::unique_ptr<ScopedAbortState> scoped_abort_state,
-                       const WTF::String& protocol,
                        RequestDigitalIdentityStatus status,
+                       const WTF::String& protocol,
                        const WTF::String& token) {
   switch (status) {
     case RequestDigitalIdentityStatus::kErrorTooManyRequests: {
@@ -112,6 +113,18 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
       }
       return;
     }
+    case RequestDigitalIdentityStatus::kErrorNoProviders:
+      resolver->RejectWithTypeError(
+          "Digital identity API needs at least one provider.");
+      return;
+
+    case RequestDigitalIdentityStatus::kErrorNoTransientUserActivation:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "The 'digital-credentials-get' feature requires transient "
+          "activation."));
+      return;
+
     case RequestDigitalIdentityStatus::kError: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNetworkError, "Error retrieving a token."));
@@ -158,69 +171,46 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
     return;
   }
 
-  size_t num_providers = options.digital()->hasProviders()
-                             ? options.digital()->providers().size()
-                             : 0u;
+  Vector<blink::mojom::blink::DigitalCredentialProviderPtr> providers;
+  for (const auto& provider : options.digital()->providers()) {
+    V8UnionObjectOrString* request_object_or_string = provider->request();
 
-  if (num_providers == 0) {
-    resolver->RejectWithTypeError(
-        "Digital identity API needs at least one provider.");
-    return;
-  }
-
-  // TODO(https://crbug.com/1416939): make sure the Digital Credentials
-  // API works well with the Multiple IdP API.
-  if (num_providers > 1u) {
-    resolver->RejectWithTypeError(
-        "Digital identity API currently does not support multiple "
-        "providers.");
-    return;
-  }
-
-  auto provider = options.digital()->providers()[0];
-  V8UnionObjectOrString* request_object_or_string = provider->request();
-
-  String stringified_request;
-  if (request_object_or_string->IsString()) {
-    stringified_request = request_object_or_string->GetAsString();
-  } else {
-    stringified_request = ValidateAndStringifyObject(
-        resolver, request_object_or_string->GetAsObject());
-    if (stringified_request.IsNull()) {
-      return;
+    String stringified_request;
+    if (request_object_or_string->IsString()) {
+      stringified_request = request_object_or_string->GetAsString();
+    } else {
+      stringified_request = ValidateAndStringifyObject(
+          resolver, request_object_or_string->GetAsObject());
+      if (stringified_request.IsNull()) {
+        continue;
+      }
     }
+
+    blink::mojom::blink::DigitalCredentialProviderPtr
+        digital_credential_provider =
+            blink::mojom::blink::DigitalCredentialProvider::New();
+    digital_credential_provider->protocol = provider->protocol();
+    digital_credential_provider->request = stringified_request;
+    providers.push_back(std::move(digital_credential_provider));
   }
 
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kIdentityDigitalCredentials);
 
-  auto* signal = options.getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                     "Request has been aborted");
-    return;
-  }
-
   ScriptState* script_state = resolver->GetScriptState();
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
-  if (signal) {
+  if (auto* signal = options.getSignalOr(nullptr)) {
     auto callback = WTF::BindOnce(&AbortRequest, WrapPersistent(script_state));
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-  blink::mojom::blink::DigitalCredentialProviderPtr
-      digital_credential_provider =
-          blink::mojom::blink::DigitalCredentialProvider::New();
-  digital_credential_provider->protocol = provider->protocol();
-  digital_credential_provider->request = stringified_request;
 
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
-  request->Request(
-      std::move(digital_credential_provider),
-      WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
-                    std::move(scoped_abort_state), provider->protocol()));
+  request->Request(std::move(providers),
+                   WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
+                                 std::move(scoped_abort_state)));
 }
 
 }  // namespace blink

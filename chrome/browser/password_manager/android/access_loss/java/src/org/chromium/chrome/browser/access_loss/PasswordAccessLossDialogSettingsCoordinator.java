@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logDialogShownMetric;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.DETAILS;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.HELP_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.HELP_BUTTON_VISIBILITY;
@@ -59,6 +60,7 @@ public class PasswordAccessLossDialogSettingsCoordinator {
         mModalDialogManager.showDialog(
                 createDialogModel(context, warningType, dialogCustomView),
                 ModalDialogManager.ModalDialogType.APP);
+        logDialogShownMetric(warningType);
     }
 
     private View createAndBindDialogCustomView(@PasswordAccessLossWarningType int warningType) {
@@ -122,6 +124,7 @@ public class PasswordAccessLossDialogSettingsCoordinator {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
                 return R.string.access_loss_no_gms_desc;
             case PasswordAccessLossWarningType.NO_UPM:
+                return R.string.access_loss_no_upm_desc;
             case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
                 return R.string.access_loss_update_gms_desc;
             case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:

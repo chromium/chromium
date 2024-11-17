@@ -43,6 +43,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -50,6 +51,7 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -124,7 +126,8 @@ public class BrowserControlsManagerUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
 
         BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
+                new BrowserControlsManager(
+                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
         mBrowserControlsManager = spy(browserControlsManager);
         mBrowserControlsManager.initialize(
                 mControlContainer,
@@ -139,7 +142,8 @@ public class BrowserControlsManagerUnitTest {
     private void remakeWithoutSpy() {
         mBrowserControlsManager.destroy();
         mBrowserControlsManager =
-                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
+                new BrowserControlsManager(
+                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
         mBrowserControlsManager.initialize(
                 mControlContainer,
                 mActivityTabProvider,
@@ -182,13 +186,14 @@ public class BrowserControlsManagerUnitTest {
         }
     }
 
-    private void notifyBrowserControlsOffsetChanged(int topControlsOffsetY) {
+    private void notifyBrowserControlsOffsetChanged(
+            int topControlsOffsetY, int bottomControlsOffsetY) {
         verify(mTab, atLeast(1)).addObserver(mTabObserverCaptor.capture());
         for (TabObserver observer : mTabObserverCaptor.getAllValues()) {
             observer.onBrowserControlsOffsetChanged(
                     mTab,
                     topControlsOffsetY,
-                    /* bottomControlsOffsetY= */ 0,
+                    bottomControlsOffsetY,
                     /* contentOffsetY= */ 0,
                     /* topControlsMinHeightOffsetY= */ 0,
                     /* bottomControlsMinHeightOffsetY= */ 0);
@@ -422,7 +427,8 @@ public class BrowserControlsManagerUnitTest {
     @Test
     public void testGetAndroidControlsVisibility() {
         BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
+                new BrowserControlsManager(
+                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
         assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
 
         browserControlsManager.initialize(
@@ -504,17 +510,68 @@ public class BrowserControlsManagerUnitTest {
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // Reduce the size of the controls such that we should hide the java view.
-        notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT);
+        notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT, 0);
         assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // Now scroll the controls back fully onscreen. Suppression layout optimizations should not
         // restore visibility of the java views eagerly.
-        notifyBrowserControlsOffsetChanged(0);
+        notifyBrowserControlsOffsetChanged(0, 0);
         assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // However when entering SHOWN state, the optimization should ignore scrolling and
         // immediately restore view visibility.
         mControlsDelegate.set(BrowserControlsState.SHOWN);
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+    }
+
+    @Test
+    public void testSetControlsPosition() {
+        remakeWithoutSpy();
+        notifyAddTab(mTab);
+        notifyCurrentTab(mTab);
+
+        assertEquals(
+                0.0f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
+
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.BOTTOM, 0, 0, TOOLBAR_HEIGHT, 10);
+        verify(mBrowserControlsStateProviderObserver)
+                .onControlsPositionChanged(ControlsPosition.BOTTOM);
+        assertEquals(
+                0.0f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
+        assertEquals(0, mBrowserControlsManager.getTopControlsMinHeight());
+        assertEquals(10, mBrowserControlsManager.getBottomControlsMinHeight());
+
+        // Hidden ratio should reflect the bottom offset, not the top.
+        notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT / 4, TOOLBAR_HEIGHT / 2);
+        assertEquals(
+                0.5f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
+
+        mBrowserControlsManager.setControlsPosition(ControlsPosition.TOP, TOOLBAR_HEIGHT, 10, 0, 0);
+        verify(mBrowserControlsStateProviderObserver)
+                .onControlsPositionChanged(ControlsPosition.TOP);
+        assertEquals(
+                0.25f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
+        assertEquals(10, mBrowserControlsManager.getTopControlsMinHeight());
+        assertEquals(0, mBrowserControlsManager.getBottomControlsMinHeight());
+
+        // Changing the bottom offset shouldn't affect hidden ratio while position is top.
+        notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT / 4, TOOLBAR_HEIGHT);
+        assertEquals(
+                0.25f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testStartWithBottom() {
+        BrowserControlsManager browserControlsManager =
+                new BrowserControlsManager(
+                        mActivity, BrowserControlsStateProvider.ControlsPosition.BOTTOM);
+        browserControlsManager.initialize(
+                mControlContainer,
+                mActivityTabProvider,
+                mTabModelSelector,
+                R.dimen.control_container_height);
+        assertEquals(0, browserControlsManager.getTopControlsHeight());
+        assertEquals(TOOLBAR_HEIGHT, browserControlsManager.getBottomControlsHeight());
     }
 }

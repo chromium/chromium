@@ -79,23 +79,6 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
   return Parent();
 }
 
-LayoutBox* LayoutObject::DeprecatedEnclosingScrollableBox() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  for (LayoutObject* ancestor = Parent(); ancestor;
-       ancestor = ancestor->Parent()) {
-    if (!ancestor->IsBox())
-      continue;
-
-    auto* ancestor_box = To<LayoutBox>(ancestor);
-    if (ancestor_box->IsUserScrollable()) {
-      return ancestor_box;
-    }
-  }
-
-  return nullptr;
-}
-
 void LayoutObject::SetNeedsOverflowRecalc(
     OverflowRecalcType overflow_recalc_type) {
   NOT_DESTROYED();

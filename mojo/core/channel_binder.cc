@@ -39,6 +39,7 @@
 #include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/core/embedder/features.h"
+#include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/public/cpp/platform/binder_exchange.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -418,7 +419,7 @@ void ChannelBinder::Receive(base::span<const uint8_t> bytes,
                             std::vector<PlatformHandle> handles) {
   size_t ignored_size_hint;
   const DispatchResult result = TryDispatchMessage(
-      base::as_chars(bytes), std::move(handles), &ignored_size_hint);
+      base::as_chars(bytes), std::move(handles), nullptr, &ignored_size_hint);
   if (result != DispatchResult::kOK) {
     OnError(Error::kReceivedMalformedData);
   }

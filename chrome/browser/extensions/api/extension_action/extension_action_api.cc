@@ -7,16 +7,17 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
@@ -28,13 +29,13 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/common/color_parser.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
-#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -46,7 +47,6 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -171,168 +171,6 @@ bool OpenPopupInBrowser(Browser& browser,
 }  // namespace
 
 //
-// ExtensionActionAPI::Observer
-//
-
-void ExtensionActionAPI::Observer::OnExtensionActionUpdated(
-    ExtensionAction* extension_action,
-    content::WebContents* web_contents,
-    content::BrowserContext* browser_context) {
-}
-
-void ExtensionActionAPI::Observer::OnExtensionActionAPIShuttingDown() {
-}
-
-ExtensionActionAPI::Observer::~Observer() {
-}
-
-//
-// ExtensionActionAPI
-//
-
-static base::LazyInstance<BrowserContextKeyedAPIFactory<ExtensionActionAPI>>::
-    DestructorAtExit g_extension_action_api_factory = LAZY_INSTANCE_INITIALIZER;
-
-ExtensionActionAPI::ExtensionActionAPI(content::BrowserContext* context)
-    : browser_context_(context), extension_prefs_(nullptr) {}
-
-ExtensionActionAPI::~ExtensionActionAPI() {
-}
-
-// static
-BrowserContextKeyedAPIFactory<ExtensionActionAPI>*
-ExtensionActionAPI::GetFactoryInstance() {
-  return g_extension_action_api_factory.Pointer();
-}
-
-// static
-ExtensionActionAPI* ExtensionActionAPI::Get(content::BrowserContext* context) {
-  return BrowserContextKeyedAPIFactory<ExtensionActionAPI>::Get(context);
-}
-
-void ExtensionActionAPI::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ExtensionActionAPI::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void ExtensionActionAPI::NotifyChange(ExtensionAction* extension_action,
-                                      content::WebContents* web_contents,
-                                      content::BrowserContext* context) {
-  for (auto& observer : observers_)
-    observer.OnExtensionActionUpdated(extension_action, web_contents, context);
-}
-
-void ExtensionActionAPI::DispatchExtensionActionClicked(
-    const ExtensionAction& extension_action,
-    WebContents* web_contents,
-    const Extension* extension) {
-  events::HistogramValue histogram_value = events::UNKNOWN;
-  const char* event_name = nullptr;
-  switch (extension_action.action_type()) {
-    case ActionInfo::Type::kAction:
-      histogram_value = events::ACTION_ON_CLICKED;
-      event_name = "action.onClicked";
-      break;
-    case ActionInfo::Type::kBrowser:
-      histogram_value = events::BROWSER_ACTION_ON_CLICKED;
-      event_name = "browserAction.onClicked";
-      break;
-    case ActionInfo::Type::kPage:
-      histogram_value = events::PAGE_ACTION_ON_CLICKED;
-      event_name = "pageAction.onClicked";
-      break;
-  }
-
-  if (event_name) {
-    base::Value::List args;
-    // The action APIs (browserAction, pageAction, action) are only available
-    // to privileged extension contexts. As such, we deterministically know that
-    // the right context type here is privileged.
-    constexpr mojom::ContextType context_type =
-        mojom::ContextType::kPrivilegedExtension;
-    ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-        ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
-                                              web_contents);
-    args.Append(ExtensionTabUtil::CreateTabObject(web_contents,
-                                                  scrub_tab_behavior, extension)
-                    .ToValue());
-
-    DispatchEventToExtension(web_contents->GetBrowserContext(),
-                             extension_action.extension_id(), histogram_value,
-                             event_name, std::move(args));
-  }
-}
-
-void ExtensionActionAPI::ClearAllValuesForTab(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
-  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  const ExtensionSet& enabled_extensions =
-      ExtensionRegistry::Get(browser_context_)->enabled_extensions();
-  ExtensionActionManager* action_manager =
-      ExtensionActionManager::Get(browser_context_);
-
-  for (ExtensionSet::const_iterator iter = enabled_extensions.begin();
-       iter != enabled_extensions.end(); ++iter) {
-    ExtensionAction* extension_action =
-        action_manager->GetExtensionAction(**iter);
-    if (extension_action) {
-      extension_action->ClearAllValuesForTab(tab_id.id());
-      NotifyChange(extension_action, web_contents, browser_context);
-    }
-  }
-}
-
-ExtensionPrefs* ExtensionActionAPI::GetExtensionPrefs() {
-  // This lazy initialization is more than just an optimization, because it
-  // allows tests to associate a new ExtensionPrefs with the browser context
-  // before we access it.
-  if (!extension_prefs_)
-    extension_prefs_ = ExtensionPrefs::Get(browser_context_);
-  return extension_prefs_;
-}
-
-void ExtensionActionAPI::DispatchEventToExtension(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    events::HistogramValue histogram_value,
-    const std::string& event_name,
-    base::Value::List event_args) {
-  if (!EventRouter::Get(context))
-    return;
-
-  auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(event_args), context);
-  event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
-  EventRouter::Get(context)
-      ->DispatchEventToExtension(extension_id, std::move(event));
-}
-
-void ExtensionActionAPI::Shutdown() {
-  for (auto& observer : observers_)
-    observer.OnExtensionActionAPIShuttingDown();
-}
-
-void ExtensionActionAPI::OnActionPinnedStateChanged(
-    const ExtensionId& extension_id,
-    bool is_pinned) {
-  // TODO(crbug.com/360916928): Today, no action APIs are compiled.
-  // Unfortunately, this means we miss out on the compiled types, which would be
-  // rather helpful here.
-  base::Value::List args;
-  base::Value::Dict change;
-  change.Set("isOnToolbar", is_pinned);
-  args.Append(std::move(change));
-  DispatchEventToExtension(browser_context_, extension_id,
-                           events::ACTION_ON_USER_SETTINGS_CHANGED,
-                           "action.onUserSettingsChanged", std::move(args));
-}
-
-//
 // ExtensionActionFunction
 //
 
@@ -425,7 +263,7 @@ bool ExtensionActionFunction::ExtractDataFromArguments() {
 }
 
 void ExtensionActionFunction::NotifyChange() {
-  ExtensionActionAPI::Get(browser_context())
+  ExtensionActionDispatcher::Get(browser_context())
       ->NotifyChange(extension_action_, contents_, browser_context());
 }
 

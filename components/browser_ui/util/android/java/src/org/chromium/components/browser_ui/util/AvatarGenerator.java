@@ -77,7 +77,7 @@ public class AvatarGenerator {
 
         // Each image has a margin of 1 dp around it.
         float margin = AVATAR_MARGIN_DIP * resources.getDisplayMetrics().density;
-        float halfSize = imageSize / 2;
+        float halfSize = imageSize / 2f;
 
         if (avatarCount == 2) {
             // +------+ +------+

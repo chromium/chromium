@@ -24,11 +24,17 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import java.io.IOException;
+import java.util.List;
 
 /** This class provides methods to access content URI schemes. */
 @JNINamespace("base")
 public abstract class ContentUriUtils {
     private static final String TAG = "ContentUriUtils";
+    private static final String PATH_TREE = "tree";
+    private static final String PATH_DOCUMENT = "document";
+    private static final String PATH_CREATE_CHILD_DOCUMENT = "create-child-document";
+    private static final String PATH_MIME_TYPE = "mime-type";
+    private static final String PATH_DISPLAY_NAME = "display-name";
 
     // Prevent instantiation.
     private ContentUriUtils() {}
@@ -185,6 +191,18 @@ public abstract class ContentUriUtils {
     @CalledByNative
     private static void listDirectory(@JniType("std::string") String uriString, long nativeVector) {
         populateFileInfo(uriString, true, nativeVector);
+    }
+
+    /**
+     * Returns whether uriString is a Document URI as per DocumentsContract#isDocumentUri().
+     *
+     * @param uriString the content URI to look up.
+     * @return whether uriString is a Document URI.
+     */
+    @CalledByNative
+    private static boolean isDocumentUri(@JniType("std::string") String uriString) {
+        return DocumentsContract.isDocumentUri(
+                ContextUtils.getApplicationContext(), Uri.parse(uriString));
     }
 
     /**
@@ -429,6 +447,166 @@ public abstract class ContentUriUtils {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /**
+     * Return the URI of the matching existing document, or build a URI which can be used by
+     * getDocumentFromQuery() to create the specified file or directory.
+     *
+     * @param parentUri URI of parent directory.
+     * @param displayName display name of file / dir.
+     * @param mimeType mime type of file, leave empty for directory.
+     * @param isDirectory true if document is a directory.
+     * @param create set to true if document should be created if it doesn't exist.
+     * @return Uri or null if no match is found and create is not set.
+     */
+    @Nullable
+    @CalledByNative
+    public static String getChildDocumentOrQuery(
+            @JniType("std::string") String parentUri,
+            @JniType("std::string") String displayName,
+            @JniType("std::string") String mimeType,
+            boolean isDirectory,
+            boolean create) {
+        if (isDirectory) {
+            mimeType = DocumentsContract.Document.MIME_TYPE_DIR;
+        } else if (mimeType.isEmpty()) {
+            mimeType = "application/octet-string";
+        }
+        try {
+            Uri uri = Uri.parse(parentUri);
+            String treeDocumentId = DocumentsContract.getTreeDocumentId(uri);
+            String documentId;
+            try {
+                documentId = DocumentsContract.getDocumentId(uri);
+            } catch (Exception e) {
+                documentId = treeDocumentId;
+            }
+            Uri child = findChild(uri.getAuthority(), treeDocumentId, documentId, displayName);
+            if (child != null) {
+                return child.toString();
+            } else if (!create) {
+                return null;
+            }
+            // Format of URL is:
+            // /create-child-document/tree/<tid>/document/<did>/mime-type/<mt>/display-name/<dn>.
+            return new Uri.Builder()
+                    .scheme(uri.getScheme())
+                    .authority(uri.getAuthority())
+                    .appendPath(PATH_CREATE_CHILD_DOCUMENT)
+                    .appendPath(PATH_TREE)
+                    .appendPath(treeDocumentId)
+                    .appendPath(PATH_DOCUMENT)
+                    .appendPath(documentId)
+                    .appendPath(PATH_MIME_TYPE)
+                    .appendPath(mimeType)
+                    .appendPath(PATH_DISPLAY_NAME)
+                    .appendPath(displayName)
+                    .build()
+                    .toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Find the child document.
+     *
+     * @param authority the authority of the parent URI.
+     * @param tree the document ID of the tree.
+     * @param parentDocumentId the document ID of the parent.
+     * @param displayName the display name of the document to find.
+     * @return the child document if found, or null.
+     */
+    private static Uri findChild(
+            String authority, String tree, String parentDocumentId, String displayName) {
+        ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
+        String[] columns = {
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+        };
+        Uri treeUri = DocumentsContract.buildTreeDocumentUri(authority, tree);
+        Uri queryUri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, parentDocumentId);
+        // Use a selection to match displayName, but don't trust that it actually works.
+        String selection = String.format("%s = ?", DocumentsContract.Document.COLUMN_DISPLAY_NAME);
+        String[] selectionArgs = {displayName};
+        try (Cursor c = resolver.query(queryUri, columns, selection, selectionArgs, null)) {
+            while (c.moveToNext()) {
+                // Verify display-name matches, and we have a valid docid.
+                if (c.isNull(0) || c.isNull(1) || !displayName.equals(c.getString(0))) {
+                    continue;
+                }
+                String documentId = c.getString(1);
+                return DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to find child %s, query=%s ", displayName, queryUri, e);
+        }
+        return null;
+    }
+
+    /**
+     * Returns true if this is a create child document query created by #getChildDocumentOrQuery().
+     *
+     * @param uriString the content URI.
+     * @return whether this is a create child document query.
+     */
+    @CalledByNative
+    private static boolean isCreateChildDocumentQuery(@JniType("std::string") String uriString) {
+        Uri uri = Uri.parse(uriString);
+        final List<String> paths = uri.getPathSegments();
+        // Format of URL is:
+        // /create-child-document/tree/<tid>/document/<did>/mime-type/<mt>/display-name/<dn>.
+        return paths.size() == 9
+                && PATH_CREATE_CHILD_DOCUMENT.equals(paths.get(0))
+                && PATH_TREE.equals(paths.get(1))
+                && PATH_DOCUMENT.equals(paths.get(3))
+                && PATH_MIME_TYPE.equals(paths.get(5))
+                && PATH_DISPLAY_NAME.equals(paths.get(7));
+    }
+
+    /**
+     * Gets or creates a document with the details encodied in queryUriString which must be
+     * generated from #getChildDocumentOrQuery().
+     *
+     * @param queryUriString the content URI to create a document from.
+     * @param create if true, the document will be created if it does not exist.
+     * @return The URI of the created document or null
+     */
+    @CalledByNative
+    private static String getDocumentFromQuery(
+            @JniType("std::string") String queryUriString, boolean create) {
+        if (!isCreateChildDocumentQuery(queryUriString)) {
+            return null;
+        }
+        Uri uri = Uri.parse(queryUriString);
+        final List<String> paths = uri.getPathSegments();
+        // Format of URL is:
+        // /create-child-document/tree/<tid>/document/<did>/mime-type/<mt>/display-name/<dn>.
+        String tree = paths.get(2);
+        String parentDocumentId = paths.get(4);
+        String mimeType = paths.get(6);
+        String displayName = paths.get(8);
+        ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
+
+        // Check if document already exists.
+        Uri child = findChild(uri.getAuthority(), tree, parentDocumentId, displayName);
+        if (child != null) {
+            return child.toString();
+        }
+
+        // Create document if requested.
+        if (create) {
+            Uri treeUri = DocumentsContract.buildTreeDocumentUri(uri.getAuthority(), tree);
+            Uri parentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, parentDocumentId);
+            try {
+                return DocumentsContract.createDocument(resolver, parentUri, mimeType, displayName)
+                        .toString();
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to create %s: %s", queryUriString, e.getMessage());
+            }
+        }
+        return null;
     }
 
     @NativeMethods

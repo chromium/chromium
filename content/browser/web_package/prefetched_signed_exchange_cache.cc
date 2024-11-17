@@ -4,6 +4,7 @@
 
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -100,7 +101,7 @@ class RedirectResponseURLLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {
@@ -295,11 +296,12 @@ bool CanStoreEntry(const PrefetchedSignedExchangeCacheEntry& entry) {
   // by the network layer and PrefetchedSignedExchangeCache stores decoded
   // response bodies, so we can safely ignore varying on the "Accept-Encoding"
   // header.
-  std::string value;
+  std::optional<std::string_view> value;
   size_t iter = 0;
-  while (outer_headers->EnumerateHeader(&iter, "vary", &value)) {
-    if (!base::EqualsCaseInsensitiveASCII(value, "accept-encoding"))
+  while ((value = outer_headers->EnumerateHeader(&iter, "vary"))) {
+    if (!base::EqualsCaseInsensitiveASCII(*value, "accept-encoding")) {
       return false;
+    }
   }
   return true;
 }
@@ -330,7 +332,7 @@ bool CanUseEntry(const PrefetchedSignedExchangeCacheEntry& entry,
 
 // Deserializes a SHA256HashValue from a string. On error, returns false.
 // This method support the form of "sha256-<base64-hash-value>".
-bool ExtractSHA256HashValueFromString(const std::string_view value,
+bool ExtractSHA256HashValueFromString(std::string_view value,
                                       net::SHA256HashValue* out) {
   if (!base::StartsWith(value, "sha256-"))
     return false;
@@ -349,9 +351,9 @@ bool ExtractSHA256HashValueFromString(const std::string_view value,
 std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
     const PrefetchedSignedExchangeCacheEntry& main_exchange) {
   std::map<GURL, net::SHA256HashValue> result;
-  std::string link_header;
-  main_exchange.inner_response()->headers->GetNormalizedHeader("link",
-                                                               &link_header);
+  std::string link_header = main_exchange.inner_response()
+                                ->headers->GetNormalizedHeader("link")
+                                .value_or(std::string());
   if (link_header.empty())
     return result;
 

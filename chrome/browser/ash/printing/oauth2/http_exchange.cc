@@ -35,9 +35,8 @@ std::string ToString(ContentFormat format) {
     case ContentFormat::kXWwwFormUrlencoded:
       return "application/x-www-form-urlencoded";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "";
 }
 
 }  // namespace

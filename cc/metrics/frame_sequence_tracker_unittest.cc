@@ -137,6 +137,7 @@ class FrameSequenceTrackerTest : public testing::Test {
         case 'p':
         case 'P':
         case 'n':
+        case 's':
           ASSERT_EQ(*str, '(') << command;
           str = ParseNumber(++str, &sequence);
           ASSERT_EQ(*str, ')');
@@ -165,7 +166,7 @@ class FrameSequenceTrackerTest : public testing::Test {
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION() << command << str;
+          NOTREACHED() << command << str;
       }
 
       switch (command) {
@@ -178,7 +179,11 @@ class FrameSequenceTrackerTest : public testing::Test {
           auto args = CreateBeginFrameArgs(source_id, sequence);
           FrameInfo frame_info;
           frame_info.final_state = FrameInfo::FrameFinalState::kDropped;
+          frame_info.final_state_raster_property =
+              FrameInfo::FrameFinalState::kDropped;
           frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothCompositor;
+          frame_info.smooth_thread_raster_property =
+              FrameInfo::SmoothThread::kSmoothCompositor;
           collection_.AddSortedFrame(args, frame_info);
           break;
         }
@@ -236,8 +241,24 @@ class FrameSequenceTrackerTest : public testing::Test {
           break;
         }
 
+        case 's': {
+          // V3 metric codepath marks frames as no update desired when they
+          // should have been marked as dropped, meaning there should be a
+          // difference between V3 and V4 percent dropped frames metrics.
+          auto args = CreateBeginFrameArgs(source_id, sequence);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kNoUpdateDesired;
+          frame_info.final_state_raster_property =
+              FrameInfo::FrameFinalState::kDropped;
+          frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothCompositor;
+          frame_info.smooth_thread_raster_property =
+              FrameInfo::SmoothThread::kSmoothCompositor;
+          collection_.AddSortedFrame(args, frame_info);
+          break;
+        }
+
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
   }
@@ -273,6 +294,11 @@ class FrameSequenceTrackerTest : public testing::Test {
   uint32_t frames_produced() const {
     return tracker_->metrics_->v3_.frames_expected -
            tracker_->metrics_->v3_.frames_dropped;
+  }
+
+  uint32_t frames_produced_v4() const {
+    return tracker_->metrics_->v3_.frames_expected -
+           tracker_->metrics_->v4_.frames_dropped;
   }
 
   FrameSequenceTracker::TerminationStatus GetTerminationStatus(
@@ -322,11 +348,13 @@ TEST_F(FrameSequenceTrackerTest, SourceIdChangeDuringSequence) {
 }
 
 TEST_F(FrameSequenceTrackerTest, TestNotifyFramePresented) {
-  collection_.StartSequence(FrameSequenceTrackerType::kCompositorAnimation);
+  collection_.StartSequence(
+      FrameSequenceTrackerType::kCompositorNativeAnimation);
   collection_.StartSequence(FrameSequenceTrackerType::kMainThreadAnimation);
   EXPECT_EQ(NumberOfTrackers(), 3u);
 
-  collection_.StopSequence(FrameSequenceTrackerType::kCompositorAnimation);
+  collection_.StopSequence(
+      FrameSequenceTrackerType::kCompositorNativeAnimation);
   EXPECT_EQ(NumberOfTrackers(), 2u);
   EXPECT_TRUE(TrackerExists(FrameSequenceTrackerType::kMainThreadAnimation));
   EXPECT_TRUE(TrackerExists(FrameSequenceTrackerType::kTouchScroll));
@@ -387,6 +415,18 @@ TEST_F(FrameSequenceTrackerTest, MainFrameNoDamageTracking) {
   args = CreateBeginFrameArgs(source, ++sequence);
   StartFrames(args);
   collection_.NotifyFrameEnd(args, args);
+}
+
+TEST_F(FrameSequenceTrackerTest, CompositorDroppedFramesV3vsV4Metrics) {
+  // Begin, present frame 1, drop it 3 times and the present
+  // frame 2, at which point we drop it 4 times.
+  // Total dropped frames should be 7, but only 3 counted by frames_produced V3
+  // while all 7 are counted by V4.
+  const char sequence[] = "b(1)p(1)d(1)d(1)d(1)p(2)s(2)s(2)s(2)s(2)";
+  GenerateSequence(sequence);
+  EXPECT_EQ(frames_expected(), 9u);
+  EXPECT_EQ(frames_produced(), 6u);     // 9 expected - 3 dropped = 6
+  EXPECT_EQ(frames_produced_v4(), 2u);  // 9 expected - 7 dropped = 2
 }
 
 TEST_F(FrameSequenceTrackerTest, SimpleSequenceOneFrame) {

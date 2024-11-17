@@ -4,6 +4,7 @@
 
 #include "components/variations/synthetic_trial_registry.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -109,6 +110,14 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
   if (!trials_updated.empty() || !trials_removed.empty()) {
     NotifySyntheticTrialObservers(trials_updated, trials_removed);
   }
+}
+
+std::vector<ActiveGroupId>
+SyntheticTrialRegistry::GetCurrentSyntheticFieldTrialsForTest() const {
+  CHECK_IS_TEST();
+  std::vector<ActiveGroupId> synthetic_trials;
+  GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(), &synthetic_trials);
+  return synthetic_trials;
 }
 
 void SyntheticTrialRegistry::RegisterSyntheticFieldTrial(

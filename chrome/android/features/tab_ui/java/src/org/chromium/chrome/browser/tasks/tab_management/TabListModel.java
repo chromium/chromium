@@ -212,6 +212,8 @@ class TabListModel extends ModelList {
      * @param index         The index of the item in {@link TabListModel} that needs to be updated.
      */
     void updateTabListModelIdForGroup(Tab selectedTab, int index) {
+        if (index < 0 || index >= size()) return;
+
         if (get(index).model.get(CARD_TYPE) != TAB) return;
         get(index).model.set(TabProperties.TAB_ID, selectedTab.getId());
     }

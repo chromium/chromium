@@ -76,8 +76,6 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItemsCount(
 
 }  // namespace
 
-using wk_navigation_util::IsWKInternalUrl;
-
 // Test fixture for web::WebTest class.
 class WebStateTest : public FakeWebClient, public WebTestWithWebState {
   void SetUp() override {
@@ -333,7 +331,6 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   auto block = ^{
     bool restored = navigation_manager->GetItemCount() == maxSessionSize &&
                     navigation_manager->CanGoForward();
-    EXPECT_EQ(restored, !navigation_manager->IsRestoreSessionInProgress());
     if (!restored) {
       EXPECT_FALSE(navigation_manager->GetLastCommittedItem());
       EXPECT_EQ(-1, navigation_manager->GetLastCommittedItemIndex());
@@ -378,7 +375,6 @@ TEST_F(WebStateTest, RestoreLargeSession) {
     EXPECT_TRUE(visible_item);
     EXPECT_TRUE(visible_item && visible_item->GetURL() == "http://www.0.com/");
     EXPECT_FALSE(navigation_manager->CanGoBack());
-    EXPECT_FALSE(IsWKInternalUrl(web_state_ptr->GetVisibleURL()));
 
     return restored;
   };
@@ -391,8 +387,6 @@ TEST_F(WebStateTest, RestoreLargeSession) {
 
   // Now wait until the last committed item is fully loaded.
   auto block2 = ^{
-    EXPECT_FALSE(IsWKInternalUrl(web_state_ptr->GetVisibleURL()));
-
     return !navigation_manager->GetPendingItem() &&
            !web_state_ptr->IsLoading() &&
            web_state_ptr->GetLoadingProgress() == 1.0;

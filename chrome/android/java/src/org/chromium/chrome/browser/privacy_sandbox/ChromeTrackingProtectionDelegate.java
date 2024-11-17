@@ -23,12 +23,12 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     }
 
     @Override
-    public boolean isBlockAll3PCDEnabled() {
+    public boolean isBlockAll3pcEnabled() {
         return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED);
     }
 
     @Override
-    public void setBlockAll3PCD(boolean enabled) {
+    public void setBlockAll3pc(boolean enabled) {
         UserPrefs.get(mProfile).setBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED, enabled);
     }
 
@@ -40,6 +40,11 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     @Override
     public void setDoNotTrack(boolean enabled) {
         UserPrefs.get(mProfile).setBoolean(Pref.ENABLE_DO_NOT_TRACK, enabled);
+    }
+
+    @Override
+    public boolean shouldShowTrackingProtectionBrandedUi() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX);
     }
 
     @Override

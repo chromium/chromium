@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser;
 
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 
 /**
  * Because JankTracker lives in //base/android it can't use things like field trial parameters so

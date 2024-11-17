@@ -60,8 +60,7 @@ int ConvertHinting(gfx::FontRenderParams::Hinting hinting) {
     case gfx::FontRenderParams::HINTING_FULL:
       return 3;
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected hinting value " << hinting;
-  return 0;
+  NOTREACHED() << "Unexpected hinting value " << hinting;
 }
 
 font_service::mojom::RenderStyleSwitch ConvertSubpixelRendering(
@@ -75,9 +74,7 @@ font_service::mojom::RenderStyleSwitch ConvertSubpixelRendering(
     case gfx::FontRenderParams::SUBPIXEL_RENDERING_VBGR:
       return font_service::mojom::RenderStyleSwitch::ON;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected subpixel rendering value " << rendering;
-  return font_service::mojom::RenderStyleSwitch::NO_PREFERENCE;
+  NOTREACHED() << "Unexpected subpixel rendering value " << rendering;
 }
 
 // The maximum number of entries to keep in the font family matching cache.

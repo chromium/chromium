@@ -106,27 +106,14 @@ struct EnrollmentConfig {
     // Forced manual enrollment triggered as a fallback to a failed
     // token-based enrollment. Cannot be skipped.
     MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK = 20,
-  };
-
-  // An enumeration of authentication mechanisms that can be used for
-  // enrollment.
-  enum AuthMechanism {
-    // Interactive authentication.
-    // Note: the entry is used as both a signal for interactive enrollment and
-    // as a default value (e.g. in `should_enroll_with_attestation()`).
-    // TODO(b/332529631): Introduce kNone entry to represent default config
-    // that does not require enrollment.
-    AUTH_MECHANISM_INTERACTIVE = 0,
-    // Automatic authentication relying on the attestation process.
-    AUTH_MECHANISM_ATTESTATION = 1,
-    // Prefer to use attestation enrollment, falling back to manual enrollment
-    // if attestation fails or manual enrollment is forced on the system.
-    AUTH_MECHANISM_ATTESTATION_PREFERRED = 2,
-    // Prefer to use automatic enrollment-token-based authentication relying on
-    // the device. If token-based auth fails, fall back to manual enrollment.
-    // As of writing, token-based-enrollment on ChromeOS only happens for Flex
-    // Auto Enrollment.
-    AUTH_MECHANISM_TOKEN_PREFERRED = 3,
+    // Forced initial enrollment triggered by remote deployment (currently
+    // a Flex feature). This enrollment mode uses token-based enrollment,
+    // similar to MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED; but it's useful
+    // to differentiate between the two.
+    MODE_REMOTE_DEPLOYMENT_SERVER_FORCED = 21,
+    // Forced manual enrollment triggered as a fallback to a failed remote
+    // deployment enrollment.
+    MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK = 22,
   };
 
   // An enumeration of assigned upgrades that a device can after initial
@@ -161,10 +148,6 @@ struct EnrollmentConfig {
 
   static EnrollmentConfig GetDemoModeEnrollmentConfig();
 
-  // Returns the respective manual fallback enrollment mode when given an
-  // attestation mode.
-  static Mode GetManualFallbackMode(Mode attestation_mode);
-
   EnrollmentConfig();
   EnrollmentConfig(const EnrollmentConfig& config);
   ~EnrollmentConfig();
@@ -177,7 +160,8 @@ struct EnrollmentConfig {
     return mode == MODE_ATTESTATION_MANUAL_FALLBACK ||
            mode == MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK ||
            mode == MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK ||
-           mode == MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
+           mode == MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK ||
+           mode == MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK;
   }
 
   // Whether enrollment is forced. The user can't skip the enrollment step
@@ -190,7 +174,7 @@ struct EnrollmentConfig {
            mode == MODE_ATTESTATION_INITIAL_SERVER_FORCED ||
            mode == MODE_ATTESTATION_ROLLBACK_FORCED || mode == MODE_RECOVERY ||
            mode == MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED ||
-           is_manual_fallback();
+           mode == MODE_REMOTE_DEPLOYMENT_SERVER_FORCED || is_manual_fallback();
   }
 
   // Whether this configuration is in attestation mode per server request.
@@ -211,25 +195,29 @@ struct EnrollmentConfig {
            mode == MODE_ATTESTATION_ROLLBACK_FORCED;
   }
 
-  // Whether this configuration is an automatic enrollment mode that has a
-  // manual fallback. I.e. after a failed attempt at automatic enrolling,
-  // manual enrollment will be triggered.
-  bool is_mode_with_manual_fallback() const {
-    return is_mode_attestation_server() ||
-           mode == MODE_ATTESTATION_ROLLBACK_FORCED ||
-           mode == MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
-  }
-
   // Whether this configuration is in attestation mode.
   bool is_mode_attestation() const {
     return is_mode_attestation_client() || is_mode_attestation_server();
   }
 
+  // Whether this configuration is in token-based mode.
+  bool is_mode_token() const {
+    return mode == MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED ||
+           mode == MODE_REMOTE_DEPLOYMENT_SERVER_FORCED;
+  }
+
   // Whether this configuration's mode causes the device to automatically
   // enroll without user interaction.
   bool is_automatic_enrollment() const {
-    return is_mode_attestation() ||
-           mode == MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
+    return is_mode_attestation() || is_mode_token();
+  }
+
+  // Whether this configuration is an automatic enrollment mode that has a
+  // manual fallback. I.e. after a failed attempt at automatic enrolling,
+  // manual enrollment will be triggered.
+  bool is_mode_with_manual_fallback() const {
+    return is_mode_attestation_server() ||
+           mode == MODE_ATTESTATION_ROLLBACK_FORCED || is_mode_token();
   }
 
   // Whether this configuration is in OAuth mode.
@@ -237,12 +225,20 @@ struct EnrollmentConfig {
     return mode != MODE_NONE && !is_automatic_enrollment();
   }
 
+  constexpr bool operator==(const EnrollmentConfig& other) const = default;
+
+  // Returns an effective config that should be used for upcoming enrollment:
+  // * Returns prescribed config if the current one prescribes an enrollment.
+  // * Returns manual enrollment config, if the current one does not prescribe
+  // enrollment.
+  EnrollmentConfig GetEffectiveConfig() const;
+
+  // Returns a manual fallback config corresponding to the given automatic
+  // enrollment config.
+  EnrollmentConfig GetManualFallbackConfig() const;
+
   // Indicates the enrollment flow variant to trigger during OOBE.
   Mode mode = MODE_NONE;
-
-  // The authentication mechanism to use.
-  // TODO(drcrash): Change to best available once ZTE is everywhere.
-  AuthMechanism auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
 
   // The domain to enroll the device to, if applicable. If this is not set, the
   // device may be enrolled to any domain. Note that for the case where the
@@ -274,7 +270,7 @@ struct EnrollmentConfig {
 
   // Source of OOBE config, if the device has an OOBE configuration file and
   // that config influences enrollment.
-  OOBEConfigSource oobe_config_source;
+  OOBEConfigSource oobe_config_source = OOBEConfigSource::kNone;
 
  private:
   // Hold fields to be filled corresponding to ones in `EnrollmentConfig`.
@@ -286,9 +282,6 @@ struct EnrollmentConfig {
 };
 
 std::ostream& operator<<(std::ostream& os, const EnrollmentConfig::Mode& mode);
-
-std::ostream& operator<<(std::ostream& os,
-                         const EnrollmentConfig::AuthMechanism& auth);
 
 std::ostream& operator<<(std::ostream& os, const EnrollmentConfig& config);
 

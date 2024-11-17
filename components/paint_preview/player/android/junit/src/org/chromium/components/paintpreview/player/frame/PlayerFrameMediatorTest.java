@@ -85,7 +85,7 @@ public class PlayerFrameMediatorTest {
     }
 
     /** Used for keeping track of all bitmap requests that {@link PlayerFrameMediator} makes. */
-    private class RequestedBitmap {
+    private static class RequestedBitmap {
         UnguessableToken mFrameGuid;
         Rect mClipRect;
         float mScaleFactor;
@@ -136,7 +136,7 @@ public class PlayerFrameMediatorTest {
      * Used for keeping track of all click events that {@link PlayerFrameMediator} sends to {@link
      * PlayerCompositorDelegate}.
      */
-    private class ClickedPoint {
+    private static class ClickedPoint {
         UnguessableToken mFrameGuid;
         int mX;
         int mY;
@@ -176,7 +176,7 @@ public class PlayerFrameMediatorTest {
      * Mocks {@link PlayerCompositorDelegate}. Stores all bitmap requests as {@link
      * RequestedBitmap}s.
      */
-    private class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
+    private static class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
         List<RequestedBitmap> mRequestedBitmap = new ArrayList<>();
         List<ClickedPoint> mClickedPoints = new ArrayList<>();
         Runnable mOnMemoryPressureRunnable;
@@ -238,7 +238,7 @@ public class PlayerFrameMediatorTest {
         }
     }
 
-    private class MatrixMatcher implements ArgumentMatcher<Matrix> {
+    private static class MatrixMatcher implements ArgumentMatcher<Matrix> {
         private Matrix mLeft;
 
         MatrixMatcher(Matrix left) {
@@ -341,9 +341,7 @@ public class PlayerFrameMediatorTest {
         // we should have only one column.
         Bitmap[][] bitmapMatrix = mModel.get(PlayerFrameProperties.BITMAP_MATRIX);
         Assert.assertTrue(Arrays.deepEquals(bitmapMatrix, new Bitmap[4][1]));
-        Assert.assertEquals(
-                new ArrayList<Pair<View, Rect>>(),
-                mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS));
+        Assert.assertEquals(List.of(), mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS));
     }
 
     /**

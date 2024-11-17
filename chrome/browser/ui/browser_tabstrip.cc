@@ -40,6 +40,7 @@ content::WebContents* AddAndReturnTabAt(
                                   : WindowOpenDisposition::NEW_BACKGROUND_TAB;
   params.tabstrip_index = idx;
   params.group = group;
+  params.pwa_navigation_capturing_force_off = true;
   Navigate(&params);
 
   if (!params.navigated_or_inserted_contents)
@@ -65,6 +66,7 @@ content::WebContents* AddSelectedTabWithURL(Browser* browser,
                                             ui::PageTransition transition) {
   NavigateParams params(browser, url, transition);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.pwa_navigation_capturing_force_off = true;
   Navigate(&params);
   return params.navigated_or_inserted_contents;
 }

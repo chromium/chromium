@@ -104,7 +104,7 @@ def match_and_consume(pattern, source):
 def load_model_from_idl(source):
     source = re.sub(r"//.*", "", source)  # Remove line comments
     # Remove block comments
-    source = re.sub(r"/\*(.|\n)*?\*/", "", source, re.MULTILINE)
+    source = re.sub(r"/\*(.|\n)*?\*/", "", source, flags=re.MULTILINE)
     # Merge the method annotation with the next line
     source = re.sub(r"\]\s*?\n\s*", "] ", source)
     source = source.strip()

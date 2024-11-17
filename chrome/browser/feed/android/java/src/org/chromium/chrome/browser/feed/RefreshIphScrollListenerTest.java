@@ -139,7 +139,7 @@ public final class RefreshIphScrollListenerTest {
 
     @Mock private Tracker mTracker;
 
-    private boolean mHasShownIPH;
+    private boolean mHasShownIph;
 
     @Before
     public void setUp() {
@@ -180,7 +180,7 @@ public final class RefreshIphScrollListenerTest {
                     }
 
                     @Override
-                    public boolean isFeedHeaderPositionInContainerSuitableForIPH(
+                    public boolean isFeedHeaderPositionInContainerSuitableForIph(
                             float headerMaxPosFraction) {
                         return false;
                     }
@@ -231,14 +231,14 @@ public final class RefreshIphScrollListenerTest {
                         delegate,
                         scrollableContainerDelegate,
                         () -> {
-                            mHasShownIPH = true;
+                            mHasShownIph = true;
                         });
         listener.onScrolled(0, scrollY);
 
         if (expectEnabled) {
-            Assert.assertTrue(mHasShownIPH);
+            Assert.assertTrue(mHasShownIph);
         } else {
-            Assert.assertFalse(mHasShownIPH);
+            Assert.assertFalse(mHasShownIph);
         }
     }
 }

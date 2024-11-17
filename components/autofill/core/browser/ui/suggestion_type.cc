@@ -88,6 +88,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kCreditCardFieldByFieldFilling";
     case SuggestionType::kIbanEntry:
       return "kIbanEntry";
+    case SuggestionType::kBnplEntry:
+      return "kBnplEntry";
     case SuggestionType::kCreateNewPlusAddress:
       return "kCreateNewPlusAddress";
     case SuggestionType::kCreateNewPlusAddressInline:
@@ -126,10 +128,10 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kFillPredictionImprovements";
     case SuggestionType::kPredictionImprovementsFeedback:
       return "kPredictionImprovementsFeedback";
-    case SuggestionType::kPredictionImprovementsDetails:
-      return "kPredictionImprovementsDetails";
     case SuggestionType::kPredictionImprovementsError:
       return "kPredictionImprovementsError";
+    case SuggestionType::kEditPredictionImprovementsInformation:
+      return "kEditPredictionImprovementsInformation";
   }
   NOTREACHED();
 }

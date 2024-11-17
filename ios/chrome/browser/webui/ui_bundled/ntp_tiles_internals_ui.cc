@@ -8,7 +8,8 @@
 #include <string_view>
 #include <vector>
 
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/ntp_tiles_internals_resources.h"
+#include "components/grit/ntp_tiles_internals_resources_map.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/webui/ntp_tiles_internals_message_handler.h"
@@ -93,10 +94,9 @@ web::WebUIIOSDataSource* CreateNTPTilesInternalsHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUINTPTilesInternalsHost);
 
-  source->AddResourcePath("ntp_tiles_internals.js", IDR_NTP_TILES_INTERNALS_JS);
-  source->AddResourcePath("ntp_tiles_internals.css",
-                          IDR_NTP_TILES_INTERNALS_CSS);
-  source->SetDefaultResource(IDR_NTP_TILES_INTERNALS_HTML);
+  source->AddResourcePaths(base::make_span(kNtpTilesInternalsResources,
+                                           kNtpTilesInternalsResourcesSize));
+  source->AddResourcePath("", IDR_NTP_TILES_INTERNALS_NTP_TILES_INTERNALS_HTML);
   return source;
 }
 
@@ -109,7 +109,7 @@ NTPTilesInternalsUI::NTPTilesInternalsUI(web::WebUIIOS* web_ui,
   web::WebUIIOSDataSource::Add(profile, CreateNTPTilesInternalsHTMLSource());
   web_ui->AddMessageHandler(
       std::make_unique<IOSNTPTilesInternalsMessageHandlerBridge>(
-          ios::FaviconServiceFactory::GetForBrowserState(
+          ios::FaviconServiceFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS)));
 }
 

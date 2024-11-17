@@ -34,18 +34,18 @@ class SendTabPushNotificationClientTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         SendTabToSelfSyncServiceFactory::GetDefaultFactory());
 
-    ChromeBrowserState* browser_state =
+    ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
-    BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
+    BrowserList* list = BrowserListFactory::GetForProfile(profile);
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])
         .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(browser_state, mock_scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile, mock_scene_state_);
     list->AddBrowser(browser_.get());
     client_ = std::make_unique<SendTabPushNotificationClient>();
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),

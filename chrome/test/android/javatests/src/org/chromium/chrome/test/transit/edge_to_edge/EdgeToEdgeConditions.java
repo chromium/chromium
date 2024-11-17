@@ -8,7 +8,9 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 
 /** Conditions that provides edge to edge related classes when features are enabled. */
@@ -75,6 +77,35 @@ class EdgeToEdgeConditions {
         @Override
         public String buildDescription() {
             return "BottomControlsStacker is available.";
+        }
+    }
+
+    /**
+     * Condition that checks the bottom chin exists in the browser controls stacker. The chin does
+     * not have to use a non-zero height or being visible.
+     */
+    static class BottomChinCondition extends ConditionWithResult<BottomControlsLayer> {
+
+        private final Supplier<BottomControlsStacker> mBottomControlsStacker;
+
+        public BottomChinCondition(Supplier<BottomControlsStacker> input) {
+            super(/* isRunOnUiThread= */ true);
+            mBottomControlsStacker = dependOnSupplier(input, "BottomControlsStacker");
+        }
+
+        @Override
+        public String buildDescription() {
+            return "Edge to edge bottom chin.";
+        }
+
+        @Override
+        protected ConditionStatusWithResult<BottomControlsLayer> resolveWithSuppliers()
+                throws Exception {
+            var bottomChin = mBottomControlsStacker.get().getLayerForTesting(LayerType.BOTTOM_CHIN);
+            if (bottomChin != null) {
+                return fulfilled().withResult(bottomChin);
+            }
+            return awaiting("Pending bottom chin from being attached.").withoutResult();
         }
     }
 }

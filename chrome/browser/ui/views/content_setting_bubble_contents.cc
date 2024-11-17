@@ -15,6 +15,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -344,12 +345,6 @@ int ContentSettingBubbleContents::GetSelectedRadioOption() {
   NOTREACHED();
 }
 
-void ContentSettingBubbleContents::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  if (learn_more_button_)
-    StyleLearnMoreButton();
-}
-
 std::u16string ContentSettingBubbleContents::GetWindowTitle() const {
   if (!content_setting_bubble_model_)
     return std::u16string();
@@ -384,7 +379,8 @@ void ContentSettingBubbleContents::Init() {
   if (!bubble_content.message.empty()) {
     auto message_label = std::make_unique<views::Label>(
         bubble_content.message, views::style::CONTEXT_LABEL,
-        views::style::STYLE_SECONDARY);
+        views::style::STYLE_BODY_3);
+    message_label->SetEnabledColorId(kColorActivityIndicatorForeground);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     rows.push_back({std::move(message_label), LayoutRowType::DEFAULT});
@@ -411,6 +407,8 @@ void ContentSettingBubbleContents::Init() {
   if (!radio_group.radio_items.empty()) {
     for (const auto& radio_item : radio_group.radio_items) {
       auto radio = std::make_unique<views::RadioButton>(radio_item, 0);
+      radio->SetLabelStyle(views::style::STYLE_BODY_4);
+      radio->SetEnabledTextColorIds(kColorActivityIndicatorSubtitleForeground);
       radio->SetVisible(bubble_content.is_user_modifiable);
       radio->SetMultiLine(true);
       radio_group_.push_back(radio.get());
@@ -517,16 +515,6 @@ void ContentSettingBubbleContents::Init() {
   content_setting_bubble_model_->set_owner(this);
 }
 
-void ContentSettingBubbleContents::StyleLearnMoreButton() {
-  DCHECK(learn_more_button_);
-  const ui::ColorProvider* cp = GetColorProvider();
-  SkColor icon_color = cp->GetColor(ui::kColorIcon);
-  SkColor icon_disabled_color = cp->GetColor(ui::kColorIconDisabled);
-  views::SetImageFromVectorIconWithColor(learn_more_button_,
-                                         vector_icons::kHelpOutlineIcon,
-                                         icon_color, icon_disabled_color);
-}
-
 std::unique_ptr<views::View>
 ContentSettingBubbleContents::CreateHelpAndManageView() {
   DCHECK(content_setting_bubble_model_);
@@ -535,15 +523,16 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
   std::vector<std::unique_ptr<views::View>> extra_views;
   // Optionally add a help icon if the view wants to link to a help page.
   if (bubble_content.show_learn_more) {
-    auto learn_more_button = views::CreateVectorImageButton(base::BindRepeating(
-        [](ContentSettingBubbleContents* bubble) {
-          bubble->GetWidget()->Close();
-          bubble->content_setting_bubble_model_->OnLearnMoreClicked();
-        },
-        base::Unretained(this)));
+    auto learn_more_button = views::CreateVectorImageButtonWithNativeTheme(
+        base::BindRepeating(
+            [](ContentSettingBubbleContents* bubble) {
+              bubble->GetWidget()->Close();
+              bubble->content_setting_bubble_model_->OnLearnMoreClicked();
+            },
+            base::Unretained(this)),
+        vector_icons::kHelpOutlineIcon);
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-    learn_more_button_ = learn_more_button.get();
     extra_views.push_back(std::move(learn_more_button));
   }
   // Optionally add a "Manage" button if the view wants to use a button to

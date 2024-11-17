@@ -108,21 +108,11 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  bool is_cdm_storage_database_enabled =
-      base::FeatureList::IsEnabled(features::kCdmStorageDatabase);
-  // Refer to b/325351177 for more information on why this feature is
-  // disabled.
-  bool is_cdm_migration_disabled =
-      !base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration);
-  if (is_cdm_storage_database_enabled && is_cdm_migration_disabled) {
-    tasks_ += 1;
-
-    auto cdm_storage_callback = base::BindOnce(
-        &SiteDataCountingHelper::GetCdmStorageCallback, base::Unretained(this));
-
-    partition->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
-        std::move(cdm_storage_callback), begin_, end_);
-  }
+  tasks_ += 1;
+  auto cdm_storage_callback = base::BindOnce(
+      &SiteDataCountingHelper::GetCdmStorageCallback, base::Unretained(this));
+  partition->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
+      std::move(cdm_storage_callback), begin_, end_);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   // Counting site usage data and durable permissions.

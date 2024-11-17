@@ -313,6 +313,19 @@ bool DataTransfer::hasDataStoreItemListChanged() const {
 void DataTransfer::OnItemListChanged() {
   data_store_item_list_changed_ = true;
   files_->clear();
+
+  if (!CanReadData()) {
+    return;
+  }
+
+  for (uint32_t i = 0; i < data_object_->length(); ++i) {
+    if (data_object_->Item(i)->Kind() == DataObjectItem::kFileKind) {
+      File* file = data_object_->Item(i)->GetAsFile();
+      if (file) {
+        files_->Append(file);
+      }
+    }
+  }
 }
 
 Vector<String> DataTransfer::types() {
@@ -328,18 +341,6 @@ FileList* DataTransfer::files() const {
     files_->clear();
     return files_.Get();
   }
-
-  if (!files_->IsEmpty())
-    return files_.Get();
-
-  for (uint32_t i = 0; i < data_object_->length(); ++i) {
-    if (data_object_->Item(i)->Kind() == DataObjectItem::kFileKind) {
-      Blob* blob = data_object_->Item(i)->GetAsFile();
-      if (auto* file = DynamicTo<File>(blob))
-        files_->Append(file);
-    }
-  }
-
   return files_.Get();
 }
 
@@ -426,7 +427,7 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
   // kDoNotRespectImageOrientation in order to avoid wasted work looking
   // at orientation.
   return DragImage::Create(image.get(), kDoNotRespectImageOrientation,
-                           kInterpolationDefault, opacity);
+                           GetDefaultInterpolationQuality(), opacity);
 }
 
 // static
@@ -605,6 +606,7 @@ DataTransfer::DataTransfer(DataTransferType type,
       data_store_item_list_changed_(true),
       files_(MakeGarbageCollected<FileList>()) {
   data_object_->AddObserver(this);
+  OnItemListChanged();
 }
 
 void DataTransfer::setDragImage(ImageResourceContent* image,

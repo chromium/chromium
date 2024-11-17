@@ -85,10 +85,8 @@
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -134,13 +132,12 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -188,13 +185,12 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/search/search.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "components/translate/core/browser/language_state.h"
 #include "components/user_manager/user_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/zoom_controller.h"
@@ -399,10 +395,8 @@ bool ShouldShowCookieMigrationNoticeForBrowser(const Browser& browser) {
   return last_window_for_profile;
 }
 
-void UpdateTabGroupSessionMetadata(
-    Browser* browser,
-    const tab_groups::TabGroupId& group_id,
-    const std::optional<std::string> saved_group_id) {
+void UpdateTabGroupSessionMetadata(Browser* browser,
+                                   const tab_groups::TabGroupId& group_id) {
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(browser->profile());
   if (!session_service) {
@@ -416,7 +410,33 @@ void UpdateTabGroupSessionMetadata(
           ->visual_data();
 
   session_service->SetTabGroupMetadata(browser->session_id(), group_id,
-                                       visual_data, saved_group_id);
+                                       visual_data);
+}
+
+bool ShouldHideUIForFullscreenWrapper(const Browser* browser) {
+  return browser->ShouldHideUIForFullscreen();
+}
+
+bool AlwaysReturnTrue(const Browser* browser) {
+  return true;
+}
+
+bool AlwaysReturnFalse(const Browser* browser) {
+  return false;
+}
+
+base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
+    const Browser* browser) {
+  // Returns a base::FunctionRef instead of a Base::RepeatingCallback to reduce
+  // allocation overhead, since this is a performance experiment.
+  if (base::FeatureList::IsEnabled(features::kInlineFullscreenPerfExperiment)) {
+    // In the experiment branch, lazy-eval ShouldHideUIForFullscreen.
+    return &ShouldHideUIForFullscreenWrapper;
+  }
+
+  // In the control branch, eagerly evaluate ShouldHideUIForFullscreen.
+  return browser->ShouldHideUIForFullscreen() ? &AlwaysReturnTrue
+                                              : &AlwaysReturnFalse;
 }
 
 }  // namespace
@@ -672,6 +692,10 @@ Browser::~Browser() {
   features_.reset();
   ClearAllUserData();
 
+  // Destroy the deletion dialog before profile resets.
+  // (see https://crbug.com/357391254)
+  tab_group_deletion_dialog_controller_.reset();
+
   // Stop observing notifications and destroy the tab monitor before continuing
   // with destruction. Profile destruction will unload extensions and reentrant
   // calls to Browser:: should be avoided while it is being torn down.
@@ -843,6 +867,17 @@ std::u16string Browser::GetWindowTitleForTab(int index) const {
   }
 
   if (title.empty() && (is_type_normal() || is_type_popup())) {
+    title = CoreTabHelper::GetDefaultTitle();
+  }
+
+  return title;
+}
+
+std::u16string Browser::GetTitleForTab(int index) const {
+  std::u16string title = FormatTitleForDisplay(
+      tab_strip_model_->GetWebContentsAt(index)->GetTitle());
+
+  if (title.empty()) {
     title = CoreTabHelper::GetDefaultTitle();
   }
 
@@ -1132,8 +1167,18 @@ bool Browser::ShouldHideUIForFullscreen() const {
   return window_ && window_->ShouldHideUIForFullscreen();
 }
 
+base::CallbackListSubscription Browser::RegisterBrowserDidClose(
+    BrowserDidCloseCallback callback) {
+  return browser_did_close_callback_list_.Add(std::move(callback));
+}
+
 views::View* Browser::TopContainer() {
   return window_->GetTopContainer();
+}
+
+base::CallbackListSubscription Browser::RegisterActiveTabDidChange(
+    ActiveTabChangeCallback callback) {
+  return did_active_tab_change_callback_list_.Add(std::move(callback));
 }
 
 tabs::TabInterface* Browser::GetActiveTabInterface() {
@@ -1150,7 +1195,21 @@ Browser::GetWebContentsModalDialogHostForWindow() {
 }
 
 bool Browser::IsActive() {
+// TODO(https://crbug.com/376306245): This is a temporary workaround for the
+// fact that window_->IsActive() does not return the right result for macOS
+// standalone PWA windows. This new behavior is still not technically correct,
+// since it's checking that the last active window is `this`, as opposed to
+// whether `this` is active.
+#if BUILDFLAG(IS_MAC)
+  // If this is a standalone PWA window, check BrowserList instead.
+  if (GetAppBrowserController()) {
+    return BrowserList::GetInstance()->GetLastActive() == this;
+  } else {
+    return window_->IsActive();
+  }
+#else
   return window_->IsActive();
+#endif
 }
 
 base::CallbackListSubscription Browser::RegisterDidBecomeActive(
@@ -1175,9 +1234,47 @@ BrowserWindowInterface::Type Browser::GetType() const {
   return type_;
 }
 
-user_education::FeaturePromoController* Browser::GetFeaturePromoController() {
-  return window()->GetFeaturePromoController();
+BrowserUserEducationInterface* Browser::GetUserEducationInterface() {
+  return window();
 }
+
+web_app::AppBrowserController* Browser::GetAppBrowserController() {
+  return app_controller_.get();
+}
+
+std::vector<tabs::TabInterface*> Browser::GetAllTabInterfaces() {
+  std::vector<tabs::TabInterface*> results;
+  for (int index = 0; index < tab_strip_model_->count(); ++index) {
+    results.push_back(tab_strip_model_->GetTabAtIndex(index));
+  }
+  return results;
+}
+
+Browser* Browser::GetBrowserForMigrationOnly() {
+  return this;
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+void Browser::EnsureActiveTab() {
+  if (GetActiveTabInterface()) {
+    return;
+  }
+  auto* app_browser_controller = GetAppBrowserController();
+
+  if (!app_browser_controller->HasReloadButton()) {
+    // Kiosk app not installed yet.
+    CHECK(app_browser_controller->IsInstalled());
+    CHECK_NE(TabStripModel::kNoTab, GetTabStripModel()->active_index());
+  }
+  if (app_browser_controller->IsHostedApp()) {
+    // Hosted app not installed yet.
+    CHECK(app_browser_controller->IsInstalled());
+    CHECK_NE(TabStripModel::kNoTab, GetTabStripModel()->active_index());
+  }
+  CHECK_NE(TabStripModel::kNoTab, GetTabStripModel()->active_index());
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void Browser::DidBecomeActive() {
   BrowserList::SetLastActive(this);
@@ -1248,6 +1345,10 @@ void Browser::OnWindowClosing() {
     // If there are no tabs, then a task will be scheduled (by views) to delete
     // this Browser.
     is_delete_scheduled_ = true;
+
+    // At this point the browser has successfully closed and is scheduled for
+    // deletion.
+    browser_did_close_callback_list_.Notify(this);
   }
 }
 
@@ -1507,18 +1608,7 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
   DCHECK(!IsRelevantToAppSessionService(type_));
   DCHECK(tab_strip_model_->group_model());
   if (change.type == TabGroupChange::kVisualsChanged) {
-    std::optional<std::string> saved_guid;
-
-    tab_groups::TabGroupSyncService* tab_group_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-    if (tab_group_service) {
-      const std::optional<tab_groups::SavedTabGroup> saved_group =
-          tab_group_service->GetGroup(change.group);
-      if (saved_group) {
-        saved_guid = saved_group->saved_guid().AsLowercaseString();
-      }
-    }
-    UpdateTabGroupSessionMetadata(this, change.group, std::move(saved_guid));
+    UpdateTabGroupSessionMetadata(this, change.group);
   } else if (change.type == TabGroupChange::kClosed) {
     sessions::TabRestoreService* tab_restore_service =
         TabRestoreServiceFactory::GetForProfile(profile());
@@ -1545,7 +1635,7 @@ void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
 
 void Browser::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    tabs::TabModel* tab,
+    tabs::TabInterface* tab,
     int index) {
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
@@ -1555,7 +1645,7 @@ void Browser::TabGroupedStateChanged(
     return;
 
   sessions::SessionTabHelper* const session_tab_helper =
-      sessions::SessionTabHelper::FromWebContents(tab->contents());
+      sessions::SessionTabHelper::FromWebContents(tab->GetContents());
   session_service->SetTabGroup(session_id(), session_tab_helper->session_id(),
                                std::move(group));
 }
@@ -1704,7 +1794,6 @@ bool Browser::ShouldAllowRunningInsecureContent(
 void Browser::OnDidBlockNavigation(
     content::WebContents* web_contents,
     const GURL& blocked_url,
-    const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
   if (reason ==
       blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture) {
@@ -2124,9 +2213,6 @@ void Browser::WebContentsCreated(WebContents* source_contents,
   // will later be inserted into this browser using Browser::Navigate via
   // AddNewContents.
   TabHelpers::AttachTabHelpers(new_contents);
-
-  // Make the tab show up in the task manager.
-  task_manager::WebContentsTags::CreateForTabContents(new_contents);
 }
 
 void Browser::RendererUnresponsive(
@@ -2456,6 +2542,11 @@ void Browser::LostPointerLock() {
       ->ExitExclusiveAccessToPreviousState();
 }
 
+bool Browser::IsWaitingForPointerLockPrompt(WebContents* web_contents) {
+  return exclusive_access_manager_->pointer_lock_controller()
+      ->IsWaitingForPointerLockPrompt(web_contents);
+}
+
 void Browser::RequestKeyboardLock(WebContents* web_contents,
                                   bool esc_key_locked) {
   exclusive_access_manager_->keyboard_lock_controller()->RequestKeyboardLock(
@@ -2475,6 +2566,18 @@ void Browser::RequestMediaAccessPermission(
       GetExtensionForOrigin(profile_, request.security_origin);
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
       web_contents, request, std::move(callback), extension);
+}
+
+void Browser::ProcessSelectAudioOutput(
+    const content::SelectAudioOutputRequest& request,
+    content::SelectAudioOutputCallback callback) {
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_FUCHSIA)
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessSelectAudioOutputRequest(
+      this, request, std::move(callback));
+#else
+  std::move(callback).Run(
+      base::unexpected(content::SelectAudioOutputError::kUnknown));
+#endif
 }
 
 bool Browser::CheckMediaAccessPermission(
@@ -2628,26 +2731,6 @@ void Browser::FileSelectionCanceled() {
 
 void Browser::OnThemeChanged() {
   window()->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Browser, translate::ContentTranslateDriver::TranslationObserver
-// implementation:
-
-void Browser::OnIsPageTranslatedChanged(content::WebContents* source) {
-  DCHECK(source);
-  if (tab_strip_model_->GetActiveWebContents() == source) {
-    window_->SetTranslateIconToggled(
-        ChromeTranslateClient::FromWebContents(source)
-            ->GetLanguageState()
-            .IsPageTranslated());
-  }
-}
-
-void Browser::OnTranslateEnabledChanged(content::WebContents* source) {
-  DCHECK(source);
-  if (tab_strip_model_->GetActiveWebContents() == source)
-    UpdateToolbar(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2821,6 +2904,7 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   }
 
   SearchTabHelper::FromWebContents(new_contents)->OnTabActivated();
+  did_active_tab_change_callback_list_.Notify(this);
 }
 
 void Browser::OnTabMoved(int from_index, int to_index) {
@@ -2833,6 +2917,9 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
                               WebContents* new_contents,
                               int index) {
   bool was_active = index == tab_strip_model_->active_index();
+  if (was_active) {
+    did_active_tab_change_callback_list_.Notify(this);
+  }
   TabDetachedAtImpl(old_contents, was_active, DETACH_TYPE_REPLACE);
   exclusive_access_manager_->OnTabClosing(old_contents);
   SessionServiceBase* session_service =
@@ -3171,18 +3258,14 @@ void Browser::SetAsDelegate(WebContents* web_contents, bool set_delegate) {
   // ...and all the helpers.
   WebContentsModalDialogManager::FromWebContents(web_contents)
       ->SetDelegate(delegate);
-  translate::ContentTranslateDriver* content_translate_driver =
-      ChromeTranslateClient::FromWebContents(web_contents)->translate_driver();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
   if (delegate) {
     zoom_controller->AddObserver(this);
-    content_translate_driver->AddTranslationObserver(this);
     BookmarkTabHelper::FromWebContents(web_contents)->AddObserver(this);
     web_contents_collection_.StartObserving(web_contents);
   } else {
     zoom_controller->RemoveObserver(this);
-    content_translate_driver->RemoveTranslationObserver(this);
     BookmarkTabHelper::FromWebContents(web_contents)->RemoveObserver(this);
     web_contents_collection_.StopObserving(web_contents);
   }
@@ -3232,14 +3315,15 @@ void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
 
 bool Browser::NormalBrowserSupportsWindowFeature(WindowFeature feature,
                                                  bool check_can_support) const {
-  bool fullscreen = ShouldHideUIForFullscreen();
+  const base::FunctionRef<bool(const Browser*)> fullscreen =
+      MaybeLazyIsFullscreen(this);
   switch (feature) {
     case FEATURE_BOOKMARKBAR:
       return true;
     case FEATURE_TABSTRIP:
     case FEATURE_TOOLBAR:
     case FEATURE_LOCATIONBAR:
-      return check_can_support || !fullscreen;
+      return check_can_support || !fullscreen(this);
     case FEATURE_TITLEBAR:
     case FEATURE_NONE:
       return false;
@@ -3248,12 +3332,12 @@ bool Browser::NormalBrowserSupportsWindowFeature(WindowFeature feature,
 
 bool Browser::PopupBrowserSupportsWindowFeature(WindowFeature feature,
                                                 bool check_can_support) const {
-  bool fullscreen = ShouldHideUIForFullscreen();
-
+  const base::FunctionRef<bool(const Browser*)> fullscreen =
+      MaybeLazyIsFullscreen(this);
   switch (feature) {
     case FEATURE_TITLEBAR:
     case FEATURE_LOCATIONBAR:
-      return check_can_support || (!fullscreen && !is_trusted_source());
+      return check_can_support || (!fullscreen(this) && !is_trusted_source());
     case FEATURE_TABSTRIP:
     case FEATURE_TOOLBAR:
     case FEATURE_BOOKMARKBAR:
@@ -3265,12 +3349,13 @@ bool Browser::PopupBrowserSupportsWindowFeature(WindowFeature feature,
 bool Browser::AppPopupBrowserSupportsWindowFeature(
     WindowFeature feature,
     bool check_can_support) const {
-  bool fullscreen = ShouldHideUIForFullscreen();
+  const base::FunctionRef<bool(const Browser*)> fullscreen =
+      MaybeLazyIsFullscreen(this);
   switch (feature) {
     case FEATURE_TITLEBAR:
-      return check_can_support || !fullscreen;
+      return check_can_support || !fullscreen(this);
     case FEATURE_LOCATIONBAR:
-      return app_controller_ && (check_can_support || !fullscreen);
+      return app_controller_ && (check_can_support || !fullscreen(this));
     default:
       return PopupBrowserSupportsWindowFeature(feature, check_can_support);
   }
@@ -3279,7 +3364,8 @@ bool Browser::AppPopupBrowserSupportsWindowFeature(
 bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
                                               bool check_can_support) const {
   DCHECK(app_controller_);
-  bool fullscreen = ShouldHideUIForFullscreen();
+  const base::FunctionRef<bool(const Browser*)> fullscreen =
+      MaybeLazyIsFullscreen(this);
   switch (feature) {
     // Web apps should always support the toolbar, so the title/origin of the
     // current page can be shown when browsing a url that is not inside the app.
@@ -3293,13 +3379,13 @@ bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
     // TODO(crbug.com/40639933): Make this control the visibility of
     // CustomTabBarView.
     case FEATURE_LOCATIONBAR:
-      return check_can_support || !fullscreen;
+      return check_can_support || !fullscreen(this);
     case FEATURE_TABSTRIP:
       // Even when the app has a tab strip, it should be hidden in
       // fullscreen. This is consistent with the behavior of
       // NormalBrowserSupportsWindowFeature().
       return app_controller_->has_tab_strip() &&
-             (check_can_support || !fullscreen);
+             (check_can_support || !fullscreen(this));
     case FEATURE_BOOKMARKBAR:
     case FEATURE_NONE:
       return false;

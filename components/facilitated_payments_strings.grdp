@@ -18,6 +18,9 @@
   <message name="IDS_SETTINGS_PIX_BANK_ACCOUNT_IDENTIFER" desc="Identifier for bank account that can be used for the Pix payment platform." formatter_data="android_java" translateable="false">
     Pix  •  <ph name="BANK_ACCOUNT_TYPE">%1$s<ex>Checking</ex></ph> ••••<ph name="ACCOUNT_NUMBER_SUFFIX">%2$s<ex>1234</ex></ph>
   </message>
+  <message name="IDS_PIX_BANK_ACCOUNT_TRANSACTION_LIMIT" desc="A note shown in the Pix bank account suggestions informing users of the transaction limits set by their bank on purchases. It is shown for every bank suggestion in the Pix form-of-payment selector. R$ is the symbol of the Brazilian Real currency. R$ is not translatable and should always be R$." formatter_data="android_java">
+    Limit per Pix R$ <ph name="TRANSACTION_LIMIT">%1$s<ex>500</ex></ph>
+  </message>
   <message name="IDS_BANK_ACCOUNT_TYPE_CHECKING" desc="A checking bank account is for users to transact their regular expenses. This is the string to describe a checking bank account." formatter_data="android_java">
     Checking
   </message>
@@ -42,6 +45,15 @@
   </message>
   <message name="IDS_PIX_PAYMENT_ADDITIONAL_INFO" desc="Additional info for the bottom sheet displaying user's PIX bank accounts linked to their GPay wallet. The bottom sheet is shown to prompt the user to pay directly on Chrome when a PIX payment page is detected. This string provides supplemental information about the user's accounts and the transaction." formatter_data="android_java">
     To turn off Pix in Chrome, go to your <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>payment settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
+  </message>
+  <message name="IDS_FACILITATED_PAYMENTS_PAYMENT_METHODS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet showing a list of the user's payment methods is opened." formatter_data="android_java">
+    Payment methods available to be selected for proceeding with the payment. Keyboard hidden.
+  </message>
+  <message name="IDS_FACILITATED_PAYMENTS_PAYMENT_METHODS_BOTTOM_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the user's payment methods is opened at full height. The sheet will occupy the entire screen." formatter_data="android_java">
+    Payment methods available to be selected for proceeding with the payment opened at full height.
+    </message>
+  <message name="IDS_FACILITATED_PAYMENTS_PAYMENT_METHODS_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet is closed." formatter_data="android_java">
+    The bottom sheet is closed.
   </message>
   <message name="IDS_PIX_PAYMENT_ERROR_SCREEN_TITLE" desc="Title for the PIX payment error screen. It is shown if PIX payment fails after the user has selected an account to pay from." formatter_data="android_java">
     Something went wrong

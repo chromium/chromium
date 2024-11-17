@@ -1708,8 +1708,7 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
       return true;
     case media::mojom::VideoCaptureFrameDropReason::
         kResolutionAdapterTimestampTooCloseToPrevious_DEPRECATED:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     case media::mojom::VideoCaptureFrameDropReason::
         kResolutionAdapterFrameRateIsHigherThanRequested:
       *output = media::VideoCaptureFrameDropReason::

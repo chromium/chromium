@@ -365,7 +365,7 @@ inline constexpr char kGoogleSheetsAppId[] = "felcaaldnbdncclmgdcncolpebgiejap";
 // The extension id of the Google Slides application.
 inline constexpr char kGoogleSlidesAppId[] = "aapocclcgogkmnckokdopfmhonfmgoek";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The id of the testing extension allowed in the signin profile.
 inline constexpr char kSigninProfileTestExtensionId[] =
     "mecfefiddjlmabpeilblgegnbioikfmp";
@@ -425,9 +425,7 @@ inline constexpr char kXboxCloudGamingAppId[] =
 // that that on other operating systems would be considered part of the OS,
 // for example the file manager.
 EXTENSIONS_EXPORT bool IsSystemUIApp(std::string_view extension_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 // The extension id of the default Demo Mode Highlights app.
 inline constexpr char kHighlightsAppId[] = "lpmakjfjcconjeehbidjclhdlpjmfjjj";
 
@@ -486,6 +484,9 @@ inline constexpr int kContentVerificationDefaultBlockSize = 4096;
 // resolved.
 inline constexpr char kDocsOfflineExtensionId[] =
     "ghbmnnjooekpmoecnnnilnnbdlolhkhi";
+
+// This is used extensively, generally as a key in a dictionary.
+inline constexpr char kId[] = "id";
 
 }  // namespace extension_misc
 

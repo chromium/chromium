@@ -727,7 +727,7 @@ void GooglePhotosFetcher<T>::OnResponseReady(
         api.value(), /*response_time=*/base::TimeTicks::Now() - start_time,
         GetResultCount(result));
   } else {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "Google Photos API request made to an unrecognized endpoint: "
         << service_url.spec();
   }

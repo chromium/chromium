@@ -10,13 +10,14 @@
 #import "base/files/file_path.h"
 #import "base/functional/callback_forward.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace web {
 class WebStateID;
 }
 
-// A browser state keyed service, providing an on-disk cache of WKWebView
+// A profile keyed service, providing an on-disk cache of WKWebView
 // sessionState data, modeled after the SnapshotStorage. Data is persisted to
 // disk in a background thread with the provided NSData to a file name based on
 // the webState TabId. Data can be written or deleted by tabId, delayed during
@@ -24,8 +25,7 @@ class WebStateID;
 @interface WebSessionStateCache : NSObject
 
 // Designated initializer.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

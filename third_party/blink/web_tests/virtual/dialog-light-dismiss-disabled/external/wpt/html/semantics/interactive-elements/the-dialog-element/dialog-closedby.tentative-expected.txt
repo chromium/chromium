@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[FAIL] closedby=any, Non-modal
+  assert_true: Dialog should respond to light dismiss expected true got false
+[FAIL] closedby=any, Modal
+  assert_true: Dialog should respond to light dismiss expected true got false
+[FAIL] closedby=closerequest, Non-modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+[FAIL] closedby=closerequest, Modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+[FAIL] closedby=none, Non-modal
+  assert_false: Dialog should NOT respond to ESC expected false got true
+[FAIL] closedby=none, Modal
+  assert_false: Dialog should NOT respond to ESC expected false got true
+[FAIL] closedby=AnY, Non-modal
+  assert_true: Dialog should respond to light dismiss expected true got false
+[FAIL] closedby=AnY, Modal
+  assert_true: Dialog should respond to light dismiss expected true got false
+[FAIL] closedby=ClOsErEqUeSt, Non-modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+[FAIL] closedby=ClOsErEqUeSt, Modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+[FAIL] closedby=NoNe, Non-modal
+  assert_false: Dialog should NOT respond to ESC expected false got true
+[FAIL] closedby=NoNe, Modal
+  assert_false: Dialog should NOT respond to ESC expected false got true
+[FAIL] closedby=invalid, Non-modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+[FAIL] closedby=invalid, Modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+[FAIL] closedby=, Non-modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+[FAIL] closedby=, Modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+[FAIL] closedby=null, Non-modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+[FAIL] closedby=null, Modal
+  assert_equals: Reflection should be limited to known values (open) expected (string) "closerequest" but got (undefined) undefined
+Harness: the test ran to completion.
+

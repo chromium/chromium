@@ -13,6 +13,7 @@ static_library("echo_private") {
   ]
 
   deps = [
+    ":echo_private_api_util",
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
@@ -33,10 +34,6 @@ static_library("echo_private") {
     "//extensions/common:mojom",
     "//third_party/icu",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 if (is_chromeos_ash) {
@@ -49,6 +46,7 @@ if (is_chromeos_ash) {
 
     deps = [
       ":echo_private",
+      ":echo_private_api_util",
       "//base",
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/settings",
@@ -64,4 +62,18 @@ if (is_chromeos_ash) {
       "//testing/gtest",
     ]
   }
+}
+
+source_set("echo_private_api_util") {
+  sources = [
+    "echo_private_api_util.cc",
+    "echo_private_api_util.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/common:constants",
+    "//components/prefs",
+  ]
 }

@@ -35,7 +35,6 @@ public class LogoCoordinator {
      * @param context Used to load colors and resources.
      * @param logoClickedCallback Supplies the StartSurface's parent tab.
      * @param logoView The view that shows the search provider logo.
-     * @param shouldFetchDoodle Whether to fetch doodle if there is.
      * @param onLogoAvailableCallback The callback for when logo is available.
      * @param visibilityObserver Observer object monitoring logo visibility.
      * @param isLogoPolishFlagEnabled True if logo polish flag is enabled.
@@ -44,7 +43,6 @@ public class LogoCoordinator {
             Context context,
             Callback<LoadUrlParams> logoClickedCallback,
             LogoView logoView,
-            boolean shouldFetchDoodle,
             Callback<Logo> onLogoAvailableCallback,
             VisibilityObserver visibilityObserver,
             boolean isLogoPolishFlagEnabled) {
@@ -59,7 +57,6 @@ public class LogoCoordinator {
                         context,
                         logoClickedCallback,
                         mLogoModel,
-                        shouldFetchDoodle,
                         onLogoAvailableCallback,
                         visibilityObserver,
                         sDefaultGoogleLogo);

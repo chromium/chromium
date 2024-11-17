@@ -162,7 +162,7 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
 
   void OnSuccess(const NigoriState& state,
                  SyncEncryptionHandler::Observer* observer) override {
-    // Note: |passphrase_time| isn't populated for keystore passphrase.
+    // Note: `passphrase_time` isn't populated for keystore passphrase.
     observer->OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
                                       /*passphrase_time=*/base::Time());
     observer->OnCryptographerStateChanged(state.cryptographer.get(),

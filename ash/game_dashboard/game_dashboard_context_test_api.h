@@ -37,6 +37,7 @@ class GameDashboardButton;
 class GameDashboardButtonRevealController;
 class GameDashboardMainMenuCursorHandler;
 class GameDashboardMainMenuView;
+class GameDashboardNetworkView;
 class GameDashboardToolbarView;
 class IconButton;
 class PillButton;
@@ -61,6 +62,7 @@ class GameDashboardContextTestApi {
   // Returns the Game Dashboard button widget, button, and title view.
   views::Widget* GetGameDashboardButtonWidget() const;
   GameDashboardButton* GetGameDashboardButton() const;
+  float GetGameDashboardButtonCornerRadius() const;
   views::Label* GetGameDashboardButtonTitle() const;
   GameDashboardButtonRevealController* GetGameDashboardButtonRevealController()
       const;
@@ -79,6 +81,7 @@ class GameDashboardContextTestApi {
   PillButton* GetMainMenuGameControlsSetupButton();
   TimeView* GetMainMenuClockView();
   GameDashboardBatteryView* GetMainMenuBatteryView();
+  GameDashboardNetworkView* GetMainMenuNetworkView();
   Switch* GetMainMenuGameControlsFeatureSwitch();
   views::LabelButton* GetMainMenuFeedbackButton();
   IconButton* GetMainMenuHelpButton();

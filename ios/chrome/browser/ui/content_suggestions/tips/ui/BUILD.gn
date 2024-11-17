@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "save_passwords_instructional_overlay_view_controller.h",
+    "save_passwords_instructional_overlay_view_controller.mm",
+    "save_passwords_instructional_view_controller.h",
+    "save_passwords_instructional_view_controller.mm",
+    "use_autofill_instructional_overlay_view_controller.h",
+    "use_autofill_instructional_overlay_view_controller.mm",
+    "use_autofill_instructional_view_controller.h",
+    "use_autofill_instructional_view_controller.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/tips_notifications/ui:shared" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/docking_promo/resources",
+    "//ios/chrome/browser/docking_promo/ui",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions/tips/ui/resources",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "save_passwords_instructional_overlay_view_controller_unittest.mm",
+    "save_passwords_instructional_view_controller_unittest.mm",
+    "use_autofill_instructional_overlay_view_controller_unittest.mm",
+    "use_autofill_instructional_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":ui",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/docking_promo/resources",
+    "//ios/chrome/browser/docking_promo/ui",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions/tips/ui/resources",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

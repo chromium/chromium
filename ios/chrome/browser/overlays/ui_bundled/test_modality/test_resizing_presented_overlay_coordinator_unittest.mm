@@ -27,8 +27,8 @@ const CGRect kWindowFrame = {{100.0, 100.0}, {100.0, 100.0}};
 class TestResizingPresentedOverlayCoordinatorTest : public PlatformTest {
  public:
   TestResizingPresentedOverlayCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     root_view_controller_ = [[UIViewController alloc] init];
     request_ = OverlayRequest::CreateWithConfig<TestResizingPresentedOverlay>(
         kWindowFrame);
@@ -42,7 +42,7 @@ class TestResizingPresentedOverlayCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;

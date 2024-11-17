@@ -27,7 +27,7 @@ SafeBrowsingControllerClient::SafeBrowsingControllerClient(
           default_safe_page,
           std::move(settings_page_helper)) {}
 
-SafeBrowsingControllerClient::~SafeBrowsingControllerClient() {}
+SafeBrowsingControllerClient::~SafeBrowsingControllerClient() = default;
 
 void SafeBrowsingControllerClient::Proceed() {
   // With committed interstitials the site has already

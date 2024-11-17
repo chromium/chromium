@@ -401,7 +401,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
   //
   // TODO(crbug.com/362521): Allow cropping/scaling of non-GPU memory backed
   // textures.
-  if (video_frame->HasTextures() &&
+  if (video_frame->HasSharedImage() &&
       video_frame->storage_type() !=
           media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     DoDeliverFrame(std::move(video_frame), estimated_capture_time);

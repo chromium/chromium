@@ -6,7 +6,7 @@ import 'chrome://compare/table.js';
 
 import type {TableElement} from 'chrome://compare/table.js';
 import {WindowProxy} from 'chrome://compare/window_proxy.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -19,11 +19,12 @@ import {$$, assertNotStyle, assertStyle, installMock} from './test_support.js';
 suite('ProductSpecificationsTableTest', () => {
   let tableElement: TableElement;
   let windowProxy: TestMock<WindowProxy>;
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
   setup(async () => {
     shoppingServiceApi.reset();
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('onLine', true);
@@ -600,10 +601,17 @@ suite('ProductSpecificationsTableTest', () => {
           },
           productDetails: [
             {
+              title: 'price',
+              content: {
+                price: '$123.45',
+                jackpotUrl: 'https://example.com/jackpot',
+              },
+            },
+            {
               title: 'foo',
               content: 'summary1',
             },
-            {title: null, content: {jackpotUrl: 'https://example.com/jackpot'}},
+            {title: null, content: 'bar1'},
           ],
         },
         {
@@ -613,8 +621,42 @@ suite('ProductSpecificationsTableTest', () => {
             imageUrl: 'https://example.com/2/image',
           },
           productDetails: [
+            // These buying options only include the jackpot URL and should not
+            // be displayed.
+            {
+              title: 'price',
+              content: {price: '', jackpotUrl: 'https://example.com/jackpot'},
+            },
             {title: 'foo', content: 'summary2'},
-            {title: null, content: {jackpotUrl: ''}},
+            {title: null, content: 'bar2'},
+          ],
+        },
+        {
+          selectedItem: {
+            title: 'title3',
+            url: 'https://example.com/3',
+            imageUrl: 'https://example.com/3/image',
+          },
+          productDetails: [
+            // These buying options only include the price but should still be
+            // displayed.
+            {title: 'price', content: {price: '$234.56', jackpotUrl: ''}},
+            {title: 'foo', content: 'summary3'},
+            {title: null, content: 'bar3'},
+          ],
+        },
+        {
+          selectedItem: {
+            title: 'title4',
+            url: 'https://example.com/4',
+            imageUrl: 'https://example.com/4/image',
+          },
+          productDetails: [
+            // These buying options don't include the price or jackpot URL and
+            // should not be displayed.
+            {title: 'price', content: {price: '', jackpotUrl: ''}},
+            {title: 'foo', content: 'summary4'},
+            {title: null, content: 'bar4'},
           ],
         },
       ];
@@ -623,79 +665,50 @@ suite('ProductSpecificationsTableTest', () => {
 
     test('detail title is hidden if it is `null`', async () => {
       const titles = tableElement.shadowRoot!.querySelectorAll('.detail-title');
-      assertEquals(2, titles.length);
+      assertEquals(8, titles.length);
     });
 
-    test('buying options are visible if any are available', async () => {
+    test('buying options are visible if price is available', async () => {
       const buyingOptions =
           tableElement.shadowRoot!.querySelectorAll('buying-options-section');
-      assertEquals(1, buyingOptions.length);
+      assertEquals(2, buyingOptions.length);
+      assertEquals('$123.45', buyingOptions[0]!.price);
       assertEquals('https://example.com/jackpot', buyingOptions[0]!.jackpotUrl);
+      assertEquals('$234.56', buyingOptions[1]!.price);
     });
+  });
 
-    test('buying options are hidden if none are available', async () => {
-      assertTrue(!!tableElement.columns[0]);
-      tableElement.columns = [
-        {
-          selectedItem: {
-            title: 'title',
-            url: 'https://example.com',
-            imageUrl: 'https://example.com/image',
-          },
-          productDetails: [
-            {title: null, content: {jackpotUrl: ''}},
-          ],
+  test('`grid-row` populates correctly', async () => {
+    // Arrange
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: 'https://example.com',
+          imageUrl: 'https://example.com/image',
         },
-        {
-          selectedItem: {
-            title: 'title2',
-            url: 'https://example.com/2',
-            imageUrl: 'https://example.com/2/image',
-          },
-          productDetails: [
-            {title: null, content: {jackpotUrl: ''}},
-          ],
+        productDetails: [{
+          title: 'foo',
+          content: {attributes: [{label: '', value: 'foo1'}], summary: []},
+        }],
+      },
+      {
+        selectedItem: {
+          title: 'title2',
+          url: 'https://example.com/2',
+          imageUrl: 'https://example.com/2/image',
         },
-      ];
-      await flushTasks();
-
-      const buyingOptions =
-          tableElement.shadowRoot!.querySelectorAll('buying-options-section');
-      assertEquals(0, buyingOptions.length);
-    });
-
-    test('`grid-row` populates correctly', async () => {
-      // Arrange
-      tableElement.columns = [
-        {
-          selectedItem: {
-            title: 'title',
-            url: 'https://example.com',
-            imageUrl: 'https://example.com/image',
-          },
-          productDetails: [{
-            title: 'foo',
-            content: {attributes: [{label: '', value: 'foo1'}], summary: []},
-          }],
-        },
-        {
-          selectedItem: {
-            title: 'title2',
-            url: 'https://example.com/2',
-            imageUrl: 'https://example.com/2/image',
-          },
-          productDetails: [{
-            title: 'foo',
-            content: {attributes: [{label: '', value: 'foo2'}], summary: []},
-          }],
-        },
-      ];
-      await waitAfterNextRender(tableElement);
-      const columns = tableElement.shadowRoot!.querySelectorAll('.col');
-      assertEquals(2, columns.length);
-      assertStyle(columns[0]!, 'grid-row', 'span 3');
-      assertStyle(columns[1]!, 'grid-row', 'span 3');
-    });
+        productDetails: [{
+          title: 'foo',
+          content: {attributes: [{label: '', value: 'foo2'}], summary: []},
+        }],
+      },
+    ];
+    await waitAfterNextRender(tableElement);
+    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+    assertEquals(2, columns.length);
+    assertStyle(columns[0]!, 'grid-row', 'span 3');
+    assertStyle(columns[1]!, 'grid-row', 'span 3');
   });
 
   suite('DragAndDrop', () => {

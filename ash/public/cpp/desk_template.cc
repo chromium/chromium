@@ -76,7 +76,6 @@ bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
     case chromeos::AppType::NON_APP:
     case chromeos::AppType::CROSTINI_APP:
       return false;
-    case chromeos::AppType::LACROS:
     case chromeos::AppType::ARC_APP:
     case chromeos::AppType::BROWSER:
     case chromeos::AppType::CHROME_APP:
@@ -94,7 +93,6 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
     desk_template->set_updated_time(updated_time_);
   if (desk_restore_data_)
     desk_template->set_desk_restore_data(desk_restore_data_->Clone());
-  desk_template->set_launch_id(launch_id_);
   desk_template->set_client_cache_guid(client_cache_guid_);
   desk_template->should_launch_on_startup_ = should_launch_on_startup_;
   desk_template->policy_definition_ = policy_definition_.Clone();
@@ -120,7 +118,6 @@ std::string DeskTemplate::ToDebugString() const {
 
   result += "Time created: " + base::TimeFormatHTTP(created_time_) + "\n";
   result += "Time updated: " + base::TimeFormatHTTP(updated_time_) + "\n";
-  result += "launch id: " + base::NumberToString(launch_id_) + "\n";
   result += "auto launch: ";
   result += should_launch_on_startup_ ? "yes\n" : "no\n";
   result +=
@@ -160,6 +157,9 @@ std::string DeskTemplate::GetDeskTemplateInfo(bool for_debugging) const {
       break;
     case DeskTemplateType::kSaveAndRecall:
       result += "save and recall\n";
+      break;
+    case DeskTemplateType::kCoral:
+      result += "coral\n";
       break;
     case DeskTemplateType::kFloatingWorkspace:
       result += "floating workspace\n";

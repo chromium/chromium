@@ -110,19 +110,19 @@ void UkmDataManagerTestUtils::PreProfileInit(
   }
 }
 
-void UkmDataManagerTestUtils::SetupForProfile(ChromeBrowserState* profile) {
+void UkmDataManagerTestUtils::SetupForProfile(ProfileIOS* profile) {
   UkmDatabaseClientHolder::SetUkmClientForTesting(profile,
                                                   ukm_database_client_.get());
   CHECK_EQ(ukm_database_client_.get(),
            &UkmDatabaseClientHolder::GetClientInstance(profile));
-  history_service_ = ios::HistoryServiceFactory::GetForBrowserState(
+  history_service_ = ios::HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   // Create the platform to kick off initialization.
   segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
       profile);
 }
 
-void UkmDataManagerTestUtils::WillDestroyProfile(ChromeBrowserState* profile) {
+void UkmDataManagerTestUtils::WillDestroyProfile(ProfileIOS* profile) {
   UkmDatabaseClientHolder::SetUkmClientForTesting(profile, nullptr);
 }
 

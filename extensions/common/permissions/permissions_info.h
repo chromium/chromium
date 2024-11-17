@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"

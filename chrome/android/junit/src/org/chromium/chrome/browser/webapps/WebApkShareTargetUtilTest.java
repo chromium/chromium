@@ -29,7 +29,7 @@ import java.util.List;
         shadows = {WebApkShareTargetUtilTest.WebApkShareTargetUtilShadow.class})
 public class WebApkShareTargetUtilTest {
     /** Builder class for {@link WebApkShareTarget} */
-    public class ShareTargetBuilder {
+    public static class ShareTargetBuilder {
         private String mAction;
         private @ShareTarget.RequestMethod String mMethod;
         private @ShareTarget.EncodingType String mEncodingType;

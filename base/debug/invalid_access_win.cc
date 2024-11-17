@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -65,7 +66,7 @@ void TerminateWithHeapCorruption() {
     HeapDestroy(heap);
   } __except (EXCEPTION_EXECUTE_HANDLER) {
     // Heap corruption exception should never be caught.
-    CHECK(false);
+    NOTREACHED();
   }
   // Should never reach here.
   abort();
@@ -80,7 +81,7 @@ void TerminateWithControlFlowViolation() {
     IndirectCall(&func);
   } __except (EXCEPTION_EXECUTE_HANDLER) {
     // CFG fast fail should never be caught.
-    CHECK(false);
+    NOTREACHED();
   }
   // Should only reach here if CFG is disabled.
   abort();

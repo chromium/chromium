@@ -219,18 +219,22 @@ void MaybeActivateSplitStoresAndLocalUpm(
         state_to_set_on_success = kOffAndMigrationPending;
         break;
       }
-      // Move the "profile" login DB to the "account" path, the latter is the
-      // synced one after activation. We could rely on a redownload instead, but
-      // a) this is a safety net, and b)it spares traffic.
-      base::FilePath profile_db_path = login_db_directory.Append(
-          password_manager::kLoginDataForProfileFileName);
-      if (!base::ReplaceFile(
-              profile_db_path,
-              login_db_directory.Append(
-                  password_manager::kLoginDataForAccountFileName),
-              /*error=*/nullptr)) {
-        error = ActivationError::kLoginDbFileMoveFailed;
-        break;
+      if (!base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kDropLoginDbRenameForUpmSyncingUsers)) {
+        // Move the "profile" login DB to the "account" path, the latter is the
+        // synced one after activation. We could rely on a redownload instead,
+        // but a) this is a safety net, and b)it spares traffic.
+        base::FilePath profile_db_path = login_db_directory.Append(
+            password_manager::kLoginDataForProfileFileName);
+        if (!base::ReplaceFile(
+                profile_db_path,
+                login_db_directory.Append(
+                    password_manager::kLoginDataForAccountFileName),
+                /*error=*/nullptr)) {
+          error = ActivationError::kLoginDbFileMoveFailed;
+          break;
+        }
       }
       break;
     }
@@ -329,6 +333,8 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
       login_db_directory.Append(password_manager::kLoginDataForProfileFileName);
   base::FilePath account_db_path =
       login_db_directory.Append(password_manager::kLoginDataForAccountFileName);
+  // Note: with kDropLoginDbRenameForUpmSyncingUsers enabled, some users won't
+  // have an account login db to rename, but for those who do, keep this logic.
   if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn &&
       IsPasswordSyncEnabled(pref_service) &&
       base::PathExists(account_db_path) &&
@@ -341,9 +347,20 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
                            static_cast<int>(kOff));
 }
 
-bool EmptyProfileStore(PrefService* pref_service) {
-  return pref_service->GetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase);
+std::string_view GetAccessLossWarningTypeName(
+    PasswordAccessLossWarningType warning_type) {
+  switch (warning_type) {
+    case PasswordAccessLossWarningType::kNoUpm:
+      return "NoUPM";
+    case PasswordAccessLossWarningType::kOnlyAccountUpm:
+      return "OnlyAccountUpm";
+    case PasswordAccessLossWarningType::kNoGmsCore:
+      return "NoGmsCore";
+    case PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed:
+      return "NewGmsCoreMigrationFailed";
+    case PasswordAccessLossWarningType::kNone:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -416,45 +433,65 @@ void SetUsesSplitStoresAndUPMForLocal(
       GetSplitStoresAndLocalUpmPrefValue(pref_service));
 }
 
-PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
-    PrefService* pref_service) {
-  // No warning should be displayed to the users, who don't have any passwords
-  // in the profile store.
-  if (EmptyProfileStore(pref_service)) {
-    return PasswordAccessLossWarningType::kNone;
-  }
-
+GmsVersionCohort GetGmsVersionCohort() {
   std::string gms_version_str =
       base::android::BuildInfo::GetInstance()->gms_version_code();
   int gms_version = 0;
   // GMSCore version could not be parsed, probably no GMSCore installed.
   if (!base::StringToInt(gms_version_str, &gms_version)) {
-    return PasswordAccessLossWarningType::kNoGmsCore;
+    return GmsVersionCohort::kNoGms;
   }
 
-  // GMSCore version is pre-UPM, update is required.
+  // GMSCore version is pre-UPM.
   if (gms_version < password_manager::kAccountUpmMinGmsVersion) {
-    return PasswordAccessLossWarningType::kNoUpm;
+    return GmsVersionCohort::kNoUpmSupport;
   }
 
   // GMSCore version supports the account passwords, but doesn't support local
-  // passwords. Update is still required.
+  // passwords.
   if (gms_version < password_manager::GetLocalUpmMinGmsVersion()) {
-    return PasswordAccessLossWarningType::kOnlyAccountUpm;
+    return GmsVersionCohort::kOnlyAccountUpmSupport;
   }
 
-  // GMSCore is up to date, but the local passwords migration has failed, so
-  // manual export/import flow should be done. Checking the
-  // `SplitStoresAndLocalUpmState` again here because the migration might have
-  // succeeded in this run.
-  if (last_migration_attempt_failed &&
-      GetSplitStoresAndLocalUpmPrefValue(pref_service) ==
-          kOffAndMigrationPending) {
-    return PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed;
-  }
+  return GmsVersionCohort::kFullUpmSupport;
+}
 
-  // Everything is fine, no warning will be shown.
-  return PasswordAccessLossWarningType::kNone;
+bool LastMigrationAttemptToUpmLocalFailed() {
+  return last_migration_attempt_failed;
+}
+
+PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
+    PrefService* pref_service) {
+  switch (GetGmsVersionCohort()) {
+    case GmsVersionCohort::kNoGms:
+      return PasswordAccessLossWarningType::kNoGmsCore;
+    case GmsVersionCohort::kNoUpmSupport:
+      return PasswordAccessLossWarningType::kNoUpm;
+    case GmsVersionCohort::kOnlyAccountUpmSupport:
+      return PasswordAccessLossWarningType::kOnlyAccountUpm;
+    case GmsVersionCohort::kFullUpmSupport: {
+      // GMSCore is up to date, but the local passwords migration has failed, so
+      // manual export/import flow should be done. Checking the
+      // `SplitStoresAndLocalUpmState` again here because the migration might
+      // have succeeded in this run.
+      if (last_migration_attempt_failed &&
+          GetSplitStoresAndLocalUpmPrefValue(pref_service) ==
+              kOffAndMigrationPending) {
+        return PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed;
+      }
+      // Full support and the user is migrated, so no warning needs to be shown.
+      return PasswordAccessLossWarningType::kNone;
+    }
+  }
+}
+
+void RecordPasswordAccessLossWarningTriggerSource(
+    PasswordAccessLossWarningTriggers trigger_source,
+    PasswordAccessLossWarningType warning_type) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PasswordManager.PasswordAccessLossWarningSheet",
+                    GetAccessLossWarningTypeName(warning_type), "Trigger"}),
+      trigger_source);
 }
 
 }  // namespace password_manager_android_util

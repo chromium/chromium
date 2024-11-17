@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "components/trusted_vault/proto/vault.pb.h"
@@ -107,8 +108,7 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     } else if (path.starts_with("/v1/users/me/securitydomains/")) {
       return AddMember(request);
     } else {
-      CHECK(false) << "Unhandled security domain service path: " << path;
-      NOTREACHED();
+      NOTREACHED() << "Unhandled security domain service path: " << path;
     }
   }
 

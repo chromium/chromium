@@ -43,6 +43,7 @@ class ChromeBrowserMainPartsWin : public ChromeBrowserMainParts {
   void ToolkitInitialized() override;
   void PreCreateMainMessageLoop() override;
   int PreCreateThreads() override;
+  void PostCreateThreads() override;
   void PostMainMessageLoopRun() override;
 
   // ChromeBrowserMainParts overrides.
@@ -51,13 +52,6 @@ class ChromeBrowserMainPartsWin : public ChromeBrowserMainParts {
   void PreProfileInit() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   void PostBrowserStart() override;
-
-  // Prepares the localized strings that are going to be displayed to
-  // the user if the browser process dies. These strings are stored in the
-  // environment block so they are accessible in the early stages of the
-  // chrome executable's lifetime.
-  static void PrepareRestartOnCrashEnviroment(
-      const base::CommandLine& parsed_command_line);
 
   // Registers Chrome with the Windows Restart Manager, which will restore the
   // Chrome session when the computer is restarted after a system update.

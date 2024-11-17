@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message_view.h"
@@ -17,6 +18,13 @@
 @property(nonatomic, readwrite) BOOL managed;
 @end
 
+namespace {
+// Name of the histogram recording whether the identity snackbar had a name to
+// display.
+const char kIdentitySnackbarHadUserName[] =
+    "Signin.IdentitySnackbarHadUserName";
+}  // namespace
+
 @implementation IdentitySnackbarMessage
 
 - (instancetype)initWithName:(NSString*)name
@@ -26,7 +34,6 @@
   self = [super init];
   if (self) {
     CHECK(avatar);
-    CHECK(name);
     CHECK(email);
     _avatar = avatar;
     _name = name;
@@ -40,6 +47,9 @@
     if (overridden_duration.InSeconds() != 0) {
       self.duration = overridden_duration.InSeconds();
     }
+    base::UmaHistogramBoolean(
+        /*name=*/kIdentitySnackbarHadUserName,
+        /*sample=*/(_name != nil));
   }
   return self;
 }

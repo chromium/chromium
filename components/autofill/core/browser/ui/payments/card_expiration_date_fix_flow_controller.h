@@ -18,7 +18,7 @@ namespace autofill {
 // Only used on mobile.
 class CardExpirationDateFixFlowController {
  public:
-  virtual ~CardExpirationDateFixFlowController() {}
+  virtual ~CardExpirationDateFixFlowController() = default;
 
   // Interaction.
   virtual void OnAccepted(const std::u16string& month,

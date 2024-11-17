@@ -48,15 +48,14 @@ class PNGSoftwareOutputDevice : public SoftwareOutputDevice {
         break;
     }
 
-    std::vector<unsigned char> output;
-    gfx::PNGCodec::Encode(
+    std::optional<std::vector<uint8_t>> output = gfx::PNGCodec::Encode(
         static_cast<const unsigned char*>(input_pixmap.addr()), color_format,
         gfx::Size(input_pixmap.width(), input_pixmap.height()),
         input_pixmap.rowBytes(),
         /*discard_transparency=*/false,
-        /*comments=*/{}, &output);
+        /*comments=*/{});
 
-    base::WriteFile(NextOutputFilePath(), output);
+    base::WriteFile(NextOutputFilePath(), output.value());
   }
 
  private:

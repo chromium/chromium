@@ -52,11 +52,12 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
 
   // Overridden from ash::WindowStateDelegate.
   bool ToggleFullscreen(ash::WindowState* window_state) override {
+    // TODO(crbug.com/377507116): Replace CanMaximize() with CanFullscreen().
     DCHECK(window_state->IsFullscreen() || window_state->CanMaximize());
     // Windows which cannot be maximized should not be fullscreened.
     if (!window_state->IsFullscreen() && !window_state->CanMaximize())
       return true;
-    chrome::ToggleFullscreenMode(browser_);
+    chrome::ToggleFullscreenMode(browser_, /*user_initiated=*/true);
     return true;
   }
 
@@ -199,8 +200,6 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
   params.init_properties_container.SetProperty(
       chromeos::kShouldHaveHighlightBorderOverlay, true);
 
-  // This is only needed for ash. For lacros, Exo tags the associated
-  // ShellSurface as being of AppType::LACROS.
   bool is_app = browser->is_type_app() || browser->is_type_app_popup();
   web_app::AppBrowserController* controller = browser->app_controller();
   if (controller && controller->system_app()) {

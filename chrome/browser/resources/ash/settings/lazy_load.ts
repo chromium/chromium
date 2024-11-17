@@ -10,15 +10,13 @@
  *  - All subpages
  */
 
-import './strings.m.js';
+import '/strings.m.js';
 /** Top-level Advanced pages & About page */
 import './crostini_page/crostini_page.js';
-import './date_time_page/date_time_page.js';
 import './os_about_page/os_about_page.js';
 import './os_files_page/os_files_page.js';
 import './os_languages_page/os_languages_section.js';
 import './os_printing_page/os_printing_page.js';
-import './os_reset_page/os_reset_page.js';
 /** Subpages */
 import './date_time_page/timezone_subpage.js';
 import './device_page/customize_mouse_buttons_subpage.js';
@@ -172,7 +170,6 @@ export {CrostiniPortForwardingElement} from './crostini_page/crostini_port_forwa
 export {CrostiniSettingsCardElement} from './crostini_page/crostini_settings_card.js';
 export {CrostiniSharedUsbDevicesElement} from './crostini_page/crostini_shared_usb_devices.js';
 export {SettingsCrostiniSubpageElement} from './crostini_page/crostini_subpage.js';
-export {SettingsDateTimePageElement} from './date_time_page/date_time_page.js';
 export {DateTimeSettingsCardElement} from './date_time_page/date_time_settings_card.js';
 export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimezoneSelectorElement} from './date_time_page/timezone_selector.js';
@@ -235,10 +232,11 @@ export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille
 export {ChangeDictationLocaleDialog, DictationLocaleOption} from './os_a11y_page/change_dictation_locale_dialog.js';
 export {SettingsChromeVoxSubpageElement} from './os_a11y_page/chromevox_subpage.js';
 export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_touchpad_page.js';
+export {DisableTouchpadMode} from './os_a11y_page/disable_touchpad_constants.js';
 export {SettingsDisplayAndMagnificationSubpageElement} from './os_a11y_page/display_and_magnification_subpage.js';
 export {AddDialogPage, FaceGazeAddActionDialogElement} from './os_a11y_page/facegaze_actions_add_dialog.js';
 export {FaceGazeActionsCardElement} from './os_a11y_page/facegaze_actions_card.js';
-export {AssignedKeyCombo, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils, KeyCombination} from './os_a11y_page/facegaze_constants.js';
+export {AssignedKeyCombo, ComplexActions, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils, KeyCombination} from './os_a11y_page/facegaze_constants.js';
 export {FaceGazeCursorCardElement} from './os_a11y_page/facegaze_cursor_card.js';
 export {SettingsFaceGazeSubpageElement} from './os_a11y_page/facegaze_subpage.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
@@ -320,6 +318,7 @@ export {SettingsAccountManagerSubpageElement} from './os_people_page/account_man
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';
 export {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
 export {SettingsFingerprintListSubpageElement} from './os_people_page/fingerprint_list_subpage.js';
+export {GraduationSettingsCardElement} from './os_people_page/graduation/graduation_settings_card.js';
 export {SettingsLockScreenElement} from './os_people_page/lock_screen_subpage.js';
 export {OsSettingsPersonalizationOptionsElement} from './os_people_page/os_personalization_options.js';
 export {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_people_page/os_sync_browser_proxy.js';
@@ -356,7 +355,6 @@ export {SecureDnsInputElement} from './os_privacy_page/secure_dns_input.js';
 export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpage.js';
 export {OsSettingsPowerwashDialogElement} from './os_reset_page/os_powerwash_dialog.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
-export {OsSettingsResetPageElement} from './os_reset_page/os_reset_page.js';
 export {OsSettingsSanitizeDialogElement} from './os_reset_page/os_sanitize_dialog.js';
 export {ResetSettingsCardElement} from './os_reset_page/reset_settings_card.js';
 export {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';

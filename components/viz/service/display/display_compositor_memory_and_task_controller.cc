@@ -28,7 +28,8 @@ DisplayCompositorMemoryAndTaskController::
   auto callback =
       base::BindOnce(&DisplayCompositorMemoryAndTaskController::InitializeOnGpu,
                      base::Unretained(this), skia_dependency_.get(), &event);
-  gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
+  gpu_task_scheduler_->ScheduleGpuTask(
+      std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
   event.Wait();
 
   shared_image_interface_ =
@@ -51,7 +52,8 @@ DisplayCompositorMemoryAndTaskController::
   auto callback =
       base::BindOnce(&DisplayCompositorMemoryAndTaskController::DestroyOnGpu,
                      base::Unretained(this), &event);
-  gpu_task_scheduler_->GetTaskSequence()->ScheduleTask(std::move(callback), {});
+  gpu_task_scheduler_->GetTaskSequence()->ScheduleTask(
+      std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
   event.Wait();
 }
 

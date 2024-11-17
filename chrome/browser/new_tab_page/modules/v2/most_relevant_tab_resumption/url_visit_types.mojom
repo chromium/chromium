@@ -22,7 +22,16 @@ enum FormFactor {
 enum DecorationType {
   kVisitedXAgo,
   kMostRecent,
+  kFrequentlyVisited,
   kFrequentlyVisitedAtTime,
+};
+
+// Used to record where a visit is derived from. Keep in sync with
+// NtpURLVisitAggregateTypes in
+// tools/metrics/histograms/metadata/new_tab_page/enums.xml.
+enum VisitSource {
+  kTab,
+  kHistory,
 };
 
 struct Decoration {
@@ -36,6 +45,9 @@ struct URLVisit {
   // See components/sync_device_info/device_info.h
   FormFactor form_factor;
 
+  // Denotes whether visit is from history or tab.
+  VisitSource source;
+
   // Name of session to be displayed on surfaces such as NTP.
   string? session_name;
 
@@ -46,7 +58,7 @@ struct URLVisit {
   string title;
 
   // Info about the reason this tab is being shown.
-  Decoration? decoration;
+  Decoration decoration;
 
   // Time since tab was last active.
   mojo_base.mojom.TimeDelta relative_time;

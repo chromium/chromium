@@ -58,10 +58,10 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::BrowserThread;
 
@@ -331,7 +331,7 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     // Update the extension prefs to reflect if the extension is no longer
     // blocked due to admin policy.
     if ((disable_reasons & disable_reason::DISABLE_BLOCKED_BY_POLICY) &&
-        !policy->MustRemainDisabled(extension.get(), nullptr, nullptr)) {
+        !policy->MustRemainDisabled(extension.get(), nullptr)) {
       disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);
       extension_prefs_->ReplaceDisableReasons(extension->id(), disable_reasons);
       if (disable_reasons == disable_reason::DISABLE_NONE)
@@ -366,7 +366,7 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     // Extension is enabled. Check management policy to verify if it should
     // remain so.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
-    if (policy->MustRemainDisabled(extension.get(), &disable_reason, nullptr)) {
+    if (policy->MustRemainDisabled(extension.get(), &disable_reason)) {
       extension_prefs_->SetExtensionDisabled(extension->id(), disable_reason);
     }
   }
@@ -662,6 +662,24 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
         manifest_version_counts->version_2_count++;
       } else if (extension->manifest_version() == 3) {
         manifest_version_counts->version_3_count++;
+      }
+      // Report the days since the extension was installed.
+      base::Time time_since_install =
+          extension_prefs_->GetFirstInstallTime(extension->id());
+      if (!time_since_install.is_null()) {
+        int days_since_install =
+            (base::Time::Now() - time_since_install).InDays();
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.DaysSinceInstall",
+                                    days_since_install, 0, 5000, 91);
+      }
+      // Report the days since the extension was last updated.
+      base::Time time_since_last_update =
+          extension_prefs_->GetLastUpdateTime(extension->id());
+      if (!time_since_last_update.is_null()) {
+        int days_since_updated =
+            (base::Time::Now() - time_since_last_update).InDays();
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.DaysSinceLastUpdate",
+                                    days_since_updated, 0, 5000, 91);
       }
     }
 

@@ -102,9 +102,7 @@ BrowsingDataModel::DataOwner GetDataOwner::GetOwningOriginOrHost<url::Origin>(
     return GetOwnerBasedOnScheme(data_key);
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected StorageType: " << static_cast<int>(storage_type_);
-  return "";
+  NOTREACHED() << "Unexpected StorageType: " << static_cast<int>(storage_type_);
 }
 
 template <>
@@ -121,9 +119,8 @@ GetDataOwner::GetOwningOriginOrHost<blink::StorageKey>(
     case BrowsingDataModel::StorageType::kCdmStorage:
       return GetOwnerBasedOnScheme(data_key.origin());
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected StorageType: " << static_cast<int>(storage_type_);
-      return "";
+      NOTREACHED() << "Unexpected StorageType: "
+                   << static_cast<int>(storage_type_);
   }
 }
 
@@ -352,7 +349,7 @@ void StorageRemoverHelper::Visitor::operator()<
         ->ClearSharedDictionaryCacheForIsolationKey(
             isolation_key, helper->GetCompleteCallback());
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -374,7 +371,7 @@ void StorageRemoverHelper::Visitor::operator()<net::CanonicalCookie>(
                               bool deleted) { std::move(callback).Run(); },
                            helper->GetCompleteCallback()));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -980,12 +977,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       attribution_reporting::features::kConversionMeasurement);
   bool is_private_aggregation_enabled =
       base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi);
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  bool is_cdm_storage_database_enabled =
-      base::FeatureList::IsEnabled(features::kCdmStorageDatabase);
-  bool is_cdm_migration_enabled =
-      base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration);
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   base::RepeatingClosure completion =
       base::BindRepeating([](const base::OnceClosure&) {},
@@ -1045,11 +1036,9 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  if (is_cdm_storage_database_enabled && !is_cdm_migration_enabled) {
-    storage_partition_->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
-        base::BindOnce(&OnCdmStorageLoaded, this, completion),
-        base::Time::Min(), base::Time::Max());
-  }
+  storage_partition_->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
+      base::BindOnce(&OnCdmStorageLoaded, this, completion), base::Time::Min(),
+      base::Time::Max());
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   // Data loaded from non-components storage types via the delegate.

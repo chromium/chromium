@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -109,6 +110,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   scoped_refptr<SiteInstance> GetFrameSiteInstance() override;
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override;
   std::optional<std::string> GetCookieDeprecationLabel() override;
+  void GetBiddingAndAuctionServerKey(
+      const std::optional<url::Origin>& coordinator,
+      base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                             std::string>)> callback) override;
 
   using DocumentService::origin;
   using DocumentService::render_frame_host;
@@ -190,7 +195,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // On failing to fetch ad auction data, call the first callback in
   // ba_data_callbacks_ & start loading the next following request in
   // ba_data_callbacks_.
-  void ReturnEmptyGetInterestGroupAdAuctionDataCallback(const std::string msg);
+  void ReturnEmptyGetInterestGroupAdAuctionDataCallback(const std::string& msg);
   void LoadAuctionDataAndKeyForNextQueuedRequest();
   void OnGotAuctionData(base::Uuid request_id, BiddingAndAuctionData data);
   void OnGotBiddingAndAuctionServerKey(
@@ -210,8 +215,9 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // For each buyer in `config`, preconnect to its origin and bidding signals
   // origin if the origins have been cached from previous interest group joins
   // or auctions. This function needs to be called separately to preconnect to
-  // origins for `config`'s component auctions.
-  void PreconnectToBuyerOrigins(const blink::AuctionConfig& config);
+  // origins for `config`'s component auctions. Returns the number of buyers
+  // that were preconnected.
+  size_t PreconnectToBuyerOrigins(const blink::AuctionConfig& config);
 
   // To avoid race conditions associated with top frame navigations (mentioned
   // in document_service.h), we need to save the values of the main frame

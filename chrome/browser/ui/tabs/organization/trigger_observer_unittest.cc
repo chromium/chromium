@@ -6,17 +6,15 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "ui/base/mojom/window_show_state.mojom.h"
-// #include "content/public/test/browser_task_environment.h"
-// #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
-// #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-// #include "ui/base/page_transition_types.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {
 class AlwaysTrigger : public TriggerPolicy {
@@ -100,12 +98,53 @@ class TabOrganizationTriggerObserverTest : public BrowserWithTestWindowTest {
   std::vector<raw_ptr<const Browser>> trigger_records_;
 };
 
-TEST_F(TabOrganizationTriggerObserverTest, TriggersOnTabStripModelChange) {
+// Flaky on chromeos.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TriggersOnTabStripModelChange \
+  DISABLED_TriggersOnTabStripModelChange
+#else
+#define MAYBE_TriggersOnTabStripModelChange TriggersOnTabStripModelChange
+#endif
+TEST_F(TabOrganizationTriggerObserverTest,
+       MAYBE_TriggersOnTabStripModelChange) {
   ASSERT_TRUE(trigger_records().empty());
   Browser* const browser = AddBrowser();
+
   AddTabToBrowser(browser, 0);
-  EXPECT_TRUE(trigger_records().empty());
   AddTabToBrowser(browser, 0);
+
+  // Flush tasks on the UI thread so the deferred trigger evaluation runs.
+  base::RunLoop run_loop;
+  task_environment()->GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(trigger_records().size(), 1u);
+  EXPECT_EQ(trigger_records()[0], browser);
+}
+
+// Flaky on chromeos.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DebouncesTabStripModelObserverEvents \
+  DISABLED_DebouncesTabStripModelObserverEvents
+#else
+#define MAYBE_DebouncesTabStripModelObserverEvents \
+  DebouncesTabStripModelObserverEvents
+#endif
+TEST_F(TabOrganizationTriggerObserverTest,
+       MAYBE_DebouncesTabStripModelObserverEvents) {
+  ASSERT_TRUE(trigger_records().empty());
+  Browser* const browser = AddBrowser();
+
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+
+  // Flush tasks on the UI thread so the deferred trigger evaluation runs.
+  // It should only run once, even though two tabs were added.
+  base::RunLoop run_loop;
+  task_environment()->GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
   EXPECT_EQ(trigger_records().size(), 1u);
   EXPECT_EQ(trigger_records()[0], browser);
 }

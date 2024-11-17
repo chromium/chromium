@@ -43,6 +43,12 @@ class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
 
+  InterpolationValue PreInterpolationCompositeIfNeeded(
+      InterpolationValue value,
+      const InterpolationValue& underlying,
+      EffectModel::CompositeOperation,
+      ConversionCheckers&) const override;
+
   InterpolationValue MaybeConvertUnderlyingValue(
       const InterpolationEnvironment&) const final;
 

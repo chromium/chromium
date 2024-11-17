@@ -9,8 +9,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
@@ -53,6 +55,8 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
       gfx::GpuMemoryBufferHandle* handle);
 
   bool Map() override;
+  void MapAsync(base::OnceCallback<void(bool)> result_cb) override;
+  bool AsyncMappingIsNonBlocking() const override;
   void* memory(size_t plane) override;
   void Unmap() override;
   int stride(size_t plane) const override;
@@ -73,9 +77,18 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
                           scoped_refptr<base::UnsafeSharedMemoryPool> pool,
                           base::span<uint8_t> premapped_memory);
 
+  // Returns callback for reporting early result.
+  // `DoMapAsync` can't invoke it directly as it holds a mapping lock.
+  std::optional<base::OnceCallback<void(void)>> DoMapAsync(
+      base::OnceCallback<void(bool)>);
+  void CheckAsyncMapResult(bool result);
+
   base::win::ScopedHandle dxgi_handle_;
   gfx::DXGIHandleToken dxgi_token_;
   raw_ptr<GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+
+  std::vector<base::OnceCallback<void(bool)>> map_callbacks_
+      GUARDED_BY(map_lock_);
 
   // Used to create and store shared memory for data, copied via request to
   // gpu process.
@@ -84,6 +97,7 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
 
   // Used to store shared memory passed from the capturer.
   base::raw_span<uint8_t> premapped_memory_;
+  bool async_mapping_in_progress_ GUARDED_BY(map_lock_) = false;
 };
 
 }  // namespace gpu

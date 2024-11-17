@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -47,12 +49,17 @@ constexpr base::TimeDelta kOpacityInDuration = base::Milliseconds(300);
 constexpr base::TimeDelta kOpacityOutDuration = base::Milliseconds(100);
 constexpr base::TimeDelta kOpacityDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kShowDuration = base::Seconds(16);
-constexpr char kTriggerOutcomeName[] = "Tab.Organization.Trigger.Outcome";
+constexpr char kAutoTabGroupsTriggerOutcomeName[] =
+    "Tab.Organization.Trigger.Outcome";
+constexpr char kDeclutterTriggerOutcomeName[] =
+    "Tab.Organization.Declutter.Trigger.Outcome";
+constexpr char kDeclutterTriggerBucketedCTRName[] =
+    "Tab.Organization.Declutter.Trigger.BucketedCTR";
 
-Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
+Edge GetFlatEdge(bool is_search_button, bool tab_search_before_chips) {
   const bool is_rtl = base::i18n::IsRTL();
-  if ((!is_search_button && before_tab_strip) ||
-      (is_search_button && !before_tab_strip)) {
+  if ((!is_search_button && tab_search_before_chips) ||
+      (is_search_button && !tab_search_before_chips)) {
     return is_rtl ? Edge::kRight : Edge::kLeft;
   }
   return is_rtl ? Edge::kLeft : Edge::kRight;
@@ -198,8 +205,9 @@ void TabSearchContainer::TabOrganizationAnimationSession::MarkAnimationDone(
 TabSearchContainer::TabSearchContainer(
     TabStripController* tab_strip_controller,
     TabStripModel* tab_strip_model,
-    bool before_tab_strip,
+    bool tab_search_before_chips,
     View* locked_expansion_view,
+    BrowserWindowInterface* browser_window_interface,
     tabs::TabDeclutterController* tab_declutter_controller)
     : AnimationDelegateViews(this),
       locked_expansion_view_(locked_expansion_view),
@@ -217,22 +225,30 @@ TabSearchContainer::TabSearchContainer(
   }
 
   std::unique_ptr<TabSearchButton> tab_search_button =
-      std::make_unique<TabSearchButton>(tab_strip_controller,
-                                        GetFlatEdge(true, before_tab_strip));
+      std::make_unique<TabSearchButton>(
+          tab_strip_controller, browser_window_interface,
+          features::IsTabstripComboButtonEnabled()
+              ? (base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft)
+              : Edge::kNone,
+          GetFlatEdge(true, tab_search_before_chips));
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
+  if (features::IsTabstripComboButtonEnabled()) {
+    tab_search_button->SetFlatEdgeFactor(1);
+  }
 
   tab_search_button_ = AddChildView(std::move(tab_search_button));
 
   int tab_search_button_index = GetIndexOf(tab_search_button_).value();
-  int index =
-      before_tab_strip ? tab_search_button_index + 1 : tab_search_button_index;
+  int index = tab_search_before_chips ? tab_search_button_index + 1
+                                      : tab_search_button_index;
   // TODO(crbug.com/40925230): Consider hiding the button when the request has
   // started, vs. when the button as clicked.
   auto_tab_group_button_ = AddChildViewAt(
-      CreateAutoTabGroupButton(tab_strip_controller, before_tab_strip), index);
+      CreateAutoTabGroupButton(tab_strip_controller, tab_search_before_chips),
+      index);
 
-  SetupButtonProperties(auto_tab_group_button_, before_tab_strip);
+  SetupButtonProperties(auto_tab_group_button_, tab_search_before_chips);
 
   browser_ = tab_strip_controller->GetBrowser();
 
@@ -240,10 +256,10 @@ TabSearchContainer::TabSearchContainer(
   // feature is not enabled.
   if (tab_declutter_controller_) {
     tab_declutter_button_ = AddChildViewAt(
-        CreateTabDeclutterButton(tab_strip_controller, before_tab_strip),
+        CreateTabDeclutterButton(tab_strip_controller, tab_search_before_chips),
         index);
 
-    SetupButtonProperties(tab_declutter_button_, before_tab_strip);
+    SetupButtonProperties(tab_declutter_button_, tab_search_before_chips);
 
     tab_declutter_observation_.Observe(tab_declutter_controller_);
   }
@@ -258,11 +274,11 @@ TabSearchContainer::~TabSearchContainer() {
 }
 
 void TabSearchContainer::SetupButtonProperties(TabOrganizationButton* button,
-                                               bool before_tab_strip) {
+                                               bool tab_search_before_chips) {
   // Set the margins for the button
   const int space_between_buttons = 2;
   gfx::Insets margin;
-  if (before_tab_strip) {
+  if (tab_search_before_chips) {
     margin.set_left(space_between_buttons);
   } else {
     margin.set_right(space_between_buttons);
@@ -276,7 +292,7 @@ void TabSearchContainer::SetupButtonProperties(TabOrganizationButton* button,
 std::unique_ptr<TabOrganizationButton>
 TabSearchContainer::CreateAutoTabGroupButton(
     TabStripController* tab_strip_controller,
-    bool before_tab_strip) {
+    bool tab_search_before_chips) {
   auto button = std::make_unique<TabOrganizationButton>(
       tab_strip_controller,
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonClicked,
@@ -286,7 +302,8 @@ TabSearchContainer::CreateAutoTabGroupButton(
       l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
       l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE),
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE),
-      kAutoTabGroupButtonElementId, GetFlatEdge(false, before_tab_strip));
+      kAutoTabGroupButtonElementId,
+      GetFlatEdge(false, tab_search_before_chips));
 
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);
@@ -296,7 +313,7 @@ TabSearchContainer::CreateAutoTabGroupButton(
 std::unique_ptr<TabOrganizationButton>
 TabSearchContainer::CreateTabDeclutterButton(
     TabStripController* tab_strip_controller,
-    bool before_tab_strip) {
+    bool tab_search_before_chips) {
   auto button = std::make_unique<TabOrganizationButton>(
       tab_strip_controller,
       base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonClicked,
@@ -306,7 +323,8 @@ TabSearchContainer::CreateTabDeclutterButton(
       l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER),
       l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER),
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER),
-      kTabDeclutterButtonElementId, GetFlatEdge(false, before_tab_strip));
+      kTabDeclutterButtonElementId,
+      GetFlatEdge(false, tab_search_before_chips));
 
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);
@@ -338,7 +356,8 @@ void TabSearchContainer::SetLockedExpansionModeForTesting(
 }
 
 void TabSearchContainer::OnAutoTabGroupButtonClicked() {
-  base::UmaHistogramEnumeration(kTriggerOutcomeName, TriggerOutcome::kAccepted);
+  base::UmaHistogramEnumeration(kAutoTabGroupsTriggerOutcomeName,
+                                TriggerOutcome::kAccepted);
   tab_organization_service_->OnActionUIAccepted(browser_);
 
   UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
@@ -349,7 +368,7 @@ void TabSearchContainer::OnAutoTabGroupButtonClicked() {
 }
 
 void TabSearchContainer::OnAutoTabGroupButtonDismissed() {
-  base::UmaHistogramEnumeration(kTriggerOutcomeName,
+  base::UmaHistogramEnumeration(kAutoTabGroupsTriggerOutcomeName,
                                 TriggerOutcome::kDismissed);
   tab_organization_service_->OnActionUIDismissed(browser_);
 
@@ -362,9 +381,12 @@ void TabSearchContainer::OnAutoTabGroupButtonDismissed() {
 void TabSearchContainer::OnOrganizeButtonTimeout(
     TabOrganizationButton* button) {
   if (button == auto_tab_group_button_) {
-    base::UmaHistogramEnumeration(kTriggerOutcomeName,
+    base::UmaHistogramEnumeration(kAutoTabGroupsTriggerOutcomeName,
                                   TriggerOutcome::kTimedOut);
     UMA_HISTOGRAM_BOOLEAN("Tab.Organization.Proactive.Clicked", false);
+  } else if (button == tab_declutter_button_) {
+    base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
+                                  TriggerOutcome::kTimedOut);
   }
 
   // Hide the button if not pressed. Use locked expansion mode to avoid
@@ -412,6 +434,10 @@ void TabSearchContainer::ExecuteShowTabOrganization(
       FROM_HERE, kShowDuration,
       base::BindOnce(&TabSearchContainer::OnOrganizeButtonTimeout,
                      base::Unretained(this), button));
+
+  if (button == tab_declutter_button_) {
+    LogDeclutterTriggerBucket(false);
+  }
 }
 
 void TabSearchContainer::ExecuteHideTabOrganization(
@@ -485,9 +511,13 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
 }
 
 void TabSearchContainer::OnTabDeclutterButtonClicked() {
-  const int tab_organization_tab_index = 1;
+  tabs::TabDeclutterController::EmitEntryPointHistogram(
+      tab_search::mojom::TabDeclutterEntryPoint::kNudge);
+  base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
+                                TriggerOutcome::kAccepted);
+  LogDeclutterTriggerBucket(true);
   tab_search_button_->tab_search_bubble_host()->ShowTabSearchBubble(
-      false, tab_organization_tab_index,
+      false, tab_search::mojom::TabSearchSection::kOrganize,
       tab_search::mojom::TabOrganizationFeature::kDeclutter);
 
   // Force hide the button when pressed, bypassing locked expansion mode.
@@ -495,6 +525,8 @@ void TabSearchContainer::OnTabDeclutterButtonClicked() {
 }
 
 void TabSearchContainer::OnTabDeclutterButtonDismissed() {
+  base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
+                                TriggerOutcome::kDismissed);
   tab_declutter_controller_->OnActionUIDismissed(
       base::PassKey<TabSearchContainer>());
 
@@ -513,6 +545,54 @@ void TabSearchContainer::OnTriggerDeclutterUIVisibility(bool should_show) {
   } else {
     HideTabOrganization(tab_declutter_button_);
   }
+}
+
+DeclutterTriggerCTRBucket TabSearchContainer::GetDeclutterTriggerBucket(
+    bool clicked) {
+  const auto total_tab_count =
+      tab_declutter_controller_->tab_strip_model()->GetTabCount();
+  const auto stale_tab_count = tab_declutter_controller_->GetStaleTabs().size();
+
+  if (total_tab_count < 15) {
+    return clicked ? DeclutterTriggerCTRBucket::kClickedUnder15Tabs
+                   : DeclutterTriggerCTRBucket::kShownUnder15Tabs;
+  } else if (total_tab_count < 20) {
+    if (stale_tab_count < 2) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19TabsUnder2Stale
+                     : DeclutterTriggerCTRBucket::kShown15To19TabsUnder2Stale;
+    } else if (stale_tab_count < 5) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19Tabs2To4Stale
+                     : DeclutterTriggerCTRBucket::kShown15To19Tabs2To4Stale;
+    } else if (stale_tab_count < 8) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19Tabs5To7Stale
+                     : DeclutterTriggerCTRBucket::kShown15To19Tabs5To7Stale;
+    } else {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked15To19TabsOver7Stale
+                     : DeclutterTriggerCTRBucket::kShown15To19TabsOver7Stale;
+    }
+  } else if (total_tab_count < 25) {
+    if (stale_tab_count < 2) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24TabsUnder2Stale
+                     : DeclutterTriggerCTRBucket::kShown20To24TabsUnder2Stale;
+    } else if (stale_tab_count < 5) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24Tabs2To4Stale
+                     : DeclutterTriggerCTRBucket::kShown20To24Tabs2To4Stale;
+    } else if (stale_tab_count < 8) {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24Tabs5To7Stale
+                     : DeclutterTriggerCTRBucket::kShown20To24Tabs5To7Stale;
+    } else {
+      return clicked ? DeclutterTriggerCTRBucket::kClicked20To24TabsOver7Stale
+                     : DeclutterTriggerCTRBucket::kShown20To24TabsOver7Stale;
+    }
+  } else {
+    return clicked ? DeclutterTriggerCTRBucket::kClickedOver24Tabs
+                   : DeclutterTriggerCTRBucket::kShownOver24Tabs;
+  }
+}
+
+void TabSearchContainer::LogDeclutterTriggerBucket(bool clicked) {
+  const DeclutterTriggerCTRBucket bucket = GetDeclutterTriggerBucket(clicked);
+  base::UmaHistogramEnumeration(kDeclutterTriggerBucketedCTRName, bucket);
 }
 
 BEGIN_METADATA(TabSearchContainer)

@@ -183,11 +183,12 @@ java_cpp_enum("autofill_core_browser_java_enums") {
     "../core/browser/data_model/credit_card.h",
     "../core/browser/data_model/iban.h",
     "../core/browser/field_types.h",
+    "../core/browser/metrics/payments/iban_metrics.h",
     "../core/browser/metrics/payments/mandatory_reauth_metrics.h",
     "../core/browser/metrics/payments/virtual_card_enrollment_metrics.h",
     "../core/browser/payments/card_unmask_challenge_option.h",
     "../core/browser/ui/autofill_image_fetcher_base.h",
-    "../core/browser/ui/payments/payments_bubble_closed_reasons.h",
+    "../core/browser/ui/payments/payments_ui_closed_reasons.h",
     "../core/browser/ui/suggestion.h",
     "../core/browser/ui/suggestion_type.h",
   ]
@@ -275,6 +276,7 @@ android_library("payments_autofill_java") {
     "java/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/BankAccount.java",
     "java/src/org/chromium/components/autofill/payments/CardDetail.java",
+    "java/src/org/chromium/components/autofill/payments/Ewallet.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
   ]
@@ -296,6 +298,7 @@ robolectric_library("payments_autofill_junit_tests") {
     "javatests/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfoTest.java",
     "javatests/src/org/chromium/components/autofill/payments/BankAccountTest.java",
     "javatests/src/org/chromium/components/autofill/payments/CardDetailTest.java",
+    "javatests/src/org/chromium/components/autofill/payments/EwalletTest.java",
     "javatests/src/org/chromium/components/autofill/payments/LegalMessageLineTest.java",
     "javatests/src/org/chromium/components/autofill/payments/PaymentInstrumentTest.java",
   ]
@@ -318,6 +321,7 @@ generate_jni("payments_jni_headers") {
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/BankAccount.java",
+    "java/src/org/chromium/components/autofill/payments/Ewallet.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
   ]

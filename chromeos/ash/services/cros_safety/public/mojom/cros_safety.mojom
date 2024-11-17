@@ -1,0 +1,57 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// Next MinVersion: 1
+
+module ash.cros_safety.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// This enum type identifies the result of either cloud or on-device safety
+// classification methods. We may want to extend this to be more fine-grained.
+[Stable, Extensible]
+enum SafetyClassifierVerdict {
+  kPass,                  // Meaning that the content passed the classification.
+  [Default] kGenericError,
+  kFailedText,            // Meaning that the text failed the classification.
+  kFailedImage,           // Meaning that the image failed the classification.
+};
+
+// These enum entries identify which feature is requesting a verdict. This
+// allows the implementation to use different classifiers per feature if
+// necessary. Within the implementation of the CrosSafetyService it will map
+// these enums to {client_id, release_config_version} pairs that tell which
+// classifier to load for an CloudSafetySession.
+[Stable, Extensible]
+enum SafetyRuleset {
+  [Default] kGeneric,
+  kMantis,
+};
+
+// CloudSafetySession is implemented within CrosSafetyService which connects
+// to the Chrome Manta service for cloud classification.
+// Next Method ID: 2
+[Stable]
+interface CloudSafetySession {
+  // Infers multiclass safety scores for the given `text`.
+  ClassifyTextSafety@0(SafetyRuleset rules, string text)
+      => (SafetyClassifierVerdict verdict);
+  // Infers multiclass safety scores for the given `image` data. Note that
+  // the `prompt` can be specified here to allow for additional filtering.
+  ClassifyImageSafety@1(SafetyRuleset rules, string? prompt,
+      mojo_base.mojom.BigBuffer image)=> (SafetyClassifierVerdict verdict);
+};
+
+// OnDeviceSafetySession is implemented within CrosSafetyService which
+// connects to the ARC OnDeviceSafetyInstance for on-device classification.
+// Next Method ID: 2
+[Stable]
+interface OnDeviceSafetySession {
+  // Infers multiclass safety scores for the given `text`.
+  ClassifyTextSafety@0(SafetyRuleset rules, string text)
+      => (SafetyClassifierVerdict verdict);
+
+  // Infers multiclass safety scores for the given `image` data.
+  ClassifyImageSafety@1(SafetyRuleset rules, mojo_base.mojom.BigBuffer image)
+      => (SafetyClassifierVerdict verdict);
+};

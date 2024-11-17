@@ -11,10 +11,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -36,7 +38,7 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -75,29 +77,6 @@ enum EnterpriseManaged {
 
 EnterpriseManaged g_is_enterprise_managed_for_testing =
     ENTERPRISE_MANAGED_STATUS_NOT_SET;
-
-bool IsEnterpriseManaged() {
-  // Return the value of the testing flag if it's set.
-  if (g_is_enterprise_managed_for_testing == ENTERPRISE_MANAGED_STATUS_TRUE) {
-    return true;
-  }
-
-  if (g_is_enterprise_managed_for_testing == ENTERPRISE_MANAGED_STATUS_FALSE) {
-    return false;
-  }
-
-#if BUILDFLAG(IS_WIN)
-  if (base::IsManagedOrEnterpriseDevice()) {
-    return true;
-  }
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  if (g_browser_process->platform_part()->browser_policy_connector_ash()) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
-  return false;
-}
 
 // Opens the login page for a captive portal. Passed in to
 // CaptivePortalBlockingPage to be invoked when the user has pressed the
@@ -244,14 +223,16 @@ ChromeSecurityBlockingPageFactory::CreateMITMSoftwareBlockingPage(
     const GURL& request_url,
     const net::SSLInfo& ssl_info,
     const std::string& mitm_software_name) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   LogSafeBrowsingSecuritySensitiveAction(
       safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())));
+          profile));
 
   auto page = std::make_unique<MITMSoftwareBlockingPage>(
       web_contents, cert_error, request_url,
       /*can_show_enhanced_protection_message=*/true, ssl_info,
-      mitm_software_name, IsEnterpriseManaged(),
+      mitm_software_name, IsEnterpriseManaged(profile),
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
@@ -415,6 +396,38 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
 
 #endif  // BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 
+// static
+bool ChromeSecurityBlockingPageFactory::IsEnterpriseManaged(Profile* profile) {
+  // Return the value of the testing flag if it's set.
+  if (g_is_enterprise_managed_for_testing == ENTERPRISE_MANAGED_STATUS_TRUE) {
+    return true;
+  }
+  if (g_is_enterprise_managed_for_testing == ENTERPRISE_MANAGED_STATUS_FALSE) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (base::IsManagedOrEnterpriseDevice()) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (connector && connector->IsDeviceEnterpriseManaged()) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (profile && profile->GetProfilePolicyConnector() &&
+      profile->GetProfilePolicyConnector()->IsManaged()) {
+    return true;
+  }
+  return false;
+}
+
+// static
 void ChromeSecurityBlockingPageFactory::SetEnterpriseManagedForTesting(
     bool enterprise_managed) {
   if (enterprise_managed) {

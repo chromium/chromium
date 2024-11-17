@@ -219,7 +219,7 @@ class CrossOriginOpenerPolicyBrowserTest
     feature_list_.InitWithFeatures(
         {network::features::kCrossOriginOpenerPolicy,
          network::features::kCoopNoopenerAllowPopups},
-        {});
+        {features::kProcessPerSiteUpToMainFrameThreshold});
 
     // Enable RenderDocument:
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
@@ -8728,6 +8728,9 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesReportingBrowserTest,
 // is properly updated.
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        NavigationVirtualBrowsingContextGroupNoopener) {
+  GURL::Replacements cross_origin;
+  cross_origin.SetHostStr("cross-origin.example.com");
+
   const struct {
     GURL url_a;
     GURL url_b;
@@ -8769,7 +8772,34 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
               "/set-header?"
               "Cross-Origin-Opener-Policy: noopener-allow-popups"),
           true,
+          true,
+      },
+      {
+          // noopener allow popups, noopener allow popups => no change
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: noopener-allow-popups"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: noopener-allow-popups"),
           false,
+          false,
+      },
+      {
+          // noopener allow popups, cross-origin noopener allow popups => change
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: noopener-allow-popups"),
+          https_server()
+              ->GetURL("a.test",
+                       "/set-header?"
+                       "Cross-Origin-Opener-Policy: noopener-allow-popups")
+              .ReplaceComponents(cross_origin),
+          true,
+          true,
       },
       {
           // unsafe-none, noopener => no change

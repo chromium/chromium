@@ -146,13 +146,13 @@ void SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::Advance() {
       if (layout_object && layout_object->IsText() &&
           node_->getNodeType() == Node::kTextNode) {
         // FIXME: What about kCdataSectionNode?
-        if (layout_object->Style()->UsedVisibility() == EVisibility::kVisible &&
+        if (layout_object->Style()->Visibility() == EVisibility::kVisible &&
             offset_ > 0) {
           handled_node_ = HandleTextNode();
         }
       } else if (layout_object && (layout_object->IsLayoutEmbeddedContent() ||
                                    TextIterator::SupportsAltText(*node_))) {
-        if (layout_object->Style()->UsedVisibility() == EVisibility::kVisible &&
+        if (layout_object->Style()->Visibility() == EVisibility::kVisible &&
             offset_ > 0) {
           handled_node_ = HandleReplacedElement();
         }

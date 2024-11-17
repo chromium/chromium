@@ -60,7 +60,7 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
       break;
     }
     case BookmarkEditor::EditDetails::EXISTING_NODE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return node;
@@ -90,7 +90,7 @@ BookmarkNode::Type BookmarkEditor::EditDetails::GetNodeType() const {
       node_type = BookmarkNode::FOLDER;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return node_type;
 }
@@ -111,7 +111,7 @@ int BookmarkEditor::EditDetails::GetWindowTitleId() const {
                          : IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return dialog_title;
 }
@@ -152,35 +152,11 @@ BookmarkEditor::EditDetails::EditDetails(const EditDetails& other) = default;
 BookmarkEditor::EditDetails::~EditDetails() = default;
 
 // static
-const BookmarkNode* BookmarkEditor::ApplyEditsWithNoFolderChange(
-    BookmarkModel* model,
-    const BookmarkNode* parent,
-    const EditDetails& details,
-    const std::u16string& new_title,
-    const GURL& new_url) {
-  if (details.type == EditDetails::NEW_URL ||
-      details.type == EditDetails::NEW_FOLDER) {
-    return CreateNewNode(model, parent, details, new_title, new_url);
-  }
-
-  const BookmarkNode* node = details.existing_node;
-  DCHECK(node);
-
-  if (node->is_url())
-    model->SetURL(node, new_url, bookmarks::metrics::BookmarkEditSource::kUser);
-  model->SetTitle(node, new_title,
-                  bookmarks::metrics::BookmarkEditSource::kUser);
-
-  return node;
-}
-
-// static
-const BookmarkNode* BookmarkEditor::ApplyEditsWithPossibleFolderChange(
-    BookmarkModel* model,
-    const BookmarkNode* new_parent,
-    const EditDetails& details,
-    const std::u16string& new_title,
-    const GURL& new_url) {
+const BookmarkNode* BookmarkEditor::ApplyEdits(BookmarkModel* model,
+                                               const BookmarkNode* new_parent,
+                                               const EditDetails& details,
+                                               const std::u16string& new_title,
+                                               const GURL& new_url) {
   if (details.type == EditDetails::NEW_URL ||
       details.type == EditDetails::NEW_FOLDER) {
     return CreateNewNode(model, new_parent, details, new_title, new_url);

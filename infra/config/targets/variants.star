@@ -15,6 +15,7 @@ targets.variant(
 targets.variant(
     name = "DISABLE_FIELD_TRIAL_CONFIG",
     identifier = "Disable Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--disable-field-trial-config",
         "--webview-verbose-logging",
@@ -24,6 +25,7 @@ targets.variant(
 targets.variant(
     name = "DISABLE_FIELD_TRIAL_CONFIG_WEBVIEW_COMMANDLINE",
     identifier = "Disable Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--webview-command-line-arg=--disable-field-trial-config",
         "--webview-command-line-arg=--webview-verbose-logging",
@@ -33,6 +35,7 @@ targets.variant(
 targets.variant(
     name = "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
     identifier = "Single Group Per Study Prefer Existing Behavior Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
         "--accept-empty-variations-seed-signature",
@@ -45,6 +48,7 @@ targets.variant(
 targets.variant(
     name = "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR",
     identifier = "Single Group Per Study Prefer New Behavior Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
         "--accept-empty-variations-seed-signature",
@@ -57,6 +61,7 @@ targets.variant(
 targets.variant(
     name = "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR_WEBVIEW_COMMANDLINE",
     identifier = "Single Group Per Study Prefer Existing Behavior Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
         "--webview-command-line-arg=--accept-empty-variations-seed-signature",
@@ -69,6 +74,7 @@ targets.variant(
 targets.variant(
     name = "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR_WEBVIEW_COMMANDLINE",
     identifier = "Single Group Per Study Prefer New Behavior Field Trial Config",
+    generate_pyl_entry = False,
     args = [
         "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
         "--webview-command-line-arg=--accept-empty-variations-seed-signature",
@@ -87,11 +93,23 @@ targets.variant(
 )
 
 targets.variant(
-    name = "IPHONE_15_PRO_18_0",
-    identifier = "iPhone 15 Pro 18.0",
+    name = "IPHONE_13",
+    identifier = "iPhone 13",
     swarming = targets.swarming(
         dimensions = {
-            "os": "iOS-18.0",
+            "device": "iPhone14,5",
+            "device_status": "available",
+        },
+    ),
+)
+
+targets.variant(
+    name = "IPHONE_15_PRO_18_0",
+    identifier = "iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0",
+    generate_pyl_entry = False,
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "iOS-17.5.1|iOS-17.6.1|iOS-18.0",
             "device": "iPhone16,1",
         },
     ),
@@ -100,6 +118,7 @@ targets.variant(
 targets.variant(
     name = "LINUX_INTEL_UHD_630_STABLE",
     identifier = "UHD 630",
+    generate_pyl_entry = False,
     mixins = [
         "linux_intel_uhd_630_stable",
     ],
@@ -108,6 +127,7 @@ targets.variant(
 targets.variant(
     name = "LINUX_NVIDIA_GTX_1660_STABLE",
     identifier = "GTX 1660",
+    generate_pyl_entry = False,
     mixins = [
         "linux_nvidia_gtx_1660_stable",
     ],
@@ -116,6 +136,7 @@ targets.variant(
 targets.variant(
     name = "MAC_MINI_INTEL_GPU_STABLE",
     identifier = "8086:3e9b",
+    generate_pyl_entry = False,
     mixins = [
         "mac_mini_intel_gpu_stable",
     ],
@@ -123,7 +144,8 @@ targets.variant(
 
 targets.variant(
     name = "MAC_RETINA_AMD_GPU_STABLE",
-    identifier = "1002:67ef",
+    identifier = "1002:7340",
+    generate_pyl_entry = False,
     mixins = [
         "mac_retina_amd_gpu_stable",
     ],
@@ -132,6 +154,7 @@ targets.variant(
 targets.variant(
     name = "MAC_RETINA_NVIDIA_GPU_STABLE",
     identifier = "10de:0fe9",
+    generate_pyl_entry = False,
     mixins = [
         "mac_retina_nvidia_gpu_stable",
     ],
@@ -148,6 +171,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_AIR_5TH_GEN_16_4",
     identifier = "iPad Air (5th generation) 16.4",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_16_4",
     ],
@@ -162,6 +186,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_AIR_5TH_GEN_17_5",
     identifier = "iPad Air (5th generation) 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -176,6 +201,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_AIR_5TH_GEN_18_1",
     identifier = "iPad Air (5th generation) 18.1",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_1",
     ],
@@ -188,8 +214,24 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPAD_AIR_5TH_GEN_18_2",
+    identifier = "iPad Air (5th generation) 18.2",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_2",
+    ],
+    args = [
+        "--platform",
+        "iPad Air (5th generation)",
+        "--version",
+        "18.2",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPAD_AIR_6TH_GEN_18_0",
     identifier = "iPad Air (6th generation) 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -202,8 +244,39 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPAD_AIR_6TH_GEN_18_1",
+    identifier = "iPad Air (6th generation) 18.1",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_1",
+    ],
+    args = [
+        "--platform",
+        "iPad Air 11-inch (M2)",
+        "--version",
+        "18.1",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPAD_AIR_6TH_GEN_18_2",
+    identifier = "iPad Air (6th generation) 18.2",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_2",
+    ],
+    args = [
+        "--platform",
+        "iPad Air 11-inch (M2)",
+        "--version",
+        "18.2",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPAD_PRO_6TH_GEN_16_4",
     identifier = "iPad Pro (12.9-inch) (6th generation) 16.4",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_16_4",
     ],
@@ -218,6 +291,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_PRO_6TH_GEN_17_5",
     identifier = "iPad Pro (12.9-inch) (6th generation) 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -232,6 +306,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPAD_PRO_7TH_GEN_18_0",
     identifier = "iPad Pro 13-inch (M4) 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -244,8 +319,54 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPAD_PRO_7TH_GEN_18_1",
+    identifier = "iPad Pro 13-inch (M4) 18.1",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_1",
+    ],
+    args = [
+        "--platform",
+        "iPad Pro 13-inch (M4)",
+        "--version",
+        "18.1",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPAD_PRO_7TH_GEN_18_2",
+    identifier = "iPad Pro 13-inch (M4) 18.2",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_2",
+    ],
+    args = [
+        "--platform",
+        "iPad Pro 13-inch (M4)",
+        "--version",
+        "18.2",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPAD_10TH_GEN_17_5",
+    identifier = "iPad (10th generation) 17.5",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_17_5",
+    ],
+    args = [
+        "--platform",
+        "iPad (10th generation)",
+        "--version",
+        "17.5",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPAD_10TH_GEN_18_0",
     identifier = "iPad (10th generation) 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -258,8 +379,39 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPAD_10TH_GEN_18_1",
+    identifier = "iPad (10th generation) 18.1",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_1",
+    ],
+    args = [
+        "--platform",
+        "iPad (10th generation)",
+        "--version",
+        "18.1",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPAD_10TH_GEN_18_2",
+    identifier = "iPad (10th generation) 18.2",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_2",
+    ],
+    args = [
+        "--platform",
+        "iPad (10th generation)",
+        "--version",
+        "18.2",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_14_16_4",
     identifier = "iPhone 14 16.4",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_16_4",
     ],
@@ -274,6 +426,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_17_5",
     identifier = "iPhone 14 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -302,6 +455,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_18_1",
     identifier = "iPhone 14 18.1",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_1",
     ],
@@ -314,8 +468,24 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPHONE_14_18_2",
+    identifier = "iPhone 14 18.2",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_2",
+    ],
+    args = [
+        "--platform",
+        "iPhone 14",
+        "--version",
+        "18.2",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_15_18_0",
     identifier = "iPhone 15 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -328,8 +498,39 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPHONE_15_18_1",
+    identifier = "iPhone 15 18.1",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_1",
+    ],
+    args = [
+        "--platform",
+        "iPhone 15",
+        "--version",
+        "18.1",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPHONE_15_18_2",
+    identifier = "iPhone 15 18.2",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_2",
+    ],
+    args = [
+        "--platform",
+        "iPhone 15",
+        "--version",
+        "18.2",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_14_PLUS_16_4",
     identifier = "iPhone 14 Plus 16.4",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_16_4",
     ],
@@ -344,6 +545,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_14_PLUS_17_5",
     identifier = "iPhone 14 Plus 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -356,22 +558,24 @@ targets.variant(
 )
 
 targets.variant(
-    name = "SIM_IPHONE_14_PLUS_18_0",
-    identifier = "iPhone 14 Plus 18.0",
+    name = "SIM_IPHONE_14_PLUS_18_1",
+    identifier = "iPhone 14 Plus 18.1",
+    generate_pyl_entry = False,
     mixins = [
-        "ios_runtime_cache_18_0",
+        "ios_runtime_cache_18_1",
     ],
     args = [
         "--platform",
         "iPhone 14 Plus",
         "--version",
-        "18.0",
+        "18.1",
     ],
 )
 
 targets.variant(
     name = "SIM_IPHONE_14_PRO_MAX_17_5",
     identifier = "iPhone 14 Pro Max 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -386,6 +590,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_15_PRO_MAX_18_0",
     identifier = "iPhone 15 Pro Max 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -398,8 +603,39 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPHONE_15_PRO_MAX_18_1",
+    identifier = "iPhone 15 Pro Max 18.1",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_1",
+    ],
+    args = [
+        "--platform",
+        "iPhone 15 Pro Max",
+        "--version",
+        "18.1",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPHONE_15_PRO_MAX_18_2",
+    identifier = "iPhone 15 Pro Max 18.2",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_2",
+    ],
+    args = [
+        "--platform",
+        "iPhone 15 Pro Max",
+        "--version",
+        "18.2",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_SE_3RD_GEN_16_4",
     identifier = "iPhone SE (3rd generation) 16.4",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_16_4",
     ],
@@ -414,6 +650,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_SE_3RD_GEN_17_5",
     identifier = "iPhone SE (3rd generation) 17.5",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_17_5",
     ],
@@ -428,6 +665,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_SE_3RD_GEN_18_0",
     identifier = "iPhone SE (3rd generation) 18.0",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_0",
     ],
@@ -442,6 +680,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_SE_3RD_GEN_18_1",
     identifier = "iPhone SE (3rd generation) 18.1",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_18_1",
     ],
@@ -454,8 +693,24 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPHONE_SE_3RD_GEN_18_2",
+    identifier = "iPhone SE (3rd generation) 18.2",
+    generate_pyl_entry = False,
+    mixins = [
+        "ios_runtime_cache_18_2",
+    ],
+    args = [
+        "--platform",
+        "iPhone SE (3rd generation)",
+        "--version",
+        "18.2",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_X_16_4",
     identifier = "iPhone X 16.4",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_16_4",
     ],
@@ -470,6 +725,7 @@ targets.variant(
 targets.variant(
     name = "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
     identifier = "full_mode",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         shards = 2,
     ),
@@ -478,6 +734,7 @@ targets.variant(
 targets.variant(
     name = "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
     identifier = "instant_mode",
+    generate_pyl_entry = False,
     args = [
         "--exclude-annotation",
         "AppModeFull",
@@ -502,16 +759,9 @@ targets.variant(
 ) for name, variant in json.decode(io.read_file("./cros-skylab-variants.json")).items()]
 
 targets.variant(
-    name = "LACROS_ASH_TOT",
-    identifier = "Ash ToT",
-    args = [
-        "--deploy-lacros",
-    ],
-)
-
-targets.variant(
     name = "WIN10_INTEL_UHD_630_STABLE",
     identifier = "8086:9bc5",
+    generate_pyl_entry = False,
     mixins = [
         "swarming_containment_auto",
         "win10_intel_uhd_630_stable",
@@ -521,6 +771,7 @@ targets.variant(
 targets.variant(
     name = "WIN10_NVIDIA_GTX_1660_STABLE",
     identifier = "10de:2184",
+    generate_pyl_entry = False,
     mixins = [
         "win10_nvidia_gtx_1660_stable",
     ],

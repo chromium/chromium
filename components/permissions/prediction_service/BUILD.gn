@@ -7,7 +7,6 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("prediction_service_messages_proto") {
   sources = [
-    "prediction_model_handshake.proto",
     "prediction_model_metadata.proto",
     "prediction_service_messages.proto",
   ]
@@ -26,6 +25,7 @@ source_set("prediction_service") {
     "//build:chromeos_buildflags",
     "//components/keyed_service/content",
     "//components/permissions:permissions_common",
+    "//components/version_info",
     "//content/public/browser",
     "//services/network/public/cpp:cpp",
     "//third_party/protobuf:protobuf_lite",
@@ -44,6 +44,8 @@ source_set("prediction_service") {
       "prediction_model_handler.h",
       "prediction_model_handler_provider.cc",
       "prediction_model_handler_provider.h",
+      "prediction_signature_model_executor.cc",
+      "prediction_signature_model_executor.h",
     ]
 
     deps += [

@@ -31,6 +31,7 @@
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -180,23 +181,6 @@ int SearchProvider::CalculateRelevanceForKeywordVerbatim(
              : 1100;
 }
 
-bool SearchProvider::CanSendCurrentPageURLInRequest(
-    const GURL& current_page_url,
-    metrics::OmniboxEventProto::PageClassification page_classification,
-    const TemplateURL* template_url,
-    const SearchTermsData& search_terms_data,
-    const AutocompleteProviderClient* client) {
-  // Send the current page URL if the request eligiblility and the user settings
-  // requirements are met and the URL is valid with an HTTP(S) scheme.
-  // Don't bother sending the URL of an NTP page; it's not useful. The server
-  // already gets equivalent information in the form of the current page
-  // classification.
-  return !omnibox::IsNTPPage(page_classification) &&
-         PageURLIsEligibleForSuggestRequest(current_page_url) &&
-         CanSendSuggestRequestWithPageURL(current_page_url, template_url,
-                                          search_terms_data, client);
-}
-
 SearchProvider::~SearchProvider() = default;
 
 // static
@@ -311,7 +295,7 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   input_ = input;
 
-  // Don't search the history database for on-focus inputs or lens searchboxes.
+  // Don't search the history database for on-focus inputs or Lens searchboxes.
   // On-focus inputs should only be used to warm up the suggest server; and Lens
   // searchboxes do not show suggestions from the history database.
   if (!input.IsZeroSuggest() &&
@@ -715,8 +699,26 @@ base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {
 }
 
 void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
-  bool query_is_private;
-  if (!IsQuerySuitableForSuggest(&query_is_private)) {
+  // Since there is currently no contextual search suggest, lens contextual
+  // searchboxes, shouldn't query suggest and only the verbatim matches should
+  // be shown.
+  if (omnibox::IsLensContextualSearchbox(
+          input_.current_page_classification()) &&
+      !lens::features::ShowContextualSearchboxSearchSuggest()) {
+    return;
+  }
+  // Make sure the current query can be sent to at least one suggest service.
+  // Don't send potentially private data to the default search provider. It's
+  // okay to send potentially private data to a keyword suggest server, if any.
+  const bool query_is_private = IsQueryPotentiallyPrivate();
+  const auto page_classification = input_.current_page_classification();
+  const TemplateURL* default_turl = providers_.GetDefaultProviderURL();
+  const TemplateURL* keyword_turl = providers_.GetKeywordProviderURL();
+  const bool can_send_any_suggest_request =
+      (!query_is_private &&
+       CanSendSuggestRequest(page_classification, default_turl, client())) ||
+      CanSendSuggestRequest(page_classification, keyword_turl, client());
+  if (!can_send_any_suggest_request) {
     StopSuggest();
     ClearAllResults();
     return;
@@ -767,21 +769,6 @@ void SearchProvider::CancelLoader(
     LogOmniboxSuggestRequest(RemoteRequestEvent::kRequestInvalidated);
     loader->reset();
   }
-}
-
-bool SearchProvider::IsQuerySuitableForSuggest(bool* query_is_private) const {
-  *query_is_private = IsQueryPotentiallyPrivate();
-
-  // Don't run Suggest in incognito mode, if the engine doesn't support it, or
-  // if the user has disabled it.  Also don't send potentially private data
-  // to the default search provider.  (It's always okay to send explicit
-  // keyword input to a keyword suggest server, if any.)
-  const TemplateURL* default_url = providers_.GetDefaultProviderURL();
-  const TemplateURL* keyword_url = providers_.GetKeywordProviderURL();
-  return !client()->IsOffTheRecord() && client()->SearchSuggestEnabled() &&
-         ((default_url && !default_url->suggestions_url().empty() &&
-           !*query_is_private) ||
-          (keyword_url && !keyword_url->suggestions_url().empty()));
 }
 
 bool SearchProvider::IsQueryPotentiallyPrivate() const {
@@ -887,21 +874,10 @@ void SearchProvider::ApplyCalculatedNavigationRelevance(
 std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     const TemplateURL* template_url,
     const AutocompleteInput& input) {
-  if (!template_url || template_url->suggestions_url().empty())
+  if (!template_url) {
     return nullptr;
+  }
 
-  // Setting SuggestUrl the same as SearchUrl is a typical misconfiguration.
-  // It's not possible for a URL to both provide a search results page and
-  // suggested queries response (at least they have different format).  Most
-  // like the user set the search URL correctly; it would be obvious if they did
-  // not. Thus, it's likely that the suggest URL is wrong.  Because it would not
-  // give a valid query suggestion response, don't bother sending queries to it
-  // (otherwise user will quickly hit rate-limit for search queries, that will
-  // harm valid search queries as well).
-  if (template_url->suggestions_url() == template_url->url())
-    return nullptr;
-
-  // Bail if the suggestion URL is invalid with the given replacements.
   TemplateURLRef::SearchTermsArgs search_term_args(input.text());
   search_term_args.input_type = input.type();
   search_term_args.cursor_position = input.cursor_position();
@@ -916,16 +892,17 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     search_term_args.prefetch_query_type =
         base::NumberToString(prefetch_data_.query_type);
   }
-  // Make sure the Lens interaction response is sent in the request, if
-  // available.
-  search_term_args.lens_overlay_interaction_response =
-      input.lens_overlay_interaction_response();
+  search_term_args.lens_overlay_suggest_inputs =
+      input.lens_overlay_suggest_inputs();
 
   const SearchTermsData& search_terms_data =
       client()->GetTemplateURLService()->search_terms_data();
 
-  // Make sure the current page URL is sent in the request, if it is allowed.
-  if (CanSendCurrentPageURLInRequest(
+  // Send the current page URL if it is valid with an HTTP(S) scheme, it is not
+  // the NTP URL, and the request eligiblility requirements are met.
+  if (PageURLIsEligibleForSuggestRequest(input.current_url(),
+                                         input.current_page_classification()) &&
+      CanSendSuggestRequestWithPageURL(
           input.current_url(), input.current_page_classification(),
           template_url, search_terms_data, client())) {
     search_term_args.current_page_url = input.current_url().spec();
@@ -936,12 +913,16 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   // If the request is from omnibox focus, send empty search term args. The
   // purpose of such a request is to signal the server to warm up; no info
   // is required.
+  // Request for suggestions in OTR contexts is not allowed; except for the Lens
+  // searchboxes.
+  DCHECK(!client()->IsOffTheRecord() ||
+         omnibox::IsLensSearchbox(input.current_page_classification()));
   return client()
       ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->StartSuggestionsRequest(
           input.IsZeroSuggest() ? RemoteRequestType::kSearchWarmup
                                 : RemoteRequestType::kSearch,
-          template_url,
+          client()->IsOffTheRecord(), template_url,
           input.IsZeroSuggest() ? TemplateURLRef::SearchTermsArgs()
                                 : search_term_args,
           search_terms_data,
@@ -997,12 +978,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         /*input_text=*/trimmed_verbatim);
     if (match_with_answer) {
       verbatim.SetAnswerType(match_with_answer->answer_type);
-      if (match_with_answer->answer) {
-        verbatim.SetAnswer(*match_with_answer->answer);
-      }
-      if (match_with_answer->answer_template) {
-        verbatim.SetRichAnswerTemplate(*match_with_answer->answer_template);
-      }
+      verbatim.SetRichAnswerTemplate(*match_with_answer->answer_template);
     }
     AddMatchToMap(verbatim, GetInput(verbatim.from_keyword()),
                   GetTemplateURL(verbatim.from_keyword()),
@@ -1130,7 +1106,6 @@ void SearchProvider::RemoveExtraAnswers(ACMatches* matches) {
         answer_seen = true;
       } else {
         it->answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
-        it->answer.reset();
         it->answer_template.reset();
       }
     }
@@ -1151,6 +1126,7 @@ void SearchProvider::DuplicateCardAnswer(ACMatches* matches) {
 
   auto& copy = matches->emplace_back(*iter);
   copy.answer_template.reset();
+  copy.answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
   copy.actions.clear();
   copy.allowed_to_be_default_match = orig_allowed_to_be_default_match;
   copy.suggestion_group_id = omnibox::GROUP_SEARCH;
@@ -1398,8 +1374,7 @@ int SearchProvider::CalculateRelevanceForVerbatimIgnoringKeywordModeState()
       return 850;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -1599,11 +1574,9 @@ void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
     }
 
     GURL answer_image_url =
-        omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-                suggestion.answer_template()
+        suggestion.answer_template()
             ? GURL(suggestion.answer_template()->answers(0).image().url())
-            : ((suggestion.answer() ? suggestion.answer()->image_url()
-                                    : GURL()));
+            : GURL();
     if (answer_image_url.is_valid()) {
       prefetch_image_urls.push_back(std::move(answer_image_url));
     }

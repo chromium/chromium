@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -64,8 +65,8 @@ public class CustomTabCookiesFetcher extends CookiesFetcher {
     }
 
     @Override
-    public void restoreCookies() {
-        super.restoreCookies();
+    public void restoreCookies(@NonNull Runnable restoreCompletedAction) {
+        super.restoreCookies(restoreCompletedAction);
 
         PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, this::cleanupUnneededCookieFiles);
     }

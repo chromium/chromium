@@ -325,7 +325,7 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
 // implementation in future.
 TEST(WebSocketFrameHeaderTest, IsKnownDataOpCode) {
   // Make the test less verbose.
-  typedef WebSocketFrameHeader Frame;
+  using Frame = WebSocketFrameHeader;
 
   // Known opcode, is used for data frames
   EXPECT_TRUE(Frame::IsKnownDataOpCode(Frame::kOpCodeContinuation));
@@ -338,12 +338,16 @@ TEST(WebSocketFrameHeaderTest, IsKnownDataOpCode) {
   EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodePong));
 
   // Check that unused opcodes return false
-  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused));
-  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnused));
-
-  // Check that opcodes with the 4 bit set return false
-  EXPECT_FALSE(Frame::IsKnownDataOpCode(0x6));
-  EXPECT_FALSE(Frame::IsKnownDataOpCode(0xF));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused3));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused4));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused5));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused6));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused7));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedB));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedC));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedD));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedE));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedF));
 
   // Check that out-of-range opcodes return false
   EXPECT_FALSE(Frame::IsKnownDataOpCode(-1));
@@ -354,7 +358,7 @@ TEST(WebSocketFrameHeaderTest, IsKnownDataOpCode) {
 // might be optimised in future.
 TEST(WebSocketFrameHeaderTest, IsKnownControlOpCode) {
   // Make the test less verbose.
-  typedef WebSocketFrameHeader Frame;
+  using Frame = WebSocketFrameHeader;
 
   // Known opcode, is used for data frames
   EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeContinuation));
@@ -367,16 +371,73 @@ TEST(WebSocketFrameHeaderTest, IsKnownControlOpCode) {
   EXPECT_TRUE(Frame::IsKnownControlOpCode(Frame::kOpCodePong));
 
   // Check that unused opcodes return false
-  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused));
-  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnused));
-
-  // Check that opcodes with the 4 bit set return false
-  EXPECT_FALSE(Frame::IsKnownControlOpCode(0x6));
-  EXPECT_FALSE(Frame::IsKnownControlOpCode(0xF));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused3));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused4));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused5));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused6));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused7));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedB));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedC));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedD));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedE));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedF));
 
   // Check that out-of-range opcodes return false
   EXPECT_FALSE(Frame::IsKnownControlOpCode(-1));
   EXPECT_FALSE(Frame::IsKnownControlOpCode(0xFF));
+}
+
+// Test for reserved data opcodes.
+TEST(WebSocketFrameHeaderTest, IsReservedDataOpCode) {
+  using Frame = WebSocketFrameHeader;
+
+  // Known opcodes for data frames should not be reserved.
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodeContinuation));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodeText));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodeBinary));
+
+  // Unused opcodes in the data frame range should be considered reserved.
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused3));
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused4));
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused5));
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused6));
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused7));
+
+  // Known opcodes for control frames should not be considered reserved data
+  // opcodes.
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodeClose));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodePing));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodePong));
+
+  // Out-of-range opcodes should not be considered reserved data opcodes.
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(-1));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(0xFF));
+}
+
+// Test for reserved control opcodes.
+TEST(WebSocketFrameHeaderTest, IsReservedControlOpCode) {
+  using Frame = WebSocketFrameHeader;
+
+  // Known opcodes for data frames should not be reserved control opcodes.
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodeContinuation));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodeText));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodeBinary));
+
+  // Known opcodes for control frames should not be reserved.
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodeClose));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodePing));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodePong));
+
+  // Unused opcodes in the control frame range should be considered reserved.
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedB));
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedC));
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedD));
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedE));
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedF));
+
+  // Out-of-range opcodes should not be considered reserved control opcodes.
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(-1));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(0xFF));
 }
 
 }  // namespace

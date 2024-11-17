@@ -80,8 +80,9 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
   AddAttribute("axnode_id", static_cast<int>(node->id()), uie);
   const std::string& display_value =
       node_data.GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
-  if (!display_value.empty())
+  if (!display_value.empty()) {
     AddAttribute("/extras/styles/display", display_value, uie);
+  }
   AddAttribute("/extras/styles/visibility", !node_data.IsInvisible(), uie);
 
   // Add extra CSS attributes, such as text-align, hierarchical level, font
@@ -89,24 +90,28 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
   // Screen2x expects these properties to be in the string format, so we
   // convert them into string.
   int32_t int_attribute_value;
-  if (node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextAlign,
-                                &int_attribute_value)) {
+  if (node_data.HasIntAttribute(ax::mojom::IntAttribute::kTextAlign)) {
+    int_attribute_value =
+        node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextAlign);
     AddAttribute("/extras/styles/text-align",
                  ui::ToString((ax::mojom::TextAlign)int_attribute_value), uie);
   }
-  if (node_data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
-                                &int_attribute_value)) {
+  if (node_data.HasIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel)) {
+    int_attribute_value =
+        node_data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
     AddAttribute("hierarchical_level", int_attribute_value, uie);
   }
   // Get float attributes and store them as string attributes in the screenai
   // proto for the main content extractor (screen2x).
   float float_attribute_value;
-  if (node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize,
-                                  &float_attribute_value)) {
+  if (node_data.HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
+    float_attribute_value =
+        node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize);
     AddAttribute("/extras/styles/font-size", float_attribute_value, uie);
   }
-  if (node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontWeight,
-                                  &float_attribute_value)) {
+  if (node_data.HasFloatAttribute(ax::mojom::FloatAttribute::kFontWeight)) {
+    float_attribute_value =
+        node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontWeight);
     AddAttribute("/extras/styles/font-weight", float_attribute_value, uie);
   }
 
@@ -125,10 +130,9 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
                                    : screenai::UiElementType::VIEW);
 
   // Bounding Box.
-  gfx::RectF bounds = tree.RelativeToTreeBounds(
-      node, gfx::RectF(0, 0),
-      /* offscreen= */ nullptr, /* clip_bounds= */ false,
-      /* skip_container_offset= */ false);
+  bool offscreen = false;
+  gfx::RectF bounds = tree.GetTreeBounds(
+      node, &offscreen, /* clip_bounds= */ false);
 
   // Bounding Box Pixels.
   screenai::BoundingBoxPixels* bounding_box_pixels =
@@ -139,8 +143,12 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
   bounding_box_pixels->set_right(bounds.right());
   uie.set_allocated_bounding_box_pixels(bounding_box_pixels);
 
-  tree_dimensions.set_height(fmax(tree_dimensions.height(), bounds.bottom()));
-  tree_dimensions.set_width(fmax(tree_dimensions.width(), bounds.right()));
+  // Update tree dimensions to include the bounds of the new node, unless it is
+  // offscreen, invisible, or ignored.
+  if (!offscreen && !node->IsInvisibleOrIgnored()) {
+    tree_dimensions.set_height(fmax(tree_dimensions.height(), bounds.bottom()));
+    tree_dimensions.set_width(fmax(tree_dimensions.width(), bounds.right()));
+  }
 
   return uie;
 }
@@ -172,8 +180,9 @@ void AddSubTree(const ui::AXTree& tree,
   }
 
   // Add child ids.
-  for (int child : child_ids)
+  for (int child : child_ids) {
     proto.mutable_ui_elements(current_node_id)->add_child_ids(child);
+  }
 }
 
 }  // namespace
@@ -195,8 +204,9 @@ std::optional<ViewHierarchyAndTreeSize> SnapshotToViewHierarchy(
              tree_dimensions);
 
   // If the tree has a zero dimension, there is nothing to send.
-  if (tree_dimensions.IsEmpty())
+  if (tree_dimensions.IsEmpty()) {
     return std::nullopt;
+  }
 
   // The bounds of the root item should be set to the snapshot size.
   proto.mutable_ui_elements(0)->mutable_bounding_box_pixels()->set_right(

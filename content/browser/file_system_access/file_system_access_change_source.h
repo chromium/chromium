@@ -46,6 +46,13 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
                              const ChangeInfo& change_info,
                              const FileSystemAccessWatchScope& scope) = 0;
 
+    // Called when the `FileSystemAccessChangeSource` underlying OS usage
+    // changes from `old_usage` to `new_usage`. `scope` is used to identify the
+    // `ChangeSource`.
+    virtual void OnUsageChange(size_t old_usage,
+                               size_t new_usage,
+                               const FileSystemAccessWatchScope& scope) = 0;
+
     virtual void OnSourceBeingDestroyed(
         FileSystemAccessChangeSource* source) = 0;
   };
@@ -94,6 +101,9 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
   void NotifyOfChange(const base::FilePath& relative_path,
                       bool error,
                       const ChangeInfo& change_info);
+
+  // Called by subclasses to report changes to their underlying OS usage.
+  void NotifyOfUsageChange(size_t old_usage, size_t new_usage);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

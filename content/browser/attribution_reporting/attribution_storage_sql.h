@@ -20,9 +20,8 @@
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
-#include "content/browser/attribution_reporting/aggregatable_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/event_level_result.mojom-forward.h"
+#include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
@@ -33,6 +32,7 @@
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
+class AggregatableNamedBudgetCandidate;
 class AggregatableTriggerConfig;
 class SuitableOrigin;
 }  // namespace attribution_reporting
@@ -69,15 +69,15 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 64;
+  static constexpr int kCurrentVersionNumber = 67;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 64;
+  static constexpr int kCompatibleVersionNumber = 67;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
-  static constexpr int kDeprecatedVersionNumber = 51;
+  static constexpr int kDeprecatedVersionNumber = 53;
 
   static_assert(kCompatibleVersionNumber <= kCurrentVersionNumber);
   static_assert(kDeprecatedVersionNumber < kCompatibleVersionNumber);
@@ -168,7 +168,8 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceDedupKeyQueryFailed = 30,
     kSourceInvalidRandomizedResponseRate = 31,
     kSourceInvalidAttributionScopesData = 32,
-    kMaxValue = kSourceInvalidAttributionScopesData,
+    kSourceInvalidAggregatableNamedBudgets = 33,
+    kMaxValue = kSourceInvalidAggregatableNamedBudgets,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionCorruptReportStatus)
 
@@ -364,20 +365,24 @@ class CONTENT_EXPORT AttributionStorageSql {
       StoredSource::Id source_id);
 
   // Returns a negative value on failure.
-  int64_t CountReportsWithDestinationSite(const net::SchemefulSite& destination,
-                                          AttributionReport::Type);
+  int64_t CountEventLevelReportsWithDestinationSite(
+      const net::SchemefulSite& destination);
+  // Returns a negative value on failure.
+  int64_t CountAggregatableReportsWithDestinationSite(
+      const net::SchemefulSite& destination);
 
   // Stores the data associated with the aggregatable report, e.g. budget
   // consumed and dedup keys. The report itself will be stored in
   // `GenerateNullAggregatableReportsAndStoreReports()`.
-  attribution_reporting::mojom::AggregatableResult
-  MaybeStoreAggregatableAttributionReportData(
-      AttributionReport& report,
-      StoredSource::Id source_id,
+  CreateReportResult::Aggregatable MaybeStoreAggregatableAttributionReportData(
+      const StoredSource&,
       int remaining_aggregatable_attribution_budget,
       int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
-      std::optional<int>& max_aggregatable_reports_per_source);
+      const std::vector<
+          attribution_reporting::AggregatableNamedBudgetCandidate>&
+          trigger_budget_candidates,
+      CreateReportResult::AggregatableSuccess);
 
   struct ReportIdAndPriority {
     AttributionReport::Id id;
@@ -394,6 +399,11 @@ class CONTENT_EXPORT AttributionStorageSql {
   [[nodiscard]] bool StoreDedupKey(StoredSource::Id,
                                    uint64_t dedup_key,
                                    AttributionReport::Type);
+
+  // Returns a negative value on failure.
+  int64_t CountUniqueReportingOriginsPerSiteForAttribution(
+      const AttributionTrigger&,
+      base::Time now);
 
  private:
   using ReportCorruptionStatusSet =
@@ -479,11 +489,13 @@ class CONTENT_EXPORT AttributionStorageSql {
 
   // Aggregate Attribution:
 
-  // Adjusts the aggregatable budget for the source event by
-  // `additional_budget_consumed`.
+  // Adjusts the aggregatable budget and selected named budget, if any, for the
+  // source event by `additional_budget_consumed`.
   [[nodiscard]] bool AdjustBudgetConsumedForSource(
       StoredSource::Id source_id,
-      int additional_budget_consumed) VALID_CONTEXT_REQUIRED(sequence_checker_);
+      int additional_budget_consumed,
+      const StoredSource::AggregatableNamedBudgets*)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] std::optional<AttributionReport::Id> StoreAttributionReport(
       int64_t source_id,

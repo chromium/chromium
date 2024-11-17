@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 
 // Interface for renderer to request Android downloaded fonts from font
 // providers on-device.
@@ -13,8 +13,7 @@ interface AndroidFontLookup {
   // lexicographic order, which may be available to be fetched locally from
   // on-device storage.
   [Sync]
-  GetUniqueNameLookupTable()
-    => (array<string> unique_font_names);
+  GetUniqueNameLookupTable() => (array<string> unique_font_names);
 
   // Returns an opened read-only File for a font with the given ICU case folded
   // full font name or null if the font is not available. Although the
@@ -24,10 +23,10 @@ interface AndroidFontLookup {
   // FetchAllFontFiles() can be used to get the font file handles.
   [Sync]
   MatchLocalFontByUniqueName(string font_unique_name)
-    => (mojo_base.mojom.ReadOnlyFile? font_file_handle);
+      => (mojo_base.mojom.ReadOnlyFile? font_file_handle);
 
   // Fetches all available font files and returns a map of ICU case folded full
   // font name to file.
   FetchAllFontFiles()
-    => (map<string, mojo_base.mojom.ReadOnlyFile> font_files);
+      => (map<string, mojo_base.mojom.ReadOnlyFile> font_files);
 };

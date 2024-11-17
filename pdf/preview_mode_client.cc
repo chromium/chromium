@@ -127,8 +127,8 @@ v8::Isolate* PreviewModeClient::GetIsolate() {
 }
 
 std::vector<PDFiumEngineClient::SearchStringResult>
-PreviewModeClient::SearchString(const char16_t* string,
-                                const char16_t* term,
+PreviewModeClient::SearchString(const std::u16string& needle,
+                                const std::u16string& haystack,
                                 bool case_sensitive) {
   NOTREACHED();
 }
@@ -177,5 +177,15 @@ bool PreviewModeClient::IsInAnnotationMode() const {
   NOTREACHED();
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void PreviewModeClient::OnSearchifyStateChange(bool busy) {
+  NOTREACHED();
+}
+
+void PreviewModeClient::OnHasSearchifyText() {
+  NOTREACHED();
+}
+#endif
 
 }  // namespace chrome_pdf

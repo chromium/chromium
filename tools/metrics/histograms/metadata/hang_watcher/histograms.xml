@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="HangWatcher.IsThreadHung.{BrowserProcessAndThreadType}"
-    enum="BooleanHung" expires_after="2025-02-09">
+    enum="BooleanHung" expires_after="2025-04-13">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -126,26 +126,6 @@ chromium-metrics-reviews@google.com.
   <token key="NonBrowserProcessAndThreadType"
       variants="NonBrowserProcessAndThreadType"/>
   <token key="MaybeBestEffort" variants="MaybeBestEffort"/>
-</histogram>
-
-<histogram name="HangWatcher.SleepDrift.{ProcessType}" units="ms"
-    expires_after="2021-10-23">
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    HangWatcher is a class that periodically checks on watched threads to see if
-    they are making progress or if they are hung. This metric is recorded when
-    the HangWatcher resumes from sleeping for its next watch time. The value is
-    the time difference between when the HangWatcher woke up and the planned
-    wake-up time. Not waking up in time is a bad state. It could be caused by an
-    overloaded machine or another problem like system sleep. Knowing whether the
-    HangWatcher wakes up in a timely manner in the average case can help analyse
-    trial results and is interesting to track over time. An increasing value for
-    this histogram could hint at a larger problem and would prevent
-    missinterpreting a reduced inflow of hang reports as a improvement when it
-    is in fact caused by hindered capabilities.
-  </summary>
-  <token key="ProcessType" variants="ProcessType"/>
 </histogram>
 
 <histogram name="HangWatcher.{ProcessType}.UncoveredStartupTime" units="ms"

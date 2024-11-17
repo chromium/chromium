@@ -59,7 +59,7 @@ ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
     return ClipStrategy::kNone;
   const ComputedStyle& style = layout_object->StyleRef();
   if (style.Display() == EDisplay::kNone ||
-      style.UsedVisibility() != EVisibility::kVisible) {
+      style.Visibility() != EVisibility::kVisible) {
     return ClipStrategy::kNone;
   }
   ClipStrategy strategy = ClipStrategy::kNone;

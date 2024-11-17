@@ -56,7 +56,7 @@ public class CustomTabBottomBarView extends BoundedLinearLayout {
         return mSwipeGestureListener.onTouchEvent(ev);
     }
 
-    private class BottomBarSwipeGestureListener extends SwipeGestureListener {
+    private static class BottomBarSwipeGestureListener extends SwipeGestureListener {
         public BottomBarSwipeGestureListener(Context context, SwipeHandler handler) {
             super(context, handler);
         }

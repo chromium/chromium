@@ -32,7 +32,7 @@ class SimplifiedBackwardsTextIteratorTest : public EditingTestBase {
                                                   behavior);
          !iterator.AtEnd(); iterator.Advance()) {
       if (!is_first)
-        builder.Append(", ", 2);
+        builder.Append(base::byte_span_from_cstring(", "));
       is_first = false;
       builder.Append(iterator.GetTextState().GetTextForTesting());
     }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/search_engines/search_engine_utils.h"
 
 #include "components/google/core/common/google_util.h"
@@ -43,19 +38,15 @@ SearchEngineType GetEngineType(const GURL& url) {
     return TemplateURLPrepopulateData::google.type;
 
   // Now check the rest of the prepopulate data.
-  for (size_t i = 0; i < TemplateURLPrepopulateData::kAllEnginesLength; ++i) {
-    // First check the main search URL.
-    if (SameDomain(
-            url, GURL(TemplateURLPrepopulateData::kAllEngines[i]->search_url)))
-      return TemplateURLPrepopulateData::kAllEngines[i]->type;
+  for (const auto* engine : TemplateURLPrepopulateData::kAllEngines) {
+    if (SameDomain(url, GURL(engine->search_url))) {
+      return engine->type;
+    }
 
-    // Then check the alternate URLs.
-    for (size_t j = 0;
-         j < TemplateURLPrepopulateData::kAllEngines[i]->alternate_urls_size;
-         ++j) {
-      if (SameDomain(url, GURL(TemplateURLPrepopulateData::kAllEngines[i]
-                                   ->alternate_urls[j])))
-        return TemplateURLPrepopulateData::kAllEngines[i]->type;
+    for (const auto* alt_url : engine->alternate_urls) {
+      if (SameDomain(url, GURL(alt_url))) {
+        return engine->type;
+      }
     }
   }
 

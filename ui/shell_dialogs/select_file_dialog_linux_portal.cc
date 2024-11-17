@@ -11,7 +11,6 @@
 
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -20,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/check_for_service_and_start.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "ui/aura/window_tree_host.h"
@@ -36,10 +36,6 @@
 namespace ui {
 
 namespace {
-
-constexpr char kDBusMethodNameHasOwner[] = "NameHasOwner";
-constexpr char kDBusMethodListActivatableNames[] = "ListActivatableNames";
-constexpr char kMethodStartServiceByName[] = "StartServiceByName";
 
 constexpr char kXdgPortalService[] = "org.freedesktop.portal.Desktop";
 constexpr char kXdgPortalObject[] = "/org/freedesktop/portal/desktop";
@@ -69,9 +65,6 @@ constexpr char kFileChooserOptionModal[] = "modal";
 constexpr int kFileChooserFilterKindGlob = 0;
 
 constexpr char kFileUriPrefix[] = "file://";
-
-// Time to wait for the notification service to start, in milliseconds.
-constexpr base::TimeDelta kStartServiceTimeout = base::Seconds(1);
 
 struct FileChooserProperties : dbus::PropertySet {
   dbus::Property<uint32_t> version;
@@ -274,122 +267,34 @@ void SelectFileDialogLinuxPortal::CheckPortalAvailabilityOnBusThread() {
   if (availability_test_complete->IsSet())
     return;
 
-  dbus::Bus* bus = AcquireBusOnBusThread();
+  scoped_refptr<dbus::Bus> bus = AcquireBusOnBusThread();
 
-  dbus::ObjectProxy* dbus_proxy =
-      bus->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  dbus_utils::CheckForServiceAndStart(
+      bus, kXdgPortalService,
+      base::BindOnce(
+          [](scoped_refptr<dbus::Bus> bus,
+             base::AtomicFlag* availability_test_complete,
+             std::optional<bool> name_has_owner) {
+            if (name_has_owner.value_or(false)) {
+              // The portal service has an owner, proceed to check the version.
+              dbus::ObjectPath portal_path(kXdgPortalObject);
+              dbus::ObjectProxy* portal =
+                  bus->GetObjectProxy(kXdgPortalService, portal_path);
 
-  if (IsPortalRunningOnBusThread(dbus_proxy) ||
-      IsPortalActivatableOnBusThread(dbus_proxy)) {
-    dbus::ObjectPath portal_path(kXdgPortalObject);
-    dbus::ObjectProxy* portal =
-        bus->GetObjectProxy(kXdgPortalService, portal_path);
-
-    FileChooserProperties properties(portal);
-    if (!properties.GetAndBlock(&properties.version)) {
-      LOG(ERROR) << "Failed to read portal version property";
-    } else if (properties.version.value() >= kXdgPortalRequiredVersion) {
-      is_portal_available_ = true;
-    }
-  }
-
-  VLOG(1) << "File chooser portal available: "
-          << (is_portal_available_ ? "yes" : "no");
-  availability_test_complete->Set();
+              FileChooserProperties properties(portal);
+              if (!properties.GetAndBlock(&properties.version)) {
+                LOG(ERROR) << "Failed to read portal version property";
+              } else if (properties.version.value() >=
+                         kXdgPortalRequiredVersion) {
+                is_portal_available_ = true;
+              }
+            }
+            VLOG(1) << "File chooser portal available: "
+                    << (is_portal_available_ ? "yes" : "no");
+            availability_test_complete->Set();
+          },
+          bus, availability_test_complete));
 }
-
-// static
-bool SelectFileDialogLinuxPortal::IsPortalRunningOnBusThread(
-    dbus::ObjectProxy* dbus_proxy) {
-  dbus::MethodCall method_call(DBUS_INTERFACE_DBUS, kDBusMethodNameHasOwner);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendString(kXdgPortalService);
-
-  std::unique_ptr<dbus::Response> response =
-      dbus_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr);
-  if (!response)
-    return false;
-
-  dbus::MessageReader reader(response.get());
-  bool owned = false;
-  if (!reader.PopBool(&owned)) {
-    LOG(ERROR) << "Failed to read response";
-    return false;
-  }
-
-  return owned;
-}
-
-// static
-bool SelectFileDialogLinuxPortal::IsPortalActivatableOnBusThread(
-    dbus::ObjectProxy* dbus_proxy) {
-  dbus::MethodCall method_call(DBUS_INTERFACE_DBUS,
-                               kDBusMethodListActivatableNames);
-
-  std::unique_ptr<dbus::Response> response =
-      dbus_proxy
-          ->CallMethodAndBlock(&method_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr);
-  if (!response)
-    return false;
-
-  dbus::MessageReader reader(response.get());
-  std::vector<std::string> names;
-  if (!reader.PopArrayOfStrings(&names)) {
-    LOG(ERROR) << "Failed to read response";
-    return false;
-  }
-
-  if (base::Contains(names, kXdgPortalService)) {
-    dbus::MethodCall start_service_call(DBUS_INTERFACE_DBUS,
-                                        kMethodStartServiceByName);
-    dbus::MessageWriter start_service_writer(&start_service_call);
-    start_service_writer.AppendString(kXdgPortalService);
-    start_service_writer.AppendUint32(/*flags=*/0);
-    auto start_service_response =
-        dbus_proxy
-            ->CallMethodAndBlock(&start_service_call,
-                                 kStartServiceTimeout.InMilliseconds())
-            .value_or(nullptr);
-    if (!start_service_response)
-      return false;
-    dbus::MessageReader start_service_reader(start_service_response.get());
-    uint32_t start_service_reply = 0;
-    if (start_service_reader.PopUint32(&start_service_reply) &&
-        (start_service_reply == DBUS_START_REPLY_SUCCESS ||
-         start_service_reply == DBUS_START_REPLY_ALREADY_RUNNING)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-SelectFileDialogLinuxPortal::PortalFilter::PortalFilter() = default;
-SelectFileDialogLinuxPortal::PortalFilter::PortalFilter(
-    const PortalFilter& other) = default;
-SelectFileDialogLinuxPortal::PortalFilter::PortalFilter(PortalFilter&& other) =
-    default;
-SelectFileDialogLinuxPortal::PortalFilter::~PortalFilter() = default;
-
-SelectFileDialogLinuxPortal::PortalFilterSet::PortalFilterSet() = default;
-SelectFileDialogLinuxPortal::PortalFilterSet::PortalFilterSet(
-    const PortalFilterSet& other) = default;
-SelectFileDialogLinuxPortal::PortalFilterSet::PortalFilterSet(
-    PortalFilterSet&& other) = default;
-SelectFileDialogLinuxPortal::PortalFilterSet::~PortalFilterSet() = default;
-
-SelectFileDialogLinuxPortal::DialogInfo::DialogInfo(
-    base::OnceClosure created_callback,
-    OnSelectFileExecutedCallback selected_callback,
-    OnSelectFileCanceledCallback canceled_callback)
-    : created_callback_(std::move(created_callback)),
-      selected_callback_(std::move(selected_callback)),
-      canceled_callback_(std::move(canceled_callback)) {}
-SelectFileDialogLinuxPortal::DialogInfo::~DialogInfo() = default;
 
 // static
 base::AtomicFlag*
@@ -405,14 +310,33 @@ SelectFileDialogLinuxPortal::BuildFilterSet() {
   for (size_t i = 0; i < file_types().extensions.size(); ++i) {
     PortalFilter filter;
 
+    std::vector<std::string> original_patterns;
+
     for (const std::string& extension : file_types().extensions[i]) {
       if (extension.empty())
         continue;
 
-      filter.patterns.push_back("*." + base::ToLowerASCII(extension));
-      auto upper = "*." + base::ToUpperASCII(extension);
-      if (upper != filter.patterns.back())
-        filter.patterns.push_back(std::move(upper));
+      // We want to allow ASCII case-insensitive matches for the extension on
+      // a per-character basis, since that's what
+      // https://html.spec.whatwg.org/multipage/input.html#attr-input-accept
+      // suggests.  For example, we should accept file.txt, file.TXT, or
+      // file.tXt.  To do this, we expand characters with ASCII case
+      // equivalents to be represented by [aA], as documented in
+      // https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.FileChooser.html
+      std::string pattern("*.");
+      for (char c : extension) {
+        char lower = base::ToLowerASCII(c);
+        char upper = base::ToUpperASCII(c);
+        if (upper != lower) {
+          pattern.append({'[', lower, upper, ']'});
+        } else {
+          pattern.append({c});
+        }
+      }
+      filter.patterns.push_back(pattern);
+
+      // Save the original form for use as a fallback description.
+      original_patterns.push_back("*." + extension);
     }
 
     if (filter.patterns.empty())
@@ -425,9 +349,7 @@ SelectFileDialogLinuxPortal::BuildFilterSet() {
           base::UTF16ToUTF8(file_types().extension_description_overrides[i]);
     }
     if (filter.name.empty()) {
-      std::vector<std::string> patterns_vector(filter.patterns.begin(),
-                                               filter.patterns.end());
-      filter.name = base::JoinString(patterns_vector, ",");
+      filter.name = base::JoinString(original_patterns, ",");
     }
 
     // The -1 is required to match against the right filter because
@@ -492,8 +414,7 @@ void SelectFileDialogLinuxPortal::DialogInfo::SelectFileImplOnBusThread(
       method = kFileChooserMethodSaveFile;
       break;
     case SELECT_NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   dbus::MethodCall method_call(kFileChooserInterfaceName, method);
@@ -521,15 +442,8 @@ void SelectFileDialogLinuxPortal::DialogInfo::SelectFileImplOnBusThread(
   AppendOptions(&writer, response_handle_token, default_path,
                 default_path_exists, filter_set);
 
-  // The sender part of the handle object contains the D-Bus connection name
-  // without the prefix colon and with all dots replaced with underscores.
-  std::string sender_part;
-  base::ReplaceChars(bus->GetConnectionName().substr(1), ".", "_",
-                     &sender_part);
-
-  dbus::ObjectPath expected_handle_path(
-      base::StringPrintf("/org/freedesktop/portal/desktop/request/%s/%s",
-                         sender_part.c_str(), response_handle_token.c_str()));
+  dbus::ObjectPath expected_handle_path(base::nix::XdgDesktopPortalRequestPath(
+      bus->GetConnectionName(), response_handle_token));
 
   response_handle_ =
       bus->GetObjectProxy(kXdgPortalService, expected_handle_path);
@@ -766,7 +680,7 @@ void SelectFileDialogLinuxPortal::DialogInfo::OnCallResponse(
     LOG(ERROR) << "Portal returned error: " << error_name << ": "
                << error_message;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // All error paths end up here.
@@ -865,7 +779,7 @@ SelectFileDialogLinuxPortal::DialogInfo::ConvertUrisToPaths(
     const std::vector<std::string>& uris) {
   std::vector<base::FilePath> paths;
   for (const std::string& uri : uris) {
-    if (!base::StartsWith(uri, kFileUriPrefix, base::CompareCase::SENSITIVE)) {
+    if (!uri.starts_with(kFileUriPrefix)) {
       LOG(WARNING) << "Ignoring unknown file chooser URI: " << uri;
       continue;
     }
@@ -881,6 +795,29 @@ SelectFileDialogLinuxPortal::DialogInfo::ConvertUrisToPaths(
 
   return paths;
 }
+
+SelectFileDialogLinuxPortal::PortalFilter::PortalFilter() = default;
+SelectFileDialogLinuxPortal::PortalFilter::PortalFilter(
+    const PortalFilter& other) = default;
+SelectFileDialogLinuxPortal::PortalFilter::PortalFilter(PortalFilter&& other) =
+    default;
+SelectFileDialogLinuxPortal::PortalFilter::~PortalFilter() = default;
+
+SelectFileDialogLinuxPortal::PortalFilterSet::PortalFilterSet() = default;
+SelectFileDialogLinuxPortal::PortalFilterSet::PortalFilterSet(
+    const PortalFilterSet& other) = default;
+SelectFileDialogLinuxPortal::PortalFilterSet::PortalFilterSet(
+    PortalFilterSet&& other) = default;
+SelectFileDialogLinuxPortal::PortalFilterSet::~PortalFilterSet() = default;
+
+SelectFileDialogLinuxPortal::DialogInfo::DialogInfo(
+    base::OnceClosure created_callback,
+    OnSelectFileExecutedCallback selected_callback,
+    OnSelectFileCanceledCallback canceled_callback)
+    : created_callback_(std::move(created_callback)),
+      selected_callback_(std::move(selected_callback)),
+      canceled_callback_(std::move(canceled_callback)) {}
+SelectFileDialogLinuxPortal::DialogInfo::~DialogInfo() = default;
 
 bool SelectFileDialogLinuxPortal::is_portal_available_ = false;
 int SelectFileDialogLinuxPortal::handle_token_counter_ = 0;

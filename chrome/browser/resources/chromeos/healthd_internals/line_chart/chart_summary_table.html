@@ -1,0 +1,82 @@
+<style include="healthd-internals-shared cr-shared-style md-select">
+  #tableContainer {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    padding: 0 16px;
+  }
+
+  table {
+    overflow: auto;
+    margin: auto;
+    width: 90%;
+    min-height: 100%;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--cr-menu-background-color);
+  }
+
+  th, td {
+    color: var(--cr-primary-text-color);
+    padding: 6px;
+    text-align: center;
+    max-width: 100px;
+    word-wrap: break-word;
+  }
+
+  td {
+    border-top: 1px solid var(--scrollable-border-color);
+  }
+
+  .legend-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .square-legend {
+    width: 12px;
+    height: 12px;
+  }
+</style>
+
+<div id="tableContainer">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Latest</th>
+        <th>Min.</th>
+        <th>Max.</th>
+        <th>Avg.</th>
+        <th>Duration</th>
+        <th>Displayed Time Span</th>
+      </tr>
+    </thead>
+    <tbody>
+      <template is="dom-repeat" items="[[displayedData]]">
+        <tr hidden="[[!item.isVisible]]">
+          <td>
+            <div class="legend-container">
+              <div class="square-legend"
+                   style$="background-color: [[item.legendColor]]"></div>
+            </div>
+          </td>
+          <td>[[item.name]]</td>
+          <td>[[item.latestValue]] [[displayedUnit]]</td>
+          <td>[[item.minValue]] [[displayedUnit]]</td>
+          <td>[[item.maxValue]] [[displayedUnit]]</td>
+          <td>[[item.averageValue]] [[displayedUnit]]</td>
+          <td>[[displayedDuration]]</td>
+          <td>[[displayedStartTime]] ~ [[displayedEndTime]]</td>
+        </tr>
+      </template>
+    </tbody>
+  </table>
+</div>

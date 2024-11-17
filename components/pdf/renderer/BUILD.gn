@@ -44,7 +44,7 @@ static_library("renderer") {
     "//pdf:pdf_view_web_plugin",
     "//printing/buildflags",
     "//services/screen_ai/buildflags",
-    "//services/screen_ai/public/cpp:metrics",
+    "//services/strings",
     "//skia",
     "//third_party/blink/public:blink",
     "//third_party/icu",
@@ -73,6 +73,7 @@ static_library("renderer") {
     ]
     deps += [
       "//components/language/core/common",
+      "//services/screen_ai/public/cpp:metrics",
       "//services/screen_ai/public/mojom",
     ]
   }

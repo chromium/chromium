@@ -121,7 +121,7 @@ public class StartupMetricsTracker {
     // The time of the activity onCreate(). All metrics (such as time to first visible content) are
     // reported in uptimeMillis relative to this value.
     private final long mActivityStartTimeMs;
-    private boolean mFirstVisibleContent3Recorded;
+    private boolean mFirstVisibleContentRecorded;
 
     private TabModelSelectorTabObserver mTabObserver;
     private PageObserver mPageObserver;
@@ -167,19 +167,20 @@ public class StartupMetricsTracker {
 
     /**
      * Register an observer to be notified on the first paint of a paint preview if present.
+     *
      * @param startupPaintPreviewHelper the helper to register the observer to.
      */
     public void registerPaintPreviewObserver(StartupPaintPreviewHelper startupPaintPreviewHelper) {
         startupPaintPreviewHelper.addMetricsObserver(
-            new PaintPreviewMetricsObserver() {
-                @Override
-                public void onFirstPaint(long durationMs) {
-                    recordTimeToFirstVisibleContent3(durationMs);
-                }
+                new PaintPreviewMetricsObserver() {
+                    @Override
+                    public void onFirstPaint(long durationMs) {
+                        recordTimeToFirstVisibleContent(durationMs);
+                    }
 
-                @Override
-                public void onUnrecordedFirstPaint() {}
-            });
+                    @Override
+                    public void onUnrecordedFirstPaint() {}
+                });
     }
 
     public void destroy() {
@@ -201,21 +202,21 @@ public class StartupMetricsTracker {
     }
 
     private void recordExperimentalHistogram(String name, long ms) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
     }
 
     private void recordNavigationCommitMetrics(long firstCommitMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit3"
                             + activityTypeToSuffix(mHistogramSuffix),
                     firstCommitMs);
             if (mHistogramSuffix == ActivityType.TABBED) {
                 recordExperimentalHistogram("FirstNavigationCommit", firstCommitMs);
                 recordFirstSafeBrowsingResponseTime();
-                recordTimeToFirstVisibleContent3(firstCommitMs);
+                recordTimeToFirstVisibleContent(firstCommitMs);
             }
         }
     }
@@ -224,17 +225,17 @@ public class StartupMetricsTracker {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
             recordExperimentalHistogram("FirstContentfulPaint", firstFcpMs);
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
         }
     }
 
-    private void recordTimeToFirstVisibleContent3(long durationMs) {
-        if (mFirstVisibleContent3Recorded) return;
+    private void recordTimeToFirstVisibleContent(long durationMs) {
+        if (mFirstVisibleContentRecorded) return;
 
-        mFirstVisibleContent3Recorded = true;
-        RecordHistogram.recordMediumTimesHistogram(
-                "Startup.Android.Cold.TimeToFirstVisibleContent3", durationMs);
+        mFirstVisibleContentRecorded = true;
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                "Startup.Android.Cold.TimeToFirstVisibleContent4", durationMs);
     }
 
     private void recordFirstSafeBrowsingResponseTime() {
@@ -242,7 +243,7 @@ public class StartupMetricsTracker {
         mFirstSafeBrowsingResponseTimeRecorded = true;
 
         if (mFirstSafeBrowsingResponseTimeMicros != 0) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.FirstSafeBrowsingApiResponseTime2.Tabbed",
                     mFirstSafeBrowsingResponseTimeMicros / 1000);
         }

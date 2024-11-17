@@ -50,9 +50,10 @@ void RecordApiUsage(const ArcWallpaperApi api) {
 }
 
 std::vector<uint8_t> EncodeImagePng(const gfx::ImageSkia& image) {
-  std::vector<uint8_t> result;
-  gfx::PNGCodec::FastEncodeBGRASkBitmap(*image.bitmap(), true, &result);
-  return result;
+  std::optional<std::vector<uint8_t>> result =
+      gfx::PNGCodec::FastEncodeBGRASkBitmap(*image.bitmap(),
+                                            /*discard_transparency=*/true);
+  return result.value_or(std::vector<uint8_t>());
 }
 
 // Singleton factory for ArcWallpaperService.

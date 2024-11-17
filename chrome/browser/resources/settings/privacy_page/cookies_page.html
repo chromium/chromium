@@ -1,8 +1,4 @@
     <style include="settings-shared">
-      img {
-        width: 100%;
-      }
-
       #explanationText,
       #generalControls {
         padding: 0 var(--cr-section-padding);
@@ -30,10 +26,6 @@
 
       #blockThirdPartyToggle {
         padding: 0 var(--cr-section-padding);
-      }
-
-      #picture {
-        display: flex;
       }
 
       .radio-group-sub-heading {
@@ -77,7 +69,7 @@
         padding-bottom: 12px;
       }
 
-      #relatedWebsiteSetsToggle {
+      #relatedWebsiteSetsToggle, #relatedWebsiteSetsToggle3pcSetting {
         padding-inline-end: 0;
         padding-inline-start: 0;
       }
@@ -89,21 +81,6 @@
         min-height: var(--cr-section-two-line-min-height);
       }
     </style>
-    <picture id="picture" hidden="[[isTrackingProtectionUxEnabled_]]">
-      <source
-          srcset="chrome://settings/images/cookies_banner_dark.svg"
-          media="(prefers-color-scheme: dark)">
-      <img id="banner" alt=""
-          src="chrome://settings/images/cookies_banner.svg">
-    </picture>
-    <picture hidden="[[!isTrackingProtectionUxEnabled_]]">
-      <source
-            srcset="chrome://settings/images/tracking_protection_banner_dark.svg"
-            media="(prefers-color-scheme: dark)">
-        <img id="banner" alt=""
-            src="chrome://settings/images/tracking_protection_banner.svg">
-      </template>
-    </picture>
     <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
       <div id="explanationText" class="secondary">
         $i18n{thirdPartyCookiesAlignedPageDescription}
@@ -113,7 +90,8 @@
             pref="{{prefs.profile.cookie_controls_mode}}"
             selectable-elements="
                 cr-radio-button, settings-collapse-radio-button"
-            on-change="onCookieControlsModeChanged_">
+            on-change="onCookieControlsModeChanged_"
+            hidden="[[isAlwaysBlock3pcsIncognitoEnabled_]]">
           <settings-collapse-radio-button id="allowThirdParty"
               pref="[[prefs.profile.cookie_controls_mode]]"
               name="[[cookieControlsModeEnum_.OFF]]"
@@ -185,6 +163,41 @@
                     sub-label="$i18n{cookiePageRwsSubLabel}"
                     disabled="[[relatedWebsiteSetsToggleDisabled_(
                         prefs.profile.cookie_controls_mode.value)]]">
+                </settings-toggle-button>
+              </div>
+            </template>
+          </settings-collapse-radio-button>
+        </settings-radio-group>
+        <settings-radio-group id="thirdPartyCookieBlockingSettingGroup" no-set-pref
+            pref="{{prefs.generated.third_party_cookie_blocking_setting}}"
+            selectable-elements="cr-radio-button, settings-collapse-radio-button"
+            on-change="onThirdPartyCookieBlockingSettingChanged_"
+            hidden="[[!isAlwaysBlock3pcsIncognitoEnabled_]]">
+          <settings-collapse-radio-button id="block3pcIncognito"
+              pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
+              name="[[thirdPartyCookieBlockingSettingEnum_.INCOGNITO_ONLY]]"
+              label="$i18n{thirdPartyCookiesPageAllowRadioLabel}"
+              expand-aria-label="$i18n{thirdPartyCookiesPageAllowExpandA11yLabel}">
+            <div slot="collapse">
+              <!-- TODO(crbug.com/370008370): Update with content when finalized. -->
+            </div>
+          </settings-collapse-radio-button>
+          <settings-collapse-radio-button id="blockAll3pc"
+              pref="[[prefs.generated.third_party_cookie_blocking_setting]]"
+              name="[[thirdPartyCookieBlockingSettingEnum_.BLOCK_THIRD_PARTY]]"
+              label="$i18n{thirdPartyCookiesPageBlockRadioLabel}"
+              expand-aria-label="$i18n{thirdPartyCookiesPageBlockExpandA11yLabel}">
+            <div slot="collapse">
+              <!-- TODO(crbug.com/370008370): Update with content when finalized. -->
+            </div>
+            <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
+              <div slot="noSelectionCollapse">
+                <settings-toggle-button id="relatedWebsiteSetsToggle3pcSetting"
+                    pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
+                    label="$i18n{cookiePageRwsLabel}"
+                    sub-label="$i18n{cookiePageRwsSubLabel}"
+                    disabled="[[relatedWebsiteSetsToggle3pcSettingDisabled_(
+                                  prefs.generated.third_party_cookie_blocking_setting.value)]]">
                 </settings-toggle-button>
               </div>
             </template>

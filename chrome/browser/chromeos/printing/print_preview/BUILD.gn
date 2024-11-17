@@ -29,6 +29,7 @@ static_library("print_preview") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser/ash/printing/print_preview",
     "//chrome/common:chrome_features",
     "//chromeos/crosapi/mojom",
     "//components/device_event_log",
@@ -48,14 +49,6 @@ static_library("print_preview") {
     "//ui/gfx/geometry",
     "//url",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/printing/print_preview" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -88,59 +81,28 @@ source_set("unit_tests") {
   ]
 }
 
-if (is_chromeos_ash) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "print_preview_webcontents_manager_browsertest.cc" ]
+  sources = [ "print_preview_webcontents_manager_browsertest.cc" ]
 
-    deps = [
-      ":print_preview",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser/chromeos/printing/print_preview/test:test_support",
-      "//chrome/browser/ui",
-      "//chrome/common:chrome_features",
-      "//chrome/test:test_support_ui",
-      "//chromeos/crosapi/mojom",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//mojo/public/cpp/bindings",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//ui/base",
-      "//url",
-    ]
-  }
-}
-
-if (is_chromeos_lacros) {
-  source_set("lacros_chrome_browsertests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = [ "print_preview_webcontents_manager_browsertest.cc" ]
-
-    deps = [
-      ":print_preview",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser/chromeos/printing/print_preview/test:test_support",
-      "//chrome/browser/ui",
-      "//chrome/common:chrome_features",
-      "//chrome/test:test_support_ui",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//mojo/public/cpp/bindings",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//ui/base",
-      "//url",
-    ]
-  }
+  deps = [
+    ":print_preview",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/chromeos/printing/print_preview/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support_ui",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
 }

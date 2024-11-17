@@ -6,13 +6,12 @@ module crosapi.mojom;
 
 import "url/mojom/url.mojom";
 
-[Stable]
 struct ProxyLocation {
     // Host (or IP address) to use for proxy.
     string host;
     int32 port;
 
-    [Stable,Extensible]
+    [Extensible]
     enum Scheme {
         [Default] kUnknown,
         kInvalid,
@@ -37,17 +36,14 @@ struct ProxyLocation {
 // services.
 // Note: In the Lacros primary profile, the extension set proxy has priority so
 // proxy updates coming from the OS are ignored.
-[Stable]
 struct ExtensionControllingProxy {
     string name;
     string id;
     [MinVersion=1] bool can_be_disabled;
 };
 
-[Stable]
 struct ProxySettingsDirect {};
 
-[Stable]
 struct ProxySettingsManual {
     array<ProxyLocation> http_proxies;
     array<ProxyLocation> secure_http_proxies;
@@ -56,7 +52,6 @@ struct ProxySettingsManual {
     array<string> exclude_domains;
  };
 
-[Stable]
 struct ProxySettingsPac {
     url.mojom.Url pac_url;
     // If true, network traffic does not fall back to direct connections in
@@ -64,12 +59,10 @@ struct ProxySettingsPac {
     bool pac_mandatory;
  };
 
-[Stable]
 struct ProxySettingsWpad {
     url.mojom.Url pac_url;
 };
 
-[Stable]
 union ProxySettings {
     ProxySettingsDirect direct;
     ProxySettingsManual manual;
@@ -78,7 +71,6 @@ union ProxySettings {
 };
 
 // TODO(crbug.com/40284947): Add support for proxy chains.
-[Stable]
 struct ProxyConfig {
     ProxySettings proxy_settings;
 
@@ -87,7 +79,6 @@ struct ProxyConfig {
 };
 
 // Implemented by Lacros-Chrome.
-[Stable]
 interface NetworkSettingsObserver {
     // This methods is called when:
     // - the observer is added to the `NetworkSettingsService`;
@@ -105,7 +96,7 @@ interface NetworkSettingsObserver {
 };
 
 // Implemented by Ash-Chrome.
-[Stable, Uuid="e8916037-b993-454a-96ef-20f269cace54"]
+[Uuid="e8916037-b993-454a-96ef-20f269cace54"]
 interface NetworkSettingsService {
     // Adds an Ash network settings service observer.
     // If a proxy is configured in Ash, the observer will be notified of the

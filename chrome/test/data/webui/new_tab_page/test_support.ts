@@ -67,7 +67,7 @@ export function createBackgroundImage(url: string): BackgroundImage {
   };
 }
 
-export function createTheme(isDark: boolean = false): Theme {
+export function createTheme({isDark = false, isBaseline = true} = {}): Theme {
   const mostVisited = {
     backgroundColor: {value: 0xff00ff00},
     isDark,
@@ -82,7 +82,7 @@ export function createTheme(isDark: boolean = false): Theme {
     dailyRefreshEnabled: false,
     backgroundImageCollectionId: '',
     logoColor: null,
-    isBaseline: true,
+    isBaseline: isBaseline,
     isDark,
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},

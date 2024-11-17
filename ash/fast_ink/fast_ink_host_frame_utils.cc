@@ -161,9 +161,10 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
       host_window.GetHost()->GetRootTransform();
   gfx::Size window_size_in_dip = host_window.GetBoundsInScreen().size();
 
-  // TODO(crbug.com/40150283): Should this be ceil? Why do we choose floor?
-  const gfx::Size window_size_in_pixel = gfx::ToFlooredSize(
-      gfx::ConvertSizeToPixels(window_size_in_dip, device_scale_factor));
+  const gfx::Size window_size_in_pixel =
+      gfx::ScaleToEnclosingRectIgnoringError(gfx::Rect{window_size_in_dip},
+                                             device_scale_factor)
+          .size();
 
   // NOTE: `shared_image` is guaranteed to be non-null by contract of this
   // method, and ClientSharedImage::mailbox() is guaranteed to be non-zero by

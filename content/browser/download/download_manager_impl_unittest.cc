@@ -190,7 +190,8 @@ class MockDownloadItemFactory final : public download::DownloadItemFactory {
   }
 
  private:
-  std::map<uint32_t, download::MockDownloadItemImpl*> items_;
+  std::map<uint32_t, raw_ptr<download::MockDownloadItemImpl, CtnExperimental>>
+      items_;
   download::DownloadItemImplDelegate item_delegate_;
   bool is_download_persistent_;
   base::WeakPtrFactory<MockDownloadItemFactory> weak_ptr_factory_{this};

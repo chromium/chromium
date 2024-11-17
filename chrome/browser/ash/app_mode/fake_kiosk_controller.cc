@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ash {
@@ -28,7 +29,8 @@ std::optional<KioskApp> FakeKioskController::GetAutoLaunchApp() const {
 
 void FakeKioskController::StartSession(const KioskAppId& app,
                                        bool is_auto_launch,
-                                       LoginDisplayHost* host) {}
+                                       LoginDisplayHost* host,
+                                       AppLaunchSplashScreen* splash_screen) {}
 
 void FakeKioskController::StartSessionAfterCrash(const KioskAppId& app,
                                                  Profile* profile) {}

@@ -195,6 +195,6 @@ HistoryCounter::HistoryResult::HistoryResult(const HistoryCounter* source,
     : SyncResult(source, value, is_sync_enabled),
       has_synced_visits_(has_synced_visits) {}
 
-HistoryCounter::HistoryResult::~HistoryResult() {}
+HistoryCounter::HistoryResult::~HistoryResult() = default;
 
 }  // namespace browsing_data

@@ -6,8 +6,10 @@
 
 #include "base/i18n/rtl.h"
 #include "base/timer/mock_timer.h"
+#include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -114,6 +116,15 @@ TEST_F(MediaProgressViewTest, MediaPlaying) {
   EXPECT_FALSE(view()->is_paused_for_testing());
   EXPECT_FALSE(view()->is_live_for_testing());
   EXPECT_TRUE(update_progress_timer()->IsRunning());
+}
+
+TEST_F(MediaProgressViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kSlider);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
 }
 
 TEST_F(MediaProgressViewTest, MediaPaused) {

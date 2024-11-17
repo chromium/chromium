@@ -9,9 +9,9 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class DomainDiversityReporter;
+class ProfileIOS;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -22,8 +22,6 @@ class PrefRegistrySyncable;
 class DomainDiversityReporterFactory : public BrowserStateKeyedServiceFactory {
  public:
   static DomainDiversityReporter* GetForProfile(ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static DomainDiversityReporter* GetForBrowserState(ProfileIOS* profile);
 
   static DomainDiversityReporterFactory* GetInstance();
 

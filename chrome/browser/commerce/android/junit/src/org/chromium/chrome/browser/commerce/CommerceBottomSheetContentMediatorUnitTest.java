@@ -14,10 +14,12 @@ import static org.mockito.Mockito.verify;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -26,6 +28,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class CommerceBottomSheetContentMediatorUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock View mContentItemCustomView;
     @Mock BottomSheetController mBottomSheetController;
     @Mock View mContentView;
@@ -34,7 +38,6 @@ public class CommerceBottomSheetContentMediatorUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mModelList = new ModelList();
     }
 
@@ -55,13 +58,13 @@ public class CommerceBottomSheetContentMediatorUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testOnContentReady_assertOnInvalidPropertyModel() {
-        setupMediator(1);
+        setupMediator(/* expectedContentCount= */ 1);
         mMediator.onContentReady(new PropertyModel());
     }
 
     @Test
     public void testOnContentReady_firstPropertyModel() {
-        setupMediator(1);
+        setupMediator(/* expectedContentCount= */ 1);
         mMediator.onContentReady(createPropertyModel(0));
 
         assertEquals(1, mModelList.size());
@@ -70,7 +73,7 @@ public class CommerceBottomSheetContentMediatorUnitTest {
 
     @Test
     public void testOnContentReady_MultiPropertyModels() {
-        setupMediator(3);
+        setupMediator(/* expectedContentCount= */ 3);
         PropertyModel model0 = createPropertyModel(0);
         PropertyModel model1 = createPropertyModel(1);
         PropertyModel model2 = createPropertyModel(2);
@@ -88,7 +91,7 @@ public class CommerceBottomSheetContentMediatorUnitTest {
 
     @Test
     public void testOnContentReady_MultiPropertyModels_withAtLeastOneNullPropertyModel() {
-        setupMediator(3);
+        setupMediator(/* expectedContentCount= */ 3);
         PropertyModel model0 = createPropertyModel(0);
         PropertyModel model1 = createPropertyModel(1);
 
@@ -104,7 +107,7 @@ public class CommerceBottomSheetContentMediatorUnitTest {
 
     @Test
     public void testOnContentReady_MultiPropertyModels_waitingForMoreContent() {
-        setupMediator(3);
+        setupMediator(/* expectedContentCount= */ 3);
         PropertyModel model0 = createPropertyModel(0);
         PropertyModel model1 = createPropertyModel(1);
 
@@ -119,11 +122,24 @@ public class CommerceBottomSheetContentMediatorUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testOnContentReady_assertOnSameType() {
-        setupMediator(1);
+        setupMediator(/* expectedContentCount= */ 1);
         PropertyModel model0 = createPropertyModel(0);
         PropertyModel model1 = createPropertyModel(0);
 
         mMediator.onContentReady(model0);
         mMediator.onContentReady(model1);
+    }
+
+    @Test
+    public void testOnBottomSheetClosed() {
+        setupMediator(/* expectedContentCount= */ 2);
+        PropertyModel model0 = createPropertyModel(0);
+        PropertyModel model1 = createPropertyModel(1);
+        mMediator.onContentReady(model1);
+        mMediator.onContentReady(model0);
+        assertEquals(2, mModelList.size());
+
+        mMediator.onBottomSheetClosed();
+        assertEquals(0, mModelList.size());
     }
 }

@@ -13,7 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {cast} from '../assert_extras.js';
 
-import {ContainerInfo, GuestId} from './guest_os_browser_proxy.js';
+import type {ContainerInfo, GuestId} from './guest_os_browser_proxy.js';
 import {getTemplate} from './guest_os_container_select.html.js';
 
 export function equalContainerId(first: GuestId, second: GuestId): boolean {

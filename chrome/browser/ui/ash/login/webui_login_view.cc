@@ -12,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/focus/arrow_key_traversal_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/functional/bind.h"
@@ -68,28 +69,6 @@ using ::content::RenderViewHost;
 using ::content::WebContents;
 using ::input::NativeWebKeyboardEvent;
 using ::web_modal::WebContentsModalDialogManager;
-
-// A class to change arrow key traversal behavior when it's alive.
-class ScopedArrowKeyTraversal {
- public:
-  explicit ScopedArrowKeyTraversal(bool new_arrow_key_tranversal_enabled)
-      : previous_arrow_key_traversal_enabled_(
-            views::FocusManager::arrow_key_traversal_enabled()) {
-    views::FocusManager::set_arrow_key_traversal_enabled(
-        new_arrow_key_tranversal_enabled);
-  }
-
-  ScopedArrowKeyTraversal(const ScopedArrowKeyTraversal&) = delete;
-  ScopedArrowKeyTraversal& operator=(const ScopedArrowKeyTraversal&) = delete;
-
-  ~ScopedArrowKeyTraversal() {
-    views::FocusManager::set_arrow_key_traversal_enabled(
-        previous_arrow_key_traversal_enabled_);
-  }
-
- private:
-  const bool previous_arrow_key_traversal_enabled_;
-};
 
 void InitializeWebView(views::WebView* web_view) {
   WebContents* web_contents = web_view->GetWebContents();
@@ -324,7 +303,7 @@ bool WebUILoginView::HandleKeyboardEvent(content::WebContents* source,
   if (forward_keyboard_event_) {
     // Disable arrow key traversal because arrow keys are handled via
     // accelerator when this view has focus.
-    ScopedArrowKeyTraversal arrow_key_traversal(false);
+    ScopedArrowKeyTraversalDisabler disabler;
 
     handled = unhandled_keyboard_event_handler_.HandleKeyboardEvent(
         event, GetFocusManager());

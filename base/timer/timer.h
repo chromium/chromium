@@ -68,6 +68,7 @@
 // should be able to tell the difference.
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -161,10 +162,6 @@ class BASE_EXPORT DelayTimerBase : public TimerBase {
   // Call this method to reset the timer delay. The user task must be set. If
   // the timer is not running, this will start it by posting a task.
   virtual void Reset();
-
-  // DEPRECATED. Call Stop() instead.
-  // TODO(crbug.com/40202541): Remove this method and all callers.
-  void AbandonAndStop();
 
   TimeTicks desired_run_time() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -297,7 +294,9 @@ class BASE_EXPORT RepeatingTimer : public internal::DelayTimerBase {
     Start(posted_from, delay, BindRepeating(method, Unretained(receiver)));
   }
 
-  const RepeatingClosure& user_task() const { return user_task_; }
+  const RepeatingClosure& user_task() const LIFETIME_BOUND {
+    return user_task_;
+  }
 
  private:
   // Mark this final, so that the destructor can call this safely.
@@ -346,7 +345,9 @@ class BASE_EXPORT RetainingOneShotTimer : public internal::DelayTimerBase {
     Start(posted_from, delay, BindRepeating(method, Unretained(receiver)));
   }
 
-  const RepeatingClosure& user_task() const { return user_task_; }
+  const RepeatingClosure& user_task() const LIFETIME_BOUND {
+    return user_task_;
+  }
 
  private:
   // Mark this final, so that the destructor can call this safely.

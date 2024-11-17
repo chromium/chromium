@@ -311,6 +311,9 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
 
   // Flag indicating if any text was converted from images by OCR.
   bool was_text_converted_from_image_ = false;
+
+  // Flag indicating that searchify (OCR) ran on some pages.
+  bool did_searchify_run_ = false;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   base::WeakPtrFactory<PdfAccessibilityTree> weak_ptr_factory_{this};

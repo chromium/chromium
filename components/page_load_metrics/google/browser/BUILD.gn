@@ -4,13 +4,37 @@
 
 source_set("browser") {
   sources = [
+    "google_url_util.cc",
+    "google_url_util.h",
     "gws_abandoned_page_load_metrics_observer.cc",
     "gws_abandoned_page_load_metrics_observer.h",
+    "gws_page_load_metrics_observer.cc",
+    "gws_page_load_metrics_observer.h",
+    "histogram_suffixes.cc",
+    "histogram_suffixes.h",
   ]
   deps = [
     "//base",
+    "//components/crash/core/common:crash_key",
+    "//components/google/core/common",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/common",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/user_prefs",
     "//content/public/browser",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "google_url_util_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
   ]
 }

@@ -223,7 +223,7 @@ public class EphemeralTabMediator {
                     }
 
                     @Override
-                    public void loadingStateChanged(boolean shouldShowLoadingUI) {
+                    public void loadingStateChanged(boolean shouldShowLoadingUi) {
                         boolean isLoading = mWebContents != null && mWebContents.isLoading();
                         if (isLoading) {
                             if (mSheetContent == null) return;

@@ -115,8 +115,7 @@ const char* ChooseExtensionFromImageFormat(
     case user_manager::UserImage::FORMAT_WEBP:
       return ".webp";
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid format: " << image_format;
-      return ".jpg";
+      NOTREACHED() << "Invalid format: " << image_format;
   }
 }
 
@@ -315,8 +314,7 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
         base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
                        false));
   } else {
-    NOTREACHED_IN_MIGRATION();
-    NotifyJobDone();
+    NOTREACHED();
   }
 }
 
@@ -555,6 +553,7 @@ UserImageManagerImpl::UserImageManagerImpl(
       user_manager_(user_manager),
       user_image_loader_delegate_(user_image_loader_delegate),
       downloading_profile_image_(false),
+      profile_image_requested_(false),
       has_managed_image_(false) {
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -580,8 +579,7 @@ void UserImageManagerImpl::LoadUserImage() {
   int image_index = image_properties->FindInt(kImageIndexNodeName)
                         .value_or(user_manager::UserImage::Type::kInvalid);
   if (image_index == user_manager::UserImage::Type::kInvalid) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   const std::string* image_url_string =
@@ -615,6 +613,7 @@ void UserImageManagerImpl::UserLoggedIn(bool user_is_new, bool user_is_local) {
   // Reset the downloaded profile image as a new user logged in.
   downloaded_profile_image_ = gfx::ImageSkia();
   profile_image_url_ = GURL();
+  profile_image_requested_ = false;
 
   is_random_image_set_ = false;
   const user_manager::User* user = GetUser();
@@ -720,6 +719,14 @@ void UserImageManagerImpl::SaveUserImageFromProfileImage() {
 void UserImageManagerImpl::DeleteUserImage() {
   job_.reset();
   DeleteUserImageAndLocalStateEntry(kUserImageProperties);
+}
+
+void UserImageManagerImpl::DownloadProfileImage() {
+  if (g_skip_profile_download) {
+    return;
+  }
+  profile_image_requested_ = true;
+  DownloadProfileData();
 }
 
 const gfx::ImageSkia& UserImageManagerImpl::DownloadedProfileImage() const {
@@ -865,6 +872,8 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
   if (downloader->GetProfilePictureStatus() ==
       ProfileDownloader::PICTURE_DEFAULT) {
     user_manager_->NotifyUserProfileImageUpdateFailed(*user);
+  } else {
+    profile_image_requested_ = false;
   }
 
   // Nothing to do if the picture is cached or is the default avatar.
@@ -928,7 +937,8 @@ bool UserImageManagerImpl::NeedProfileImage() const {
   const user_manager::User* user = GetUser();
   return IsUserLoggedInAndHasGaiaAccount() &&
          IsCustomizationSelectorsPrefEnabled() &&
-         user->image_index() == user_manager::UserImage::Type::kProfile;
+         (user->image_index() == user_manager::UserImage::Type::kProfile ||
+          profile_image_requested_ || is_random_image_set_);
 }
 
 void UserImageManagerImpl::DownloadProfileData() {
@@ -982,7 +992,7 @@ void UserImageManagerImpl::OnJobDone() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, job_.release());
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

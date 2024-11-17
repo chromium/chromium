@@ -1,4 +1,4 @@
-/*! https://github.com/leeoniya/uPlot (v1.6.21) */
+/*! https://github.com/leeoniya/uPlot (v1.6.31) */
 export declare class uPlot {
   /**
    * when passing a function for @targ, call init() after attaching self.root
@@ -30,6 +30,9 @@ export declare class uPlot {
    * coords of plotting area in canvas pixels (relative to full canvas w/axes)
    */
   readonly bbox: uPlot.BBox;
+
+  /** cached global DOMRect of plotting area in CSS pixels */
+  get rect(): DOMRect;
 
   /** coords of selected region in CSS pixels (relative to plotting area) */
   readonly select: uPlot.BBox;
@@ -70,10 +73,10 @@ export declare class uPlot {
   redraw(rebuildPaths?: boolean, recalcAxes?: boolean): void;
 
   /**
-   * defers recalc & redraw for multiple ops, e.g. setScale('x', ...) &&
-   * setScale('y', ...)
+   * manual batching of multiple ops (aka immediate mode that skips implicit
+   * microtask queue), ops, e.g. setScale('x', ...) && setScale('y', ...)
    */
-  batch(txn: Function): void;
+  batch(txn: Function, deferHooks?: boolean): void;
 
   /** destroys DOM, removes resize & scroll listeners, etc. */
   destroy(): void;
@@ -88,7 +91,8 @@ export declare class uPlot {
   setCursor(opts: {left: number, top: number}, fireHook?: boolean): void;
 
   /** sets the legend to the values of the specified idx */
-  setLegend(opts: {idx: number}, fireHook?: boolean): void;
+  setLegend(opts: {idx?: number, idxs?: (number|null)[]}, fireHook?: boolean):
+      void;
 
   // TODO: include other series style opts which are dynamically pulled?
   /** toggles series visibility or focus */
@@ -216,7 +220,7 @@ export declare class uPlot {
   static orient(u: uPlot, seriesIdx: number, callback: uPlot.OrientCallback):
       any;
 
-  /** returns a pub/sub instance shared by all plots usng the provided key */
+  /** returns a pub/sub instance shared by all plots using the provided key */
   static sync(key: string): uPlot.SyncPubSub;
 
   /**
@@ -292,11 +296,10 @@ export declare namespace uPlot {
   export type TypedArray = Int8Array|Uint8Array|Int16Array|Uint16Array|
       Int32Array|Uint32Array|Uint8ClampedArray|Float32Array|Float64Array;
 
-  export type AlignedData =
-      [
-        xValues: number[]|TypedArray,
-        ...yValues: ((number|null|undefined)[]|TypedArray)[],
-      ]
+  export type AlignedData = TypedArray[]|
+      [xValues: number[]|TypedArray,
+          ...yValues: ((number|null|undefined)[]|TypedArray)[],
+  ]
 
       export interface DateNames {
     /** long month names */
@@ -363,10 +366,13 @@ export declare namespace uPlot {
     show?: boolean;  // true
     /** show series values at current cursor.idx */
     live?: boolean;  // true
-    /** swiches primary interaction mode to toggle-one/toggle-all */
+    /** switches primary interaction mode to toggle-one/toggle-all */
     isolate?: boolean;  // false
     /** series indicators */
     markers?: Legend.Markers;
+
+    /** callback for moving the legend elsewhere. e.g. external DOM container */
+    mount?: (self: uPlot, el: HTMLElement) => void;
 
     /** current index (readback-only, not for init) */
     idx?: number|null;
@@ -540,7 +546,7 @@ export declare namespace uPlot {
 
     export type DataIdxRefiner =
         (self: uPlot, seriesIdx: number, closestIdx: number,
-         xValue: number) => number;
+         xValue: number) => number|null;
 
     export type MousePosRefiner =
         (self: uPlot, mouseLeft: number, mouseTop: number) => LeftTop;
@@ -573,6 +579,11 @@ export declare namespace uPlot {
 
     export interface Points {
       show?: Points.Show;
+      /**
+       * only show single y-closest point on hover (only works when
+       * cursor.focus.prox >= 0)
+       */
+      one?: boolean;
       /** hover point diameter in CSS pixels */
       size?: Points.Size;
       /** hover point bbox in CSS pixels (will be used instead of size) */
@@ -598,6 +609,11 @@ export declare namespace uPlot {
        * adaptive/unidirectional behavior
        */
       uni?: number;  // null
+      /**
+       * post-drag "click" event proxy, default is to prevent these click
+       * events
+       */
+      click?: (self: uPlot, e: MouseEvent) => void;
     }
 
     export namespace Sync {
@@ -617,7 +633,13 @@ export declare namespace uPlot {
       export type ScaleKeyMatcher =
           (subScaleKey: string|null, pubScaleKey: string|null) => boolean;
 
-      export type Match = [matchX: ScaleKeyMatcher, matchY: ScaleKeyMatcher];
+      export type SeriesIdxMatcher =
+          (sub: uPlot, pub: uPlot, pubSeriesIdx: number) => number|null;
+
+      export type Match = [
+        matchX: ScaleKeyMatcher, matchY: ScaleKeyMatcher,
+        matchSeriesIdx?: SeriesIdxMatcher
+      ];
 
       export type Values = [xScaleValue: number, yScaleValue: number];
     }
@@ -635,7 +657,10 @@ export declare namespace uPlot {
        * (%) position
        */
       scales?: Sync.Scales;  // [xScaleKey, null]
-      /** fns that match x and y scale keys between publisher and subscriber */
+      /**
+       * fns that match x and y scale keys and seriesIdxs between publisher and
+       * subscriber
+       */
       match?: Sync.Match;
       /** event filters */
       filters?: Sync.Filters;
@@ -646,12 +671,50 @@ export declare namespace uPlot {
       values?: Sync.Values,
     }
 
+    // options that compile the cursor.dataIdx callback (the index scanner)
+    export interface Hover {
+      /** minimum cursor proximity to datapoint in CSS pixels for point hover */
+      prox?: number|null|
+          ((self: uPlot, seriesIdx: number, closestIdx: number,
+            xValue: number) => number | null);  // null/Infinity
+      /** when non-zero, will only proximity-test indices forward or backward */
+      bias?: HoverBias;  // 0
+      /**
+       * what values to treat as non-hoverable and trigger scanning to another
+       * index
+       */
+      skip?: any[];  // [undefined]
+    }
+
     export interface Focus {
       /**
        * minimum cursor proximity to datapoint in CSS pixels for focus
-       * activation
+       * activation, disabled: < 0, enabled: <= 1e6
        */
       prox: number;
+      /**
+       * when non-zero, will only focus next series towards or away from zero
+       */
+      bias?: FocusBias;  // 0
+      /**
+       * measures cursor y distance to a series in CSS pixels (for triggering
+       * setSeries hook with closest)
+       */
+      dist?:
+          (self: uPlot, seriesIdx: number, dataIdx: number, valPos: number,
+           curPos: number) => number;
+    }
+
+    export const enum FocusBias {
+      None = 0,
+      AwayFromZero = 1,
+      TowardsZero = -1,
+    }
+
+    export const enum HoverBias {
+      None = 0,
+      Forward = 1,
+      Backward = -1,
     }
   }
 
@@ -703,11 +766,17 @@ export declare namespace uPlot {
     /** sync cursor between multiple charts */
     sync?: Cursor.Sync;
 
-    /** focus series closest to cursor */
+    /** focus series closest to cursor (y) */
     focus?: Cursor.Focus;
+
+    /** hover data points closest to cursor (x) */
+    hover?: Cursor.Hover;
 
     /** lock cursor on mouse click in plotting area */
     lock?: boolean;  // false
+
+    /** the most recent mouse event */
+    event?: MouseEvent;
   }
 
   export namespace Scale {
@@ -720,6 +789,7 @@ export declare namespace uPlot {
       Ordinal = 2,
       Logarithmic = 3,
       ArcSinh = 4,
+      Custom = 100,
     }
 
     export type LogBase = 10|2;
@@ -759,6 +829,11 @@ export declare namespace uPlot {
 
     /** arcsinh linear threshold */
     asinh?: number;  // 1
+
+    /** forward transform fn, with custom distr: 100 */
+    fwd?: (v: number) => number;
+    /** backward transform fn, with custom distr: 100 */
+    bwd?: (v: number) => number;
 
     /** current min scale value */
     min?: number;
@@ -800,6 +875,24 @@ export declare namespace uPlot {
       gaps?: [from: number, to: number][];
 
       /**
+       * line width in CSS pixels, if differs from series.width (for dynamic
+       * rendering optimization)
+       */
+      width?: number;
+
+      /**
+       * fill style, if differs from series.fill (for dynamic rendering
+       * optimization)
+       */
+      _fill?: CanvasRenderingContext2D['fillStyle'];
+
+      /**
+       * stroke style, if differs from series.stroke (for dynamic rendering
+       * optimization)
+       */
+      _stroke?: CanvasRenderingContext2D['strokeStyle'];
+
+      /**
        * bitmap of whether the band clip should be applied to stroke, fill, or
        * both
        */
@@ -813,6 +906,9 @@ export declare namespace uPlot {
 
       // whether to draw ascenders/descenders at null/gap boundaries
       ascDesc?: boolean;  // false
+
+      // extend hz lines to plot edges when x scale is beyond x data limits?
+      extend?: boolean;  // false
     }
 
     export const enum BarsPathBuilderFacetUnit {
@@ -852,13 +948,19 @@ export declare namespace uPlot {
       stroke?: BarsPathBuilderFacet;
     }
 
+    /** radii for bar end (at bar's value) and bar start (baseline, zero)  */
+    export type BarsPathBuilderRadii = [endRadius: number, baseRadius: number];
+
+    export type BarsPathBuilderRadius = number|BarsPathBuilderRadii|
+        ((self: uPlot, seriesIdx: number) => BarsPathBuilderRadii);
+
     export interface BarsPathBuilderOpts {
       align?: -1|0|1;  // 0
 
       size?: [factor?: number, max?: number, min?: number];
 
       // corner radius factor of bar size (0 - 0.5)
-      radius?: number;  // 0
+      radius?: BarsPathBuilderRadius;  // 0
 
       /** fixed-size gap between bars in CSS pixels (reduces bar width) */
       gap?: number;
@@ -933,8 +1035,8 @@ export declare namespace uPlot {
       }
 
       export type Show = boolean|
-          ((self: uPlot, seriesIdx: number, idx0: number,
-            idx1: number) => boolean|undefined);
+          ((self: uPlot, seriesIdx: number, idx0: number, idx1: number,
+            gaps?: null|number[][]) => boolean|undefined);
 
       export type Filter = number[]|null|
           ((self: uPlot, seriesIdx: number, show: boolean,
@@ -1012,9 +1114,9 @@ export declare namespace uPlot {
 
     export type Value = string|
         ((self: uPlot, rawValue: number, seriesIdx: number,
-          idx: number) => string|number);
+          idx: number|null) => string|number);
 
-    export type Values = (self: uPlot, seriesIdx: number, idx: number) =>
+    export type Values = (self: uPlot, seriesIdx: number, idx: number|null) =>
         object;
 
     export type FillTo = number|
@@ -1210,7 +1312,7 @@ export declare namespace uPlot {
 
     interface FilterableOrthoLines extends OrthoLines {
       /**
-       * can filter which splits render lines. e.g splits.map(v => v % 2 === 0 ?
+       * can filter which splits render lines. e.g splits.map(v => v % 2 == 0 ?
        * v : null)
        */
       filter?: Filter;
@@ -1249,6 +1351,12 @@ export declare namespace uPlot {
     /** font used for axis values */
     font?: CanvasRenderingContext2D['font'];
 
+    /**
+     * font-size multiplier for multi-line axis values (similar to CSS
+     * line-height: 1.5em)
+     */
+    lineGap?: number;  // 1.5
+
     /** color of axis label & values */
     stroke?: Axis.Stroke;
 
@@ -1281,7 +1389,7 @@ export declare namespace uPlot {
 
     /**
      * can filter which splits are passed to axis.values() for rendering. e.g
-     * splits.map(v => v % 2 === 0 ? v : null)
+     * splits.map(v => v % 2 == 0 ? v : null)
      */
     filter?: Axis.Filter;
 
@@ -1316,7 +1424,7 @@ export declare namespace uPlot {
 
       /**
        * fires after each initial and subsequent series addition (discern via
-       * self.status === 0 or 1)
+       * self.status == 0 or 1)
        */
       addSeries?: (self: uPlot, seriesIdx: number) => void;
 

@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_bubble_controller.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {

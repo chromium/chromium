@@ -521,9 +521,36 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     }
   }
 
-  void SetShouldTextBoxTrimStart() { space_.SetShouldTextBoxTrimStart(); }
-  void SetShouldTextBoxTrimEnd() { space_.SetShouldTextBoxTrimEnd(); }
+  void SetShouldTextBoxTrimNodeStart(bool b) {
+    if (b || space_.rare_data_) {
+      space_.EnsureRareData()->should_text_box_trim_node_start = b;
+    }
+  }
+  void SetShouldTextBoxTrimNodeEnd(bool b) {
+    if (b || space_.rare_data_) {
+      space_.EnsureRareData()->should_text_box_trim_node_end = b;
+    }
+  }
+  void SetShouldTextBoxTrimFragmentainerStart(bool b) {
+    if (b || space_.rare_data_) {
+      space_.EnsureRareData()->should_text_box_trim_fragmentainer_start = b;
+    }
+  }
+  void SetShouldTextBoxTrimFragmentainerEnd(bool b) {
+    if (b || space_.rare_data_) {
+      space_.EnsureRareData()->should_text_box_trim_fragmentainer_end = b;
+    }
+  }
+  void SetShouldTextBoxTrimInsideWhenLineClamp(bool b) {
+    if (b || space_.rare_data_) {
+      space_.EnsureRareData()->should_text_box_trim_inside_when_line_clamp = b;
+    }
+  }
+
   void SetShouldForceTextBoxTrimEnd() { space_.SetShouldForceTextBoxTrimEnd(); }
+  void SetEffectiveTextBoxEdge(TextBoxEdge value) {
+    space_.SetEffectiveTextBoxEdge(value);
+  }
 
   void SetDecorationPercentageResolutionType(
       DecorationPercentageResolutionType type) {

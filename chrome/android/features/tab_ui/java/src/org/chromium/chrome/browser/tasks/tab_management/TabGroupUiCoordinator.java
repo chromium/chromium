@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -23,6 +24,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
@@ -33,17 +35,18 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -62,10 +65,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             new ObservableSupplierImpl<>();
 
     private final Activity mActivity;
-    private final Context mContext;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final PropertyModel mModel;
-    private final IncognitoStateProvider mIncognitoStateProvider;
     private final TabGroupUiToolbarView mToolbarView;
     private final ViewGroup mTabListContainerView;
     private final ScrimCoordinator mScrimCoordinator;
@@ -78,19 +79,22 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final TabCreatorManager mTabCreatorManager;
     private final TabContentManager mTabContentManager;
     private final ModalDialogManager mModalDialogManager;
+    private final ObservableSupplierImpl<Token> mCurrentTabGroupId = new ObservableSupplierImpl<>();
+    private final ThemeColorProvider mThemeColorProvider;
+
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
     private LazyOneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
     private TabListCoordinator mTabStripCoordinator;
     private TabGroupUiMediator mMediator;
+    private @Nullable TabBubbler mTabBubbler;
 
     /** Creates a new {@link TabGroupUiCoordinator} */
     public TabGroupUiCoordinator(
             @NonNull Activity activity,
             @NonNull ViewGroup parentView,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull IncognitoStateProvider incognitoStateProvider,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @NonNull BottomSheetController bottomSheetController,
@@ -99,12 +103,11 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @NonNull ModalDialogManager modalDialogManager) {
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull ThemeColorProvider themeColorProvider) {
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.constructor")) {
             mActivity = activity;
-            mContext = parentView.getContext();
             mBrowserControlsStateProvider = browserControlsStateProvider;
-            mIncognitoStateProvider = incognitoStateProvider;
             mScrimCoordinator = scrimCoordinator;
             mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
             mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
@@ -116,7 +119,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             : R.layout.bottom_tab_strip_toolbar;
             mToolbarView =
                     (TabGroupUiToolbarView)
-                            LayoutInflater.from(mContext).inflate(layoutId, parentView, false);
+                            LayoutInflater.from(activity).inflate(layoutId, parentView, false);
             mTabListContainerView = mToolbarView.getViewContainer();
             mBottomSheetController = bottomSheetController;
             mDataSharingTabManager = dataSharingTabManager;
@@ -127,6 +130,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             mTabCreatorManager = tabCreatorManager;
             mTabContentManager = tabContentManager;
             mModalDialogManager = modalDialogManager;
+            mThemeColorProvider = themeColorProvider;
             parentView.addView(mToolbarView);
         }
     }
@@ -134,8 +138,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private ActionConfirmationManager createActionConfirmationManager() {
         Profile profile = mTabModelSelector.getModel(false).getProfile();
         TabGroupModelFilter regularFilter =
-                (TabGroupModelFilter)
-                        mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
         return new ActionConfirmationManager(
                 profile, mActivity, regularFilter, mModalDialogManager);
     }
@@ -144,15 +147,17 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         assert mTabGridDialogControllerSupplier != null;
         if (mTabGridDialogCoordinator != null) return mTabGridDialogCoordinator;
 
-        var currentTabModelFilterSupplier =
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
+        var currentTabGroupModelFilterSupplier =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilterSupplier();
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(
                         mActivity,
                         mBrowserControlsStateProvider,
                         mBottomSheetController,
                         mDataSharingTabManager,
-                        currentTabModelFilterSupplier,
+                        currentTabGroupModelFilterSupplier,
                         mTabContentManager,
                         mTabCreatorManager,
                         mActivity.findViewById(R.id.coordinator),
@@ -162,7 +167,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         mScrimCoordinator,
                         mTabStripCoordinator.getTabGroupTitleEditor(),
                         mActionConfirmationSupplier.get(),
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        /* desktopWindowStateManager= */ null);
         return mTabGridDialogCoordinator;
     }
 
@@ -172,19 +178,22 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController,
             Callback<Object> onModelTokenChange) {
-        var currentTabModelFilterSupplier =
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
+        var currentTabGroupModelFilterSupplier =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilterSupplier();
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.initializeWithNative")) {
             mTabStripCoordinator =
                     new TabListCoordinator(
                             TabListCoordinator.TabListMode.STRIP,
-                            mContext,
+                            mActivity,
                             mBrowserControlsStateProvider,
                             mModalDialogManager,
-                            currentTabModelFilterSupplier,
+                            currentTabGroupModelFilterSupplier,
                             /* thumbnailProvider= */ null,
                             /* actionOnRelatedTabs= */ false,
                             mActionConfirmationSupplier.get(),
+                            mDataSharingTabManager,
                             /* gridCardOnClickListenerProvider= */ null,
                             /* dialogHandler= */ null,
                             TabProperties.TabActionState.UNSET,
@@ -226,7 +235,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 sharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
                                 activity,
-                                SharedImageTilesType.CLICKABLE,
+                                SharedImageTilesType.DEFAULT,
                                 SharedImageTilesColor.DYNAMIC,
                                 dataSharingService);
                 FrameLayout container =
@@ -246,12 +255,22 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mTabContentManager,
                             mTabCreatorManager,
                             mLayoutStateProviderSupplier,
-                            mIncognitoStateProvider,
                             mTabGridDialogControllerSupplier,
                             mOmniboxFocusStateSupplier,
-                            sharedImageTilesCoordinator);
+                            sharedImageTilesCoordinator,
+                            mThemeColorProvider);
 
-            TabGroupUtils.startObservingForCreationIPH();
+            Profile profile = mTabModelSelector.getModel(false).getProfile();
+            CollaborationService collaborationService =
+                    CollaborationServiceFactory.getForProfile(profile);
+            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
+            if (serviceStatus.isAllowedToJoin()) {
+                mTabBubbler =
+                        new TabBubbler(
+                                profile,
+                                mTabStripCoordinator.getTabListNotificationHandler(),
+                                mCurrentTabGroupId);
+            }
         }
     }
 
@@ -270,16 +289,12 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
      */
     @Override
     public void resetStripWithListOfTabs(List<Tab> tabs) {
-        if (tabs != null
-                && mBottomSheetController.getSheetState()
-                        == BottomSheetController.SheetState.HIDDEN) {
-            TabGroupUtils.maybeShowIPH(
-                    mTabModelSelector.getModel(false).getProfile(),
-                    FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
-                    mTabStripCoordinator.getContainerView(),
-                    mBottomSheetController);
-        }
         mTabStripCoordinator.resetWithListOfTabs(tabs, false);
+
+        mCurrentTabGroupId.set(tabs == null || tabs.isEmpty() ? null : tabs.get(0).getTabGroupId());
+        if (mTabBubbler != null) {
+            mTabBubbler.showAll();
+        }
     }
 
     /**
@@ -291,6 +306,13 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     @Override
     public void resetGridWithListOfTabs(List<Tab> tabs) {
         if (mTabGridDialogControllerSupplier != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                    && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
+                    && ChromeFeatureList.isEnabled(
+                            SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
+                TabUiUtils.updateViewContentSensitivityForTabs(
+                        tabs, mTabGridDialogControllerSupplier.get()::setGridContentSensitivity);
+            }
             mTabGridDialogControllerSupplier.get().resetWithListOfTabs(tabs);
         }
     }
@@ -327,6 +349,10 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         mModelChangeProcessor.destroy();
         if (mMediator != null) {
             mMediator.destroy();
+        }
+        if (mTabBubbler != null) {
+            mTabBubbler.destroy();
+            mTabBubbler = null;
         }
     }
 }

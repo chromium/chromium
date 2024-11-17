@@ -22,8 +22,8 @@ namespace partition_alloc {
 // |size| is the size of the failed allocation, or 0 if not known.
 // Crash reporting classifies such crashes as OOM.
 // Must be allocation-safe.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void TerminateBecauseOutOfMemory(size_t size);
+[[noreturn]] PA_NOT_TAIL_CALLED PA_COMPONENT_EXPORT(
+    PARTITION_ALLOC) void TerminateBecauseOutOfMemory(size_t size);
 
 // Records the size of the allocation that caused the current OOM crash, for
 // consumption by Breakpad.

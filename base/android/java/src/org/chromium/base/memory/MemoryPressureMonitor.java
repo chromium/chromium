@@ -119,7 +119,8 @@ public class MemoryPressureMonitor {
                             public void onTrimMemory(int level) {
                                 Integer pressure = memoryPressureFromTrimLevel(level);
                                 if (pressure != null) {
-                                    notifyPressure(pressure);
+                                    PostTask.runOrPostTask(
+                                            TaskTraits.UI_DEFAULT, () -> notifyPressure(pressure));
                                 }
 
                                 // We start from Android U due to changes in
@@ -137,7 +138,9 @@ public class MemoryPressureMonitor {
 
                             @Override
                             public void onLowMemory() {
-                                notifyPressure(MemoryPressureLevel.CRITICAL);
+                                PostTask.runOrPostTask(
+                                        TaskTraits.UI_DEFAULT,
+                                        () -> notifyPressure(MemoryPressureLevel.CRITICAL));
                             }
 
                             @Override

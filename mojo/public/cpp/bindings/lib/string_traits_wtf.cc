@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/bindings/string_traits_wtf.h"
 
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/string_data_view.h"
 
@@ -27,7 +29,8 @@ WTF::StringUTF8Adaptor StringTraits<WTF::String>::GetUTF8(
 // static
 bool StringTraits<WTF::String>::Read(StringDataView input,
                                      WTF::String* output) {
-  WTF::String result = WTF::String::FromUTF8(input.storage(), input.size());
+  WTF::String result =
+      WTF::String::FromUTF8(std::string_view(input.storage(), input.size()));
   output->swap(result);
   return true;
 }

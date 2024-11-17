@@ -17,8 +17,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 
 class Profile;
@@ -28,7 +28,7 @@ namespace ash {
 class LoginDisplayHost;
 
 class NetworkUiController
-    : public AppLaunchSplashScreenView::Delegate,
+    : public AppLaunchSplashScreen::Delegate,
       public KioskAppLauncher::NetworkDelegate,
       public NetworkStateInformer::NetworkStateInformerObserver {
  public:
@@ -70,7 +70,7 @@ class NetworkUiController
 
   NetworkUiController(Observer& observer,
                       LoginDisplayHost* host,
-                      AppLaunchSplashScreenView& splash_screen,
+                      AppLaunchSplashScreen& splash_screen,
                       std::unique_ptr<NetworkMonitor> network_monitor);
   NetworkUiController(const NetworkUiController&) = delete;
   NetworkUiController& operator=(const NetworkUiController&) = delete;
@@ -118,7 +118,7 @@ class NetworkUiController
 
   const raw_ref<Observer> observer_;
   const raw_ptr<LoginDisplayHost> host_;
-  const raw_ref<AppLaunchSplashScreenView> splash_screen_view_;
+  const raw_ref<AppLaunchSplashScreen> splash_screen_;
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<NetworkMonitor> network_monitor_;
 

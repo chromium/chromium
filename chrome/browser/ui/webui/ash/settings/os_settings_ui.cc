@@ -41,6 +41,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_parental_controls_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/graduation_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/app_permission_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/magic_boost_notice_page_handler_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
@@ -321,6 +322,13 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<audio_config::mojom::CrosAudioConfig> receiver) {
   GetAudioConfigService(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<graduation::mojom::GraduationHandler> receiver) {
+  OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+      ->graduation_handler()
+      ->BindInterface(std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

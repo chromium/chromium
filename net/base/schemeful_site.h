@@ -180,14 +180,11 @@ class NET_EXPORT SchemefulSite {
   FRIEND_TEST_ALL_PREFIXES(SchemefulSiteTest, OpaqueSerialization);
   FRIEND_TEST_ALL_PREFIXES(SchemefulSiteTest, InternalValue);
 
-  struct ObtainASiteResult {
-    url::Origin origin;
-    bool used_registerable_domain;
-  };
+  struct ObtainASiteResult;
 
   static ObtainASiteResult ObtainASite(const url::Origin&);
 
-  explicit SchemefulSite(ObtainASiteResult);
+  explicit SchemefulSite(ObtainASiteResult, const url::Origin&);
 
   // Deserializes a string obtained from `SerializeWithNonce()` to a
   // `SchemefulSite`. Returns nullopt if the value was invalid in any way.

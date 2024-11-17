@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -55,6 +56,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
@@ -71,6 +73,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -1801,19 +1804,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
       user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
 
   // Install web apps for the two profiles.
-  auto example_url1 = GURL("http://www.example_one.com");
+  auto example_url1 = GURL("https://www.example_one.com");
   std::string app_name1 = "A Test Web App1";
   webapps::AppId app_id1 =
       InstallPWAWithName(profile1, example_url1, app_name1);
-  auto example_url2 = GURL("http://www.example_two.com");
+  auto example_url2 = GURL("https://www.example_two.com");
   std::string app_name2 = "A Test Web App2";
   webapps::AppId app_id2 =
       InstallPWAWithName(profile1, example_url2, app_name2);
-  auto example_url3 = GURL("http://www.example_three.com");
+  auto example_url3 = GURL("https://www.example_three.com");
   std::string app_name3 = "A Test Web App3";
   webapps::AppId app_id3 =
       InstallPWAWithName(&profile2, example_url3, app_name3);
-  auto example_url4 = GURL("http://www.example_four.com");
+  auto example_url4 = GURL("https://www.example_four.com");
   std::string app_name4 = "A Test Web App4";
   webapps::AppId app_id4 =
       InstallPWAWithName(&profile2, example_url4, app_name4);
@@ -1826,52 +1829,45 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
   ASSERT_NE(app_browser1, nullptr);
   ASSERT_NE(app_browser2, nullptr);
 
-  // List web apps for all profiles.
-  std::vector<Profile*> expected_profiles = {&profile2, profile1};
-  std::vector<webapps::AppId*> expected_installed_apps_id = {
-      &app_id4, &app_id3, &app_id2, &app_id1};
-  std::vector<std::string*> expected_installed_apps_name = {
-      &app_name4, &app_name3, &app_name2, &app_name1};
-  std::vector<webapps::AppId*> expected_open_apps_id = {&app_id1, &app_id3};
-  std::vector<std::string*> expected_open_apps_name = {&app_name1, &app_name3};
-  base::Value::Dict apps_for_all_profiles;
-  base::Value::List installed_apps_for_all_profile;
-  base::Value::List open_apps_for_all_profile;
-  for (int i = 0; i < 2; i++) {
-    // Get installed web apps.
-    base::Value::Dict installed_item_info;
-    installed_item_info.Set("profile_id",
-                            expected_profiles[i]->GetBaseName().AsUTF8Unsafe());
-    base::Value::List installed_apps_per_profile;
-    for (int j = 0; j < 2; j++) {
-      base::Value::Dict web_app_info;
-      web_app_info.Set("id", *expected_installed_apps_id[i * 2 + j]);
-      web_app_info.Set("name", *expected_installed_apps_name[i * 2 + j]);
-      installed_apps_per_profile.Append(std::move(web_app_info));
-    }
-    installed_item_info.Set("web_apps", std::move(installed_apps_per_profile));
-    installed_apps_for_all_profile.Append(std::move(installed_item_info));
-    // Get open web apps.
-    base::Value::Dict open_item_info;
-    open_item_info.Set("profile_id",
-                       expected_profiles[1 - i]->GetBaseName().AsUTF8Unsafe());
-    base::Value::List open_apps_per_profile;
-    base::Value::Dict web_app_info;
-    web_app_info.Set("id", *expected_open_apps_id[i]);
-    web_app_info.Set("name", *expected_open_apps_name[i]);
-    open_apps_per_profile.Append(std::move(web_app_info));
-    open_item_info.Set("web_apps", std::move(open_apps_per_profile));
-    open_apps_for_all_profile.Append(std::move(open_item_info));
-  }
-  apps_for_all_profiles.Set("installed_web_apps",
-                            std::move(installed_apps_for_all_profile));
-  apps_for_all_profiles.Set("open_web_apps",
-                            std::move(open_apps_for_all_profile));
-
-  std::string expected_info;
-  JSONStringValueSerializer serializer(&expected_info);
-  serializer.set_pretty_print(true);
-  EXPECT_TRUE(serializer.Serialize(apps_for_all_profiles));
+  // Expected installed apps for given profile in JSON format as a raw string.
+  // This is short so it is easier to just directly embed it versus using a
+  // separate golden file.
+  // NOTE: The output format uses an indent of 3 spaces and a trailing newline.
+  std::string expected_info = R"({
+   "installed_web_apps": [ {
+      "profile_id": "New Profile 1",
+      "web_apps": [ {
+         "id": "dhjmdeeglmiagclobghjoaodgfhkjhgb",
+         "name": "A Test Web App3"
+      }, {
+         "id": "ifgmomgfhabbbbapaeolfmaoamipmegf",
+         "name": "A Test Web App4"
+      } ]
+   }, {
+      "profile_id": "Default",
+      "web_apps": [ {
+         "id": "ghbcfjbejbhpcpbcmbgmffhopeebbkpi",
+         "name": "A Test Web App1"
+      }, {
+         "id": "nlbjkhjncnclobaokfdbpgejplliapkd",
+         "name": "A Test Web App2"
+      } ]
+   } ],
+   "open_web_apps": [ {
+      "profile_id": "Default",
+      "web_apps": [ {
+         "id": "ghbcfjbejbhpcpbcmbgmffhopeebbkpi",
+         "name": "A Test Web App1"
+      } ]
+   }, {
+      "profile_id": "New Profile 1",
+      "web_apps": [ {
+         "id": "dhjmdeeglmiagclobghjoaodgfhkjhgb",
+         "name": "A Test Web App3"
+      } ]
+   } ]
+}
+)";
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   base::FilePath output_path =
@@ -1890,6 +1886,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::string file_contents;
     ASSERT_TRUE(base::ReadFileToString(output_path, &file_contents));
+    // Normalize Windows line endings to Linux line endings used by golden data.
+    base::ReplaceSubstringsAfterOffset(&file_contents, 0, "\r\n", "\n");
     ASSERT_EQ(expected_info, file_contents);
   }
 }
@@ -1906,19 +1904,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
       user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
 
   // Install web apps for the two profiles.
-  auto example_url1 = GURL("http://www.example_one.com");
+  auto example_url1 = GURL("https://www.example_one.com");
   std::string app_name1 = "A Test Web App1";
   webapps::AppId app_id1 =
       InstallPWAWithName(profile1, example_url1, app_name1);
-  auto example_url2 = GURL("http://www.example_two.com");
+  auto example_url2 = GURL("https://www.example_two.com");
   std::string app_name2 = "A Test Web App2";
   webapps::AppId app_id2 =
       InstallPWAWithName(profile1, example_url2, app_name2);
-  auto example_url3 = GURL("http://www.example_three.com");
+  auto example_url3 = GURL("https://www.example_three.com");
   std::string app_name3 = "A Test Web App3";
   webapps::AppId app_id3 =
       InstallPWAWithName(&profile2, example_url3, app_name3);
-  auto example_url4 = GURL("http://www.example_four.com");
+  auto example_url4 = GURL("https://www.example_four.com");
   std::string app_name4 = "A Test Web App4";
   webapps::AppId app_id4 =
       InstallPWAWithName(&profile2, example_url4, app_name4);
@@ -1931,46 +1929,32 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
   ASSERT_NE(app_browser1, nullptr);
   ASSERT_NE(app_browser2, nullptr);
 
-  // List web apps for the given profile.
+  // Expected installed apps for given profile in JSON format as a raw string.
+  // This is short so it is easier to just directly embed it versus using a
+  // separate golden file.
+  // NOTE: The output format uses an indent of 3 spaces and a trailing newline.
+  std::string expected_info = R"({
+   "installed_web_apps": [ {
+      "profile_id": "New Profile 1",
+      "web_apps": [ {
+         "id": "dhjmdeeglmiagclobghjoaodgfhkjhgb",
+         "name": "A Test Web App3"
+      }, {
+         "id": "ifgmomgfhabbbbapaeolfmaoamipmegf",
+         "name": "A Test Web App4"
+      } ]
+   } ],
+   "open_web_apps": [ {
+      "profile_id": "New Profile 1",
+      "web_apps": [ {
+         "id": "dhjmdeeglmiagclobghjoaodgfhkjhgb",
+         "name": "A Test Web App3"
+      } ]
+   } ]
+}
+)";
 
-  // Get installed web apps.
-  base::Value::List installed_apps_for_given_profile;
-  base::Value::Dict installed_item_info;
-  installed_item_info.Set("profile_id", profile2.GetBaseName().AsUTF8Unsafe());
-  base::Value::List installed_apps_per_profile;
-  base::Value::Dict web_app_info1;
-  web_app_info1.Set("name", app_name4);
-  web_app_info1.Set("id", app_id4);
-  installed_apps_per_profile.Append(std::move(web_app_info1));
-  base::Value::Dict web_app_info2;
-  web_app_info2.Set("name", app_name3);
-  web_app_info2.Set("id", app_id3);
-  installed_apps_per_profile.Append(std::move(web_app_info2));
-  installed_item_info.Set("web_apps", std::move(installed_apps_per_profile));
-  installed_apps_for_given_profile.Append(std::move(installed_item_info));
-
-  // Get open web apps.
-  base::Value::List open_apps_for_given_profile;
-  base::Value::Dict open_item_info;
-  open_item_info.Set("profile_id", profile2.GetBaseName().AsUTF8Unsafe());
-  base::Value::List open_apps_per_profile;
-  base::Value::Dict web_app_info3;
-  web_app_info3.Set("name", app_name3);
-  web_app_info3.Set("id", app_id3);
-  open_apps_per_profile.Append(std::move(web_app_info3));
-  open_item_info.Set("web_apps", std::move(open_apps_per_profile));
-  open_apps_for_given_profile.Append(std::move(open_item_info));
-
-  base::Value::Dict apps_for_given_profiles;
-  apps_for_given_profiles.Set("installed_web_apps",
-                              std::move(installed_apps_for_given_profile));
-  apps_for_given_profiles.Set("open_web_apps",
-                              std::move(open_apps_for_given_profile));
-  std::string expected_info;
-  JSONStringValueSerializer serializer(&expected_info);
-  serializer.set_pretty_print(true);
-  EXPECT_TRUE(serializer.Serialize(apps_for_given_profiles));
-
+  // Extract actual output using command-line flag.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   base::FilePath output_path =
       user_data_dir.Append(FILE_PATH_LITERAL("AppsForGivenProfile.json"));
@@ -1989,6 +1973,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::string file_contents;
     ASSERT_TRUE(base::ReadFileToString(output_path, &file_contents));
+    // Normalize Windows line endings to Linux line endings used by golden data.
+    base::ReplaceSubstringsAfterOffset(&file_contents, 0, "\r\n", "\n");
     ASSERT_EQ(expected_info, file_contents);
   }
 }
@@ -2065,7 +2051,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
   SessionStartupPref::SetStartupPref(test_profile, pref_last);
 
   // Install web app
-  auto example_url = GURL("http://www.example.com");
+  auto example_url = GURL("https://www.example.com");
   webapps::AppId app_id = InstallPWA(test_profile, example_url);
   Browser* app_browser =
       web_app::LaunchWebAppBrowserAndWait(test_profile, app_id);
@@ -2445,7 +2431,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   // Simulate a browser restart by creating the profiles in the PRE_PRE part.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(embedded_https_test_server().Start());
 
   // Create a profile.
   base::FilePath dest_path = profile_manager->user_data_dir();
@@ -2458,7 +2444,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   Browser* browser1 = Browser::Create({Browser::TYPE_NORMAL, &profile1, true});
   chrome::NewTab(browser1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser1, embedded_test_server()->GetURL("/title1.html")));
+      browser1, embedded_https_test_server().GetURL("/title1.html")));
   browser1->window()->Show();
   browser1->window()->Maximize();
 
@@ -2484,7 +2470,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   Profile& profile1 = profiles::testing::CreateProfileSync(
       profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
 
-  auto example_url = GURL("http://www.example.com");
+  auto example_url = GURL("https://www.example.com");
   webapps::AppId new_app_id = InstallPWA(&profile1, example_url);
   Browser* app = web_app::LaunchWebAppBrowserAndWait(&profile1, new_app_id);
   ASSERT_TRUE(app);
@@ -3210,15 +3196,23 @@ class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
     BrowserList::RemoveObserver(this);
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    command_line->AppendSwitchPath(switches::kUserDataDir, temp_dir_.GetPath());
+  bool SetUpUserDataDirectory() override {
+    base::FilePath user_data_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+
     std::string json;
     base::Value::Dict local_state;
     local_state.SetByDottedPath(prefs::kWasRestarted, true);
     base::JSONWriter::Write(local_state, &json);
-    ASSERT_TRUE(base::WriteFile(
-        temp_dir_.GetPath().Append(chrome::kLocalStateFilename), json));
+
+    base::FilePath local_state_path =
+        user_data_dir.Append(chrome::kLocalStateFilename);
+    if (!base::WriteFile(local_state_path, json)) {
+      ADD_FAILURE() << "base::WriteFile() failed, " << local_state_path;
+      return false;
+    }
+
+    return true;
   }
 
  protected:
@@ -3232,9 +3226,6 @@ class StartupBrowserCreatorWasRestartedFlag : public InProcessBrowserTest,
   }
 
   bool on_browser_added_hit_ = false;
-
- private:
-  base::ScopedTempDir temp_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorWasRestartedFlag, Test) {

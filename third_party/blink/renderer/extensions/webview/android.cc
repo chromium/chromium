@@ -9,8 +9,8 @@ namespace blink {
 
 Android::Android() = default;
 
-WebView* Android::webview(ExecutionContext* execution_context) {
-  return &WebView::From(*execution_context);
+WebViewAndroid* Android::webview(ExecutionContext* execution_context) {
+  return &WebViewAndroid::From(*execution_context);
 }
 
 void Android::Trace(Visitor* visitor) const {

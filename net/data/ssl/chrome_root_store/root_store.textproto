@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 16
+version_major: 17
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -235,6 +235,13 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "02ed0eb28c14da45165c566791700d6451d7fb56f0b2ab1d3b8eb070e56edff5"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1731369599
+    min_version: "131"
+  }
+  constraints: {
+    max_version_exclusive: "131"
+  }
 }
 
 # CN=AffirmTrust Commercial, O=AffirmTrust, C=US
@@ -242,6 +249,13 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "0376ab1d54c5f9803ce4b2e201a0ee7eef7b57b636e8a93c9b8d4860c96f5fa7"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1731369599
+    min_version: "131"
+  }
+  constraints: {
+    max_version_exclusive: "131"
+  }
 }
 
 # CN=AffirmTrust Networking, O=AffirmTrust, C=US
@@ -249,6 +263,13 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "0a81ec5a929777f145904af38d5d509f66b5e2c58fcdb531058b0e17f3f0b41b"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1731369599
+    min_version: "131"
+  }
+  constraints: {
+    max_version_exclusive: "131"
+  }
 }
 
 # CN=Entrust Root Certification Authority - G2, OU=(c) 2009 Entrust, Inc. - for authorized use only, OU=See www.entrust.net/legal-terms, O=Entrust, Inc., C=US
@@ -256,11 +277,25 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "43df5774b03e7fef5fe40d931a7bedf1bb2e6b42738c4e6d3841103d3aa7f339"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1731369599
+    min_version: "131"
+  }
+  constraints: {
+    max_version_exclusive: "131"
+  }
 }
 
 # CN=Entrust.net Certification Authority (2048), OU=(c) 1999 Entrust.net Limited, OU=www.entrust.net/CPS_2048 incorp. by ref. (limits liab.), O=Entrust.net
 trust_anchors {
   sha256_hex: "6dc47172e01cbcb0bf62580d895fe2b8ac9ad4f873801e0c10b9c837d21eb177"
+  constraints: {
+    sct_not_after_sec: 1731369599
+    min_version: "131"
+  }
+  constraints: {
+    max_version_exclusive: "131"
+  }
 }
 
 # CN=AffirmTrust Premium, O=AffirmTrust, C=US
@@ -268,6 +303,13 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "70a73f7f376b60074248904534b11482d5bf0e698ecc498df52577ebf2e93b9a"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1731369599
+    min_version: "131"
+  }
+  constraints: {
+    max_version_exclusive: "131"
+  }
 }
 
 # CN=Entrust Root Certification Authority, OU=(c) 2006 Entrust, Inc., OU=www.entrust.net/CPS is incorporated by reference, O=Entrust, Inc., C=US
@@ -275,6 +317,13 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1731369599
+    min_version: "131"
+  }
+  constraints: {
+    max_version_exclusive: "131"
+  }
 }
 
 # CN=AffirmTrust Premium ECC, O=AffirmTrust, C=US
@@ -282,6 +331,13 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "bd71fdf6da97e4cf62d1647add2581b07d79adf8397eb4ecba9c5e8488821423"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1731369599
+    min_version: "131"
+  }
+  constraints: {
+    max_version_exclusive: "131"
+  }
 }
 
 # CN=Entrust Root Certification Authority - G4, OU=(c) 2015 Entrust, Inc. - for authorized use only, OU=See www.entrust.net/legal-terms, O=Entrust, Inc., C=US
@@ -289,6 +345,13 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "db3517d1f6732a2d5ab97c533ec70779ee3270a62fb4ac4238372460e6f01e88"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1731369599
+    min_version: "131"
+  }
+  constraints: {
+    max_version_exclusive: "131"
+  }
 }
 
 # CN=GDCA TrustAUTH R5 ROOT, O=GUANG DONG CERTIFICATE AUTHORITY CO.,LTD., C=CN
@@ -640,11 +703,6 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "62dd0be9b9f50a163ea0f8e75c053b1eca57ea55c8688f647c6881f2c8357b95"
   ev_policy_oids: "2.23.140.1.1"
-}
-
-# CN=SwissSign Silver CA - G2, O=SwissSign AG, C=CH
-trust_anchors {
-  sha256_hex: "be6c4da2bbb9ba59b6f3939768374246c3c005993fa98f020d1dedbed48a81d5"
 }
 
 # CN=TWCA Global Root CA, OU=Root CA, O=TAIWAN-CA, C=TW

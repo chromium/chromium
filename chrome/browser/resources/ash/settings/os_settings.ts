@@ -8,7 +8,7 @@
  */
 
 /** Necessary imports to load the app */
-import './strings.m.js';
+import '/strings.m.js';
 import './os_settings_ui/os_settings_ui.js';
 // TODO(b/263414034) Determine if these imports are needed here at all,
 // or should be moved to lazy_load.ts
@@ -142,6 +142,7 @@ export {ControlledButtonElement} from './controls/controlled_button.js';
 export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';
 export {ExtensionControlledIndicatorElement} from './controls/extension_controlled_indicator.js';
 export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
+export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
 export {SettingsSliderElement} from './controls/settings_slider.js';
 export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
 export {BaseRowMixin} from './controls/v2/base_row_mixin.js';
@@ -156,7 +157,7 @@ export {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRem
 export {SettingsAudioElement} from './device_page/audio.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {SettingsDevicePageElement} from './device_page/device_page.js';
-export {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerSource, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
+export {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, PowerSource, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
 export {SettingsDisplayElement} from './device_page/display.js';
 export {DisplayLayoutElement} from './device_page/display_layout.js';
 export {NightLightScheduleType} from './device_page/display_night_light.js';
@@ -206,6 +207,7 @@ export * as appParentalControlsHandlerMojom from './mojom-webui/app_parental_con
 export * as appPermissionHandlerMojom from './mojom-webui/app_permission_handler.mojom-webui.js';
 export * as crosAudioConfigMojom from './mojom-webui/cros_audio_config.mojom-webui.js';
 export * as displaySettingsProviderMojom from './mojom-webui/display_settings_provider.mojom-webui.js';
+export * as graduationHandlerMojom from './mojom-webui/graduation_handler.mojom-webui.js';
 export * as personalizationSearchMojom from './mojom-webui/personalization_search.mojom-webui.js';
 export * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 export * as searchMojom from './mojom-webui/search.mojom-webui.js';
@@ -254,6 +256,7 @@ export {OneDriveBrowserProxy, OneDrivePageCallbackRouter, OneDrivePageHandlerRem
 export {createPageAvailability as createPageAvailabilityForTesting, OsPageAvailability} from './os_page_availability.js';
 export {AccountManagerSettingsCardElement} from './os_people_page/account_manager_settings_card.js';
 export {AdditionalAccountsSettingsCardElement} from './os_people_page/additional_accounts_settings_card.js';
+export {setGraduationHandlerProviderForTesting} from './os_people_page/graduation/mojo_interface_provider.js';
 export {OsSettingsPeoplePageElement} from './os_people_page/os_people_page.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {setAppPermissionProviderForTesting} from './os_privacy_page/mojo_interface_provider.js';

@@ -14,7 +14,7 @@ class PermissionRequestCreator {
  public:
   typedef base::OnceCallback<void(bool)> SuccessCallback;
 
-  virtual ~PermissionRequestCreator() {}
+  virtual ~PermissionRequestCreator() = default;
 
   // Returns false if creating a permission request is expected to fail.
   // If this method returns true, it doesn't necessary mean that creating the

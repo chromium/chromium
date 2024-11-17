@@ -125,7 +125,7 @@ class PhishingDOMFeatureExtractor {
   raw_ptr<const base::TickClock> clock_;
 
   // The output parameters from the most recent call to ExtractFeatures().
-  raw_ptr<FeatureMap> features_;  // The caller keeps ownership of this.
+  raw_ptr<FeatureMap, DanglingUntriaged> features_;  // The caller keeps ownership of this.
   DoneCallback done_callback_;
 
   // The current (sub-)document that we are processing.  May be a null document

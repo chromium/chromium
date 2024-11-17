@@ -59,7 +59,7 @@ class MessagePumpKqueueTest : public testing::Test {
 class PortWatcher : public MessagePumpKqueue::MachPortWatcher {
  public:
   PortWatcher(RepeatingClosure callback) : callback_(std::move(callback)) {}
-  ~PortWatcher() override {}
+  ~PortWatcher() override = default;
 
   void OnMachMessageReceived(mach_port_t port) override {
     mach_msg_empty_rcv_t message{};

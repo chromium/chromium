@@ -20,6 +20,7 @@
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -86,15 +87,16 @@ class ComposeSession
         compose::ComposeSessionCloseReason close_reason,
         const compose::ComposeSessionEvents& events) = 0;
   };
-  ComposeSession(
-      content::WebContents* web_contents,
-      optimization_guide::OptimizationGuideModelExecutor* executor,
-      base::Token session_id,
-      InnerTextProvider* inner_text,
-      autofill::FieldGlobalId node_id,
-      bool is_page_language_supported,
-      Observer* observer,
-      ComposeCallback callback = base::NullCallback());
+  ComposeSession(content::WebContents* web_contents,
+                 optimization_guide::OptimizationGuideModelExecutor* executor,
+                 optimization_guide::ModelQualityLogsUploaderService*
+                     model_quality_uploader,
+                 base::Token session_id,
+                 InnerTextProvider* inner_text,
+                 autofill::FieldGlobalId node_id,
+                 bool is_page_language_supported,
+                 Observer* observer,
+                 ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
 
   // Binds this to a Compose webui.
@@ -110,7 +112,9 @@ class ComposeSession
   // Requests a compose response for `input`. The result will be sent through
   // the ComposeDialog interface rather than through a callback, as it might
   // complete after the originating WebUI has been destroyed.
-  void Compose(const std::string& input, bool is_input_edited) override;
+  void Compose(const std::string& input,
+               compose::mojom::InputMode mode,
+               bool is_input_edited) override;
 
   // Requests a rewrite the last response. `style` specifies how the response
   // should be changed. An empty `style` without a tone or length requests a
@@ -171,7 +175,7 @@ class ComposeSession
 
   // Notifies the session that a new dialog is opening and starts. Saves the
   // |selected_text| for use as an initial prompt and refreshes innertext.
-  void InitializeWithText(const std::string_view selected_text);
+  void InitializeWithText(std::string_view selected_text);
 
   // If all pre-conditions are acknowledged starts refreshing page context. If
   // autocompose is enabled and has not been tried yet this session will also
@@ -239,15 +243,16 @@ class ComposeSession
       int request_id,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result);
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
+          logging_data);
   void ModelExecutionProgress(optimization_guide::StreamingResponse result);
   void ModelExecutionComplete(
       base::TimeDelta request_delta,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result);
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void AddNewResponseToHistory(std::unique_ptr<ComposeState> new_state);
   void EraseForwardStatesInHistory();
 
@@ -306,6 +311,10 @@ class ComposeSession
   // Outlives `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
 
+  // Outlives `this`.
+  raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
+      model_quality_uploader_;
+
   mojo::Receiver<compose::mojom::ComposeSessionUntrustedPageHandler>
       handler_receiver_;
   mojo::Remote<compose::mojom::ComposeUntrustedDialog> dialog_remote_;
@@ -354,6 +363,10 @@ class ComposeSession
   // Reason that a compose session was exited, used for quality logging.
   optimization_guide::proto::FinalStatus final_status_{
       optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED};
+  // Success status of a completed compose session, used for quality logging.
+  optimization_guide::proto::FinalModelStatus final_model_status_{
+      optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_UNSPECIFIED};
 
   // Tracks how long a session has been open.
   std::unique_ptr<base::ElapsedTimer> session_duration_;

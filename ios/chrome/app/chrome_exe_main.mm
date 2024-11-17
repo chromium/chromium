@@ -12,6 +12,7 @@
 #import "components/component_updater/component_updater_paths.h"
 #import "ios/chrome/app/startup/ios_chrome_main.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
@@ -87,6 +88,8 @@ int ChromeMain(int argc, char* argv[]) {
   // This is a blocking call.
   DumpSandboxIfRequested();
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+
+  tests_hook::WipeProfileIfRequested(argc, argv);
 
   // Set NSUserDefaults keys to force pseudo-RTL if needed.
   SetTextDirectionIfPseudoRTLEnabled();

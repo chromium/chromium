@@ -10,10 +10,14 @@
 #ifndef __XML_IO_H__
 #define __XML_IO_H__
 
+/** DOC_DISABLE */
 #include <stdio.h>
 #include <libxml/xmlversion.h>
 #include <libxml/encoding.h>
+#define XML_TREE_INTERNALS
 #include <libxml/tree.h>
+#undef XML_TREE_INTERNALS
+/** DOC_ENABLE */
 
 #ifdef __cplusplus
 extern "C" {
@@ -207,6 +211,7 @@ XMLPUBFUN xmlParserInputBufferPtr
 XMLPUBFUN xmlParserInputBufferPtr
 	xmlParserInputBufferCreateFilename	(const char *URI,
                                                  xmlCharEncoding enc);
+XML_DEPRECATED
 XMLPUBFUN xmlParserInputBufferPtr
 	xmlParserInputBufferCreateFile		(FILE *file,
                                                  xmlCharEncoding enc);
@@ -224,12 +229,15 @@ XMLPUBFUN xmlParserInputBufferPtr
 						 xmlInputCloseCallback  ioclose,
 						 void *ioctx,
 	                                         xmlCharEncoding enc);
+XML_DEPRECATED
 XMLPUBFUN int
 	xmlParserInputBufferRead		(xmlParserInputBufferPtr in,
 						 int len);
+XML_DEPRECATED
 XMLPUBFUN int
 	xmlParserInputBufferGrow		(xmlParserInputBufferPtr in,
 						 int len);
+XML_DEPRECATED
 XMLPUBFUN int
 	xmlParserInputBufferPush		(xmlParserInputBufferPtr in,
 						 int len,

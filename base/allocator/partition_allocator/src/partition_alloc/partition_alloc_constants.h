@@ -467,7 +467,7 @@ constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 // the place used by a previous one will lead the previous SlotSpan to be
 // decommitted immediately, provided that it is still empty.
 //
-// Setting this value higher means giving more time for reuse to happen, at the
+// Increasing the ring size means giving more time for reuse to happen, at the
 // cost of possibly increasing peak committed memory usage (and increasing the
 // size of PartitionRoot a bit, since the ring buffer is there). Note that the
 // ring buffer doesn't necessarily contain an empty SlotSpan, as SlotSpans are
@@ -478,23 +478,27 @@ constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 // PurgeFlags::kDecommitEmptySlotSpans flag will eagerly decommit all entries
 // in the ring buffer, so with periodic purge enabled, this typically happens
 // every few seconds.
+//
+// The constants below define the empty ring size:
+// - In foreground mode (see `PartitionRoot::AdjustForForeground`).
+constexpr size_t kForegroundEmptySlotSpanRingSize =
 #if PA_BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
-// USE_LARGE_EMPTY_SLOT_SPAN_RING results in two size. kMaxEmptyCacheIndexBits,
-// which is used when the renderer is in the foreground, and
-// kMinEmptyCacheIndexBits which is used when the renderer is in the background.
-constexpr size_t kMaxEmptyCacheIndexBits = 10;
-constexpr size_t kMinEmptyCacheIndexBits = 7;
+    1 << 10;
 #else
-constexpr size_t kMaxEmptyCacheIndexBits = 7;
-constexpr size_t kMinEmptyCacheIndexBits = 7;
+    1 << 7;
 #endif
-static_assert(kMinEmptyCacheIndexBits <= kMaxEmptyCacheIndexBits,
-              "min size must be <= max size");
-// kMaxFreeableSpans is the buffer size, but is never used as an index value,
-// hence <= is appropriate.
-constexpr size_t kMaxFreeableSpans = 1 << kMaxEmptyCacheIndexBits;
-constexpr size_t kMinFreeableSpans = 1 << kMinEmptyCacheIndexBits;
+// - In background mode or large empty slot span ring mode (see
+//   `PartitionRoot::AdjustForBackground` and
+//   `PartitionRoot::EnableLargeEmptySlotSpanRing`).
+constexpr size_t kBackgroundEmptySlotSpanRingSize = 1 << 7;
+// - By default.
 constexpr size_t kDefaultEmptySlotSpanRingSize = 16;
+
+// This is the maximum ring size supported across all modes:
+constexpr size_t kMaxEmptySlotSpanRingSize = kForegroundEmptySlotSpanRingSize;
+static_assert(kMaxEmptySlotSpanRingSize >= kForegroundEmptySlotSpanRingSize);
+static_assert(kMaxEmptySlotSpanRingSize >= kBackgroundEmptySlotSpanRingSize);
+static_assert(kMaxEmptySlotSpanRingSize >= kDefaultEmptySlotSpanRingSize);
 
 // If the total size in bytes of allocated but not committed pages exceeds this
 // value (probably it is a "out of virtual address space" crash), a special

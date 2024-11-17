@@ -20,6 +20,8 @@ PendingSwapParams& PendingSwapParams::operator=(PendingSwapParams&&) = default;
 
 int PendingSwapParams::GetMax() {
   int ret = max_pending_swaps;
+  if (max_pending_swaps_72hz)
+    ret = std::max(ret, max_pending_swaps_72hz.value());
   if (max_pending_swaps_90hz)
     ret = std::max(ret, max_pending_swaps_90hz.value());
   if (max_pending_swaps_120hz)

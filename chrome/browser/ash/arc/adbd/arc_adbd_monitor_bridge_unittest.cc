@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -86,9 +87,10 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
         ArcServiceManager::Get()->arc_bridge_service()->adbd_monitor());
 
     const guest_os::GuestId arcvm_id(guest_os::VmType::ARCVM, kArcVmName, "");
-    guest_os::GuestOsSessionTracker::GetForProfile(profile)->AddGuestForTesting(
-        arcvm_id,
-        guest_os::GuestInfo{arcvm_id, kArcVmCidForTesting, {}, {}, {}, {}});
+    guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)
+        ->AddGuestForTesting(
+            arcvm_id,
+            guest_os::GuestInfo{arcvm_id, kArcVmCidForTesting, {}, {}, {}, {}});
   }
 
   void TearDown() override {

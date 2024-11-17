@@ -24,6 +24,12 @@ class MockDeviceAuthenticator : public DeviceAuthenticator {
               (const std::u16string&, AuthenticateCallback),
               (override));
   MOCK_METHOD(void, Cancel, (), (override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(device_reauth::BiometricStatus,
+              GetBiometricAvailabilityStatus,
+              (),
+              (override));
+#endif
 };
 
 }  // namespace device_reauth

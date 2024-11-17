@@ -425,7 +425,7 @@ void AutoConnectHandler::DisableAutoconnectForNetwork(
     autoconnect_path = base::StrCat(
         {::onc::network_config::kCellular, ".", ::onc::cellular::kAutoConnect});
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   properties.SetByDottedPath(autoconnect_path, false);
   managed_configuration_handler_->SetProperties(

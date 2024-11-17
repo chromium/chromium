@@ -5,11 +5,12 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_fake_header_item.h"
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_item.h"
+#import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_subtitle_item.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_action_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_delegate.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_whats_new_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -37,6 +39,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionFeaturesIdentifier = kSectionIdentifierEnumZero,
   SectionChromeTipIdenfitier,
+  SectionSubtitleIdentifier,
 };
 
 }  // namespace
@@ -193,15 +196,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   return cell;
 }
 
-- (TableViewItem*)defaultSectionCell {
-  WhatsNewTableViewFakeHeaderItem* cell =
-      [[WhatsNewTableViewFakeHeaderItem alloc] initWithType:ItemTypeHeader];
-  cell.text = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_NEW_TITLE);
+- (TableViewItem*)subtitleSectionCell {
+  WhatsNewTableViewSubtitleItem* cell =
+      [[WhatsNewTableViewSubtitleItem alloc] initWithType:ItemTypeHeader];
+  cell.title =
+      l10n_util::GetNSString(IDS_IOS_WHATS_NEW_PRICE_INSIGHTS_SUBTITLE);
   return cell;
 }
 
 - (void)loadItems {
   TableViewModel* model = self.tableViewModel;
+
+  // Add subtitle
+  if (IsPriceInsightsEnabled()) {
+    [model addSectionWithIdentifier:SectionSubtitleIdentifier];
+    [model setHeader:[self subtitleSectionCell]
+        forSectionWithIdentifier:SectionSubtitleIdentifier];
+  }
 
   [self loadFeatures:model];
   [self loadChromeTip:model];
@@ -238,6 +249,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     case SectionChromeTipIdenfitier:
       header.text =
           l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE);
+      break;
+    case SectionSubtitleIdentifier:
       break;
   }
   return header;

@@ -29,10 +29,10 @@ DownloadInternalsUI::DownloadInternalsUI(content::WebUI* web_ui)
           Profile::FromWebUI(web_ui), chrome::kChromeUIDownloadInternalsHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
+      "script-src chrome://resources 'self';");
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
+      "trusted-types lit-html-desktop;");
 
   // Required resources.
   html_source->UseStringsJs();

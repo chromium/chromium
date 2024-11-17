@@ -59,6 +59,7 @@ struct WaylandFrame {
 
  private:
   friend class WaylandFrameManager;
+  friend class WaylandFrameManagerTest;
 
   uint32_t frame_id;
   raw_ptr<WaylandSurface, DanglingUntriaged> root_surface;
@@ -66,7 +67,8 @@ struct WaylandFrame {
   base::circular_deque<std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
       subsurfaces_to_overlays;
 
-  base::flat_map<WaylandSurface*, WaylandBufferHandle*> submitted_buffers;
+  base::flat_map<WaylandSurface*, raw_ptr<WaylandBufferHandle, CtnExperimental>>
+      submitted_buffers;
 
   // An indicator that there are buffers destrotyed before frame playback. This
   // frame should be skipped.
@@ -82,6 +84,10 @@ struct WaylandFrame {
   base::ScopedFD merged_release_fence_fd;
   // Whether this frame has had OnSubmission sent for it.
   bool submission_acked;
+  // Whether OnSubmission for this frame should be sent with
+  // SWAP_NAK_RECREATE_BUFFERS. This is used if there was a failure in
+  // submitting this frame which shouldn't result in a GPU process restart.
+  bool swap_result_recreate_buffers = false;
 
   // The wayland object identifying this feedback.
   wl::Object<struct wp_presentation_feedback> pending_feedback;
@@ -130,20 +136,46 @@ class WaylandFrameManager {
   // Similar to ClearStates(), but does not clear submitted frames.
   void Hide();
 
+  void SetVideoCapture();
+  void ReleaseVideoCapture();
+
+  void OnWindowActivationChanged();
+  void OnWindowSuspensionChanged();
+
   static base::TimeDelta GetPresentationFlushTimerDurationForTesting();
 
  private:
+  friend class WaylandFrameManagerTest;
+
   void PlayBackFrame(std::unique_ptr<WaylandFrame> frame);
   void DiscardFrame(std::unique_ptr<WaylandFrame> frame);
 
+  void OnVideoCaptureUpdate();
+
+  // Checks if ACKs for swaps should be sent immediately instead of sending
+  // frames to wayland.
+  // This is done when window is SUSPENDED during video capture to ensure the
+  // video capture still works as compositors may throttle occluded windows.
+  void EvaluateShouldAckSwapWithoutCommit();
+
+  // Checks if frames should be sent without setting frame callbacks. This is
+  // done when window is not focused during video capture as a fallback to
+  // ensure video capture works in case the compositor stops sending frame
+  // callbacks and doesn't support SUSPENDED state yet or SUSPENDED state is
+  // sent after a delay [1].
+  // [1] https://gitlab.gnome.org/GNOME/mutter/-/issues/3663
+  void EvaluateShouldSkipFrameCallbacks();
+
   // Configures |surface| but does not commit wl_surface states yet.
-  // Returns whether or not changes require a commit to the wl_surface.
-  bool ApplySurfaceConfigure(WaylandFrame* frame,
-                             WaylandSurface* surface,
-                             wl::WaylandOverlayConfig& config,
-                             bool needs_opaque_region);
+  // Returns whether or not changes require a commit to the wl_surface, or
+  // std::nullopt if there was a failure in configuring the surface.
+  std::optional<bool> ApplySurfaceConfigure(WaylandFrame* frame,
+                                            WaylandSurface* surface,
+                                            wl::WaylandOverlayConfig& config,
+                                            bool needs_opaque_region);
 
   void MaybeProcessSubmittedFrames();
+  void SetFakeFeedback(WaylandFrame* frame);
   void ProcessOldSubmittedFrame(WaylandFrame* frame);
 
   // Gets presentation feedback information ready to be sent for submitted
@@ -229,6 +261,17 @@ class WaylandFrameManager {
   base::OneShotTimer freeze_timeout_timer_;
 
   base::OneShotTimer presentation_flush_timer_;
+
+  int video_capture_count_ = 0;
+
+  // Indicates if fallback rendering should be used by not relying on frame
+  // callbacks.
+  bool should_skip_frame_callbacks_ = false;
+
+  // Indicates if rendering should continue in the background without sending
+  // surface commits to wayland. This is used to ensure video capture works when
+  // we know the window is occluded and can simply bypass wayland in this case.
+  bool should_ack_swap_without_commit_ = false;
 
   base::WeakPtrFactory<WaylandFrameManager> weak_factory_;
 };

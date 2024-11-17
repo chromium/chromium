@@ -15,6 +15,8 @@ MockMirroringActivity::MockMirroringActivity(
                         app_id,
                         nullptr,
                         nullptr,
+                        logger_,
+                        debugger_,
                         content::FrameTreeNodeId(),
                         CastSinkExtraData(),
                         std::move(on_stop),

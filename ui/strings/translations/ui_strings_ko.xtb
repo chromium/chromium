@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">개발자 UI 모듈(dev_ui)이 설치되지 않아 페이지를 로드할 수 없습니다</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> 시스템</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">왼쪽 화살표</translation>
 <translation id="5633029987065897167">비어 있음</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1분}other{#분}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">페이지 아래로</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">탭</translation>
 <translation id="8259556432390118667">16진수 색상 값</translation>
 <translation id="8328145009876646418">왼쪽 모서리</translation>
 <translation id="8331626408530291785">위로 스크롤</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1초}other{#초}}</translation>
 <translation id="9059834730836941392">알림 접기</translation>
 <translation id="9170848237812810038">실행 취소(&amp;U)</translation>
+<translation id="9195990613383871904">내일</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">홈</translation>
 <translation id="944069440740578670">읽지 않은 알림</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1초 전}other{#초 전}}</translation>

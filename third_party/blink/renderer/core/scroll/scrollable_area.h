@@ -37,10 +37,10 @@
 #include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_behavior.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
-#include "third_party/blink/renderer/core/scroll/scroll_start_targets.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/style/scroll_start_data.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -163,8 +163,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual PhysicalOffset LocalToScrollOriginOffset() const = 0;
 
-  static bool ScrollBehaviorFromString(const String&,
-                                       mojom::blink::ScrollBehavior&);
+  static mojom::blink::ScrollBehavior V8EnumToScrollBehavior(
+      V8ScrollBehavior::Enum);
 
   // Register a callback that will be invoked when the next scroll completes -
   // this includes the scroll animation time.
@@ -322,24 +322,20 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual gfx::Point ConvertFromContainingEmbeddedContentViewToScrollbar(
       const Scrollbar& scrollbar,
       const gfx::Point& parent_point) const {
-    NOTREACHED_IN_MIGRATION();
-    return parent_point;
+    NOTREACHED();
   }
   virtual gfx::Point ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar& scrollbar,
       const gfx::Point& scrollbar_point) const {
-    NOTREACHED_IN_MIGRATION();
-    return scrollbar_point;
+    NOTREACHED();
   }
   virtual gfx::Point ConvertFromRootFrame(
       const gfx::Point& point_in_root_frame) const {
-    NOTREACHED_IN_MIGRATION();
-    return point_in_root_frame;
+    NOTREACHED();
   }
   virtual gfx::Point ConvertFromRootFrameToVisualViewport(
       const gfx::Point& point_in_root_frame) const {
-    NOTREACHED_IN_MIGRATION();
-    return point_in_root_frame;
+    NOTREACHED();
   }
 
   virtual Scrollbar* HorizontalScrollbar() const { return nullptr; }
@@ -615,6 +611,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void SetSnappedQueryTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) {}
 
+  virtual void UpdateScrollMarkers(const ScrollOffset& offset) {}
+
  protected:
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
@@ -657,7 +655,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                   const ScrollOffset& delta);
 
   virtual void StopApplyingScrollStart() {}
-  const ScrollStartTargetCandidates* GetScrollStartTargets() const;
+  const LayoutObject* GetScrollStartTarget() const;
 
   virtual Node* GetSnapEventTargetAlongAxis(const AtomicString& type,
                                             cc::SnapAxis) const {
@@ -707,8 +705,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
           mojom::blink::ScrollBehavior::kSmooth,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
 
-  void ScrollToScrollStartTarget(const LayoutBox*, cc::SnapAxis);
-  void ScrollToScrollStartTargets(const ScrollStartTargetCandidates*);
+  void ScrollToScrollStartTarget(const LayoutObject*);
 
   bool ShouldFilterIncomingScroll(mojom::blink::ScrollType incoming_type) {
     auto old_type = active_smooth_scroll_type_;

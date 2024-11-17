@@ -3,9 +3,9 @@ CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was c
 CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.
 ../resources/tests1.dat:
 30
-102
+100
 
-Test 30 of 114 in ../resources/tests1.dat failed. Input:
+Test 30 of 112 in ../resources/tests1.dat failed. Input:
 <select><b><option><select><option></b></select>X
 Got:
 | <html>
@@ -15,10 +15,9 @@ Got:
 |       <b>
 |         <option>
 |     <b>
-|     <select>
-|       <b>
+|       <select>
 |         <option>
-|     "X"
+|       "X"
 Expected:
 | <html>
 |   <head>
@@ -28,7 +27,7 @@ Expected:
 |     <option>
 |       "X"
 
-Test 102 of 114 in ../resources/tests1.dat failed. Input:
+Test 100 of 112 in ../resources/tests1.dat failed. Input:
 <select><b><option><select><option></b></select>
 Got:
 | <html>
@@ -38,8 +37,7 @@ Got:
 |       <b>
 |         <option>
 |     <b>
-|     <select>
-|       <b>
+|       <select>
 |         <option>
 Expected:
 | <html>

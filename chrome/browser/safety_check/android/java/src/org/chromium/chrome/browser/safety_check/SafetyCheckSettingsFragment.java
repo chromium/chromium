@@ -16,12 +16,13 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Settings fragment containing Safety check. This class represents a View in the MVC paradigm. */
-public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat implements SettingsPage {
+public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat
+        implements EmbeddableSettingsPage {
     private static final String SAFETY_CHECK_IMMEDIATE_RUN =
             "SafetyCheckSettingsFragment.safetyCheckImmediateRun";
 

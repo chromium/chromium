@@ -268,34 +268,15 @@ bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
 }
 
 bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
+  std::string app_container_id;
+  // Default policy is always disabled if App Container is enabled.
+  if (GetAppContainerId(&app_container_id)) {
+    return true;
+  }
   switch (sandbox_type_) {
     case sandbox::mojom::Sandbox::kAudio:
       // Default policy is disabled for audio process to allow audio drivers
       // to read device properties (https://crbug.com/883326).
-      return true;
-    case sandbox::mojom::Sandbox::kXrCompositing:
-      return true;
-    case sandbox::mojom::Sandbox::kMediaFoundationCdm:
-      // Default policy is disabled for MF Cdm process to allow the application
-      // of specific LPAC sandbox policies.
-      return true;
-    case sandbox::mojom::Sandbox::kNetwork:
-      // An LPAC specific policy for network service is set elsewhere.
-      return true;
-    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
-      // An LPAC policy is used for on-device model execution.
-      return true;
-#if BUILDFLAG(ENABLE_PRINTING)
-    case sandbox::mojom::Sandbox::kPrintCompositor:
-      // Default policy is disabled for Print Compositor to allow the
-      // application of specific LPAC sandbox policies, when that feature is
-      // enabled.
-      return base::FeatureList::IsEnabled(
-          sandbox::policy::features::kPrintCompositorLPAC);
-#endif
-    case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
-      // Default policy is disabled for Windows System Proxy Resolver process to
-      // allow the application of specific LPAC sandbox policies.
       return true;
     default:
       return false;
@@ -404,7 +385,8 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
 #if BUILDFLAG(ENABLE_PRINTING)
   if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor &&
       base::FeatureList::IsEnabled(
-          sandbox::policy::features::kPrintCompositorLPAC)) {
+          sandbox::policy::features::kPrintCompositorLPAC) &&
+      !app_container_disabled_) {
     // LPAC sandbox is enabled, so do not use a restricted token.
     auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
                                         sandbox::USER_UNPROTECTED);

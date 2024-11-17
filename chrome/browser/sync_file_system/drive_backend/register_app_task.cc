@@ -119,7 +119,7 @@ bool RegisterAppTask::FilterCandidates(const TrackerIDSet& trackers,
             trackers.active_tracker(), candidate)) {
       return true;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::unique_ptr<FileTracker> oldest_tracker;
@@ -127,8 +127,7 @@ bool RegisterAppTask::FilterCandidates(const TrackerIDSet& trackers,
     std::unique_ptr<FileTracker> tracker(new FileTracker);
     if (!metadata_database()->FindTrackerByTrackerID(
             *itr, tracker.get())) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     FileMetadata file;
@@ -136,12 +135,11 @@ bool RegisterAppTask::FilterCandidates(const TrackerIDSet& trackers,
     DCHECK(tracker->has_synced_details());
 
     if (!metadata_database()->FindFileByFileID(tracker->file_id(), &file)) {
-      NOTREACHED_IN_MIGRATION();
       // The parent folder is sync-root, whose contents are fetched in
       // initialization sequence.
       // So at this point, direct children of sync-root should have
       // FileMetadata.
-      continue;
+      NOTREACHED();
     }
 
     if (file.details().file_kind() != FILE_KIND_FOLDER)

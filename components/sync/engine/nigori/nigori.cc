@@ -22,18 +22,12 @@
 #include "base/time/default_tick_clock.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "crypto/encryptor.h"
+#include "crypto/aes_cbc.h"
 #include "crypto/hmac.h"
+#include "crypto/kdf.h"
 #include "crypto/random.h"
-#include "crypto/symmetric_key.h"
+#include "crypto/subtle_passkey.h"
 
-using base::Base64Decode;
-using base::Base64Encode;
-using crypto::HMAC;
-using crypto::SymmetricKey;
-
-const size_t kDerivedKeySizeInBits = 128;
-const size_t kDerivedKeySizeInBytes = kDerivedKeySizeInBits / 8;
 const size_t kHashSize = 32;
 const size_t kDefaultScryptCostParameter = 8192;  // 2^13.
 
@@ -44,16 +38,16 @@ namespace {
 // NigoriStream simplifies the concatenation operation of the Nigori protocol.
 class NigoriStream {
  public:
-  // Append the big-endian representation of the length of |value| with 32 bits,
-  // followed by |value| itself to the stream.
+  // Append the big-endian representation of the length of `value` with 32 bits,
+  // followed by `value` itself to the stream.
   NigoriStream& operator<<(const std::string& value) {
     stream_ << base::as_string_view(base::U32ToBigEndian(value.size()));
     stream_ << value;
     return *this;
   }
 
-  // Append the big-endian representation of the length of |type| with 32 bits,
-  // followed by the big-endian representation of the value of |type|, with 32
+  // Append the big-endian representation of the length of `type` with 32 bits,
+  // followed by the big-endian representation of the value of `type`, with 32
   // bits, to the stream.
   NigoriStream& operator<<(const Nigori::Type type) {
     stream_ << base::as_string_view(base::U32ToBigEndian(sizeof(uint32_t)));
@@ -76,8 +70,7 @@ const char* GetHistogramSuffixForKeyDerivationMethod(
       return "Scrypt8192";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 size_t& GetScryptCostParameter() {
@@ -87,6 +80,11 @@ size_t& GetScryptCostParameter() {
 }
 
 }  // namespace
+
+// static
+crypto::SubtlePassKey Nigori::MakeCryptoPassKey() {
+  return crypto::SubtlePassKey{};
+}
 
 Nigori::Keys::Keys() = default;
 Nigori::Keys::~Keys() = default;
@@ -105,89 +103,84 @@ void Nigori::Keys::InitByDerivationUsingPbkdf2(const std::string& password) {
   // "dummy") as PBKDF2_HMAC_SHA1(Ns("dummy") + Ns("localhost"), "saltsalt",
   // 1001, 128), where Ns(S) is the NigoriStream representation of S (32-bit
   // big-endian length of S followed by S itself).
-  const uint8_t kRawConstantSalt[] = {0xc7, 0xca, 0xfb, 0x23, 0xec, 0x2a,
-                                      0x9d, 0x4c, 0x03, 0x5a, 0x90, 0xae,
-                                      0xed, 0x8b, 0xa4, 0x98};
-  const size_t kUserIterations = 1002;
-  const size_t kEncryptionIterations = 1003;
-  const size_t kSigningIterations = 1004;
+  const auto kSalt = std::to_array<uint8_t>({
+      // clang-format off
+      0xc7, 0xca, 0xfb, 0x23, 0xec, 0x2a, 0x9d, 0x4c,
+      0x03, 0x5a, 0x90, 0xae, 0xed, 0x8b, 0xa4, 0x98,
+  });  // clang-format on
 
-  std::string salt(reinterpret_cast<const char*>(kRawConstantSalt),
-                   sizeof(kRawConstantSalt));
+  // The varying iteration counts here may look odd but this is how Nigori does
+  // domain separation when generating subkeys - instead of varying the salt, it
+  // varies the iteration count. This has an unfortunate  cryptographic
+  // property, namely that
+  //
+  //   Kenc = Kuser ^ HMAC-SHA1(P, Kuser)
+  //   Kmac = Kenc ^ HMAC-SHA1(P, Kenc)
+  //
+  // but we still do the involved work 3 times over, which is obviously
+  // undesirable, but also it's baked into the Nigori spec.
 
   // Kuser = PBKDF2(P, Suser, Nuser, 16)
-  user_key = SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-      SymmetricKey::AES, password, salt, kUserIterations,
-      kDerivedKeySizeInBits);
-  DCHECK(user_key);
+  user_key = std::make_optional<std::array<uint8_t, kKeySizeBytes>>();
+  crypto::kdf::DeriveKeyPbkdf2HmacSha1(
+      crypto::kdf::Pbkdf2HmacSha1Params{.iterations = 1002},
+      base::as_byte_span(password), kSalt, user_key.value(),
+      Nigori::MakeCryptoPassKey());
 
   // Kenc = PBKDF2(P, Suser, Nenc, 16)
-  encryption_key = SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-      SymmetricKey::AES, password, salt, kEncryptionIterations,
-      kDerivedKeySizeInBits);
-  DCHECK(encryption_key);
+  crypto::kdf::DeriveKeyPbkdf2HmacSha1(
+      crypto::kdf::Pbkdf2HmacSha1Params{.iterations = 1003},
+      base::as_byte_span(password), kSalt, encryption_key,
+      Nigori::MakeCryptoPassKey());
 
   // Kmac = PBKDF2(P, Suser, Nmac, 16)
-  mac_key = SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-      SymmetricKey::HMAC_SHA1, password, salt, kSigningIterations,
-      kDerivedKeySizeInBits);
-  DCHECK(mac_key);
+  crypto::kdf::DeriveKeyPbkdf2HmacSha1(
+      crypto::kdf::Pbkdf2HmacSha1Params{.iterations = 1004},
+      base::as_byte_span(password), kSalt, mac_key,
+      Nigori::MakeCryptoPassKey());
 }
 
 void Nigori::Keys::InitByDerivationUsingScrypt(const std::string& salt,
                                                const std::string& password) {
-  const size_t kCostParameter = GetScryptCostParameter();
-  const size_t kBlockSize = 8;
-  const size_t kParallelizationParameter = 11;
-  const size_t kMaxMemoryBytes = 32 * 1024 * 1024;  // 32 MiB.
-
-  // |user_key| is not used anymore. However, old clients may fail to import a
+  // `user_key` is not used anymore. However, old clients may fail to import a
   // Nigori node without one. We initialize it to all zeroes to prevent a
   // failure on those clients.
-  user_key = SymmetricKey::Import(SymmetricKey::AES,
-                                  std::string(kDerivedKeySizeInBytes, '\0'));
-  DCHECK(user_key);
+  user_key = std::make_optional<std::array<uint8_t, kKeySizeBytes>>();
 
   // Derive a master key twice as long as the required key size, and split it
   // into two to get the encryption and MAC keys.
-  std::unique_ptr<SymmetricKey> master_key =
-      SymmetricKey::DeriveKeyFromPasswordUsingScrypt(
-          SymmetricKey::AES, password, salt, kCostParameter, kBlockSize,
-          kParallelizationParameter, kMaxMemoryBytes,
-          2 * kDerivedKeySizeInBits);
-  std::string master_key_str = master_key->key();
+  const crypto::kdf::ScryptParams params{
+      .cost = GetScryptCostParameter(),
+      .block_size = 8,
+      .parallelization = 11,
+      .max_memory_bytes = 32 * 1024 * 1024,  // 32 MiB
+  };
 
-  std::string encryption_key_str =
-      master_key_str.substr(0, kDerivedKeySizeInBytes);
-  DCHECK_EQ(encryption_key_str.length(), kDerivedKeySizeInBytes);
-  encryption_key = SymmetricKey::Import(SymmetricKey::AES, encryption_key_str);
-  DCHECK(encryption_key);
+  std::array<uint8_t, kKeySizeBytes * 2> keys;
+  crypto::kdf::DeriveKeyScrypt(params, base::as_byte_span(password),
+                               base::as_byte_span(salt), keys,
+                               MakeCryptoPassKey());
 
-  std::string mac_key_str = master_key_str.substr(kDerivedKeySizeInBytes);
-  DCHECK_EQ(mac_key_str.length(), kDerivedKeySizeInBytes);
-  mac_key = SymmetricKey::Import(SymmetricKey::HMAC_SHA1, mac_key_str);
-  DCHECK(mac_key);
+  base::span(encryption_key).copy_from(base::span(keys).first(kKeySizeBytes));
+  base::span(mac_key).copy_from(base::span(keys).subspan(kKeySizeBytes));
 }
 
 bool Nigori::Keys::InitByImport(const std::string& user_key_str,
                                 const std::string& encryption_key_str,
                                 const std::string& mac_key_str) {
-  // |user_key| is not used anymore so we tolerate a failed import.
-  user_key = SymmetricKey::Import(SymmetricKey::AES, user_key_str);
+  if (user_key_str.size() == kKeySizeBytes) {
+    user_key = std::make_optional<std::array<uint8_t, kKeySizeBytes>>();
+    // `user_key` is not used anymore so we tolerate a failed import.
+    base::span(user_key.value()).copy_from(base::as_byte_span(user_key_str));
+  }
 
-  if (encryption_key_str.empty() || mac_key_str.empty()) {
+  if (encryption_key_str.size() != encryption_key.size() ||
+      mac_key_str.size() != mac_key.size()) {
     return false;
   }
 
-  encryption_key = SymmetricKey::Import(SymmetricKey::AES, encryption_key_str);
-  if (!encryption_key) {
-    return false;
-  }
-
-  mac_key = SymmetricKey::Import(SymmetricKey::HMAC_SHA1, mac_key_str);
-  if (!mac_key) {
-    return false;
-  }
+  base::span(encryption_key).copy_from(base::as_byte_span(encryption_key_str));
+  base::span(mac_key).copy_from(base::as_byte_span(mac_key_str));
 
   return true;
 }
@@ -221,56 +214,36 @@ std::string Nigori::GetKeyName() const {
   NigoriStream plaintext;
   plaintext << Nigori::Password << kNigoriKeyName;
 
-  crypto::Encryptor encryptor;
-  CHECK(encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC,
-                       std::string(kIvSize, 0)));
+  const std::array<uint8_t, crypto::aes_cbc::kBlockSize> kIv{};
+  auto ciphertext = crypto::aes_cbc::Encrypt(
+      keys_.encryption_key, kIv, base::as_byte_span(plaintext.str()));
+  auto mac = crypto::hmac::SignSha256(keys_.mac_key, ciphertext);
 
-  std::string ciphertext;
-  CHECK(encryptor.Encrypt(plaintext.str(), &ciphertext));
-
-  HMAC hmac(HMAC::SHA256);
-  CHECK(hmac.Init(keys_.mac_key->key()));
-
-  std::vector<unsigned char> hash(kHashSize);
-  CHECK(hmac.Sign(ciphertext, &hash[0], hash.size()));
-
-  std::string output;
-  output.assign(ciphertext);
-  output.append(hash.begin(), hash.end());
+  std::vector<uint8_t> output;
+  std::copy(ciphertext.begin(), ciphertext.end(), std::back_inserter(output));
+  std::copy(mac.begin(), mac.end(), std::back_inserter(output));
   return base::Base64Encode(output);
 }
 
 // Enc[Kenc,Kmac](value)
 std::string Nigori::Encrypt(const std::string& value) const {
-  std::array<uint8_t, kIvSize> iv;
+  std::array<uint8_t, crypto::aes_cbc::kBlockSize> iv;
   crypto::RandBytes(iv);
 
-  crypto::Encryptor encryptor;
-  CHECK(encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC, iv));
+  auto ciphertext = crypto::aes_cbc::Encrypt(keys_.encryption_key, iv,
+                                             base::as_byte_span(value));
+  auto mac = crypto::hmac::SignSha256(keys_.mac_key, ciphertext);
 
-  std::string ciphertext;
-  CHECK(encryptor.Encrypt(value, &ciphertext));
-
-  HMAC hmac(HMAC::SHA256);
-  CHECK(hmac.Init(keys_.mac_key->key()));
-
-  std::array<uint8_t, kHashSize> hash;
-  CHECK(hmac.Sign(ciphertext, hash.data(), hash.size()));
-
-  std::string output;
-  output.assign(base::as_string_view(iv));
-  output.append(ciphertext);
-  output.append(base::as_string_view(hash));
+  std::vector<uint8_t> output;
+  std::copy(iv.begin(), iv.end(), std::back_inserter(output));
+  std::copy(ciphertext.begin(), ciphertext.end(), std::back_inserter(output));
+  std::copy(mac.begin(), mac.end(), std::back_inserter(output));
   return base::Base64Encode(output);
 }
 
 bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {
-  std::string input;
-  if (!Base64Decode(encrypted, &input)) {
-    return false;
-  }
-
-  if (input.size() < kIvSize * 2 + kHashSize) {
+  auto input_buf = base::Base64Decode(encrypted);
+  if (!input_buf || input_buf->size() < kIvSize * 2 + kHashSize) {
     return false;
   }
 
@@ -278,30 +251,24 @@ bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {
   // * iv (16 bytes)
   // * ciphertext (multiple of 16 bytes)
   // * hash (32 bytes)
-  std::string iv(input.substr(0, kIvSize));
-  std::string ciphertext(
-      input.substr(kIvSize, input.size() - (kIvSize + kHashSize)));
-  std::string hash(input.substr(input.size() - kHashSize, kHashSize));
+  const auto input = base::make_span(*input_buf);
+  const auto iv = input.first<kIvSize>();
+  const base::span<const uint8_t> ciphertext =
+      input.subspan(kIvSize, input.size() - (kIvSize + kHashSize));
+  const auto mac = input.last<kHashSize>();
 
-  HMAC hmac(HMAC::SHA256);
-  if (!hmac.Init(keys_.mac_key->key())) {
+  if (!crypto::hmac::VerifySha256(keys_.mac_key, ciphertext, mac)) {
     return false;
   }
 
-  if (!hmac.Verify(ciphertext, hash)) {
+  auto decrypted =
+      crypto::aes_cbc::Decrypt(keys_.encryption_key, iv, ciphertext);
+  if (decrypted.has_value()) {
+    value->assign(base::as_string_view(*decrypted));
+    return true;
+  } else {
     return false;
   }
-
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC, iv)) {
-    return false;
-  }
-
-  if (!encryptor.Decrypt(ciphertext, value)) {
-    return false;
-  }
-
-  return true;
 }
 
 void Nigori::ExportKeys(std::string* user_key,
@@ -312,13 +279,13 @@ void Nigori::ExportKeys(std::string* user_key,
   DCHECK(user_key);
 
   if (keys_.user_key) {
-    *user_key = keys_.user_key->key();
+    user_key->assign(base::as_string_view(*keys_.user_key));
   } else {
     user_key->clear();
   }
 
-  *encryption_key = keys_.encryption_key->key();
-  *mac_key = keys_.mac_key->key();
+  encryption_key->assign(base::as_string_view(keys_.encryption_key));
+  mac_key->assign(base::as_string_view(keys_.mac_key));
 }
 
 // static

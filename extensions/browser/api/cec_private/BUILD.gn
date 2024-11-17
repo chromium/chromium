@@ -23,15 +23,9 @@ source_set("cec_private") {
     "//extensions/common/api",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "cec_private_delegate_ash.cc" ]
     deps += [ "//chromeos/ash/components/dbus/cec_service" ]
-  } else if (is_chromeos_lacros) {
-    sources += [ "cec_private_delegate_lacros.cc" ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
   }
 
   public_deps = [ "//extensions/browser:browser_sources" ]

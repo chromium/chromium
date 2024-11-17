@@ -606,7 +606,8 @@ public class AccountPickerBottomSheetRenderTest {
                                     AccountPickerLaunchMode.DEFAULT,
                                     /* isWebSignin= */ mSigninAccessPoint
                                             == SigninAccessPoint.WEB_SIGNIN,
-                                    mSigninAccessPoint);
+                                    mSigninAccessPoint,
+                                    /* selectedCoreAccountId= */ null);
                 });
         ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_selected_account), isDisplayed()));
     }

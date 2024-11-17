@@ -100,7 +100,8 @@ enum ContentSettingsType {
   // provide a custom accessibility experience. Requires explicit user consent
   // because some users may not want sites to know they're using assistive
   // technology.
-  ACCESSIBILITY_EVENTS,
+  // Deprecated in M131.
+  DEPRECATED_ACCESSIBILITY_EVENTS,
 
   // Used to store whether to allow a website to install a payment handler.
   PAYMENT_HANDLER,
@@ -458,5 +459,9 @@ enum ContentSettingsType {
   // Website setting to indicate whether user has opted in to allow web apps to
   // install other web apps.
   WEB_APP_INSTALLATION,
+
+  // Content settings for private network access in the context of the
+  // Direct Sockets API.
+  DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

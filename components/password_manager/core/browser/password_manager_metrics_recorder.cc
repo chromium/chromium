@@ -80,8 +80,7 @@ void PasswordManagerMetricsRecorder::RecordProvisionalSaveFailure(
             form_origin.DeprecatedGetOriginAsURL());
         break;
       case MAX_FAILURE_VALUE:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
     logger->LogMessage(Logger::STRING_DECISION_DROP);
   }

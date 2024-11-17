@@ -1,0 +1,13 @@
+{
+  "ios-device": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "name": "check_static_initializers",
+        "script": "check_static_initializers.py"
+      }
+    ]
+  }
+}

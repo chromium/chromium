@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_view_transition_type_set.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
@@ -102,8 +103,7 @@ const char* ViewTransition::StateToString(State state) {
     case State::kTransitionStateCallbackDispatched:
       return "TransitionStateCallbackDispatched";
   };
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // static
@@ -356,8 +356,7 @@ bool ViewTransition::CanAdvanceTo(State state) const {
     case State::kTimedOut:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -385,8 +384,7 @@ bool ViewTransition::StateRunsInViewTransitionStepsDuringMainFrame(
     case State::kTransitionStateCallbackDispatched:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -548,7 +546,7 @@ void ViewTransition::ProcessCurrentState() {
 
       case State::kAnimateTagDiscovery:
         DCHECK(!in_main_lifecycle_update_);
-        document_->View()->UpdateLifecycleToPrePaintClean(
+        document_->View()->UpdateAllLifecyclePhasesExceptPaint(
             DocumentUpdateReason::kViewTransition);
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kPrePaintClean);
@@ -686,11 +684,15 @@ void ViewTransition::ContextDestroyed() {
   SkipTransition(PromiseResponse::kRejectAbort);
 }
 
-void ViewTransition::NotifyCaptureFinished() {
+void ViewTransition::NotifyCaptureFinished(
+    const std::unordered_map<viz::ViewTransitionElementResourceId, gfx::RectF>&
+        capture_rects) {
   if (state_ != State::kCapturing) {
     DCHECK(IsTerminalState(state_));
     return;
   }
+
+  style_tracker_->SetCaptureRectsFromCompositor(capture_rects);
   bool process_next_state = AdvanceTo(State::kCaptured);
   DCHECK(process_next_state);
   ProcessCurrentState();
@@ -893,19 +895,16 @@ void ViewTransition::PauseRendering() {
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink", "ViewTransition::PauseRendering",
                                     this);
-  const base::TimeDelta kTimeout = [this]() {
-    if (auto* settings = document_->GetFrame()->GetContentSettingsClient();
-        settings && settings->IncreaseViewTransitionCallbackTimeout()) {
-      return base::Seconds(15);
-    } else {
-      return base::Seconds(4);
-    }
-  }();
+  static const base::TimeDelta timeout_delay =
+      RuntimeEnabledFeatures::
+              ViewTransitionLongCallbackTimeoutForTestingEnabled()
+          ? base::Seconds(15)
+          : base::Seconds(4);
   document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
       ->PostDelayedTask(FROM_HERE,
                         WTF::BindOnce(&ViewTransition::OnRenderingPausedTimeout,
                                       WrapWeakPersistent(this)),
-                        kTimeout);
+                        timeout_delay);
 }
 
 void ViewTransition::OnRenderingPausedTimeout() {

@@ -19,16 +19,19 @@ public class PaymentInstrument {
     private final String mNickname;
     private final GURL mDisplayIconUrl;
     private final @PaymentRail int[] mSupportedPaymentRails;
+    private final boolean mIsFidoEnrolled;
 
     protected PaymentInstrument(
             long instrumentId,
             String nickname,
             GURL displayIconUrl,
-            @PaymentRail int[] supportedPaymentRails) {
+            @PaymentRail int[] supportedPaymentRails,
+            boolean isFidoEnrolled) {
         mInstrumentId = instrumentId;
         mNickname = nickname;
         mDisplayIconUrl = displayIconUrl;
         mSupportedPaymentRails = supportedPaymentRails;
+        mIsFidoEnrolled = isFidoEnrolled;
     }
 
     /** Returns the instrument id for the payment instrument. */
@@ -55,6 +58,12 @@ public class PaymentInstrument {
     /** Returns an array of {@link PaymentRail} that are supported by the payment instrument. */
     public @PaymentRail int[] getSupportedPaymentRails() {
         return mSupportedPaymentRails;
+    }
+
+    /** Returns whether the device is enrolled in FIDO for this payment instrument. */
+    @CalledByNative
+    public boolean getIsFidoEnrolled() {
+        return mIsFidoEnrolled;
     }
 
     /**
@@ -84,7 +93,8 @@ public class PaymentInstrument {
         return mInstrumentId == other.getInstrumentId()
                 && Objects.equals(mNickname, other.getNickname())
                 && Objects.equals(mDisplayIconUrl, other.getDisplayIconUrl())
-                && Arrays.equals(mSupportedPaymentRails, other.getSupportedPaymentRails());
+                && Arrays.equals(mSupportedPaymentRails, other.getSupportedPaymentRails())
+                && (mIsFidoEnrolled == other.getIsFidoEnrolled());
     }
 
     /** Builder for {@link PaymentInstrument}. */
@@ -93,6 +103,7 @@ public class PaymentInstrument {
         private String mNickname;
         private GURL mDisplayIconUrl;
         private @PaymentRail int[] mSupportedPaymentRails;
+        private boolean mIsFidoEnrolled;
 
         /** Set the instrument id on the PaymentInstrument. */
         public Builder setInstrumentId(long instrumentId) {
@@ -118,6 +129,12 @@ public class PaymentInstrument {
             return this;
         }
 
+        /** Set the nickname on the PaymentInstrument. */
+        public Builder setIsFidoEnrolled(boolean isFidoEnrolled) {
+            mIsFidoEnrolled = isFidoEnrolled;
+            return this;
+        }
+
         public PaymentInstrument build() {
             // The asserts are only checked in tests and in some Canary builds but not in
             // production. This is intended as we don't want to crash Chrome production for the
@@ -127,7 +144,11 @@ public class PaymentInstrument {
             assert mSupportedPaymentRails != null && mSupportedPaymentRails.length != 0
                     : "Payment instrument must support at least one payment rail.";
             return new PaymentInstrument(
-                    mInstrumentId, mNickname, mDisplayIconUrl, mSupportedPaymentRails);
+                    mInstrumentId,
+                    mNickname,
+                    mDisplayIconUrl,
+                    mSupportedPaymentRails,
+                    mIsFidoEnrolled);
         }
     }
 }

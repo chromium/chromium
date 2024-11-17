@@ -218,7 +218,8 @@ _COMMANDS = {
     "TouchUp": (Method.POST, "/session/:sessionId/touch/up"),
     "Type": (Method.POST, "/session/:sessionId/keys"),
     "TypeElement": (Method.POST, "/session/:sessionId/element/:id/value"),
-    "UploadFile": (Method.POST, "/session/:sessionId/file")
+    "UploadFile": (Method.POST, "/session/:sessionId/file"),
+    "Print": (Method.POST, "/session/:sessionId/print"),
 }
 
 MULTI_SESSION_COMMANDS = ["GetSessions"]

@@ -49,8 +49,7 @@ bool BrowsingContextGroupSwap::ShouldSwap() const {
     case BrowsingContextGroupSwapType::kProactiveSwap:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool BrowsingContextGroupSwap::ShouldClearProxiesOnCommit() const {
@@ -64,8 +63,7 @@ bool BrowsingContextGroupSwap::ShouldClearProxiesOnCommit() const {
     case BrowsingContextGroupSwapType::kCoopSwap:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool BrowsingContextGroupSwap::ShouldClearWindowName() const {
@@ -79,8 +77,7 @@ bool BrowsingContextGroupSwap::ShouldClearWindowName() const {
     case BrowsingContextGroupSwapType::kRelatedCoopSwap:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 BrowsingContextGroupSwap::BrowsingContextGroupSwap(

@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalaneg</translation>
 <translation id="1168100932582989117">Gweinyddion enw Google</translation>
+<translation id="1170788066030116158">Dyddiad tynnwyd</translation>
 <translation id="1172970565351728681">Tua <ph name="REMAINING_TIME" /> ar ôl</translation>
 <translation id="1173894706177603556">Ailenwi</translation>
 <translation id="1173916544412572294">Rhwydwaith <ph name="NETWORK_INDEX" /> of<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Batri'r Ffôn <ph name="BATTERY_STATUS" />%, Manylion</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Gwrthodwyd tystysgrif ddilysu o bell</translation>
 <translation id="4394214039309501350">Dolen allanol</translation>
 <translation id="4394980935660306080">Yn gynharach yr wythnos hon</translation>
+<translation id="4397435965699247285">Nid yw OneDrive ar gael tra all-lein</translation>
 <translation id="4398096759193130964">Adferwch yr eitemau neu llusgwch nhw i ffolder newydd y tu allan i'r bin sbwriel</translation>
 <translation id="4401287888955153199">Echdynnu popeth</translation>
 <translation id="4410695710508688828">Gwnaeth y gweithrediad echdynnu fethu. <ph name="ERROR_MESSAGE" /></translation>

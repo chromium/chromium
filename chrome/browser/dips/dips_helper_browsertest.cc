@@ -19,7 +19,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -524,8 +524,16 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   }
 }
 
+// Flaky on Android: https://crbug.com/369717773
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_UserClearedSitesAreNotReportedToUKM \
+  DISABLED_UserClearedSitesAreNotReportedToUKM
+#else
+#define MAYBE_UserClearedSitesAreNotReportedToUKM \
+  UserClearedSitesAreNotReportedToUKM
+#endif
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       UserClearedSitesAreNotReportedToUKM) {
+                       MAYBE_UserClearedSitesAreNotReportedToUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   content::WebContents* web_contents = GetActiveWebContents();
   DIPSServiceImpl* dips_service =

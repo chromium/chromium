@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logDialogUserActionMetric;
+
 import android.app.Activity;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction;
 import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -61,6 +64,7 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
     }
 
     void onHelpButtonClicked() {
+        logDialogUserActionMetric(mWarningType, PasswordAccessLossWarningUserAction.HELP_CENTER);
         switch (mWarningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
                 mHelpUrLauncher.showHelpArticle(
@@ -90,7 +94,11 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
     @Override
     public void onClick(PropertyModel model, int buttonType) {
         if (buttonType == ButtonType.POSITIVE) {
+            logDialogUserActionMetric(
+                    mWarningType, PasswordAccessLossWarningUserAction.MAIN_ACTION);
             runPositiveButtonCallback();
+        } else if (buttonType == ButtonType.NEGATIVE) {
+            logDialogUserActionMetric(mWarningType, PasswordAccessLossWarningUserAction.DISMISS);
         }
         mModalDialogManager.dismissDialog(
                 model,

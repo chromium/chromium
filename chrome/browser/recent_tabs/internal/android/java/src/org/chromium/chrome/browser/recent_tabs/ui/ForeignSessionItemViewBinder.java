@@ -68,7 +68,6 @@ public class ForeignSessionItemViewBinder {
         builder.append(sessionInfo);
         builder.append(
                 view.getContext()
-                        .getResources()
                         .getString(
                                 isSelected
                                         ? R.string.restore_tabs_device_screen_selected_description

@@ -27,6 +27,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/client_side_phishing_model_metadata.pb.h"
@@ -39,6 +40,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
+namespace {
+
+using ::optimization_guide::AnyWrapProto;
+
+}
 
 class ClientSidePhishingModelObserverTracker
     : public optimization_guide::TestOptimizationGuideModelProvider {
@@ -64,19 +71,6 @@ class ClientSidePhishingModelObserverTracker
     }
   }
 
-  optimization_guide::proto::Any WrapMetadata(
-      std::optional<optimization_guide::proto::ClientSidePhishingModelMetadata>
-          metadata) {
-    std::string serialized_metadata;
-    metadata->SerializeToString(&serialized_metadata);
-    optimization_guide::proto::Any any;
-    any.set_value(serialized_metadata);
-    any.set_type_url(
-        "type.googleapis.com/"
-        "optimization_guide.proto.ClientSidePhishingModelMetadata");
-    return any;
-  }
-
   // Notifies the model validation observer about the model file update.
   void NotifyModelFileUpdate(
       optimization_guide::proto::OptimizationTarget optimization_target,
@@ -91,7 +85,7 @@ class ClientSidePhishingModelObserverTracker
           optimization_guide::TestModelInfoBuilder()
               .SetModelFilePath(model_file_path)
               .SetAdditionalFiles(additional_files_path)
-              .SetModelMetadata(WrapMetadata(trigger_model_metadata))
+              .SetModelMetadata(AnyWrapProto(trigger_model_metadata))
               .Build();
       model_observer_->OnModelUpdated(optimization_target, *model_metadata);
     } else if (optimization_target ==
@@ -103,7 +97,7 @@ class ClientSidePhishingModelObserverTracker
       auto model_metadata =
           optimization_guide::TestModelInfoBuilder()
               .SetModelFilePath(model_file_path)
-              .SetModelMetadata(WrapMetadata(image_embedding_model_metadata))
+              .SetModelMetadata(AnyWrapProto(image_embedding_model_metadata))
               .Build();
       model_observer_->OnModelUpdated(optimization_target, *model_metadata);
     }
@@ -129,11 +123,8 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness {
 
     model_observer_tracker_ =
         std::make_unique<ClientSidePhishingModelObserverTracker>();
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     client_side_phishing_model_ = std::make_unique<ClientSidePhishingModel>(
-        model_observer_tracker_.get(), background_task_runner);
+        model_observer_tracker_.get());
   }
 
   void TearDown() override {

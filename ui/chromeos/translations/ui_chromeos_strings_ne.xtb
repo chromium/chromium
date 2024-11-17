@@ -19,6 +19,7 @@
 <translation id="115443833402798225">हंगुल Ahnmatae</translation>
 <translation id="1155759005174418845">क्याटालान</translation>
 <translation id="1168100932582989117">Google का नामसम्बन्धी सर्भरहरू</translation>
+<translation id="1170788066030116158">फोटो खिचिएको मिति</translation>
 <translation id="1172970565351728681">लगभग <ph name="REMAINING_TIME" /> बाँकी</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" /> सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, विवरणहरू</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">प्रमाणीकरण प्रमाणपत्रलाई सीधै अस्वीकार गर्‍यो</translation>
 <translation id="4394214039309501350">बाह्य लिंक</translation>
 <translation id="4394980935660306080">यो हप्ताको सुरुवातमा</translation>
+<translation id="4397435965699247285">अफलाइन भएका बेला OneDrive चलाउन मिल्दैन</translation>
 <translation id="4398096759193130964">यी फाइलहरू रिस्टोर गर्नुहोस् वा यी फाइलहरू ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्</translation>
 <translation id="4401287888955153199">सबै सामग्री एक्स्ट्र्याक्ट गर्नुहोस्</translation>
 <translation id="4410695710508688828">एक्स्ट्र्याक्ट गर्न सकिएन। <ph name="ERROR_MESSAGE" /></translation>
@@ -478,7 +480,7 @@
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4784330909746505604">PowerPoint प्रस्तुति</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> के.बि.</translation>
-<translation id="4789067489790477934">Parallels Desktop लाई आफ्नो Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य यन्त्रमा पनि सिंक हुने छन्।</translation>
+<translation id="4789067489790477934">Parallels Desktop लाई आफ्नो Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य डिभाइसमा पनि सिंक हुने छन्।</translation>
 <translation id="4790766916287588578">हिन्दी इनस्क्रिप्ट किबोर्ड</translation>
 <translation id="4801956050125744859">दुवै राख्नुहोस्</translation>
 <translation id="4804827417948292437">अभोकाडो</translation>
@@ -845,7 +847,7 @@
 <translation id="751507702149411736">बेलारूसियन</translation>
 <translation id="7521790570754130607">मोबाइल डेटा प्रयोग गर्न PIN हाल्नु पर्ने हुन्छ</translation>
 <translation id="7532029025027028521">फारसी लिपि रूपान्तरण</translation>
-<translation id="7544830582642184299">Linux का एपलाई तपाईंको Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य यन्त्रमा पनि सिंक हुने छन्।</translation>
+<translation id="7544830582642184299">Linux का एपलाई तपाईंको Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य डिभाइसमा पनि सिंक हुने छन्।</translation>
 <translation id="7547009467130558110">स्निकर</translation>
 <translation id="7547780573915868306">लिथुआनियाली</translation>
 <translation id="7547811415869834682">डच</translation>

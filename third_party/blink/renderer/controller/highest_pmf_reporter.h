@@ -57,11 +57,6 @@ class CONTROLLER_EXPORT HighestPmfReporter
   double peak_resident_bytes_at_current_highest_pmf_ = 0.0;
   unsigned webpage_counts_at_current_highest_pmf_ = 0;
   unsigned report_count_ = 0;
-
-  static const char* highest_pmf_metric_names[];
-  static const char* peak_resident_bytes_metric_names[];
-  static const char* webpage_counts_metric_names[];
-  static const base::TimeDelta time_to_report[];
 };
 
 }  // namespace blink

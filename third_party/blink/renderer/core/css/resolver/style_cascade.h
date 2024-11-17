@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_attr_type.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
@@ -31,7 +30,6 @@ namespace blink {
 
 class CascadeInterpolations;
 class CascadeResolver;
-class CSSAppearanceAutoBaseSelectValuePair;
 class CSSMathFunctionValue;
 class CSSParserContext;
 class CSSParserTokenStream;
@@ -270,7 +268,11 @@ class CORE_EXPORT StyleCascade {
     bool IsAnimationTainted() const { return is_animation_tainted_; }
     String OriginalText() { return original_text_.ToString(); }
 
+    bool Append(StringView str,
+                wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
     bool Append(CSSVariableData* data,
+                wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
+    bool Append(const CSSValue* data,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
     void Append(const CSSParserToken&, StringView string);
 
@@ -357,12 +359,6 @@ class CORE_EXPORT StyleCascade {
                                     CascadePriority,
                                     CascadeOrigin&,
                                     CascadeResolver&);
-  const CSSValue* ResolveAppearanceAutoBaseSelect(
-      const CSSProperty&,
-      const CSSAppearanceAutoBaseSelectValuePair&,
-      CascadePriority,
-      CascadeOrigin&,
-      CascadeResolver&);
   const CSSValue* ResolveMathFunction(const CSSProperty&,
                                       const CSSMathFunctionValue&,
                                       CascadePriority);
@@ -396,6 +392,7 @@ class CORE_EXPORT StyleCascade {
                          CascadeResolver&,
                          const CSSParserContext&,
                          const FunctionContext&,
+                         CSSParserTokenType stop_type,
                          TokenSequence&);
   bool ResolveVarInto(CSSParserTokenStream&,
                       CascadeResolver&,
@@ -414,13 +411,12 @@ class CORE_EXPORT StyleCascade {
                        CascadeResolver&,
                        const CSSParserContext&,
                        TokenSequence&);
+  bool ResolveAppearanceAutoBaseSelectInto(CSSParserTokenStream&,
+                                           CascadeResolver&,
+                                           const CSSParserContext&,
+                                           TokenSequence&);
 
   void AppendTaintToken(TokenSequence& out);
-
-  // Check if <declaration-value> type is equal to <attr-type>.
-  bool ValidateAttrFallback(TokenSequence& sequence,
-                            CSSAttrType attr_type,
-                            const CSSParserContext& context);
 
   // NOTE: The FunctionContext object must be the _caller's_ function context,
   // not the one the function itself sets up. This is because it is used to

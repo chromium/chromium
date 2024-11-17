@@ -35,8 +35,8 @@ class TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest
     : public PlatformTest {
  public:
   TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state_ = web_state.get();
     // Set up WebState and InfoBarManager.
@@ -75,7 +75,7 @@ class TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<web::FakeWebState> web_state_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;

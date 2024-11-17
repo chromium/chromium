@@ -39,7 +39,8 @@
           "builder": "ios17-sdk-device",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios17-sdk-device/targets"
     }
   },
   "$build/reclient": {
@@ -66,5 +67,5 @@
   },
   "builder_group": "chromium.fyi",
   "recipe": "chromium",
-  "xcode_build_version": "16b5001e"
+  "xcode_build_version": "16b5100e"
 }

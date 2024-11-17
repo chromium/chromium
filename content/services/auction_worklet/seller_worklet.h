@@ -32,6 +32,7 @@
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -87,6 +88,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   };
 
   // Starts loading the worklet script on construction.
+  //
+  // `trusted_signals_kvv2_manager` must remain valid for the lifetime of the
+  // SellerWorklet.
   SellerWorklet(
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
@@ -96,12 +100,16 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
           pending_url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
+      TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
       const GURL& decision_logic_url,
       const std::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       std::optional<uint16_t> experiment_group_id,
-      GetNextThreadIndexCallback next_thread_index_callback);
+      mojom::TrustedSignalsPublicKeyPtr public_key,
+      GetNextThreadIndexCallback next_thread_index_callback,
+      mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+          load_seller_worklet_client);
 
   explicit SellerWorklet(const SellerWorklet&) = delete;
   SellerWorklet& operator=(const SellerWorklet&) = delete;
@@ -126,6 +134,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const std::optional<blink::AdCurrency>& bid_currency,
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
+      mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
       const std::optional<GURL>& direct_from_seller_seller_signals,
       const std::optional<std::string>&
           direct_from_seller_seller_signals_header_ad_slot,
@@ -146,6 +155,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
       const std::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,
+      const url::Origin& bidder_joining_origin,
       mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
           score_ad_client) override;
   void SendPendingSignalsRequests() override;
@@ -200,6 +210,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller;
     std::optional<blink::AdCurrency> component_expect_bid_currency;
     url::Origin browser_signal_interest_group_owner;
+    url::Origin bidder_joining_origin;
     GURL browser_signal_render_url;
     std::optional<std::string>
         browser_signal_selected_buyer_and_seller_reporting_id;
@@ -229,7 +240,19 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_scoring_signals_request;
+
+    // Used when there's a KVv2 request managed by the
+    // TrustedSignalsKVv2Manager. Not cleared until the scoreBid() call is
+    // complete, to keep the signals cached in the manager.
+    std::unique_ptr<TrustedSignalsKVv2Manager::Request>
+        trusted_scoring_signals_kvv2_request;
+
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals_result;
+
+    // Set to true while waiting a signals fetch (either
+    // `trusted_scoring_signals_request` or
+    // `trusted_scoring_signals_kvv2_request`).
+    bool waiting_for_signals_fetch = false;
 
     // True if failed loading valid trusted scoring signals.
     bool trusted_bidding_signals_fetch_failed = false;
@@ -604,8 +627,11 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+  // Owned by the AuctionWorkletService that owns `this`.
+  raw_ptr<TrustedSignalsKVv2Manager> trusted_signals_kvv2_manager_;
 
   const GURL script_source_url_;
+  mojom::TrustedSignalsPublicKeyPtr public_key_;
 
   // Populated only if `this` was created with a non-null
   // `trusted_scoring_signals_url`.
@@ -658,6 +684,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       auction_network_events_handler_;
 
   GetNextThreadIndexCallback get_next_thread_index_callback_;
+
+  mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+      load_seller_worklet_client_;
 
   SEQUENCE_CHECKER(user_sequence_checker_);
 

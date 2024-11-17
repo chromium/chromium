@@ -28,13 +28,11 @@ bool SupportsInvalidation(CSSSelector::MatchType match) {
     case CSSSelector::kUnknown:
     case CSSSelector::kPagePseudoClass:
       // These should not appear in StyleRule selectors.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     default:
       // New match type added. Figure out if it needs a subtree invalidation or
       // not.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -86,8 +84,10 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoIndeterminate:
     case CSSSelector::kPseudoTarget:
     case CSSSelector::kPseudoCurrent:
+    case CSSSelector::kPseudoCheck:
     case CSSSelector::kPseudoBefore:
     case CSSSelector::kPseudoAfter:
+    case CSSSelector::kPseudoSelectArrow:
     case CSSSelector::kPseudoMarker:
     case CSSSelector::kPseudoModal:
     case CSSSelector::kPseudoSelectorFragmentAnchor:
@@ -128,6 +128,8 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoFullScreenAncestor:
     case CSSSelector::kPseudoFullscreen:
     case CSSSelector::kPseudoPaused:
+    case CSSSelector::kPseudoPermissionElementInvalidStyle:
+    case CSSSelector::kPseudoPermissionElementOccluded:
     case CSSSelector::kPseudoPermissionGranted:
     case CSSSelector::kPseudoPictureInPicture:
     case CSSSelector::kPseudoPlaying:
@@ -149,7 +151,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoOpen:
     case CSSSelector::kPseudoClosed:
     case CSSSelector::kPseudoDialogInTopLayer:
-    case CSSSelector::kPseudoSelectHasChildButton:
     case CSSSelector::kPseudoPicker:
     case CSSSelector::kPseudoPopoverInTopLayer:
     case CSSSelector::kPseudoPopoverOpen:
@@ -167,7 +168,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoGrammarError:
     case CSSSelector::kPseudoHas:
     case CSSSelector::kPseudoUnparsed:  // Never invalidates.
-    case CSSSelector::kPseudoTrue:
     case CSSSelector::kPseudoViewTransition:
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:
@@ -175,19 +175,18 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoActiveViewTransition:
     case CSSSelector::kPseudoActiveViewTransitionType:
+    case CSSSelector::kPseudoHasSlotted:
       return true;
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoLeftPage:
     case CSSSelector::kPseudoRightPage:
     case CSSSelector::kPseudoFirstPage:
       // These should not appear in StyleRule selectors.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     default:
       // New pseudo type added. Figure out if it needs a subtree invalidation or
       // not.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -248,6 +247,14 @@ scoped_refptr<InvalidationSet> CopyInvalidationSet(
   scoped_refptr<InvalidationSet> copy = DescendantInvalidationSet::Create();
   copy->Combine(invalidation_set);
   return copy;
+}
+
+bool IsSimpleSelectorValidAfterHost(const CSSSelector* simple_selector) {
+  // TODO(blee@igalia.com) Need to support logical combinations after :host
+  // (e.g. ':host:not(:has(.a))')
+  return simple_selector->Match() == CSSSelector::kPseudoElement ||
+         simple_selector->IsHostPseudoClass() ||
+         simple_selector->GetPseudoType() == CSSSelector::kPseudoHas;
 }
 
 }  // anonymous namespace
@@ -352,6 +359,10 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
        current = current->NextSimpleSelector()) {
     switch (current->GetPseudoType()) {
       case CSSSelector::kPseudoHas:
+        if (found_host_pseudo && !current->IsLastInComplexSelector() &&
+            !IsSimpleSelectorValidAfterHost(current->NextSimpleSelector())) {
+          return SelectorPreMatch::kNeverMatches;
+        }
         break;
       case CSSSelector::kPseudoFirstLine:
         metadata.uses_first_line_rules = true;
@@ -365,9 +376,7 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
           return SelectorPreMatch::kNeverMatches;
         }
         if (!current->IsLastInComplexSelector() &&
-            current->NextSimpleSelector()->Match() !=
-                CSSSelector::kPseudoElement &&
-            !current->NextSimpleSelector()->IsHostPseudoClass()) {
+            !IsSimpleSelectorValidAfterHost(current->NextSimpleSelector())) {
           return SelectorPreMatch::kNeverMatches;
         }
         found_host_pseudo = true;
@@ -727,8 +736,7 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
     }
 
     if (!simple_selector->NextSimpleSelector() ||
-        (simple_selector->Relation() != CSSSelector::kSubSelector &&
-         simple_selector->Relation() != CSSSelector::kScopeActivation)) {
+        (simple_selector->Relation() != CSSSelector::kSubSelector)) {
       return simple_selector;
     }
   }
@@ -885,6 +893,9 @@ void RuleInvalidationDataVisitor<VisitorType>::
     AddFeaturesToInvalidationSetsForHasPseudoClass(
         simple_selector, &compound, sibling_features, descendant_features,
         in_nth_child);
+    if (simple_selector.HasArgumentMatchInShadowTree()) {
+      descendant_features.invalidation_flags.SetTreeBoundaryCrossing(true);
+    }
   }
 
   if (InvalidationSetType* invalidation_set = InvalidationSetForSimpleSelector(
@@ -1101,6 +1112,11 @@ bool RuleInvalidationDataVisitor<VisitorType>::
         break;
       case CSSSelector::kPseudoVisited:
         // Ignore :visited to prevent history leakage.
+        break;
+      case CSSSelector::kPseudoScope:
+        // Ignore :scope inside :has() because :has() anchor element doesn't
+        // have any descendant/sibling/sibling-descendant element that matches
+        // document root or scope root.
         break;
       default:
         if constexpr (is_builder()) {
@@ -1386,8 +1402,7 @@ void RuleInvalidationDataVisitor<VisitorType>::
       combinator = CSSSelector::kIndirectAdjacent;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   UpdateFeaturesFromCombinator(combinator, last_compound_in_adjacent_chain,
@@ -1601,6 +1616,8 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoFullScreenAncestor:
       case CSSSelector::kPseudoFullscreen:
       case CSSSelector::kPseudoPaused:
+      case CSSSelector::kPseudoPermissionElementInvalidStyle:
+      case CSSSelector::kPseudoPermissionElementOccluded:
       case CSSSelector::kPseudoPermissionGranted:
       case CSSSelector::kPseudoPictureInPicture:
       case CSSSelector::kPseudoPlaying:
@@ -1619,6 +1636,7 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoSelectorFragmentAnchor:
       case CSSSelector::kPseudoActiveViewTransition:
       case CSSSelector::kPseudoActiveViewTransitionType:
+      case CSSSelector::kPseudoHasSlotted:
         return EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
                                            position, in_nth_child);
       case CSSSelector::kPseudoFirstOfType:

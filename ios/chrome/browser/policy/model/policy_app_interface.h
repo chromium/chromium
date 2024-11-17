@@ -51,13 +51,13 @@
 // to be finished before returning the value.
 + (BOOL)clearCloudPolicyDirectory [[nodiscard]];
 
-// Returns YES if there is user policy data in the current BrowserState.
-+ (BOOL)hasUserPolicyDataInCurrentBrowserState;
+// Returns YES if there is user policy data in the current Profile.
++ (BOOL)hasUserPolicyDataInCurrentProfile;
 
-// Returns YES if in the user policy store of the current BrowserState the
+// Returns YES if in the user policy store of the current Profile the
 // policy with name `policyName` and of type integer is set to `expectedValue`.
-+ (BOOL)hasUserPolicyInCurrentBrowserState:(NSString*)policyName
-                          withIntegerValue:(int)expectedValue;
++ (BOOL)hasUserPolicyInCurrentProfile:(NSString*)policyName
+                     withIntegerValue:(int)expectedValue;
 
 @end
 

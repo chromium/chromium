@@ -77,9 +77,9 @@ void PushNotificationProfileService::OnPrimaryAccountChanged(
       // The PostTask function must be used for the OnPrimaryAccountSet to
       // ensure that the appropriate Profile has been updated with the newly
       // signed in account's gaia id. The class that is responsible for updating
-      // the Profile's gaia ID is SigninBrowserStateInfoUpdater.
+      // the Profile's gaia ID is SigninProfileInfoUpdater.
       //
-      // Since SigninBrowserStateInfoUpdater is also a
+      // Since SigninProfileInfoUpdater is also a
       // signin::IdentityManager::Observer. Thus, the PostTask() function
       // guarantees that the Profile's gaia id will have been updated by the
       // time OnPrimaryAccountSet() method is invoked.

@@ -7,7 +7,6 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
-
 assert(is_chromeos)
 
 source_set("vpn_provider") {
@@ -25,18 +24,11 @@ source_set("vpn_provider") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/components/login/login_state",
     "//chromeos/crosapi/mojom",
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/login/login_state" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
 }

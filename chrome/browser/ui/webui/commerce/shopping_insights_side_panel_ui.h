@@ -9,15 +9,14 @@
 
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
-#include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace ui {
 class ColorChangeHandler;

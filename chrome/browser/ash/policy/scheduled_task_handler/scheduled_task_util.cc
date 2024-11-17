@@ -112,7 +112,7 @@ UCalendarDateFields GetFieldToAdvanceFor(
     case ScheduledTaskExecutor::Frequency::kMonthly:
       return UCAL_MONTH;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Returns a valid time that is advanced in comparison to |time| based on the

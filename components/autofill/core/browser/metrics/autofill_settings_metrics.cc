@@ -140,4 +140,9 @@ void MaybeLogAutofillProfileDisabled(const PrefService& pref_service) {
   base::RecordAction(base::UserMetricsAction("Autofill_ProfileDisabled"));
 }
 
+void LogAutofillPaymentsSyncDisabled(SyncDisabledReason reason) {
+  base::UmaHistogramEnumeration("Autofill.CreditCard.SyncDisabledReason",
+                                reason);
+}
+
 }  // namespace autofill::autofill_metrics

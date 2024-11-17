@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
@@ -56,6 +57,10 @@ void InstallAppLocallyCommand::StartWithLock(
     if (web_app_to_update) {
       web_app_to_update->SetInstallState(
           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+      if (base::FeatureList::IsEnabled(
+              features::kWebAppDontAddExistingAppsToSync)) {
+        web_app_to_update->AddSource(WebAppManagement::kUserInstalled);
+      }
     }
   }
 

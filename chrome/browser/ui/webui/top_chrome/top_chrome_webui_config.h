@@ -45,14 +45,31 @@ class TopChromeWebUIConfig : public content::WebUIConfig {
   // Returns true if the host should automatically resize to fit the page size.
   virtual bool ShouldAutoResizeHost() = 0;
 
-  // Returns true to allow preloading. Preloading could affect business logics
-  // or metrics logging. Some considerations:
-  // * For usage statistics, observe the web contents for OnVisibilityChanged()
-  //   to become visible.
-  // * Preloading might happen during startup when some data is not available
-  //   (e.g. bookmark). Preloadable WebUIs must be resilient to that.
-  // * GetCommandIdForTesting() must return a non-null command id. This is used
-  //   in tests to trigger preloaded WebUIs and ensure they don't crash.
+  // Returns true to allow preloading.
+  //
+  // Preloading runs the WebUI in an isolated WebContents managed by
+  // WebUIContentsPreloadManager. This environment lacks knowledge of its
+  // embedder (e.g., side panel) and only knows the associated profile. It's
+  // similar to running in a tab but without TabHelpers.
+  //
+  // Implications for preloaded WebUIs:
+  //
+  // * Data Availability: Preloading may occur during startup when some data
+  //   (e.g., bookmarks) is unavailable. Preloadable WebUIs must handle this.
+  // * Context Availability: Some WebUIs rely on their embedder injecting a
+  //   context (e.g., TabInterface) into the WebUI controller during WebUI
+  //   construction. These WebUIs assume page handles are created after this
+  //   injection. This assumption is invalid for preloaded WebUIs because at
+  //   preload time, there is no embedder present, and by the time the injection
+  //   happens at show time, the page handler could already be created.
+  // * Testability: `GetCommandIdForTesting()` must return a non-null command
+  //   ID for testing purposes. This ensures preloaded WebUIs can be triggered
+  //   and tested for crashes.
+  // * Visibility: Do not assume user visibility upon page load. Observe
+  //   `OnVisibilityChanged()` on the WebContents to track visibility.
+  //
+  // TODO(crbug.com/360724768): Provide context (browser, tab, etc.) to WebUIs
+  // at the framework level.
   virtual bool IsPreloadable() = 0;
 
   // Returns the command id that can be used in tests to trigger the UI.

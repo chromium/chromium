@@ -203,8 +203,7 @@ public class UsbNotificationManager {
                 ChromePreferenceKeys.USB_NOTIFICATION_IDS, notificationIds);
     }
 
-    private static boolean shouldStartService(
-            Context context, boolean isConnected, int notificationTabId) {
+    private static boolean shouldStartService(boolean isConnected, int notificationTabId) {
         if (isConnected) return true;
         SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds =
@@ -214,8 +213,9 @@ public class UsbNotificationManager {
     }
 
     /**
-     * Send an intent to the usb notification service to either create or destroy the
-     * notification identified by notificationTabId.
+     * Send an intent to the usb notification service to either create or destroy the notification
+     * identified by notificationTabId.
+     *
      * @param context The activity context.
      * @param service The usb notification service class.
      * @param notificationTabId The tab id.
@@ -231,7 +231,7 @@ public class UsbNotificationManager {
             GURL url,
             boolean isIncognito) {
         boolean isConnected = UsbBridge.isWebContentsConnectedToUsbDevice(webContents);
-        if (!shouldStartService(context, isConnected, notificationTabId)) return;
+        if (!shouldStartService(isConnected, notificationTabId)) return;
         Intent intent = new Intent(context, service);
         intent.setAction(ACTION_USB_UPDATE);
         intent.putExtra(NOTIFICATION_ID_EXTRA, notificationTabId);

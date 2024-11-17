@@ -32,13 +32,6 @@ CrashRecoveryLauncher::~CrashRecoveryLauncher() = default;
 void CrashRecoveryLauncher::Start(OnDoneCallback callback) {
   done_callback_ = std::move(callback);
   SYSLOG(INFO) << "Starting crash recovery flow for app " << kiosk_app_id_;
-  lacros_launcher_ = std::make_unique<app_mode::LacrosLauncher>();
-  lacros_launcher_->Start(
-      base::BindOnce(&CrashRecoveryLauncher::OnLacrosLaunchComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CrashRecoveryLauncher::OnLacrosLaunchComplete() {
   app_launcher_->Initialize();
 }
 

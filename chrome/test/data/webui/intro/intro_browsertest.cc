@@ -12,7 +12,6 @@ class IntroBrowserTest : public WebUIMochaBrowserTest {
   IntroBrowserTest() { set_test_loader_host(chrome::kChromeUIIntroHost); }
 };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_F(IntroBrowserTest, SignInPromo) {
   RunTest("intro/sign_in_promo_test.js", "mocha.run()");
 }
@@ -20,10 +19,3 @@ IN_PROC_BROWSER_TEST_F(IntroBrowserTest, SignInPromo) {
 IN_PROC_BROWSER_TEST_F(IntroBrowserTest, DiceApp) {
   RunTest("intro/dice_app_test.js", "mocha.run()");
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(IntroBrowserTest, LacrosApp) {
-  RunTest("intro/lacros_app_test.js", "mocha.run()");
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

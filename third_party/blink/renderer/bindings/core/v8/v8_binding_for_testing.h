@@ -36,7 +36,7 @@ class V8TestingScope {
   ExecutionContext* GetExecutionContext() const;
   v8::Isolate* GetIsolate() const;
   v8::Local<v8::Context> GetContext() const;
-  ExceptionState& GetExceptionState();
+  DummyExceptionStateForTesting& GetExceptionState();
   Page& GetPage();
   LocalFrame& GetFrame();
   LocalDOMWindow& GetWindow();

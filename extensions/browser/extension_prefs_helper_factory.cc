@@ -45,7 +45,7 @@ ExtensionPrefsHelperFactory::BuildServiceInstanceForBrowserContext(
 content::BrowserContext* ExtensionPrefsHelperFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context, /*force_guest_profile=*/true);
+      context);
 }
 
 bool ExtensionPrefsHelperFactory::ServiceIsNULLWhileTesting() const {

@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -105,6 +106,16 @@ base::expected<content::WebContents*, std::string> OpenInNewTab(
 // Helper function for performing client side cookie access via JS.
 void AccessCookieViaJSIn(content::WebContents* web_contents,
                          content::RenderFrameHost* frame);
+
+[[nodiscard]] testing::AssertionResult ClientSideRedirectViaMetaTag(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* frame,
+    const GURL& target_url);
+
+[[nodiscard]] testing::AssertionResult ClientSideRedirectViaJS(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* frame,
+    const GURL& target_url);
 
 // Helper function to navigate to /set-cookie on `host` and wait for
 // OnCookiesAccessed() to be called.

@@ -8,11 +8,11 @@ import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import 'chrome://chrome-signin/arc_account_picker/arc_account_picker_app.js';
-import './gaia_action_buttons/gaia_action_buttons.js';
+import 'chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js';
 import './signin_blocked_by_policy_page.js';
 import './signin_error_page.js';
 import './welcome_page_app.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {getAccountAdditionOptionsFromJSON} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
 import type {AuthCompletedCredentials, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';

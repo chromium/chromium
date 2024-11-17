@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_client.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -55,7 +54,7 @@ GoogleServiceAuthError GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
     case kAuthenticationErrorCategoryUnknownIdentityErrors:
       return GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
   }
-  NOTREACHED_IN_MIGRATION() << "unsupported error: " << static_cast<int>(error);
+  NOTREACHED() << "unsupported error: " << static_cast<int>(error);
 }
 
 // Converts a DeviceAccountsProvider::AccountInfo to an AccountInfo.
@@ -107,7 +106,7 @@ SSOAccessTokenFetcher::SSOAccessTokenFetcher(
   DCHECK(provider_);
 }
 
-SSOAccessTokenFetcher::~SSOAccessTokenFetcher() {}
+SSOAccessTokenFetcher::~SSOAccessTokenFetcher() = default;
 
 void SSOAccessTokenFetcher::Start(const std::string& client_id,
                                   const std::string& client_secret_unused,
@@ -177,16 +176,6 @@ void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentialsInternal(
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
 
-  if (!base::FeatureList::IsEnabled(switches::kAlwaysLoadDeviceAccounts) &&
-      primary_account_id.empty()) {
-    // On startup, always fire refresh token loaded even if there is nothing
-    // to load (not authenticated).
-    set_load_credentials_state(
-        signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
-    FireRefreshTokensLoaded();
-    return;
-  }
-
   ReloadCredentials(primary_account_id);
   if (primary_account_id.empty() ||
       RefreshTokenIsAvailable(primary_account_id)) {
@@ -220,7 +209,7 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials(
 
   // Get the list of new account ids.
   std::set<CoreAccountId> new_account_ids;
-  for (const auto& new_account : provider_->GetAllAccounts()) {
+  for (const auto& new_account : provider_->GetAccountsForProfile()) {
     DCHECK(!new_account.gaia.empty());
     DCHECK(!new_account.email.empty());
 
@@ -271,9 +260,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected call to UpdateCredentials when using shared "
-         "authentication.";
+  NOTREACHED() << "Unexpected call to UpdateCredentials when using shared "
+                  "authentication.";
 }
 
 void ProfileOAuth2TokenServiceIOSDelegate::RevokeAllCredentialsInternal(
@@ -316,6 +304,28 @@ std::vector<CoreAccountId> ProfileOAuth2TokenServiceIOSDelegate::GetAccounts()
     const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return std::vector<CoreAccountId>(accounts_.begin(), accounts_.end());
+}
+
+std::vector<AccountInfo>
+ProfileOAuth2TokenServiceIOSDelegate::GetAccountsOnDevice() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // TODO(crbug.com/368409110): Cache these accounts somewhere, maybe in a
+  // separate AccountTrackerService instance.
+  std::vector<AccountInfo> account_infos;
+  for (const auto& account : provider_->GetAccountsOnDevice()) {
+    CHECK(!account.gaia.empty());
+    CHECK(!account.email.empty());
+    AccountInfo account_info;
+    account_info.account_id = CoreAccountId::FromGaiaId(account.gaia);
+    account_info.gaia = account.gaia;
+    account_info.email = account.email;
+    account_info.hosted_domain = account.hosted_domain;
+    // TODO(crbug.com/368409110): Find a way to determine the full AccountInfo
+    // for these accounts, not only the "core" fields.
+    account_infos.push_back(std::move(account_info));
+  }
+  return account_infos;
 }
 
 bool ProfileOAuth2TokenServiceIOSDelegate::RefreshTokenIsAvailable(

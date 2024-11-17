@@ -7,6 +7,7 @@
 #include <limits>
 #include <vector>
 
+#include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_item.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
@@ -540,7 +541,7 @@ TEST(BirchRankerTest, RankWeatherItems_Morning) {
   ASSERT_EQ(1u, items.size());
 
   // The item had a ranking assigned.
-  EXPECT_FLOAT_EQ(items[0].ranking(), 5.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 4.f);
 }
 
 TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
@@ -561,6 +562,23 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
 
   // The item was not ranked.
   EXPECT_FLOAT_EQ(items[0].ranking(), std::numeric_limits<float>::max());
+}
+
+TEST(BirchRankerTest, RankCoralItems) {
+  // Create a coral item.
+  BirchCoralItem item(u"Title", u"Subtext", CoralSource::kInSession,
+                      /*group_id=*/base::Token());
+  std::vector<BirchCoralItem> items = {item};
+
+  // Simulate 9 AM.
+  base::Time now = TimeFromString("22 Feb 2024 09:00 UTC");
+  BirchRanker ranker(now);
+  ranker.RankCoralItems(&items);
+
+  ASSERT_EQ(1u, items.size());
+
+  // The item had a ranking assigned.
+  EXPECT_FLOAT_EQ(items[0].ranking(), 5.f);
 }
 
 }  // namespace

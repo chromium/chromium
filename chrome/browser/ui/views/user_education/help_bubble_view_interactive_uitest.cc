@@ -19,10 +19,10 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_factory.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -33,6 +33,7 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -216,8 +217,19 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
 // entering accessible keyboard navigation commands to try to read the help
 // bubble, or by trying to interact with the help bubble with the mouse to e.g.
 // close it.
+//
+// There's a race condition on at least Linux where the focus update happens
+// later than expected, on an OS message callback, which can kill the tab editor
+// bubble while we're trying to reactivate it below
+// (https://crbug.com/372283580).
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BubblePreventsCloseOnLossOfFocus \
+  DISABLED_BubblePreventsCloseOnLossOfFocus
+#else
+#define MAYBE_BubblePreventsCloseOnLossOfFocus BubblePreventsCloseOnLossOfFocus
+#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
-                       BubblePreventsCloseOnLossOfFocus) {
+                       MAYBE_BubblePreventsCloseOnLossOfFocus) {
   browser()->tab_strip_model()->AddToNewGroup({0});
 
   HelpBubbleParams params;
@@ -236,19 +248,13 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
                 [](ui::TrackedElement* element) {
                   // Show the tab group editor bubble.
                   auto* const view = AsView(element);
-                  view->ShowContextMenu(
-                      view->GetLocalBounds().CenterPoint(),
-                      ui::MenuSourceType::MENU_SOURCE_KEYBOARD);
+                  view->ShowContextMenu(view->GetLocalBounds().CenterPoint(),
+                                        ui::mojom::MenuSourceType::kKeyboard);
                 }),
       WaitForShow(kTabGroupEditorBubbleId),
 
       // Display a help bubble attached to the tab group editor.
       ShowHelpBubble(kTabGroupEditorBubbleId, std::move(params)),
-      // WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
-      //          [&help_bubble_native_view](HelpBubbleView* bubble) {
-      //            help_bubble_native_view =
-      //            bubble->GetWidget()->GetNativeView();
-      //          }),
 
       // Activate the help bubble. This should not cause the editor to close.
       ActivateSurface(HelpBubbleView::kHelpBubbleElementIdForTesting),
@@ -257,13 +263,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
       // Close the help bubble.
       CloseHelpBubble(),
 
-      // Wait for focus to get reset to a valid surface.
-      //
-      // There's a race condition on at least Linux where the focus update
-      // happens later than expected, on an OS message callback, which can kill
-      // the tab editor bubble while we're trying to reactivate it below.
-      // WaitForState(views::test::kCurrentWidgetFocus,
-      //              testing::Ne(std::ref(help_bubble_native_view))),
       // Re-Activate the dialog. It may or may not receive activation when the
       // help bubble closes.
       ActivateSurface(kTabGroupEditorBubbleId),
@@ -324,7 +323,7 @@ constexpr char kLinuxWaylandErrorMessage[] =
 // Determines whether the current system is Linux + Wayland and the current test
 // should be skipped for reasons described in the error message above.
 bool SkipIfLinuxWayland() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   return views::test::InteractionTestUtilSimulatorViews::IsWayland();
 #else
   return false;
@@ -367,11 +366,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, MAYBE_AnnotateMenu) {
   RunTestSequence(
       // Show the application menu and attach a bubble to a menu item.
       PressButton(kToolbarAppMenuButtonElementId),
-
-      // There may be some shuffling and setting up on some platforms (looking
-      // at you, Lacros) so make sure the menu is fully loaded before trying to
-      // show the help bubble.
-      WaitForShow(AppMenuModel::kDownloadsMenuItem),
 
       // Show the help bubble attached to the menu.
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params)),
@@ -419,11 +413,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
       // Show the application menu and attach a bubble to two different menu
       // items.
       PressButton(kToolbarAppMenuButtonElementId),
-
-      // There may be some shuffling and setting up on some platforms (looking
-      // at you, Lacros) so make sure the menu is fully loaded before trying to
-      // show the help bubble.
-      WaitForShow(AppMenuModel::kDownloadsMenuItem),
 
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params1)),
       ShowHelpBubble(AppMenuModel::kMoreToolsMenuItem, std::move(params2)),

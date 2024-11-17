@@ -21,6 +21,9 @@ namespace media {
 // When a VideoFrame is backed by native textures, VideoPixelFormat describes
 // how those textures should be sampled and combined to produce the final
 // pixels.
+//
+// WARNING: Do not add pixel formats with more than 8 bytes per pixel or the
+// total size of the frame can overflow on 32-bit platforms.
 enum VideoPixelFormat {
   PIXEL_FORMAT_UNKNOWN = 0,  // Unknown or unspecified format value.
   PIXEL_FORMAT_I420 =
@@ -48,15 +51,15 @@ enum VideoPixelFormat {
   // The P* in the formats below designates the number of bits per pixel
   // component. I.e. P9 is 9-bits per pixel component, P10 is 10-bits per pixel
   // component, etc.
-  PIXEL_FORMAT_YUV420P9 = 16,
-  PIXEL_FORMAT_YUV420P10 = 17,
-  PIXEL_FORMAT_YUV422P9 = 18,
-  PIXEL_FORMAT_YUV422P10 = 19,
-  PIXEL_FORMAT_YUV444P9 = 20,
-  PIXEL_FORMAT_YUV444P10 = 21,
-  PIXEL_FORMAT_YUV420P12 = 22,
-  PIXEL_FORMAT_YUV422P12 = 23,
-  PIXEL_FORMAT_YUV444P12 = 24,
+  PIXEL_FORMAT_YUV420P9 = 16,   // 13.5bpp YUV planar.
+  PIXEL_FORMAT_YUV420P10 = 17,  // 15bpp YUV planar, also known as I010
+  PIXEL_FORMAT_YUV422P9 = 18,   // 18bpp YUV planar.
+  PIXEL_FORMAT_YUV422P10 = 19,  // 20bpp YUV planar.
+  PIXEL_FORMAT_YUV444P9 = 20,   // 27bpp YUV planar.
+  PIXEL_FORMAT_YUV444P10 = 21,  // 30bpp YUV planar.
+  PIXEL_FORMAT_YUV420P12 = 22,  // 18bpp YUV planar.
+  PIXEL_FORMAT_YUV422P12 = 23,  // 24bpp YUV planar.
+  PIXEL_FORMAT_YUV444P12 = 24,  // 36bpp YUV planar.
 
   /* PIXEL_FORMAT_Y8 = 25, Deprecated */
   PIXEL_FORMAT_Y16 = 26,  // single 16bpp plane.

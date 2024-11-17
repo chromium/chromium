@@ -8,13 +8,14 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 
 import android.content.Context;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.core.util.Supplier;
 
+import org.chromium.base.CallbackController;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.R;
@@ -25,11 +26,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
@@ -39,6 +39,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,6 +50,7 @@ import java.util.List;
 
 /** Contains the logic to set the state of the model and react to actions. */
 class TabGroupRowMediator {
+    private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
     private final SavedTabGroup mSavedTabGroup;
     private final TabGroupModelFilter mTabGroupModelFilter;
@@ -62,9 +64,10 @@ class TabGroupRowMediator {
     private final Supplier<Integer> mFetchGroupState;
     private final PropertyModel mPropertyModel;
 
+    private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+
     /**
      * @param context Used to load resources and create views.
-     * @param savedTabGroup
      * @param tabGroupModelFilter Used to read current tab groups.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param dataSharingService Used to fetch shared group data.
@@ -112,10 +115,7 @@ class TabGroupRowMediator {
 
         ClusterData clusterData = new ClusterData(faviconResolver, numberOfTabs, urlList);
         builder.with(TabGroupRowProperties.CLUSTER_DATA, clusterData);
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            builder.with(TabGroupRowProperties.COLOR_INDEX, savedTabGroup.color);
-        }
+        builder.with(TabGroupRowProperties.COLOR_INDEX, savedTabGroup.color);
 
         String userTitle = savedTabGroup.title;
         Pair<String, Integer> titleData = new Pair<>(userTitle, numberOfTabs);
@@ -123,20 +123,33 @@ class TabGroupRowMediator {
 
         builder.with(TabGroupRowProperties.CREATION_MILLIS, savedTabGroup.creationTimeMs);
         builder.with(TabGroupRowProperties.OPEN_RUNNABLE, this::openGroup);
+        builder.with(TabGroupRowProperties.DESTROYABLE, this::destroy);
         mPropertyModel = builder.build();
 
         String collaborationId = savedTabGroup.collaborationId;
         if (mDataSharingService != null
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
                 && TabShareUtils.isCollaborationIdValid(savedTabGroup.collaborationId)) {
-            mDataSharingService.readGroup(collaborationId, this::onReadGroup);
+            mDataSharingService.readGroup(
+                    collaborationId, mCallbackController.makeCancelable(this::onReadGroup));
         } else {
             setSharedProperties(GroupSharedState.NOT_SHARED, /* groupData= */ null);
         }
     }
 
+    /**
+     * Note that this model may contain a {@link TabGroupRowProperties.DESTROYABLE} that needs to be
+     * cleaned up.
+     */
     public PropertyModel getModel() {
         return mPropertyModel;
+    }
+
+    private void destroy() {
+        mCallbackController.destroy();
+        if (mSharedImageTilesCoordinator != null) {
+            mSharedImageTilesCoordinator.destroy();
+        }
     }
 
     private void onReadGroup(@NonNull GroupDataOrFailureOutcome outcome) {
@@ -150,9 +163,7 @@ class TabGroupRowMediator {
             mPropertyModel.set(DELETE_RUNNABLE, this::processDeleteGroup);
             mPropertyModel.set(LEAVE_RUNNABLE, null);
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, false);
-            mPropertyModel.set(
-                    TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK,
-                    (container) -> container.removeAllViews());
+            mPropertyModel.set(TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW, null);
             return;
         }
 
@@ -163,7 +174,7 @@ class TabGroupRowMediator {
                     DELETE_RUNNABLE,
                     () ->
                             processDeleteSharedGroup(
-                                    groupData.displayName, groupData.groupToken.groupId));
+                                    groupData.displayName, groupData.groupToken.collaborationId));
             mPropertyModel.set(LEAVE_RUNNABLE, null);
         } else {
             // TODO(crbug.com/365852281): Leave action should look like a delete if there are no
@@ -171,32 +182,29 @@ class TabGroupRowMediator {
             mPropertyModel.set(DELETE_RUNNABLE, null);
             mPropertyModel.set(
                     LEAVE_RUNNABLE,
-                    () -> processLeaveGroup(groupData.displayName, groupData.groupToken.groupId));
+                    () ->
+                            processLeaveGroup(
+                                    groupData.displayName, groupData.groupToken.collaborationId));
         }
 
         if (sharedState == GroupSharedState.COLLABORATION_ONLY) {
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, false);
-            mPropertyModel.set(
-                    TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK,
-                    (container) -> container.removeAllViews());
+            mPropertyModel.set(TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW, null);
         } else if (sharedState == GroupSharedState.HAS_OTHER_USERS) {
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, true);
+            if (mSharedImageTilesCoordinator == null) {
+                mSharedImageTilesCoordinator =
+                        new SharedImageTilesCoordinator(
+                                mContext,
+                                SharedImageTilesType.DEFAULT,
+                                SharedImageTilesColor.DYNAMIC,
+                                mDataSharingService);
+            }
+            mSharedImageTilesCoordinator.updateCollaborationId(mSavedTabGroup.collaborationId);
             mPropertyModel.set(
-                    TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK,
-                    this::attachImageTilesOnContainer);
+                    TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW,
+                    mSharedImageTilesCoordinator.getView());
         }
-    }
-
-    private void attachImageTilesOnContainer(FrameLayout container) {
-        SharedImageTilesCoordinator sharedImageTilesCoordinator =
-                new SharedImageTilesCoordinator(
-                        mContext,
-                        SharedImageTilesType.DEFAULT,
-                        SharedImageTilesColor.DYNAMIC,
-                        mDataSharingService);
-        sharedImageTilesCoordinator.updateCollaborationId(mSavedTabGroup.collaborationId);
-        TabUiUtils.attachSharedImageTilesCoordinatorToFrameLayout(
-                sharedImageTilesCoordinator, container);
     }
 
     private void openGroup() {
@@ -222,7 +230,12 @@ class TabGroupRowMediator {
             String syncId = savedTabGroup.syncId;
             mTabGroupUiActionHandler.openTabGroup(syncId);
             savedTabGroup = mTabGroupSyncService.getGroup(syncId);
-            assert savedTabGroup.localId != null;
+        }
+
+        if (savedTabGroup.localId == null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.TabGroupSync.WindowStateOnFailedOpen", state, GroupWindowState.COUNT);
+            return;
         }
 
         int rootId = mTabGroupModelFilter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
@@ -235,12 +248,22 @@ class TabGroupRowMediator {
     }
 
     private void processDeleteGroup() {
-        mActionConfirmationManager.processDeleteGroupAttempt(
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        deleteGroup();
-                    }
-                });
+        @GroupWindowState int state = mFetchGroupState.get();
+        if (state == GroupWindowState.HIDDEN) {
+            // A hidden group needs to show a dialog here because the TabRemover is not used.
+            mActionConfirmationManager.processDeleteGroupAttempt(
+                    (@ActionConfirmationResult Integer result) -> {
+                        if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
+                            // A dialog already happened so we can bypass it. We shouldn't assume
+                            // the group is still in the HIDDEN state though so call deleteGroup and
+                            // do whatever is appropriate based on the current state.
+                            deleteGroup(/* allowDialog= */ false);
+                        }
+                    });
+        } else {
+            // TabRemover used in deleteGroup will handle the dialog if required.
+            deleteGroup(/* allowDialog= */ true);
+        }
     }
 
     private void processDeleteSharedGroup(String groupTitle, String groupId) {
@@ -248,8 +271,8 @@ class TabGroupRowMediator {
         // no other users.
         mActionConfirmationManager.processDeleteSharedGroupAttempt(
                 groupTitle,
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                (@ActionConfirmationResult Integer result) -> {
+                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                         mDataSharingService.deleteGroup(groupId, this::onLeaveOrDeleteGroup);
                     }
                 });
@@ -260,8 +283,8 @@ class TabGroupRowMediator {
         // no other users.
         mActionConfirmationManager.processLeaveGroupAttempt(
                 groupTitle,
-                (@ConfirmationResult Integer result) -> {
-                    if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                (@ActionConfirmationResult Integer result) -> {
+                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
                         String memberEmail = mCoreAccountInfoSupplier.get().getEmail();
                         mDataSharingService.removeMember(
                                 groupId, memberEmail, this::onLeaveOrDeleteGroup);
@@ -282,7 +305,7 @@ class TabGroupRowMediator {
         }
     }
 
-    private void deleteGroup() {
+    private void deleteGroup(boolean allowDialog) {
         @GroupWindowState int state = mFetchGroupState.get();
         if (state == GroupWindowState.IN_ANOTHER) {
             return;
@@ -295,6 +318,7 @@ class TabGroupRowMediator {
         }
 
         if (state == GroupWindowState.IN_CURRENT_CLOSING) {
+            // No need to show a dialog for this since the closure already started.
             for (SavedTabGroupTab savedTab : mSavedTabGroup.savedTabs) {
                 if (savedTab.localId != null) {
                     mTabGroupModelFilter.getTabModel().commitTabClosure(savedTab.localId);
@@ -306,10 +330,16 @@ class TabGroupRowMediator {
         } else if (state == GroupWindowState.IN_CURRENT) {
             int rootId =
                     mTabGroupModelFilter.getRootIdFromStableId(mSavedTabGroup.localId.tabGroupId);
-            List<Tab> tabsToClose = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
-            mTabGroupModelFilter.closeTabs(
-                    TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build());
+            mTabGroupModelFilter
+                    .getTabModel()
+                    .getTabRemover()
+                    .closeTabs(
+                            TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, rootId)
+                                    .allowUndo(false)
+                                    .build(),
+                            allowDialog);
         } else {
+            assert !allowDialog : "A dialog should have already been shown.";
             mTabGroupSyncService.removeGroup(mSavedTabGroup.syncId);
         }
     }

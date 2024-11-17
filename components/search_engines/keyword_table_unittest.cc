@@ -23,12 +23,12 @@ using base::Time;
 
 class KeywordTableTest : public testing::Test {
  public:
-  KeywordTableTest() {}
+  KeywordTableTest() = default;
 
   KeywordTableTest(const KeywordTableTest&) = delete;
   KeywordTableTest& operator=(const KeywordTableTest&) = delete;
 
-  ~KeywordTableTest() override {}
+  ~KeywordTableTest() override = default;
 
  protected:
   void SetUp() override {

@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_V8_BINDINGS_H_
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_V8_BINDINGS_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -210,10 +211,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
 
   // Args: string ax_tree_id.
   void SetDesktopID(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Args: string ax_tree_id, int node_id
-  // Returns: JS object with a map from html attribute key to value.
-  void GetHtmlAttributes(const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   // Called when an accessibility tree is destroyed and needs to be
   // removed from our cache.

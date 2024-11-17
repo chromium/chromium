@@ -61,7 +61,7 @@ class TestAutofillDriverTemplate : public T {
     return std::nullopt;
   }
   bool IsActive() const override { return is_active_; }
-  bool IsInAnyMainFrame() const override { return is_in_any_main_frame_; }
+  bool IsInAnyMainFrame() const override { return true; }
   bool HasSharedAutofillPermission() const override { return shared_autofill_; }
   bool CanShowAutofillUi() const override { return true; }
   void ApplyFieldAction(mojom::FieldActionType action_type,
@@ -69,7 +69,7 @@ class TestAutofillDriverTemplate : public T {
                         const FieldGlobalId& field,
                         const std::u16string& value) override {}
   void SendTypePredictionsToRenderer(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
+      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms)
       override {}
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field,
@@ -105,11 +105,12 @@ class TestAutofillDriverTemplate : public T {
 
   // The return value contains the FieldGlobalIds of all elements (field_id,
   // type) of `field_type_map` for which
-  // `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
+  // `field_type_map_filter_.Run(triggered_origin, field, type)` is true and for
+  // which there's a corresponding field in `fields`.
   base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
-      base::span<const FormFieldData> form_data,
+      base::span<const FormFieldData> fields,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override {
     if (action_type == mojom::FormActionType::kUndo) {
@@ -117,8 +118,9 @@ class TestAutofillDriverTemplate : public T {
     }
     std::vector<FieldGlobalId> result;
     for (const auto& [id, type] : field_type_map) {
-      if (!field_type_map_filter_ ||
-          field_type_map_filter_.Run(triggered_origin, id, type)) {
+      if ((!field_type_map_filter_ ||
+           field_type_map_filter_.Run(triggered_origin, id, type)) &&
+          base::Contains(fields, id, &FormFieldData::global_id)) {
         result.push_back(id);
       }
     }
@@ -140,10 +142,6 @@ class TestAutofillDriverTemplate : public T {
   void SetParent(TestAutofillDriverTemplate* parent) { parent_ = parent; }
 
   void SetIsActive(bool is_active) { is_active_ = is_active; }
-
-  void SetIsInAnyMainFrame(bool is_in_any_main_frame) {
-    is_in_any_main_frame_ = is_in_any_main_frame;
-  }
 
   void SetSharedAutofill(bool shared_autofill) {
     shared_autofill_ = shared_autofill;
@@ -174,7 +172,6 @@ class TestAutofillDriverTemplate : public T {
   std::map<RemoteFrameToken, LocalFrameToken> remote_frame_tokens_;
   raw_ptr<TestAutofillDriverTemplate> parent_ = nullptr;
   bool is_active_ = true;
-  bool is_in_any_main_frame_ = true;
   bool shared_autofill_ = false;
   net::IsolationInfo isolation_info_;
   base::RepeatingCallback<bool(const url::Origin&, FieldGlobalId, FieldType)>

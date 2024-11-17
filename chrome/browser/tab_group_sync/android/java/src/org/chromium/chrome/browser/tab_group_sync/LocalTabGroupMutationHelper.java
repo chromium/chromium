@@ -8,9 +8,9 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.OpeningSource;
@@ -36,19 +36,14 @@ public class LocalTabGroupMutationHelper {
     private final TabGroupSyncService mTabGroupSyncService;
     private final TabCreationDelegate mTabCreationDelegate;
 
-    // TODO(shaktisahu): This is unnecessary now. Remove passing this from constructor.
-    private final NavigationTracker mNavigationTracker;
-
     /** Constructor. */
     public LocalTabGroupMutationHelper(
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupSyncService tabGroupSyncService,
-            TabCreationDelegate tabCreationDelegate,
-            NavigationTracker navigationTracker) {
+            TabCreationDelegate tabCreationDelegate) {
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupSyncService = tabGroupSyncService;
         mTabCreationDelegate = tabCreationDelegate;
-        mNavigationTracker = navigationTracker;
     }
 
     /**
@@ -95,14 +90,12 @@ public class LocalTabGroupMutationHelper {
         LocalTabGroupId localTabGroupId =
                 TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId);
         assert localTabGroupId != null : "Local tab group ID is null after creating a group!";
-        mTabGroupSyncService.updateLocalTabGroupMapping(tabGroup.syncId, localTabGroupId);
+        mTabGroupSyncService.updateLocalTabGroupMapping(
+                tabGroup.syncId, localTabGroupId, openingSource);
         for (String syncTabId : tabIdMappings.keySet()) {
             mTabGroupSyncService.updateLocalTabId(
                     localTabGroupId, syncTabId, tabIdMappings.get(syncTabId));
         }
-
-        TabGroupSyncUtils.recordTabGroupOpenCloseMetrics(
-                mTabGroupSyncService, /* open= */ true, openingSource, localTabGroupId);
     }
 
     /**
@@ -196,7 +189,9 @@ public class LocalTabGroupMutationHelper {
 
         if (!tabsToClose.isEmpty()) {
             getTabModel()
-                    .closeTabs(TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build());
+                    .getTabRemover()
+                    .forceCloseTabs(
+                            TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build());
         }
         updateTabGroupVisuals(tabGroup, rootId);
         // TODO(crbug.com/346406221): This currently causes the layout strip to flicker as events
@@ -234,12 +229,12 @@ public class LocalTabGroupMutationHelper {
 
         // Close the tabs.
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
-        getTabModel().closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
+        getTabModel()
+                .getTabRemover()
+                .forceCloseTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
 
         // Remove mapping from service. Collect metrics before that.
-        TabGroupSyncUtils.recordTabGroupOpenCloseMetrics(
-                mTabGroupSyncService, /* open= */ false, closingSource, tabGroupId);
-        mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId);
+        mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId, closingSource);
     }
 
     private List<Tab> findLocalTabsNotInSyncPostStartup(SavedTabGroup savedTabGroup) {

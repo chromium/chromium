@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperTest,
       browser()->tab_strip_model()->GetWebContentsAt(0);
   auto* const resource_usage =
       TabResourceUsageTabHelper::FromWebContents(web_contents);
-  const uint64_t bytes_used = std::numeric_limits<uint64_t>::max();
+  const uint64_t bytes_used = std::numeric_limits<int64_t>::max();
   resource_usage->SetMemoryUsageInBytes(bytes_used);
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   ResourceUsageCollectorObserver observer(run_loop.QuitClosure());

@@ -231,8 +231,7 @@ YuvSubsampling ToYuvSubsampling(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUY2:
       return YuvSubsampling::kYuv422;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid format " << format;
-      return YuvSubsampling::kYuv444;
+      NOTREACHED() << "Invalid format " << format;
   }
 }
 

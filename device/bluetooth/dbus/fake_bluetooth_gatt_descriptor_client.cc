@@ -128,7 +128,7 @@ void FakeBluetoothGattDescriptorClient::ReadValue(
 
 void FakeBluetoothGattDescriptorClient::WriteValue(
     const dbus::ObjectPath& object_path,
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (!base::Contains(properties_, object_path)) {

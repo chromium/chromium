@@ -59,10 +59,10 @@ int RetrieveCacheFlags(int load_flags) {
 std::optional<std::string> GetHeaderString(
     const scoped_refptr<net::HttpResponseHeaders>& headers,
     const std::string& header_name) {
-  std::string header_value;
-  if (!headers || !headers->GetNormalizedHeader(header_name, &header_value))
+  if (!headers) {
     return std::nullopt;
-  return header_value;
+  }
+  return headers->GetNormalizedHeader(header_name);
 }
 
 bool ShouldEnforcePrivateNetworkAccessHeader(

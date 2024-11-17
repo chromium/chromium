@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.PlusAddressesHelper;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
@@ -87,6 +88,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             };
     private static EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
+    static final String MANAGE_PLUS_ADDRESSES = "manage_plus_addresses";
     private @Nullable AddressEditorCoordinator mAddressEditor;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -209,6 +211,16 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
             getPreferenceScreen().addPreference(pref);
         }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)) {
+            AutofillProfileEditorPreference pref =
+                    new AutofillProfileEditorPreference(getStyledContext());
+            pref.setTitle(R.string.plus_address_settings_entry_title);
+            pref.setSummary(R.string.plus_address_settings_entry_summary);
+            pref.setKey(MANAGE_PLUS_ADDRESSES);
+
+            getPreferenceScreen().addPreference(pref);
+        }
     }
 
     @Override
@@ -238,6 +250,11 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     public void onDisplayPreferenceDialog(Preference preference) {
         if (!(preference instanceof AutofillProfileEditorPreference)) {
             super.onDisplayPreferenceDialog(preference);
+            return;
+        }
+
+        if (preference.getKey().equals(MANAGE_PLUS_ADDRESSES)) {
+            PlusAddressesHelper.openManagePlusAddresses(getActivity(), getProfile());
             return;
         }
 

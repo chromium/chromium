@@ -1560,7 +1560,7 @@ TEST_F(NearbyConnectionsTest, ReceiveFilePayloadNotRegistered) {
 
   fake_payload_listener.payload_cb = base::BindLambdaForTesting(
       [&](const std::string& endpoint_id, mojom::PayloadPtr payload) {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       });
 
   EXPECT_CALL(

@@ -13,7 +13,7 @@ module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 
-[Stable, Extensible]
+[Extensible]
 enum TelemetryKeyboardConnectionType {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -25,7 +25,7 @@ enum TelemetryKeyboardConnectionType {
   kUnknown = 4,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum TelemetryKeyboardPhysicalLayout {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -36,7 +36,7 @@ enum TelemetryKeyboardPhysicalLayout {
 };
 
 // The international standard that the layout follows.
-[Stable, Extensible]
+[Extensible]
 enum TelemetryKeyboardMechanicalLayout {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -46,7 +46,7 @@ enum TelemetryKeyboardMechanicalLayout {
   kJis = 4,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum TelemetryKeyboardNumberPadPresence {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -58,7 +58,7 @@ enum TelemetryKeyboardNumberPadPresence {
 };
 
 // Note that this enumeration will need to be extended if new keys are added.
-[Stable, Extensible]
+[Extensible]
 enum TelemetryKeyboardTopRowKey {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -89,7 +89,7 @@ enum TelemetryKeyboardTopRowKey {
   kDelete = 23,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum TelemetryKeyboardTopRightKey {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -100,7 +100,6 @@ enum TelemetryKeyboardTopRightKey {
 };
 
 // Describes a connected keyboard.
-[Stable]
 struct TelemetryKeyboardInfo {
   // The number of the keyboard's /dev/input/event* node.
   UInt32Value? id@0;
@@ -126,7 +125,6 @@ struct TelemetryKeyboardInfo {
 
 // Keyboard diagnostics event info. It is fired when users completed a keyboard
 // diagnostic in the Diagnostics App.
-[Stable]
 struct TelemetryKeyboardDiagnosticEventInfo {
   // The keyboard which has been tested.
   TelemetryKeyboardInfo keyboard_info@0;

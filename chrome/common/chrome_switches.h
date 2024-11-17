@@ -209,6 +209,7 @@ extern const char kWinJumplistAction[];
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAuthAndroidNegotiateAccountType[];
+extern const char kDisableDefaultBrowserPromo[];
 extern const char kForceDeviceOwnership[];
 extern const char kForceEnableNightMode[];
 extern const char kForceShowUpdateMenuBadge[];
@@ -279,6 +280,11 @@ extern const char kAllowNaClSocketAPI[];
     BUILDFLAG(IS_WIN)
 extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
+extern const char kForceNtpMobilePromo[];
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+extern const char kGlicGuestURL[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

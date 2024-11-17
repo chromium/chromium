@@ -4,14 +4,22 @@
 
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 
+#import <AuthenticationServices/AuthenticationServices.h>
+
 #import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
-#import "ios/chrome/common/credential_provider/credential.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
+#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
+#import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/credential_provider/credential_provider_creation_notifier.h"
+#import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
 using base::SysNSStringToUTF8;
 
@@ -37,35 +45,14 @@ NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
 // Generates the signature during the passkey assertion process by decrypting
 // the passkey using the security domain secret and then using the decrypted
 // passkey to call passkey_model_utils's GenerateEcSignature function.
-NSData* GenerateSignature(NSData* encrypted_private_key,
-                          NSData* encrypted_message,
+NSData* GenerateSignature(id<Credential> credential,
                           NSData* authenticator_data,
                           NSData* client_data_hash,
-                          NSData* security_domain_secret) {
-  if (!security_domain_secret) {
-    return nil;
-  }
+                          NSArray<NSData*>* security_domain_secrets) {
+  std::string private_key =
+      DecryptPrivateKey(credential, security_domain_secrets);
 
-  std::vector<uint8_t> trusted_vault_key;
-  Append(trusted_vault_key, security_domain_secret);
-
-  // Decrypt the private key using the security domain secret.
-  sync_pb::WebauthnCredentialSpecifics credential_specifics;
-  if (encrypted_private_key) {
-    credential_specifics.set_private_key(encrypted_private_key.bytes,
-                                         encrypted_private_key.length);
-  } else if (encrypted_message) {
-    credential_specifics.set_encrypted(encrypted_message.bytes,
-                                       encrypted_message.length);
-  } else {
-    return nil;
-  }
-
-  sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
-  if (!webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-          trusted_vault_key, credential_specifics, &credential_secrets)) {
-    // TODO(crbug.com/355047427): On the first failed attempt, mark keys as
-    // stale, re-fetch the keys and try to decrypt again.
+  if (private_key.empty()) {
     return nil;
   }
 
@@ -77,8 +64,7 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
   // Compute signature.
   std::optional<std::vector<uint8_t>> signature =
       webauthn::passkey_model_utils::GenerateEcSignature(
-          base::as_byte_span(credential_secrets.private_key()),
-          signed_over_data);
+          base::as_byte_span(private_key), signed_over_data);
   if (!signature) {
     return nil;
   }
@@ -86,20 +72,125 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
   return [NSData dataWithBytes:signature->data() length:signature->size()];
 }
 
+void SaveToIdentityStore(id<Credential> credential, ProceduralBlock completion)
+    API_AVAILABLE(ios(17.0)) {
+  auto stateCompletion = ^(ASCredentialIdentityStoreState* state) {
+    if (state.enabled) {
+      // Update ASCredentialIdentityStore to make the passkey immediately
+      // available locally.
+      NSMutableArray<id<ASCredentialIdentity>>* storeIdentities =
+          [NSMutableArray arrayWithCapacity:1];
+      [storeIdentities addObject:[[ASPasskeyCredentialIdentity alloc]
+                                     cr_initWithCredential:credential]];
+      [ASCredentialIdentityStore.sharedStore
+          replaceCredentialIdentityEntries:storeIdentities
+                                completion:^(BOOL success, NSError* error) {
+                                  completion();
+                                }];
+    } else {
+      completion();
+    }
+  };
+  [ASCredentialIdentityStore.sharedStore
+      getCredentialIdentityStoreStateWithCompletion:stateCompletion];
+}
+
+// Saves a newly created passkey to the user defaults credential store. This
+// credential store will be read by Chrome if it is currently running, or the
+// next time it runs, to sync the newly created passkeys in the user's account.
+void SaveCredential(id<Credential> credential) {
+  NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
+  UserDefaultsCredentialStore* store = [[UserDefaultsCredentialStore alloc]
+      initWithUserDefaults:app_group::GetGroupUserDefaults()
+                       key:key];
+
+  if ([store credentialWithRecordIdentifier:credential.recordIdentifier]) {
+    [store updateCredential:credential];
+  } else {
+    [store addCredential:credential];
+  }
+
+  [store saveDataWithCompletion:^(NSError* error) {
+    if (error != nil) {
+      return;
+    }
+
+    if (@available(iOS 17.0, *)) {
+      SaveToIdentityStore(credential, ^{
+        // Notify Chrome that a new passkey was created
+        [CredentialProviderCreationNotifier notifyCredentialCreated];
+      });
+    }
+  }];
+}
+
+// Returns the UserVerificationPreference based on the provided
+// `user_verification_preference_string`. The passed string is expected to match
+// one of the user verification preference options made available by the
+// WebAuthn API.
+UserVerificationPreference UserVerificationPreferenceFromString(
+    NSString* user_verification_preference_string) {
+  if ([user_verification_preference_string isEqualToString:@"required"]) {
+    return UserVerificationPreference::kRequired;
+  } else if ([user_verification_preference_string
+                 isEqualToString:@"preferred"]) {
+    return UserVerificationPreference::kPreferred;
+  } else if ([user_verification_preference_string
+                 isEqualToString:@"discouraged"]) {
+    return UserVerificationPreference::kDiscouraged;
+  } else {
+    // Probably indicates that the WebAuthn API changed.
+    return UserVerificationPreference::kOther;
+  }
+}
+
 }  // namespace
+
+std::string DecryptPrivateKey(id<Credential> credential,
+                              NSArray<NSData*>* security_domain_secrets) {
+  if ([security_domain_secrets count] == 0) {
+    return std::string();
+  }
+
+  // Decrypt the private key using the security domain secret.
+  sync_pb::WebauthnCredentialSpecifics credential_specifics;
+  if ([credential.privateKey length] > 0) {
+    credential_specifics.set_private_key(credential.privateKey.bytes,
+                                         credential.privateKey.length);
+  } else if ([credential.encrypted length] > 0) {
+    credential_specifics.set_encrypted(credential.encrypted.bytes,
+                                       credential.encrypted.length);
+  } else {
+    return std::string();
+  }
+
+  sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
+  for (NSData* security_domain_secret in security_domain_secrets) {
+    std::vector<uint8_t> trusted_vault_key;
+    Append(trusted_vault_key, security_domain_secret);
+
+    if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+            trusted_vault_key, credential_specifics, &credential_secrets)) {
+      return std::move(credential_secrets.private_key());
+    }
+  }
+
+  return std::string();
+}
 
 ASPasskeyRegistrationCredential* PerformPasskeyCreation(
     NSData* client_data_hash,
     NSString* rp_id,
     NSString* user_name,
     NSData* user_handle,
-    NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
-  if (!security_domain_secret) {
+    NSString* gaia,
+    NSArray<NSData*>* security_domain_secrets) API_AVAILABLE(ios(17.0)) {
+  if ([security_domain_secrets count] == 0) {
     return nil;
   }
 
   std::vector<uint8_t> trusted_vault_key;
-  Append(trusted_vault_key, security_domain_secret);
+  Append(trusted_vault_key, security_domain_secrets[0]);
 
   // Convert input arguments to std equivalents for use in functions below.
   std::vector<uint8_t> user_id;
@@ -119,18 +210,20 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
   sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
   std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
 
-  // TODO(crbug.com/330355124): Save the new credential to a store so that it
-  //                            can be synced.
-
   base::span<const uint8_t> cred_id =
       base::as_byte_span(passkey.credential_id());
   NSData* credential_id = [NSData dataWithBytes:cred_id.data()
                                          length:cred_id.size()];
-  std::vector<uint8_t> authenticator_data =
-      webauthn::passkey_model_utils::MakeAuthenticatorDataForCreation(
+  std::vector<uint8_t> attestation_object_for_creation =
+      webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
           rp_id_str, cred_id, public_key_spki_der);
-  NSData* attestation_object = [NSData dataWithBytes:authenticator_data.data()
-                                              length:authenticator_data.size()];
+  NSData* attestation_object =
+      [NSData dataWithBytes:attestation_object_for_creation.data()
+                     length:attestation_object_for_creation.size()];
+
+  SaveCredential([[ArchivableCredential alloc] initWithFavicon:nil
+                                                          gaia:gaia
+                                                       passkey:passkey]);
 
   return [ASPasskeyRegistrationCredential
       credentialWithRelyingParty:rp_id
@@ -143,8 +236,8 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
-    NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
-  if (!security_domain_secret) {
+    NSArray<NSData*>* security_domain_secrets) API_AVAILABLE(ios(17.0)) {
+  if ([security_domain_secrets count] == 0) {
     return nil;
   }
 
@@ -158,14 +251,16 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
   NSData* authenticatorData =
       MakeAuthenticatorDataForAssertion(credential.rpId);
   NSData* signature = GenerateSignature(
-      credential.privateKey, credential.encrypted, authenticatorData,
-      client_data_hash, security_domain_secret);
+      credential, authenticatorData, client_data_hash, security_domain_secrets);
+
+  if (!signature) {
+    return nil;
+  }
 
   // Update the credential's last used time.
   credential.lastUsedTime =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  // TODO(crbug.com/355047898): Save the last used time of the credential to
-  //                            update it the next time Chrome syncs.
+  SaveCredential(credential);
 
   return [ASPasskeyAssertionCredential
       credentialWithUserHandle:credential.userId
@@ -174,4 +269,28 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
                 clientDataHash:client_data_hash
              authenticatorData:authenticatorData
                   credentialID:credential.credentialId];
+}
+
+BOOL ShouldPerformUserVerificationForPreference(
+    NSString* user_verification_preference_string,
+    BOOL is_biometric_authentication_enabled) {
+  UserVerificationPreference user_verification_preference =
+      UserVerificationPreferenceFromString(user_verification_preference_string);
+
+  // If the UserVerificationPreference value is `kOther`, the WebAuthn API
+  // probably changed. This should be investigated, but shouldn't cause a crash.
+  if (user_verification_preference == UserVerificationPreference::kOther) {
+    base::debug::DumpWithoutCrashing();
+  }
+
+  switch (user_verification_preference) {
+    case UserVerificationPreference::kRequired:
+    case UserVerificationPreference::kOther:  // Fallback to highest degree of
+                                              // security.
+      return YES;
+    case UserVerificationPreference::kPreferred:
+      return is_biometric_authentication_enabled;
+    case UserVerificationPreference::kDiscouraged:
+      return NO;
+  }
 }

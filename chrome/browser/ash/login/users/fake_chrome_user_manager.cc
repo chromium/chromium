@@ -14,14 +14,13 @@
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
-#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/known_user.h"
@@ -34,42 +33,11 @@
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace {
-
-class FakeTaskRunner : public base::SingleThreadTaskRunner {
- public:
-  FakeTaskRunner() = default;
-
-  FakeTaskRunner(const FakeTaskRunner&) = delete;
-  FakeTaskRunner& operator=(const FakeTaskRunner&) = delete;
-
- protected:
-  ~FakeTaskRunner() override {}
-
- private:
-  // base::SingleThreadTaskRunner:
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override {
-    std::move(task).Run();
-    return true;
-  }
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override {
-    return PostDelayedTask(from_here, std::move(task), delay);
-  }
-  bool RunsTasksInCurrentSequence() const override { return true; }
-};
-
-}  // namespace
-
 namespace ash {
 
 FakeChromeUserManager::FakeChromeUserManager()
-    : UserManagerBase(
+    : UserManagerImpl(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
-          new FakeTaskRunner(),
           g_browser_process ? g_browser_process->local_state() : nullptr,
           ash::CrosSettings::IsInitialized() ? ash::CrosSettings::Get()
                                              : nullptr) {
@@ -110,7 +78,7 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
     const AccountId& account_id,
     bool is_affiliated,
     user_manager::UserType user_type,
-    TestingProfile* profile) {
+    Profile* profile) {
   user_manager::User* user =
       user_manager::User::CreateRegularUser(account_id, user_type);
   user->SetAffiliated(is_affiliated);
@@ -147,6 +115,16 @@ user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
     const AccountId& account_id) {
   user_manager::User* user =
       user_manager::User::CreateWebKioskAppUser(account_id);
+  user->set_username_hash(
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
+  users_.push_back(user);
+  return user;
+}
+
+user_manager::User* FakeChromeUserManager::AddKioskIwaUser(
+    const AccountId& account_id) {
+  user_manager::User* user = user_manager::User::CreateKioskIwaUser(account_id);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   user_storage_.emplace_back(user);
@@ -212,8 +190,8 @@ void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {
 
 void FakeChromeUserManager::OnSessionStarted() {}
 
-user_manager::UserList FakeChromeUserManager::GetUsersAllowedForMultiProfile()
-    const {
+user_manager::UserList
+FakeChromeUserManager::GetUsersAllowedForMultiUserSignIn() const {
   // Supervised users are not allowed to use multi-profiles.
   if (GetLoggedInUsers().size() == 1 &&
       GetPrimaryUser()->GetType() != user_manager::UserType::kRegular) {
@@ -303,7 +281,7 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
 }
 
 void FakeChromeUserManager::SwitchToLastActiveUser() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeChromeUserManager::IsKnownUser(const AccountId& account_id) const {
@@ -357,7 +335,7 @@ const user_manager::User* FakeChromeUserManager::GetPrimaryUser() const {
 void FakeChromeUserManager::SaveUserOAuthStatus(
     const AccountId& account_id,
     user_manager::User::OAuthTokenStatus oauth_token_status) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeChromeUserManager::SaveForceOnlineSignin(const AccountId& account_id,
@@ -397,11 +375,11 @@ void FakeChromeUserManager::SaveUserDisplayEmail(
 }
 
 void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<std::string> FakeChromeUserManager::GetOwnerEmail() {
-  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
+  return GetLocalState() ? UserManagerImpl::GetOwnerEmail() : std::nullopt;
 }
 
 bool FakeChromeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
@@ -448,6 +426,13 @@ bool FakeChromeUserManager::IsLoggedInAsWebKioskApp() const {
   const user_manager::User* active_user = GetActiveUser();
   return active_user
              ? active_user->GetType() == user_manager::UserType::kWebKioskApp
+             : false;
+}
+
+bool FakeChromeUserManager::IsLoggedInAsKioskIWA() const {
+  const user_manager::User* active_user = GetActiveUser();
+  return active_user
+             ? active_user->GetType() == user_manager::UserType::kKioskIWA
              : false;
 }
 

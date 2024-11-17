@@ -59,6 +59,11 @@ int FakeDataTypeControllerDelegate::clear_metadata_count() const {
   return clear_metadata_count_;
 }
 
+void FakeDataTypeControllerDelegate::SetNodesForDebugging(
+    base::Value::List nodes) {
+  all_nodes_for_debugging_ = std::move(nodes);
+}
+
 void FakeDataTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback callback) {
@@ -99,7 +104,7 @@ void FakeDataTypeControllerDelegate::HasUnsyncedData(
 
 void FakeDataTypeControllerDelegate::GetAllNodesForDebugging(
     DataTypeControllerDelegate::AllNodesCallback callback) {
-  std::move(callback).Run(type_, base::Value::List());
+  std::move(callback).Run(all_nodes_for_debugging_.Clone());
 }
 
 void FakeDataTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {}

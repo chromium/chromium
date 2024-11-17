@@ -18,8 +18,8 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStat
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** A ThemeColorProvider for the app theme (incognito or standard theming). */
@@ -59,20 +59,20 @@ public class AppThemeColorProvider extends ThemeColorProvider
     private boolean mIsTopResumedActivity;
 
     /** Provider for desktop windowing mode state. */
-    @Nullable private final DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Nullable private final DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * @param context The {@link Context} that is used to retrieve color related resources.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} instance
      *     associated with the current activity. {@code null} if activity lifecycle observation is
      *     not required.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the current
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the current
      *     activity. {@code null} if desktop window state observation is not required.
      */
     AppThemeColorProvider(
             Context context,
             @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(context);
 
         mActivityContext = context;
@@ -96,10 +96,10 @@ public class AppThemeColorProvider extends ThemeColorProvider
                     }
                 };
 
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mIsTopResumedActivity =
-                mDesktopWindowStateProvider == null
-                        || !mDesktopWindowStateProvider.isInUnfocusedDesktopWindow();
+                mDesktopWindowStateManager == null
+                        || !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
 
         // Activity lifecycle observation for activity focus change.
         if (activityLifecycleDispatcher != null) {
@@ -163,7 +163,7 @@ public class AppThemeColorProvider extends ThemeColorProvider
             Context context, @BrandedColorScheme int brandedColorScheme) {
         var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
         return mActivityLifecycleDispatcher == null
-                        || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)
+                        || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
                 ? iconTint
                 : ThemeUtils.getThemedToolbarIconTintForActivityState(
                         context, brandedColorScheme, mIsTopResumedActivity);

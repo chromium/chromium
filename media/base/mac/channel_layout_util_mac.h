@@ -5,6 +5,11 @@
 #ifndef MEDIA_BASE_MAC_CHANNEL_LAYOUT_UTIL_MAC_H_
 #define MEDIA_BASE_MAC_CHANNEL_LAYOUT_UTIL_MAC_H_
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/374320451): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <memory>

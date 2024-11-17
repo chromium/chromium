@@ -26,7 +26,8 @@ class AddressFieldParserTest : public FormFieldParserTestBase,
                                        features::kAutofillUseFRAddressModel,
                                        features::kAutofillUsePLAddressModel,
                                        features::kAutofillUseINAddressModel,
-                                       features::kAutofillUseITAddressModel},
+                                       features::kAutofillUseITAddressModel,
+                                       features::kAutofillUseNLAddressModel},
                                       {});
   }
   AddressFieldParserTest(const AddressFieldParserTest&) = delete;
@@ -115,7 +116,7 @@ TEST_F(AddressFieldParserTest, ParseStreetNameAndHouseNumbertPL) {
 TEST_F(AddressFieldParserTest, ParseStreetNameHouseNumbertAndAptNumPL) {
   AddTextFormFieldData("street", "ulica", ADDRESS_HOME_STREET_NAME);
   AddTextFormFieldData("house-number", "Nr domu", ADDRESS_HOME_HOUSE_NUMBER);
-  AddTextFormFieldData("house-number", "Nr lokalu", ADDRESS_HOME_APT_NUM);
+  AddTextFormFieldData("apartment", "Nr lokalu", ADDRESS_HOME_APT_NUM);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("PL"),
                     LanguageCode("pl"));
 }

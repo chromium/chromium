@@ -84,7 +84,6 @@ android_apk("custom_tabs_client_example_apk") {
   ]
 
   android_manifest = "src/AndroidManifest.xml"
-  target_sdk_version = android_sdk_version
   apk_name = "CustomTabsClientExample"
 
   deps = [

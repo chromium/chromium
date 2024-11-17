@@ -26,7 +26,7 @@ struct RegistrationInfo;
 
 namespace blink {
 
-class HTMLAnchorElement;
+class HTMLAnchorElementBase;
 class HTMLElement;
 class KURL;
 class LocalFrame;
@@ -79,7 +79,7 @@ class CORE_EXPORT AttributionSrcLoader
   [[nodiscard]] std::optional<Impression> RegisterNavigation(
       const KURL& navigation_url,
       const AtomicString& attribution_src,
-      HTMLAnchorElement* element,
+      HTMLAnchorElementBase* element,
       bool has_transient_user_activation,
       network::mojom::ReferrerPolicy);
 
@@ -121,10 +121,13 @@ class CORE_EXPORT AttributionSrcLoader
                       std::optional<AttributionSrcToken>,
                       network::mojom::ReferrerPolicy);
 
+  // TODO(crbug.com/369219144): The explainer seems to indicate this should
+  // only work with <a>, but the code has always worked for <area> as well.
+  // Either update the explainer, or update the code to use HTMLAnchorElement*.
   [[nodiscard]] std::optional<Impression> RegisterNavigationInternal(
       const KURL& navigation_url,
       Vector<KURL> attribution_src_urls,
-      HTMLAnchorElement*,
+      HTMLAnchorElementBase*,
       bool has_transient_user_activation,
       network::mojom::ReferrerPolicy);
 

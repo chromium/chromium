@@ -57,11 +57,16 @@ DataSharingServiceFactory::DataSharingServiceFactory()
 
 DataSharingServiceFactory::~DataSharingServiceFactory() = default;
 
-KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DataSharingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kDataSharingFeature) ||
-      context->IsOffTheRecord()) {
-    return new EmptyDataSharingService();
+  bool isFeatureEnabled = base::FeatureList::IsEnabled(
+                              data_sharing::features::kDataSharingFeature) ||
+                          base::FeatureList::IsEnabled(
+                              data_sharing::features::kDataSharingJoinOnly);
+
+  if (!isFeatureEnabled || context->IsOffTheRecord()) {
+    return std::make_unique<EmptyDataSharingService>();
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
@@ -77,7 +82,8 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
   sdk_delegate = std::make_unique<DataSharingSDKDelegateDesktop>(context);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  return new DataSharingServiceImpl(
+  return std::make_unique<DataSharingServiceImpl>(
+      profile->GetPath(),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       IdentityManagerFactory::GetForProfile(profile),

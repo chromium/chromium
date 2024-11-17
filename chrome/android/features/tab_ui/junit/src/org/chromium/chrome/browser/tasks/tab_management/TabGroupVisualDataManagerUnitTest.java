@@ -36,12 +36,12 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -52,10 +52,7 @@ import java.util.Set;
 /** Tests for {@link TabGroupVisualDataManager}. */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-    ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
-})
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
 public class TabGroupVisualDataManagerUnitTest {
 
     private static final String TAB1_TITLE = "Tab1";
@@ -77,7 +74,7 @@ public class TabGroupVisualDataManagerUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
@@ -104,19 +101,25 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(mTab2).when(mTabModelSelector).getTabById(TAB2_ID);
         doReturn(mTab3).when(mTabModelSelector).getTabById(TAB3_ID);
         doReturn(mTab4).when(mTabModelSelector).getTabById(TAB4_ID);
-        doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
+        doReturn(mTabGroupModelFilterProvider)
+                .when(mTabModelSelector)
+                .getTabGroupModelFilterProvider();
+        doReturn(mTabGroupModelFilter)
+                .when(mTabGroupModelFilterProvider)
+                .getCurrentTabGroupModelFilter();
+        doReturn(mTabGroupModelFilter)
+                .when(mTabGroupModelFilterProvider)
+                .getTabGroupModelFilter(false);
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB2_ID, TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
                 .getLazyAllRootIdsInComprehensiveModel(any());
         doReturn(mIncognitoTabGroupModelFilter)
-                .when(mTabModelFilterProvider)
-                .getTabModelFilter(true);
+                .when(mTabGroupModelFilterProvider)
+                .getTabGroupModelFilter(true);
 
         doNothing()
-                .when(mTabModelFilterProvider)
-                .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
+                .when(mTabGroupModelFilterProvider)
+                .addTabGroupModelFilterObserver(mTabModelObserverCaptor.capture());
         doNothing()
                 .when(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());

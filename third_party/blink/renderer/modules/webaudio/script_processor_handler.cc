@@ -57,7 +57,7 @@ ScriptProcessorHandler::ScriptProcessorHandler(
   AddOutput(number_of_output_channels);
 
   channel_count_ = number_of_input_channels;
-  SetInternalChannelCountMode(kExplicit);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
 
   if (Context()->GetExecutionContext()) {
     task_runner_ = Context()->GetExecutionContext()->GetTaskRunner(
@@ -315,15 +315,17 @@ void ScriptProcessorHandler::SetChannelCount(uint32_t channel_count,
 }
 
 void ScriptProcessorHandler::SetChannelCountMode(
-    const String& mode,
+    V8ChannelCountMode::Enum mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
-  if ((mode == "max") || (mode == "clamped-max")) {
+  if ((mode == V8ChannelCountMode::Enum::kMax) ||
+      (mode == V8ChannelCountMode::Enum::kClampedMax)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "channelCountMode cannot be changed from 'explicit' to '" + mode + "'");
+        "channelCountMode cannot be changed from 'explicit' to '" +
+            V8ChannelCountMode(mode).AsString() + "'");
   }
 }
 

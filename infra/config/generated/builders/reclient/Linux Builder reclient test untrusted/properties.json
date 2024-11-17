@@ -43,7 +43,8 @@
           "builder": "Linux Builder reclient test untrusted",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/reclient/Linux Builder reclient test untrusted/targets"
     }
   },
   "$build/reclient": {

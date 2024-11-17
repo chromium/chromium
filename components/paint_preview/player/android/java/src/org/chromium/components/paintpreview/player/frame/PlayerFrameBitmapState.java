@@ -220,7 +220,6 @@ public class PlayerFrameBitmapState {
 
         mRequiredBitmaps[row][col] = true;
         if (mPendingBitmapRequests != null && mPendingBitmapRequests[row][col] != null) {
-            mPendingBitmapRequests[row][col].setVisible(mVisibleBitmaps[row][col]);
             return false;
         }
         if (mBitmapMatrix == null
@@ -233,8 +232,7 @@ public class PlayerFrameBitmapState {
         final int y = row * mTileSize.getHeight();
         final int x = col * mTileSize.getWidth();
 
-        BitmapRequestHandler bitmapRequestHandler =
-                new BitmapRequestHandler(row, col, mScaleFactor, mVisibleBitmaps[row][col]);
+        BitmapRequestHandler bitmapRequestHandler = new BitmapRequestHandler(row, col);
         mPendingBitmapRequests[row][col] = bitmapRequestHandler;
         int requestId =
                 mCompositorDelegate.requestBitmap(
@@ -336,20 +334,11 @@ public class PlayerFrameBitmapState {
     private class BitmapRequestHandler implements Callback<Bitmap> {
         int mRequestRow;
         int mRequestCol;
-        float mRequestScaleFactor;
-        boolean mVisible;
         int mRequestId;
 
-        private BitmapRequestHandler(
-                int requestRow, int requestCol, float requestScaleFactor, boolean visible) {
+        private BitmapRequestHandler(int requestRow, int requestCol) {
             mRequestRow = requestRow;
             mRequestCol = requestCol;
-            mRequestScaleFactor = requestScaleFactor;
-            mVisible = visible;
-        }
-
-        private void setVisible(boolean visible) {
-            mVisible = visible;
         }
 
         private void setRequestId(int requestId) {
@@ -363,10 +352,7 @@ public class PlayerFrameBitmapState {
             return ret;
         }
 
-        /**
-         * Called when bitmap is successfully composited.
-         * @param result
-         */
+        /** Called when bitmap is successfully composited. */
         @Override
         public void onResult(Bitmap result) {
             TraceEvent.begin("BitmapRequestHandler.onResult");

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
+
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_match_type.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/variations/variations_switches.h"
@@ -15,6 +17,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event.h"
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "services/network/public/cpp/resource_request.h"
 
 namespace {
 
@@ -253,12 +256,15 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
   [self updateForceVariationTextViews];
 }
 
+- (void)removeAllObjects {
+  [_events removeAllObjects];
+  [_tableView reloadData];
+}
+
 #pragma mark - AutocompleteControllerObserver
 
 - (void)autocompleteController:(AutocompleteController*)controller
              didStartWithInput:(const AutocompleteInput&)input {
-  [_events removeAllObjects];
-  [_tableView reloadData];
 }
 
 - (void)autocompleteController:(AutocompleteController*)controller
@@ -279,6 +285,7 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
                          request:(const network::ResourceRequest*)request {
   OmniboxRemoteSuggestionEvent* event = [[OmniboxRemoteSuggestionEvent alloc]
       initWithUniqueIdentifier:requestIdentifier];
+  event.requestURL = base::SysUTF8ToNSString(request->url.spec());
 
   [_events insertObject:event atIndex:0];
 

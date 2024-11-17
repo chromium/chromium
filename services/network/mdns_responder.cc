@@ -592,8 +592,7 @@ class MdnsResponderManager::SocketHandler::ResponseScheduler {
       case MdnsResponseSendOption::ResponseClass::PROBE_RESOLUTION:
         return RateLimitScheme::NO_LIMIT;
       case MdnsResponseSendOption::ResponseClass::UNSPECIFIED:
-        NOTREACHED_IN_MIGRATION();
-        return RateLimitScheme::PER_RESPONSE;
+        NOTREACHED();
     }
   }
   // Returns null if the computed delay exceeds kMaxScheduledDelay and the next

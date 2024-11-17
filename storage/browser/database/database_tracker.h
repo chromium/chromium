@@ -18,6 +18,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -327,7 +328,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   // main DB and journal file that was accessed. When the Incognito profile
   // goes away (or when the browser crashes), all these handles will be
   // closed, and the files will be deleted.
-  std::map<std::u16string, base::File*> incognito_file_handles_;
+  std::map<std::u16string, raw_ptr<base::File, CtnExperimental>>
+      incognito_file_handles_;
 
   // In a non-Incognito profile, all DBs in an origin are stored in a
   // directory named after the origin. In an Incognito profile though, we do

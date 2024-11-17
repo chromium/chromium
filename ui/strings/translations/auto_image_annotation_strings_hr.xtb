@@ -34,11 +34,9 @@
 <translation id="405782047075994056">Ikona strelice lijevo, može označavati povratak</translation>
 <translation id="4302299849305494927">Ikona zvučnika, može označavati glasnoću</translation>
 <translation id="4363712632243441817">Ikona emitiranja, može označavati emitiranje videozapisa na udaljeni zaslon</translation>
-<translation id="4384249794467006333">Slika nije označena. Da biste dobili opise slika, otvorite izbornik Više opcija u gornjem desnom kutu.</translation>
 <translation id="4436211924730548766">Ikona lijevog ševrona</translation>
 <translation id="4444765639179266822">Čini se da piše: <ph name="OCR_TEXT" /></translation>
 <translation id="4540719609030900356">Ikona papirnatog zrakoplova, može označavati slanje</translation>
-<translation id="4576178047100686001">Slika nije označena. Da biste dobili opise slika, otvorite izbornik Više opcija u gornjem lijevom kutu.</translation>
 <translation id="4577968231433672268">Ikona plusa, može označavati dodavanje</translation>
 <translation id="4611825382945206498">Sat s kružnom strelicom, može označavati povijest</translation>
 <translation id="4679853894970977730">Ikona kamere, može označavati snimanje fotografije</translation>
@@ -46,6 +44,7 @@
 <translation id="4908855810237020461">Ikona sata, može označavati vrijeme</translation>
 <translation id="5121688653159243920">Ikona popisa s grafičkim oznakama</translation>
 <translation id="5214400792580101697">Ikona zaustavljanja</translation>
+<translation id="5316551112821993767">Ova slika nije označena. Dvaput dodirnite gumb za više opcija pri vrhu preglednika da biste dobili opise slika.</translation>
 <translation id="5586467629893654334">Ikona mjeseca, može označavati noć ili spavanje</translation>
 <translation id="5599474660109692598">Ikona oblačića iz stripa, može označavati chat</translation>
 <translation id="5617165654945759937">Ikona olovke, može označavati uređivanje</translation>

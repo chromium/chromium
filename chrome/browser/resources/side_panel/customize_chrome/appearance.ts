@@ -4,7 +4,7 @@
 
 import './theme_snapshot.js';
 import './hover_button.js';
-import './strings.m.js'; // Required by <managed-dialog>.
+import '/strings.m.js'; // Required by <managed-dialog>.
 import 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.js';
 import 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
 import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';

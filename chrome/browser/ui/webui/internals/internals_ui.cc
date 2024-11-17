@@ -23,7 +23,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/internals/lens/lens_internals_ui_message_handler.h"
 #include "chrome/browser/ui/webui/internals/notifications/notifications_internals_ui_message_handler.h"
 #else
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -60,7 +59,7 @@ void HandleWebUIRequestCallback(
         profile, path, std::move(callback));
   }
 #endif
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -82,8 +81,6 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   // Add your sub-URL internals WebUI here.
   // Keep this set of sub-URLs in sync with `ChromeInternalsURLPaths()`.
 #if BUILDFLAG(IS_ANDROID)
-  // chrome://internals/lens
-  AddLensInternals(web_ui);
   // chrome://internals/notifications
   source_->AddResourcePath(
       "notifications",
@@ -105,16 +102,7 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
 
 InternalsUI::~InternalsUI() = default;
 
-#if BUILDFLAG(IS_ANDROID)
-void InternalsUI::AddLensInternals(content::WebUI* web_ui) {
-  source_->AddResourcePath("lens", IDR_LENS_INTERNALS_LENS_INTERNALS_HTML);
-
-  web_ui->AddMessageHandler(
-      std::make_unique<LensInternalsUIMessageHandler>(profile_));
-}
-
-#else   // BUILDFLAG(IS_ANDROID)
-
+#if !BUILDFLAG(IS_ANDROID)
 void InternalsUI::BindInterface(
     mojo::PendingReceiver<
         mojom::user_education_internals::UserEducationInternalsPageHandler>
@@ -147,7 +135,6 @@ void InternalsUI::BindInterface(
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(pending_receiver));
 }
-
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(InternalsUI)

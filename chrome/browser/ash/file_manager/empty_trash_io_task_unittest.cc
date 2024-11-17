@@ -85,6 +85,9 @@ class EmptyTrashIOTaskTest : public TrashBaseTest {
 
     return directories;
   }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(EmptyTrashIOTaskTest, EnabledTrashDirsAreTrashed) {
@@ -105,8 +108,7 @@ TEST_F(EmptyTrashIOTaskTest, EnabledTrashDirsAreTrashed) {
                       EntryStatusPaths(ContainerEq(trash_directories))))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  EmptyTrashIOTask task(kTestStorageKey, profile_.get(), file_system_context_,
-                        temp_dir_.GetPath());
+  EmptyTrashIOTask task(kTestStorageKey, profile_.get(), file_system_context_);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 

@@ -7,7 +7,8 @@
 
 #import "base/memory/singleton.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace power_bookmarks {
 class PowerBookmarkService;
@@ -17,9 +18,6 @@ class PowerBookmarkService;
 class PowerBookmarkServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static power_bookmarks::PowerBookmarkService* GetForProfile(
-      ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static power_bookmarks::PowerBookmarkService* GetForBrowserState(
       ProfileIOS* profile);
   static PowerBookmarkServiceFactory* GetInstance();
 

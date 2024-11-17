@@ -93,7 +93,7 @@ TEST(SequenceCheckerTest, DifferentThreadNoTaskScope) {
 
 TEST(SequenceCheckerTest, DifferentThreadDifferentSequenceToken) {
   SequenceCheckerImpl sequence_checker;
-  RunCallbackThread thread(BindLambdaForTesting([&]() {
+  RunCallbackThread thread(BindLambdaForTesting([&] {
     TaskScope task_scope(SequenceToken::Create(),
                          /* is_thread_bound=*/false);
     ExpectNotCalledOnValidSequence(&sequence_checker);
@@ -102,7 +102,7 @@ TEST(SequenceCheckerTest, DifferentThreadDifferentSequenceToken) {
 
 TEST(SequenceCheckerTest, DifferentThreadDifferentSequenceTokenThreadBound) {
   SequenceCheckerImpl sequence_checker;
-  RunCallbackThread thread(BindLambdaForTesting([&]() {
+  RunCallbackThread thread(BindLambdaForTesting([&] {
     TaskScope task_scope(SequenceToken::Create(),
                          /* is_thread_bound=*/true);
     ExpectNotCalledOnValidSequence(&sequence_checker);
@@ -113,7 +113,7 @@ TEST(SequenceCheckerTest, DifferentThreadSameSequenceToken) {
   const SequenceToken token = SequenceToken::Create();
   TaskScope task_scope(token, /* is_thread_bound=*/false);
   SequenceCheckerImpl sequence_checker;
-  RunCallbackThread thread(BindLambdaForTesting([&]() {
+  RunCallbackThread thread(BindLambdaForTesting([&] {
     TaskScope task_scope(token, /* is_thread_bound=*/false);
     ExpectCalledOnValidSequence(&sequence_checker);
   }));
@@ -126,7 +126,7 @@ TEST(SequenceCheckerTest, DifferentThreadSameSequenceTokenThreadBound) {
   const SequenceToken token = SequenceToken::Create();
   TaskScope task_scope(token, /* is_thread_bound=*/true);
   SequenceCheckerImpl sequence_checker;
-  RunCallbackThread thread(BindLambdaForTesting([&]() {
+  RunCallbackThread thread(BindLambdaForTesting([&] {
     TaskScope task_scope(token, /* is_thread_bound=*/false);
     ExpectCalledOnValidSequence(&sequence_checker);
   }));
@@ -315,7 +315,7 @@ TEST(SequenceCheckerTest, FromThreadDestruction) {
     test::TaskEnvironment task_environment;
     auto task_runner = ThreadPool::CreateSequencedTaskRunner({});
     task_runner->PostTask(
-        FROM_HERE, BindLambdaForTesting([&]() {
+        FROM_HERE, BindLambdaForTesting([&] {
           thread_local_owner.Set(
               std::make_unique<SequenceCheckerOwner>(&other_checker));
         }));
@@ -340,7 +340,7 @@ TEST(SequenceCheckerTest, LockBasic) {
   SequenceCheckerImpl sequence_checker;
   releasable_auto_lock.Release();
 
-  ThreadPool::PostTask(BindLambdaForTesting([&]() {
+  ThreadPool::PostTask(BindLambdaForTesting([&] {
     // Check sequencing while holding the lock.
     {
       AutoLock auto_lock(lock, subtle::LockTracking::kEnabled);
@@ -381,7 +381,7 @@ TEST(SequenceCheckerTest, ManyLocks) {
   releasable_auto_lock_b.Release();
   releasable_auto_lock_a.Release();
 
-  ThreadPool::PostTask(BindLambdaForTesting([&]() {
+  ThreadPool::PostTask(BindLambdaForTesting([&] {
     {
       AutoLock auto_lock_a(lock_a, subtle::LockTracking::kEnabled);
       AutoLock auto_lock_b(lock_b, subtle::LockTracking::kEnabled);
@@ -432,7 +432,7 @@ TEST(SequenceCheckerTest, LockAndSequence) {
   // Check sequencing without holding the lock.
   EXPECT_TRUE(sequence_checker.CalledOnValidSequence());
 
-  ThreadPool::PostTask(BindLambdaForTesting([&]() {
+  ThreadPool::PostTask(BindLambdaForTesting([&] {
     // Check sequencing while holding the lock. This is not valid because
     // `CalledOnValidSequence()` previously returned true while the lock wasn't
     // held.
@@ -462,7 +462,7 @@ TEST(SequenceCheckerTest, LockDetachFromSequence) {
   // Re-bind without holding the lock.
   EXPECT_TRUE(sequence_checker.CalledOnValidSequence());
 
-  ThreadPool::PostTask(BindLambdaForTesting([&]() {
+  ThreadPool::PostTask(BindLambdaForTesting([&] {
     // Check sequencing while holding the lock. This is not valid because the
     // sequence checker was detached and re-bound without the lock.
     {
@@ -488,7 +488,7 @@ TEST(SequenceCheckerTest, LockMoveConstruction) {
   SequenceCheckerImpl other_sequence_checker(std::move(sequence_checker));
   releasable_auto_lock.Release();
 
-  ThreadPool::PostTask(BindLambdaForTesting([&]() {
+  ThreadPool::PostTask(BindLambdaForTesting([&] {
     // Check sequencing while holding the lock.
     {
       AutoLock auto_lock(lock, subtle::LockTracking::kEnabled);
@@ -516,7 +516,7 @@ TEST(SequenceCheckerTest, LockMoveAssignment) {
   other_sequence_checker = std::move(sequence_checker);
   releasable_auto_lock.Release();
 
-  ThreadPool::PostTask(BindLambdaForTesting([&]() {
+  ThreadPool::PostTask(BindLambdaForTesting([&] {
     // Check sequencing while holding the lock.
     {
       AutoLock auto_lock(lock, subtle::LockTracking::kEnabled);

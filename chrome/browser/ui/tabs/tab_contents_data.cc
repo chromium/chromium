@@ -24,13 +24,13 @@ class TabContentsDataImpl : public TabContentsData {
   TabContentsDataImpl(const TabContentsDataImpl&) = delete;
   TabContentsDataImpl& operator=(const TabContentsDataImpl&) = delete;
 
-  size_t TabCountRecursive() const override;
+  size_t TotalTabCount() const override;
   size_t IndexOfFirstNonPinnedTab() const override;
 
   tabs::TabModel* GetTabAtIndexRecursive(size_t index) const override;
 
   std::optional<size_t> GetIndexOfTabRecursive(
-      const tabs::TabModel* tab_handle) const override;
+      const tabs::TabInterface* tab) const override;
 
   void AddTabRecursive(std::unique_ptr<tabs::TabModel> tab_model,
                        size_t index,
@@ -68,13 +68,13 @@ std::unique_ptr<TabContentsData> CreateTabContentsDataImpl() {
   }
 }
 
-size_t TabContentsDataImpl::TabCountRecursive() const {
+size_t TabContentsDataImpl::TotalTabCount() const {
   return contents_data_.size();
 }
 
 size_t TabContentsDataImpl::IndexOfFirstNonPinnedTab() const {
   for (size_t i = 0; i < contents_data_.size(); ++i) {
-    if (!contents_data_[i].get()->pinned()) {
+    if (!contents_data_[i].get()->IsPinned()) {
       return i;
     }
   }
@@ -87,11 +87,10 @@ tabs::TabModel* TabContentsDataImpl::GetTabAtIndexRecursive(
 }
 
 std::optional<size_t> TabContentsDataImpl::GetIndexOfTabRecursive(
-    const tabs::TabModel* tab_model) const {
-  const auto is_same_tab =
-      [tab_model](const std::unique_ptr<tabs::TabModel>& other) {
-        return other.get() == tab_model;
-      };
+    const tabs::TabInterface* tab) const {
+  const auto is_same_tab = [tab](const std::unique_ptr<tabs::TabModel>& other) {
+    return other.get() == tab;
+  };
 
   const auto iter =
       std::find_if(contents_data_.cbegin(), contents_data_.cend(), is_same_tab);
@@ -106,8 +105,8 @@ void TabContentsDataImpl::AddTabRecursive(
     size_t index,
     std::optional<tab_groups::TabGroupId> new_group_id,
     bool new_pinned_state) {
-  tab_model->set_group(new_group_id);
-  tab_model->set_pinned(new_pinned_state);
+  tab_model->SetGroup(new_group_id);
+  tab_model->SetPinned(new_pinned_state);
   contents_data_.insert(contents_data_.begin() + index, std::move(tab_model));
 }
 
@@ -120,7 +119,7 @@ std::unique_ptr<tabs::TabModel> TabContentsDataImpl::RemoveTabAtIndexRecursive(
   contents_data_.erase(contents_data_.begin() + index);
 
   // Update the tab.
-  old_data->set_group(std::nullopt);
+  old_data->SetGroup(std::nullopt);
 
   return old_data;
 }
@@ -132,8 +131,8 @@ void TabContentsDataImpl::MoveTabRecursive(
     bool new_pinned_state) {
   tabs::TabModel* tab_model = GetTabAtIndexRecursive(initial_index);
 
-  tab_model->set_pinned(new_pinned_state);
-  tab_model->set_group(new_group_id);
+  tab_model->SetPinned(new_pinned_state);
+  tab_model->SetGroup(new_group_id);
 
   // Move the tab to the destination index.
   if (initial_index != final_index) {
@@ -183,14 +182,14 @@ void TabContentsDataImpl::ValidateData(const TabGroupModel* group_model) {
   }
 
   // Check for pinned validity.
-  bool unpinned_found = contents_data_[0].get()->pinned() ? false : true;
+  bool unpinned_found = contents_data_[0].get()->IsPinned() ? false : true;
   for (size_t i = 1; i < contents_data_.size(); i++) {
     if (!unpinned_found) {
-      if (!contents_data_[i].get()->pinned()) {
+      if (!contents_data_[i].get()->IsPinned()) {
         unpinned_found = true;
       }
     } else {
-      DCHECK(!contents_data_[i].get()->pinned());
+      DCHECK(!contents_data_[i].get()->IsPinned());
     }
   }
 

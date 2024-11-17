@@ -166,8 +166,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
   bool IsWebInputEvent() const override { return true; }
 
   void Dispatch(MainThreadEventQueue* queue) override {
-    if (RuntimeEnabledFeatures::UnblockTouchMoveEarlierEnabled() &&
-        originally_cancelable_ &&
+    if (originally_cancelable_ &&
         event_->Event().GetType() == WebInputEvent::Type::kTouchMove) {
       auto* touch_event = static_cast<WebTouchEvent*>(event_->EventPointer());
       if (queue->GetMainThreadOnly().should_unblock_touch_moves) {
@@ -856,9 +855,6 @@ void MainThreadEventQueue::RequestUnbufferedInputEvents() {
 void MainThreadEventQueue::UnblockQueuedBlockingTouchMovesIfNeeded(
     const WebInputEvent& dispatched_event,
     mojom::blink::InputEventResultState ack_result) {
-  if (!RuntimeEnabledFeatures::UnblockTouchMoveEarlierEnabled()) {
-    return;
-  }
   if (!WebInputEvent::IsTouchEventType(dispatched_event.GetType())) {
     return;
   }

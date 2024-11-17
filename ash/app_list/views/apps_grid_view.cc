@@ -22,7 +22,6 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
-#include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_keyboard_controller.h"
@@ -915,14 +914,6 @@ void AppsGridView::ClearDragState() {
   dragging_for_reparent_item_ = false;
   extra_page_opened_ = false;
   reparent_drag_cancellation_.Reset();
-}
-
-void AppsGridView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  if (drag_and_drop_host_ == drag_and_drop_host) {
-    return;
-  }
-  drag_and_drop_host_ = drag_and_drop_host;
 }
 
 bool AppsGridView::IsAnimatingView(AppListItemView* view) const {
@@ -2596,16 +2587,16 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
                                              /*send_native_event=*/true);
 
   // Attempt to animate the transition from a promise app into an actual app
-  const std::string package_name =
-      view->item()->GetMetadata()->promise_package_id;
-  auto found = pending_promise_apps_removals_.find(package_name);
-
-  if (item->GetMetadata()->app_status == AppStatus::kReady &&
-      found != pending_promise_apps_removals_.end()) {
-    view->AnimateInFromPromiseApp(
-        found->second,
-        base::BindRepeating(&AppsGridView::FinishAnimationForPromiseApps,
-                            weak_factory_.GetWeakPtr(), package_name));
+  if (item->GetMetadata()->app_status == AppStatus::kReady) {
+    std::string package_name = view->item()->GetMetadata()->promise_package_id;
+    auto found = pending_promise_apps_removals_.find(package_name);
+    if (found != pending_promise_apps_removals_.end()) {
+      view->AnimateInFromPromiseApp(
+          found->second,
+          base::BindRepeating(&AppsGridView::FinishAnimationForPromiseApps,
+                              weak_factory_.GetWeakPtr(),
+                              std::move(package_name)));
+    }
   }
 }
 

@@ -23,7 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -111,10 +111,10 @@ public class PriceTrackingFeaturesTest {
     @Test
     @SmallTest
     public void testIsPriceTrackingEligibleIncognitoProfile() {
-        OTRProfileID otrProfileID = OTRProfileID.createUnique("test:Incognito");
+        OtrProfileId otrProfileId = OtrProfileId.createUnique("test:Incognito");
         Profile incognitoProfile =
                 ProfileManager.getLastUsedRegularProfile()
-                        .getOffTheRecordProfile(otrProfileID, /* createIfNeeded= */ true);
+                        .getOffTheRecordProfile(otrProfileId, /* createIfNeeded= */ true);
         Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible(incognitoProfile));
     }
 

@@ -20,6 +20,7 @@ static_library("printing") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/printing",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/dbus/printscanmgr",
     "//chromeos/printing",
     "//printing:printing_base",

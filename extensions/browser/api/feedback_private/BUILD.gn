@@ -25,15 +25,17 @@ source_set("feedback_private") {
     "//components/feedback",
     "//components/feedback/content",
     "//components/feedback/redaction_tool",
+    "//components/variations/net",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
     "//google_apis",
     "//net",
+    "//services/data_decoder/public/cpp",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "access_rate_limiter.cc",
       "access_rate_limiter.h",
@@ -46,11 +48,14 @@ source_set("feedback_private") {
     deps += [
       "//ash/public/cpp",
       "//chromeos/ash/components/cryptohome",
+      "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
       "//chromeos/ash/components/dbus/debug_daemon",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/assistant/public/mojom",
       "//components/account_id",
       "//components/user_manager",
+      "//extensions/browser/api/feedback_private/proto",
+      "//third_party/boringssl",
     ]
   }
 }

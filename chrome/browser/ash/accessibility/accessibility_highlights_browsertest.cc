@@ -184,8 +184,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
   PrefService* prefs = GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kAccessibilityCaretHighlightEnabled, true);
 
-  // Will wait for the omnibox to be shown. Note in Lacros this might take
-  // a little time.
+  // Will wait for the omnibox to be shown.
   const gfx::Rect omnibox_bounds =
       utils_->GetBoundsForNodeInRootByClassName("OmniboxViewViews");
 
@@ -207,8 +206,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
   generator_->PressAndReleaseKey(ui::KeyboardCode::VKEY_K);
   gfx::Rect new_bounds = caret_layer->layer()->GetTargetBounds();
   if (new_bounds == bounds) {
-    // In Ash this happens immediately, while in Lacros it takes some
-    // time for focus ring changes to propagate.
     WaitForFocusRingsChanged();
     new_bounds = caret_layer->layer()->GetTargetBounds();
   }

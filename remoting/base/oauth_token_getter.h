@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "remoting/base/oauth_token_info.h"
 
 namespace remoting {
 
@@ -26,9 +27,7 @@ class OAuthTokenGetter {
   };
 
   typedef base::OnceCallback<void(Status status,
-                                  const std::string& user_email,
-                                  const std::string& access_token,
-                                  const std::string& scopes)>
+                                  const OAuthTokenInfo& token_info)>
       TokenCallback;
 
   // This structure contains information required to perform authorization

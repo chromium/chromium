@@ -299,6 +299,7 @@ found in the LICENSE file.
     <style name="Theme.BrowserUI.Translucent.NoTitleBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">false</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ElegantTextHeight" parent="">
@@ -310,10 +311,5 @@ found in the LICENSE file.
     <style name="ThemeOverlay.BrowserUI.DefaultFontFamilyThemeOverlay" parent="">
         <item name="defaultFontFamily">sans-serif</item>
         <item name="defaultMediumFontFamily">sans-serif-medium</item>
-    </style>
-
-    <style name="ThemeOverlay.BrowserUI.DevTestingDefaultFontFamilyThemeOverlay" parent="">
-        <item name="defaultFontFamily">casual</item>
-        <item name="defaultMediumFontFamily">cursive</item>
     </style>
 </resources>

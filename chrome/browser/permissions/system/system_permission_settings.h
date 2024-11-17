@@ -45,6 +45,10 @@ void SetInstanceForTesting(PlatformHandle* instance_for_testing);
 // `false` otherwise.
 bool CanPrompt(ContentSettingsType type);
 
+// For testing purposes only. Mocks that Chrome can request system-level
+// permissions.
+base::AutoReset<bool> MockSystemPromptForTesting();
+
 // Check whether the system blocks the access to the specified content type /
 // permission.
 bool IsDenied(ContentSettingsType type);

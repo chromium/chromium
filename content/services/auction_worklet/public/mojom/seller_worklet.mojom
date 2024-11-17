@@ -7,6 +7,7 @@ module auction_worklet.mojom;
 import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
 import "content/services/auction_worklet/public/mojom/real_time_reporting.mojom";
 import "content/services/auction_worklet/public/mojom/reject_reason.mojom";
+import "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -180,6 +181,15 @@ interface SellerWorklet {
   // `auction_ad_config_non_shared_params` Values in an AuctionConfig that can
   //  vary between auctions that can share a SellerWorklet.
   //
+  // `key_value_signals_cache_key`: When using version two of the trusted
+  //  signals key value protocol, this contains information needed to retrieve
+  //  the fetched signals for the call from the browser process through the
+  //  TrustedSignalsCache API. When the browser-side cache is disabled and
+  //  fetching is done by the worklet service directly, this should be null.
+  //  SetTrustedSignalsCache() must have already been called on the parent
+  //  AuctionWorkletService before creating the SellerWorklet if passing in
+  //  a non-null value.
+  //
   // `direct_from_seller_seller_signals` The subresource URL of the
   //  DirectFromSellerSignals for the seller, as produced by concatenating the
   //  `directFromSellerSignals` URL prefix field passed from runAdAuction() with
@@ -239,14 +249,14 @@ interface SellerWorklet {
   //  timing information passed to an untrusted process.
   //
   // `browser_signal_render_size` is the size associated with the `renderUrl`
-  // returned by the BidderWorklet making the bid. This argument is optional.
-  // When there is no size associated with the `renderUrl`, it will be a
-  // nullopt.
-  // See explainer: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#32-on-device-bidding
+  //  returned by the BidderWorklet making the bid. This argument is optional.
+  //  When there is no size associated with the `renderUrl`, it will be a
+  //  nullopt.
+  //  See explainer: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#32-on-device-bidding
   //
   // `browser_signal_for_debugging_only_in_cooldown_or_lockout` Whether the
-  // browser is under lockout or the seller's origin is under cooldown for
-  // sending forDebuggingOnly reports.
+  //  browser is under lockout or the seller's origin is under cooldown for
+  //  sending forDebuggingOnly reports.
   //
   // `seller_timeout` Restrict the runtime of the seller's scoring script. Any
   //  timeout higher than 500 ms will be clamped to 500 ms before passing in as
@@ -257,12 +267,13 @@ interface SellerWorklet {
   //  to use with tracing calls.
   //
   // `score_ad_client` When the ScoreAd completes, successfully or not, its
-  // OnScoreAdComplete() method will be invoked with the results.
+  //  OnScoreAdComplete() method will be invoked with the results.
   ScoreAd(string ad_metadata_json,
           double bid,
           blink.mojom.AdCurrency? bid_currency,
           blink.mojom.AuctionAdConfigNonSharedParams
               auction_ad_config_non_shared_params,
+          TrustedSignalsCacheKey? key_value_signals_cache_key,
           url.mojom.Url? direct_from_seller_seller_signals,
           string? direct_from_seller_seller_signals_header_ad_slot,
           url.mojom.Url? direct_from_seller_auction_signals,
@@ -279,6 +290,7 @@ interface SellerWorklet {
           bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
           mojo_base.mojom.TimeDelta? seller_timeout,
           uint64 trace_id,
+          url.mojom.Origin bidder_joining_origin,
           pending_remote<ScoreAdClient> score_ad_client);
 
   // Hint to the worklet to send a network request for any needed trusted

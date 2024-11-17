@@ -516,7 +516,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation
   virtual void DidChangeSelectionInSelectControl(HTMLFormControlElement&) {}
 
-  virtual void SelectOrSelectListFieldOptionsChanged(HTMLFormControlElement&) {}
+  virtual void SelectFieldOptionsChanged(HTMLFormControlElement&) {}
   virtual void AjaxSucceeded(LocalFrame*) {}
   // Called when the value of `element` has been changed by JavaScript.
   // `old_value` contains the value before being changed.
@@ -597,6 +597,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void PasswordFieldReset(HTMLInputElement& element) {}
 
   virtual float ZoomFactorForViewportLayout() { return 1; }
+
+  virtual void OnFirstContentfulPaint() {}
 
  protected:
   ChromeClient() = default;

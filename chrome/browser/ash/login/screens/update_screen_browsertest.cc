@@ -7,12 +7,10 @@
 #include <memory>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
@@ -121,16 +119,7 @@ class UpdateScreenTest : public OobeBaseTest,
                          public LocalStateMixin::Delegate,
                          public ::testing::WithParamInterface<RegionToCodeMap> {
  public:
-  UpdateScreenTest() {
-    if (GetParam().is_opt_out_feature_enabled) {
-      feature_list_.InitAndEnableFeature(
-          features::kConsumerAutoUpdateToggleAllowed);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kConsumerAutoUpdateToggleAllowed);
-    }
-  }
-
+  UpdateScreenTest() = default;
   UpdateScreenTest(const UpdateScreenTest&) = delete;
   UpdateScreenTest& operator=(const UpdateScreenTest&) = delete;
 
@@ -212,7 +201,7 @@ class UpdateScreenTest : public OobeBaseTest,
     // screen if the check for update happens fast enough. When we have an
     // opt out option we still need to show an additional step so we start
     // showing the spinner from the start.
-    if (GetParam().is_eu && features::IsConsumerAutoUpdateToggleAllowed()) {
+    if (GetParam().is_eu) {
       OobeScreenWaiter update_screen_waiter(UpdateView::kScreenId);
       update_screen_waiter.set_assert_next_screen();
       update_screen_waiter.Wait();
@@ -285,7 +274,6 @@ class UpdateScreenTest : public OobeBaseTest,
 
   base::OnceClosure screen_result_callback_;
 
-  base::test::ScopedFeatureList feature_list_;
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
@@ -293,7 +281,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateCheckDoneBeforeShow) {
   ShowUpdateScreen();
   // For this test, the show timer is expected not to fire - cancel it
   // immediately.
-  if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (!GetParam().is_eu) {
     EXPECT_TRUE(update_screen_->GetShowTimerForTesting()->IsRunning());
     update_screen_->GetShowTimerForTesting()->Stop();
   }
@@ -312,7 +300,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateCheckDoneBeforeShow) {
   update_engine_client()->set_default_status(status);
   update_engine_client()->NotifyObserversThatStatusChanged(status);
 
-  if (GetParam().is_eu && features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (GetParam().is_eu) {
     WaitForOptOutStepAndClickNext();
   } else {
     ASSERT_TRUE(last_screen_result_.has_value());
@@ -330,8 +318,9 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateCheckDoneBeforeShow) {
 
 IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateNotFoundAfterScreenShow) {
   ShowUpdateScreen();
-  if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed())
+  if (!GetParam().is_eu) {
     EXPECT_TRUE(update_screen_->GetShowTimerForTesting()->IsRunning());
+  }
 
   update_engine::StatusResult status;
   status.set_current_operation(update_engine::Operation::IDLE);
@@ -343,8 +332,9 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateNotFoundAfterScreenShow) {
   update_engine_client()->NotifyObserversThatStatusChanged(status);
   tick_clock_.Advance(kTimeAdvanceMicroseconds200);
 
-  if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed())
+  if (!GetParam().is_eu) {
     update_screen_->GetShowTimerForTesting()->FireNow();
+  }
 
   OobeScreenWaiter update_screen_waiter(UpdateView::kScreenId);
   update_screen_waiter.set_assert_next_screen();
@@ -361,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateNotFoundAfterScreenShow) {
   update_engine_client()->set_default_status(status);
   update_engine_client()->NotifyObserversThatStatusChanged(status);
 
-  if (GetParam().is_eu && features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (GetParam().is_eu) {
     WaitForOptOutStepAndClickNext();
   } else {
     ASSERT_TRUE(last_screen_result_.has_value());
@@ -387,8 +377,9 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestUpdateAvailable) {
   update_engine_client()->set_default_status(status);
   update_engine_client()->NotifyObserversThatStatusChanged(status);
 
-  if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed())
+  if (!GetParam().is_eu) {
     update_screen_->GetShowTimerForTesting()->FireNow();
+  }
 
   OobeScreenWaiter update_screen_waiter(UpdateView::kScreenId);
   update_screen_waiter.set_assert_next_screen();
@@ -522,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestErrorIssuingUpdateCheck) {
       UpdateEngineClient::UPDATE_RESULT_FAILED);
   ShowUpdateScreen();
 
-  if (GetParam().is_eu && features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (GetParam().is_eu) {
     WaitForOptOutStepAndClickNext();
   } else {
     ASSERT_TRUE(last_screen_result_.has_value());
@@ -543,7 +534,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestErrorCheckingForUpdate) {
   update_engine_client()->set_default_status(status);
   version_updater_->UpdateStatusChangedForTesting(status);
 
-  if (GetParam().is_eu && features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (GetParam().is_eu) {
     WaitForOptOutStepAndClickNext();
   } else {
     ASSERT_TRUE(last_screen_result_.has_value());
@@ -570,7 +561,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestErrorUpdating) {
   update_engine_client()->set_default_status(status);
   update_engine_client()->NotifyObserversThatStatusChanged(status);
 
-  if (GetParam().is_eu && features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (GetParam().is_eu) {
     WaitForOptOutStepAndClickNext();
   } else {
     ASSERT_TRUE(last_screen_result_.has_value());
@@ -612,8 +603,9 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
   update_engine_client()->NotifyObserversThatStatusChanged(status);
   tick_clock_.Advance(kTimeAdvanceSeconds10);
 
-  if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed())
+  if (!GetParam().is_eu) {
     EXPECT_TRUE(update_screen_->GetShowTimerForTesting()->IsRunning());
+  }
 
   // Update available, but it is not critical in test.
   status.set_current_operation(update_engine::Operation::UPDATE_AVAILABLE);
@@ -630,7 +622,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
   // As update is not critical in test if opt out option is available we proceed
   // to opt-out-info step instead.
   test::OobeJS().ExpectVisible("oobe-update");
-  if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (!GetParam().is_eu) {
     test::OobeJS().ExpectVisiblePath(kBetterUpdateCheckingForUpdatesDialog);
   }
   test::OobeJS().ExpectHiddenPath(kCellularPermissionDialog);
@@ -640,7 +632,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
   update_engine_client()->set_default_status(status);
   update_engine_client()->NotifyObserversThatStatusChanged(status);
 
-  if (GetParam().is_eu && features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (GetParam().is_eu) {
     WaitForOptOutStepAndClickNext();
   } else {
     ASSERT_TRUE(last_screen_result_.has_value());
@@ -722,7 +714,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestAPReselection) {
       false /* check_error_state */, ConnectCallbackMode::ON_COMPLETED);
 
   ASSERT_EQ(OOBE_SCREEN_UNKNOWN.AsId(), error_screen_->GetParentScreen());
-  if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (!GetParam().is_eu) {
     EXPECT_TRUE(update_screen_->GetShowTimerForTesting()->IsRunning());
     update_screen_->GetShowTimerForTesting()->FireNow();
   }
@@ -1007,7 +999,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, UpdateScreenSteps) {
   update_engine_client()->set_default_status(status);
   update_engine_client()->NotifyObserversThatStatusChanged(status);
 
-  if (GetParam().is_eu && features::IsConsumerAutoUpdateToggleAllowed()) {
+  if (GetParam().is_eu) {
     test::OobeJS().ExpectVisiblePath(kBetterUpdateCheckingForUpdatesDialog);
   } else {
     test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);
@@ -1016,8 +1008,9 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, UpdateScreenSteps) {
   test::OobeJS().ExpectHiddenPath(kRestartingDialog);
   test::OobeJS().ExpectHiddenPath(kBetterUpdateCompletedDialog);
 
-  if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed())
+  if (!GetParam().is_eu) {
     update_screen_->GetShowTimerForTesting()->FireNow();
+  }
 
   test::OobeJS().ExpectVisiblePath(kBetterUpdateCheckingForUpdatesDialog);
   test::OobeJS().ExpectHiddenPath(kUpdateInProgressDialog);

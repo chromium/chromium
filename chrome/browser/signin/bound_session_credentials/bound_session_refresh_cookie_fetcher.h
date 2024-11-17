@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/functional/callback_forward.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 // This class makes the network request to the Gaia cookie rotation endpoint to
 // refresh bound Google authentication cookies. A new fetcher instance should be
@@ -26,8 +27,18 @@ class BoundSessionRefreshCookieFetcher {
     kChallengeRequiredUnexpectedFormat = 5,
     kChallengeRequiredLimitExceeded = 6,
     kSignChallengeFailed = 7,
-    kMaxValue = kSignChallengeFailed,
+    kChallengeRequiredSessionIdMismatch = 8,
+    kMaxValue = kChallengeRequiredSessionIdMismatch,
   };
+
+  static constexpr char kRotationChallengeHeader[] =
+      "Sec-Session-Google-Challenge";
+  static constexpr char kRotationChallengeResponseHeader[] =
+      "Sec-Session-Google-Response";
+  static constexpr char kRotationDebugHeader[] =
+      "Sec-Session-Google-Rotation-Debug-Info";
+  // Not constexpr to avoid inlining the long definition here.
+  static const net::NetworkTrafficAnnotationTag kTrafficAnnotation;
 
   static bool IsPersistentError(Result result);
   static bool IsTransientError(Result result);

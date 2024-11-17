@@ -43,4 +43,17 @@ struct CTLogInfo {
 
   // Information about previous operators for this log (if any).
   array<PreviousOperatorEntry> previous_operators;
+
+  // Type of the log.
+  enum LogType {
+    // Log type is unspecified.
+    kUnspecified = 0,
+    // Log implements the RFC6962 spec.
+    kRFC6962 = 1,
+    // Log implements the Static CT API spec.
+    kStaticCTAPI = 2,
+  };
+
+  // Type of the log.
+  LogType log_type;
 };

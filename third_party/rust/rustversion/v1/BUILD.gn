@@ -12,27 +12,27 @@ cargo_crate("lib") {
   crate_name = "rustversion"
   epoch = "1"
   crate_type = "proc-macro"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/attr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/bound.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/constfn.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/date.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/expand.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/expr.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/iter.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/release.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/time.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/token.rs",
-    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/version.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/attr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/bound.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/constfn.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/date.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/expand.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/expr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/release.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/time.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/token.rs",
+    "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/version.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.17"
+  cargo_pkg_version = "1.0.18"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "rustversion"
   cargo_pkg_description =
@@ -43,8 +43,8 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
-  build_root = "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/build/build.rs"
-  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/build/build.rs" ]
-  build_script_inputs = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.17/src/../build/rustc.rs" ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/build/build.rs"
+  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/build/build.rs" ]
+  build_script_inputs = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/../build/rustc.rs" ]
   build_script_outputs = [ "version.expr" ]
 }

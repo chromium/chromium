@@ -4,7 +4,7 @@
 
 module web_package.mojom;
 
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "url/mojom/url.mojom";
 
 // Factory interface that constructs and binds the receivers that are used
@@ -37,8 +37,7 @@ interface WebBundleParser {
 
   // Parses a response from the range
   // |[response_offset, response_offset + response_length)|.
-  ParseResponse(uint64 response_offset,
-                uint64 response_length)
+  ParseResponse(uint64 response_offset, uint64 response_length)
       => (BundleResponse? Result, BundleResponseParseError? error);
 
   // Closes all the resources that the parser is using.
@@ -141,8 +140,7 @@ struct SignatureInfoEcdsaP256SHA256 {
   EcdsaP256SHA256Signature signature;
 };
 
-struct SignatureInfoUnknown {
-};
+struct SignatureInfoUnknown {};
 
 union SignatureInfo {
   SignatureInfoUnknown unknown;

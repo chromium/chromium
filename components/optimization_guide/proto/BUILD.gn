@@ -16,14 +16,15 @@ proto_library("optimization_guide_proto") {
     "client_side_phishing_model_metadata.proto",
     "common_types.proto",
     "descriptors.proto",
+    "features/bling_prototyping.proto",
     "features/common_quality_data.proto",
     "features/compose.proto",
     "features/default.proto",
     "features/forms_annotations.proto",
     "features/forms_predictions.proto",
     "features/history_answer.proto",
-    "features/history_document.proto",
     "features/history_query.proto",
+    "features/history_query_intent.proto",
     "features/history_search_strings.proto",
     "features/model_prototyping.proto",
     "features/product_specifications.proto",
@@ -34,6 +35,7 @@ proto_library("optimization_guide_proto") {
     "features/wallpaper_search.proto",
     "hint_cache.proto",
     "hints.proto",
+    "history_query_intent_model_metadata.proto",
     "loading_predictor_metadata.proto",
     "model_execution.proto",
     "model_quality_metadata.proto",
@@ -85,7 +87,11 @@ proto_library("compose_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "compose.descriptor"
-  proto_deps = [ ":optimization_guide_proto" ]
+  proto_deps = [
+    ":optimization_guide_proto",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
 proto_library("string_value_proto_descriptor") {
@@ -105,7 +111,11 @@ proto_library("tab_organization_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "tab_organization.descriptor"
-  proto_deps = [ ":optimization_guide_proto" ]
+  proto_deps = [
+    ":optimization_guide_proto",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
 proto_library("history_answer_proto_descriptor") {
@@ -115,7 +125,11 @@ proto_library("history_answer_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "history_answer.descriptor"
-  proto_deps = [ ":optimization_guide_proto" ]
+  proto_deps = [
+    ":optimization_guide_proto",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
 proto_library("summarize_descriptor") {
@@ -136,4 +150,18 @@ proto_library("prompt_api_proto_descriptor") {
   generate_python = false
   generate_descriptor = "prompt_api.descriptor"
   proto_deps = [ ":optimization_guide_proto" ]
+}
+
+proto_library("history_query_intent_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/history_query_intent.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "history_query_intent.descriptor"
+  proto_deps = [
+    ":optimization_guide_proto",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }

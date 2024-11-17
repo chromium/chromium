@@ -7,15 +7,16 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
@@ -132,7 +133,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
                  @"Clearing credentials wasn't done.");
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
@@ -141,7 +142,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -156,6 +157,15 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   if ([self isRunningTest:@selector(testOpenKeyboardOnAutofocus)]) {
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordBottomSheetAutofocus);
+  }
+
+  if ([self isRunningTest:@selector
+            (testOpenPasswordBottomSheetTapUseKeyboardShowKeyboard_V2)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheetV2);
+  } else {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheetV2);
   }
 
   return config;
@@ -376,6 +386,33 @@ id<GREYMatcher> OpenKeyboardButton() {
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
+// Tests that showing the keyboard from the bottom sheet works for V2.
+- (void)testOpenPasswordBottomSheetTapUseKeyboardShowKeyboard_V2 {
+  // TODO(crbug.com/349804536): Test is flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.")
+  }
+
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form_empty.html"))];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+  [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForKeyboardToAppear];
+}
+
 - (void)testOpenPasswordBottomSheetOpenPasswordManager {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
@@ -440,6 +477,7 @@ id<GREYMatcher> OpenKeyboardButton() {
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
+// Disabled due to flakes across builders; see https://crbug.com/374961324.
 - (void)testOpenPasswordBottomSheetOpenPasswordDetails {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
@@ -504,9 +542,24 @@ id<GREYMatcher> OpenKeyboardButton() {
   // Emit auth result so password details surface is revealed.
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
-                                   IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
+  id<GREYMatcher> usernameCellMatcher =
+      chrome_test_util::TextFieldForCellWithLabelId(
+          IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
+
+  // Check that the username cell is displayed.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:usernameCellMatcher]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+  NSString* errorMessage =
+      @"There is no password view with a username table view cell";
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             errorMessage);
+  [[EarlGrey selectElementWithMatcher:usernameCellMatcher]
       assertWithMatcher:grey_textFieldValue(@"user2")];
 
   // Verify visit metric was recorded.

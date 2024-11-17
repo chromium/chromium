@@ -127,7 +127,7 @@ class TestResourceMultiBuffer : public ResourceMultiBuffer {
 
 class TestUrlData : public UrlData {
  public:
-  TestUrlData(const GURL& url,
+  TestUrlData(const KURL& url,
               CorsMode cors_mode,
               UrlIndex* url_index,
               UrlData::CacheMode cache_mode,
@@ -167,7 +167,7 @@ class TestUrlIndex : public UrlIndex {
       : UrlIndex(fetch_context, task_runner),
         task_runner_(std::move(task_runner)) {}
 
-  scoped_refptr<UrlData> NewUrlData(const GURL& url,
+  scoped_refptr<UrlData> NewUrlData(const KURL& url,
                                     UrlData::CorsMode cors_mode,
                                     UrlData::CacheMode cache_mode) override {
     NotifyNewUrlData(url, cors_mode, cache_mode);
@@ -182,7 +182,7 @@ class TestUrlIndex : public UrlIndex {
   }
 
   MOCK_METHOD3(NotifyNewUrlData,
-               void(GURL, UrlData::CorsMode, UrlData::CacheMode));
+               void(KURL, UrlData::CorsMode, UrlData::CacheMode));
 
  private:
   scoped_refptr<TestUrlData> last_url_data_;
@@ -255,19 +255,19 @@ class MultiBufferDataSourceTest : public testing::Test {
 
   MOCK_METHOD1(OnInitialize, void(bool));
 
-  void InitializeWithCors(const char* url,
+  void InitializeWithCors(const char* url_string,
                           bool expected,
                           UrlData::CorsMode cors_mode,
                           size_t file_size = kFileSize) {
-    GURL gurl(url);
+    KURL url(url_string);
     media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
     data_source_ = std::make_unique<MockMultiBufferDataSource>(
-        task_runner_, url_index_.GetByUrl(gurl, cors_mode, UrlData::kNormal),
+        task_runner_, url_index_.GetByUrl(url, cors_mode, UrlData::kNormal),
         media_log_.get(), &host_);
     data_source_->SetPreload(preload_);
 
     response_generator_ =
-        std::make_unique<TestResponseGenerator>(gurl, file_size);
+        std::make_unique<TestResponseGenerator>(url, file_size);
     EXPECT_CALL(*this, OnInitialize(expected));
     data_source_->SetIsClientAudioElement(is_client_audio_element_);
     data_source_->Initialize(base::BindOnce(
@@ -747,7 +747,7 @@ TEST_F(MultiBufferDataSourceTest,
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
-  response2.SetCurrentRequestUrl(GURL(kHttpDifferentPathUrl));
+  response2.SetCurrentRequestUrl(KURL(kHttpDifferentPathUrl));
   // The origin URL of response1 and response2 are same. So no error should
   // occur.
   ExecuteMixedResponseSuccessTest(response1, response2);
@@ -760,7 +760,7 @@ TEST_F(MultiBufferDataSourceTest,
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
-  response2.SetCurrentRequestUrl(GURL(kHttpDifferentOriginUrl));
+  response2.SetCurrentRequestUrl(KURL(kHttpDifferentOriginUrl));
   // The origin URL of response1 and response2 are different. So an error should
   // occur.
   ExecuteMixedResponseFailureTest(response1, response2);
@@ -785,7 +785,7 @@ TEST_F(MultiBufferDataSourceTest,
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   response1.SetWasFetchedViaServiceWorker(true);
-  std::vector<WebURL> url_list = {GURL(kHttpUrl)};
+  std::vector<WebURL> url_list = {KURL(kHttpUrl)};
   response1.SetUrlListViaServiceWorker(url_list);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
@@ -800,7 +800,7 @@ TEST_F(MultiBufferDataSourceTest,
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   response1.SetWasFetchedViaServiceWorker(true);
-  std::vector<WebURL> url_list = {GURL(kHttpDifferentPathUrl)};
+  std::vector<WebURL> url_list = {KURL(kHttpDifferentPathUrl)};
   response1.SetUrlListViaServiceWorker(url_list);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
@@ -815,7 +815,7 @@ TEST_F(MultiBufferDataSourceTest,
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   response1.SetWasFetchedViaServiceWorker(true);
-  std::vector<WebURL> url_list = {GURL(kHttpDifferentOriginUrl)};
+  std::vector<WebURL> url_list = {KURL(kHttpDifferentOriginUrl)};
   response1.SetUrlListViaServiceWorker(url_list);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
@@ -830,7 +830,7 @@ TEST_F(MultiBufferDataSourceTest,
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
   response1.SetWasFetchedViaServiceWorker(true);
-  std::vector<WebURL> url_list = {GURL(kHttpDifferentOriginUrl)};
+  std::vector<WebURL> url_list = {KURL(kHttpDifferentOriginUrl)};
   response1.SetUrlListViaServiceWorker(url_list);
   WebURLResponse response2 =
       response_generator_->GeneratePartial206(kDataSize, kDataSize * 2 - 1);
@@ -1036,7 +1036,7 @@ TEST_F(MultiBufferDataSourceTest, Http_ShareData) {
   media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
   MockMultiBufferDataSource source2(
       task_runner_,
-      url_index_.GetByUrl(GURL(kHttpUrl), UrlData::CORS_UNSPECIFIED,
+      url_index_.GetByUrl(KURL(kHttpUrl), UrlData::CORS_UNSPECIFIED,
                           UrlData::kNormal),
       media_log_.get(), &host2);
   source2.SetPreload(preload_);
@@ -1054,6 +1054,66 @@ TEST_F(MultiBufferDataSourceTest, Http_ShareData) {
   EXPECT_EQ(source2.downloading(), true);
 
   Stop();
+}
+
+TEST_F(MultiBufferDataSourceTest, Http_ShareData_AtLeastOneProgress) {
+  // Initialize the first provider.
+  Initialize(kHttpUrl, true, kFileSize);
+  ASSERT_EQ(test_data_providers.size(), 1u);
+  auto* provider1 = *test_data_providers.begin();
+
+  // Initialize the second provider before the first receives any response.
+  StrictMock<MockBufferedDataSourceHost> host2;
+  media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
+  MockMultiBufferDataSource source2(
+      task_runner_,
+      url_index_.GetByUrl(KURL(kHttpUrl), UrlData::CORS_UNSPECIFIED,
+                          UrlData::kNormal),
+      media_log_.get(), &host2);
+  source2.SetPreload(preload_);
+  source2.Initialize(base::DoNothing());
+
+  ASSERT_EQ(test_data_providers.size(), 2u);
+  TestMultiBufferDataProvider* provider2 = nullptr;
+  for (auto* provider : test_data_providers) {
+    if (provider != provider1) {
+      provider2 = provider;
+      break;
+    }
+  }
+  ASSERT_TRUE(provider2);
+
+  // Respond to the first provider w/ a response and data.
+  const auto total_bytes = response_generator_->content_length();
+  EXPECT_CALL(host_, SetTotalBytes(total_bytes));
+  provider1->DidReceiveResponse(response_generator_->Generate206(0));
+  EXPECT_CALL(host_, AddBufferedByteRange(0, testing::Ge(total_bytes)))
+      .Times(testing::AtLeast(1));
+
+  auto data = base::HeapArray<char>::Uninit(total_bytes);
+  base::ranges::fill(data, 0xA5);  // Arbitrary non-zero value.
+  provider1->DidReceiveData(data);
+  provider1->DidFinishLoading();
+  task_environment_.RunUntilIdle();
+
+  // Now respond to the second provider, it should merge with the first since
+  // it can share the previous data. Note: MultiBuffer provides byte ranges in
+  // terms of block units, so the buffered range may exceed total bytes.
+  EXPECT_CALL(host2, AddBufferedByteRange(0, testing::Ge(total_bytes)));
+  EXPECT_CALL(host2, SetTotalBytes(total_bytes));
+  provider2->DidReceiveResponse(response_generator_->Generate206(0));
+  provider1 = provider2 = nullptr;  // May have been released at this point.
+
+  EXPECT_CALL(*this, ReadCallback(kDataSize));
+  ReadAt(0, kDataSize);
+  task_environment_.RunUntilIdle();
+
+  // Expectations should be met before Stop() is called.
+  testing::Mock::VerifyAndClear(&host_);
+  testing::Mock::VerifyAndClear(&host2);
+
+  data_source_->Stop();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(MultiBufferDataSourceTest, Http_Read_Seek) {
@@ -1442,16 +1502,16 @@ TEST_F(MultiBufferDataSourceTest,
 }
 
 TEST_F(MultiBufferDataSourceTest, SeekPastEOF) {
-  GURL gurl(kHttpUrl);
+  KURL url(kHttpUrl);
   media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
   data_source_ = std::make_unique<MockMultiBufferDataSource>(
       task_runner_,
-      url_index_.GetByUrl(gurl, UrlData::CORS_UNSPECIFIED, UrlData::kNormal),
+      url_index_.GetByUrl(url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal),
       media_log_.get(), &host_);
   data_source_->SetPreload(preload_);
 
   response_generator_ =
-      std::make_unique<TestResponseGenerator>(gurl, kDataSize + 1);
+      std::make_unique<TestResponseGenerator>(url, kDataSize + 1);
   EXPECT_CALL(*this, OnInitialize(true));
   data_source_->Initialize(base::BindOnce(
       &MultiBufferDataSourceTest::OnInitialize, base::Unretained(this)));
@@ -1495,8 +1555,8 @@ TEST_F(MultiBufferDataSourceTest, Http_RetryThenRedirect) {
   run_loop.Run();
 
   // Server responds with a redirect.
-  WebURL url{GURL(kHttpDifferentPathUrl)};
-  WebURLResponse response((GURL(kHttpUrl)));
+  WebURL url{KURL(kHttpDifferentPathUrl)};
+  WebURLResponse response((KURL(kHttpUrl)));
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1513,8 +1573,8 @@ TEST_F(MultiBufferDataSourceTest, Http_NotStreamingAfterRedirect) {
   Initialize(kHttpUrl, true);
 
   // Server responds with a redirect.
-  WebURL url{GURL(kHttpDifferentPathUrl)};
-  WebURLResponse response((GURL(kHttpUrl)));
+  WebURL url{KURL(kHttpDifferentPathUrl)};
+  WebURLResponse response((KURL(kHttpUrl)));
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1535,8 +1595,8 @@ TEST_F(MultiBufferDataSourceTest, Http_RangeNotSatisfiableAfterRedirect) {
   Initialize(kHttpUrl, true);
 
   // Server responds with a redirect.
-  WebURL url{GURL(kHttpDifferentPathUrl)};
-  WebURLResponse response((GURL(kHttpUrl)));
+  WebURL url{KURL(kHttpDifferentPathUrl)};
+  WebURLResponse response((KURL(kHttpUrl)));
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1549,8 +1609,8 @@ TEST_F(MultiBufferDataSourceTest, Http_404AfterRedirect) {
   Initialize(kHttpUrl, false);
 
   // Server responds with a redirect.
-  WebURL url{GURL(kHttpDifferentPathUrl)};
-  WebURLResponse response((GURL(kHttpUrl)));
+  WebURL url{KURL(kHttpDifferentPathUrl)};
+  WebURLResponse response((KURL(kHttpUrl)));
   response.SetHttpStatusCode(307);
   data_provider()->WillFollowRedirect(url, response);
 
@@ -1559,8 +1619,8 @@ TEST_F(MultiBufferDataSourceTest, Http_404AfterRedirect) {
 }
 
 TEST_F(MultiBufferDataSourceTest, PreserveCachingModeAfterRedirect) {
-  GURL start = GURL("https://start.com");
-  GURL redir = GURL("https://redir.com");
+  KURL start("https://start.com");
+  KURL redir("https://redir.com");
   media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
   WebURL url{redir};
   WebURLResponse redirect_response(start);
@@ -1625,7 +1685,7 @@ TEST_F(MultiBufferDataSourceTest, PreserveCachingModeAfterRedirect) {
     EXPECT_EQ(data_source->downloading(), false);
     EXPECT_CALL(url_index_, NotifyNewUrlData(redir, _, _)).Times(0);
     data_provider()->WillFollowRedirect(url, redirect_response);
-    EXPECT_CALL(host_, AddBufferedByteRange(0, _));
+    EXPECT_CALL(host_, AddBufferedByteRange(0, _)).Times(testing::AtLeast(1));
     EXPECT_CALL(host_, SetTotalBytes(kDataSize));
     Respond(data_response);
     ReceiveData(kDataSize);
@@ -1693,8 +1753,8 @@ TEST_F(MultiBufferDataSourceTest, LengthKnownAtEOF) {
 
 TEST_F(MultiBufferDataSourceTest, FileSizeLessThanBlockSize) {
   Initialize(kHttpUrl, true);
-  GURL gurl(kHttpUrl);
-  WebURLResponse response(gurl);
+  KURL url(kHttpUrl);
+  WebURLResponse response(url);
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       WebString::FromUTF8("Content-Length"),
@@ -1928,16 +1988,16 @@ TEST_F(MultiBufferDataSourceTest, CheckBufferSizeAfterReadingALot) {
 // Provoke an edge case where the loading state may not end up transitioning
 // back to "idle" when we're done loading.
 TEST_F(MultiBufferDataSourceTest, Http_CheckLoadingTransition) {
-  GURL gurl(kHttpUrl);
+  KURL url(kHttpUrl);
   media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
   data_source_ = std::make_unique<MockMultiBufferDataSource>(
       task_runner_,
-      url_index_.GetByUrl(gurl, UrlData::CORS_UNSPECIFIED, UrlData::kNormal),
+      url_index_.GetByUrl(url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal),
       media_log_.get(), &host_);
   data_source_->SetPreload(preload_);
 
   response_generator_ =
-      std::make_unique<TestResponseGenerator>(gurl, kDataSize * 1);
+      std::make_unique<TestResponseGenerator>(url, kDataSize * 1);
   EXPECT_CALL(*this, OnInitialize(true));
   data_source_->Initialize(base::BindOnce(
       &MultiBufferDataSourceTest::OnInitialize, base::Unretained(this)));

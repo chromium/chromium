@@ -52,8 +52,7 @@ public class RestoreTabsCoordinator {
 
         View restoreTabsPromoScreenView =
                 rootView.findViewById(R.id.restore_tabs_promo_screen_sheet);
-        RestoreTabsPromoScreenCoordinator restoreTabsPromoScreenCoordinator =
-                new RestoreTabsPromoScreenCoordinator(restoreTabsPromoScreenView, mModel);
+        new RestoreTabsPromoScreenCoordinator(restoreTabsPromoScreenView, mModel);
 
         View detailScreenView = rootView.findViewById(R.id.restore_tabs_detail_screen_sheet);
         mRestoreTabsDetailScreenCoordinator =

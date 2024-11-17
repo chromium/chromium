@@ -28,7 +28,7 @@ constexpr char kImageData[] = "data";
 
 class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
  public:
-  CachedImageFetcherImageDataStoreDiskTest() {}
+  CachedImageFetcherImageDataStoreDiskTest() = default;
 
   CachedImageFetcherImageDataStoreDiskTest(
       const CachedImageFetcherImageDataStoreDiskTest&) = delete;

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -193,10 +192,11 @@ void SidePanelControllerViews::CloseSidePanel() {
 }
 
 std::unique_ptr<views::View>
-SidePanelControllerViews::CreateCustomizeChromeWebView() {
+SidePanelControllerViews::CreateCustomizeChromeWebView(
+    SidePanelEntryScope& scope) {
   auto customize_chrome_web_view =
       std::make_unique<SidePanelWebUIViewT<CustomizeChromeUI>>(
-          base::RepeatingClosure(), base::RepeatingClosure(),
+          scope, base::RepeatingClosure(), base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<CustomizeChromeUI>>(
               GURL(chrome::kChromeUICustomizeChromeSidePanelURL),
               Profile::FromBrowserContext(

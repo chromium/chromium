@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.EDGE_TO_EDGE_BOTTOM_INSETS;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.FLOATING_ACTION_BUTTON_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
@@ -253,6 +254,67 @@ public class HubPaneHostViewUnitTest {
         ShadowLooper.runUiThreadTasks();
 
         assertEquals(oldMargin, getBottomMargin(mActionButton));
+    }
+
+    @Test
+    public void testBottomMarginForFloatingActionButton() {
+        int fixedMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.hub.R.dimen
+                                        .floating_action_button_margin);
+        assertEquals(fixedMargin, getBottomMargin(mActionButton));
+
+        // Bottom margin use the larger insets since larger than the original.
+        int edgeToEdgeMargin = 10;
+        mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, edgeToEdgeMargin);
+        assertEquals(edgeToEdgeMargin + fixedMargin, getBottomMargin(mActionButton));
+    }
+
+    @Test
+    public void testSnackbarContainerFabAnimation_EdgeToEdge() {
+        mActionButton.layout(0, 0, 100, 100);
+        mSnackbarContainer.layout(0, 100, 100, 100);
+
+        int oldMargin = getBottomMargin(mActionButton);
+        int edgeToEdgeMargin = 24;
+        mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, edgeToEdgeMargin);
+        assertEquals(oldMargin + edgeToEdgeMargin, getBottomMargin(mActionButton));
+
+        View.OnLayoutChangeListener listener =
+                mPaneHost.getSnackbarLayoutChangeListenerForTesting();
+
+        listener.onLayoutChange(
+                mSnackbarContainer,
+                /* left= */ 0,
+                /* top= */ 50,
+                /* right= */ 100,
+                /* bottom= */ 100,
+                /* oldLeft= */ 0,
+                /* oldTop= */ 100,
+                /* oldRight= */ 100,
+                /* oldBottom= */ 100);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(
+                "Snackbar height should be used to calculate bottom margin.",
+                oldMargin + 50,
+                getBottomMargin(mActionButton));
+
+        listener.onLayoutChange(
+                mSnackbarContainer,
+                /* left= */ 0,
+                /* top= */ 100,
+                /* right= */ 100,
+                /* bottom= */ 100,
+                /* oldLeft= */ 0,
+                /* oldTop= */ 50,
+                /* oldRight= */ 100,
+                /* oldBottom= */ 100);
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals(oldMargin + edgeToEdgeMargin, getBottomMargin(mActionButton));
     }
 
     private int getBottomMargin(View view) {

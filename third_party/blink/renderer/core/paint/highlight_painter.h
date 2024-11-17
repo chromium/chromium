@@ -143,9 +143,8 @@ class CORE_EXPORT HighlightPainter {
   enum Phase { kBackground, kForeground };
 
   // Paints backgrounds or foregrounds for markers that are not exposed as CSS
-  // highlight pseudos. Note that when text is painted here, that text will have
-  // also been painted by the text fragment painter or one of the CSS-based
-  // methods like PaintHighlightOverlays. This will create antialiasing errors.
+  // highlight pseudos. Note that when text is painted here, that text will be
+  // painted two or more times, which will create antialiasing errors.
   void PaintNonCssMarkers(Phase phase);
 
   // Indicates the way this painter should be used by the caller, aside from
@@ -283,6 +282,7 @@ class CORE_EXPORT HighlightPainter {
   const AutoDarkMode foreground_auto_dark_mode_;
   const AutoDarkMode background_auto_dark_mode_;
   DocumentMarkerVector markers_;
+  DocumentMarkerVector search_;
   DocumentMarkerVector target_;
   DocumentMarkerVector spelling_;
   DocumentMarkerVector grammar_;

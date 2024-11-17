@@ -276,12 +276,8 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckUrlResult(
   DCHECK(url_checker);
 
   auto it = active_url_checkers_.find(url_checker);
-  // TODO(crbug.com/359420122): consider removing this PostTask once
-  // kSafeBrowsingOnUIThread launches, if all the callers are ok with the
-  // callback being run synchronously sometimes.
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(it->second), proceed,
-                                showed_interstitial, performed_check));
-
+  auto callback = std::move(it->second);
   active_url_checkers_.erase(it);
+  std::move(callback).Run(proceed, showed_interstitial, performed_check);
+  // `callback` may have deleted `this`, the only safe thing is to return.
 }

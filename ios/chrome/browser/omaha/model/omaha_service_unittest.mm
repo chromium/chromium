@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 
+#import <UIKit/UIKit.h>
 #import <regex.h>
 #import <sys/types.h>
 
@@ -13,11 +14,14 @@
 #import "base/strings/stringprintf.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "base/time/time_override.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/channel_info.h"
@@ -38,6 +42,15 @@ namespace {
 
 const int64_t kUnknownInstallDate = 2;
 
+base::Time GetTimeWithDelta(base::TimeDelta delta) {
+  static base::Time base = base::subtle::TimeNowIgnoringOverride();
+  return base + delta;
+}
+
+base::TimeTicks GetTimeTicksWithDelta(base::TimeDelta delta) {
+  static base::TimeTicks base = base::subtle::TimeTicksNowIgnoringOverride();
+  return base + delta;
+}
 }  // namespace
 
 class OmahaServiceTest : public PlatformTest {
@@ -103,6 +116,10 @@ class OmahaServiceTest : public PlatformTest {
     service->current_ping_time_ = base::Time();
     service->last_sent_time_ = base::Time();
     service->locale_lang_ = std::string();
+  }
+
+  base::TimeDelta TimerRemainingTime(OmahaService* service) {
+    return service->timer_.desired_run_time() - base::TimeTicks::Now();
   }
 
   std::string test_application_id() const {
@@ -831,4 +848,73 @@ TEST_F(OmahaServiceTest, InstallRetryTest) {
   EXPECT_FALSE(service.IsNextPingInstallRetry());
   id1 = service.GetNextPingRequestId(OmahaService::USAGE_PING);
   ASSERT_NE(id1, service.GetNextPingRequestId(OmahaService::USAGE_PING));
+}
+
+TEST_F(OmahaServiceTest, ResyncTimerAfterSystemSuspend) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kOmahaResyncTimerOnForeground);
+
+  OmahaService service(true);
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
+  service.InitializeURLLoaderFactory(test_shared_url_loader_factory_);
+  CleanService(&service, std::string(version_info::GetVersionNumber()));
+
+  {
+    base::subtle::ScopedTimeClockOverrides clock_overrides(
+        []() { return GetTimeWithDelta(base::Hours(0)); },
+        []() { return GetTimeTicksWithDelta(base::Hours(0)); }, nullptr);
+
+    // Sending a successful ping will schedule another ping in the future.
+    service.SendPing();
+    auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        pending_request->request.url.spec(), GetResponseSuccess());
+
+    EXPECT_GE(TimerRemainingTime(&service), base::Minutes(299));
+    EXPECT_EQ(service.last_sent_time_, base::Time::Now());
+  }
+
+  // Simulate two hours of system suspend time.
+  {
+    base::subtle::ScopedTimeClockOverrides clock_overrides(
+        []() { return GetTimeWithDelta(base::Hours(2)); },
+        []() { return GetTimeTicksWithDelta(base::Hours(0)); }, nullptr);
+
+    // Before the resync, the timer should still have ~5 hours of
+    // running time left.
+    EXPECT_GT(TimerRemainingTime(&service), base::Minutes(299));
+    EXPECT_LT(TimerRemainingTime(&service), base::Minutes(301));
+
+    // After the resync, there should be ~3 hours of running time
+    // left, since the wall clock advanced by 2 hours.
+    service.ResyncTimerIfNeeded();
+    EXPECT_GT(TimerRemainingTime(&service), base::Minutes(179));
+    EXPECT_LT(TimerRemainingTime(&service), base::Minutes(181));
+    EXPECT_NE(service.last_sent_time_, base::Time::Now());
+  }
+
+  // Simulate six hours of wall clock time, two hours of that suspended.
+  {
+    base::subtle::ScopedTimeClockOverrides clock_overrides(
+        []() { return GetTimeWithDelta(base::Hours(6)); },
+        []() { return GetTimeTicksWithDelta(base::Hours(2)); }, nullptr);
+
+    // Before the resync, the timer should still have ~1 hour of
+    // running time left.
+    EXPECT_GT(TimerRemainingTime(&service), base::Minutes(59));
+    EXPECT_LT(TimerRemainingTime(&service), base::Minutes(61));
+
+    // After the resync, the timer should fire.
+    service.ResyncTimerIfNeeded();
+    auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        pending_request->request.url.spec(), GetResponseSuccess());
+
+    EXPECT_GT(TimerRemainingTime(&service), base::Minutes(299));
+    EXPECT_LT(TimerRemainingTime(&service), base::Minutes(301));
+    EXPECT_EQ(service.last_sent_time_, base::Time::Now());
+  }
+
+  // Spin the runloop to clear any pending tasks.
+  base::RunLoop().RunUntilIdle();
 }

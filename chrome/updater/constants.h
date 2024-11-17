@@ -29,14 +29,6 @@ inline constexpr char kExecutableName[] = "updater.exe";
 inline constexpr char kExecutableName[] = "updater";
 #endif
 
-// The name of the enterprise companion program image.
-#if BUILDFLAG(IS_WIN)
-inline constexpr char kCompanionAppExecutableName[] =
-    "enterprise_companion.exe";
-#else
-inline constexpr char kCompanionAppExecutableName[] = "enterprise_companion";
-#endif
-
 // Uninstall switch for the enterprise companion app.
 inline constexpr char kUninstallCompanionAppSwitch[] = "uninstall";
 
@@ -181,7 +173,9 @@ inline constexpr char kLoggingModuleSwitchValue[] =
 #if BUILDFLAG(IS_WIN)
     "*/components/winhttp/*=1,"
 #endif
-    "*/components/update_client/*=2,*/chrome/updater/*=2";
+    "*/components/update_client/*=2,"
+    "*/chrome/enterprise_companion/*=2,"
+    "*/chrome/updater/*=2";
 
 // Specifies the application that the Updater needs to install.
 inline constexpr char kAppIdSwitch[] = "app-id";
@@ -227,6 +221,12 @@ inline constexpr char kOfflineDirSwitch[] =
 // that scenario.
 inline constexpr char kAppArgsSwitch[] = "appargs";  // backward-compatibility.
 
+// If provided alongside the update or install switch, a value is written to the
+// local preferences indicating that the Chrome Enterprise Companion App
+// experiment should be enabled.
+// TODO(crbug.com/342180612): Remove once the application has fully launched.
+inline constexpr char kEnableCecaExperimentSwitch[] = "enable-ceca-experiment";
+
 // The "expect-elevated" switch indicates that updater setup should be running
 // elevated (at high integrity). This switch is needed to avoid running into a
 // loop trying (but failing repeatedly) to elevate updater setup when attempting
@@ -246,7 +246,7 @@ inline constexpr char kCmdLinePrefersUser[] = "prefers-user";
 // Environment variables. Defined in the .cc file so that the updater branding
 // constants don't leak in this public header.
 extern const char kUsageStatsEnabled[];
-extern const char kUsageStatsEnabledValueEnabled[];
+inline constexpr char kUsageStatsEnabledValueEnabled[] = "1";
 
 // File system paths.
 //
@@ -278,6 +278,8 @@ inline constexpr char kDevOverrideKeyIdleCheckPeriodSeconds[] =
 inline constexpr char kDevOverrideKeyManagedDevice[] = "managed_device";
 inline constexpr char kDevOverrideKeyEnableDiffUpdates[] =
     "enable_diff_updates";
+inline constexpr char kDevOverrideKeyCecaConnectionTimeout[] =
+    "ceca_connection_timeout";
 
 // Timing constants.
 // How long to wait for an application installer (such as chrome_installer.exe)
@@ -586,8 +588,10 @@ inline constexpr int kErrorFailedToMoveDownloadedFile = 5;
 // Error occurred during file writing.
 inline constexpr int kErrorFailedToWriteFile = 6;
 
-inline constexpr base::TimeDelta kInitialDelay = base::Minutes(1);
+inline constexpr base::TimeDelta kInitialDelay = base::Seconds(1);
 inline constexpr base::TimeDelta kServerKeepAliveTime = base::Seconds(10);
+
+inline constexpr base::TimeDelta kCecaConnectionTimeout = base::Seconds(30);
 
 // The maximum number of server starts before the updater uninstalls itself
 // while waiting for the first app registration.

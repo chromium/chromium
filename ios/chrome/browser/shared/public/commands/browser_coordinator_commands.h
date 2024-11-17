@@ -8,6 +8,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+namespace base {
+class ScopedClosureRunner;
+}
 @protocol BadgeItem;
 class GURL;
 
@@ -55,11 +58,8 @@ class GURL;
 - (void)showHelpPage;
 
 // Shows the activity indicator overlay that appears over the view to prevent
-// interaction with the web page.
-- (void)showActivityOverlay;
-
-// Hides the activity indicator overlay.
-- (void)hideActivityOverlay;
+// interaction with the web page until the returned value is destructed.
+- (base::ScopedClosureRunner)showActivityOverlay;
 
 #if !defined(NDEBUG)
 // Inserts a new tab showing the HTML source of the current page.

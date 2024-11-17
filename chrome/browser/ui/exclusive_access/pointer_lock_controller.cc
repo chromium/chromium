@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_permission_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -74,19 +74,34 @@ void PointerLockController::RequestToLockPointer(WebContents* web_contents,
       return;
     }
   }
-  if (!base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
-    LockPointer(web_contents->GetWeakPtr(), last_unlocked_by_target);
+
+  content::GlobalRenderFrameHostId rfh_id =
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
+
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kKeyboardAndPointerLockPrompt)) {
+    LockPointer(web_contents->GetWeakPtr(), rfh_id, last_unlocked_by_target);
     return;
   }
+
+  DCHECK(!IsWaitingForPointerLockPrompt(web_contents));
+  hosts_waiting_for_pointer_lock_permission_prompt_.insert(rfh_id);
+
   exclusive_access_manager()->permission_manager().QueuePermissionRequest(
       blink::PermissionType::POINTER_LOCK,
       base::BindOnce(&PointerLockController::LockPointer,
                      weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
-                     last_unlocked_by_target),
+                     rfh_id, last_unlocked_by_target),
       base::BindOnce(&PointerLockController::RejectRequestToLockPointer,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     web_contents->GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
+                     rfh_id),
       web_contents);
+}
+
+bool PointerLockController::IsWaitingForPointerLockPrompt(
+    WebContents* web_contents) {
+  return IsWaitingForPointerLockPromptHelper(
+      web_contents->GetPrimaryMainFrame()->GetGlobalId());
 }
 
 void PointerLockController::ExitExclusiveAccessIfNecessary() {
@@ -141,6 +156,9 @@ void PointerLockController::UnlockPointer() {
   if (!tab)
     return;
 
+  hosts_waiting_for_pointer_lock_permission_prompt_.erase(
+      tab->GetPrimaryMainFrame()->GetGlobalId());
+
   content::RenderWidgetHostView* pointer_lock_view = nullptr;
   RenderViewHost* const rvh =
       exclusive_access_tab()->GetPrimaryMainFrame()->GetRenderViewHost();
@@ -153,7 +171,10 @@ void PointerLockController::UnlockPointer() {
 
 void PointerLockController::LockPointer(
     base::WeakPtr<content::WebContents> web_contents,
+    content::GlobalRenderFrameHostId rfh_id,
     bool last_unlocked_by_target) {
+  hosts_waiting_for_pointer_lock_permission_prompt_.erase(rfh_id);
+
   if (!web_contents) {
     if (lock_state_callback_for_test_) {
       std::move(lock_state_callback_for_test_).Run();
@@ -191,13 +212,18 @@ void PointerLockController::LockPointer(
 }
 
 void PointerLockController::RejectRequestToLockPointer(
-    base::WeakPtr<content::WebContents> web_contents) {
+    base::WeakPtr<content::WebContents> web_contents,
+    content::GlobalRenderFrameHostId rfh_id) {
+  DCHECK(IsWaitingForPointerLockPromptHelper(rfh_id));
+  hosts_waiting_for_pointer_lock_permission_prompt_.erase(rfh_id);
+
   if (!web_contents) {
     if (lock_state_callback_for_test_) {
       std::move(lock_state_callback_for_test_).Run();
     }
     return;
   }
+
   // Focus has moved to the modal, so move it back to the WebContents.
   web_contents->Focus();
   web_contents->GotResponseToPointerLockRequest(
@@ -231,4 +257,9 @@ bool PointerLockController::ShouldSuppressBubbleReshowForStateChange() {
          (pointer_lock_state_ == POINTERLOCK_UNLOCKED &&
           bubble_type ==
               EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION);
+}
+
+bool PointerLockController::IsWaitingForPointerLockPromptHelper(
+    content::GlobalRenderFrameHostId rfh_id) {
+  return hosts_waiting_for_pointer_lock_permission_prompt_.contains(rfh_id);
 }

@@ -199,8 +199,7 @@ EnumTraits<ash::multidevice::mojom::SoftwareFeature,
           PHONE_HUB_CAMERA_ROLL_CLIENT;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ash::multidevice::mojom::SoftwareFeature::BETTER_TOGETHER_HOST;
+  NOTREACHED();
 }
 
 bool EnumTraits<ash::multidevice::mojom::SoftwareFeature,
@@ -258,8 +257,7 @@ bool EnumTraits<ash::multidevice::mojom::SoftwareFeature,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 ash::multidevice::mojom::SoftwareFeatureState
@@ -275,8 +273,7 @@ EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
       return ash::multidevice::mojom::SoftwareFeatureState::kEnabled;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ash::multidevice::mojom::SoftwareFeatureState::kNotSupported;
+  NOTREACHED();
 }
 
 bool EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
@@ -295,8 +292,7 @@ bool EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

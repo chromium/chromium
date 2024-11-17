@@ -125,9 +125,9 @@ std::vector<SettingsItem> GetSettingItems(
       continue;
     }
 
-    int64_t plist_file_size = 0;
-    if (!base::GetFileSize(resolved_path, &plist_file_size) ||
-        plist_file_size > (kMaxFileSizeInMb << 20)) {
+    std::optional<int64_t> plist_file_size = base::GetFileSize(resolved_path);
+    if (!plist_file_size.has_value() ||
+        plist_file_size.value() > (kMaxFileSizeInMb << 20)) {
       item.presence = PresenceValue::kNotFound;
       items.push_back(item);
       continue;

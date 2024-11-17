@@ -10,11 +10,11 @@
 
 namespace ui_devtools {
 
-MockUIElementDelegate::MockUIElementDelegate() {}
-MockUIElementDelegate::~MockUIElementDelegate() {}
+MockUIElementDelegate::MockUIElementDelegate() = default;
+MockUIElementDelegate::~MockUIElementDelegate() = default;
 
-FakeFrontendChannel::FakeFrontendChannel() {}
-FakeFrontendChannel::~FakeFrontendChannel() {}
+FakeFrontendChannel::FakeFrontendChannel() = default;
+FakeFrontendChannel::~FakeFrontendChannel() = default;
 
 int FakeFrontendChannel::CountProtocolNotificationMessageStartsWith(
     const std::string& message) {

@@ -17,4 +17,6 @@ compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
         result);
 optimization_guide::proto::UserFeedback OptimizationFeedbackFromComposeFeedback(
     compose::mojom::UserFeedback feedback);
+optimization_guide::proto::ComposeUpfrontInputMode ComposeUpfrontInputMode(
+    compose::mojom::InputMode mode);
 #endif  // CHROME_COMMON_COMPOSE_TYPE_CONVERSIONS_H_

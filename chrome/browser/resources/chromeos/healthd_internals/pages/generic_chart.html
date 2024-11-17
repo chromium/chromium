@@ -1,16 +1,40 @@
 <style include="healthd-internals-shared">
-  .line-chart-header {
-    height: 25px;
+  #pageHeader {
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #headerEndContainer {
+    display: flex;
+    gap: 8px;
+    padding-inline-end: 32px;
+    align-items: center;
   }
 
   #lineChart {
     display: flex;
-    height: calc(100% - 25px);
+    height: calc(100% - 60px);
     width: 100%;
   }
 </style>
 <div class="full-page">
-  <h1 class="line-chart-header">[[chartHeader]]</h1>
+  <div id="pageHeader">
+    <h1>[[chartHeader]]</h1>
+    <div id="headerEndContainer">
+      <template is="dom-if" if="[[!isSummaryTableDisplayed]]">
+        <cr-button class="action-button" on-click="toggleChartSummaryTable">
+          Show Details
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[isSummaryTableDisplayed]]">
+        <cr-button class="cancel-button" on-click="toggleChartSummaryTable">
+          Hide Details
+        </cr-button>
+      </template>
+    </div>
+  </div>
   <healthd-internals-line-chart id="lineChart">
   </healthd-internals-line-chart>
 </div>

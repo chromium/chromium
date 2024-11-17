@@ -19,9 +19,34 @@ import "third_party/blink/public/mojom/widget/visual_properties.mojom";
 import "ui/base/dragdrop/mojom/drag_drop_types.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/range/mojom/range.mojom";
 
 [EnableIf=is_mac]
 import "ui/base/mojom/attributed_string.mojom";
+
+// This structure contains ime text span offset and its bounds used to support
+// Windows Text Services Framework GetTextExt and GetACPFromPoint APIs for
+// stylus writing gesture support.
+[EnableIf=is_win]
+struct ProximateCharacterRangeBounds {
+  gfx.mojom.Range range;
+  array<gfx.mojom.Rect> bounds;
+};
+
+// This structure contains blink focus related data for stylus writing in
+// response to FrameWidget::OnStartStylusWriting.
+struct StylusWritingFocusResult {
+  gfx.mojom.Rect focused_edit_bounds;
+  gfx.mojom.Rect caret_bounds;
+
+  // `proximate_bounds` is optional because there's a few scenarios where it may
+  // not be available, including but not limited to:
+  // - StylusHandwritingWin feature is disabled
+  // - "proximate" bounds collection can be disabled through field trials.
+  // - Something unexpected occurred when computing the "pivot" or query range.
+  [EnableIf=is_win]
+  ProximateCharacterRangeBounds? proximate_bounds;
+};
 
 // Implemented in Blink, this interface defines frame-widget-specific methods that
 // will be invoked from the browser process (e.g. blink::WebFrameWidget).
@@ -91,8 +116,8 @@ interface FrameWidget {
   // another message that writing has ended. This message responds with the
   // focused edit bounds and caret bounds after stylus writable element is
   // focused, and null if that element could not be focused.
-  OnStartStylusWriting() => (gfx.mojom.Rect? focused_edit_bounds,
-                             gfx.mojom.Rect? caret_bounds);
+  OnStartStylusWriting([EnableIf=is_win] gfx.mojom.Rect focus_rect_in_widget)
+      => (StylusWritingFocusResult? focus_result);
 
   // Exposes an interface to the renderer to provide positional and styling
   // information about the currently focused element.

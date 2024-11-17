@@ -74,10 +74,12 @@ void Attr::setValue(const AtomicString& value,
                     ExceptionState& exception_state) {
   // Element::setAttribute will remove the attribute if value is null.
   DCHECK(!value.IsNull());
-  if (element_)
-    element_->setAttribute(GetQualifiedName(), value, exception_state);
-  else
+  if (element_) {
+    element_->SetAttributeWithValidation(GetQualifiedName(), value,
+                                         exception_state);
+  } else {
     standalone_value_or_attached_local_name_ = value;
+  }
 }
 
 void Attr::setNodeValue(const String& v, ExceptionState& exception_state) {

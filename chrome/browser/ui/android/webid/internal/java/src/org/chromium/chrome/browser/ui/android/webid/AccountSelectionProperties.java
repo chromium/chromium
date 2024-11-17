@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -161,6 +162,7 @@ class AccountSelectionProperties {
         static class Properties {
             public IdentityProviderMetadata mIdpMetadata;
             public Callback<Account> mOnClickListener;
+            public @RpMode.EnumType int mRpMode;
         }
 
         static final ReadableObjectPropertyKey<Properties> PROPERTIES =

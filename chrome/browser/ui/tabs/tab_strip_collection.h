@@ -64,6 +64,7 @@ class TabStripCollection : public TabCollection, public TabContentsData {
   void MoveGroupTo(const TabGroupModel* group_model,
                    const tab_groups::TabGroupId& group,
                    int to_index) override;
+  size_t TotalTabCount() const override;
 
   // Removes the tab present at a recursive index in the collection and
   // returns the unique_ptr to the tab model. If there is no tab present
@@ -79,13 +80,13 @@ class TabStripCollection : public TabCollection, public TabContentsData {
 
   // TabCollection:
   // This will be false as this does not contain a tab as a direct child.
-  bool ContainsTab(TabModel* tab_model) const override;
-  bool ContainsTabRecursive(TabModel* tab_model) const override;
+  bool ContainsTab(const TabInterface* tab) const override;
+  bool ContainsTabRecursive(const TabInterface* tab) const override;
   // Returns true if the collection is the pinned collection or the
   // unpinned collection.
   bool ContainsCollection(TabCollection* collection) const override;
   std::optional<size_t> GetIndexOfTabRecursive(
-      const TabModel* tab_model) const override;
+      const TabInterface* tab) const override;
   std::optional<size_t> GetIndexOfCollection(
       TabCollection* collection) const override;
   // Tabs and Collections are not allowed to be removed from TabStripCollection.
@@ -94,7 +95,6 @@ class TabStripCollection : public TabCollection, public TabContentsData {
   std::unique_ptr<TabCollection> MaybeRemoveCollection(
       TabCollection* collection) override;
   size_t ChildCount() const override;
-  size_t TabCountRecursive() const override;
 
   TabCollectionStorage* GetTabCollectionStorageForTesting() {
     return impl_.get();

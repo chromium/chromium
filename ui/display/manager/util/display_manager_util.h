@@ -11,16 +11,12 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/types/display_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "third_party/cros_system_api/dbus/service_constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace gfx {
 class Rect;
@@ -34,7 +30,6 @@ class ManagedDisplayMode;
 class ManagedDisplayInfo;
 using DisplayInfoList = std::vector<ManagedDisplayInfo>;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns a string describing |state|.
 std::string DisplayPowerStateToString(chromeos::DisplayPowerState state);
 
@@ -51,8 +46,6 @@ DISPLAY_MANAGER_EXPORT int GetDisplayPower(
     const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
     chromeos::DisplayPowerState state,
     std::vector<bool>* display_power);
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Determines whether |a| is within an epsilon of |b|.
 bool WithinEpsilon(float a, float b);

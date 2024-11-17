@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_video_stats.h"
@@ -49,22 +50,21 @@ String ContentHintToString(
     case WebMediaStreamTrack::ContentHintType::kVideoText:
       return kContentHintStringVideoText;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kContentHintStringNone;
+  NOTREACHED();
 }
 
-String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state) {
+V8MediaStreamTrackState ReadyStateToV8TrackState(
+    const MediaStreamSource::ReadyState& ready_state) {
   // Although muted is tracked as a ReadyState, only "live" and "ended" are
   // visible externally.
   switch (ready_state) {
     case MediaStreamSource::kReadyStateLive:
     case MediaStreamSource::kReadyStateMuted:
-      return "live";
+      return V8MediaStreamTrackState(V8MediaStreamTrackState::Enum::kLive);
     case MediaStreamSource::kReadyStateEnded:
-      return "ended";
+      return V8MediaStreamTrackState(V8MediaStreamTrackState::Enum::kEnded);
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 // static
@@ -99,7 +99,6 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
   UserMediaRequest* const request = MakeGarbageCollected<UserMediaRequest>(
       window, user_media_client, UserMediaRequestType::kDisplayMedia, audio,
       video, /*should_prefer_current_tab=*/false,
-      /*auto_select_all_screens=*/false,
       /*capture_controller=*/nullptr,
       MakeGarbageCollected<GetOpenDeviceRequestCallbacks>(),
       IdentifiableSurface());
@@ -124,11 +123,10 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
   // TODO(1288839): What happens if GetOpenDevice fails?
   DCHECK(track);
   if (track->GetWrapperTypeInfo() != data.track_impl_subtype) {
-    NOTREACHED_IN_MIGRATION()
-        << "transferred track should be "
-        << data.track_impl_subtype->interface_name << " but instead it is "
-        << track->GetWrapperTypeInfo()->interface_name;
-    return nullptr;
+    NOTREACHED() << "transferred track should be "
+                 << data.track_impl_subtype->interface_name
+                 << " but instead it is "
+                 << track->GetWrapperTypeInfo()->interface_name;
   }
   return track;
 }

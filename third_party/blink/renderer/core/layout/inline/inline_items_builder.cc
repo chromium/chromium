@@ -423,8 +423,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
           RestoreTrailingCollapsibleSpace(last_item);
           return false;
         case InlineItem::kOpaqueToCollapsing:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } else if (last_item->EndCollapseType() == InlineItem::kCollapsed) {
       RestoreTrailingCollapsibleSpace(last_item);
@@ -533,8 +532,7 @@ template <>
 bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     const InlineNodeData&,
     LayoutText*) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 template <typename MappingBuilder>
@@ -1217,7 +1215,6 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendAtomicInline(
                                                  layout_object);
   RestoreTrailingCollapsibleSpaceIfRemoved();
   Append(InlineItem::kAtomicInline, kObjectReplacementCharacter, layout_object);
-  has_ruby_ = has_ruby_ || layout_object->IsRubyColumn();
 
   // When this atomic inline is inside of an inline box, the height of the
   // inline box can be different from the height of the atomic inline. Ensure

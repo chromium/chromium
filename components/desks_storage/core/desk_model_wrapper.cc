@@ -81,6 +81,7 @@ void DeskModelWrapper::AddOrUpdateEntry(
                                                      std::move(callback));
       return;
     // Return kInvalidArgument on an unknown desk type.
+    case ash::DeskTemplateType::kCoral:
     case ash::DeskTemplateType::kUnknown:
       std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument,
                               std::move(new_entry));
@@ -126,6 +127,10 @@ size_t DeskModelWrapper::GetDeskTemplateEntryCount() const {
          policy_entries_.size();
 }
 
+size_t DeskModelWrapper::GetCoralEntryCount() const {
+  return 0u;
+}
+
 size_t DeskModelWrapper::GetMaxSaveAndRecallDeskEntryCount() const {
   return save_and_recall_desks_model_->GetMaxSaveAndRecallDeskEntryCount();
 }
@@ -133,6 +138,10 @@ size_t DeskModelWrapper::GetMaxSaveAndRecallDeskEntryCount() const {
 size_t DeskModelWrapper::GetMaxDeskTemplateEntryCount() const {
   return GetDeskTemplateModel()->GetMaxDeskTemplateEntryCount() +
          policy_entries_.size();
+}
+
+size_t DeskModelWrapper::GetMaxCoralEntryCount() const {
+  return 0u;
 }
 
 std::set<base::Uuid> DeskModelWrapper::GetAllEntryUuids() const {
@@ -173,6 +182,7 @@ ash::DeskTemplate* DeskModelWrapper::FindOtherEntryWithName(
     case ash::DeskTemplateType::kSaveAndRecall:
       return save_and_recall_desks_model_->FindOtherEntryWithName(name, type,
                                                                   uuid);
+    case ash::DeskTemplateType::kCoral:
     case ash::DeskTemplateType::kUnknown:
       return nullptr;
   }

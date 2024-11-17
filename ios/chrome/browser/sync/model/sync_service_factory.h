@@ -9,7 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace syncer {
 class SyncServiceImpl;
@@ -20,9 +21,6 @@ class SyncService;
 // ProfileIOS.
 class SyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358299863): Remove when fully migrated.
-  static syncer::SyncService* GetForBrowserState(ProfileIOS* profile);
-
   static syncer::SyncService* GetForProfile(ProfileIOS* profile);
   static syncer::SyncService* GetForProfileIfExists(ProfileIOS* profile);
 

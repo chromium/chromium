@@ -145,7 +145,7 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
   if (!layout_view)
     return;
 
-  if (!layout_view->GetFrameView()->UpdateLifecycleToPrePaintClean(
+  if (!layout_view->GetFrameView()->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kInspector)) {
     return;
   }
@@ -343,8 +343,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
       continue;
 
     // If background elements are hidden, ignore their background colors.
-    if (element != top_element &&
-        style->UsedVisibility() == EVisibility::kHidden) {
+    if (element != top_element && style->Visibility() == EVisibility::kHidden) {
       continue;
     }
 

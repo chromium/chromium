@@ -81,12 +81,10 @@ void MediaStreamAudioProcessor::ProcessCapturedAudio(
     const media::AudioBus& audio_source,
     base::TimeTicks audio_capture_time,
     int num_preferred_channels,
-    double volume,
-    bool key_pressed) {
+    double volume) {
   DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
   audio_processor_->ProcessCapturedAudio(audio_source, audio_capture_time,
-                                         num_preferred_channels, volume,
-                                         key_pressed);
+                                         num_preferred_channels, volume);
 }
 
 void MediaStreamAudioProcessor::Stop() {
@@ -130,12 +128,12 @@ bool MediaStreamAudioProcessor::WouldModifyAudio(
   }
 
 #if !BUILDFLAG(IS_IOS)
-  if (properties.goog_auto_gain_control) {
+  if (properties.auto_gain_control) {
     return true;
   }
 #endif
 
-  if (properties.goog_noise_suppression) {
+  if (properties.noise_suppression) {
     return true;
   }
 

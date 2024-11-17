@@ -60,7 +60,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown"/>
   <int value="2" label="Not allowed because feature disabled"/>
   <int value="3" label="Not allowed because the suggest setting is disabled"/>
-  <int value="4" label="Not allowed because the Drive setting is disabled"/>
+  <int value="4"
+      label="Not allowed because the Drive setting is disabled (obsolete)"/>
   <int value="5" label="Not allowed because the profile is off the record"/>
   <int value="6" label="Not allowed because the user is not logged in"/>
   <int value="7" label="Not allowed because the user is not Syncing"/>

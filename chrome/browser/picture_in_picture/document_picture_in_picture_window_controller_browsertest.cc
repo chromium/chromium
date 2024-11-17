@@ -59,6 +59,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
@@ -616,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // Simulate a click on the document picture in picture window title, and
   // verify that the context menu is not shown.
   pip_frame_view->frame()->ShowContextMenuForViewImpl(
-      window_title, click_location, ui::MenuSourceType::MENU_SOURCE_MOUSE);
+      window_title, click_location, ui::mojom::MenuSourceType::kMouse);
 
   EXPECT_EQ(false, pip_frame_view->frame()->IsMenuRunnerRunningForTesting());
 }

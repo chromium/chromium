@@ -37,10 +37,8 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/url_conversion.h"
-#include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
-#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
@@ -48,6 +46,8 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_renderer_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_renderer.h"
 #include "third_party/blink/renderer/modules/mediastream/web_media_player_ms_compositor.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
+#include "third_party/blink/renderer/platform/media/media_player_util.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -360,7 +360,7 @@ WebMediaPlayerMS::WebMediaPlayerMS(
       network_state_(WebMediaPlayer::kNetworkStateEmpty),
       ready_state_(WebMediaPlayer::kReadyStateHaveNothing),
       buffered_(static_cast<size_t>(0)),
-      client_(client),
+      client_(static_cast<MediaPlayerClient*>(client)),
       delegate_(delegate),
       delegate_id_(0),
       paused_(true),
@@ -390,7 +390,7 @@ WebMediaPlayerMS::WebMediaPlayerMS(
   delegate_id_ = delegate_->AddObserver(this);
   SendLogMessage(String::Format(
       "%s({delegate_id=%d}, {is_audio_element=%s}, {sink_id=%s})", __func__,
-      delegate_id_, client->IsAudioElement() ? "true" : "false",
+      delegate_id_, client_->IsAudioElement() ? "true" : "false",
       sink_id.Utf8().c_str()));
 
   // TODO(tmathmeyer) WebMediaPlayerImpl gets the URL from the WebLocalFrame.
@@ -1081,15 +1081,16 @@ void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
   const scoped_refptr<media::VideoFrame> frame = compositor_->GetCurrentFrame();
 
   scoped_refptr<viz::RasterContextProvider> provider;
-  if (frame && frame->HasTextures()) {
+  if (frame && frame->HasSharedImage()) {
     provider = Platform::Current()->SharedMainThreadContextProvider();
     // GPU Process crashed.
     if (!provider)
       return;
   }
-  const gfx::RectF dest_rect(rect);
-  video_renderer_.Paint(frame, canvas, dest_rect, flags,
-                        GetFrameTransformation(frame), provider.get());
+  media::PaintCanvasVideoRenderer::PaintParams paint_params;
+  paint_params.dest_rect = gfx::RectF(rect);
+  paint_params.transformation = GetFrameTransformation(frame);
+  video_renderer_.Paint(frame, canvas, flags, paint_params, provider.get());
 }
 
 scoped_refptr<media::VideoFrame> WebMediaPlayerMS::GetCurrentFrameThenUpdate() {
@@ -1629,8 +1630,7 @@ WebMediaPlayerMS::GetMediaStreamType() {
     case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
       return media::mojom::MediaStreamType::kLocalDisplayCapture;
     case mojom::blink::MediaStreamType::NUM_MEDIA_TYPES:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 
   return std::nullopt;

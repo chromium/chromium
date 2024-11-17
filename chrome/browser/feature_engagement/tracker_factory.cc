@@ -61,7 +61,8 @@ TrackerFactory::TrackerFactory()
 
 TrackerFactory::~TrackerFactory() = default;
 
-KeyedService* TrackerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 

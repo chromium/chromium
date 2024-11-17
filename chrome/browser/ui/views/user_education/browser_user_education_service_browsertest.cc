@@ -31,9 +31,9 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "components/user_education/common/feature_promo_registry.h"
-#include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/tutorial_identifier.h"
+#include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/tutorial/tutorial_identifier.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,8 +133,7 @@ std::ostream& operator<<(std::ostream& os, const IPHFailure& failure) {
   os << failure.feature->name;
   switch (failure.reason) {
     case IPHFailureReason::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case IPHFailureReason::kUnlisted:
       os << " is not registered in feature_engagement::kAllFeatures in "
             "feature_list.cc. This will cause most attempts to show or access "
@@ -494,8 +493,7 @@ std::ostream& operator<<(std::ostream& os, const TutorialFailure& failure) {
   os << failure.tutorial_id;
   switch (failure.reason) {
     case TutorialFailureReason::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case TutorialFailureReason::kLikelySkippedStep:
       os << " shows a bubble anchored to an always-visible UI element "
          << failure.identifier << " (step " << failure.step_number
@@ -634,7 +632,7 @@ class BrowserUserEducationServiceNewBadgeBrowserTest
     // grace period.
     auto& storage_service =
         UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
-            ->feature_promo_storage_service();
+            ->user_education_storage_service();
     storage_service.set_profile_creation_time_for_testing(
         storage_service.GetCurrentTime() - base::Days(365));
   }
@@ -659,9 +657,9 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
   // Ensure that the feature can be marked as used.
   for (int i = 0; i < user_education::features::GetNewBadgeFeatureUsedCount();
        i += 2) {
-    browser()->window()->NotifyPromoFeatureUsed(
+    browser()->window()->NotifyNewBadgeFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         browser()->profile(), user_education::features::kNewBadgeTestFeature);
   }
 
@@ -684,9 +682,9 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
   // Ensure that the feature can be marked as used.
   for (int i = 0; i < user_education::features::GetNewBadgeFeatureUsedCount();
        i += 2) {
-    browser()->window()->NotifyPromoFeatureUsed(
+    browser()->window()->NotifyNewBadgeFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         browser()->profile(), user_education::features::kNewBadgeTestFeature);
   }
 

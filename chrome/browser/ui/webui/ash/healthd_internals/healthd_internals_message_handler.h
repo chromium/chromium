@@ -38,6 +38,9 @@ class HealthdInternalsMessageHandler : public content::WebUIMessageHandler {
   // Handle the `getHealthdProcessInfo` request.
   void HandleGetHealthdProcessInfo(const base::Value::List& args);
 
+  // Handle the `getCrosSystemInfo` request.
+  void HandleGetCrosSystemInfo(const base::Value::List& args);
+
   // Handle the telemetry result from `probe_service_`.
   void HandleTelemetryResult(base::Value callback_id,
                              cros_healthd::mojom::TelemetryInfoPtr info);

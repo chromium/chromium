@@ -24,6 +24,8 @@ public class ViewResizerUtil {
         float dpToPx = resources.getDisplayMetrics().density;
 
         int screenWidthDp = 0;
+        // Some automotive devices with wide displays show side UI components, which should not be
+        // included in the padding calculations.
         if (BuildInfo.getInstance().isAutomotive && view != null) {
             screenWidthDp = (int) (view.getMeasuredWidth() / dpToPx);
         }

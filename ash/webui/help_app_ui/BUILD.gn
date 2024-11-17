@@ -38,6 +38,7 @@ static_library("help_app_ui") {
   ]
 
   deps = [
+    ":help_app_ui_pref",
     ":mojo_bindings",
     ":mojo_bindings_js",
     "//ash/constants",
@@ -57,6 +58,7 @@ static_library("help_app_ui") {
     "//chromeos/constants",
     "//chromeos/strings",
     "//components/keyed_service/content:content",
+    "//components/prefs",
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
@@ -64,6 +66,15 @@ static_library("help_app_ui") {
     "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
   ]
+}
+
+static_library("help_app_ui_pref") {
+  sources = [
+    "help_app_prefs.cc",
+    "help_app_prefs.h",
+  ]
+
+  deps = [ "//components/prefs" ]
 }
 
 mojom("mojo_bindings") {
@@ -106,6 +117,7 @@ source_set("browser_test_support") {
 
   deps = [
     ":help_app_ui",
+    ":help_app_ui_pref",
     "resources:test_build_ts",
     "//ash/public/cpp:cpp",
     "//ash/webui/web_applications/test:test_support",

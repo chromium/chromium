@@ -29,8 +29,7 @@ void Reject(ScriptPromiseResolverBase* resolver,
 
   switch (error.status) {
     case mojom::blink::FileSystemAccessStatus::kOk:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case mojom::blink::FileSystemAccessStatus::kPermissionDenied:
       resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
                                        message);

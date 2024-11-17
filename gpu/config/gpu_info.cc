@@ -71,8 +71,7 @@ const char* ImageDecodeAcceleratorTypeToString(
     case gpu::ImageDecodeAcceleratorType::kUnknown:
       return "Unknown";
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid ImageDecodeAcceleratorType.";
-  return "";
+  NOTREACHED() << "Invalid ImageDecodeAcceleratorType.";
 }
 
 const char* ImageDecodeAcceleratorSubsamplingToString(
@@ -334,6 +333,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     uint32_t visibility_callback_call_count;
 
 #if BUILDFLAG(ENABLE_VULKAN)
+    bool hardware_supports_vulkan;
     std::optional<VulkanInfo> vulkan_info;
 #endif
   };
@@ -409,6 +409,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddInt("visibilityCallbackCallCount",
                      visibility_callback_call_count);
 #if BUILDFLAG(ENABLE_VULKAN)
+  enumerator->AddBool("hardwareSupportsVulkan", hardware_supports_vulkan);
   if (vulkan_info) {
     auto blob = vulkan_info->Serialize();
     enumerator->AddBinary("vulkanInfo", base::span<const uint8_t>(blob));

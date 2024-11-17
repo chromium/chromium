@@ -80,6 +80,8 @@ source_set("base") {
     "audio_glitch_info.h",
     "audio_hash.cc",
     "audio_hash.h",
+    "audio_limiter.cc",
+    "audio_limiter.h",
     "audio_power_monitor.cc",
     "audio_power_monitor.h",
     "audio_processing.cc",
@@ -202,6 +204,8 @@ source_set("base") {
     "key_systems_impl.h",
     "key_systems_support_registration.cc",
     "key_systems_support_registration.h",
+    "limiting_audio_queue.cc",
+    "limiting_audio_queue.h",
     "localized_strings.cc",
     "localized_strings.h",
     "logging_override_if_enabled.h",
@@ -331,8 +335,6 @@ source_set("base") {
     "tuneable.cc",
     "tuneable.h",
     "use_after_free_checker.h",
-    "user_input_monitor.cc",
-    "user_input_monitor.h",
     "video_aspect_ratio.cc",
     "video_aspect_ratio.h",
     "video_bitrate_allocation.cc",
@@ -447,21 +449,15 @@ source_set("base") {
     deps += [ "//third_party/libaom" ]
   }
 
-  if (is_linux && !is_castos) {
-    sources += [ "user_input_monitor_linux.cc" ]
-  } else if (is_mac) {
-    sources += [ "user_input_monitor_mac.cc" ]
+  if (is_mac) {
     frameworks = [
       "CoreVideo.framework",
       "CoreFoundation.framework",
       "CoreGraphics.framework",
       "IOSurface.framework",
     ]
-  } else if (is_win) {
-    sources += [ "user_input_monitor_win.cc" ]
-  } else {
-    defines += [ "DISABLE_USER_INPUT_MONITOR" ]
   }
+
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -597,6 +593,7 @@ source_set("unit_tests") {
     "audio_glitch_info_unittest.cc",
     "audio_hash_unittest.cc",
     "audio_latency_unittest.cc",
+    "audio_limiter_unittest.cc",
     "audio_parameters_unittest.cc",
     "audio_point_unittest.cc",
     "audio_power_monitor_unittest.cc",
@@ -626,6 +623,7 @@ source_set("unit_tests") {
     "frame_buffer_pool_unittest.cc",
     "frame_rate_estimator_unittest.cc",
     "key_systems_unittest.cc",
+    "limiting_audio_queue_unittest.cc",
     "media_log_unittest.cc",
     "media_serializers_unittest.cc",
     "media_url_demuxer_unittest.cc",
@@ -649,7 +647,6 @@ source_set("unit_tests") {
     "supported_video_decoder_config_unittest.cc",
     "time_delta_interpolator_unittest.cc",
     "tuneable_unittest.cc",
-    "user_input_monitor_unittest.cc",
     "vector_math_unittest.cc",
     "video_aspect_ratio_unittest.cc",
     "video_bitrate_allocation_unittest.cc",
@@ -710,6 +707,7 @@ source_set("perftests") {
   sources = [
     "audio_bus_perftest.cc",
     "audio_converter_perftest.cc",
+    "audio_limiter_perftest.cc",
     "run_all_perftests.cc",
     "sinc_resampler_perftest.cc",
     "vector_math_perftest.cc",

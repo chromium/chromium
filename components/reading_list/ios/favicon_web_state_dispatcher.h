@@ -16,13 +16,13 @@ namespace reading_list {
 // dispatcher keeps it alive long enough for it to download the favicons.
 class FaviconWebStateDispatcher {
  public:
-  FaviconWebStateDispatcher() {}
+  FaviconWebStateDispatcher() = default;
 
   FaviconWebStateDispatcher(const FaviconWebStateDispatcher&) = delete;
   FaviconWebStateDispatcher& operator=(const FaviconWebStateDispatcher&) =
       delete;
 
-  virtual ~FaviconWebStateDispatcher() {}
+  virtual ~FaviconWebStateDispatcher() = default;
   // Returns a WebState with a Favicon Driver attached.
   virtual std::unique_ptr<web::WebState> RequestWebState() = 0;
   // Called to return a WebState. The WebState should not be used after being

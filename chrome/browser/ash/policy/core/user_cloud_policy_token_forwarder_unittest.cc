@@ -15,14 +15,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -117,8 +115,6 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   void SetUp() override {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ASSERT_TRUE(profile_manager_->SetUp());
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDMServerOAuthForChildUser);
   }
 
   void TearDown() override {
@@ -216,8 +212,6 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   std::unique_ptr<MockCloudPolicyStore> store_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(UserCloudPolicyTokenForwarderTest,

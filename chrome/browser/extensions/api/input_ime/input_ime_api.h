@@ -51,7 +51,10 @@ class InputImeEventRouterFactory {
   InputImeEventRouterFactory();
   ~InputImeEventRouterFactory();
 
-  std::map<Profile*, InputImeEventRouter*, ProfileCompare> router_map_;
+  std::map<Profile*,
+           raw_ptr<InputImeEventRouter, CtnExperimental>,
+           ProfileCompare>
+      router_map_;
 };
 
 class InputImeKeyEventHandledFunction : public ExtensionFunction {

@@ -74,6 +74,7 @@ public class LegacyTabStartupMetricsTracker {
     private boolean mFirstVisibleContent2Recorded;
     private boolean mVisibleContentRecorded;
     private boolean mBackPressOccurred;
+    private boolean mBackBeforeFirstVisibleContentRecorded;
 
     // Records whether StartupPaintPreview's first paint was recorded pre-the app being in the
     // foreground. Used for investigating crbug.com/1273097.
@@ -141,7 +142,7 @@ public class LegacyTabStartupMetricsTracker {
                     FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
         }
 
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToForegroundSessionStart",
                 SystemClock.uptimeMillis() - mActivityStartTimeMs);
 
@@ -190,19 +191,18 @@ public class LegacyTabStartupMetricsTracker {
         mShouldTrackStartupMetrics = false;
     }
 
-    /**
-     * TODO(crbug.com/40944523): This is exposed in order to investigate whether back press will
-     * interrupt the recording of first visible content related histograms. Remove this once a
-     * definitive conclusion is reached.
-     *
-     * @return Whether first visible content related histogram is recorded.
-     */
-    public boolean isFirstVisibleContentRecorded() {
-        return mFirstVisibleContent2Recorded;
-    }
-
+    /** Record if back press occurs before first visible content is drawn. */
     public void onBackPressed() {
         mBackPressOccurred = true;
+
+        if (!mShouldTrackStartupMetrics
+                || mBackBeforeFirstVisibleContentRecorded
+                || mFirstVisibleContent2Recorded) {
+            return;
+        }
+
+        mBackBeforeFirstVisibleContentRecorded = true;
+        RecordUserAction.record("SystemBackBeforeFirstVisibleContent2");
     }
 
     public void destroy() {
@@ -234,7 +234,7 @@ public class LegacyTabStartupMetricsTracker {
                 && UmaUtils.hasComeToForegroundWithNative()
                 && !UmaUtils.hasComeToBackgroundWithNative()) {
             mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit"
                             + activityTypeToSuffix(mHistogramSuffix),
                     mFirstCommitTimeMs);
@@ -247,7 +247,7 @@ public class LegacyTabStartupMetricsTracker {
                 && isTrackedPage
                 && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
             mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed", mFirstCommitTimeMs);
             recordFirstVisibleContent2(mFirstCommitTimeMs);
         }
@@ -273,7 +273,7 @@ public class LegacyTabStartupMetricsTracker {
 
         if (UmaUtils.hasComeToForegroundWithNative() && !UmaUtils.hasComeToBackgroundWithNative()) {
             long durationMs = firstContentfulPaintMs - mActivityStartTimeMs;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstContentfulPaint"
                             + activityTypeToSuffix(mHistogramSuffix),
                     durationMs);
@@ -300,7 +300,7 @@ public class LegacyTabStartupMetricsTracker {
         if (mFirstVisibleContentRecorded) return;
 
         mFirstVisibleContentRecorded = true;
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToFirstVisibleContent", durationMs);
     }
 
@@ -318,7 +318,7 @@ public class LegacyTabStartupMetricsTracker {
         if (mFirstVisibleContent2Recorded) return;
 
         mFirstVisibleContent2Recorded = true;
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToFirstVisibleContent2", durationMs);
         TraceEvent.startupTimeToFirstVisibleContent2(mActivityId, mActivityStartTimeMs, durationMs);
         if (mBackPressOccurred) {
@@ -338,7 +338,7 @@ public class LegacyTabStartupMetricsTracker {
         if (mVisibleContentRecorded) return;
 
         mVisibleContentRecorded = true;
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToVisibleContent", durationMs);
     }
 }

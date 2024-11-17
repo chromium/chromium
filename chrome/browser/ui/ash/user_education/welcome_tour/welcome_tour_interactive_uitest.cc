@@ -4,6 +4,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/constants/devicetype.h"
@@ -106,9 +106,7 @@ class WelcomeTourInteractiveUiTest
          {ash::features::kWelcomeTourCounterfactualArm,
           IsWelcomeTourCounterfactuallyEnabled()},
          {ash::features::kWelcomeTourHoldbackArm, false},
-         {app_list_features::kAppsCollections, IsAppsCollectionsEnabled()},
-         {app_list_features::kForceShowAppsCollections,
-          IsAppsCollectionsEnabled()}});
+         {app_list_features::kAppsCollections, IsAppsCollectionsEnabled()}});
 
     // TODO(http://b/277091006): Remove after preventing app launches.
     // Prevent the browser from launching as it is not needed to fully exercise
@@ -121,6 +119,9 @@ class WelcomeTourInteractiveUiTest
   // InteractiveBrowserTest:
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+
+    ash::AppsCollectionsController::Get()->ForceAppsCollectionsForTesting(
+        IsAppsCollectionsEnabled());
 
     // Install system apps.
     // NOTE: This test requires the "Help" and "Settings" apps to be installed.
@@ -412,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
       // Step 7 in V1 and step 8 in V2: Explore app window.
       InAnyContext(WaitForBrowser()),
       InSameContext(Steps(WaitForAppListBubbleToHide(),
-                          CheckBrowserIsForWebApp(web_app::kHelpAppId))));
+                          CheckBrowserIsForWebApp(ash::kHelpAppId))));
 }
 
 // An interactive UI test that locks the screen during the Welcome Tour.

@@ -121,8 +121,7 @@ WebHTTPBody GetWebHTTPBodyForRequestBody(
         break;
       }
       case network::DataElement::Tag::kChunkedDataPipe:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return http_body;

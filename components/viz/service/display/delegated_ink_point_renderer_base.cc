@@ -143,6 +143,14 @@ DelegatedInkPointRendererBase::FilterPoints() {
   return points_to_draw;
 }
 
+std::optional<AggregatedRenderPassId>
+DelegatedInkPointRendererBase::GetLatestMetadataRenderPassId() const {
+  if (metadata_) {
+    return AggregatedRenderPassId::FromUnsafeValue(metadata_->render_pass_id());
+  }
+  return std::nullopt;
+}
+
 void DelegatedInkPointRendererBase::PredictPoints(
     std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw) {
   DCHECK(metadata_);

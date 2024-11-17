@@ -13,10 +13,11 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
-#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_view_controller.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest_mac.h"
@@ -24,6 +25,20 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
+
+// Finds a subview with a given accessibility id.
+UIView* FindByID(UIView* view, NSString* accessibility_id) {
+  if (view.accessibilityIdentifier == accessibility_id) {
+    return view;
+  }
+  for (UIView* subview in view.subviews) {
+    UIView* foundView = FindByID(subview, accessibility_id);
+    if (foundView) {
+      return foundView;
+    }
+  }
+  return nil;
+}
 
 // Create the Feature Engagement Mock Tracker.
 std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
@@ -71,19 +86,18 @@ class DefaultBrowserGenericPromoCoordinatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
 
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:view_controller_];
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            browser_state_.get()));
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
 
     coordinator_ = [[DefaultBrowserGenericPromoCoordinator alloc]
         initWithBaseViewController:view_controller_
@@ -97,9 +111,9 @@ class DefaultBrowserGenericPromoCoordinatorTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-   DefaultBrowserGenericPromoCoordinator* coordinator_;
+  DefaultBrowserGenericPromoCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
@@ -123,14 +137,21 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest, TestRemindMeLater) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserVideoPromo.Appear"));
 
-  // This should present a GenericDefaultBrowserPromoViewController.
+  // This should present a DefaultBrowserInstructionsViewController.
   ASSERT_TRUE([view_controller_.presentedViewController
-      isKindOfClass:[DefaultBrowserGenericPromoViewController class]]);
-   DefaultBrowserGenericPromoViewController* generic_promo_view_controller =
-      base::apple::ObjCCastStrict<DefaultBrowserGenericPromoViewController>(
+      isKindOfClass:[DefaultBrowserInstructionsViewController class]]);
+  DefaultBrowserInstructionsViewController* promo_view_controller =
+      base::apple::ObjCCastStrict<DefaultBrowserInstructionsViewController>(
           view_controller_.presentedViewController);
 
-  EXPECT_EQ(YES, generic_promo_view_controller.hasRemindMeLater);
+  UIView* tertiary_button_view =
+      FindByID(promo_view_controller.view,
+               kConfirmationAlertTertiaryActionAccessibilityIdentifier);
+  EXPECT_NSNE(nil, tertiary_button_view);
+  ASSERT_TRUE([tertiary_button_view isKindOfClass:[UIButton class]]);
+
+  UIButton* tertiary_button =
+      base::apple::ObjCCastStrict<UIButton>(tertiary_button_view);
 
   // Prepare to tap tertiary action.
   EXPECT_CALL(
@@ -138,7 +159,7 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest, TestRemindMeLater) {
       NotifyEvent(
           feature_engagement::events::kDefaultBrowserPromoRemindMeLater));
 
-  [generic_promo_view_controller.actionHandler confirmationAlertTertiaryAction];
+  [tertiary_button sendActionsForControlEvents:UIControlEventTouchUpInside];
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserVideoPromo.Fullscreen.RemindMeLater"));
@@ -164,11 +185,19 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
   ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 0);
   ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
 
-  DefaultBrowserGenericPromoViewController* generic_promo_view_controller =
-      base::apple::ObjCCastStrict<DefaultBrowserGenericPromoViewController>(
+  DefaultBrowserInstructionsViewController* promo_view_controller =
+      base::apple::ObjCCastStrict<DefaultBrowserInstructionsViewController>(
           view_controller_.presentedViewController);
-  [generic_promo_view_controller
-          .actionHandler confirmationAlertSecondaryAction];
+
+  UIView* secondary_button_view =
+      FindByID(promo_view_controller.view,
+               kConfirmationAlertSecondaryActionAccessibilityIdentifier);
+  EXPECT_NSNE(nil, secondary_button_view);
+  ASSERT_TRUE([secondary_button_view isKindOfClass:[UIButton class]]);
+
+  UIButton* secondary_button =
+      base::apple::ObjCCastStrict<UIButton>(secondary_button_view);
+  [secondary_button sendActionsForControlEvents:UIControlEventTouchUpInside];
 
   // Check that after dismissing the promo only histograms for cancel action are
   // recorded.
@@ -202,10 +231,18 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
   ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 0);
   ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
 
-  DefaultBrowserGenericPromoViewController* generic_promo_view_controller =
-      base::apple::ObjCCastStrict<DefaultBrowserGenericPromoViewController>(
+  DefaultBrowserInstructionsViewController* promo_view_controller =
+      base::apple::ObjCCastStrict<DefaultBrowserInstructionsViewController>(
           view_controller_.presentedViewController);
-  [generic_promo_view_controller.actionHandler confirmationAlertPrimaryAction];
+  UIView* primary_button_view =
+      FindByID(promo_view_controller.view,
+               kConfirmationAlertPrimaryActionAccessibilityIdentifier);
+  EXPECT_NSNE(nil, primary_button_view);
+  ASSERT_TRUE([primary_button_view isKindOfClass:[UIButton class]]);
+
+  UIButton* primary_button =
+      base::apple::ObjCCastStrict<UIButton>(primary_button_view);
+  [primary_button sendActionsForControlEvents:UIControlEventTouchUpInside];
 
   // Check that after primaryaction the promo only histograms for primary action
   // action are recorded.

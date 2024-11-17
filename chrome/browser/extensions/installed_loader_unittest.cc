@@ -11,14 +11,13 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_profile.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -165,7 +164,7 @@ void InstalledLoaderUnitTest::RunEmitUserHistogramsTest(
     int user_expected_total_count) {
   base::HistogramTester histograms;
   InstalledLoader loader(service());
-  loader.RecordExtensionsIncrementedMetricsForTesting(testing_profile());
+  loader.RecordExtensionsIncrementedMetricsForTesting(profile());
 
   histograms.ExpectTotalCount("Extensions.LoadAllTime2", 1);
   histograms.ExpectTotalCount("Extensions.LoadAll", 1);

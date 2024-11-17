@@ -11,7 +11,6 @@
 
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -106,9 +105,13 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
   WindowController* window_controller =
       ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
   if (!window_controller) {
-    return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
+    return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
   }
   Browser* current_browser = window_controller->GetBrowser();
+  if (!current_browser) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
 
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (!profile->IsSameOrParent(browser->profile()))
@@ -177,15 +180,19 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int group_id = params->group_id;
-  Browser* browser = nullptr;
+  WindowController* window = nullptr;
   tab_groups::TabGroupId id = tab_groups::TabGroupId::CreateEmpty();
   const tab_groups::TabGroupVisualData* visual_data = nullptr;
   std::string error;
   if (!ExtensionTabUtil::GetGroupById(group_id, browser_context(),
-                                      include_incognito_information(), &browser,
+                                      include_incognito_information(), &window,
                                       &id, &visual_data, &error)) {
     return RespondNow(Error(std::move(error)));
   }
+
+  // Since this is in a tab group, there should not be a prerender tab (with no
+  // window).
+  CHECK(window);
 
   DCHECK(!id.is_empty());
 
@@ -202,13 +209,20 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   if (params->update_properties.title)
     title = base::UTF8ToUTF16(*params->update_properties.title);
 
-  TabStripModel* tab_strip_model =
-      ExtensionTabUtil::GetEditableTabStripModel(browser);
-  if (!tab_strip_model)
-    return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
-  if (!tab_strip_model->SupportsTabGroups())
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+
+  Browser* browser = window->GetBrowser();
+  if (!browser) {
     return RespondNow(
-        Error(tabs_constants::kTabStripDoesNotSupportTabGroupsError));
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  if (!tab_strip_model->SupportsTabGroups()) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
   TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(id);
 
   tab_groups::TabGroupVisualData new_visual_data(title, color, collapsed);
@@ -251,23 +265,27 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
                                       const std::optional<int>& window_id,
                                       tab_groups::TabGroupId* group,
                                       std::string* error) {
-  Browser* source_browser = nullptr;
+  WindowController* source_window = nullptr;
   const tab_groups::TabGroupVisualData* visual_data = nullptr;
   if (!ExtensionTabUtil::GetGroupById(
           group_id, browser_context(), include_incognito_information(),
-          &source_browser, group, &visual_data, error)) {
+          &source_window, group, &visual_data, error)) {
     return false;
   }
 
-  TabStripModel* source_tab_strip =
-      ExtensionTabUtil::GetEditableTabStripModel(source_browser);
-  if (!source_tab_strip) {
-    *error = tabs_constants::kTabStripNotEditableError;
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    *error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
 
+  Browser* source_browser = source_window->GetBrowser();
+  if (!source_browser) {
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+  TabStripModel* source_tab_strip = source_browser->tab_strip_model();
   if (!source_tab_strip->SupportsTabGroups()) {
-    *error = tabs_constants::kTabStripDoesNotSupportTabGroupsError;
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
     return false;
   }
 
@@ -278,40 +296,44 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   }
 
   if (window_id) {
-    WindowController* window_controller = nullptr;
+    WindowController* target_window = nullptr;
     if (!windows_util::GetControllerFromWindowID(
             this, *window_id, WindowController::GetAllWindowFilter(),
-            &window_controller, error)) {
+            &target_window, error)) {
       return false;
     }
-    Browser* target_browser = window_controller->GetBrowser();
+    Browser* target_browser = target_window->GetBrowser();
+    if (!target_browser) {
+      *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+      return false;
+    }
 
     // TODO(crbug.com/40638654): Rather than calling is_type_normal(), should
     // this call SupportsWindowFeature(Browser::FEATURE_TABSTRIP)?
     if (!target_browser->is_type_normal()) {
-      *error = tabs_constants::kCanOnlyMoveTabsWithinNormalWindowsError;
+      *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
       return false;
     }
 
-    if (target_browser->profile() != source_browser->profile()) {
-      *error = tabs_constants::kCanOnlyMoveTabsWithinSameProfileError;
+    if (target_window->profile() != source_window->profile()) {
+      *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError;
       return false;
     }
 
     // If windowId is different from the current window, move between windows.
-    if (target_browser == source_browser) {
+    if (target_window == source_window) {
       return false;
     }
 
     TabStripModel* target_tab_strip =
         ExtensionTabUtil::GetEditableTabStripModel(target_browser);
     if (!target_tab_strip) {
-      *error = tabs_constants::kTabStripNotEditableError;
+      *error = ExtensionTabUtil::kTabStripNotEditableError;
       return false;
     }
 
     if (!target_tab_strip->SupportsTabGroups()) {
-      *error = tabs_constants::kTabStripDoesNotSupportTabGroupsError;
+      *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
       return false;
     }
 

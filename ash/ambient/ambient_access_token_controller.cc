@@ -39,7 +39,7 @@ void AmbientAccessTokenController::RequestAccessToken(
     bool may_refresh_token_on_lock) {
   // |token_refresh_timer_| may become stale during sleeping.
   if (token_refresh_timer_.IsRunning())
-    token_refresh_timer_.AbandonAndStop();
+    token_refresh_timer_.Stop();
 
   if (!access_token_.empty()) {
     DCHECK(!has_pending_request_);

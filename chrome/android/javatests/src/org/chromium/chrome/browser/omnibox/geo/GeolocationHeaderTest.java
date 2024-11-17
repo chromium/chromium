@@ -216,7 +216,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @RequiresRestart(value = "Needs to reset cached geolocation from previous tests")
-    public void testGeolocationHeaderPrimingDisabledOSPermissionBlocked() {
+    public void testGeolocationHeaderPrimingDisabledOsPermissionBlocked() {
         setPermission(ContentSettingValues.ALLOW);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
@@ -260,14 +260,7 @@ public class GeolocationHeaderTest {
         mOmniboxTestUtils.requestFocus();
         mOmniboxTestUtils.typeText("aaaaaaaaaa", false);
         mOmniboxTestUtils.waitAnimationsComplete();
-        // We use the existance of the GeolocationHeader.sFirstLocation field to indicate whether
-        // there has been a location request yet.
-        if (shouldPrimeHeader) {
-            Assert.assertNotEquals(
-                    Long.MAX_VALUE, GeolocationHeader.getFirstLocationTimeForTesting());
-        } else {
-            Assert.assertEquals(Long.MAX_VALUE, GeolocationHeader.getFirstLocationTimeForTesting());
-        }
+        Assert.assertEquals(shouldPrimeHeader, GeolocationHeader.isGeolocationPrimedForTesting());
     }
 
     private void assertHeaderState(String header, long locationTime, boolean shouldBeNull) {

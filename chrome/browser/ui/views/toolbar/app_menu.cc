@@ -23,7 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -60,7 +59,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/zoom/page_zoom.h"
@@ -79,7 +78,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/base/ui_base_features.h"
@@ -95,6 +94,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -353,8 +353,7 @@ END_METADATA
 std::u16string GetUpgradeDialogSubstringText() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-  if (base::FeatureList::IsEnabled(features::kUpdateTextOptions) &&
-      !UpgradeDetector::GetInstance()->is_outdated_install() &&
+  if (!UpgradeDetector::GetInstance()->is_outdated_install() &&
       !UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
     {
       return {l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT)};
@@ -541,7 +540,7 @@ class FullscreenButton : public ImageButton {
     GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
     GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
         menu_model, fullscreen_index, accname_string_id,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         // ChromeOS uses a dedicated "fullscreen" media key for fullscreen
         // mode on most ChromeOS devices which cannot be specified in the
         // standard way here, so omit the accelerator to avoid providing
@@ -1014,7 +1013,7 @@ void AppMenu::RunMenu(views::MenuButtonController* host) {
   menu_runner_->RunMenuAt(
       host->button()->GetWidget(), host,
       host->button()->GetAnchorBoundsInScreen(),
-      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE,
+      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kNone,
       /*native_view_for_gestures=*/gfx::NativeView(), /*corners=*/std::nullopt,
       "Chrome.AppMenu.MenuHostInitToNextFramePresented");
 }
@@ -1108,7 +1107,7 @@ views::View::DropCallback AppMenu::GetDropCallback(
 bool AppMenu::ShowContextMenu(MenuItemView* source,
                               int command_id,
                               const gfx::Point& p,
-                              ui::MenuSourceType source_type) {
+                              ui::mojom::MenuSourceType source_type) {
   return IsBookmarkCommand(command_id)
              ? bookmark_menu_delegate_->ShowContextMenu(source, command_id, p,
                                                         source_type)
@@ -1205,8 +1204,8 @@ void AppMenu::ExecuteCommand(int command_id, int mouse_event_flags) {
   }
 
   if (IsBookmarkCommand(command_id)) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenBookmark",
-                               menu_opened_timer_.Elapsed());
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "WrenchMenu.TimeToAction.OpenBookmark", menu_opened_timer_.Elapsed());
     UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction",
                               MENU_ACTION_BOOKMARK_OPEN, LIMIT_MENU_ACTION);
     bookmark_menu_delegate_->ExecuteCommand(command_id, mouse_event_flags);
@@ -1259,8 +1258,9 @@ bool AppMenu::GetAccelerator(int command_id,
 
 void AppMenu::WillShowMenu(MenuItemView* menu) {
   if (menu == saved_tab_groups_menu_) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowSavedTabGroups",
-                               menu_opened_timer_.Elapsed());
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "WrenchMenu.TimeToAction.ShowSavedTabGroups",
+        menu_opened_timer_.Elapsed());
     UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction",
                               MENU_ACTION_SHOW_SAVED_TAB_GROUPS,
                               LIMIT_MENU_ACTION);
@@ -1482,7 +1482,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         break;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       case IDC_TAKE_SCREENSHOT:
         DCHECK(!screenshot_menu_item_);
         screenshot_menu_item_ = item;

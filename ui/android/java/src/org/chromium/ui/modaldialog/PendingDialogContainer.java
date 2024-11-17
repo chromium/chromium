@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  */
 class PendingDialogContainer {
     /** A class representing the attributes of a pending dialog. */
-    class PendingDialogType {
+    static class PendingDialogType {
         public final PropertyModel propertyModel;
         public final @ModalDialogType int dialogType;
         public final @ModalDialogPriority int dialogPriority;

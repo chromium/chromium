@@ -97,6 +97,7 @@ void WebContentsObserverProxy::PrimaryMainFrameRenderProcessGone(
 }
 
 void WebContentsObserverProxy::DidStartLoading() {
+  TRACE_EVENT("browser", "WebContentsObserverProxy::DidStartLoading");
   JNIEnv* env = AttachCurrentThread();
   if (auto* entry = web_contents()->GetController().GetPendingEntry()) {
     base_url_of_last_started_data_url_ = entry->GetBaseURLForDataURL();
@@ -145,6 +146,7 @@ void WebContentsObserverProxy::PrimaryMainDocumentElementAvailable() {
 
 void WebContentsObserverProxy::DidStartNavigation(
     NavigationHandle* navigation_handle) {
+  TRACE_EVENT("browser", "WebContentsObserverProxy::DidStartNavigation");
   if (navigation_handle->IsInPrimaryMainFrame()) {
     Java_WebContentsObserverProxy_didStartNavigationInPrimaryMainFrame(
         AttachCurrentThread(), java_observer_,
@@ -277,15 +279,9 @@ void WebContentsObserverProxy::DidFirstVisuallyNonEmptyPaint() {
 
 void WebContentsObserverProxy::OnVisibilityChanged(
     content::Visibility visibility) {
-  // Occlusion is not supported on Android.
-  DCHECK_NE(visibility, content::Visibility::OCCLUDED);
-
   JNIEnv* env = AttachCurrentThread();
-
-  if (visibility == content::Visibility::VISIBLE)
-    Java_WebContentsObserverProxy_wasShown(env, java_observer_);
-  else
-    Java_WebContentsObserverProxy_wasHidden(env, java_observer_);
+  Java_WebContentsObserverProxy_onVisibilityChanged(
+      env, java_observer_, static_cast<jint>(visibility));
 }
 
 void WebContentsObserverProxy::TitleWasSet(NavigationEntry* entry) {

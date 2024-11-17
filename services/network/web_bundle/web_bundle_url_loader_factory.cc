@@ -331,7 +331,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void SetPriority(net::RequestPriority priority,
@@ -906,18 +906,21 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   // to read auction-only signals for ad auctions; only the browser process
   // is allowed to read those, and only the browser process can issue trusted
   // requests.
-  std::string auction_only;
   // TODO(crbug.com/40269364): Remove old names once API users have migrated to
   // new names.
-  if (!loader->is_trusted() && response_head->headers &&
-      (response_head->headers->GetNormalizedHeader("Ad-Auction-Only",
-                                                   &auction_only) ||
-       response_head->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only",
-                                                   &auction_only)) &&
-      base::EqualsCaseInsensitiveASCII(auction_only, "true")) {
-    loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
-                                    /*reason=*/std::nullopt);
-    return;
+  if (!loader->is_trusted() && response_head->headers) {
+    std::optional<std::string> auction_only =
+        response_head->headers->GetNormalizedHeader("Ad-Auction-Only");
+    if (!auction_only) {
+      auction_only =
+          response_head->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only");
+    }
+    if (auction_only &&
+        base::EqualsCaseInsensitiveASCII(*auction_only, "true")) {
+      loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
+                                      /*reason=*/std::nullopt);
+      return;
+    }
   }
 
   auto orb_analyzer = orb::ResponseAnalyzer::Create(&orb_state_);

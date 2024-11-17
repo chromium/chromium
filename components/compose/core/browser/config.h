@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 
 namespace compose {
@@ -62,24 +63,24 @@ struct Config {
   bool saved_state_nudge_enabled = true;
 
   // Whether to enable the proactive nudge with no saved state.
-  bool proactive_nudge_enabled = false;
+  bool proactive_nudge_enabled = true;
 
   // Use the compact UI for proactive nudge.
-  bool proactive_nudge_compact_ui = false;
+  bool proactive_nudge_compact_ui = true;
 
   // Whether or not the proactive nudge is shown at the cursor.
-  bool is_nudge_shown_at_cursor = false;
+  bool is_nudge_shown_at_cursor = true;
 
   // Used to randomly hide the nudge in order to reduce exposure, experimental
   // flag for triggering research experiments only. If param is greater than
   // `1`, always shows. If param is negative, never shows.
-  double proactive_nudge_show_probability = 1e-3;
+  double proactive_nudge_show_probability = 0.02;
 
   // When segmentation is enabled and working, this parameter controls how often
   // we randomly decide to show the proactive nudge regardless of the
   // segmentation platform's response. Nudges shown in this way contribute to
   // training data for the segmentation platform.
-  double proactive_nudge_force_show_probability = 1e-5;
+  double proactive_nudge_force_show_probability = 0.004;
 
   // Whether to collect training data for the segmentation platform any time the
   // nudge is shown. If false, training data is only collected when the nudge is
@@ -104,6 +105,10 @@ struct Config {
   // nudge.
   int proactive_nudge_text_change_count = 10;
 
+  // List of countries where the proactive nudge is enabled. The default value
+  // is set in the constructor.
+  base::flat_set<std::string> proactive_nudge_countries;
+
   // Whether the nudge on selection should be enabled.
   bool selection_nudge_enabled = false;
 
@@ -120,15 +125,16 @@ struct Config {
   // once per field per focus.
   bool proactive_nudge_field_per_navigation = true;
 
+  // How many text change events to wait for before dismissing the nudge.
   unsigned int nudge_field_change_event_max = 3;
 
   // The duration that the saved state notification is shown before
   // auto-dismissal.
-  unsigned int saved_state_timeout_milliseconds = 2000;
+  base::TimeDelta saved_state_timeout = base::Milliseconds(2000);
 
   // The delay to wait to show the saved state notification after the compose
   // dialog loses focus.
-  unsigned int focus_lost_delay_milliseconds = 100;
+  base::TimeDelta focus_lost_delay = base::Milliseconds(100);
 
   // Whether the dialog should prioritize staying within bounds of the browser
   // window above visibility of the anchor rect.
@@ -141,14 +147,11 @@ struct Config {
 
   // The threshold for Compose request latency before showing a client-side
   // error message.
-  unsigned int request_latency_timeout_seconds = 20;
+  base::TimeDelta request_latency_timeout = base::Seconds(20);
 
   // Finch-controllable list of countries where Compose should be enabled. The
-  // default value contains countries where it was already fully launched.
-  std::vector<std::string> enabled_countries = {
-      "bd", "ca", "gh", "in", "ke", "my", "ng", "ph",
-      "pk", "sg", "tz", "ug", "us", "zm", "zw",
-  };
+  // default value is set in the constructor.
+  base::flat_set<std::string> enabled_countries;
 
   // The threshold for the lifetime of a Compose session. A session whose
   // lifetime has exceeded this threshold will be replaced with a new session

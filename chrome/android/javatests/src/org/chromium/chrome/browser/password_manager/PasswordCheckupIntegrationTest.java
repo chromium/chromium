@@ -29,7 +29,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -63,6 +64,8 @@ public class PasswordCheckupIntegrationTest {
     private static final String USERNAME_TEXT = "test4";
     private static final String PASSWORD_TEXT = "test4";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule;
@@ -81,8 +84,6 @@ public class PasswordCheckupIntegrationTest {
 
     @Before
     public void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         mSettingsActivityTestRule = new SettingsActivityTestRule<>(MainSettings.class);
 
         mFakeCredentialManagerLauncherFactory = new FakeCredentialManagerLauncherFactoryImpl();

@@ -125,8 +125,7 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
     switch (rv) {
       case MOJO_RESULT_BUSY:
       case MOJO_RESULT_INVALID_ARGUMENT:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case MOJO_RESULT_FAILED_PRECONDITION:
         std::move(quit_closure).Run();
         return;
@@ -147,8 +146,7 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
         break;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 std::string ReadDataPipe(mojo::ScopedDataPipeConsumerHandle handle) {
@@ -328,7 +326,7 @@ class FileSystemURLLoaderFactoryTest
     EXPECT_EQ(base::File::FILE_OK, result);
   }
 
-  void EnsureFileExists(const std::string_view file_name) {
+  void EnsureFileExists(std::string_view file_name) {
     std::unique_ptr<FileSystemOperationContext> context(NewOperationContext());
 
     base::RunLoop loop;
@@ -343,7 +341,7 @@ class FileSystemURLLoaderFactoryTest
     loop.Run();
   }
 
-  void TruncateFile(const std::string_view file_name, int64_t length) {
+  void TruncateFile(std::string_view file_name, int64_t length) {
     std::unique_ptr<FileSystemOperationContext> context(NewOperationContext());
 
     base::RunLoop loop;
@@ -728,10 +726,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileTest) {
   EXPECT_EQ(kTestFileData, response_text);
   ASSERT_TRUE(client->response_head()->headers) << "No response headers";
   EXPECT_EQ(200, client->response_head()->headers->response_code());
-  std::string cache_control;
-  EXPECT_TRUE(client->response_head()->headers->GetNormalizedHeader(
-      "cache-control", &cache_control));
-  EXPECT_EQ("no-cache", cache_control);
+  EXPECT_EQ(
+      client->response_head()->headers->GetNormalizedHeader("cache-control"),
+      "no-cache");
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileTestDlp) {
@@ -758,10 +755,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileTestDlp) {
   EXPECT_EQ(kTestFileData, response_text);
   ASSERT_TRUE(client->response_head()->headers) << "No response headers";
   EXPECT_EQ(200, client->response_head()->headers->response_code());
-  std::string cache_control;
-  EXPECT_TRUE(client->response_head()->headers->GetNormalizedHeader(
-      "cache-control", &cache_control));
-  EXPECT_EQ("no-cache", cache_control);
+  EXPECT_EQ(
+      client->response_head()->headers->GetNormalizedHeader("cache-control"),
+      "no-cache");
 }
 
 // Verify that when site isolation is enabled, a renderer process for one
@@ -983,10 +979,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileAutoMountFileTest) {
   EXPECT_EQ(kTestFileData, response_text);
   EXPECT_EQ(200, client->response_head()->headers->response_code());
 
-  std::string cache_control;
-  EXPECT_TRUE(client->response_head()->headers->GetNormalizedHeader(
-      "cache-control", &cache_control));
-  EXPECT_EQ("no-cache", cache_control);
+  EXPECT_EQ(
+      client->response_head()->headers->GetNormalizedHeader("cache-control"),
+      "no-cache");
 
   ASSERT_TRUE(
       storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(

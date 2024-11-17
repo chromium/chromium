@@ -81,6 +81,11 @@ export const DetailsPage = {
 
   // Enum shared between CB & CBX are: BATTERY, GOOGLE_APPS, NEARBY_SHARE,
   // MESSAGING, BUILT_IN_SECURITY,MS_365_APPS, SWITCHING, COMPARISON
+
+  // New in 2024 Cycle 2 refresh
+  // CBX:
+  HELP_ME_READ: 'HelpMeRead',
+  LIVE_TRANSLATE: 'LiveTranslate',
 };
 
 /**

@@ -19,8 +19,6 @@ class KURL;
 
 namespace bindings {
 
-class EnumerationBase;
-
 // A fall-through case.
 template <typename IDLType, typename ReturnType>
 inline constexpr bool IsReturnTypeCompatible = false;
@@ -146,11 +144,12 @@ template <>
 inline constexpr bool IsReturnTypeCompatible<IDLObject, v8::Local<v8::Value>> =
     true;
 
-// TODO(caseq): take care of this case, promises should be returned as
-// IDLPromise<>.
-template <>
-inline constexpr bool
-    IsReturnTypeCompatible<blink::IDLPromise, v8::Local<v8::Promise>> = true;
+// TODO(caseq): take care of this case, all promises should be returned as
+// ScriptPromise<PromiseType> and IDLTypeImplementedAsV8Promise extended
+// attribute should be removed.
+template <typename PromiseType>
+inline constexpr bool IsReturnTypeCompatible<blink::IDLPromise<PromiseType>,
+                                             v8::Local<v8::Promise>> = true;
 
 // Any IDL strings are compatible to any blink strings.
 template <typename IDLStringType>
@@ -161,18 +160,6 @@ template <typename IDLStringType>
   requires std::derived_from<IDLStringType, IDLStringTypeBase>
 inline constexpr bool IsReturnTypeCompatible<IDLStringType, WTF::AtomicString> =
     true;
-
-// TODO(caseq): allow enums to be returned as strings for now, but start
-// enforcing enum-specific types latter.
-template <typename IDLEnumeration>
-  requires std::derived_from<IDLEnumeration, bindings::EnumerationBase>
-inline constexpr bool IsReturnTypeCompatible<IDLEnumeration, WTF::String> =
-    true;
-
-template <typename IDLEnumeration>
-  requires std::derived_from<IDLEnumeration, bindings::EnumerationBase>
-inline constexpr bool
-    IsReturnTypeCompatible<IDLEnumeration, WTF::AtomicString> = true;
 
 // TODO(caseq): note we do not differentiate between double and float here. Not
 // sure if there's a point considering representation would be the same on the

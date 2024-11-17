@@ -12,10 +12,11 @@
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
-#include "third_party/blink/renderer/core/layout/space_utils.h"
 
 namespace blink {
 
@@ -1133,7 +1134,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
     if (track_baseline == LayoutUnit::Min())
       return;
 
-    const LayoutUnit extra_margin = GetExtraMarginForBaseline(
+    const auto extra_margin = GetExtraMarginForBaseline(
         ComputeMarginsFor(space, item_style,
                           grid_item->BaselineWritingDirection(track_direction)),
         subgridded_item, track_direction, writing_mode);
@@ -1152,11 +1153,8 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
   };
 
   auto MinOrMaxContentSize = [&](bool is_min_content) -> LayoutUnit {
-    const auto result =
-        grid_item->IsSubgrid()
-            ? ComputeMinAndMaxContentContributionForSelf(node, space,
-                                                         MinMaxSizesFunc)
-            : ComputeMinAndMaxContentContributionForSelf(node, space);
+    const auto result = ComputeMinAndMaxContentContributionForSelf(
+        node, space, MinMaxSizesFunc);
 
     // The min/max contribution may depend on the block-size of the grid-area:
     // <div style="display: inline-grid; grid-template-columns: auto auto;">
@@ -1185,10 +1183,10 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
   };
 
   auto MinContentSize = [&]() -> LayoutUnit {
-    return MinOrMaxContentSize(/* is_min_content */ true);
+    return MinOrMaxContentSize(/*is_min_content=*/true);
   };
   auto MaxContentSize = [&]() -> LayoutUnit {
-    return MinOrMaxContentSize(/* is_min_content */ false);
+    return MinOrMaxContentSize(/*is_min_content=*/false);
   };
 
   // This function will determine the correct block-size of a grid-item.
@@ -1215,7 +1213,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       // set our inline size to our max-content contribution size.
       const auto fallback_space = CreateConstraintSpaceForMeasure(
           subgridded_item, track_direction,
-          /* opt_fixed_inline_size */ MaxContentSize());
+          /*opt_fixed_inline_size=*/MaxContentSize());
 
       result = LayoutGridItemForMeasure(*grid_item, fallback_space,
                                         sizing_constraint);
@@ -1256,12 +1254,12 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       break;
     case GridItemContributionType::kForIntrinsicMinimums: {
       // TODO(ikilpatrick): All of the below is incorrect for replaced elements.
-      const Length& main_length = is_parallel_with_track_direction
-                                      ? item_style.LogicalWidth()
-                                      : item_style.LogicalHeight();
-      const Length& min_length = is_parallel_with_track_direction
-                                     ? item_style.LogicalMinWidth()
-                                     : item_style.LogicalMinHeight();
+      const auto& main_length = is_parallel_with_track_direction
+                                    ? item_style.LogicalWidth()
+                                    : item_style.LogicalHeight();
+      const auto& min_length = is_parallel_with_track_direction
+                                   ? item_style.LogicalMinWidth()
+                                   : item_style.LogicalMinHeight();
 
       // We could be clever is and make this an if-stmt, but each type has
       // subtle consequences. This forces us in the future when we add a new
@@ -1269,7 +1267,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       switch (main_length.GetType()) {
         case Length::kAuto:
         case Length::kFitContent:
-        case Length::kFillAvailable:
+        case Length::kStretch:
         case Length::kPercent:
         case Length::kCalculated: {
           const auto border_padding =
@@ -1340,7 +1338,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
             // Add the baseline shim, border, and padding (margins will be added
             // later) back to the contribution, since we don't want the outer
             // size of the minimum size to overflow its grid area; these are
-            // already accounted for in the current value of |contribution|.
+            // already accounted for in the current value of `contribution`.
             contribution =
                 std::min(contribution, spanned_tracks_definite_max_size +
                                            baseline_shim + border_padding_sum);
@@ -1368,8 +1366,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
         case Length::kDeviceHeight:
         case Length::kNone:
         case Length::kContent:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     }
@@ -1379,10 +1376,8 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
                                                       : BlockContributionSize();
       break;
     case GridItemContributionType::kForFreeSpace:
-      NOTREACHED_IN_MIGRATION()
-          << "|kForFreeSpace| should only be used to distribute extra "
-             "space in maximize tracks and stretch auto tracks steps.";
-      break;
+      NOTREACHED() << "`kForFreeSpace` should only be used to distribute extra "
+                      "space in maximize tracks and stretch auto tracks steps.";
   }
   return (contribution + margin_sum).ClampNegativeToZero();
 }
@@ -2194,8 +2189,7 @@ LayoutUnit AffectedSizeForContribution(
     case GridItemContributionType::kForMaxContentMaximums:
       return DefiniteGrowthLimit(set);
     case GridItemContributionType::kForFreeSpace:
-      NOTREACHED_IN_MIGRATION();
-      return LayoutUnit();
+      NOTREACHED();
   }
 }
 
@@ -2227,8 +2221,7 @@ void GrowAffectedSizeByPlannedIncrease(
       set->IncreaseGrowthLimit(DefiniteGrowthLimit(*set) + planned_increase);
       return;
     case GridItemContributionType::kForFreeSpace:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 
@@ -3237,8 +3230,7 @@ LayoutUnit AlignmentOffset(LayoutUnit container_size,
     case AxisEdge::kLastBaseline:
       return baseline_offset;
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,

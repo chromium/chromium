@@ -9,6 +9,9 @@
 
 // Coordinator for displaying a UIActivityIndicatorView overlay over the current
 // context.
+// TODO(crbug.com/335387869): Delete this coordinator when Quick Delete is fully
+// launched. No other coordinators uses it.
+// It should not be instantiated in a scene that is blocked by a UIBlocker.
 @interface ChromeActivityOverlayCoordinator : ChromeCoordinator
 
 // Text that will be shown above the UIActivityIndicatorView.

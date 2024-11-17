@@ -10,6 +10,7 @@
 
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_os_info_override_win.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/version.h"
@@ -311,6 +312,8 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
       .WillRepeatedly(Return(create_reg_key_work_item.get()));
   EXPECT_CALL(work_item_list, AddSetRegStringValueWorkItem(_, _, _, _, _, _))
       .WillRepeatedly(Return(set_reg_value_work_item.get()));
+  EXPECT_CALL(work_item_list, AddSetRegDwordValueWorkItem(_, _, _, _, _, _))
+      .WillRepeatedly(Return(set_reg_value_work_item.get()));
   EXPECT_CALL(work_item_list, AddDeleteTreeWorkItem(_, _))
       .WillRepeatedly(Return(delete_tree_work_item.get()));
   EXPECT_CALL(work_item_list, AddDeleteRegKeyWorkItem(_, _, _))
@@ -322,6 +325,32 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
       *installer_state, *installation_state, setup_path_, current_version,
       archive_path_,    src_path_,           temp_dir_,   *new_version_,
   };
+
+  // Set up expectations for setup.exe's on-os-upgrade handler.
+  const std::wstring update_handler_command_key =
+      base::StrCat({install_static::GetClientsKeyPath(), L"\\",
+                    google_update::kRegCommandsKey, L"\\", L"on-os-upgrade"});
+  EXPECT_CALL(work_item_list,
+              AddCreateRegKeyWorkItem(kRegRoot, update_handler_command_key,
+                                      KEY_WOW64_32KEY))
+      .WillOnce(Return(create_reg_key_work_item.get()));
+  const std::wstring command_line =
+      base::StrCat({L"\"", installer_state->target_path().value(), L"\\",
+                    base::ASCIIToWide(new_version_->GetString()),
+                    L"\\Installer\\setup.exe\" --on-os-upgrade --system-level "
+                    L"--verbose-logging %1"});
+  EXPECT_CALL(work_item_list,
+              AddSetRegStringValueWorkItem(
+                  kRegRoot, update_handler_command_key, KEY_WOW64_32KEY,
+                  std::wstring(google_update::kRegCommandLineField),
+                  command_line, true))
+      .WillOnce(Return(set_reg_value_work_item.get()));
+  EXPECT_CALL(
+      work_item_list,
+      AddSetRegDwordValueWorkItem(
+          kRegRoot, update_handler_command_key, KEY_WOW64_32KEY,
+          std::wstring(google_update::kRegAutoRunOnOSUpgradeField), 1, true))
+      .WillOnce(Return(set_reg_value_work_item.get()));
 
   AddInstallWorkItems(install_params, &work_item_list);
 }

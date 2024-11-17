@@ -173,12 +173,12 @@ SkBitmap GetResizedBitmap(const SkBitmap& source_bitmap,
 
 class FaviconImageSource : public gfx::ImageSkiaSource {
  public:
-  FaviconImageSource() {}
+  FaviconImageSource() = default;
 
   FaviconImageSource(const FaviconImageSource&) = delete;
   FaviconImageSource& operator=(const FaviconImageSource&) = delete;
 
-  ~FaviconImageSource() override {}
+  ~FaviconImageSource() override = default;
 
   // gfx::ImageSkiaSource:
   gfx::ImageSkiaRep GetImageForScale(float scale) override {

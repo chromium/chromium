@@ -36,8 +36,7 @@ unsigned SyntheticPointerActionParams::GetWebMouseEventModifier(
     case SyntheticPointerActionParams::Button::NO_BUTTON:
       return blink::WebMouseEvent::kNoModifiers;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::WebMouseEvent::kNoModifiers;
+  NOTREACHED();
 }
 
 // static
@@ -58,8 +57,7 @@ SyntheticPointerActionParams::GetWebMouseEventButton(
     case SyntheticPointerActionParams::Button::NO_BUTTON:
       return blink::WebMouseEvent::Button::kNoButton;
   }
-  NOTREACHED_IN_MIGRATION();
-  return blink::WebMouseEvent::Button::kNoButton;
+  NOTREACHED();
 }
 
 // static

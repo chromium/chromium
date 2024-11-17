@@ -37,8 +37,7 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
           isolate, V8ObjectConstructor::IsValidConstructorMode);
       break;
     case kIdlBufferSourceType:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case kIdlObservableArray:
       v8_template = v8::FunctionTemplate::New(isolate);
       break;
@@ -49,7 +48,7 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
       v8_template = v8::FunctionTemplate::New(isolate);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   install_interface_template_func(isolate, world, v8_template);
 

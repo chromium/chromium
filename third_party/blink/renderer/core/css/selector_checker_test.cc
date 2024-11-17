@@ -101,6 +101,50 @@ ScopeProximityTestData scope_proximity_test_data[] = {
     },
 
     // The proximity is determined according to the nearest scoping root.
+    // (#target is the scope itself, selected with :scope).
+    {
+      R"HTML(
+        <div class=a>
+          <div>
+            <div>
+              <div>
+                <div id=target class=a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )HTML",
+      R"CSS(
+        @scope (.a) {
+          :scope { z-index: 1; }
+        }
+      )CSS",
+      0
+    },
+
+    // The proximity is determined according to the nearest scoping root.
+    // (#target is the scope itself, selected with &).
+    {
+      R"HTML(
+        <div class=a>
+          <div>
+            <div>
+              <div>
+                <div id=target class=a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )HTML",
+      R"CSS(
+        @scope (.a) {
+          & { z-index: 1; }
+        }
+      )CSS",
+      0
+    },
+
+    // The proximity is determined according to the nearest scoping root.
     // (Nested scopes from different @scope rules).
     {
       R"HTML(
@@ -185,7 +229,8 @@ TEST_P(ScopeProximityTest, All) {
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
   StyleScopeFrame style_scope_frame(*target, /* parent */ nullptr);
-  SelectorChecker::SelectorCheckingContext context(target);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*target)};
   context.selector = style_rule->FirstSelector();
   context.style_scope = scope;
   context.style_scope_frame = &style_scope_frame;
@@ -277,7 +322,8 @@ TEST_P(MatchFlagsTest, All) {
   ASSERT_TRUE(selector_list->HasOneSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(element);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*element)};
   context.selector = selector_list->First();
 
   SelectorChecker::MatchResult result;
@@ -327,7 +373,8 @@ class ImpactTest : public PageTestBase {
     DCHECK(selector_list->HasOneSelector());
 
     SelectorChecker checker(SelectorChecker::kResolvingStyle);
-    SelectorChecker::SelectorCheckingContext context(&element);
+    SelectorChecker::SelectorCheckingContext context{
+        ElementResolveContext(element)};
     context.selector = selector_list->First();
     context.impact = impact;
 
@@ -644,7 +691,8 @@ TEST_P(MatchFlagsShadowTest, Host) {
   ASSERT_TRUE(selector_list->HasOneSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(host);
+  SelectorChecker::SelectorCheckingContext context{
+      ElementResolveContext(*host)};
   context.selector = selector_list->First();
   context.scope = host->GetShadowRoot();
 
@@ -815,15 +863,18 @@ TEST_F(EasySelectorCheckerTest, IsEasy) {
   EXPECT_FALSE(IsEasy("::before"));
   EXPECT_FALSE(IsEasy("div::before"));
   EXPECT_FALSE(IsEasy("* .a"));  // Due to the universal selector.
+  EXPECT_TRUE(IsEasy(".a *"));   // Due to bucketing.
   EXPECT_TRUE(IsEasy("[attr]"));
   EXPECT_TRUE(IsEasy("[attr=\"foo\"]"));
-  EXPECT_FALSE(IsEasy("[attr=\"foo\" i]"));
+  EXPECT_TRUE(IsEasy("[attr=\"foo\" i]"));
   EXPECT_TRUE(IsEasy(":root"));       // Due to bucketing.
   EXPECT_TRUE(IsEasy(":any-link"));   // Due to bucketing.
   EXPECT_TRUE(IsEasy("a:any-link"));  // Due to bucketing.
   EXPECT_TRUE(IsEasy(".a .b"));
   EXPECT_TRUE(IsEasy(".a .b.c.d"));
-  EXPECT_FALSE(IsEasy(".a > .b"));
+  EXPECT_TRUE(IsEasy(".a > .b"));
+  EXPECT_TRUE(IsEasy(".a .b > .c"));
+  EXPECT_FALSE(IsEasy(".a > .b .c"));
   EXPECT_FALSE(IsEasy(".a ~ .b"));
   EXPECT_FALSE(IsEasy("&"));
   EXPECT_FALSE(IsEasy(":not(.a)"));
@@ -871,7 +922,7 @@ TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
   ASSERT_TRUE(foo);
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(foo);
+  SelectorChecker::SelectorCheckingContext context{ElementResolveContext(*foo)};
   context.selector = selector_list->First();
   // We have a selector with :scope, but no context.scope:
   context.scope = nullptr;
@@ -880,81 +931,6 @@ TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
 
   // Don't crash.
   EXPECT_FALSE(checker.Match(context, result));
-}
-
-TEST_F(SelectorCheckerTest, PseudoTrue) {
-  GetDocument().body()->setInnerHTML("<div id=foo></div>");
-  UpdateAllLifecyclePhasesForTest();
-
-  CSSSelector selector;
-  selector.SetTrue();
-  selector.SetLastInComplexSelector(true);
-
-  Element* foo = GetDocument().getElementById(AtomicString("foo"));
-  ASSERT_TRUE(foo);
-
-  SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(foo);
-  context.selector = &selector;
-
-  SelectorChecker::MatchResult result;
-  EXPECT_TRUE(checker.Match(context, result));
-}
-
-TEST_F(SelectorCheckerTest, PseudoTrueMatchesHost) {
-  GetDocument().body()->setHTMLUnsafe(R"HTML(
-    <div id=host>
-      <template shadowrootmode=open>
-      </template>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  CSSSelector selector;
-  selector.SetTrue();
-  selector.SetLastInComplexSelector(true);
-
-  Element* host = GetElementById("host");
-  ASSERT_TRUE(host);
-  ShadowRoot* shadow = host->GetShadowRoot();
-  ASSERT_TRUE(shadow);
-
-  SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(host);
-  context.selector = &selector;
-  context.scope = shadow;
-
-  SelectorChecker::MatchResult result;
-  EXPECT_TRUE(checker.Match(context, result));
-}
-
-TEST_F(SelectorCheckerTest, ColumnWithScrollMarker) {
-  GetDocument().body()->setInnerHTML(
-      "<style>"
-      "#test::column { snap-alignment: center; }"
-      "#test::column::scroll-marker { content: '*'; opacity: 0.5; }"
-      "</style>"
-      "<div id='test'></div>");
-  UpdateAllLifecyclePhasesForTest();
-
-  const CSSSelector* selector =
-      css_test_helpers::ParseSelectorList("#test::column::scroll-marker")
-          ->First();
-  ASSERT_TRUE(selector);
-
-  Element* foo = GetDocument().getElementById(AtomicString("test"));
-  ASSERT_TRUE(foo);
-
-  SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::SelectorCheckingContext context(foo);
-  context.selector = selector;
-
-  SelectorChecker::MatchResult result;
-  EXPECT_TRUE(checker.Match(context, result));
-  ASSERT_TRUE(foo->CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker));
-  EXPECT_EQ(
-      foo->CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker)->Opacity(),
-      0.5);
 }
 
 }  // namespace blink

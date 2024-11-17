@@ -18,25 +18,27 @@ source_set("app_icon") {
   deps = [
     ":util",
     "//base",
-    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/favicon",
     "//chrome/browser/icon_transcoder",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/resources:app_icon_resources_grit",
+    "//chrome/browser/resources:app_icon_resources",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//components/app_constants",
     "//components/favicon/core",
+    "//components/favicon_base",
     "//components/keyed_service/content",
     "//components/services/app_service",
     "//components/webapps/common",
+    "//content/public/browser",
   ]
 
   if (enable_extensions) {
     deps += [
-      "//extensions:extensions_browser_resources_grit",
+      "//extensions:extensions_browser_resources",
       "//extensions/browser",
       "//extensions/common",
     ]
@@ -61,7 +63,7 @@ source_set("app_icon") {
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/image_decoder",
-      "//chrome/browser/resources:component_extension_resources_grit",
+      "//chrome/browser/resources:component_extension_resources",
       "//components/arc/common",
     ]
   }
@@ -139,6 +141,7 @@ source_set("unit_tests") {
     ]
 
     deps += [
+      "//ash/components/arc:arc_app_constants",
       "//ash/components/arc:arc_test_support",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",

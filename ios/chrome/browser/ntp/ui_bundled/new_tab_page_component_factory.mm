@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
@@ -70,7 +71,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
 - (NewTabPageHeaderViewController*)headerViewControllerForBrowser:
     (Browser*)browser {
-  PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+  PrefService* prefService = browser->GetProfile()->GetPrefs();
   NSInteger lensNewBadgeShowCount =
       prefService->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount);
 
@@ -111,22 +112,22 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
                         (id<UserAccountImageUpdateDelegate>)imageUpdater {
   ProfileIOS* profile = browser->GetProfile();
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(profile);
+      AuthenticationServiceFactory::GetForProfile(profile);
   DiscoverFeedService* discoverFeedService =
       DiscoverFeedServiceFactory::GetForProfile(profile);
   PrefService* prefService = profile->GetPrefs();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(profile);
-  BOOL isSafeMode = [browser->GetSceneState().appState resumingFromSafeMode];
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  BOOL isSafeMode =
+      [browser->GetSceneState().profileState.appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
       initWithTemplateURLService:templateURLService
                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
                      authService:authService
                  identityManager:IdentityManagerFactory::GetForProfile(profile)
            accountManagerService:ChromeAccountManagerServiceFactory::
-                                     GetForBrowserState(profile)
+                                     GetForProfile(profile)
         identityDiscImageUpdater:imageUpdater
                      isIncognito:profile->IsOffTheRecord()
              discoverFeedService:discoverFeedService

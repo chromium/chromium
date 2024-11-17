@@ -6,10 +6,9 @@
 #define COMPONENTS_EXO_WAYLAND_ZAURA_SHELL_H_
 
 #include <aura-shell-server-protocol.h>
-
 #include <stdint.h>
 
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_state_type.h"

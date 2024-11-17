@@ -13,8 +13,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class AtomicUint32Test : public testing::Test {
  protected:
@@ -77,5 +76,4 @@ TEST_F(AtomicUint32Test, GetOnNewThread) {
   VerifyValueInThread(new_token);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

@@ -28,7 +28,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
@@ -80,13 +79,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     /** Minimal height the bottom sheet CCT should show is half of the display height. */
     private static final float MINIMAL_HEIGHT_RATIO = 0.5f;
 
-    /**
-     * The maximum height we can snap to is under experiment, we have two branches, 90% of the
-     * display height and 100% of the display height. This ratio is used to calculate the 90% of the
-     * display height.
-     */
-    private static final float EXTRA_HEIGHT_RATIO = 0.1f;
-
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
     private static final int NAVBAR_BUTTON_HIDE_SHOW_DELAY_MS = 150;
@@ -120,7 +112,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
 
     private ImageView mSpinnerView;
-    private LinearLayout mNavbar;
     private CircularProgressDrawable mSpinner;
     private Runnable mSoftKeyboardRunnable;
     private boolean mStopShowingSpinner;
@@ -949,13 +940,11 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     void setMockViewForTesting(
-            LinearLayout navbar,
             ImageView spinnerView,
             CircularProgressDrawable spinner,
             CustomTabToolbar toolbar,
             View toolbarCoordinator,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
-        mNavbar = navbar;
         mSpinnerView = spinnerView;
         mSpinner = spinner;
         mToolbarView = toolbar;

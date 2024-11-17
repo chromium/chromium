@@ -34,8 +34,6 @@ static_library("component_updater") {
     "timer_update_scheduler.cc",
     "timer_update_scheduler.h",
     "update_scheduler.h",
-    "url_param_filter_remover.cc",
-    "url_param_filter_remover.h",
   ]
 
   public_deps = [ ":component_updater_paths" ]

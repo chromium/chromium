@@ -85,6 +85,11 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
                         callback);
     }
 
+    @Override
+    public void onResume() {
+        RenderWidgetHostViewImplJni.get().onResume(getNativePtr());
+    }
+
     // ====================
     // Support for native.
     // ====================
@@ -135,5 +140,7 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
                 int height,
                 String path,
                 Callback<String> callback);
+
+        void onResume(long nativeRenderWidgetHostViewAndroid);
     }
 }

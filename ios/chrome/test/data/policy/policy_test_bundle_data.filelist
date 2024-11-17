@@ -36,8 +36,11 @@
 //ios/chrome/test/data/policy/pref_mapping/DeletingUndecryptablePasswordsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/DisableSafeBrowsingProceedAnyway.json
 //ios/chrome/test/data/policy/pref_mapping/DownloadManagerSaveToDriveSettings.json
+//ios/chrome/test/data/policy/pref_mapping/FilePickerChooseFromDriveSettings.json
 //ios/chrome/test/data/policy/pref_mapping/EditBookmarksEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/EnableExperimentalPolicies.json
+//ios/chrome/test/data/policy/pref_mapping/EnterpriseRealTimeUrlCheckMode.json
+//ios/chrome/test/data/policy/pref_mapping/OnSecurityEventEnterpriseConnector.json
 //ios/chrome/test/data/policy/pref_mapping/GenAiDefaultSettings.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeout.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeoutActions.json
@@ -77,3 +80,4 @@
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedAnonymizedDataCollectionEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedMetricsAllowed.json
 //ios/chrome/test/data/policy/pref_mapping/WebAnnotations.json
+//ios/chrome/test/data/policy/pref_mapping/DownloadRestrictions.json

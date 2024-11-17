@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace ui {
 
@@ -26,7 +26,7 @@ namespace ui {
 // scale from 0.3 to 1 from between times 0.75 and 1.
 //
 ///////////////////////////////////////////////////////////////////////////////
-class GFX_EXPORT InterpolatedTransform {
+class COMPONENT_EXPORT(GFX) InterpolatedTransform {
  public:
   InterpolatedTransform();
   // The interpolated transform varies only when t in (start_time, end_time).
@@ -87,7 +87,8 @@ class GFX_EXPORT InterpolatedTransform {
 // Represents an animated rotation.
 //
 ///////////////////////////////////////////////////////////////////////////////
-class GFX_EXPORT InterpolatedRotation : public InterpolatedTransform {
+class COMPONENT_EXPORT(GFX) InterpolatedRotation
+    : public InterpolatedTransform {
  public:
   InterpolatedRotation(float start_degrees, float end_degrees);
   InterpolatedRotation(float start_degrees,
@@ -114,7 +115,8 @@ class GFX_EXPORT InterpolatedRotation : public InterpolatedTransform {
 // Represents an animated rotation.
 //
 ///////////////////////////////////////////////////////////////////////////////
-class GFX_EXPORT InterpolatedAxisAngleRotation : public InterpolatedTransform {
+class COMPONENT_EXPORT(GFX) InterpolatedAxisAngleRotation
+    : public InterpolatedTransform {
  public:
   InterpolatedAxisAngleRotation(const gfx::Vector3dF& axis,
                                 float start_degrees,
@@ -146,7 +148,7 @@ class GFX_EXPORT InterpolatedAxisAngleRotation : public InterpolatedTransform {
 // Represents an animated scale.
 //
 ///////////////////////////////////////////////////////////////////////////////
-class GFX_EXPORT InterpolatedScale : public InterpolatedTransform {
+class COMPONENT_EXPORT(GFX) InterpolatedScale : public InterpolatedTransform {
  public:
   InterpolatedScale(float start_scale, float end_scale);
   InterpolatedScale(float start_scale, float end_scale,
@@ -171,7 +173,8 @@ class GFX_EXPORT InterpolatedScale : public InterpolatedTransform {
   const gfx::Point3F end_scale_;
 };
 
-class GFX_EXPORT InterpolatedTranslation : public InterpolatedTransform {
+class COMPONENT_EXPORT(GFX) InterpolatedTranslation
+    : public InterpolatedTransform {
  public:
   InterpolatedTranslation(const gfx::PointF& start_pos,
                           const gfx::PointF& end_pos);
@@ -208,7 +211,8 @@ class GFX_EXPORT InterpolatedTranslation : public InterpolatedTransform {
 // See InterpolatedTransformAboutPivot for an example of its usage.
 //
 ///////////////////////////////////////////////////////////////////////////////
-class GFX_EXPORT InterpolatedConstantTransform : public InterpolatedTransform {
+class COMPONENT_EXPORT(GFX) InterpolatedConstantTransform
+    : public InterpolatedTransform {
  public:
   explicit InterpolatedConstantTransform(const gfx::Transform& transform);
 
@@ -233,7 +237,7 @@ class GFX_EXPORT InterpolatedConstantTransform : public InterpolatedTransform {
 // P * T * P^-1 where P is a constant transform to the new origin.
 //
 ///////////////////////////////////////////////////////////////////////////////
-class GFX_EXPORT InterpolatedTransformAboutPivot
+class COMPONENT_EXPORT(GFX) InterpolatedTransformAboutPivot
     : public InterpolatedTransform {
  public:
   // Takes ownership of the passed transform.
@@ -265,7 +269,8 @@ class GFX_EXPORT InterpolatedTransformAboutPivot
   std::unique_ptr<InterpolatedTransform> transform_;
 };
 
-class GFX_EXPORT InterpolatedMatrixTransform : public InterpolatedTransform {
+class COMPONENT_EXPORT(GFX) InterpolatedMatrixTransform
+    : public InterpolatedTransform {
  public:
   InterpolatedMatrixTransform(const gfx::Transform& start_transform,
                               const gfx::Transform& end_transform);

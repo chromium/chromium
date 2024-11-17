@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1066101356081285416">Chrome은 사용자가 방문한 사이트에서 운송장 번호를 감지하여 새 탭 페이지에 배송 현황을 표시합니다. 이 기능을 제공하고 모든 사용자를 위해 Google 쇼핑 기능을 개선하기 위해 운송장 번호와 웹사이트 이름이 Google로 전송됩니다. <ph name="BEGIN_LINK" />배송 추적 설정<ph name="END_LINK" />에서 언제든지 업데이트할 수 있습니다.</translation>
+<translation id="1086486568852410168">Google 렌즈로 검색</translation>
 <translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="1146503048444965320">Chrome에서 새 탭 열기</translation>
 <translation id="1166460004393506534">Chrome에서 인터넷 사용 기록 삭제</translation>
@@ -38,7 +39,9 @@
 <translation id="1670609221633730681">Chrome 도움말: 주소 표시줄 위치 선택</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome의 북마크에 입력한 URL을 추가합니다.</translation>
+<translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1830634592642484976">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
+<translation id="1891812034154776216">Chrome 종료 시 열린 시크릿 탭 숨기기</translation>
 <translation id="1917964099031477364">이 계정 및 저장되지 않은 모든 데이터가 Chrome 및 이 기기의 기타 Google 앱에서 삭제됩니다.</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
@@ -70,6 +73,7 @@
 <translation id="2689064829982324496">웹사이트에 로그인되어 있는 Google 계정에서 모두 로그아웃하려면 <ph name="BEGIN_LINK" />Chrome에서 로그아웃<ph name="END_LINK" />하세요.</translation>
 <translation id="2695886661449553974">Chrome에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2703746758996815929">유용한 Chrome 도움말을 확인하려면 iOS 설정에서 알림을 사용 설정하세요</translation>
+<translation id="2728851697704606655">Google 렌즈로 번역</translation>
 <translation id="2736805085127235148">현재 기기 설정에서 Chrome 알림이 사용 중지되어 있습니다.</translation>
 <translation id="2754428955276778271">Chrome 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다.
 
@@ -247,6 +251,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7581063337314642333">Chrome에서 탭 그리드로 이동</translation>
 <translation id="7599894504325210080">Chrome 자동 완성 펼쳐 보기</translation>
 <translation id="7642373780953416937">Chrome에서 자동으로 감지한 개인 정보 보호 또는 보안 문제에 대한 알림을 받습니다.</translation>
+<translation id="7660356333829433649">이곳으로 다시 돌아와 Chrome을 최대한 활용하는 데 도움이 되는 유용한 팁을 확인하세요.</translation>
 <translation id="7662994914830945754">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="7693590760643069321">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="7698568245838009292">Chrome에서 카메라에 액세스하려고 함</translation>
@@ -261,6 +266,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7948283758957877064">Chrome의 새로운 기능</translation>
 <translation id="8000174216052461231">Chrome 도움말: Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="8006014511203279255">언제든지 메시지 또는 기타 앱에서 링크를 탭하여 Chrome을 사용해 보세요.</translation>
+<translation id="8014670471808569312">Chrome에서 비밀번호 저장을 제안합니다.</translation>
 <translation id="8018153653741938705">Chrome으로 안전하게 보호하기</translation>
 <translation id="8022947259858476807">링크를 열고, 위젯에서 검색하고, 다른 앱에서 비밀번호를 자동 완성할 기본 브라우저로 Chrome을 사용합니다.</translation>
 <translation id="804638182476029347">Chrome에서 가격 인하 알림을 받도록 허용</translation>
@@ -292,6 +298,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8558480467877843976">이제 언제든지 메시지, 문서, 기타 앱에서 탐색하거나 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="8603022514504485810">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="8630122478628016441">'Chrome 종료 시 시크릿 탭 잠금'을 사용 설정합니다.</translation>
+<translation id="8673726683583791503">Google 렌즈로 쇼핑</translation>
 <translation id="8727043961453758442">Chrome 최대한 활용하기</translation>
 <translation id="8765470054473112089">주소 표시줄이나 검색창에 검색어를 입력하면 Chrome은 더 나은 추천을 위해 사용자가 입력한 내용을 기본 검색엔진에 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="8772179140489533211">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>

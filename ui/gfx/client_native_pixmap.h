@@ -5,7 +5,7 @@
 #ifndef UI_GFX_CLIENT_NATIVE_PIXMAP_H_
 #define UI_GFX_CLIENT_NATIVE_PIXMAP_H_
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
@@ -14,7 +14,7 @@ struct NativePixmapHandle;
 // This represents a buffer that can be written to directly by regular CPU code,
 // but can also be read by the GPU.
 // NativePixmap is its counterpart in GPU process.
-class GFX_EXPORT ClientNativePixmap {
+class COMPONENT_EXPORT(GFX) ClientNativePixmap {
  public:
   virtual ~ClientNativePixmap() {}
 

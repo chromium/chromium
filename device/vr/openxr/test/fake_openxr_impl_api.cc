@@ -898,6 +898,8 @@ XrResult xrLocateHandJointsEXT(XrHandTrackerEXT hand_tracker,
             "XrHandJointsLocateInfoEXT is nullptr");
   RETURN_IF(locations == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrHandJointLocationsEXT is nullptr");
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSpace(locate_info->baseSpace));
+  g_test_helper.LocateJoints(hand_tracker, locate_info, locations);
   // No tests actually use hand joint data, so we leave them unpopulated at this
   // time.
   return XR_SUCCESS;
@@ -916,10 +918,7 @@ XrResult xrLocateSpace(XrSpace space,
             "XrSpaceLocation is nullptr");
   g_test_helper.LocateSpace(space, &(location->pose));
 
-  location->locationFlags = XR_SPACE_LOCATION_ORIENTATION_VALID_BIT |
-                            XR_SPACE_LOCATION_POSITION_VALID_BIT |
-                            XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT |
-                            XR_SPACE_LOCATION_POSITION_TRACKED_BIT;
+  location->locationFlags = OpenXrTestHelper::kValidTrackedPoseFlags;
 
   return XR_SUCCESS;
 }

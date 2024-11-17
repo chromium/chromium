@@ -26,7 +26,7 @@ enum class LensEntrypoint {
   LensOverlayLocationBar = 14,
   LensOverlayOverflowMenu = 15,
   kMaxValue = LensOverlayOverflowMenu,
-  //  LINT.ThenChange(//tools/metrics/histograms/enums.xml:AmbientSearchEntryPoint)
+  //  LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:AmbientSearchEntryPoint)
 };
 
 extern const char kIOSLensEntrypoint[];

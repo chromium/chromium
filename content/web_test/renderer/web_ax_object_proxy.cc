@@ -173,8 +173,7 @@ gfx::Rect BoundsForCharacter(const blink::WebAXObject& object,
                          inline_text_box_rect.width(), character_offsets[0]);
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        return gfx::Rect();
+        NOTREACHED();
     }
   }
 
@@ -325,7 +324,6 @@ gin::ObjectTemplateBuilder WebAXObjectProxy::GetObjectTemplateBuilder(
       .SetProperty("checked", &WebAXObjectProxy::Checked)
       .SetProperty("isVisible", &WebAXObjectProxy::IsVisible)
       .SetProperty("isVisited", &WebAXObjectProxy::IsVisited)
-      .SetProperty("isOffScreen", &WebAXObjectProxy::IsOffScreen)
       .SetProperty("isCollapsed", &WebAXObjectProxy::IsCollapsed)
       .SetProperty("hasPopup", &WebAXObjectProxy::HasPopup)
       .SetProperty("isValid", &WebAXObjectProxy::IsValid)
@@ -942,13 +940,6 @@ bool WebAXObjectProxy::IsVisited() {
     return false;
   }
   return accessibility_object_.IsVisited();
-}
-
-bool WebAXObjectProxy::IsOffScreen() {
-  if (!UpdateLayout()) {
-    return false;
-  }
-  return accessibility_object_.IsOffScreen();
 }
 
 bool WebAXObjectProxy::IsValid() {

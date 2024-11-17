@@ -41,7 +41,8 @@
           "builder": "CFI Linux ToT",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/CFI Linux ToT/targets"
     }
   },
   "$build/reclient": {

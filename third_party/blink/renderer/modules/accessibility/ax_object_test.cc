@@ -921,6 +921,10 @@ TEST_F(AccessibilityTest, NextOnLine) {
   )HTML");
   const AXObject* span1 = GetAXObjectByElementId("span1");
   ScopedFreezeAXCache freeze(GetAXObjectCache());
+
+  // Force computation of next/previous on line data, since this is not the
+  // regular flow.
+  GetAXObjectCache().ComputeNodesOnLine(span1->GetLayoutObject());
   ASSERT_NE(nullptr, span1);
 
   const AXObject* next = span1->NextOnLine();
@@ -940,6 +944,10 @@ TEST_F(AccessibilityTest, NextOnLineInlineBlock) {
   )HTML");
   const AXObject* this_object = GetAXObjectByElementId("this");
   ScopedFreezeAXCache freeze(GetAXObjectCache());
+
+  // Force computation of next/previous on line data, since this is not the
+  // regular flow.
+  GetAXObjectCache().ComputeNodesOnLine(this_object->GetLayoutObject());
   ASSERT_NE(nullptr, this_object);
 
   const AXObject* next = this_object->NextOnLine();
@@ -970,6 +978,10 @@ TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
   )HTML");
   const AXObject* span1 = GetAXObjectByElementId("span1");
   ScopedFreezeAXCache freeze(GetAXObjectCache());
+
+  // Force computation of next/previous on line data, since this is not the
+  // regular flow.
+  GetAXObjectCache().ComputeNodesOnLine(span1->GetLayoutObject());
   ASSERT_NE(nullptr, span1);
   EXPECT_EQ("go ", span1->GetNode()->textContent());
 
@@ -995,6 +1007,10 @@ TEST_F(AccessibilityTest, NextOnLineAriaHidden) {
   )HTML");
   const AXObject* this_object = GetAXObjectByElementId("this");
   ScopedFreezeAXCache freeze(GetAXObjectCache());
+
+  // Force computation of next/previous on line data, since this is not the
+  // regular flow.
+  GetAXObjectCache().ComputeNodesOnLine(this_object->GetLayoutObject());
   ASSERT_NE(nullptr, this_object);
 
   const AXObject* next = this_object->NextOnLine();
@@ -1393,9 +1409,7 @@ TEST_F(AccessibilityTest, IsSelectedFromFocusSupported) {
   EXPECT_FALSE(option2->IsSelectedFromFocusSupported());
   EXPECT_FALSE(option3->IsSelectedFromFocusSupported());
   EXPECT_FALSE(option4->IsSelectedFromFocusSupported());
-  // TODO(crbug.com/1143451): #option5 should not support selection from focus
-  // because #option4 is explicitly selected.
-  EXPECT_TRUE(option5->IsSelectedFromFocusSupported());
+  EXPECT_FALSE(option5->IsSelectedFromFocusSupported());
 }
 
 TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
@@ -1847,8 +1861,8 @@ TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedLiveProperty) {
   AXObject* main = GetAXObjectByElementId("main");
   ASSERT_NE(nullptr, main);
 
-  main->GetElement()->setAttribute(html_names::kAriaLiveAttr, "polite",
-                                   ASSERT_NO_EXCEPTION);
+  main->GetElement()->setAttribute(html_names::kAriaLiveAttr,
+                                   AtomicString("polite"));
   GetAXObjectCache().UpdateAXForAllDocuments();
 
   AXObject* mark = GetAXObjectByElementId("mark");
@@ -1874,8 +1888,8 @@ TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedAriaHiddenProperty) {
   AXObject* main = GetAXObjectByElementId("main");
   ASSERT_NE(nullptr, main);
 
-  main->GetElement()->setAttribute(html_names::kAriaHiddenAttr, "true",
-                                   ASSERT_NO_EXCEPTION);
+  main->GetElement()->setAttribute(html_names::kAriaHiddenAttr,
+                                   keywords::kTrue);
   GetAXObjectCache().UpdateAXForAllDocuments();
 
   AXObject* mark = GetAXObjectByElementId("mark");
@@ -1909,8 +1923,7 @@ TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedInertProperty) {
   AXObject* main = GetAXObjectByElementId("main");
   ASSERT_NE(nullptr, main);
 
-  main->GetElement()->setAttribute(html_names::kInertAttr, "true",
-                                   ASSERT_NO_EXCEPTION);
+  main->GetElement()->setAttribute(html_names::kInertAttr, keywords::kTrue);
   GetAXObjectCache().UpdateAXForAllDocuments();
 
   AXObject* mark = GetAXObjectByElementId("mark");
@@ -1936,8 +1949,8 @@ TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedDisabledProperty) {
   AXObject* fieldset = GetAXObjectByElementId("fieldset");
   ASSERT_NE(nullptr, fieldset);
 
-  fieldset->GetElement()->setAttribute(html_names::kAriaDisabledAttr, "true",
-                                       ASSERT_NO_EXCEPTION);
+  fieldset->GetElement()->setAttribute(html_names::kAriaDisabledAttr,
+                                       keywords::kTrue);
   GetAXObjectCache().UpdateAXForAllDocuments();
 
   AXObject* mark = GetAXObjectByElementId("mark");

@@ -64,7 +64,7 @@ MATCHER_P2(MetadataBatchContains, state, entities, "") {
 }
 
 // Matcher for sync_pb::DataTypeState: verifies that field
-// |encryption_key_name| is equal to the provided string |expected_key_name|.
+// `encryption_key_name` is equal to the provided string `expected_key_name`.
 MATCHER_P(HasEncryptionKeyName, expected_key_name, "") {
   return arg.encryption_key_name() == expected_key_name;
 }

@@ -19,31 +19,27 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.api.ApiException;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsCoordinator;
-import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
-import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportFlowCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.DataType;
@@ -66,7 +62,9 @@ public class PasswordManagerHelper {
     @IntDef({
         PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
         PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
-        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT
+        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
+        PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT,
+        PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PasswordCheckOperation {
@@ -78,9 +76,13 @@ public class PasswordManagerHelper {
 
         /** Obtain pending intent for launching password checkup UI */
         int GET_PASSWORD_CHECKUP_INTENT = 2;
-    }
 
-    private static final String UPM_VARIATION_FEATURE_PARAM = "stage";
+        /** Obtain the number of weak credentials. */
+        int GET_WEAK_CREDENTIALS_COUNT = 3;
+
+        /** Obtain the number of reused credentials. */
+        int GET_REUSED_CREDENTIALS_COUNT = 4;
+    }
 
     // Loading dialog is dismissed with this delay after sending an intent to prevent
     // the old activity from showing up before the new one is shown.
@@ -170,22 +172,13 @@ public class PasswordManagerHelper {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
 
-        @PasswordAccessLossWarningType int warningType = getAccessLossWarningType(prefService);
-        if (warningType != PasswordAccessLossWarningType.NONE) {
-            // Always start export flow from Chrome main settings. If this is already being called
-            // from main settings, then launch export flow right away.
-            Runnable startExportFlow =
-                    referrer == ManagePasswordsReferrer.CHROME_SETTINGS
-                            ? () -> launchExportFlow(context, modalDialogManagerSupplier)
-                            : () -> PasswordExportLauncher.showMainSettingsAndStartExport(context);
-            new PasswordAccessLossDialogSettingsCoordinator()
-                    .showPasswordAccessLossDialog(
-                            context,
-                            modalDialogManagerSupplier.get(),
-                            warningType,
-                            GmsUpdateLauncher::launch,
-                            startExportFlow,
-                            customTabIntentHelper);
+        if (PasswordAccessLossDialogHelper.tryShowAccessLossWarning(
+                mProfile,
+                context,
+                referrer,
+                modalDialogManagerSupplier,
+                customTabIntentHelper,
+                BuildInfo.getInstance())) {
             return;
         }
 
@@ -237,9 +230,8 @@ public class PasswordManagerHelper {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
         context.startActivity(
-                SettingsLauncherFactory.createSettingsLauncher()
-                        .createSettingsActivityIntent(
-                                context, SettingsFragment.PASSWORDS, fragmentArgs));
+                SettingsNavigationFactory.createSettingsNavigation()
+                        .createSettingsIntent(context, SettingsFragment.PASSWORDS, fragmentArgs));
     }
 
     /**
@@ -339,7 +331,7 @@ public class PasswordManagerHelper {
                 accountName,
                 result -> {
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
-                    successCallback.onResult(result);
+                    successCallback.onResult(null);
                 },
                 error -> {
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
@@ -374,6 +366,84 @@ public class PasswordManagerHelper {
         }
 
         checkupClient.getBreachedCredentialsCount(
+                referrer,
+                accountName,
+                result -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    successCallback.onResult(result);
+                },
+                error -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    failureCallback.onResult(error);
+                });
+    }
+
+    /**
+     * Asynchronously returns the number of weak credentials for the provided account.
+     *
+     * @param referrer the place that requested number of weak credentials.
+     * @param accountName the account name that is syncing passwords. If no value was provided, the
+     *     local account will be used.
+     * @param successCallback callback called with the number of weak passwords.
+     * @param failureCallback callback called if encountered an error.
+     */
+    public void getWeakCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {
+        PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(
+                        PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT);
+
+        PasswordCheckupClientHelper checkupClient;
+        try {
+            checkupClient = getPasswordCheckupClientHelper();
+        } catch (Exception exception) {
+            failureCallback.onResult(exception);
+            return;
+        }
+
+        checkupClient.getWeakCredentialsCount(
+                referrer,
+                accountName,
+                result -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    successCallback.onResult(result);
+                },
+                error -> {
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.of(error));
+                    failureCallback.onResult(error);
+                });
+    }
+
+    /**
+     * Asynchronously returns the number of reused credentials for the provided account.
+     *
+     * @param referrer the place that requested number of reused credentials.
+     * @param accountName the account name that is syncing passwords. If no value was provided, the
+     *     local account will be used.
+     * @param successCallback callback called with the number of reused passwords.
+     * @param failureCallback callback called if encountered an error.
+     */
+    public void getReusedCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {
+        PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(
+                        PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT);
+
+        PasswordCheckupClientHelper checkupClient;
+        try {
+            checkupClient = getPasswordCheckupClientHelper();
+        } catch (Exception exception) {
+            failureCallback.onResult(exception);
+            return;
+        }
+
+        checkupClient.getReusedCredentialsCount(
                 referrer,
                 accountName,
                 result -> {
@@ -424,15 +494,6 @@ public class PasswordManagerHelper {
         // Re-enroll the user by resetting the enroll pref. Other state reset happens on
         // unenroll.
         prefs.setBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS, false);
-    }
-
-    public void launchExportFlow(
-            Context context, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
-        FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
-        assert activity != null : "Context is expected to be a fragment activity";
-
-        new PasswordAccessLossExportFlowCoordinator(activity, mProfile, modalDialogManagerSupplier)
-                .startExportFlow();
     }
 
     @VisibleForTesting
@@ -502,7 +563,7 @@ public class PasswordManagerHelper {
         loadingDialogCoordinator.show();
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
-                        (PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT));
+                        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT);
         // TODO(crbug.com/40945093): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
         // take the accountEmail as String.
         checkupClient.getPasswordCheckupIntent(
@@ -540,13 +601,20 @@ public class PasswordManagerHelper {
         }
 
         // If the exception is not a Chrome-defined one, it means that the call failed at the
-        // API call level.
+        // API call level. It could have either failed with a known ApiException or because of a
+        // different error (e.g. a different exception thrown by the implementation of the API).
+        if (!(exception instanceof ApiException)) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    kGetIntentErrorHistogram,
+                    CredentialManagerError.OTHER_API_ERROR,
+                    CredentialManagerError.COUNT);
+            return;
+        }
+
         RecordHistogram.recordEnumeratedHistogram(
                 kGetIntentErrorHistogram,
-                CredentialManagerError.API_ERROR,
+                CredentialManagerError.API_EXCEPTION,
                 CredentialManagerError.COUNT);
-
-        if (!(exception instanceof ApiException)) return;
 
         final String kGetIntentApiErrorHistogram =
                 forAccount
@@ -755,18 +823,6 @@ public class PasswordManagerHelper {
             } catch (ActivityNotFoundException e) {
             }
         }
-    }
-
-    public static @PasswordAccessLossWarningType int getAccessLossWarningType(
-            PrefService prefService) {
-        // TODO(crbug.com/323149739): Enable this feature flag in SafetyCheckMediatorTest and
-        // PasswordManagerHelperTest in all tests before launch.
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList
-                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
-            return PasswordAccessLossWarningType.NONE;
-        }
-        return PasswordManagerUtilBridge.getPasswordAccessLossWarningType(prefService);
     }
 
     @NativeMethods

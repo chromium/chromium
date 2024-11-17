@@ -128,7 +128,8 @@ class PLATFORM_EXPORT GraphicsContextState final {
 
   TextDrawingModeFlags text_drawing_mode_ = kTextModeFill;
 
-  InterpolationQuality interpolation_quality_ = kInterpolationDefault;
+  InterpolationQuality interpolation_quality_ =
+      GetDefaultInterpolationQuality();
   DynamicRangeLimit dynamic_range_limit_{
       cc::PaintFlags::DynamicRangeLimit::kHigh};
 

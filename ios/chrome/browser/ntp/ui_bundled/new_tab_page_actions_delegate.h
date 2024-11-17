@@ -38,6 +38,12 @@
 // The Parcel Tracking module was tapped.
 - (void)parcelTrackingOpened;
 
+// The Price Tracking Promo module was tapped.
+- (void)priceTrackingPromoOpened;
+
+// The Tips module was tapped.
+- (void)tipsOpened;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_ACTIONS_DELEGATE_H_

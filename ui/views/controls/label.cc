@@ -15,7 +15,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -23,6 +22,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -51,6 +51,7 @@ enum LabelPropertyKey {
   kLabelLineHeight,
   kLabelObscured,
   kLabelAllowCharacterBreak,
+  kAccessibleTextOffsets,
 };
 
 bool IsOpaque(SkColor color) {
@@ -131,6 +132,10 @@ void Label::SetText(const std::u16string& new_text) {
       GetViewAccessibility().SetName(new_text);
     }
   }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  MaybeRefreshAccessibleTextOffsets();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 void Label::AdjustAccessibleName(std::u16string& new_name,
@@ -359,6 +364,9 @@ void Label::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
   OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
                         &full_text_, kLabelHorizontalAlignment),
                     kPropertyEffectsPaint);
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  MaybeRefreshAccessibleTextOffsets();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 gfx::VerticalAlignment Label::GetVerticalAlignment() const {
@@ -433,9 +441,16 @@ void Label::SetObscured(bool obscured) {
   ClearDisplayText();
   if (obscured)
     SetSelectable(false);
+
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&full_text_, kLabelObscured),
       kPropertyEffectsPreferredSizeChanged);
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // Since the text might be obscured, we need to make sure we recalculate the
+  // offsets if needed.
+  ax_name_used_to_compute_offsets_.clear();
+  MaybeRefreshAccessibleTextOffsets();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 bool Label::IsDisplayTextClipped() const {
@@ -492,8 +507,15 @@ void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
     return;
   elide_behavior_ = elide_behavior;
   UpdateFullTextElideBehavior();
+
   ClearDisplayText();
   OnPropertyChanged(&elide_behavior_, kPropertyEffectsPreferredSizeChanged);
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // Even though the elided behavior will not change the accessible name, it
+  // might change the offsets so we must make sure to recompute them if needed.
+  ax_name_used_to_compute_offsets_.clear();
+  MaybeRefreshAccessibleTextOffsets();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 std::u16string Label::GetTooltipText() const {
@@ -844,12 +866,11 @@ void Label::PaintText(gfx::Canvas* canvas) {
   if (display_text_)
     display_text_->Draw(canvas);
 
-#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40725997): Enable this DCHECK on ChromeOS and LaCrOS by
-  // fixing either this check (to correctly idenfify more paints-on-opaque
-  // cases), refactoring parents to use background() or by fixing
-  // subpixel-rendering issues that the DCHECK detects.
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/40725997): Enable this DCHECK on ChromeOS by fixing either
+  // this check (to correctly idenfify more paints-on-opaque cases), refactoring
+  // parents to use background() or by fixing subpixel-rendering issues that the
+  // DCHECK detects.
   if (!display_text_ || display_text_->subpixel_rendering_suppressed() ||
       skip_subpixel_rendering_opacity_check_) {
     return;
@@ -882,6 +903,10 @@ void Label::PaintText(gfx::Canvas* canvas) {
 
 void Label::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   ClearDisplayText();
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  MaybeRefreshAccessibleTextOffsets();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 void Label::OnPaint(gfx::Canvas* canvas) {
@@ -1024,38 +1049,37 @@ bool Label::CanHandleAccelerators() const {
          View::CanHandleAccelerators();
 }
 
-void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-  // If the accessible name changed since the last time we computed the text
-  // offsets, we need to recompute them.
+void Label::OnAccessibilityInitializing(ui::AXNodeData* data) {
+  if (display_text_ && ::ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
+    ax_name_used_to_compute_offsets_ = GetViewAccessibility().GetCachedName();
+
+    data->AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
+                              ComputeTextOffsets(display_text_.get()));
+
+    WordBoundaries boundaries = ComputeWordBoundaries(GetText());
+    data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                              boundaries.starts);
+    data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                              boundaries.ends);
+  }
+}
+
+void Label::MaybeRefreshAccessibleTextOffsets() const {
   if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
+      GetViewAccessibility().is_initialized() &&
       ax_name_used_to_compute_offsets_ !=
           GetViewAccessibility().GetCachedName()) {
     GetViewAccessibility().ClearTextOffsets();
     ax_name_used_to_compute_offsets_.clear();
 
-    // TODO(crbug.com/325137417): When this function is only used to initialize
-    // the cache with these values, refactor this part to not rely on the cache
-    // as it will cause a chicken and egg situation. For now, this is necessary
-    // to keep the text offsets up to date.
-    if (RefreshAccessibleTextOffsets()) {
+    if (RefreshAccessibleTextOffsetsIfNeeded()) {
       ax_name_used_to_compute_offsets_ = GetViewAccessibility().GetCachedName();
-      node_data->AddIntListAttribute(
-          ax::mojom::IntListAttribute::kCharacterOffsets,
-          GetViewAccessibility().GetCharacterOffsets());
-      node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
-                                     GetViewAccessibility().GetWordStarts());
-      node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
-                                     GetViewAccessibility().GetWordEnds());
     }
   }
-#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
-#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-bool Label::RefreshAccessibleTextOffsets() {
+bool Label::RefreshAccessibleTextOffsetsIfNeeded() const {
   // TODO(https://crbug.com/325137417): Should we clear the display text after
   // we rebuilt it only for accessibility purposes? Investigate this once we
   // migrate the text offsets attributes.
@@ -1093,7 +1117,7 @@ void Label::VisibilityChanged(View* starting_from, bool is_visible) {
 
 void Label::ShowContextMenuForViewImpl(View* source,
                                        const gfx::Point& point,
-                                       ui::MenuSourceType source_type) {
+                                       ui::mojom::MenuSourceType source_type) {
   if (!GetRenderTextForSelectionController())
     return;
 

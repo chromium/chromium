@@ -151,7 +151,7 @@ class ActionableProtocolErrorChecker : public SingleClientStatusChangeChecker {
 };
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorTest) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Clearing the server data resets the server birthday and triggers a NIGORI
   // invalidation. This triggers a sync cycle and a GetUpdates request that runs
@@ -162,10 +162,10 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, UpgradeClientErrorDuringIncrementalSync) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
-  const BookmarkNode* node1 = AddFolder(0, 0, "title1");
-  SetTitle(0, node1, "new_title1");
+  const BookmarkNode* node1 = AddFolder(0, 0, u"title1");
+  SetTitle(0, node1, u"new_title1");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   std::string description = "Not My Fault";
@@ -175,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, UpgradeClientErrorDuringIncrementalSync) {
       sync_pb::SyncEnums::UPGRADE_CLIENT);
 
   // Now make one more change so we will do another sync.
-  const BookmarkNode* node2 = AddFolder(0, 0, "title2");
-  SetTitle(0, node2, "new_title2");
+  const BookmarkNode* node2 = AddFolder(0, 0, u"title2");
+  SetTitle(0, node2, u"new_title2");
 
   // Wait until an actionable error is encountered.
   EXPECT_TRUE(ActionableProtocolErrorChecker(GetSyncService(0)).Wait());
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, MAYBE_ErrorWhileSettingUp) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Now setup sync and it should succeed.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 #else
   // Now enable a datatype, whose first 2 syncs would fail, but we should
   // recover and setup succesfully on the third attempt.
@@ -259,10 +259,10 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, MAYBE_ErrorWhileSettingUp) {
 // Tests that on receiving CLIENT_DATA_OBSOLETE sync engine gets restarted and
 // initialized with different cache_guid.
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, ClientDataObsoleteTest) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
-  const BookmarkNode* node1 = AddFolder(0, 0, "title1");
-  SetTitle(0, node1, "new_title1");
+  const BookmarkNode* node1 = AddFolder(0, 0, u"title1");
+  SetTitle(0, node1, u"new_title1");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   std::string description = "Not My Fault";
@@ -276,8 +276,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ClientDataObsoleteTest) {
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
 
   // Trigger sync by making one more change.
-  const BookmarkNode* node2 = AddFolder(0, 0, "title2");
-  SetTitle(0, node2, "new_title2");
+  const BookmarkNode* node2 = AddFolder(0, 0, u"title2");
+  SetTitle(0, node2, u"new_title2");
 
   ASSERT_TRUE(syncer::SyncEngineStoppedChecker(GetSyncService(0)).Wait());
 
@@ -292,10 +292,10 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ClientDataObsoleteTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, EncryptionObsoleteErrorTest) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
-  const BookmarkNode* node1 = AddFolder(0, 0, "title1");
-  SetTitle(0, node1, "new_title1");
+  const BookmarkNode* node1 = AddFolder(0, 0, u"title1");
+  SetTitle(0, node1, u"new_title1");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   GetFakeServer()->TriggerActionableProtocolError(
@@ -303,8 +303,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, EncryptionObsoleteErrorTest) {
       sync_pb::SyncEnums::UNKNOWN_ACTION);
 
   // Now make one more change so we will do another sync.
-  const BookmarkNode* node2 = AddFolder(0, 0, "title2");
-  SetTitle(0, node2, "new_title2");
+  const BookmarkNode* node2 = AddFolder(0, 0, u"title2");
+  SetTitle(0, node2, u"new_title2");
 
   SyncDisabledChecker sync_disabled(GetSyncService(0));
   sync_disabled.Wait();
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, EncryptionObsoleteErrorTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   syncer::DataTypeSet synced_datatypes =
       GetSyncService(0)->GetActiveDataTypes();
   ASSERT_TRUE(synced_datatypes.Has(syncer::HISTORY));
@@ -330,8 +330,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
   ASSERT_TRUE(TypeDisabledChecker(GetSyncService(0), syncer::HISTORY).Wait());
   ASSERT_TRUE(TypeDisabledChecker(GetSyncService(0), syncer::SESSIONS).Wait());
 
-  const BookmarkNode* node1 = AddFolder(0, 0, "title1");
-  SetTitle(0, node1, "new_title1");
+  const BookmarkNode* node1 = AddFolder(0, 0, u"title1");
+  SetTitle(0, node1, u"new_title1");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 }
 
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
 // commit request.
 IN_PROC_BROWSER_TEST_F(SyncErrorTest,
                        PRE_ShouldResendUncommittedEntitiesAfterBrowserRestart) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::TRANSIENT_ERROR);
   syncer::UserEventService* event_service =
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
 
 // Tests that throttling one datatype does not influence other datatypes.
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
-  const std::string kBookmarkFolderTitle = "title1";
+  const std::u16string kBookmarkFolderTitle = u"title1";
 
   ASSERT_TRUE(SetupSync());
   // Set the preference to false initially which should get synced.

@@ -8,12 +8,14 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -63,7 +65,11 @@ void RegisterInterfaces(const std::vector<std::string>& interfaces,
 
 class IPCInterfacesDumper : public InProcessBrowserTest {
  public:
-  IPCInterfacesDumper() = default;
+  IPCInterfacesDumper()
+      : sync_run_loop_timeout_(FROM_HERE, base::TimeDelta::Max()) {}
+
+ private:
+  base::test::ScopedRunLoopTimeout sync_run_loop_timeout_;
 };
 
 IN_PROC_BROWSER_TEST_F(IPCInterfacesDumper, DumperTest) {
@@ -111,6 +117,6 @@ IN_PROC_BROWSER_TEST_F(IPCInterfacesDumper, DumperTest) {
   base::File file(std::move(filepath),
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   std::optional<std::string> json_string = base::WriteJson(json);
-  CHECK(json_string);
-  file.WriteAtCurrentPos(json_string->data(), json_string->size());
+  CHECK(json_string.has_value());
+  file.WriteAtCurrentPos(base::as_byte_span(json_string.value()));
 }

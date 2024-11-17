@@ -7,7 +7,9 @@
 
 #include <memory>
 
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
+#include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/mojom/shopping_service.mojom.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 
 class GURL;
 
@@ -21,6 +23,9 @@ shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     const GURL& url,
     const std::optional<const ProductInfo>& info,
     const std::string& locale);
+
+shared::mojom::ProductSpecificationsSetPtr ProductSpecsSetToMojo(
+    const ProductSpecificationsSet& set);
 
 }  // namespace commerce
 

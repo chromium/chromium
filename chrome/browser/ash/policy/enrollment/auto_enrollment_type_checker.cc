@@ -80,170 +80,24 @@ static std::string FRERequirementToString(
   }
 }
 
-// Returns true if we are on Flex and FRE is enabled on Flex.
-static bool IsFlexAndFREOnFlexIsEnabled() {
-  return ash::switches::IsRevenBranding() &&
+// Returns true if we are on an officially branded Flex and FRE is enabled
+// on Flex.
+static bool IsOfficialGoogleFlexAndFREOnFlexIsEnabled() {
+  return IsOfficialGoogleFlex() &&
+         // FRE on Flex is enabled unless explicitly disabled ("never" enabled).
          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-             ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex) ==
-             AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways;
+             ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex) !=
+             AutoEnrollmentTypeChecker::kForcedReEnrollmentNever;
 }
 
 // Returns true if FRE state keys are supported.
 static bool AreFREStateKeysSupported() {
   // TODO(b/331677599): Return IsOfficialGoogleOS().
-  return IsOfficialGoogleChrome() || IsFlexAndFREOnFlexIsEnabled();
-}
-
-// Kill switch config request parameters.
-constexpr net::NetworkTrafficAnnotationTag kKSConfigTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation(
-        "unified_state_determination_kill_switch",
-        R"(
-            semantics {
-              sender: "Unified State Determination"
-              description:
-                "Communication with the backend used to check whether "
-                "unified state determination should be enabled."
-              trigger: "Open device for the first time, powerwash the device."
-              data: "A simple GET HTTP request without user data."
-              destination: GOOGLE_OWNED_SERVICE
-              internal {
-                contacts {
-                  email: "sergiyb@google.com"
-                }
-                contacts {
-                  email: "chromeos-commercial-remote-management@google.com"
-                }
-              }
-              user_data {
-                type: NONE
-              }
-              last_reviewed: "2023-05-16"
-            }
-            policy {
-              cookies_allowed: NO
-              setting: "This feature cannot be controlled by Chrome settings."
-              chrome_policy {}
-            })");
-constexpr char kKSConfigUrl[] =
-    "https://www.gstatic.com/chromeos-usd-experiment/v1.json";
-constexpr base::TimeDelta kKSConfigFetchTimeout = base::Seconds(1);
-constexpr int kKSConfigFetchTries = 4;
-constexpr size_t kKSConfigMaxSize = 1024;  // 1KB
-constexpr char kKSConfigFetchMethod[] = "GET";
-constexpr char kKSConfigDisableUpToVersionKey[] = "disable_up_to_version";
-constexpr int kUMAKSFetchNumTriesMinValue = 1;
-constexpr int kUMAKSFetchNumTriesExclusiveMaxValue = 51;
-constexpr int kUMAKSFetchNumTriesBuckets =
-    kUMAKSFetchNumTriesExclusiveMaxValue - kUMAKSFetchNumTriesMinValue;
-
-// This value represents current version of the code. After we have enabled kill
-// switch for a particular version, we can increment it after fixing the logic.
-// The devices running new code will not be affected by kill switch and we can
-// test our fixes.
-const int kCodeVersion = 1;
-
-// When set to true, unified state determination is disabled.
-std::optional<bool> g_unified_state_determination_kill_switch;
-
-void ReportKillSwitchFetchTries(int tries) {
-  base::UmaHistogramCustomCounts(kUMAStateDeterminationKillSwitchFetchNumTries,
-                                 tries, kUMAKSFetchNumTriesMinValue,
-                                 kUMAKSFetchNumTriesExclusiveMaxValue,
-                                 kUMAKSFetchNumTriesBuckets);
-}
-
-void ParseKSConfig(base::OnceClosure init_callback,
-                   const std::string& response) {
-  std::optional<base::Value> config = base::JSONReader::Read(response);
-  if (!config || !config->is_dict()) {
-    LOG(ERROR) << "Kill switch config is not valid JSON or not a dict";
-    std::move(init_callback).Run();
-    return;
-  }
-
-  std::optional<int> disable_up_to_version =
-      config->GetDict().FindInt(kKSConfigDisableUpToVersionKey);
-  if (!disable_up_to_version) {
-    LOG(ERROR) << "Kill switch config is missing disable_up_to_version key or "
-                  "it is not an int";
-    std::move(init_callback).Run();
-    return;
-  }
-
-  g_unified_state_determination_kill_switch =
-      kCodeVersion <= disable_up_to_version;
-  std::move(init_callback).Run();
-}
-
-void FetchKSConfig(
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    base::OnceClosure init_callback,
-    int tries_left,
-    std::unique_ptr<network::SimpleURLLoader> loader = nullptr,
-    std::unique_ptr<std::string> response = nullptr) {
-  if (loader) {
-    base::UmaHistogramSparse(
-        kUMAStateDeterminationKillSwitchFetchNetworkErrorCode,
-        -loader->NetError());
-  }
-
-  if (!response && tries_left) {
-    auto request = std::make_unique<network::ResourceRequest>();
-    request->url = GURL(kKSConfigUrl);
-    request->method = kKSConfigFetchMethod;
-    request->load_flags = net::LOAD_DISABLE_CACHE;
-    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-    VLOG(1) << "Sending kill switch config request to " << request->url;
-    loader = network::SimpleURLLoader::Create(std::move(request),
-                                              kKSConfigTrafficAnnotation);
-    loader->SetTimeoutDuration(kKSConfigFetchTimeout);
-    // Use the raw pointer to avoid calling on empty `loader` after std::move.
-    network::SimpleURLLoader* loader_ptr = loader.get();
-    loader_ptr->DownloadToString(
-        loader_factory.get(),
-        base::BindOnce(FetchKSConfig, loader_factory, std::move(init_callback),
-                       tries_left - 1, std::move(loader)),
-        kKSConfigMaxSize);
-    return;
-  }
-
-  // On any errors, assume kill switch is enabled and fallback to old logic.
-  g_unified_state_determination_kill_switch = true;
-  if (!response) {
-    LOG(ERROR) << "Kill switch config request failed with code "
-               << loader->NetError();
-    ReportKillSwitchFetchTries(kKSConfigFetchTries);
-    std::move(init_callback).Run();
-    return;
-  }
-
-  VLOG(1) << "Received kill switch config response after "
-          << (kKSConfigFetchTries - tries_left) << " tries: " << *response;
-  ReportKillSwitchFetchTries(kKSConfigFetchTries - tries_left);
-  ParseKSConfig(std::move(init_callback), *response);
-}
-
-bool IsUnifiedStateDeterminationDisabledByKillSwitch() {
-  // If AutoEnrollmentTypeChecker is not initialized, assume the kill switch is
-  // enabled. This is for legacy code that doesn't know about unified state
-  // determination. New code should wait for init to complete.
-  return g_unified_state_determination_kill_switch.value_or(true);
+  return IsOfficialGoogleChrome() ||
+         IsOfficialGoogleFlexAndFREOnFlexIsEnabled();
 }
 
 }  // namespace
-
-// static
-void AutoEnrollmentTypeChecker::Initialize(
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    base::OnceClosure init_callback) {
-  FetchKSConfig(loader_factory, std::move(init_callback), kKSConfigFetchTries);
-}
-
-// static
-bool AutoEnrollmentTypeChecker::Initialized() {
-  return g_unified_state_determination_kill_switch.has_value();
-}
 
 // static
 bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
@@ -258,11 +112,6 @@ bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
   if (command_line_mode == kUnifiedStateDeterminationNever) {
     base::UmaHistogramEnumeration(kUMAStateDeterminationStatus,
                                   USDStatus::kDisabledViaNeverSwitch);
-    return false;
-  }
-  if (IsUnifiedStateDeterminationDisabledByKillSwitch()) {
-    base::UmaHistogramEnumeration(kUMAStateDeterminationStatus,
-                                  USDStatus::kDisabledViaKillSwitch);
     return false;
   }
 
@@ -597,24 +446,6 @@ AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
 
   // Neither FRE nor initial state determination checks are needed.
   return CheckType::kNone;
-}
-
-// static
-void AutoEnrollmentTypeChecker::
-    SetUnifiedStateDeterminationKillSwitchForTesting(bool is_killed) {
-  g_unified_state_determination_kill_switch = is_killed;
-}
-
-// static
-void AutoEnrollmentTypeChecker::
-    ClearUnifiedStateDeterminationKillSwitchForTesting() {
-  g_unified_state_determination_kill_switch.reset();
-}
-
-// static
-bool AutoEnrollmentTypeChecker::
-    IsUnifiedStateDeterminationDisabledByKillSwitchForTesting() {
-  return IsUnifiedStateDeterminationDisabledByKillSwitch();
 }
 
 }  // namespace policy

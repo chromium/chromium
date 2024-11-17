@@ -1,0 +1,79 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  resources_package = "org.chromium.components.browser_ui.edge_to_edge"
+  sources = [
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/BaseSystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeManager.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgePadAdjuster.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeStateProvider.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeSupplier.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeSystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/SystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/WindowSystemBarColorHelper.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/layout/EdgeToEdgeBaseLayout.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/layout/EdgeToEdgeLayoutCoordinator.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/edge_to_edge_base_layout.xml" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeManagerUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeStateProviderUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/EdgeToEdgeSystemBarColorHelperUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/WindowSystemBarColorHelperUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/edge_to_edge/layout/EdgeToEdgeLayoutUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  resources_package = "org.chromium.components.browser_ui.edge_to_edge"
+  sources = [ "java/src/org/chromium/components/browser_ui/edge_to_edge/layout/EdgeToEdgeLayoutViewTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

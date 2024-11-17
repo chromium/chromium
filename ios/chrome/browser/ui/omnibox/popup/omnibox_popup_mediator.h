@@ -137,6 +137,9 @@ class OmniboxPopupMediatorDelegate {
 /// Sets the text alignment of the popup content.
 - (void)setTextAlignment:(NSTextAlignment)alignment;
 
+/// Sets whether the omnibox has a thumbnail.
+- (void)setHasThumbnail:(BOOL)hasThumbnail;
+
 /// Updates the popup with the `results`.
 - (void)updateWithResults:(const AutocompleteResult&)results;
 

@@ -79,8 +79,7 @@ class CORE_EXPORT ImageResource final
 
   void DidAddClient(ResourceClient*) override;
 
-  std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers()
-      override;
+  ResourceStatus GetContentStatus() const override;
 
   void AllClientsAndObserversRemoved() override;
 
@@ -126,6 +125,9 @@ class CORE_EXPORT ImageResource final
   void DecodeError(bool all_data_received);
   bool IsAccessAllowed(
       ImageResourceInfo::DoesCurrentFrameHaveSingleSecurityOrigin) const;
+
+  std::pair<ResourcePriority, ResourcePriority> ComputePriorityFromObservers()
+      override;
 
   bool HasClientsOrObservers() const override;
 

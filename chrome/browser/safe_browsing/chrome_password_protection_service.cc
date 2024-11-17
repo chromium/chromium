@@ -73,6 +73,7 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
@@ -169,9 +170,7 @@ PasswordReuseLookup::ReputationVerdict GetVerdictToLogFromResponse(
     case LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED:
       return PasswordReuseLookup::VERDICT_UNSPECIFIED;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected response_verdict: " << response_verdict;
-  return PasswordReuseLookup::VERDICT_UNSPECIFIED;
+  NOTREACHED() << "Unexpected response_verdict: " << response_verdict;
 }
 
 // Given a |web_contents|, returns the navigation id of its last committed
@@ -604,8 +603,7 @@ void ChromePasswordProtectionService::OnUserAction(
       HandleResetPasswordOnInterstitial(web_contents, action);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -913,9 +911,8 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
       break;
     case RequestOutcome::UNKNOWN:
     case RequestOutcome::DEPRECATED_NO_EXTENDED_REPORTING:
-      NOTREACHED_IN_MIGRATION()
-          << __FUNCTION__ << ": outcome: " << static_cast<int>(outcome);
-      break;
+      NOTREACHED() << __FUNCTION__
+                   << ": outcome: " << static_cast<int>(outcome);
   }
 }
 
@@ -957,10 +954,11 @@ void ChromePasswordProtectionService::OnGaiaPasswordChanged(
 // Disabled on Android, because enterprise reporting extension is not supported.
 #if !BUILDFLAG(IS_ANDROID)
   // Only report if the current password changed is the primary account and it's
-  // not a Gmail account or if the current password changed is a content area
-  // account and it's not a Gmail account.
-  if (!IsAccountGmail(username))
+  // not a consumer account or if the current password changed is a content area
+  // account and it's not a consumer account.
+  if (!IsAccountConsumer(username)) {
     ReportPasswordChanged();
+  }
 #endif
 }
 
@@ -1191,7 +1189,7 @@ void ChromePasswordProtectionService::HandleUserActionOnPageInfo(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ChromePasswordProtectionService::HandleResetPasswordOnInterstitial(
@@ -1248,6 +1246,14 @@ std::u16string ChromePasswordProtectionService::GetWarningDetailText(
 
 std::string ChromePasswordProtectionService::GetOrganizationName(
     ReusedPasswordAccountType password_type) const {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kEnterprisePasswordReuseUiRefresh)) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    return GetPrefs()->GetString(prefs::kEnterpriseCustomLabel);
+#else
+    return std::string();
+#endif
+  }
   if (password_type.account_type() != ReusedPasswordAccountType::GSUITE) {
     return std::string();
   }
@@ -1495,7 +1501,7 @@ std::string ChromePasswordProtectionService::GetSyncPasswordHashFromPrefs() {
                         : std::string();
 }
 
-PrefService* ChromePasswordProtectionService::GetPrefs() {
+PrefService* ChromePasswordProtectionService::GetPrefs() const {
   return profile_->GetPrefs();
 }
 
@@ -1629,10 +1635,16 @@ bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
          !GetAccountInfo().hosted_domain.empty();
 }
 
-bool ChromePasswordProtectionService::IsAccountGmail(
+bool ChromePasswordProtectionService::IsAccountConsumer(
     const std::string& username) const {
-  return GetAccountInfoForUsername(username).hosted_domain ==
-         kNoHostedDomainFound;
+  // Check that |username| is likely an email address because if |username| has
+  // no email domain MayBeEnterpriseUserBasedOnEmail will assume it is a
+  // consumer account.
+  return (username.find("@") != std::string::npos &&
+          !signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+              username)) ||
+         GetAccountInfoForUsername(username).hosted_domain ==
+             kNoHostedDomainFound;
 }
 
 AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(

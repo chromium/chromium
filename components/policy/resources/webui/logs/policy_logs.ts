@@ -7,7 +7,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

@@ -7,12 +7,34 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {
+
+TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
+  base::HistogramTester histogram_tester;
+
+  LogPixCodeCopied();
+
+  histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.PixCodeCopied",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogFopSelected) {
+  base::HistogramTester histogram_tester;
+
+  LogFopSelected();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelector.UserAction",
+      /*sample=*/FopSelectorAction::kFopSelected,
+      /*expected_bucket_count=*/1);
+}
 
 TEST(FacilitatedPaymentsMetricsTest,
      LogPaymentCodeValidationResultAndLatency_ValidatorFailed) {
@@ -54,17 +76,22 @@ TEST(FacilitatedPaymentsMetricsTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogIsAvailableResult) {
+TEST(FacilitatedPaymentsMetricsTest, LogApiAvailabilityCheckResultAndLatency) {
   base::HistogramTester histogram_tester;
 
-  LogIsApiAvailableResult(/*result=*/true, base::Milliseconds(10));
+  LogApiAvailabilityCheckResultAndLatency(/*result=*/true,
+                                          base::Milliseconds(10));
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.IsApiAvailable.Result",
-      /*sample=*/true,
+      "FacilitatedPayments.Pix.IsApiAvailable.Success.Latency",
+      /*sample=*/10,
       /*expected_bucket_count=*/1);
+
+  LogApiAvailabilityCheckResultAndLatency(/*result=*/false,
+                                          base::Milliseconds(10));
+
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.IsApiAvailable.Latency",
+      "FacilitatedPayments.Pix.IsApiAvailable.Failure.Latency",
       /*sample=*/10,
       /*expected_bucket_count=*/1);
 }
@@ -81,45 +108,40 @@ TEST(FacilitatedPaymentsMetricsTest, LogLoadRiskDataResult) {
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogGetClientTokenResult) {
+TEST(FacilitatedPaymentsMetricsTest, LogGetClientTokenResultAndLatency) {
   base::HistogramTester histogram_tester;
 
-  LogGetClientTokenResult(/*result=*/true, base::Milliseconds(10));
+  LogGetClientTokenResultAndLatency(/*result=*/true, base::Milliseconds(10));
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.GetClientToken.Result",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.GetClientToken.Latency",
+      "FacilitatedPayments.Pix.GetClientToken.Success.Latency",
       /*sample=*/10,
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogPaymentNotOfferedReason) {
+TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentAttempt) {
   base::HistogramTester histogram_tester;
 
-  LogPaymentNotOfferedReason(PaymentNotOfferedReason::kApiNotAvailable);
+  LogInitiatePaymentAttempt();
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PaymentNotOfferedReason",
-      /*sample=*/PaymentNotOfferedReason::kApiNotAvailable,
+      "FacilitatedPayments.Pix.InitiatePayment.Attempt",
+      /*sample=*/true,
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResult) {
-  base::HistogramTester histogram_tester;
+TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResultAndLatency) {
+  for (bool result : {true, false}) {
+    base::HistogramTester histogram_tester;
 
-  LogInitiatePaymentResult(/*result=*/true, base::Milliseconds(10));
+    LogInitiatePaymentResultAndLatency(result, base::Milliseconds(10));
 
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePayment.Result",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePayment.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Pix.InitiatePayment.",
+                      result ? "Success" : "Failure", ".Latency"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
 }
 
 TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionResult) {
@@ -199,6 +221,35 @@ TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Abandoned) {
       /*expected_bucket_count=*/1);
 }
 
+class FacilitatedPaymentsMetricsExitedReasonTest
+    : public testing::TestWithParam<PayflowExitedReason> {};
+
+TEST_P(FacilitatedPaymentsMetricsExitedReasonTest, LogPayflowExitedReason) {
+  base::HistogramTester histogram_tester;
+
+  LogPayflowExitedReason(GetParam());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/GetParam(),
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsMetricsExitedReasonTest,
+    testing::Values(PayflowExitedReason::kCodeValidatorFailed,
+                    PayflowExitedReason::kInvalidCode,
+                    PayflowExitedReason::kUserOptedOut,
+                    PayflowExitedReason::kNoLinkedAccount,
+                    PayflowExitedReason::kLandscapeScreenOrientation,
+                    PayflowExitedReason::kApiClientNotAvailable,
+                    PayflowExitedReason::kRiskDataNotAvailable,
+                    PayflowExitedReason::kClientTokenNotAvailable,
+                    PayflowExitedReason::kInitiatePaymentFailed,
+                    PayflowExitedReason::kActionTokenNotAvailable,
+                    PayflowExitedReason::kUserLoggedOut));
+
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:
   base::test::TaskEnvironment task_environment_{
@@ -224,6 +275,28 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogTransactionResult_UkmLogged) {
             static_cast<uint8_t>(TransactionResult::kSuccess));
   EXPECT_EQ(ukm_entries[0].metrics.at("TriggerSource"),
             static_cast<uint8_t>(TriggerSource::kDOMSearch));
+}
+
+class FacilitatedPaymentsMetricsTestForUiScreens
+    : public testing::TestWithParam<UiState> {
+ public:
+  UiState ui_screen() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(FacilitatedPaymentsMetricsTest,
+                         FacilitatedPaymentsMetricsTestForUiScreens,
+                         testing::Values(UiState::kFopSelector,
+                                         UiState::kProgressScreen,
+                                         UiState::kErrorScreen));
+
+TEST_P(FacilitatedPaymentsMetricsTestForUiScreens, LogUiScreenShown) {
+  base::HistogramTester histogram_tester;
+
+  LogUiScreenShown(ui_screen());
+
+  histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.UiScreenShown",
+                                      /*sample=*/ui_screen(),
+                                      /*expected_bucket_count=*/1);
 }
 
 }  // namespace payments::facilitated

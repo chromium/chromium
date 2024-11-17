@@ -137,17 +137,9 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->AddMessageHandler(std::move(handler));
     web_ui_->set_web_contents(web_contents());
-
-    // Initialize NewWindowDelegate things.
-    auto instance = std::make_unique<MockNewWindowDelegate>();
-    auto primary = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_primary_ = primary.get();
-    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(instance), std::move(primary));
   }
 
   void TearDown() override {
-    new_window_provider_.reset();
     web_ui_.reset();
     identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -184,6 +176,8 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
                                              enabled);
   }
 
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
   raw_ptr<syncer::TestSyncService, DanglingUntriaged> sync_service_ = nullptr;
   raw_ptr<syncer::SyncUserSettings, DanglingUntriaged> user_settings_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
@@ -192,9 +186,9 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
   TestWebUIProvider test_web_ui_provider_;
   std::unique_ptr<TestChromeWebUIControllerFactory> test_web_ui_factory_;
   raw_ptr<OSSyncHandler, DanglingUntriaged> handler_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
-      new_window_delegate_primary_;
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
+
+ private:
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(OsSyncHandlerTest, OsSyncPrefsSentOnNavigateToPage) {
@@ -324,7 +318,7 @@ TEST_F(OsSyncHandlerTest, ShowSetupSyncForAllTypesIndividually) {
 
 TEST_F(OsSyncHandlerTest, OpenBrowserSyncSettings) {
   EXPECT_CALL(
-      *new_window_delegate_primary_,
+      new_window_delegate(),
       OpenUrl(
           GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage),
           ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,

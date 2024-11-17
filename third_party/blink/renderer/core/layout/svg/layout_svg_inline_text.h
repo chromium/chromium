@@ -73,7 +73,6 @@ class LayoutSVGInlineText final : public LayoutText {
 
   PhysicalRect PhysicalLinesBoundingBox() const override;
 
-  PhysicalRect VisualRectInDocument(VisualRectFlags) const final;
   gfx::RectF VisualRectInLocalSVGCoordinates() const final;
 
   float scaling_factor_;

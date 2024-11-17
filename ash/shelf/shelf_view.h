@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/views/app_list_drag_and_drop_host.h"
+#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -30,6 +30,7 @@
 #include "base/timer/timer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -84,7 +85,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ShelfObserver,
                              public views::ContextMenuController,
                              public views::BoundsAnimatorObserver,
-                             public ApplicationDragAndDropHost,
                              public ShelfTooltipDelegate {
   METADATA_HEADER(ShelfView, views::AccessiblePaneView)
 
@@ -201,9 +201,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   views::View* GetDefaultFocusableChild() override;
 
   // Overridden from views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // Called from ScrollableShelfView when shelf config is updated.
   void OnShelfConfigUpdated();
@@ -213,16 +214,14 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // drop should be shown or not.
   bool ShouldEventActivateButton(views::View* view, const ui::Event& event);
 
-  // ApplicationDragAndDropHost:
   bool ShouldHandleDrag(const std::string& app_id,
-                        const gfx::Point& location_in_screen) const override;
+                        const gfx::Point& location_in_screen) const;
   bool StartDrag(const std::string& app_id,
                  const gfx::Point& location_in_screen,
-                 const gfx::Rect& drag_icon_bounds_in_screen) override;
+                 const gfx::Rect& drag_icon_bounds_in_screen);
   bool Drag(const gfx::Point& location_in_screen,
-            const gfx::Rect& drag_icon_bounds_in_screen) override;
-  void EndDrag(bool cancel,
-               std::unique_ptr<AppDragIconProxy> icon_proxy) override;
+            const gfx::Rect& drag_icon_bounds_in_screen);
+  void EndDrag(bool cancel);
 
   // Swaps the given button with the next one if |with_next| is true, or with
   // the previous one if |with_next| is false.
@@ -526,7 +525,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void ShowShelfContextMenu(const ShelfID& shelf_id,
                             const gfx::Point& point,
                             views::View* source,
-                            ui::MenuSourceType source_type,
+                            ui::mojom::MenuSourceType source_type,
                             std::unique_ptr<ui::SimpleMenuModel> model);
 
   // Handles the result of an item selection, records the |action| taken and
@@ -548,7 +547,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                 const ShelfID& shelf_id,
                 const gfx::Point& click_point,
                 bool context_menu,
-                ui::MenuSourceType source_type);
+                ui::mojom::MenuSourceType source_type);
 
   // Callback for MenuRunner.
   // |source| is either a ShelfView or a ShelfAppButton.

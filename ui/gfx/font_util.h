@@ -5,12 +5,12 @@
 #ifndef UI_GFX_FONT_UTIL_H_
 #define UI_GFX_FONT_UTIL_H_
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
 // Initialize the library fonts.
-GFX_EXPORT void InitializeFonts();
+COMPONENT_EXPORT(GFX) void InitializeFonts();
 
 }  // namespace gfx
 

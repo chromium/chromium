@@ -9,14 +9,15 @@
 
 #include <vector>
 
-#include "ui/accessibility/platform/browser_accessibility.h"
-#include "ui/accessibility/platform/fuchsia/browser_accessibility_manager_fuchsia.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_relative_bounds.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/ax_platform_node_fuchsia.h"
+#include "ui/accessibility/platform/fuchsia/browser_accessibility_manager_fuchsia.h"
 
 namespace ui {
 
@@ -84,7 +85,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityFuchsia : public Browser
   bool IsFuchsiaDefaultAction() const;
 
   // Fuchsia-specific representation of this node.
-  AXPlatformNodeFuchsia* platform_node_;
+  raw_ptr<AXPlatformNodeFuchsia> platform_node_;
 };
 
 BrowserAccessibilityFuchsia* COMPONENT_EXPORT(AX_PLATFORM)

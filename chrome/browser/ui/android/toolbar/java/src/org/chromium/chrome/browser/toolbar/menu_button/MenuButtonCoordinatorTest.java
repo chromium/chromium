@@ -22,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -103,7 +104,7 @@ public class MenuButtonCoordinatorTest {
                         () -> false,
                         mThemeColorProvider,
                         () -> null,
-                        () -> {},
+                        CallbackUtils.emptyRunnable(),
                         R.id.menu_button_wrapper);
     }
 

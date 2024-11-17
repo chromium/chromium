@@ -12,18 +12,6 @@ namespace switches {
 // involving a command line switch.
 const char kAllowPreCommitInput[] = "allow-pre-commit-input";
 
-// Used to communicate managed policy for the
-// BeforeunloadEventCancelByPreventDefault feature. This feature is typically
-// controlled by base::Feature (see blink/common/features.*) but requires an
-// enterprise policy override. This is implicitly a tri-state, and can be either
-// unset, or set to "1" for force enable, or "0" for force disable.
-extern const char kBeforeunloadEventCancelByPreventDefaultPolicy[] =
-    "beforeunload-event-cancel-by-prevent-default-policy";
-extern const char
-    kBeforeunloadEventCancelByPreventDefaultPolicy_ForceDisable[] = "0";
-extern const char kBeforeunloadEventCancelByPreventDefaultPolicy_ForceEnable[] =
-    "1";
-
 // Set blink settings. Format is <name>[=<value],<name>[=<value>],...
 // The names are declared in Settings.json5. For boolean type, use "true",
 // "false", or omit '=<value>' part to set to true. For enum type, use the int
@@ -147,11 +135,17 @@ const char kMinHeightForGpuRasterTile[] = "min-height-for-gpu-raster-tile";
 extern const char kMutationEventsEnabled[] =
     "deprecated-mutation-events-enabled";
 
-// Used to communicate managed policy for CSSCustomStateDeprecatedSynatx. This
+// Used to communicate managed policy for CSSCustomStateDeprecatedSyntax. This
 // feature is typically controlled by a RuntimeEnabledFeature, but requires an
 // enterprise policy override.
 extern const char kCSSCustomStateDeprecatedSyntaxEnabled[] =
     "css-custom-state-deprecated-syntax-enabled";
+
+// Used to communicate managed policy for SelectParserRelaxation. This feature
+// is typically controlled by a RuntimeEnabledFeature, but requires an
+// enterprise policy override.
+extern const char kDisableSelectParserRelaxation[] =
+    "disable-select-parser-relaxation";
 
 // Sets the timeout seconds of the network-quiet timers in IdlenessDetector.
 // Used by embedders who want to change the timeout time in order to run web
@@ -189,6 +183,12 @@ const char kConditionalFocusWindowMs[] = "conditional-focus-window-ms";
 
 // Specifies the flags passed to JS engine.
 const char kJavaScriptFlags[] = "js-flags";
+
+// Used to communicate managed policy for WebAudioBypassOutputBuffering.  This
+// feature is typically controlled by a RuntimeEnabledFeature, but requires an
+// enterprise policy override.
+const char kWebAudioBypassOutputBufferingOptOut[] =
+    "web-audio-bypass-output-buffering-opt-out";
 
 }  // namespace switches
 }  // namespace blink

@@ -36,18 +36,17 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
-import org.chromium.components.tab_group_sync.TabGroupEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
@@ -240,13 +239,8 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTabGroupModelFilterObserverCaptor
                 .getValue()
                 .committedTabGroupClosure(TOKEN_1, /* wasHiding= */ true);
-        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
-
-        // Verify metrics.
-        EventDetails eventDetails = mEventDetailsCaptor.getValue();
-        assertEquals(TabGroupEvent.TAB_GROUP_CLOSED, eventDetails.eventType);
-        assertEquals(LOCAL_TAB_GROUP_ID_1, eventDetails.localGroupId);
-        assertEquals(ClosingSource.CLOSED_BY_USER, eventDetails.closingSource);
+        verify(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1, ClosingSource.CLOSED_BY_USER);
     }
 
     @Test
@@ -254,14 +248,9 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTabGroupModelFilterObserverCaptor
                 .getValue()
                 .committedTabGroupClosure(TOKEN_1, /* wasHiding= */ false);
-        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
+        verify(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1, ClosingSource.DELETED_BY_USER);
         verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);
-
-        // Verify metrics.
-        EventDetails eventDetails = mEventDetailsCaptor.getValue();
-        assertEquals(TabGroupEvent.TAB_GROUP_CLOSED, eventDetails.eventType);
-        assertEquals(LOCAL_TAB_GROUP_ID_1, eventDetails.localGroupId);
-        assertEquals(ClosingSource.DELETED_BY_USER, eventDetails.closingSource);
     }
 
     @Test

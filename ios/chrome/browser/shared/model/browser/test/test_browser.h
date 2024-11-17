@@ -17,23 +17,23 @@ class WebStateListDelegate;
 class TestBrowser final : public Browser {
  public:
   // Constructor that takes a WebStateListDelegate.
-  TestBrowser(ChromeBrowserState* browser_state,
+  TestBrowser(ProfileIOS* profile,
               SceneState* scene_state,
               std::unique_ptr<WebStateListDelegate> web_state_list_delegate,
               Type type = Type::kRegular);
 
-  // Constructor that takes only a BrowserState and a SceneState; a fake
+  // Constructor that takes only a Profile and a SceneState; a fake
   // WebStateListDelegate will be used.
-  TestBrowser(ChromeBrowserState* browser_state, SceneState* scene_state);
+  TestBrowser(ProfileIOS* profile, SceneState* scene_state);
 
-  // Constructor that takes a ChromeBrowserState and WebStateListDelegate;
+  // Constructor that takes a ProfileIOS and WebStateListDelegate;
   // SceneState will be nil.
-  TestBrowser(ChromeBrowserState* browser_state,
+  TestBrowser(ProfileIOS* profile,
               std::unique_ptr<WebStateListDelegate> web_state_list_delegate);
 
-  // Constructor that takes only a BrowserState; a fake WebStateListDelegate
+  // Constructor that takes only a Profile; a fake WebStateListDelegate
   // will be used. SceneState will be nil.
-  explicit TestBrowser(ChromeBrowserState* browser_state);
+  explicit TestBrowser(ProfileIOS* profile);
 
   TestBrowser(const TestBrowser&) = delete;
   TestBrowser& operator=(const TestBrowser&) = delete;
@@ -42,10 +42,7 @@ class TestBrowser final : public Browser {
 
   // Browser.
   Type type() const override;
-  // TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
-  // remove this method.
-  ChromeBrowserState* GetBrowserState() final;
-  ChromeBrowserState* GetProfile() final;
+  ProfileIOS* GetProfile() final;
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
   SceneState* GetSceneState() final;
@@ -60,7 +57,7 @@ class TestBrowser final : public Browser {
 
  private:
   const Type type_;
-  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
+  raw_ptr<ProfileIOS> profile_ = nullptr;
   __weak SceneState* scene_state_ = nil;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;

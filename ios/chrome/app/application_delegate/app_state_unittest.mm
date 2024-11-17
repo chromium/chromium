@@ -12,7 +12,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#import "ios/chrome/app/application_delegate/app_state+Testing.h"
+#import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
@@ -42,7 +42,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/ui/scoped_iphone_portrait_only/scoped_iphone_portrait_only.h"
+#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -98,36 +98,39 @@
 @end
 @implementation AppStateObserverToMockMainController
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   switch (appState.initStage) {
-    case InitStageStart:
+    case AppInitStage::kStart:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageBrowserBasic:
+    case AppInitStage::kBrowserBasic:
       break;
-    case InitStageSafeMode:
+    case AppInitStage::kSafeMode:
       break;
-    case InitStageVariationsSeed:
+    case AppInitStage::kVariationsSeed:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageBrowserObjectsForBackgroundHandlers:
+    case AppInitStage::kBrowserObjectsForBackgroundHandlers:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageEnterprise:
+    case AppInitStage::kEnterprise:
       break;
-    case InitStageBrowserObjectsForUI:
+    case AppInitStage::kLoadProfiles:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageNormalUI:
+    case AppInitStage::kBrowserObjectsForUI:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageFirstRun:
+    case AppInitStage::kNormalUI:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageChoiceScreen:
+    case AppInitStage::kFirstRun:
       [appState queueTransitionToNextInitStage];
       break;
-    case InitStageFinal:
+    case AppInitStage::kChoiceScreen:
+      [appState queueTransitionToNextInitStage];
+      break;
+    case AppInitStage::kFinal:
       break;
   }
 }
@@ -175,7 +178,7 @@ typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 }
 
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)nextInitStage {
+    willTransitionToInitStage:(AppInitStage)nextInitStage {
   if (self.needsQueueTransition && !self.triggerOnDidTransition) {
     [appState queueTransitionToNextInitStage];
     self.needsQueueTransition = NO;
@@ -183,7 +186,7 @@ typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
   if (self.needsQueueTransition && self.triggerOnDidTransition) {
     [appState queueTransitionToNextInitStage];
     self.needsQueueTransition = NO;
@@ -211,16 +214,12 @@ class AppStateTest : public BlockCleanupTest {
 
   void SetUp() override {
     BlockCleanupTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
   }
 
   void TearDown() override {
@@ -272,9 +271,8 @@ class AppStateTest : public BlockCleanupTest {
           initWithStartupInformation:startup_information_mock_
                      connectedScenes:@[ main_scene_state_ ]];
 
-      main_scene_state_ =
-          [main_scene_state_ initWithAppState:app_state_
-                                 browserState:GetBrowserState()];
+      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_
+                                                      profile:GetProfile()];
       main_scene_state_.window = GetWindowMock();
 
       if (with_safe_mode_agent) {
@@ -312,9 +310,8 @@ class AppStateTest : public BlockCleanupTest {
           initWithStartupInformation:startup_information_mock_
                      connectedScenes:@[ main_scene_state_ ]];
 
-      main_scene_state_ =
-          [main_scene_state_ initWithAppState:app_state_
-                                 browserState:GetBrowserState()];
+      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_
+                                                      profile:GetProfile()];
       main_scene_state_.window = window;
       [window makeKeyAndVisible];
 
@@ -340,7 +337,7 @@ class AppStateTest : public BlockCleanupTest {
   id GetConnectionInformationMock() { return connection_information_mock_; }
   id GetWindowMock() { return window_; }
   id GetAppStateObserverMock() { return app_state_observer_mock_; }
-  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
+  ProfileIOS* GetProfile() { return profile_.get(); }
 
  private:
   web::WebTaskEnvironment task_environment_;
@@ -362,7 +359,7 @@ class AppStateTest : public BlockCleanupTest {
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> handle_startup_swizzler_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 #pragma mark - Tests.
@@ -379,7 +376,7 @@ TEST_F(AppStateNoFixtureTest, WillResignActive) {
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
-  profile_manager.AddProfileWithBuilder(TestChromeBrowserState::Builder());
+  profile_manager.AddProfileWithBuilder(TestProfileIOS::Builder());
 
   AppState* appState =
       [[AppState alloc] initWithStartupInformation:startupInformation];
@@ -415,9 +412,6 @@ TEST_F(AppStateTest, WillTerminate) {
   [[GetStartupInformationMock() expect] stopChromeMain];
 
   AppState* appState = GetAppStateWithMock();
-
-  id appStateMock = OCMPartialMock(GetAppStateWithMock());
-  [[appStateMock expect] completeUIInitialization];
 
   // Start init stages.
   [appState startInitialization];
@@ -460,7 +454,7 @@ TEST_F(AppStateTest, ApplicationWillEnterForeground) {
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
   std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(GetBrowserState());
+      std::make_unique<TestBrowser>(GetProfile());
 
   [[metricsMediator expect] updateMetricsStateBasedOnPrefsUserTriggered:NO];
   [[metricsMediator expect]
@@ -468,9 +462,6 @@ TEST_F(AppStateTest, ApplicationWillEnterForeground) {
                                           [OCMArg anyPointer])];
   [[memoryHelper expect] resetForegroundMemoryWarningCount];
   [[[memoryHelper stub] andReturnValue:@0] foregroundMemoryWarningCount];
-
-  id appStateMock = OCMPartialMock(GetAppStateWithMock());
-  [[appStateMock expect] completeUIInitialization];
 
   // Simulate finishing the initialization before going to background.
   [GetAppStateWithMock() startInitialization];
@@ -551,9 +542,9 @@ TEST_F(AppStateTest, ApplicationDidEnterBackgroundStageBackground) {
 // Tests that -queueTransitionToNextInitStage transitions to the next stage.
 TEST_F(AppStateTest, queueTransitionToNextInitStage) {
   AppState* appState = GetAppStateWithMock();
-  ASSERT_EQ(appState.initStage, InitStageStart);
+  ASSERT_EQ(appState.initStage, AppInitStage::kStart);
   [appState queueTransitionToNextInitStage];
-  ASSERT_EQ(appState.initStage, static_cast<InitStage>(InitStageStart + 1));
+  ASSERT_EQ(appState.initStage, NextAppInitStage(AppInitStage::kStart));
 }
 
 // Tests that -queueTransitionToNextInitStage notifies observers.
@@ -561,19 +552,19 @@ TEST_F(AppStateTest, queueTransitionToNextInitStageNotifiesObservers) {
   // Setup.
   AppState* appState = GetAppStateWithMock();
   id observer = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
-  InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
+  AppInitStage secondStage = NextAppInitStage(AppInitStage::kStart);
   [appState addObserver:observer];
 
   [[[observer expect] andDo:^(NSInvocation*) {
     // Verify that the init stage isn't yet increased when calling
     // #willTransitionToInitStage.
-    EXPECT_EQ(InitStageStart, appState.initStage);
+    EXPECT_EQ(AppInitStage::kStart, appState.initStage);
   }] appState:appState willTransitionToInitStage:secondStage];
   [[[observer expect] andDo:^(NSInvocation*) {
     // Verify that the init stage is increased when calling
     // #didTransitionFromInitStage.
     EXPECT_EQ(secondStage, appState.initStage);
-  }] appState:appState didTransitionFromInitStage:InitStageStart];
+  }] appState:appState didTransitionFromInitStage:AppInitStage::kStart];
 
   [appState queueTransitionToNextInitStage];
 
@@ -594,8 +585,8 @@ TEST_F(AppStateTest,
       [[AppStateTransitioningObserver alloc] init];
   id observer2 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
 
-  InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
-  InitStage thirdStage = static_cast<InitStage>(InitStageStart + 2);
+  AppInitStage secondStage = NextAppInitStage(AppInitStage::kStart);
+  AppInitStage thirdStage = NextAppInitStage(secondStage);
 
   // The order is important here.
   [appState addObserver:observer1];
@@ -607,10 +598,10 @@ TEST_F(AppStateTest,
   // transitioningObserver queueing a new transition from one of the callbacks.
   [[observer1 expect] appState:appState willTransitionToInitStage:secondStage];
   [[observer1 expect] appState:appState
-      didTransitionFromInitStage:InitStageStart];
+      didTransitionFromInitStage:AppInitStage::kStart];
   [[observer2 expect] appState:appState willTransitionToInitStage:secondStage];
   [[observer2 expect] appState:appState
-      didTransitionFromInitStage:InitStageStart];
+      didTransitionFromInitStage:AppInitStage::kStart];
   [[observer1 expect] appState:appState willTransitionToInitStage:thirdStage];
   [[observer1 expect] appState:appState didTransitionFromInitStage:secondStage];
   [[observer2 expect] appState:appState willTransitionToInitStage:thirdStage];
@@ -636,8 +627,8 @@ TEST_F(AppStateTest,
   transitioningObserver.triggerOnDidTransition = YES;
   id observer2 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
 
-  InitStage secondStage = static_cast<InitStage>(InitStageStart + 1);
-  InitStage thirdStage = static_cast<InitStage>(InitStageStart + 2);
+  AppInitStage secondStage = NextAppInitStage(AppInitStage::kStart);
+  AppInitStage thirdStage = NextAppInitStage(secondStage);
 
   // The order is important here.
   [appState addObserver:observer1];
@@ -649,10 +640,10 @@ TEST_F(AppStateTest,
   // transitioningObserver queueing a new transition from one of the callbacks.
   [[observer1 expect] appState:appState willTransitionToInitStage:secondStage];
   [[observer1 expect] appState:appState
-      didTransitionFromInitStage:InitStageStart];
+      didTransitionFromInitStage:AppInitStage::kStart];
   [[observer2 expect] appState:appState willTransitionToInitStage:secondStage];
   [[observer2 expect] appState:appState
-      didTransitionFromInitStage:InitStageStart];
+      didTransitionFromInitStage:AppInitStage::kStart];
   [[observer1 expect] appState:appState willTransitionToInitStage:thirdStage];
   [[observer1 expect] appState:appState didTransitionFromInitStage:secondStage];
   [[observer2 expect] appState:appState willTransitionToInitStage:thirdStage];
@@ -665,29 +656,30 @@ TEST_F(AppStateTest,
   [observer2 verify];
 }
 
-// Tests, on iPhone, that when ScopedIphonePortraitOnly is created,
-// `-AppState.portraitOnly` returns YES.
-TEST_F(AppStateTest, BlockIphonePortraitOnly) {
+// Tests that when ScopedForcePortraitOrientation is created, `-portraitOnly`
+// returns YES.
+TEST_F(AppStateTest, ForcePortraitOrientation) {
   AppState* appState = GetAppStateWithMock();
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-    [[[GetWindowMock() stub] andReturn:nil] rootViewController];
-    SwizzleSafeModeShouldStart(NO);
 
-    [[[GetStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
-    [[GetStartupInformationMock() stub] setIsFirstRun:YES];
-    [[[GetStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
+  [[[GetWindowMock() stub] andReturn:nil] rootViewController];
+  SwizzleSafeModeShouldStart(NO);
 
-    // Simulate finishing the initialization before going to background.
-    [GetAppStateWithMock() startInitialization];
-    [GetAppStateWithMock() queueTransitionToNextInitStage];
+  [[[GetStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
+  [[GetStartupInformationMock() stub] setIsFirstRun:YES];
+  [[[GetStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
-    ASSERT_FALSE(appState.portraitOnly);
-    std::unique_ptr<ScopedIphonePortraitOnly> scopedIphonePortraitOnly =
-        std::make_unique<ScopedIphonePortraitOnly>(appState);
-    ASSERT_TRUE(appState.portraitOnly);
-    scopedIphonePortraitOnly.reset();
-    ASSERT_FALSE(appState.portraitOnly);
-  }
+  // Simulate finishing the initialization before going to background.
+  [GetAppStateWithMock() startInitialization];
+  [GetAppStateWithMock() queueTransitionToNextInitStage];
+
+  ASSERT_FALSE(appState.portraitOnly);
+  std::unique_ptr<ScopedForcePortraitOrientation>
+      scopedForcePortraitOrientation =
+          std::make_unique<ScopedForcePortraitOrientation>(appState);
+  ASSERT_TRUE(appState.portraitOnly);
+
+  scopedForcePortraitOrientation.reset();
+  ASSERT_FALSE(appState.portraitOnly);
 }
 
 TEST_F(AppStateTest, AppAgentRetrieval) {

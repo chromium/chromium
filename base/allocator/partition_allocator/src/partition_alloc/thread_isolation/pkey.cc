@@ -61,7 +61,8 @@ void Wrpkru(uint32_t pkru) {
   asm volatile(".byte 0x0f,0x01,0xef\n" : : "a"(pkru), "c"(0), "d"(0));
 }
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+    PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 
 LiftPkeyRestrictionsScope::LiftPkeyRestrictionsScope()
     : saved_pkey_value_(kDefaultPkeyValue) {
@@ -83,7 +84,8 @@ LiftPkeyRestrictionsScope::~LiftPkeyRestrictionsScope() {
   }
 }
 
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+        // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 
 }  // namespace partition_alloc::internal
 

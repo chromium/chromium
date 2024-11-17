@@ -18,11 +18,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/select_file_dialog_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
@@ -174,10 +172,6 @@ SelectFileDialogExtension::RoutingID GetRoutingID(
     const SelectFileDialogExtension::Owner& owner) {
   if (owner.android_task_id.has_value())
     return base::StringPrintf("android.%d", *owner.android_task_id);
-
-  // Lacros ids are already prefixed with "lacros".
-  if (owner.lacros_window_id.has_value())
-    return *owner.lacros_window_id;
 
   if (web_contents) {
     return base::StringPrintf(
@@ -454,9 +448,8 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
       owner.window->GetId() ==
           ash::kShellWindowId_CaptureModeFolderSelectionDialogOwner;
 
-  const bool skip_finding_browser = is_for_capture_mode ||
-                                    owner.android_task_id.has_value() ||
-                                    owner.lacros_window_id.has_value();
+  const bool skip_finding_browser =
+      is_for_capture_mode || owner.android_task_id.has_value();
 
   can_resize_ =
       !display::Screen::GetScreen()->InTabletMode() && !is_for_capture_mode;
@@ -482,11 +475,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     return;
 
   std::vector<std::string> volume_filter;
-  if (owner.is_lacros) {
-    // SelectFileAsh (Lacros) is opening the dialog: only show fusebox volumes
-    // in File Manager UI to return real file descriptors to SelectFileAsh.
-    volume_filter.push_back("fusebox-only");
-  } else if (use_media_store_filter) {
+  if (use_media_store_filter) {
     // ArcSelectFile is opening the dialog: add 'media-store-files-only' filter
     // to only show volumes in File Manager UI that are indexed by the Android
     // MediaStore.

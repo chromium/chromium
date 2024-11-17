@@ -9,13 +9,14 @@
 #include "third_party/blink/renderer/core/css/css_container_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
+#include "third_party/blink/renderer/core/css/scroll_state_query_snapshot.h"
 #include "third_party/blink/renderer/core/css/snapped_query_scroll_snapshot.h"
-#include "third_party/blink/renderer/core/css/stuck_query_scroll_snapshot.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -103,13 +104,40 @@ Element* CachedContainer(Element* starting_element,
   return container;
 }
 
+PaintLayerScrollableArea* FindScrollContainerScrollableArea(
+    const Element& container) {
+  if (const LayoutObject* layout_object = container.GetLayoutObject()) {
+    if (const LayoutBox* snap_container =
+            layout_object->ContainingScrollContainer()) {
+      return snap_container->GetScrollableArea();
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
+  if (PaintLayerScrollableArea* scrollable_area =
+          FindScrollContainerScrollableArea(container)) {
+    if (SnappedQueryScrollSnapshot* snapshot =
+            scrollable_area->GetSnappedQueryScrollSnapshot()) {
+      ContainerSnappedFlags snapped =
+          static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
+      if (snapshot->GetSnappedTargetX() == container) {
+        snapped |= static_cast<ContainerSnappedFlags>(ContainerSnapped::kX);
+      }
+      if (snapshot->GetSnappedTargetY() == container) {
+        snapped |= static_cast<ContainerSnappedFlags>(ContainerSnapped::kY);
+      }
+      snapped_ = pending_snapped_ = snapped;
+    }
+  }
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container.GetDocument(), container, std::nullopt, std::nullopt,
-      ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo,
-      static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone));
+      ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped_,
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone),
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone));
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -155,8 +183,8 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   }
   bool selects_size = selector.SelectsSizeContainers();
   bool selects_style = selector.SelectsStyleContainers();
-  bool selects_state = selector.SelectsStateContainers();
-  if (!selects_size && !selects_style && !selects_state) {
+  bool selects_scroll_state = selector.SelectsScrollStateContainers();
+  if (!selects_size && !selects_style && !selects_scroll_state) {
     return false;
   }
 
@@ -166,8 +194,8 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   if (selects_style) {
     match_result.SetDependsOnStyleContainerQueries();
   }
-  if (selects_state) {
-    match_result.SetDependsOnStateContainerQueries();
+  if (selects_scroll_state) {
+    match_result.SetDependsOnScrollStateContainerQueries();
   }
 
   Element* starting_element =
@@ -263,21 +291,40 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   if (result.unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative) {
     match_result.SetDependsOnRootFontContainerQueries();
   }
+  if (!depends_on_size_) {
+    depends_on_size_ = query.Selector().SelectsSizeContainers();
+  }
   if (!depends_on_style_) {
     depends_on_style_ = query.Selector().SelectsStyleContainers();
   }
   if (!depends_on_stuck_) {
     depends_on_stuck_ = query.Selector().SelectsStickyContainers();
-    if (depends_on_stuck_ && !stuck_snapshot_) {
+    if (depends_on_stuck_ && !scroll_state_snapshot_) {
       CHECK(media_query_evaluator_);
       Element* container_element = ContainerElement();
       CHECK(container_element);
-      stuck_snapshot_ =
-          MakeGarbageCollected<StuckQueryScrollSnapshot>(*container_element);
+      scroll_state_snapshot_ =
+          MakeGarbageCollected<ScrollStateQuerySnapshot>(*container_element);
     }
   }
   if (!depends_on_snapped_) {
     depends_on_snapped_ = query.Selector().SelectsSnapContainers();
+    if (depends_on_snapped_) {
+      if (PaintLayerScrollableArea* scrollable_area =
+              FindScrollContainerScrollableArea(*ContainerElement())) {
+        scrollable_area->EnsureSnappedQueryScrollSnapshot();
+      }
+    }
+  }
+  if (!depends_on_overflowing_) {
+    depends_on_overflowing_ = query.Selector().SelectsOverflowContainers();
+    if (depends_on_overflowing_ && !scroll_state_snapshot_) {
+      CHECK(media_query_evaluator_);
+      Element* container_element = ContainerElement();
+      CHECK(container_element);
+      scroll_state_snapshot_ =
+          MakeGarbageCollected<ScrollStateQuerySnapshot>(*container_element);
+    }
   }
   unit_flags_ |= result.unit_flags;
 
@@ -287,20 +334,18 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
     PhysicalSize size,
     PhysicalAxes contained_axes) {
-  if (size_ == size && contained_axes_ == contained_axes && !font_dirty_) {
+  if (size_ == size && contained_axes_ == contained_axes) {
     return Change::kNone;
   }
 
   UpdateContainerSize(size, contained_axes);
-  font_dirty_ = false;
 
   Change change = ComputeSizeChange();
-
   if (change != Change::kNone) {
     ClearResults(change, kSizeContainer);
   }
 
-  return change;
+  return referenced_by_unit_ ? Change::kDescendantContainers : change;
 }
 
 void ContainerQueryEvaluator::SetPendingSnappedStateFromScrollSnapshot(
@@ -329,9 +374,13 @@ void ContainerQueryEvaluator::SetPendingSnappedStateFromScrollSnapshot(
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ApplyScrollState() {
   Change change = Change::kNone;
-  if (stuck_snapshot_) {
-    change = StickyContainerChanged(stuck_snapshot_->StuckHorizontal(),
-                                    stuck_snapshot_->StuckVertical());
+  if (scroll_state_snapshot_) {
+    change = StickyContainerChanged(scroll_state_snapshot_->StuckHorizontal(),
+                                    scroll_state_snapshot_->StuckVertical());
+    Change overflow_change = OverflowContainerChanged(
+        scroll_state_snapshot_->OverflowingHorizontal(),
+        scroll_state_snapshot_->OverflowingVertical());
+    change = std::max(change, overflow_change);
   }
   Change snap_change = SnapContainerChanged(pending_snapped_);
   change = std::max(change, snap_change);
@@ -371,6 +420,24 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::SnapContainerChanged(
 }
 
 ContainerQueryEvaluator::Change
+ContainerQueryEvaluator::OverflowContainerChanged(
+    ContainerOverflowingFlags overflowing_horizontal,
+    ContainerOverflowingFlags overflowing_vertical) {
+  if (overflowing_horizontal_ == overflowing_horizontal &&
+      overflowing_vertical_ == overflowing_vertical) {
+    return Change::kNone;
+  }
+
+  UpdateContainerOverflowing(overflowing_horizontal, overflowing_vertical);
+  Change change = ComputeOverflowChange();
+  if (change != Change::kNone) {
+    ClearResults(change, kOverflowContainer);
+  }
+
+  return change;
+}
+
+ContainerQueryEvaluator::Change
 ContainerQueryEvaluator::StyleContainerChanged() {
   if (!depends_on_style_) {
     return Change::kNone;
@@ -385,10 +452,49 @@ ContainerQueryEvaluator::StyleContainerChanged() {
   return change;
 }
 
+ContainerQueryEvaluator::Change
+ContainerQueryEvaluator::StyleAffectingSizeChanged() {
+  Change change = ComputeSizeChange();
+  if (change != Change::kNone) {
+    ClearResults(change, kSizeContainer);
+  }
+  return change;
+}
+
+ContainerQueryEvaluator::Change
+ContainerQueryEvaluator::StyleAffectingScrollStateChanged() {
+  Change snap_change = ComputeSnapChange();
+  if (snap_change != Change::kNone) {
+    ClearResults(snap_change, kSnapContainer);
+  }
+  Change sticky_change = ComputeStickyChange();
+  if (sticky_change != Change::kNone) {
+    ClearResults(sticky_change, kStickyContainer);
+  }
+  Change overflow_change = ComputeOverflowChange();
+  if (overflow_change != Change::kNone) {
+    ClearResults(overflow_change, kOverflowContainer);
+  }
+  return std::max(std::max(snap_change, sticky_change), overflow_change);
+}
+
+void ContainerQueryEvaluator::UpdateContainerValues() {
+  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
+  Element* container = existing_values.ContainerElement();
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      container->GetDocument(), *container, existing_values.Width(),
+      existing_values.Height(), existing_values.StuckHorizontal(),
+      existing_values.StuckVertical(), existing_values.SnappedFlags(),
+      existing_values.OverflowingHorizontal(),
+      existing_values.OverflowingVertical());
+  media_query_evaluator_ =
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
+}
+
 void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
   visitor->Trace(media_query_evaluator_);
   visitor->Trace(results_);
-  visitor->Trace(stuck_snapshot_);
+  visitor->Trace(scroll_state_snapshot_);
 }
 
 void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
@@ -422,7 +528,8 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, width, height,
       existing_values.StuckHorizontal(), existing_values.StuckVertical(),
-      existing_values.SnappedFlags());
+      existing_values.SnappedFlags(), existing_values.OverflowingHorizontal(),
+      existing_values.OverflowingVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -439,7 +546,8 @@ void ContainerQueryEvaluator::UpdateContainerStuck(
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, existing_values.Width(),
       existing_values.Height(), stuck_horizontal, stuck_vertical,
-      existing_values.SnappedFlags());
+      existing_values.SnappedFlags(), existing_values.OverflowingHorizontal(),
+      existing_values.OverflowingVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -454,7 +562,27 @@ void ContainerQueryEvaluator::UpdateContainerSnapped(
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, existing_values.Width(),
       existing_values.Height(), existing_values.StuckHorizontal(),
-      existing_values.StuckVertical(), snapped);
+      existing_values.StuckVertical(), snapped,
+      existing_values.OverflowingHorizontal(),
+      existing_values.OverflowingVertical());
+  media_query_evaluator_ =
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
+}
+
+void ContainerQueryEvaluator::UpdateContainerOverflowing(
+    ContainerOverflowingFlags overflowing_horizontal,
+    ContainerOverflowingFlags overflowing_vertical) {
+  overflowing_horizontal_ = overflowing_horizontal;
+  overflowing_vertical_ = overflowing_horizontal;
+
+  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
+  Element* container = existing_values.ContainerElement();
+
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      container->GetDocument(), *container, existing_values.Width(),
+      existing_values.Height(), existing_values.StuckHorizontal(),
+      existing_values.StuckVertical(), existing_values.Snapped(),
+      overflowing_horizontal, overflowing_vertical);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -482,6 +610,8 @@ void ContainerQueryEvaluator::ClearResults(Change change,
           pair.key->Selector().SelectsStickyContainers()) ||
          (container_type == kSnapContainer &&
           pair.key->Selector().SelectsSnapContainers()) ||
+         (container_type == kOverflowContainer &&
+          pair.key->Selector().SelectsOverflowContainers()) ||
          (container_type == kStyleContainer &&
           pair.key->Selector().SelectsStyleContainers()))) {
       continue;
@@ -495,10 +625,6 @@ void ContainerQueryEvaluator::ClearResults(Change change,
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeSizeChange()
     const {
-  if (referenced_by_unit_) {
-    return Change::kDescendantContainers;
-  }
-
   Change change = Change::kNone;
 
   for (const auto& result : results_) {
@@ -568,6 +694,24 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeSnapChange()
   return change;
 }
 
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeOverflowChange()
+    const {
+  Change change = Change::kNone;
+
+  for (const auto& result : results_) {
+    const ContainerQuery& query = *result.key;
+    if (!query.Selector().SelectsOverflowContainers()) {
+      continue;
+    }
+    if (Eval(query).value == result.value.value) {
+      continue;
+    }
+    change = std::max(result.value.change, change);
+  }
+
+  return change;
+}
+
 void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
     StyleRecalcChange change) {
   CHECK(media_query_evaluator_);
@@ -584,23 +728,102 @@ void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
   // We recreate both the MediaQueryEvaluator and the CSSContainerValues objects
   // here only to update the font-size etc from the current container style in
   // CSSContainerValues.
-  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
-  Element* container = existing_values.ContainerElement();
-  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
-      container->GetDocument(), *container, existing_values.Width(),
-      existing_values.Height(), existing_values.StuckHorizontal(),
-      existing_values.StuckVertical(), existing_values.SnappedFlags());
-  media_query_evaluator_ =
-      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
+  UpdateContainerValues();
 }
 
-void ContainerQueryEvaluator::MarkFontDirtyIfNeeded(
+StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
+    const StyleRecalcChange& child_change,
     const ComputedStyle& old_style,
-    const ComputedStyle& new_style) {
-  if (!(unit_flags_ & MediaQueryExpValue::kFontRelative) || font_dirty_) {
-    return;
+    const ComputedStyle& new_style,
+    bool style_changed) {
+  StyleRecalcChange recalc_change = child_change;
+  if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
+      RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() ||
+      RuntimeEnabledFeatures::CSSOverflowContainerQueriesEnabled()) {
+    switch (ApplyScrollState()) {
+      case ContainerQueryEvaluator::Change::kNone:
+        break;
+      case ContainerQueryEvaluator::Change::kNearestContainer:
+        recalc_change = recalc_change.ForceRecalcScrollStateContainer();
+        break;
+      case ContainerQueryEvaluator::Change::kDescendantContainers:
+        recalc_change =
+            recalc_change.ForceRecalcDescendantScrollStateContainers();
+        break;
+    }
   }
-  font_dirty_ = old_style.GetFont() != new_style.GetFont();
+
+  if (!style_changed) {
+    return recalc_change;
+  }
+
+  // If size container queries are expressed in font-relative units, the query
+  // evaluation may change even if the size of the container in pixels did not
+  // change. If the old and new style use different font properties, and there
+  // are existing queries that depend on font relative units, we need to update
+  // the container values and invalidate style for any changed queries.
+  bool invalidate_for_font =
+      (unit_flags_ & MediaQueryExpValue::kFontRelative) &&
+      old_style.GetFont() != new_style.GetFont();
+
+  // Writing direction changes may affect how logical queries match for size and
+  // scroll-state() queries even when the physical size or scroll-state do not
+  // change.
+  bool invalidate_for_writing_direction =
+      MayDependOnWritingDirection() &&
+      old_style.GetWritingDirection() != new_style.GetWritingDirection();
+
+  if (invalidate_for_writing_direction || invalidate_for_font) {
+    // Writing direction and font sizing are cached on CSSContainerValues. Need
+    // to recreate the values based on the current ComputedStyle.
+    UpdateContainerValues();
+  }
+
+  if (invalidate_for_writing_direction || invalidate_for_font) {
+    switch (StyleAffectingSizeChanged()) {
+      case ContainerQueryEvaluator::Change::kNone:
+        break;
+      case ContainerQueryEvaluator::Change::kNearestContainer:
+        recalc_change = recalc_change.ForceRecalcSizeContainer();
+        break;
+      case ContainerQueryEvaluator::Change::kDescendantContainers:
+        recalc_change = recalc_change.ForceRecalcDescendantSizeContainers();
+        break;
+    }
+  }
+  if (invalidate_for_writing_direction) {
+    if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
+        RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() ||
+        RuntimeEnabledFeatures::CSSOverflowContainerQueriesEnabled()) {
+      switch (StyleAffectingScrollStateChanged()) {
+        case ContainerQueryEvaluator::Change::kNone:
+          break;
+        case ContainerQueryEvaluator::Change::kNearestContainer:
+          recalc_change = recalc_change.ForceRecalcScrollStateContainer();
+          break;
+        case ContainerQueryEvaluator::Change::kDescendantContainers:
+          recalc_change =
+              recalc_change.ForceRecalcDescendantScrollStateContainers();
+          break;
+      }
+    }
+  }
+  if (!base::ValuesEquivalent(old_style.InheritedVariables(),
+                              new_style.InheritedVariables()) ||
+      !base::ValuesEquivalent(old_style.NonInheritedVariables(),
+                              new_style.NonInheritedVariables())) {
+    switch (StyleContainerChanged()) {
+      case ContainerQueryEvaluator::Change::kNone:
+        break;
+      case ContainerQueryEvaluator::Change::kNearestContainer:
+        recalc_change = recalc_change.ForceRecalcStyleContainerChildren();
+        break;
+      case ContainerQueryEvaluator::Change::kDescendantContainers:
+        recalc_change = recalc_change.ForceRecalcStyleContainerDescendants();
+        break;
+    }
+  }
+  return recalc_change;
 }
 
 Element* ContainerQueryEvaluator::ContainerElement() const {

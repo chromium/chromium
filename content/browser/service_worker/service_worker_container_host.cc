@@ -40,8 +40,7 @@ ServiceWorkerMetrics::EventType PurposeToEventType(
     case blink::mojom::ControllerServiceWorkerPurpose::FETCH_SUB_RESOURCE:
       return ServiceWorkerMetrics::EventType::FETCH_SUB_RESOURCE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ServiceWorkerMetrics::EventType::UNKNOWN;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -397,8 +396,9 @@ void ServiceWorkerContainerHostForClient::OnVersionAttributesChanged(
     ServiceWorkerRegistration* registration,
     blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!get_ready_callback_ || get_ready_callback_->is_null())
+  if (!get_ready_callback_ || get_ready_callback_->is_null()) {
     return;
+  }
   if (changed_mask->active && registration->active_version()) {
     // Wait until the state change so we don't send the get for ready
     // registration complete message before set version attributes message.
@@ -575,6 +575,20 @@ ServiceWorkerRegistrationObjectManager::CreateInfo(
   if (existing_host != registration_object_hosts_.end()) {
     return existing_host->second->CreateObjectInfo();
   }
+  {  // TODO(crbug.com/372879072): Remove this scope after investigation.
+    std::vector<GURL> urls = {container_host_->url(), registration->scope()};
+    if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(urls)) {
+      static bool has_dumped_without_crashing = false;
+      if (!has_dumped_without_crashing) {
+        has_dumped_without_crashing = true;
+        SCOPED_CRASH_KEY_STRING256("SWRegistration", "container_url",
+                                   container_host_->url().spec());
+        SCOPED_CRASH_KEY_STRING256("SWRegistration", "registration_scope",
+                                   registration->scope().spec());
+        base::debug::DumpWithoutCrashing();
+      }
+    }
+  }
   registration_object_hosts_[registration_id] =
       std::make_unique<ServiceWorkerRegistrationObjectHost>(
           container_host_->context(), &container_host_.get(),
@@ -645,8 +659,9 @@ ServiceWorkerObjectManager::GetOrCreateHost(
 
   const int64_t version_id = version->version_id();
   auto existing_object_host = service_worker_object_hosts_.find(version_id);
-  if (existing_object_host != service_worker_object_hosts_.end())
+  if (existing_object_host != service_worker_object_hosts_.end()) {
     return existing_object_host->second->AsWeakPtr();
+  }
 
   service_worker_object_hosts_[version_id] =
       std::make_unique<ServiceWorkerObjectHost>(container_host_->context(),
@@ -808,12 +823,14 @@ ServiceWorkerContainerHostForServiceWorker::top_frame_origin() const {
 
 void ServiceWorkerContainerHostForClient::ReturnRegistrationForReadyIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!get_ready_callback_ || get_ready_callback_->is_null())
+  if (!get_ready_callback_ || get_ready_callback_->is_null()) {
     return;
+  }
   ServiceWorkerRegistration* registration =
       service_worker_client().MatchRegistration();
-  if (!registration || !registration->active_version())
+  if (!registration || !registration->active_version()) {
     return;
+  }
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrationForReady",
       TRACE_ID_LOCAL(this), "Registration ID", registration->id());
@@ -1323,7 +1340,7 @@ void ServiceWorkerContainerHostForClient::DispatchExtendableMessageEvent(
 
     // Web workers don't yet have access to ServiceWorker objects, so they
     // can't postMessage to one (https://crbug.com/371690).
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

@@ -345,8 +345,9 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
 
     if (@available(iOS 17, *)) {
       __weak __typeof(self) weakSelf = self;
-      NSArray<UITrait>* traits =
-          (@[ UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self ]);
+      NSArray<UITrait>* traits = (@[
+        UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
+      ]);
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                        UITraitCollection* previousCollection) {
         [weakSelf pauseAnimationOnTraitChange:previousCollection];

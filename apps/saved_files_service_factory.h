@@ -35,7 +35,7 @@ class SavedFilesServiceFactory : public BrowserContextKeyedServiceFactory {
   ~SavedFilesServiceFactory() override;
   friend struct base::DefaultSingletonTraits<SavedFilesServiceFactory>;
 
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;

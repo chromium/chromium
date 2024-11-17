@@ -13,8 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -139,5 +138,4 @@ TEST_F(InputFileTest, TestExtractUnderlyingFile_Invalid) {
   EXPECT_FALSE(file.IsValid());
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

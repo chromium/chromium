@@ -36,16 +36,27 @@ class CC_EXPORT ViewTransitionContentLayer : public Layer {
     return is_live_content_layer_;
   }
 
+  // This is a superset of the captured rect, in the element's enclosing layer's
+  // coordinate space. If not set, it's assumed that the layer is already sized
+  // to match the originating element's painted contents (e.g. the root element,
+  // or displaying captured snapshots of the old content).
+  void SetMaxExtentsRectInOriginatingLayerSpace(
+      const gfx::RectF& max_extents_rect_in_originating_layer_space);
+
  protected:
   explicit ViewTransitionContentLayer(
       const viz::ViewTransitionElementResourceId& resource_id,
       bool is_live_content_layer);
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
 
  private:
   ~ViewTransitionContentLayer() override;
 
   const viz::ViewTransitionElementResourceId resource_id_;
   const bool is_live_content_layer_;
+  ProtectedSequenceReadable<gfx::RectF> max_extents_rect_;
 };
 
 }  // namespace cc

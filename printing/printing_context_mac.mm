@@ -112,39 +112,32 @@ bool IsIppColorModelColorful(mojom::ColorModel color_model) {
 
 base::expected<std::vector<uint8_t>, mojom::ResultCode>
 CaptureSystemPrintSettings(PMPrintSettings& print_settings) {
-  CFDataRef data_ref = nullptr;
+  base::apple::ScopedCFTypeRef<CFDataRef> data_ref;
   OSStatus status = PMPrintSettingsCreateDataRepresentation(
-      print_settings, &data_ref, kPMDataFormatXMLDefault);
+      print_settings, data_ref.InitializeInto(), kPMDataFormatXMLDefault);
   if (status != noErr) {
     OSSTATUS_LOG(ERROR, status)
         << "Failed to create data representation of print settings";
     return base::unexpected(mojom::ResultCode::kFailed);
   }
 
-  base::apple::ScopedCFTypeRef<CFDataRef> scoped_data_ref(data_ref);
-  uint32_t data_size = CFDataGetLength(data_ref);
-  std::vector<uint8_t> capture_data(data_size);
-  CFDataGetBytes(data_ref, CFRangeMake(0, data_size),
-                 static_cast<UInt8*>(&capture_data.front()));
-  return capture_data;
+  auto data_span = base::apple::CFDataToSpan(data_ref.get());
+  return std::vector<uint8_t>(data_span.begin(), data_span.end());
 }
 
 base::expected<std::vector<uint8_t>, mojom::ResultCode> CaptureSystemPageFormat(
     PMPageFormat& page_format) {
-  CFDataRef data_ref = nullptr;
+  base::apple::ScopedCFTypeRef<CFDataRef> data_ref;
   OSStatus status = PMPageFormatCreateDataRepresentation(
-      page_format, &data_ref, kPMDataFormatXMLDefault);
+      page_format, data_ref.InitializeInto(), kPMDataFormatXMLDefault);
   if (status != noErr) {
     OSSTATUS_LOG(ERROR, status)
         << "Failed to create data representation of page format";
     return base::unexpected(mojom::ResultCode::kFailed);
   }
 
-  uint32_t data_size = CFDataGetLength(data_ref);
-  std::vector<uint8_t> capture_data(data_size);
-  CFDataGetBytes(data_ref, CFRangeMake(0, data_size),
-                 static_cast<UInt8*>(&capture_data.front()));
-  return capture_data;
+  auto data_span = base::apple::CFDataToSpan(data_ref.get());
+  return std::vector<uint8_t>(data_span.begin(), data_span.end());
 }
 
 base::expected<base::apple::ScopedCFTypeRef<CFStringRef>, mojom::ResultCode>

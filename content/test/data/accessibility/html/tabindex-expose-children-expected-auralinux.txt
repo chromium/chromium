@@ -5,7 +5,7 @@
 ++++++++[static] name='1.'
 ++++++[section] name='2.'
 ++++++++[static] name='2.'
-++[section] name='3. 4.'
+++[section]
 ++++[section]
 ++++++[section]
 ++++++++[section] name='3.'

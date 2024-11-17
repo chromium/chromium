@@ -10,8 +10,7 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
@@ -76,5 +75,4 @@ TEST_F(BrowserTabsModelControllerTest, MutablePhoneModelProperlySet) {
   EXPECT_EQ(phone_model()->browser_tabs_model()->most_recent_tabs().size(), 1U);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

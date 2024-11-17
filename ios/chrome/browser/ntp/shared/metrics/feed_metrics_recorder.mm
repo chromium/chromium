@@ -93,7 +93,7 @@ using feed::FeedUserActionType;
 // YES if the NTP is visible.
 @property(nonatomic, assign) BOOL isNTPVisible;
 
-// The ChromeBrowserState PrefService.
+// The ProfileIOS PrefService.
 @property(nonatomic, assign) PrefService* prefService;
 
 @end
@@ -667,6 +667,10 @@ using feed::FeedUserActionType;
                                     FeedSortType::kUnspecifiedSortType);
       return;
   }
+}
+
+- (void)recordCarouselScrolled:(int)scrollDistance {
+  [self recordEngagement:scrollDistance interacted:NO];
 }
 
 - (void)recordUniformityFlagValue:(BOOL)flag {

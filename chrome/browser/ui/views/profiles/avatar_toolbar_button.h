@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,10 +30,6 @@ enum class AvatarDelayType {
   kNameGreeting,
   // Delay for the SigninPending mode to show the "Verify it's you" text.
   kSigninPendingText,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Delay for the Management Label transient mode to stop showing "Work".
-  kManagementLabelTransientMode,
-#endif
 };
 
 // This class takes care the Profile Avatar Button.
@@ -46,11 +41,6 @@ class AvatarToolbarButton : public ToolbarButton {
   METADATA_HEADER(AvatarToolbarButton, ToolbarButton)
 
  public:
-  enum ProfileLabelType : int {
-    kWork = 0,
-    kSchool = 1,
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnMouseExited() {}
@@ -93,8 +83,8 @@ class AvatarToolbarButton : public ToolbarButton {
   void MaybeShowProfileSwitchIPH();
 
   // Attempts showing the In-Produce-Help when a supervised user signs-in in a
-  // profile or takes over an existing non-signed in profile.
-  void MaybeShowSupervisedUserSignInIPH(const AccountInfo& account_info);
+  // profile.
+  void MaybeShowSupervisedUserSignInIPH();
 
   // Attempts showing the In-Product-Help in a subsequent web sign-in when the
   // explicit browser sign-in preference was remembered.
@@ -129,7 +119,8 @@ class AvatarToolbarButton : public ToolbarButton {
   void RemoveObserver(Observer* observer);
 
   // Can be used in tests to reduce or remove the delay before showing the IPH.
-  static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
+  [[nodiscard]] static base::AutoReset<base::TimeDelta>
+  SetScopedIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
 
   // These helper functions allow tests to be time independent; tests that are
   // time dependent tend to create a lot of flakiness.

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/certificate_viewer_webui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 #include "content/public/browser/web_contents.h"
 
 void ShowCertificateDialog(base::WeakPtr<content::WebContents> web_contents,
@@ -18,10 +18,21 @@ void ShowCertificateDialog(base::WeakPtr<content::WebContents> web_contents,
     return;
   }
 
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> view_certs;
-  view_certs.push_back(std::move(cert));
   CertificateViewerDialog::ShowConstrained(
-      std::move(view_certs),
-      /*cert_nicknames=*/{}, web_contents.get(),
+      std::move(cert), web_contents.get(),
+      web_contents->GetTopLevelNativeWindow());
+}
+
+void ShowCertificateDialog(
+    base::WeakPtr<content::WebContents> web_contents,
+    bssl::UniquePtr<CRYPTO_BUFFER> cert,
+    chrome_browser_server_certificate_database::CertificateMetadata
+        cert_metadata) {
+  if (!web_contents) {
+    return;
+  }
+
+  CertificateViewerDialog::ShowConstrainedWithMetadata(
+      std::move(cert), std::move(cert_metadata), web_contents.get(),
       web_contents->GetTopLevelNativeWindow());
 }

@@ -6,21 +6,14 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/apple/foundation_util.h"
-#import "base/ios/ios_util.h"
-#import "base/test/scoped_feature_list.h"
-#import "components/prefs/pref_registry_simple.h"
-#import "components/prefs/testing_pref_service.h"
-#import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/app/application_delegate/app_state+Testing.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -51,22 +44,14 @@ namespace {
 class PromosManagerCoordinatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    auto testing_prefs =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterBrowserStatePrefs(testing_prefs->registry());
-
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
-    builder.SetPrefService(std::move(testing_prefs));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
 
     view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:view_controller_];
@@ -75,22 +60,24 @@ class PromosManagerCoordinatorTest : public PlatformTest {
     startup_information_ = [[FakeStartupInformation alloc] init];
     [startup_information_ setIsColdStart:YES];
 
-    AppState* app_state = OCMClassMock([AppState class]);
-    OCMStub([(AppState*)app_state initStage]).andReturn(InitStageFinal);
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state
-                                    browserState:browser_state_.get()];
+    profile_state_ = OCMClassMock([ProfileState class]);
+    OCMStub([profile_state_ initStage]).andReturn(ProfileInitStage::kFinal);
+    OCMStub([profile_state_ profile]).andReturn(profile_.get());
+
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
+                                                    profile:profile_.get()];
+    scene_state_.profileState = profile_state_;
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
   }
 
   // Initializes a new `PromosManagerCoordinator` for testing.
   void CreatePromosManagerCoordinator() {
+    Browser* browser =
+        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     coordinator_ = [[PromosManagerCoordinator alloc]
             initWithBaseViewController:view_controller_
-                               browser:browser_.get()
+                               browser:browser
         credentialProviderPromoHandler:OCMStrictProtocolMock(@protocol(
                                            CredentialProviderPromoCommands))
                    dockingPromoHandler:OCMStrictProtocolMock(
@@ -106,20 +93,18 @@ class PromosManagerCoordinatorTest : public PlatformTest {
 
   // Sets up the UI to be ready for promo display.
   void SetupUIForPromoDisplay() {
-    browser_.get()->GetSceneState().activationLevel =
-        SceneActivationLevelForegroundActive;
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   }
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   PromosManagerCoordinator* coordinator_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<TestBrowser> browser_;
+  std::unique_ptr<TestProfileIOS> profile_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
   FakeStartupInformation* startup_information_;
+  ProfileState* profile_state_;
   FakeSceneState* scene_state_;
 };
 
@@ -226,8 +211,7 @@ TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackUINotAvailableTest) {
 
   // Set UI not available for promo display before calling
   // ```displayPromoCallback```
-  browser_.get()->GetSceneState().activationLevel =
-      SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelBackground;
   [mockCoordinator displayPromoCallback:true];
 
   [mockCoordinator verify];

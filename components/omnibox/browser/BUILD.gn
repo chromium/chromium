@@ -94,6 +94,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "star_active.icon",
     "star_active_chrome_refresh.icon",
     "star_chrome_refresh.icon",
+    "summarize_auto.icon",
     "switch.icon",
     "switch_cr2023.icon",
     "tab.icon",
@@ -320,6 +321,7 @@ static_library("browser") {
     "//base",
     "//base:i18n",
     "//components/history/core/browser",
+    "//components/lens:features",
     "//components/lens/proto/server:proto",
     "//components/omnibox/common",
     "//components/omnibox/resources:omnibox_pedal_synonyms",
@@ -416,8 +418,7 @@ static_library("browser") {
     deps += [
       "//components/history_clusters/core",
       "//components/history_embeddings",
-      "//components/keyed_service/content",
-      "//content/public/browser",
+      "//content/public/common",
     ]
   }
 
@@ -500,10 +501,6 @@ static_library("location_bar") {
     "//ui/gfx",
   ]
 
-  if (is_chromeos) {
-    deps += [ "//chromeos/crosapi/cpp:cpp" ]
-  }
-
   if (is_chromeos_ash) {
     deps += [ "//chromeos/constants" ]
   }
@@ -523,6 +520,12 @@ static_library("location_bar") {
 }
 
 if (is_android) {
+  proto_java_library("autocomplete_proto_java") {
+    sources = [ "android/autocomplete.proto" ]
+    proto_path = "../../../"
+    deps = [ "//third_party/omnibox_proto:omnibox_proto_java" ]
+  }
+
   android_resources("java_resources") {
     sources = [
       "android/java/res/drawable-hdpi/omnibox_https_valid.png",
@@ -581,10 +584,10 @@ if (is_android) {
 
   android_library("browser_java") {
     sources = [
+      "android/java/src/org/chromium/components/omnibox/AutocompleteInput.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
       "android/java/src/org/chromium/components/omnibox/SecurityButtonAnimationDelegate.java",
-      "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionDelegate.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionFactory.java",
@@ -593,15 +596,17 @@ if (is_android) {
 
     resources_package = "org.chromium.components.omnibox"
     deps = [
+      ":autocomplete_proto_java",
       ":java_resources",
       "//base:base_java",
       "//build/android:build_java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/styles/android:java_resources",
       "//components/browser_ui/widget/android:java",
+      "//components/cached_flags:java",
       "//components/embedder_support/android:util_java",
+      "//components/omnibox/common:features_java",
       "//components/security_state/core:security_state_enums_java",
-      "//content/public/android:content_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
@@ -626,7 +631,10 @@ if (is_android) {
 
   robolectric_library("junit") {
     resources_package = "org.chromium.components.omnibox"
-    sources = [ "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/AutocompleteInputUnitTest.java",
+      "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java",
+    ]
     deps = [
       ":browser_java",
       ":java_resources",
@@ -636,9 +644,12 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/styles/android:java_resources",
+      "//components/cached_flags:java",
       "//components/embedder_support/android:util_java",
+      "//components/omnibox/common:features_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/junit:junit",
+      "//third_party/metrics_proto:metrics_proto_java",
       "//third_party/mockito:mockito_java",
     ]
   }
@@ -676,7 +687,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
-      "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionFactory.java",
     ]
@@ -889,6 +899,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
+    "//components/query_parser:query_parser",
     "//components/safe_browsing/core/common:common",
     "//components/search",
     "//components/search_engines",

@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "also_build_ash_chrome": true,
     "chromeos_is_browser_only": true,
     "is_clang": true,
     "is_debug": true,

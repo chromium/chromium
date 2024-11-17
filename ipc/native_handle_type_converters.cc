@@ -22,8 +22,7 @@ IPC::MessageAttachment::Type TypeConverter<
     case native::SerializedHandleType::FUCHSIA_HANDLE:
       return IPC::MessageAttachment::Type::FUCHSIA_HANDLE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return IPC::MessageAttachment::Type::MOJO_HANDLE;
+  NOTREACHED();
 }
 
 // static
@@ -42,8 +41,7 @@ native::SerializedHandleType TypeConverter<
     case IPC::MessageAttachment::Type::FUCHSIA_HANDLE:
       return native::SerializedHandleType::FUCHSIA_HANDLE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return native::SerializedHandleType::MOJO_HANDLE;
+  NOTREACHED();
 }
 
 }  // namespace mojo

@@ -312,7 +312,7 @@ void WebstoreInstaller::Start() {
   const std::string* name =
       approval_->manifest->available_values().FindString(manifest_keys::kName);
   if (!name) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   extensions::InstallTracker* tracker =
       extensions::InstallTrackerFactory::GetForBrowserContext(profile_);
@@ -624,6 +624,7 @@ void WebstoreInstaller::StartDownload(
       download_url_, render_process_host_id, render_frame_host->GetRoutingID(),
       traffic_annotation));
   params->set_file_path(file);
+  params->set_initiator(render_frame_host->GetLastCommittedOrigin());
   if (controller.GetVisibleEntry()) {
     content::Referrer referrer = content::Referrer::SanitizeForRequest(
         download_url_,

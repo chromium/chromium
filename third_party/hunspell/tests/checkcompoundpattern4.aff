@@ -1,8 +1,0 @@
-# sandhi in Telugu writing system, based on the Kiran Chittella's example
-
-COMPOUNDFLAG x
-COMPOUNDMIN 1
-CHECKCOMPOUNDPATTERN 2
-CHECKCOMPOUNDPATTERN a/A u/A O
-CHECKCOMPOUNDPATTERN u/B u/B u
-

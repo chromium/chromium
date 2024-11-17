@@ -7,12 +7,12 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class ChromeAccountManagerService;
+class ProfileIOS;
 
 // Singleton that owns all ChromeAccountManagerServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class ChromeAccountManagerServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
@@ -20,9 +20,6 @@ class ChromeAccountManagerServiceFactory
       delete;
   ChromeAccountManagerServiceFactory& operator=(
       const BrowserStateKeyedServiceFactory&) = delete;
-
-  // TODO(crbug.com/358301380): remove this method.
-  static ChromeAccountManagerService* GetForBrowserState(ProfileIOS* profile);
 
   static ChromeAccountManagerService* GetForProfile(ProfileIOS* profile);
   static ChromeAccountManagerServiceFactory* GetInstance();

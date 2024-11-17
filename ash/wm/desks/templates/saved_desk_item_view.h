@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -111,13 +110,13 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   void UpdateSavedDesk(const DeskTemplate& updated_saved_desk);
 
   // views::Button:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout(PassKey) override;
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
+  void SetTooltipText(const std::u16string& tooltip_text) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/input/cursor_manager.h"
+#import "components/input/events_helper.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/web_input_event_builders_mac.h"
@@ -42,7 +43,6 @@
 #include "content/browser/renderer_host/render_widget_helper.h"
 #import "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
-#import "content/common/input/events_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/render_widget_host.h"
@@ -63,7 +63,6 @@
 #include "ui/base/cocoa/cursor_accessibility_scale_factor.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/secure_password_input.h"
-#include "ui/base/cocoa/text_services_context_menu.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
@@ -79,6 +78,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/menus/cocoa/text_services_context_menu.h"
 
 using blink::WebInputEvent;
 using blink::WebMouseEvent;
@@ -622,11 +622,8 @@ input::CursorManager* RenderWidgetHostViewMac::GetCursorManager() {
 }
 
 void RenderWidgetHostViewMac::OnOldViewDidNavigatePreCommit() {
-  if (base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
-    browser_compositor_->DidNavigateMainFramePreCommit();
-  }
+  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+  browser_compositor_->DidNavigateMainFramePreCommit();
 }
 
 void RenderWidgetHostViewMac::OnNewViewDidNavigatePostCommit() {
@@ -1448,7 +1445,7 @@ void RenderWidgetHostViewMac::ProcessAckedTouchEvent(
       ack_result == blink::mojom::InputEventResultState::kConsumed;
   gesture_provider_.OnTouchEventAck(
       touch.event.unique_touch_event_id, event_consumed,
-      InputEventResultStateIsSetBlocking(ack_result));
+      input::InputEventResultStateIsSetBlocking(ack_result));
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       host()->delegate() && host()->delegate()->GetInputEventRouter()) {
     host()

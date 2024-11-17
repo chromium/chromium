@@ -190,7 +190,7 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
-#include "ui/events/android/motion_event_android.h"
+#include "ui/events/android/motion_event_android_java.h"
 #include "ui/gfx/geometry/point_f.h"
 #endif
 
@@ -1186,8 +1186,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       DepictFrameTree(root));
 
   // Navigate iframe to a data URL. The navigation happens from a script in the
-  // parent frame, so the data URL should be committed in the same SiteInstance
-  // as the parent frame.
+  // parent frame, so the data URL should be committed in the same
+  // SiteInstanceGroup as the parent frame. If kSiteInstanceGroupsForDataUrls is
+  // enabled, the data URL should be in its own SiteInstance. Otherwise it
+  // shares a SiteInstance with its parent.
   RenderFrameDeletedObserver deleted_observer1(
       root->child_at(0)->current_frame_host());
   GURL data_url("data:text/html,dataurl");
@@ -1199,27 +1201,54 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   deleted_observer1.WaitUntilDeleted();
 
   // Ensure that we have navigated using the top level process.
-  EXPECT_EQ(
-      " Site A\n"
-      "   |--Site A\n"
-      "   +--Site A\n"
-      "        +--Site A\n"
-      "Where A = http://a.com/",
-      DepictFrameTree(root));
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    // Site A and Site C are in the same SiteInstanceGroup, so there are no
+    // proxies for each other.
+    // TODO(crbug.com/341741267, yangsharon): Update output to show that A and C
+    // are in the same SiteInstanceGroup.
+    EXPECT_EQ(
+        " Site A\n"
+        "   |--Site C\n"
+        "   +--Site A\n"
+        "        +--Site A\n"
+        "Where A = http://a.com/\n"
+        "      C = data:nonce_C",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A\n"
+        "   |--Site A\n"
+        "   +--Site A\n"
+        "        +--Site A\n"
+        "Where A = http://a.com/",
+        DepictFrameTree(root));
+  }
 
   // Load cross-site page into iframe.
   url = embedded_test_server()->GetURL("bar.com", "/title2.html");
   EXPECT_TRUE(NavigateToURLFromRenderer(child, url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url, observer.last_navigation_url());
-  EXPECT_EQ(
-      " Site A ------------ proxies for C\n"
-      "   |--Site C ------- proxies for A\n"
-      "   +--Site A ------- proxies for C\n"
-      "        +--Site A -- proxies for C\n"
-      "Where A = http://a.com/\n"
-      "      C = http://bar.com/",
-      DepictFrameTree(root));
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_EQ(
+        " Site A ------------ proxies for D\n"
+        "   |--Site D ------- proxies for {A,C}\n"
+        "   +--Site A ------- proxies for D\n"
+        "        +--Site A -- proxies for D\n"
+        "Where A = http://a.com/\n"
+        "      C = data:nonce_C\n"
+        "      D = http://bar.com/",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for C\n"
+        "   |--Site C ------- proxies for A\n"
+        "   +--Site A ------- proxies for C\n"
+        "        +--Site A -- proxies for C\n"
+        "Where A = http://a.com/\n"
+        "      C = http://bar.com/",
+        DepictFrameTree(root));
+  }
 
   // Navigate iframe to about:blank. The navigation happens from a script in the
   // parent frame, so it should be committed in the same SiteInstance as the
@@ -1248,14 +1277,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(child, url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url, observer.last_navigation_url());
-  EXPECT_EQ(
-      " Site A ------------ proxies for D\n"
-      "   |--Site D ------- proxies for A\n"
-      "   +--Site A ------- proxies for D\n"
-      "        +--Site A -- proxies for D\n"
-      "Where A = http://a.com/\n"
-      "      D = http://f00.com/",
-      DepictFrameTree(root));
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_EQ(
+        " Site A ------------ proxies for E\n"
+        "   |--Site E ------- proxies for {A,C}\n"
+        "   +--Site A ------- proxies for E\n"
+        "        +--Site A -- proxies for E\n"
+        "Where A = http://a.com/\n"
+        "      C = data:nonce_C\n"
+        "      E = http://f00.com/",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for D\n"
+        "   |--Site D ------- proxies for A\n"
+        "   +--Site A ------- proxies for D\n"
+        "        +--Site A -- proxies for D\n"
+        "Where A = http://a.com/\n"
+        "      D = http://f00.com/",
+        DepictFrameTree(root));
+  }
 
   // Navigate the iframe itself to about:blank using a script executing in its
   // own context. It should stay in the same SiteInstance as before, not the
@@ -1266,14 +1307,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(about_blank_url, child->current_url());
 
   // Ensure that we have navigated using the top level process.
-  EXPECT_EQ(
-      " Site A ------------ proxies for D\n"
-      "   |--Site D ------- proxies for A\n"
-      "   +--Site A ------- proxies for D\n"
-      "        +--Site A -- proxies for D\n"
-      "Where A = http://a.com/\n"
-      "      D = http://f00.com/",
-      DepictFrameTree(root));
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_EQ(
+        " Site A ------------ proxies for E\n"
+        "   |--Site E ------- proxies for {A,C}\n"
+        "   +--Site A ------- proxies for E\n"
+        "        +--Site A -- proxies for E\n"
+        "Where A = http://a.com/\n"
+        "      C = data:nonce_C\n"
+        "      E = http://f00.com/",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for D\n"
+        "   |--Site D ------- proxies for A\n"
+        "   +--Site A ------- proxies for D\n"
+        "        +--Site A -- proxies for D\n"
+        "Where A = http://a.com/\n"
+        "      D = http://f00.com/",
+        DepictFrameTree(root));
+  }
 }
 
 // This test checks that killing a renderer process of a remote frame
@@ -2004,7 +2057,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CreateProxiesForNewFrames) {
 
   // Add a new child frame to the top-level frame.
   RenderFrameHostCreatedObserver frame_observer(shell()->web_contents(), 1);
-  EXPECT_TRUE(ExecJs(shell(), "addFrame('data:text/html,foo');"));
+  EXPECT_TRUE(ExecJs(shell(), "addFrame('about:blank');"));
   frame_observer.Wait();
 
   // The new frame should have a proxy in Site B, for use by the old frame.
@@ -3282,6 +3335,94 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(0, GetReceivedMessages(root->child_at(1)));
   EXPECT_EQ(2, GetReceivedMessages(popup_root));
   EXPECT_EQ(1, GetReceivedMessages(popup2_root));
+}
+
+// Check that in certain situations, postMessage has to create proxies on demand
+// so that event.source may be used to reply. In particular, this test starts on
+// A(B) and opens C(D) from A. At this point, D can reach B (via
+// parent.opener.frames[0], but B cannot see D. However, if D sends a
+// postMessage to B, B now gains a reference to D through event.source, and
+// therefore the message should create a proxy for D in B's process. See
+// https://crbug.com/40261772.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       PostMessageCreatesProxyOnDemand) {
+  // Start on A(B).
+  GURL opener_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), opener_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // From A, open a popup with a C(D) page.
+  GURL popup_url(embedded_test_server()->GetURL(
+      "c.com", "/cross_site_iframe_factory.html?c(d)"));
+  Shell* new_shell = OpenPopup(root, popup_url, "");
+  EXPECT_TRUE(new_shell);
+  FrameTreeNode* popup_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  EXPECT_EQ(root, popup_root->opener());
+
+  // Verify proxy setup. Both A and B should be visible to all four frames:
+  // - C can reach A via opener
+  // - C can reach B via opener.frames[0]
+  // - D can reach A via parent.opener
+  // - D can reach B via parent.opener.frames[0]
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C D\n"
+      "   +--Site B ------- proxies for A C D\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/\n"
+      "      C = http://c.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(root));
+  // C and D are only visible to each other and to A, via A's window.open
+  // reference. B doesn't have a way to reach them.
+  EXPECT_EQ(
+      " Site C ------------ proxies for A D\n"
+      "   +--Site D ------- proxies for A C\n"
+      "Where A = http://a.com/\n"
+      "      C = http://c.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(popup_root));
+
+  // Install a postMessage handler in B that echoes back event.data with
+  // "-reply" appended to it. This requires having a valid event.source.
+  EXPECT_TRUE(ExecJs(root->child_at(0)->current_frame_host(),
+                     "window.addEventListener('message', function(event) {\n"
+                     "  event.source.postMessage(event.data + '-reply', '*');\n"
+                     "});"));
+
+  // Send a message from D to B and wait for a response. While processing the
+  // message, the browser process should create a proxy for D in B, which B will
+  // use when replying.
+  EXPECT_TRUE(
+      ExecJs(popup_root->child_at(0), WaitForMessageScript("event.data")));
+  EXPECT_TRUE(ExecJs(popup_root->child_at(0),
+                     "parent.opener.frames[0].postMessage('popup-ping', '*')"));
+  EXPECT_EQ("popup-ping-reply",
+            EvalJs(popup_root->child_at(0), "onMessagePromise"));
+
+  // Verify the final proxies. The proxies for the opener window shouldn't have
+  // changed (A and B are still visible to all other frames).
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C D\n"
+      "   +--Site B ------- proxies for A C D\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/\n"
+      "      C = http://c.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(root));
+  // Frames C and D should now have proxies in site B, since frame B can now
+  // reach both of them (D via event.source, and C via event.source.top).
+  EXPECT_EQ(
+      " Site C ------------ proxies for A B D\n"
+      "   +--Site D ------- proxies for A B C\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/\n"
+      "      C = http://c.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(popup_root));
 }
 
 // Check that parent.frames[num] references correct sibling frames when the
@@ -5640,7 +5781,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       child_1->current_frame_host()->GetSiteInstance();
 
   // Navigate the iframes to data URLs via renderer initiated navigations, which
-  // will commit in the existing SiteInstances.
+  // will commit in the existing SiteInstanceGroups.
   TestNavigationObserver observer(shell()->web_contents());
   GURL data_url_0("data:text/html,dataurl_0");
   {
@@ -5650,8 +5791,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(data_url_0, observer.last_navigation_url());
-  EXPECT_EQ(child_site_instance_0,
-            child_0->current_frame_host()->GetSiteInstance());
+
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(child_site_instance_0,
+              child_0->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(child_site_instance_0->group(),
+              child_0->current_frame_host()->GetSiteInstance()->group());
+  } else {
+    EXPECT_EQ(child_site_instance_0,
+              child_0->current_frame_host()->GetSiteInstance());
+  }
 
   GURL data_url_1("data:text/html,dataurl_1");
   {
@@ -5661,8 +5810,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(data_url_1, observer.last_navigation_url());
-  EXPECT_EQ(child_site_instance_1,
-            child_1->current_frame_host()->GetSiteInstance());
+
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(child_site_instance_1,
+              child_1->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(child_site_instance_1->group(),
+              child_1->current_frame_host()->GetSiteInstance()->group());
+  } else {
+    EXPECT_EQ(child_site_instance_1,
+              child_1->current_frame_host()->GetSiteInstance());
+  }
 
   // Grab the NavigationEntry and clone its PageState into a new entry for
   // restoring into a new tab.
@@ -8712,10 +8869,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(nav_manager.was_successful());
   // Fallback handling should discard the child browsing context and render the
   // fallback contents.
-  // TODO(dcheng): Chrome is not compliant with the spec. An HTTP error triggers
-  // fallback content, which is supposed to discard the nested browsing
-  // context...
-  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  EXPECT_EQ(0, EvalJs(web_contents(), "window.length"));
   EXPECT_EQ("fallback", EvalJs(web_contents(), "document.body.innerText"));
 }
 
@@ -8761,10 +8915,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSpeculativeRFHDelay,
   EXPECT_FALSE(nav_manager.was_successful());
   // Fallback handling should discard the child browsing context and render the
   // fallback contents.
-  // TODO(dcheng): Chrome is not compliant with the spec. An HTTP error triggers
-  // fallback content, which is supposed to discard the nested browsing
-  // context...
-  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  EXPECT_EQ(0, EvalJs(web_contents(), "window.length"));
   EXPECT_EQ("fallback", EvalJs(web_contents(), "document.body.innerText"));
 }
 
@@ -8845,15 +8996,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(nav_manager.was_successful());
   // Fallback handling should discard the child browsing context and render the
   // fallback contents.
-  // TODO(dcheng): Chrome is not compliant with the spec. An HTTP error triggers
-  // fallback content, which is supposed to discard the nested browsing
-  // context...
-  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  EXPECT_EQ(0, EvalJs(web_contents(), "window.length"));
   EXPECT_EQ("fallback", EvalJs(web_contents(), "document.body.innerText"));
-
-  // `WaitForNavigationFinished()` should imply the `NavigationRequest` has been
-  // cleaned up as well, but check to be sure.
-  EXPECT_FALSE(first_child->navigation_request());
 }
 
 // Test that a cross-site navigation in <object> that fails with an HTTP error
@@ -8930,15 +9074,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(nav_manager.was_successful());
   // Fallback handling should discard the child browsing context and render the
   // fallback contents.
-  // TODO(dcheng): Chrome is not compliant with the spec. An HTTP error triggers
-  // fallback content, which is supposed to discard the nested browsing
-  // context...
-  EXPECT_EQ(1, EvalJs(web_contents(), "window.length"));
+  EXPECT_EQ(0, EvalJs(web_contents(), "window.length"));
   EXPECT_EQ("fallback", EvalJs(web_contents(), "document.body.innerText"));
-
-  // `WaitForNavigationFinished()` should imply the `NavigationRequest` has been
-  // cleaned up as well, but check to be sure.
-  EXPECT_FALSE(first_child->navigation_request());
 }
 
 // Test that a same-site navigation in <object> that fails with a network error
@@ -9230,9 +9367,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   float y = size.height() / 2;
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
   ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
-  ui::MotionEventAndroid event(nullptr, nullptr, 1.f / root_view->GetDipScale(),
-                               0.f, 0.f, 0.f, base::TimeTicks(), 0, 1, 0, 0, 0,
-                               0, 0, 0, 0, 0, false, &pointer0, &pointer1);
+  ui::MotionEventAndroidJava event(nullptr, nullptr,
+                                   1.f / root_view->GetDipScale(), 0.f, 0.f,
+                                   0.f, base::TimeTicks(), 0, 1, 0, 0, 0, 0, 0,
+                                   0, 0, 0, 0, false, &pointer0, &pointer1);
   root_view->OnTouchEventForTesting(event);
 
   EXPECT_TRUE(mock_handler.did_receive_event());
@@ -9563,10 +9701,10 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
     ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
     JNIEnv* env = base::android::AttachCurrentThread();
     auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
-    ui::MotionEventAndroid touch(
+    ui::MotionEventAndroidJava touch(
         env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
         ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0,
-        0, 0, false, &p, nullptr);
+        0, 0, 0, false, &p, nullptr);
     view->OnTouchEvent(touch);
   }
 
@@ -10511,11 +10649,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_NE(third_shell_instance->GetProcess(), bar_process);
 }
 
+class SitePerProcessNoSharingBrowserTest : public SitePerProcessBrowserTest {
+ public:
+  SitePerProcessNoSharingBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kProcessPerSiteUpToMainFrameThreshold);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Check that when a subframe reuses an existing process for the same site
 // across BrowsingInstances, a browser-initiated navigation in that subframe's
 // tab doesn't unnecessarily share the reused process.  See
 // https://crbug.com/803367.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+IN_PROC_BROWSER_TEST_P(SitePerProcessNoSharingBrowserTest,
                        NoProcessSharingAfterSubframeReusesExistingProcess) {
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
@@ -12987,16 +13136,9 @@ IN_PROC_BROWSER_TEST_P(InnerWebContentsAttachTest, PrepareFrame) {
   auto* child_node = web_contents()->GetPrimaryFrameTree().root()->child_at(0);
   EXPECT_TRUE(NavigateToURLFromRenderer(child_node, child_frame_url));
   if (test_beforeunload) {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kBeforeunloadEventCancelByPreventDefault)) {
-      EXPECT_TRUE(ExecJs(child_node,
-                         "window.addEventListener('beforeunload', (e) => {"
-                         "e.preventDefault(); return e; });"));
-    } else {
-      EXPECT_TRUE(ExecJs(child_node,
-                         "window.addEventListener('beforeunload', (e) => {"
-                         "e.returnValue = 'Not empty string'; return e; });"));
-    }
+    EXPECT_TRUE(ExecJs(child_node,
+                       "window.addEventListener('beforeunload', (e) => {"
+                       "e.preventDefault(); return e; });"));
   }
   auto* original_child_frame = child_node->current_frame_host();
   RenderFrameDeletedObserver original_child_frame_observer(
@@ -13344,15 +13486,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
 
   // Now do a browser-initiated navigation to about:blank in a new tab created
-  // in the previous SiteInstance. This happens to stay in the same process,
-  // though there may not be a requirement for that.
+  // in the previous SiteInstance. The current behavior is for the navigation
+  // to switch to a new SiteInstance, though there is no real requirement for
+  // that. In the past the existing SiteInstance was used.
   WebContents::CreateParams new_contents_params(
       web_contents()->GetBrowserContext(), web_contents()->GetSiteInstance());
   std::unique_ptr<WebContents> new_web_contents(
       WebContents::Create(new_contents_params));
 
   EXPECT_TRUE(NavigateToURL(new_web_contents.get(), GURL(url::kAboutBlankURL)));
-  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetProcess(),
+  EXPECT_NE(web_contents()->GetPrimaryMainFrame()->GetProcess(),
             new_web_contents->GetPrimaryMainFrame()->GetProcess());
 }
 
@@ -13867,6 +14010,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessBrowserTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessNoSharingBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessBrowserTestWithoutSpeculativeRFHDelay,

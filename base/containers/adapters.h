@@ -5,38 +5,12 @@
 #ifndef BASE_CONTAINERS_ADAPTERS_H_
 #define BASE_CONTAINERS_ADAPTERS_H_
 
-#include <stddef.h>
-
-#include <iterator>
 #include <utility>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/compiler_specific.h"
+#include "base/containers/adapters_internal.h"
 
 namespace base {
-
-namespace internal {
-
-// Internal adapter class for implementing base::Reversed.
-template <typename T>
-class ReversedAdapter {
- public:
-  using Iterator = decltype(std::rbegin(std::declval<T&>()));
-
-  explicit ReversedAdapter(T& t) : t_(t) {}
-  ReversedAdapter(const ReversedAdapter& ra) : t_(ra.t_) {}
-  ReversedAdapter& operator=(const ReversedAdapter&) = delete;
-
-  Iterator begin() const { return std::rbegin(t_); }
-  Iterator end() const { return std::rend(t_); }
-
- private:
-  // RAW_PTR_EXCLUSION: References a STACK_ALLOCATED class. It is only used
-  // inside for loops. Ideally, the container being iterated over should be the
-  // one held via a raw_ref/raw_ptrs.
-  RAW_PTR_EXCLUSION T& t_;
-};
-
-}  // namespace internal
 
 // Reversed returns a container adapter usable in a range-based "for" statement
 // for iterating a reversible container in reverse order.
@@ -47,9 +21,9 @@ class ReversedAdapter {
 //   for (int i : base::Reversed(v)) {
 //     // iterates through v from back to front
 //   }
-template <typename T>
-internal::ReversedAdapter<T> Reversed(T& t) {
-  return internal::ReversedAdapter<T>(t);
+template <typename Range>
+auto Reversed(Range&& range LIFETIME_BOUND) {
+  return internal::ReversedAdapter<Range>(std::forward<Range>(range));
 }
 
 }  // namespace base

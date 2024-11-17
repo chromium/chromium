@@ -13,15 +13,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_driver.h"
-#include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_associated_data.h"
@@ -31,15 +28,12 @@
 namespace translate {
 
 TranslateUILanguagesManager::TranslateUILanguagesManager(
-    const base::WeakPtr<TranslateManager>& translate_manager,
     const std::vector<std::string>& language_codes,
     const std::string& source_language,
     const std::string& target_language)
-    : translate_manager_(translate_manager),
-      source_language_index_(kNoIndex),
+    : source_language_index_(kNoIndex),
       initial_source_language_index_(kNoIndex),
-      target_language_index_(kNoIndex),
-      prefs_(translate_manager_->translate_client()->GetTranslatePrefs()) {
+      target_language_index_(kNoIndex) {
   std::string locale =
       TranslateDownloadManager::GetInstance()->application_locale();
 

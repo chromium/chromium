@@ -7,7 +7,6 @@
 
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/keyed_service/core/keyed_service.h"

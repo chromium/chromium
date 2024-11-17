@@ -37,8 +37,7 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
 
   switch (break_value) {
     default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case EBreakBetween::kAuto:
       return 0;
     case EBreakBetween::kAvoidColumn:
@@ -1510,8 +1509,7 @@ wtf_size_t PreviousInnerFragmentainerIndex(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return idx;
+  NOTREACHED();
 }
 
 PhysicalOffset OffsetInStitchedFragments(
@@ -1585,6 +1583,10 @@ LayoutUnit BlockSizeForFragmentation(
     LogicalSize logical_size =
         result.GetPhysicalFragment().Size().ConvertToLogical(writing_mode);
     block_size = logical_size.block_size;
+
+    // Then remove any block-end trimming, since it shouldn't take up space in
+    // ancestry layout.
+    block_size -= result.TrimBlockEndBy().value_or(LayoutUnit());
   }
 
   // Ruby annotations do not take up space in the line box, so we need this to

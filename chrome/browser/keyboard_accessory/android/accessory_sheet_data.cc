@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 
 namespace autofill {
@@ -26,7 +27,8 @@ AccessorySheetField& AccessorySheetField::operator=(AccessorySheetField&&) =
     default;
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
-  os << "(display text: \"" << field.display_text() << "\", "
+  os << "(suggestion_type: " << base::to_underlying(field.suggestion_type())
+     << ", " << "display text: \"" << field.display_text() << "\", "
      << "text_to_fill: \"" << field.text_to_fill() << "\", "
      << "a11y_description: \"" << field.a11y_description() << "\", " << "id: \""
      << field.id() << "\", " << "icon_id: \"" << field.icon_id() << "\", "
@@ -38,6 +40,12 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
 AccessorySheetField::Builder::Builder() = default;
 
 AccessorySheetField::Builder::~Builder() = default;
+
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetSuggestionType(
+    AccessorySuggestionType suggestion_type) && {
+  accessory_sheet_field_.set_suggestion_type(suggestion_type);
+  return std::move(*this);
+}
 
 AccessorySheetField::Builder&& AccessorySheetField::Builder::SetDisplayText(
     std::u16string display_text) && {
@@ -159,10 +167,12 @@ std::ostream& operator<<(std::ostream& os, const UserInfoSection& section) {
 PlusAddressInfo::PlusAddressInfo(std::string origin,
                                  std::u16string plus_address)
     : origin_(std::move(origin)),
-      plus_address_(AccessorySheetField::Builder()
-                        .SetDisplayText(std::move(plus_address))
-                        .SetSelectable(true)
-                        .Build()) {}
+      plus_address_(
+          AccessorySheetField::Builder()
+              .SetSuggestionType(AccessorySuggestionType::kPlusAddress)
+              .SetDisplayText(std::move(plus_address))
+              .SetSelectable(true)
+              .Build()) {}
 
 PlusAddressInfo::PlusAddressInfo(const PlusAddressInfo&) = default;
 
@@ -234,6 +244,7 @@ std::ostream& operator<<(std::ostream& os,
 PromoCodeInfo::PromoCodeInfo(std::u16string promo_code,
                              std::u16string details_text)
     : promo_code_(AccessorySheetField::Builder()
+                      .SetSuggestionType(AccessorySuggestionType::kPromoCode)
                       .SetDisplayText(std::move(promo_code))
                       .SetSelectable(true)
                       .Build()),
@@ -260,6 +271,7 @@ IbanInfo::IbanInfo(std::u16string value,
                    std::u16string text_to_fill,
                    std::string id)
     : value_(AccessorySheetField::Builder()
+                 .SetSuggestionType(AccessorySuggestionType::kIban)
                  .SetDisplayText(std::move(value))
                  .SetTextToFill(std::move(text_to_fill))
                  .SetId(std::move(id))
@@ -456,33 +468,38 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AddUserInfo(
 }
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendSimpleField(
+    AccessorySuggestionType suggestion_type,
     std::u16string text) && {
   // Calls AppendSimpleField(...)& since |this| is an lvalue.
-  return std::move(AppendSimpleField(std::move(text)));
+  return std::move(AppendSimpleField(suggestion_type, std::move(text)));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AppendSimpleField(
+    AccessorySuggestionType suggestion_type,
     std::u16string text) & {
   std::u16string display_text = text;
   std::u16string text_to_fill = text;
   std::u16string a11y_description = std::move(text);
-  return AppendField(std::move(display_text), std::move(text_to_fill),
-                     std::move(a11y_description), false, true);
+  return AppendField(suggestion_type, std::move(display_text),
+                     std::move(text_to_fill), std::move(a11y_description),
+                     false, true);
 }
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
     std::u16string display_text,
     std::u16string a11y_description,
     bool is_obfuscated,
     bool selectable) && {
   std::u16string text_to_fill = display_text;
   // Calls AppendField(...)& since |this| is an lvalue.
-  return std::move(AppendField(std::move(display_text), std::move(text_to_fill),
-                               std::move(a11y_description), is_obfuscated,
-                               selectable));
+  return std::move(AppendField(
+      suggestion_type, std::move(display_text), std::move(text_to_fill),
+      std::move(a11y_description), is_obfuscated, selectable));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
     std::u16string display_text,
     std::u16string text_to_fill,
     std::u16string a11y_description,
@@ -490,6 +507,7 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
     bool selectable) & {
   accessory_sheet_data_.mutable_user_info_list().back().add_field(
       AccessorySheetField::Builder()
+          .SetSuggestionType(suggestion_type)
           .SetDisplayText(std::move(display_text))
           .SetTextToFill(std::move(text_to_fill))
           .SetA11yDescription(std::move(a11y_description))
@@ -500,6 +518,7 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
 }
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
     std::u16string display_text,
     std::u16string text_to_fill,
     std::u16string a11y_description,
@@ -507,12 +526,13 @@ AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
     bool is_obfuscated,
     bool selectable) && {
   // Calls AppendField(...)& since |this| is an lvalue.
-  return std::move(AppendField(std::move(display_text), std::move(text_to_fill),
-                               std::move(a11y_description), std::move(id),
-                               is_obfuscated, selectable));
+  return std::move(AppendField(
+      suggestion_type, std::move(display_text), std::move(text_to_fill),
+      std::move(a11y_description), std::move(id), is_obfuscated, selectable));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
     std::u16string display_text,
     std::u16string text_to_fill,
     std::u16string a11y_description,
@@ -521,6 +541,7 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
     bool selectable) & {
   accessory_sheet_data_.mutable_user_info_list().back().add_field(
       AccessorySheetField::Builder()
+          .SetSuggestionType(suggestion_type)
           .SetDisplayText(std::move(display_text))
           .SetTextToFill(std::move(text_to_fill))
           .SetA11yDescription(std::move(a11y_description))
@@ -532,6 +553,7 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
 }
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
     std::u16string display_text,
     std::u16string text_to_fill,
     std::u16string a11y_description,
@@ -541,6 +563,7 @@ AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
     bool selectable) && {
   accessory_sheet_data_.mutable_user_info_list().back().add_field(
       AccessorySheetField::Builder()
+          .SetSuggestionType(suggestion_type)
           .SetDisplayText(std::move(display_text))
           .SetTextToFill(std::move(text_to_fill))
           .SetA11yDescription(std::move(a11y_description))

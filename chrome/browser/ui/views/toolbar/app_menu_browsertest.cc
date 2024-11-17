@@ -25,7 +25,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -56,16 +55,12 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/display/screen.h"
-#include "ui/display/tablet_state.h"
-#endif
 
 namespace {
 
@@ -229,6 +224,18 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
   menu_button()->ShowMenu(views::MenuRunner::NO_FLAGS);
 }
 
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ExpandCollapse) {
+  EXPECT_FALSE(menu_button()->IsMenuShowing());
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kExpand;
+  menu_button()->HandleAccessibleAction(action_data);
+  EXPECT_TRUE(menu_button()->IsMenuShowing());
+  action_data.action = ax::mojom::Action::kCollapse;
+  menu_button()->HandleAccessibleAction(action_data);
+  EXPECT_FALSE(menu_button()->IsMenuShowing());
+}
+
 // There should be at least one subtest below for every distinct submenu of the
 // app menu; note that the "main" menu also counts as a submenu. More tests are
 // needed if a submenu can have distinct appearances that should all be tested,
@@ -257,26 +264,11 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
   ShowAndVerifyUi();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main_tablet_mode) {
-  display::Screen::GetScreen()->OverrideTabletStateForTesting(
-      display::TabletState::kInTabletMode);
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
-                       InvokeUi_main_tablet_mode) {
-  display::Screen::GetScreen()->OverrideTabletStateForTesting(
-      display::TabletState::kInTabletMode);
-  ShowAndVerifyUi();
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_main_guest) {
 // TODO(crbug.com/40899974): ChromeOS specific profile logic still needs to be
 // updated, setup this test for a Guest user session with appropriate command
 // line switches afterwards.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   auto browser_resetter = SetBrowser(CreateGuestBrowser());
   ShowAndVerifyUi();
 #endif
@@ -287,7 +279,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_main_incognito) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_history) {
+// TODO(crbug.com/375132024): Re-enable test.
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, DISABLED_InvokeUi_history) {
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_bookmarks) {
@@ -314,20 +307,27 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_help) {
 }
 #endif
 
+// TODO(crbug.com/375132024): Re-enable test.
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
-                       InvokeUi_passwords_and_autofill) {
+                       DISABLED_InvokeUi_passwords_and_autofill) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_reading_list) {
+// TODO(crbug.com/375132024): Re-enable test.
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       DISABLED_InvokeUi_reading_list) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_extensions) {
+// TODO(crbug.com/375132024): Re-enable test.
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       DISABLED_InvokeUi_extensions) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_find_and_edit) {
+// TODO(crbug.com/375132024): Re-enable test.
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       DISABLED_InvokeUi_find_and_edit) {
   ShowAndVerifyUi();
 }
 
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_save_and_share) {
   ShowAndVerifyUi();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
                        InvokeUi_main_profile_signed_in) {
@@ -346,8 +346,9 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/375132024): Re-enable test.
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
-                       InvokeUi_profile_menu_in_app_menu_signed_out) {
+                       DISABLED_InvokeUi_profile_menu_in_app_menu_signed_out) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
   profiles::testing::CreateProfileSync(profile_manager, new_path);

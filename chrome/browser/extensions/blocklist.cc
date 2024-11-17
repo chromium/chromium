@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
@@ -86,10 +87,11 @@ class SafeBrowsingClientImpl
 
   // Constructs a client to query the database manager for |extension_ids| and
   // run |callback| with the IDs of those which have been blocklisted.
-  static void Start(const std::set<ExtensionId>& extension_ids,
+  static void Start(base::PassKey<SafeBrowsingDatabaseManager::Client> pass_key,
+                    const std::set<ExtensionId>& extension_ids,
                     OnResultCallback callback) {
-    auto safe_browsing_client = base::WrapRefCounted(
-        new SafeBrowsingClientImpl(extension_ids, std::move(callback)));
+    auto safe_browsing_client = base::WrapRefCounted(new SafeBrowsingClientImpl(
+        std::move(pass_key), extension_ids, std::move(callback)));
     safe_browsing_client->StartCheck(g_database_manager.Get().get(),
                                      extension_ids);
   }
@@ -97,9 +99,12 @@ class SafeBrowsingClientImpl
  private:
   friend class base::RefCountedThreadSafe<SafeBrowsingClientImpl>;
 
-  SafeBrowsingClientImpl(const std::set<ExtensionId>& extension_ids,
-                         OnResultCallback callback)
-      : callback_task_runner_(
+  SafeBrowsingClientImpl(
+      base::PassKey<SafeBrowsingDatabaseManager::Client> pass_key,
+      const std::set<ExtensionId>& extension_ids,
+      OnResultCallback callback)
+      : SafeBrowsingDatabaseManager::Client(std::move(pass_key)),
+        callback_task_runner_(
             base::SingleThreadTaskRunner::GetCurrentDefault()),
         callback_(std::move(callback)) {}
 
@@ -197,8 +202,9 @@ void Blocklist::GetBlocklistedIDs(const std::set<ExtensionId>& ids,
   // extensions returned by SafeBrowsing will then be passed to
   // GetBlocklistStateIDs to get the particular BlocklistState for each id.
   SafeBrowsingClientImpl::Start(
-      ids, base::BindOnce(&Blocklist::GetBlocklistStateForIDs,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      SafeBrowsingDatabaseManager::Client::GetPassKey(), ids,
+      base::BindOnce(&Blocklist::GetBlocklistStateForIDs,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void Blocklist::GetMalwareIDs(const std::set<ExtensionId>& ids,

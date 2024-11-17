@@ -6,7 +6,6 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,60 +43,7 @@ ExpsRegistrationSuccessObserver::ExpsRegistrationSuccessObserver(
 ExpsRegistrationSuccessObserver::~ExpsRegistrationSuccessObserver() = default;
 
 void ExpsRegistrationSuccessObserver::PrimaryPageChanged(content::Page& page) {
-  if (!web_contents() || !pref_service()) {
-    return;
-  }
-
-  MaybeShowIPH();
-
-  if (pref_service()->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
-    return;
-  }
-
-  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
-  if (!DoesUrlMatchPatternsInList(url,
-                                  exps_registration_success_url_patterns_)) {
-    return;
-  }
-
-  // Save the status to a pref.
-  pref_service()->SetBoolean(kHasNavigatedToExpsSuccessPage, true);
-}
-
-void ExpsRegistrationSuccessObserver::MaybeShowIPH() {
-  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
-    return;
-  }
-
-  const auto& url = web_contents()->GetVisibleURL();
-  if (!IsValidPageURLForCompanion(url)) {
-    return;
-  }
-
-  if (!IsSearchInCompanionSidePanelSupported()) {
-    return;
-  }
-
-  if (DoesUrlMatchPatternsInList(url, blocklisted_iph_url_patterns_)) {
-    return;
-  }
-
-  bool has_pinned_entry = pref_service()->GetBoolean(
-      prefs::kSidePanelCompanionEntryPinnedToToolbar);
-  if (!has_pinned_entry) {
-    return;
-  }
-
-  ShowIPH();
-}
-
-void ExpsRegistrationSuccessObserver::ShowIPH() {
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents());
-  if (!browser || !browser->window()) {
-    return;
-  }
-  browser->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHCompanionSidePanelFeature);
+  // TODO(crbug.com/348678854): Remove this when removing all companion code.
 }
 
 PrefService* ExpsRegistrationSuccessObserver::pref_service() {

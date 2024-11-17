@@ -104,7 +104,7 @@ const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
     case gfx::ANDROID_HARDWARE_BUFFER:
       return "platform";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gfx::GpuMemoryBufferType GetNativeBufferType() {
@@ -303,7 +303,8 @@ SharedImageFactory::SharedImageFactory(
   }
   if (is_ahb_supported) {
     auto ahb_factory = std::make_unique<AHardwareBufferImageBackingFactory>(
-        feature_info.get(), gpu_preferences_);
+        feature_info.get(), gpu_preferences_,
+        context_state_->vk_context_provider());
     factories_.push_back(std::move(ahb_factory));
   }
 #elif BUILDFLAG(IS_OZONE)
@@ -512,13 +513,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  SharedImageBackingFactory* factory = nullptr;
-  if (backing_factory_for_testing_) {
-    factory = backing_factory_for_testing_;
-  } else {
-    factory = GetFactoryByUsage(usage, format, size, data, gfx::EMPTY_BUFFER);
-  }
-
+  SharedImageBackingFactory* const factory =
+      GetFactoryByUsage(usage, format, size, data, gfx::EMPTY_BUFFER);
   if (!factory) {
     LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, debug_label);
     return false;
@@ -744,7 +740,14 @@ void SharedImageFactory::RegisterSharedImageBackingFactoryForTesting(
 gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
   gpu::SharedImageCapabilities shared_image_caps;
   shared_image_caps.supports_scanout_shared_images =
-      SharedImageManager::SupportsScanoutImages();
+      shared_image_manager_->SupportsScanoutImages();
+
+#if BUILDFLAG(IS_WIN)
+  // Scanout for software video frames is supported on Windows except on D3D9.
+  shared_image_caps.supports_scanout_shared_images_for_software_video_frames =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+#endif
+
   const bool is_angle_metal =
       gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal;

@@ -14,10 +14,8 @@
 namespace history {
 
 gfx::Image CreateGoogleThumbnailForTest() {
-  // Returned image takes ownership of decoded SkBitmap.
-  std::unique_ptr<SkBitmap> thumbnail_bitmap(
-      gfx::JPEGCodec::Decode(kGoogleThumbnail, sizeof(kGoogleThumbnail)));
-  return gfx::Image::CreateFrom1xBitmap(*thumbnail_bitmap);
+  return gfx::Image::CreateFrom1xBitmap(
+      gfx::JPEGCodec::Decode(kGoogleThumbnail));
 }
 
 }  // namespace

@@ -52,7 +52,7 @@ class PrefRegistrySyncable;
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Registers preferences related to sign-in coordinator.
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Returns a coordinator to sign-in the user without taps if the identity has
 // been selected with `identity`. Otherwise, it will ask the user to select
@@ -180,6 +180,11 @@ class PrefRegistrySyncable;
                                                    promoAction:(signin_metrics::
                                                                     PromoAction)
                                                                    promoAction;
+
+// Returns a coordinator to switch account.
++ (instancetype)accountMenuCoordinatorWithBaseViewController:
+                    (UIViewController*)viewController
+                                                     browser:(Browser*)browser;
 
 // Interrupts the sign-in flow.
 // `signinCompletion(SigninCoordinatorResultInterrupted, nil)` is guaranteed to

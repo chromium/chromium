@@ -240,8 +240,7 @@ std::optional<std::vector<float>> FeatureAggregatorImpl::Process(
                                            end_time, accepted_enum_ids));
   switch (aggregation) {
     case proto::Aggregation::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return std::vector<float>();
+      NOTREACHED();
     case proto::Aggregation::COUNT:
       return CountAggregation(samples);
     case proto::Aggregation::COUNT_BOOLEAN:

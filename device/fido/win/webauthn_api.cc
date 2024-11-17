@@ -316,7 +316,11 @@ WinWebAuthnApi::WinWebAuthnApi() = default;
 WinWebAuthnApi::~WinWebAuthnApi() = default;
 
 bool WinWebAuthnApi::SupportsHybrid() {
-  return IsAvailable() && Version() >= WEBAUTHN_API_VERSION_6;
+  const int min_version =
+      base::FeatureList::IsEnabled(kWebAuthnSkipHybridConfigIfSystemSupported)
+          ? WEBAUTHN_API_VERSION_7
+          : WEBAUTHN_API_VERSION_6;
+  return IsAvailable() && Version() >= min_version;
 }
 
 std::pair<MakeCredentialStatus,
@@ -391,8 +395,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
     // MakeCredentialRequestHandler rejects a request with credProtect
     // enforced=true if webauthn.dll does not support credProtect.
     if (request.cred_protect_enforce && api_version < WEBAUTHN_API_VERSION_2) {
-      NOTREACHED_IN_MIGRATION();
-      return {MakeCredentialStatus::kWinNotAllowedError, std::nullopt};
+      NOTREACHED();
     }
     // Windows doesn't support the concept of
     // CredProtectRequest::kUVOrCredIDRequiredOrBetter. So an authenticators

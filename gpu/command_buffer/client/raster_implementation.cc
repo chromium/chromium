@@ -103,20 +103,6 @@ BASE_FEATURE(kDisableErrorHandlingForReadback,
              "kDisableErrorHandlingForReadback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPaintCacheBudgetConfigurableFeature,
-             "PaintCacheBudgetConfigurableFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-MIRACLE_PARAMETER_FOR_INT(GetNormalPaintCacheBudget,
-                          kPaintCacheBudgetConfigurableFeature,
-                          "NormalPaintCacheBudgetBytes",
-                          4 * 1024 * 1024)
-
-MIRACLE_PARAMETER_FOR_INT(GetLowEndPaintCacheBudget,
-                          kPaintCacheBudgetConfigurableFeature,
-                          "LowEndPaintCacheBudgetBytes",
-                          256 * 1024)
-
 const uint32_t kMaxTransferCacheEntrySizeForTransferBuffer = 1024;
 const size_t kMaxImmediateDeletedPaintCachePaths = 1024;
 
@@ -663,8 +649,7 @@ void RasterImplementation::SetAggressivelyFreeResources(
 }
 
 uint64_t RasterImplementation::ShareGroupTracingGUID() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void RasterImplementation::SetErrorMessageCallback(
@@ -674,19 +659,17 @@ void RasterImplementation::SetErrorMessageCallback(
 
 bool RasterImplementation::ThreadSafeShallowLockDiscardableTexture(
     uint32_t texture_id) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void RasterImplementation::CompleteLockDiscardableTexureOnContextThread(
     uint32_t texture_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool RasterImplementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
     uint32_t texture_id) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void* RasterImplementation::MapTransferCacheEntry(uint32_t serialized_size) {
@@ -851,7 +834,7 @@ GLenum RasterImplementation::GetGLError() {
 #if defined(RASTER_CLIENT_FAIL_GL_ERRORS)
 void RasterImplementation::FailGLError(GLenum error) {
   if (error != GL_NO_ERROR) {
-    NOTREACHED_IN_MIGRATION() << "Error:" << error;
+    NOTREACHED() << "Error:" << error;
   }
 }
 // NOTE: Calling GetGLError overwrites data in the result buffer.
@@ -1216,15 +1199,12 @@ void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,
 
 void RasterImplementation::CopySharedImage(const gpu::Mailbox& source_mailbox,
                                            const gpu::Mailbox& dest_mailbox,
-                                           GLenum dest_target,
                                            GLint xoffset,
                                            GLint yoffset,
                                            GLint x,
                                            GLint y,
                                            GLsizei width,
-                                           GLsizei height,
-                                           GLboolean unpack_flip_y,
-                                           GLboolean unpack_premultiply_alpha) {
+                                           GLsizei height) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCopySharedImage("
                      << source_mailbox.ToDebugString() << ", "
@@ -1244,7 +1224,7 @@ void RasterImplementation::CopySharedImage(const gpu::Mailbox& source_mailbox,
   memcpy(mailboxes + sizeof(source_mailbox.name), dest_mailbox.name,
          sizeof(dest_mailbox.name));
   helper_->CopySharedImageINTERNALImmediate(xoffset, yoffset, x, y, width,
-                                            height, unpack_flip_y, mailboxes);
+                                            height, mailboxes);
   CheckGLError();
 }
 
@@ -1842,48 +1822,45 @@ void RasterImplementation::IssueImageDecodeCacheEntryCreation(
 
 GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
     const gpu::Mailbox& mailbox) {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void RasterImplementation::DeleteGpuRasterTexture(GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RasterImplementation::BeginGpuRaster() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 void RasterImplementation::EndGpuRaster() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RasterImplementation::BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
                                                                 GLenum mode) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RasterImplementation::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RasterImplementation::InitializeDiscardableTextureCHROMIUM(
     GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RasterImplementation::UnlockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool RasterImplementation::LockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void RasterImplementation::TraceBeginCHROMIUM(const char* category_name,
@@ -1940,9 +1917,9 @@ cc::ClientPaintCache* RasterImplementation::GetOrCreatePaintCache() {
   if (!paint_cache_) {
     size_t paint_cache_budget = 0u;
     if (base::SysInfo::IsLowEndDevice()) {
-      paint_cache_budget = GetLowEndPaintCacheBudget();
+      paint_cache_budget = 256 * 1024;
     } else {
-      paint_cache_budget = GetNormalPaintCacheBudget();
+      paint_cache_budget = 4 * 1024 * 1024;
     }
     paint_cache_ = std::make_unique<cc::ClientPaintCache>(paint_cache_budget);
   }

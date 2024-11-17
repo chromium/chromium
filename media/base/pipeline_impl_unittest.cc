@@ -1143,7 +1143,7 @@ class PipelineTeardownTest : public PipelineImplTest {
       return;
     }
 
-    NOTREACHED_IN_MIGRATION() << "State not supported: " << state;
+    NOTREACHED() << "State not supported: " << state;
   }
 
   void DoSuspend(TeardownState state, StopOrError stop_or_error) {
@@ -1182,7 +1182,7 @@ class PipelineTeardownTest : public PipelineImplTest {
             .WillOnce(Stop(pipeline_.get()));
       }
     } else if (state != kSuspended && state != kSuspending) {
-      NOTREACHED_IN_MIGRATION() << "State not supported: " << state;
+      NOTREACHED() << "State not supported: " << state;
     }
   }
 

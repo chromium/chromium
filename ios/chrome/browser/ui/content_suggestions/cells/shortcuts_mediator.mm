@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/crb_protocol_observers.h"
+#import "base/memory/raw_ptr.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_commands.h"
@@ -48,8 +48,8 @@
   // Number of unread items in reading list model.
   NSInteger _readingListUnreadCount;
   //  ShortcutsConfig* _shortcutsConfig;
-  feature_engagement::Tracker* _tracker;
-  AuthenticationService* _authService;
+  raw_ptr<feature_engagement::Tracker> _tracker;
+  raw_ptr<AuthenticationService> _authService;
   ShortcutsConsumerList* _consumers;
 }
 
@@ -145,8 +145,7 @@
       [self.dispatcher showWhatsNew];
       break;
     case NTPCollectionShortcutTypeCount:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return;
 }

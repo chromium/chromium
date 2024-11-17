@@ -31,15 +31,37 @@ const directory_promise = (async () => {
   return entries;
 })();
 
+async function cleanupDirectory(dir, ignoreRejections) {
+  // Get a snapshot of the entries.
+  const entries = await Array.fromAsync(dir.values());
+
+  // Call removeEntry on all of them.
+  const remove_entry_promises = entries.map(
+      entry =>
+          dir.removeEntry(entry.name, {recursive: entry.kind === 'directory'}));
+
+  // Wait for them all to resolve or reject.
+  if (ignoreRejections) {
+    await Promise.allSettled(remove_entry_promises);
+  } else {
+    await Promise.all(remove_entry_promises);
+  }
+}
+
 function directory_test(func, description) {
   promise_test(async t => {
     const directory = await directory_promise;
-    // To be resilient against tests not cleaning up properly, cleanup before
-    // every test.
-    for await (let entry of directory.values()) {
-      await directory.removeEntry(
-          entry.name, {recursive: entry.kind === 'directory'});
-    }
+
+    // To be extra resilient against bad tests, cleanup before every test.
+    await cleanupDirectory(directory, /*ignoreRejections=*/ false);
+
+    // Cleanup after every test.
+    t.add_cleanup(async () => {
+      // Ignore any rejections since other cleanup code may have deleted them
+      // before we could.
+      await cleanupDirectory(directory, /*ignoreRejections=*/ true);
+    });
+
     await func(t, directory);
   }, description);
 }
@@ -129,13 +151,14 @@ function framed_test(func, description) {
       try {
         // Set up handles to all third party frames.
         const handles = [
-          null,  // firstParty
-          newIframe(same_site_origin),  // thirdPartySameSite
-          null,  // thirdPartySameSite_AncestorBit
+          null,                          // firstParty
+          newIframe(same_site_origin),   // thirdPartySameSite
+          null,                          // thirdPartySameSite_AncestorBit
           newIframe(cross_site_origin),  // thirdPartyCrossSite
-          newAnonymousIframe(same_site_origin),  // anonymousFrameSameSite
+          newIframeCredentialless(same_site_origin),  // anonymousFrameSameSite
           null,  // anonymousFrameSameSite_AncestorBit
-          newAnonymousIframe(cross_site_origin),  // anonymousFrameCrossSite
+          newIframeCredentialless(
+              cross_site_origin),  // anonymousFrameCrossSite
         ];
         // Set up nested SameSite frames for ancestor bit contexts.
         const setUpQueue = token();
@@ -143,8 +166,10 @@ function framed_test(func, description) {
           child_frame_js(same_site_origin, "newIframe", setUpQueue));
         handles[FRAME_CONTEXT.thirdPartySameSite_AncestorBit] =
           await receive(setUpQueue);
-        send(newAnonymousIframe(cross_site_origin),
-          child_frame_js(same_site_origin, "newAnonymousIframe", setUpQueue));
+        send(
+            newIframeCredentialless(cross_site_origin),
+            child_frame_js(
+                same_site_origin, 'newIframeCredentialless', setUpQueue));
         handles[FRAME_CONTEXT.anonymousFrameSameSite_AncestorBit] =
           await receive(setUpQueue);
 

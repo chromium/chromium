@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -832,7 +832,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   for (const auto& entry : disabled_system_features_pref) {
     switch (static_cast<policy::SystemFeature>(entry.GetInt())) {
       case policy::SystemFeature::kCanvas:
-        disabled_web_apps_.insert(kCanvasAppId);
+        disabled_web_apps_.insert(ash::kCanvasAppId);
         break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case policy::SystemFeature::kCamera:

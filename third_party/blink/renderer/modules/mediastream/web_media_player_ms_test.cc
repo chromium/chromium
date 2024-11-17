@@ -32,12 +32,12 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_renderer_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/web_media_player_ms_compositor.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -525,7 +525,7 @@ class WebMediaPlayerMSTest
           testing::tuple<bool /* enable_surface_layer_for_video */,
                          bool /* opaque_frame */,
                          bool /* odd_size_frame */>>,
-      public WebMediaPlayerClient,
+      public MediaPlayerClient,
       public cc::VideoFrameProvider::Client {
  public:
   WebMediaPlayerMSTest()
@@ -566,7 +566,7 @@ class WebMediaPlayerMSTest
   void AddMediaTrack(const media::MediaTrack& track) override {}
 
   void MediaSourceOpened(std::unique_ptr<WebMediaSource>) override {}
-  void RemotePlaybackCompatibilityChanged(const WebURL& url,
+  void RemotePlaybackCompatibilityChanged(const KURL& url,
                                           bool is_compatible) override {}
   bool WasAlwaysMuted() override { return false; }
   bool HasSelectedVideoTrack() override { return false; }
@@ -622,10 +622,6 @@ class WebMediaPlayerMSTest
         new media::MockGpuMemoryBufferVideoFramePool(&frame_ready_cbs_));
   }
 
-  void DisableMaxVsyncDelayForRendererReset() {
-    compositor_->maximum_vsync_delay_for_renderer_reset_ =
-        base::TimeDelta::Max();
-  }
   // Sets the value of the rendering_ flag. Called from expectations in the
   // test.
   void SetRendering(bool rendering) { rendering_ = rendering; }
@@ -1572,7 +1568,6 @@ TEST_P(WebMediaPlayerMSTest, GetVideoFramePresentationMetadataWithNoAlgorithm) {
 TEST_P(WebMediaPlayerMSTest, DuplicateFrameTimestamp) {
   InitializeWebMediaPlayerMS();
   LoadAndGetFrameProvider(true);
-  DisableMaxVsyncDelayForRendererReset();
 
   const bool opaque_frame = testing::get<1>(GetParam());
   const bool odd_size_frame = testing::get<2>(GetParam());
@@ -1584,24 +1579,27 @@ TEST_P(WebMediaPlayerMSTest, DuplicateFrameTimestamp) {
   auto frame = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep);
-  frame->metadata().reference_time = base::TimeTicks() + kStep;
+  frame->metadata().reference_time = base::TimeTicks::Now() + kStep;
   auto frame2 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep);
-  frame2->metadata().reference_time = base::TimeTicks() + kStep;
+  frame2->metadata().reference_time = base::TimeTicks::Now() + kStep;
   auto frame3 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep * 2);
-  frame3->metadata().reference_time = base::TimeTicks() + kStep * 2;
+  frame3->metadata().reference_time = base::TimeTicks::Now() + kStep * 2;
+
+  compositor_->StartRendering();
+  task_environment_.RunUntilIdle();
+  base::TimeTicks deadline = base::TimeTicks::Now();
+  // Call UpdateCurrentFrame() to initialize last_deadline_max_ in
+  // WebMediaPlayerMSCompositor.
+  EXPECT_TRUE(compositor_->UpdateCurrentFrame(deadline, deadline + kStep));
 
   compositor_->EnqueueFrame(std::move(frame), true);
   compositor_->EnqueueFrame(std::move(frame2), true);
   compositor_->EnqueueFrame(std::move(frame3), true);
 
-  compositor_->StartRendering();
-  task_environment_.RunUntilIdle();
-
-  base::TimeTicks deadline;
   deadline += kStep;  // Don't start deadline at zero.
 
   for (int i = 1; i <= 2; ++i) {
@@ -1619,7 +1617,6 @@ TEST_P(WebMediaPlayerMSTest, DuplicateFrameTimestamp) {
 TEST_P(WebMediaPlayerMSTest, HandlesArbitraryTimestampConversions) {
   InitializeWebMediaPlayerMS();
   LoadAndGetFrameProvider(true);
-  DisableMaxVsyncDelayForRendererReset();
 
   const bool opaque_frame = testing::get<1>(GetParam());
   const bool odd_size_frame = testing::get<2>(GetParam());
@@ -1631,21 +1628,24 @@ TEST_P(WebMediaPlayerMSTest, HandlesArbitraryTimestampConversions) {
   auto frame = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep);
-  frame->metadata().reference_time = base::TimeTicks() + kStep;
+  frame->metadata().reference_time = base::TimeTicks::Now() + kStep;
   frame->metadata().frame_duration = kStep - base::Microseconds(1);
   auto frame2 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep * 2);
-  frame2->metadata().reference_time = base::TimeTicks() + kStep * 2;
+  frame2->metadata().reference_time = base::TimeTicks::Now() + kStep * 2;
   frame2->metadata().frame_duration = kStep - base::Microseconds(1);
+
+  compositor_->StartRendering();
+  task_environment_.RunUntilIdle();
+  base::TimeTicks deadline = base::TimeTicks::Now();
+  // Call UpdateCurrentFrame() to initialize last_deadline_max_ in
+  // WebMediaPlayerMSCompositor.
+  EXPECT_TRUE(compositor_->UpdateCurrentFrame(deadline, deadline + kStep));
 
   compositor_->EnqueueFrame(std::move(frame), true);
   compositor_->EnqueueFrame(std::move(frame2), true);
 
-  compositor_->StartRendering();
-  task_environment_.RunUntilIdle();
-
-  base::TimeTicks deadline;
   deadline += kStep;  // Don't start deadline at zero.
 
   for (int i = 1; i <= 2; ++i) {
@@ -1663,7 +1663,6 @@ TEST_P(WebMediaPlayerMSTest, HandlesArbitraryTimestampConversions) {
 TEST_P(WebMediaPlayerMSTest, OutOfOrderEnqueue) {
   InitializeWebMediaPlayerMS();
   LoadAndGetFrameProvider(true);
-  DisableMaxVsyncDelayForRendererReset();
 
   const bool opaque_frame = testing::get<1>(GetParam());
   const bool odd_size_frame = testing::get<2>(GetParam());
@@ -1675,25 +1674,28 @@ TEST_P(WebMediaPlayerMSTest, OutOfOrderEnqueue) {
   auto frame = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep);
-  frame->metadata().reference_time = base::TimeTicks() + kStep;
+  frame->metadata().reference_time = base::TimeTicks::Now() + kStep;
   auto frame2 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep * 2);
-  frame2->metadata().reference_time = base::TimeTicks() + kStep * 2;
+  frame2->metadata().reference_time = base::TimeTicks::Now() + kStep * 2;
   auto frame3 = media::VideoFrame::CreateZeroInitializedFrame(
       opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       frame_size, gfx::Rect(frame_size), frame_size, kStep * 3);
-  frame3->metadata().reference_time = base::TimeTicks() + kStep * 3;
+  frame3->metadata().reference_time = base::TimeTicks::Now() + kStep * 3;
+
+  compositor_->StartRendering();
+  task_environment_.RunUntilIdle();
+  base::TimeTicks deadline = base::TimeTicks::Now();
+  // Call UpdateCurrentFrame() to initialize last_deadline_max_ in
+  // WebMediaPlayerMSCompositor.
+  EXPECT_TRUE(compositor_->UpdateCurrentFrame(deadline, deadline + kStep));
 
   compositor_->EnqueueFrame(std::move(frame), true);
   compositor_->EnqueueFrame(std::move(frame3), true);
   compositor_->EnqueueFrame(std::move(frame2), true);
 
-  compositor_->StartRendering();
-  task_environment_.RunUntilIdle();
-
   // Frames 1, 3 should be dropped.
-  base::TimeTicks deadline;
   deadline += kStep;  // Don't start deadline at zero.
 
   // Return value may be true or false depending on if surface layer is used.

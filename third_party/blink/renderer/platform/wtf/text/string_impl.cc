@@ -310,11 +310,6 @@ scoped_refptr<StringImpl> StringImpl::Create(
   return string;
 }
 
-scoped_refptr<StringImpl> StringImpl::Create(const UChar* characters,
-                                             wtf_size_t length) {
-  return Create({characters, length});
-}
-
 scoped_refptr<StringImpl> StringImpl::Create(
     base::span<const LChar> latin1_data) {
   if (latin1_data.empty()) {
@@ -327,17 +322,11 @@ scoped_refptr<StringImpl> StringImpl::Create(
   return string;
 }
 
-scoped_refptr<StringImpl> StringImpl::Create(const LChar* characters,
-                                             wtf_size_t length) {
-  return Create({characters, length});
-}
-
 scoped_refptr<StringImpl> StringImpl::Create(
-    const LChar* characters,
-    wtf_size_t length,
+    base::span<const LChar> characters,
     ASCIIStringAttributes ascii_attributes) {
-  scoped_refptr<StringImpl> ret = Create(characters, length);
-  if (length) {
+  scoped_refptr<StringImpl> ret = Create(characters);
+  if (!characters.empty()) {
     // If length is 0 then `ret` is empty_ and should not have its
     // attributes calculated or changed.
     uint32_t new_flags = ASCIIStringAttributesToFlags(ascii_attributes);
@@ -348,28 +337,23 @@ scoped_refptr<StringImpl> StringImpl::Create(
 }
 
 scoped_refptr<StringImpl> StringImpl::Create8BitIfPossible(
-    const UChar* characters,
-    wtf_size_t length) {
-  if (!characters || !length)
+    base::span<const UChar> characters) {
+  if (!characters.data() || characters.empty()) {
     return empty_;
-
-  LChar* data;
-  scoped_refptr<StringImpl> string = CreateUninitialized(length, data);
-
-  for (wtf_size_t i = 0; i < length; ++i) {
-    if (characters[i] & 0xff00)
-      return Create(characters, length);
-    data[i] = static_cast<LChar>(characters[i]);
   }
 
-  return string;
-}
+  base::span<LChar> data;
+  scoped_refptr<StringImpl> string =
+      CreateUninitialized(characters.size(), data);
 
-scoped_refptr<StringImpl> StringImpl::Create(const LChar* string) {
-  if (!string)
-    return empty_;
-  size_t length = strlen(reinterpret_cast<const char*>(string));
-  return Create(string, base::checked_cast<wtf_size_t>(length));
+  for (size_t i = 0; i < characters.size(); ++i) {
+    const UChar c = characters[i];
+    if (c & 0xff00) {
+      return Create(characters);
+    }
+    data[i] = static_cast<LChar>(c);
+  }
+  return string;
 }
 
 bool StringImpl::ContainsOnlyWhitespaceOrEmpty() {
@@ -423,17 +407,14 @@ UChar32 StringImpl::CharacterStartingAt(wtf_size_t i) {
   return 0;
 }
 
-wtf_size_t StringImpl::CopyTo(UChar* buffer,
-                              wtf_size_t start,
-                              wtf_size_t max_length) const {
-  wtf_size_t number_of_characters_to_copy =
-      std::min(length() - start, max_length);
+size_t StringImpl::CopyTo(base::span<UChar> buffer, wtf_size_t start) const {
+  size_t number_of_characters_to_copy =
+      std::min<size_t>(length() - start, buffer.size());
   if (!number_of_characters_to_copy)
     return 0;
-  if (Is8Bit())
-    CopyChars(buffer, Characters8() + start, number_of_characters_to_copy);
-  else
-    CopyChars(buffer, Characters16() + start, number_of_characters_to_copy);
+  buffer = buffer.first(number_of_characters_to_copy);
+  VisitCharacters(StringView(*this, start, number_of_characters_to_copy),
+                  [buffer](auto chars) { CopyChars(buffer, chars); });
   return number_of_characters_to_copy;
 }
 
@@ -675,18 +656,15 @@ scoped_refptr<StringImpl> StringImpl::Remove(wtf_size_t start,
   length_to_remove = std::min(length_ - start, length_to_remove);
   wtf_size_t removed_end = start + length_to_remove;
 
-  if (Is8Bit()) {
-    StringBuffer<LChar> buffer(length_ - length_to_remove);
-    CopyChars(buffer.Characters(), Characters8(), start);
-    CopyChars(buffer.Characters() + start, Characters8() + removed_end,
-              length_ - removed_end);
-    return buffer.Release();
-  }
-  StringBuffer<UChar> buffer(length_ - length_to_remove);
-  CopyChars(buffer.Characters(), Characters16(), start);
-  CopyChars(buffer.Characters() + start, Characters16() + removed_end,
-            length_ - removed_end);
-  return buffer.Release();
+  return VisitCharacters(
+      *this, [start, length_to_remove, removed_end](auto chars) {
+        using CharType = decltype(chars)::value_type;
+        StringBuffer<CharType> buffer(chars.size() - length_to_remove);
+        auto [before, after] = buffer.Span().split_at(start);
+        CopyChars(before, chars.first(start));
+        CopyChars(after, chars.subspan(removed_end));
+        return buffer.Release();
+      });
 }
 
 template <typename CharType, class UCharPredicate>
@@ -1736,30 +1714,31 @@ bool Equal(const StringImpl* a, const StringImpl* b) {
 }
 
 template <typename CharType>
-inline bool EqualInternal(const StringImpl* a,
-                          const CharType* b,
-                          wtf_size_t length) {
+inline bool EqualInternal(const StringImpl* a, base::span<const CharType> b) {
   if (!a)
-    return !b;
-  if (!b)
+    return !b.data();
+  if (!b.data()) {
     return false;
+  }
 
-  if (a->length() != length)
+  if (a->length() != b.size()) {
     return false;
+  }
   if (a->Is8Bit())
-    return Equal(a->Characters8(), b, length);
-  return Equal(a->Characters16(), b, length);
+    return Equal(a->Characters8(), b.data(), b.size());
+  return Equal(a->Characters16(), b.data(), b.size());
 }
 
-bool Equal(const StringImpl* a, const LChar* b, wtf_size_t length) {
-  return EqualInternal(a, b, length);
+bool Equal(const StringImpl* a, base::span<const LChar> b) {
+  return EqualInternal(a, b);
 }
 
-bool Equal(const StringImpl* a, const UChar* b, wtf_size_t length) {
-  return EqualInternal(a, b, length);
+bool Equal(const StringImpl* a, base::span<const UChar> b) {
+  return EqualInternal(a, b);
 }
 
-bool Equal(const StringImpl* a, const LChar* b) {
+template <typename StringType>
+bool EqualInternal(const StringType* a, const LChar* b) {
   if (!a)
     return !b;
   if (!b)
@@ -1791,6 +1770,14 @@ bool Equal(const StringImpl* a, const LChar* b) {
   }
 
   return !b[length];
+}
+
+bool Equal(const StringImpl* a, const LChar* b) {
+  return EqualInternal(a, b);
+}
+
+bool Equal(const StringView& a, const LChar* b) {
+  return EqualInternal(&a, b);
 }
 
 bool EqualNonNull(const StringImpl* a, const StringImpl* b) {

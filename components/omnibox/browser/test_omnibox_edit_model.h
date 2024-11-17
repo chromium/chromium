@@ -44,7 +44,8 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   bool is_temporary_text() const { return is_temporary_text_; }
 
  protected:
-  PrefService* GetPrefService() const override;
+  PrefService* GetPrefService() override;
+  const PrefService* GetPrefService() const override;
 
  private:
   bool popup_is_open_;

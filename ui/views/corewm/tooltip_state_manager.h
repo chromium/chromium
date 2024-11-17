@@ -21,10 +21,6 @@ namespace aura {
 class Window;
 }
 
-namespace gfx {
-class Rect;
-}
-
 namespace wm {
 class TooltipObserver;
 }
@@ -83,15 +79,6 @@ class VIEWS_EXPORT TooltipStateManager {
   void UpdatePositionIfNeeded(const gfx::Point& position,
                               TooltipTrigger trigger);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Called when tooltip is shown/hidden on server.
-  // Only used by Lacros.
-  void OnTooltipShownOnServer(aura::Window* window,
-                              const std::u16string& text,
-                              const gfx::Rect& bounds);
-  void OnTooltipHiddenOnServer();
-#endif
-
  private:
   friend class test::TooltipControllerTestHelper;
 
@@ -132,8 +119,6 @@ class VIEWS_EXPORT TooltipStateManager {
 
   // Two timers for the tooltip: one to hide an on-screen tooltip after a delay,
   // and one to display the tooltip when the timer fires.
-  // Timers are always not running on Lacros using server side tooltip since
-  // they are handled on Ash side.
   base::OneShotTimer will_hide_tooltip_timer_;
   base::OneShotTimer will_show_tooltip_timer_;
 

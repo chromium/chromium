@@ -46,8 +46,8 @@ PageAbortReason GetAbortReasonForEndReason(PageEndReason end_reason) {
 }
 
 // Common helper for QueryContainsComponent and QueryContainsComponentPrefix.
-bool QueryContainsComponentHelper(const std::string_view query,
-                                  const std::string_view component,
+bool QueryContainsComponentHelper(std::string_view query,
+                                  std::string_view component,
                                   bool component_is_prefix) {
   if (query.empty() || component.empty() ||
       component.length() > query.length()) {
@@ -217,7 +217,8 @@ base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
       return zero;
     case PrerenderingState::kActivated: {
       base::TimeDelta corrected = event - delegate.GetActivationStart().value();
-      return std::max(zero, corrected);
+      CHECK_GE(corrected, zero);
+      return corrected;
     }
   }
 }
@@ -283,92 +284,18 @@ bool DidObserveLoadingBehaviorInAnyFrame(
   return (all_frame_loading_behavior_flags & behavior) != 0;
 }
 
-bool IsGoogleSearchHostname(const GURL& url) {
-  std::optional<std::string> result =
-      page_load_metrics::GetGoogleHostnamePrefix(url);
-  return result && result.value() == "www";
-}
-
-bool IsProbablyGoogleSearchUrl(const GURL& url) {
-  if (!page_load_metrics::IsGoogleSearchHostname(url)) {
-    return false;
-  }
-
-  const std::string_view path = url.path_piece();
-  if (path == "/maps" || path.find("/maps/") != std::string_view::npos) {
-    return false;
-  }
-
-  return true;
-}
-
-// Determine if the given url has query associated with it.
-bool HasGoogleSearchQuery(const GURL& url) {
-  // NOTE: we do not require 'q=' in the query, as AJAXy search may instead
-  // store the query in the URL fragment.
-  return QueryContainsComponentPrefix(url.query_piece(), "q=") ||
-         QueryContainsComponentPrefix(url.ref_piece(), "q=");
-}
-
-bool IsGoogleSearchResultUrl(const GURL& url) {
-  if (!IsGoogleSearchHostname(url)) {
-    return false;
-  }
-
-  if (!HasGoogleSearchQuery(url)) {
-    return false;
-  }
-
-  const std::string_view path = url.path_piece();
-  return path == "/search" || path == "/webhp" || path == "/custom" ||
-         path == "/";
-}
-
-bool IsGoogleSearchHomepageUrl(const GURL& url) {
-  if (!IsGoogleSearchHostname(url)) {
-    return false;
-  }
-
-  const std::string_view path = url.path_piece();
-  if (path == "/webhp" || path == "/") {
-    return true;
-  }
-
-  return (path == "/custom" || path == "/search") && !HasGoogleSearchQuery(url);
-}
-
-bool IsGoogleSearchRedirectorUrl(const GURL& url) {
-  if (!IsGoogleSearchHostname(url))
-    return false;
-
-  // The primary search redirector.  Google search result redirects are
-  // differentiated from other general google redirects by 'source=web' in the
-  // query string.
-  if (url.path_piece() == "/url" && url.has_query() &&
-      QueryContainsComponent(url.query_piece(), "source=web")) {
-    return true;
-  }
-
-  // Intent-based navigations from search are redirected through a second
-  // redirector, which receives its redirect URL in the fragment/hash/ref
-  // portion of the URL (the portion after '#'). We don't check for the presence
-  // of certain params in the ref since this redirector is only used for
-  // redirects from search.
-  return url.path_piece() == "/searchurl/r.html" && url.has_ref();
-}
-
 bool IsZstdUrl(const GURL& url) {
   return url.DomainIs("facebook.com") || url.DomainIs("instagram.com") ||
          url.DomainIs("whatsapp.com") || url.DomainIs("messenger.com");
 }
 
-bool QueryContainsComponent(const std::string_view query,
-                            const std::string_view component) {
+bool QueryContainsComponent(std::string_view query,
+                            std::string_view component) {
   return QueryContainsComponentHelper(query, component, false);
 }
 
-bool QueryContainsComponentPrefix(const std::string_view query,
-                                  const std::string_view component) {
+bool QueryContainsComponentPrefix(std::string_view query,
+                                  std::string_view component) {
   return QueryContainsComponentHelper(query, component, true);
 }
 

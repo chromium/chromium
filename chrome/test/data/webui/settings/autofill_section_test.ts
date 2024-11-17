@@ -19,7 +19,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, STUB_USER_ACCOUNT_INFO, TestAutofillManager} from './autofill_fake_data.js';
-import {createAutofillSection, initiateRemoving, initiateEditing, CountryDetailManagerTestImpl, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog, deleteAddress, getAddressFieldValue} from './autofill_section_test_utils.js';
+import {createAutofillSection, initiateRemoving, initiateEditing, CountryDetailManagerTestImpl, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog, getAddressFieldValue} from './autofill_section_test_utils.js';
 // clang-format on
 
 const FieldType = chrome.autofillPrivate.FieldType;
@@ -192,44 +192,6 @@ suite('AutofillSectionUiTest', function() {
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
     }
-
-    document.body.removeChild(section);
-  });
-});
-
-suite('AutofillSectionFocusTest', function() {
-  // TODO(crbug.com/40279141): Fix the flakiness.
-  test.skip('verifyFocusLocationAfterRemoving', async () => {
-    const section = await createAutofillSection(
-        [
-          createAddressEntry(),
-          createAddressEntry(),
-          createAddressEntry(),
-        ],
-        {profile_enabled: {value: true}});
-    const manager = AutofillManagerImpl.getInstance() as TestAutofillManager;
-
-    await deleteAddress(section, manager, 1);
-    const addressesAfterRemovingInTheMiddle =
-        section.$.addressList.querySelectorAll('.list-item');
-    assertTrue(
-        addressesAfterRemovingInTheMiddle[1]!.matches(':focus-within'),
-        'The focus should remain on the same index on the list (but next ' +
-            'to the removed address).');
-
-    await deleteAddress(section, manager, 1);
-    const addressesAfterRemovingLastInTheList =
-        section.$.addressList.querySelectorAll('.list-item');
-    assertTrue(
-        addressesAfterRemovingLastInTheList[0]!.matches(':focus-within'),
-        'After removing the last address on the list the focus should go ' +
-            'to the preivous address.');
-
-    await deleteAddress(section, manager, 0);
-    assertTrue(
-        section.$.addAddress.matches(':focus-within'),
-        'If there are no addresses remaining after removal the focus should ' +
-            'go to the Add button.');
 
     document.body.removeChild(section);
   });
@@ -541,8 +503,7 @@ suite('AutofillSectionAddressTests', function() {
         emailAddress, getAddressFieldValue(address, FieldType.EMAIL_ADDRESS));
   });
 
-  // TODO(crbug.com/40279141): Fix the flakiness.
-  test.skip('verifyPhoneAndEmailAreRemoved', function() {
+  test('verifyPhoneAndEmailAreRemoved', function() {
     const address = createEmptyAddressEntry();
 
     const phoneNumber = '(555) 555-5555';
@@ -558,7 +519,7 @@ suite('AutofillSectionAddressTests', function() {
     });
     address.fields.push({type: FieldType.EMAIL_ADDRESS, value: emailAddress});
 
-    return createAddressDialog(address).then(function(dialog) {
+    return createAddressDialog(address).then(async function(dialog) {
       const rows = dialog.$.dialog.querySelectorAll('.address-row');
       assertGT(rows.length, 0, 'dialog should contain address rows');
 
@@ -571,18 +532,26 @@ suite('AutofillSectionAddressTests', function() {
       assertTrue(!!phoneInput, 'phone element should be the first cr-input');
       assertTrue(!!emailInput, 'email element should be the second cr-input');
 
-      assertEquals(phoneNumber, phoneInput.value);
-      assertEquals(emailAddress, emailInput.value);
+      assertEquals(
+          phoneNumber, phoneInput.value,
+          'The input should have the corresponding address field value.');
+      assertEquals(
+          emailAddress, emailInput.value,
+          'The input should have the corresponding address field value.');
 
       phoneInput.value = '';
       emailInput.value = '';
+      await flushTasks();
 
       return expectEvent(dialog, 'save-address', function() {
                dialog.$.saveButton.click();
              }).then(function() {
         assertFalse(
-            !!getAddressFieldValue(address, FieldType.PHONE_HOME_WHOLE_NUMBER));
-        assertFalse(!!getAddressFieldValue(address, FieldType.EMAIL_ADDRESS));
+            !!getAddressFieldValue(address, FieldType.PHONE_HOME_WHOLE_NUMBER),
+            'The phone field should be empty.');
+        assertFalse(
+            !!getAddressFieldValue(address, FieldType.EMAIL_ADDRESS),
+            'The email field should be empty.');
       });
     });
   });
@@ -712,8 +681,7 @@ suite('AutofillSectionAddressTests', function() {
     });
   });
 
-  // TODO(crbug.com/40279141): Fix the flakiness.
-  test.skip('verifySyncRecordTypeNoticeForNewAddress', async () => {
+  test('verifySyncRecordTypeNoticeForNewAddress', async () => {
     const section = await createAutofillSection([], {}, {
       ...STUB_USER_ACCOUNT_INFO,
       email: 'stub-user@example.com',

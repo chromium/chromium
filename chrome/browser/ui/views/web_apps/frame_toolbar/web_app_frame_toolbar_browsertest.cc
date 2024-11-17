@@ -21,7 +21,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -68,6 +68,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -282,13 +283,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 }
 
-// TODO(crbug.com/40940526): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ThemeChange DISABLED_ThemeChange
-#else
-#define MAYBE_ThemeChange ThemeChange
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, MAYBE_ThemeChange) {
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
   ASSERT_TRUE(https_server()->Started());
   const GURL app_url = https_server()->GetURL("/banners/theme-color.html");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
@@ -1375,8 +1370,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 // Regression test for https://crbug.com/1448878.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DraggableRegionsIgnoredForOwnedWidgets) {
-  // TODO(https://crbug.com/329235190): Lacros using accelerated widget for
-  // bubble, so the point within browser_view is still draggable and returns
+  // TODO(https://crbug.com/329235190): In case accelerated widget is used for
+  // bubble, the point within browser_view is still draggable and returns
   // `HTCAPTION`.
   if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
     GTEST_SKIP();
@@ -1665,7 +1660,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Test that a download by a web app browser only shows the download UI in that
 // app's window.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
@@ -1740,7 +1735,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                   ->download_display_for_testing()
                   ->IsShowing());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DisplayModeMediaCSS) {
@@ -2041,7 +2036,8 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis \
   DISABLED_WindowSetResizableBlocksResizeToAndResizeByApis
 #else
-#define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis WindowSetResizableBlocksResizeToAndResizeByApis
+#define MAYBE_WindowSetResizableBlocksResizeToAndResizeByApis \
+  WindowSetResizableBlocksResizeToAndResizeByApis
 #endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
@@ -2083,8 +2079,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test to ensure crbug.com/1513330 won't reproduce.
-// TODO(b/41492287, b/336264927): Flaky on Linux, Mac, and Lacros.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/41492287, b/336264927): Flaky on Linux and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
   DISABLED_WindowSetResizableDoesntBlockMoveToAndMoveByApis
 #else
@@ -2194,6 +2190,60 @@ IN_PROC_BROWSER_TEST_F(
     return MatchMediaMatches(
         web_contents, "window.matchMedia('(display-state: normal)').matches");
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableDoNotBlockRequestFullscreen) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* browser_view = helper()->browser_view();
+  auto* web_contents = browser_view->GetActiveWebContents();
+
+  SetResizableAndWait(web_contents, false, false);
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+  {
+    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
+                                           {.tab_fullscreen = true});
+    EXPECT_TRUE(ExecJs(web_contents,
+                       "(async () => {await "
+                       "document.documentElement.requestFullscreen();})()"));
+    waiter.Wait();
+  }
+  EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
+  {
+    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
+                                           {.tab_fullscreen = false});
+    EXPECT_TRUE(ExecJs(web_contents,
+                       "(async () => {await document.exitFullscreen();})()"));
+    waiter.Wait();
+  }
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableBlocksUserInitiatedFullscreen) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* browser_view = helper()->browser_view();
+  auto* web_contents = browser_view->GetActiveWebContents();
+
+  SetResizableAndWait(web_contents, false, false);
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+
+  // Most accelerators (e.g., F11, ⛶, Fn+F) maps to IDC_FULLSCREEN command
+  ASSERT_TRUE(chrome::ExecuteCommand(helper()->app_browser(), IDC_FULLSCREEN));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+
+  // Exception: VKEY_ZOOM maps to ash::AcceleratorAction::kToggleFullscreen
+#if BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      helper()->app_browser(), ui::VKEY_ZOOM, false, false, false, false));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+#endif
 }
 
 #if !BUILDFLAG(IS_MAC)
@@ -2442,8 +2492,14 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(nav_url);
 }
 
+// TODO(https://crbug.com/361839153): This test fails on ChromeOS builds.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OutOfScopeBarShown DISABLED_OutOfScopeBarShown
+#else
+#define MAYBE_OutOfScopeBarShown OutOfScopeBarShown
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       OutOfScopeBarShown) {
+                       MAYBE_OutOfScopeBarShown) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if out-of-scope bar is shown after navigation.
@@ -2465,8 +2521,14 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(app_url());
 }
 
+// TODO(crbug.com/376592844): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ThemeColorChange DISABLED_ThemeColorChange
+#else
+#define MAYBE_ThemeColorChange ThemeColorChange
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       ThemeColorChange) {
+                       MAYBE_ThemeColorChange) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -2488,8 +2550,16 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(nav_url);
 }
 
+// TODO(https://crbug.com/361839153): This test fails on ChromeOS builds.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OutOfScopeBarWithThemeColorChange \
+  DISABLED_OutOfScopeBarWithThemeColorChange
+#else
+#define MAYBE_OutOfScopeBarWithThemeColorChange \
+  OutOfScopeBarWithThemeColorChange
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       OutOfScopeBarWithThemeColorChange) {
+                       MAYBE_OutOfScopeBarWithThemeColorChange) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -2526,8 +2596,16 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(app_url());
 }
 
+// TODO(https://crbug.com/361839153): This test fails on ChromeOS builds.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WebAppOriginTextAccessibleProperties \
+  DISABLED_WebAppOriginTextAccessibleProperties
+#else
+#define MAYBE_WebAppOriginTextAccessibleProperties \
+  WebAppOriginTextAccessibleProperties
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       WebAppOriginTextAccessibleProperties) {
+                       MAYBE_WebAppOriginTextAccessibleProperties) {
   InstallAndLaunchWebApp();
   auto* origin_text = helper()->origin_text_view();
   ui::AXNodeData data;
@@ -2667,8 +2745,10 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
+// TODO(crbug.com/371923523): Reenable ExtendedScope* tests when they are more
+// stable.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
-                       ExtendedScope) {
+                       DISABLED_ExtendedScope) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -2703,7 +2783,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
-                       ExtendedScopeToOutOfScope) {
+                       DISABLED_ExtendedScopeToOutOfScope) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -2735,7 +2815,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
-                       ExtendedScopeThemeColorChange) {
+                       DISABLED_ExtendedScopeThemeColorChange) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =

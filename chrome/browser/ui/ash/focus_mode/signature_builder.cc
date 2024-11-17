@@ -86,7 +86,6 @@ bool SignatureBuilder::BuildHeaders(HeaderCallback callback) {
     return false;
   }
 
-  LOG(WARNING) << "Start certificate retrieval";
   if (!certificate_manager_->GetCertificate(
           /*force_update=*/false,
           base::BindOnce(&SignatureBuilder::OnCertificateRetrieved,
@@ -105,8 +104,6 @@ void SignatureBuilder::OnCertificateRetrieved(
     std::move(callback).Run({});
     return;
   }
-
-  LOG(WARNING) << "Certificate expiration " << certificate_key->expiration;
 
   Fields fields;
   fields.device_info = DeviceInfo();
@@ -164,8 +161,6 @@ void SignatureBuilder::OnBaseSigned(
   if (intermediate_certificates.empty()) {
     DVLOG(0) << "Certificate chain is empty. Omitting header";
   } else {
-    LOG(WARNING) << "Intermeidate certificates "
-                 << intermediate_certificates.size();
     headers.push_back(
         base::StrCat({"Client-Cert-Chain: ",
                       base::JoinString(intermediate_certificates, ",")}));

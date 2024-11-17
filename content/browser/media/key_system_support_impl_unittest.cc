@@ -86,7 +86,14 @@ KeySystemCapabilities TestKeySystemCapabilities(
     std::optional<CdmCapability> hw_secure_capability) {
   KeySystemCapabilities key_system_capabilities;
   key_system_capabilities[kTestKeySystem] = KeySystemCapability(
-      std::move(sw_secure_capability), std::move(hw_secure_capability));
+      sw_secure_capability.has_value()
+          ? media::CdmCapabilityOrStatus(
+                std::move(sw_secure_capability).value())
+          : base::unexpected(media::CdmCapabilityQueryStatus::kUnknown),
+      hw_secure_capability.has_value()
+          ? media::CdmCapabilityOrStatus(
+                std::move(hw_secure_capability).value())
+          : base::unexpected(media::CdmCapabilityQueryStatus::kUnknown));
   return key_system_capabilities;
 }
 
@@ -188,8 +195,8 @@ TEST_F(KeySystemSupportImplTest, OneObserver) {
   auto& capabilities = results_[kObserver1][0];
   ASSERT_TRUE(capabilities.count(kTestKeySystem));
   const auto& capability = capabilities[kTestKeySystem];
-  EXPECT_TRUE(capability.sw_secure_capability);
-  EXPECT_FALSE(capability.hw_secure_capability);
+  EXPECT_TRUE(capability.sw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(capability.hw_cdm_capability_or_status.has_value());
 }
 
 TEST_F(KeySystemSupportImplTest, TwoObservers) {
@@ -221,8 +228,8 @@ TEST_F(KeySystemSupportImplTest, TwoObservers) {
   auto& capabilities = results_[kObserver1][0];
   ASSERT_TRUE(capabilities.count(kTestKeySystem));
   const auto& capability = capabilities[kTestKeySystem];
-  EXPECT_TRUE(capability.sw_secure_capability);
-  EXPECT_FALSE(capability.hw_secure_capability);
+  EXPECT_TRUE(capability.sw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(capability.hw_cdm_capability_or_status.has_value());
 
   EXPECT_TRUE(results_.count(kObserver2));     // Observer 2
   EXPECT_EQ(results_[kObserver2].size(), 1u);  // One update for observer 1
@@ -257,14 +264,14 @@ TEST_F(KeySystemSupportImplTest, TwoUpdates) {
   auto& capabilities_1 = results_[kObserver1][0];
   ASSERT_TRUE(capabilities_1.count(kTestKeySystem));
   const auto& capability_1 = capabilities_1[kTestKeySystem];
-  EXPECT_TRUE(capability_1.sw_secure_capability);
-  EXPECT_FALSE(capability_1.hw_secure_capability);
+  EXPECT_TRUE(capability_1.sw_cdm_capability_or_status.has_value());
+  EXPECT_FALSE(capability_1.hw_cdm_capability_or_status.has_value());
 
   auto& capabilities_2 = results_[kObserver1][1];
   ASSERT_TRUE(capabilities_2.count(kTestKeySystem));
   const auto& capability_2 = capabilities_2[kTestKeySystem];
-  EXPECT_TRUE(capability_2.sw_secure_capability);
-  EXPECT_TRUE(capability_2.hw_secure_capability);
+  EXPECT_TRUE(capability_2.sw_cdm_capability_or_status.has_value());
+  EXPECT_TRUE(capability_2.hw_cdm_capability_or_status.has_value());
 }
 
 TEST_F(KeySystemSupportImplTest, AllowHWSecureCapability) {

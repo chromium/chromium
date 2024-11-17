@@ -66,6 +66,18 @@ bool CSSOMUtils::IsEmptyValueList(const CSSValue* value) {
 }
 
 // static
+bool CSSOMUtils::HasGridRepeatValue(const CSSValueList* value_list) {
+  if (value_list) {
+    for (const auto& value : *value_list) {
+      if (value->IsGridRepeatValue()) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// static
 String CSSOMUtils::NamedGridAreaTextForPosition(
     const NamedGridAreaMap& grid_area_map,
     wtf_size_t row,
@@ -118,19 +130,32 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
   if (IsAutoValueList(template_row_values)) {
     list->Append(*template_area_values);
   } else {
-    // In order to insert grid-area names in the correct positions, we need to
-    // reconstruct a space-separated `CSSValueList` and append
-    // that to the existing list that gets returned.
-    CSSValueList* template_row_list = CSSValueList::CreateSpaceSeparated();
+    // "Note: Note that the repeat() function isn’t allowed in these track
+    // listings, as the tracks are intended to visually line up one-to-one with
+    // the rows/columns in the “ASCII art”."
+    //
+    // https://www.w3.org/TR/css-grid-2/#explicit-grid-shorthand
+    //
+    // Rows are always expected to be present and a `CSSValueList` in this case,
+    // but columns may not be.
+    const CSSValueList* template_row_value_list =
+        DynamicTo<CSSValueList>(template_row_values);
+    DCHECK(template_row_value_list);
+    if (HasGridRepeatValue(template_row_value_list) ||
+        HasGridRepeatValue(DynamicTo<CSSValueList>(template_column_values))) {
+      return list;
+    }
 
+    // In order to insert grid-area names in the correct positions, we need to
+    // construct a space-separated `CSSValueList` and append that to the
+    // existing list that gets returned.
+    CSSValueList* template_row_list = CSSValueList::CreateSpaceSeparated();
     const cssvalue::CSSGridTemplateAreasValue* template_areas =
         DynamicTo<cssvalue::CSSGridTemplateAreasValue>(template_area_values);
     DCHECK(template_areas);
     const NamedGridAreaMap& grid_area_map = template_areas->GridAreaMap();
-    wtf_size_t grid_area_column_count = template_areas->ColumnCount();
+    const wtf_size_t grid_area_column_count = template_areas->ColumnCount();
     wtf_size_t grid_area_index = 0;
-    const CSSValueList* template_row_value_list =
-        DynamicTo<CSSValueList>(template_row_values);
 
     for (const auto& row_value : *template_row_value_list) {
       if (row_value->IsGridLineNamesValue()) {
@@ -148,7 +173,6 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
       if (!grid_area_text.empty()) {
         template_row_list->Append(*MakeGarbageCollected<CSSStringValue>(
             grid_area_text.ReleaseString()));
-
         ++grid_area_index;
       }
 

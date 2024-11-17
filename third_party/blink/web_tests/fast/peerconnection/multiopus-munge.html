@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RTCPeerConnection red+opus support</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+
+const fmtp = 'channel_mapping=0,4,1,2,3,5;coupled_streams=2;num_streams=4';
+function munge(sdp) {
+  const lines = sdp.split('\r\n').map(l => l.trim());
+  const payloadTypes = lines
+    .filter(l => l.startsWith('a=rtpmap:'))
+    .map(l => parseInt(l.substring(9).split(' ')[0], 10));
+  let payloadType = undefined;
+  // Searching the upper range should typically be enough.
+  for (let i = 127; i >= 96; i--) {
+    if (!payloadTypes.includes(i)) {
+      payloadType = i;
+      break;
+    }
+  }
+  return lines.map(line => {
+    if (line.startsWith('m=audio 9 UDP/TLS/RTP/SAVPF ')) {
+      return line.substring(0, 28) + payloadType + ' ' + line.substring(28);
+    }
+    return line;
+  }).join('\r\n') +
+    'a=rtpmap:' + payloadType + ' multiopus/48000/6\r\n' +
+    'a=fmtp:' + payloadType + ' ' + fmtp + '\r\n';
+}
+
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
+
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true})
+  t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+
+  const sender = pc1.addTrack(stream.getAudioTracks()[0], stream);
+  await pc1.setLocalDescription();
+  await pc2.setRemoteDescription(pc1.localDescription);
+  const answer = await pc2.createAnswer();
+  // Add multiopus to the receiver.
+  await pc2.setLocalDescription({type: 'answer', sdp: munge(answer.sdp)});
+  await pc1.setRemoteDescription(pc2.localDescription);
+
+  const parameters = await sender.getParameters();
+  assert_equals(parameters.codecs[0].mimeType, 'audio/multiopus');
+  assert_equals(parameters.codecs[0].sdpFmtpLine, fmtp);
+}, `SDP munging adding multiopus works`);
+    </script>
+  </body>
+</html>
+

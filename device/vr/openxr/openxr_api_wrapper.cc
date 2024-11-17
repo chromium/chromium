@@ -84,8 +84,7 @@ const char* GetXrSessionStateName(XrSessionState state) {
       return "Max_Enum";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 }  // namespace
@@ -283,8 +282,7 @@ bool OpenXrApiWrapper::HasSpace(XrReferenceSpaceType type) const {
     case XR_REFERENCE_SPACE_TYPE_STAGE:
       return stage_space_ != XR_NULL_HANDLE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -369,7 +367,7 @@ device::mojom::XREnvironmentBlendMode OpenXrApiWrapper::GetMojoBlendMode(
     case XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND:
       return device::mojom::XREnvironmentBlendMode::kAlphaBlend;
     case XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   };
   return device::mojom::XREnvironmentBlendMode::kOpaque;
 }
@@ -404,7 +402,7 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
       }
       break;
     case device::mojom::XRSessionMode::kInline:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return GetMojoBlendMode(blend_mode_);
@@ -525,7 +523,8 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         break;
 
       case mojom::XRSessionFeature::SECONDARY_VIEWS:
-        // SECONDARY_VIEWS support can't be checked beyond just the
+      case mojom::XRSessionFeature::WEBGPU:
+        // SECONDARY_VIEWS and WEBGPU support can't be checked beyond just the
         // mode/extension check. If we passed that, then it's enabled.
         is_enabled = true;
         break;
@@ -609,6 +608,16 @@ XrResult OpenXrApiWrapper::InitSession(
   RETURN_IF_XR_FAILED(OpenXRInputHelper::CreateOpenXRInputHelper(
       instance_, system_, extension_helper, session_, local_space_,
       enable_hand_tracking, &input_helper_));
+
+  // We need to mark whether or not the graphics binding is backing a WebGPU
+  // session prior to any swap chain images being activated because the
+  // associated shared images need to be created with WebGPU-specific flags.
+  const bool webgpu_session =
+      base::Contains(session_options_->required_features,
+                     device::mojom::XRSessionFeature::WEBGPU) ||
+      base::Contains(session_options_->optional_features,
+                     device::mojom::XRSessionFeature::WEBGPU);
+  graphics_binding_->SetWebGPUSession(webgpu_session);
 
   // Make sure all of the objects we initialized are there.
   DCHECK(HasSession());
@@ -1049,7 +1058,7 @@ XrResult OpenXrApiWrapper::LocateViews(
     case XR_REFERENCE_SPACE_TYPE_MAX_ENUM:
     case XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT:
     case XR_REFERENCE_SPACE_TYPE_LOCALIZATION_MAP_ML:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Initialize the XrView objects' type field to XR_TYPE_VIEW. xrLocateViews

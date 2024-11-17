@@ -107,8 +107,6 @@ class WaylandPointer {
                      wl_fixed_t z,
                      wl_fixed_t a);
 
-  bool SuppressFocusChangeEvents() const;
-
   wl::Object<wl_pointer> obj_;
   wl::Object<zcr_pointer_stylus_v2> zcr_pointer_stylus_v2_;
   const raw_ptr<WaylandConnection> connection_;
@@ -154,7 +152,6 @@ class WaylandPointer::Delegate {
   virtual void OnPointerStylusToolChanged(EventPointerType pointer_type) = 0;
   virtual void OnPointerStylusForceChanged(float force) = 0;
   virtual void OnPointerStylusTiltChanged(const gfx::Vector2dF& tilt) = 0;
-  virtual const WaylandWindow* GetPointerTarget() const = 0;
 };
 
 }  // namespace ui

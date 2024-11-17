@@ -20,7 +20,7 @@ bool ParseNativeMessageJson(const std::string& message,
     return false;
   }
 
-  auto message_value = std::move(opt_message.value());
+  auto message_value = std::move(*opt_message);
   if (!message_value.is_dict()) {
     LOG(ERROR) << "Received a message that's not a dictionary.";
     return false;

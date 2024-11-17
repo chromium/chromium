@@ -62,6 +62,22 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
     return CompositorScrollTimeline::ScrollDown;
   }
 
+  if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
+    PhysicalToLogical<CompositorScrollTimeline::ScrollDirection> converter(
+        style ? style->GetWritingDirection()
+              : WritingDirectionMode(WritingMode::kHorizontalTb,
+                                     TextDirection::kLtr),
+        CompositorScrollTimeline::ScrollUp,
+        CompositorScrollTimeline::ScrollRight,
+        CompositorScrollTimeline::ScrollDown,
+        CompositorScrollTimeline::ScrollLeft);
+    if (axis == ScrollAxis::kBlock) {
+      return converter.BlockEnd();
+    }
+    DCHECK_EQ(axis, ScrollAxis::kInline);
+    return converter.InlineEnd();
+  }
+
   // Harder cases; first work out which axis is which, and then for each check
   // which edge we start at.
 

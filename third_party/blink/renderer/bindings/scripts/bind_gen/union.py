@@ -309,6 +309,13 @@ def make_factory_methods(cg_context):
                                   attribute=None,
                                   body=scope_node))
 
+    # 1. If the union type includes undefined and V is undefined, then return
+    # the unique undefined value.
+    member = find_by_type(lambda t: t.is_undefined)
+    if member:
+        dispatch_if("${v8_value}->IsUndefined()",
+                    S("blink_value", "ToV8UndefinedGenerator ${blink_value};"))
+
     # 2. If the union type includes a nullable type and V is null or undefined,
     #   ...
     member = find_by_member(lambda m: m.is_null)
@@ -719,11 +726,9 @@ def make_accessor_functions(cg_context):
                                   class_name=cg_context.class_name)
         func_def.set_base_template_vars(cg_context.template_bindings())
         node = CxxSwitchNode(cond="content_type_")
-        node.append(
-            case=None,
-            body=[T("NOTREACHED_IN_MIGRATION();"),
-                  T("return nullptr;")],
-            should_add_break=False)
+        node.append(case=None,
+                    body=[T("NOTREACHED();")],
+                    should_add_break=False)
         for member in subunion_members:
             node.append(case=member.content_type(),
                         body=F("return MakeGarbageCollected<{}>({}());",
@@ -839,8 +844,7 @@ def make_tov8_function(cg_context):
     body.extend([
         branches,
         EmptyNode(),
-        TextNode("NOTREACHED_IN_MIGRATION();"),
-        TextNode("return v8::Local<v8::Value>();"),
+        TextNode("NOTREACHED();"),
     ])
 
     return func_decl, func_def

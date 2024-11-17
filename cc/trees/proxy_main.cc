@@ -35,6 +35,7 @@
 #include "cc/trees/scoped_abort_remaining_swap_promises.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/trace_utils.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace cc {
@@ -251,8 +252,7 @@ void ProxyMain::BeginMainFrame(
     commit_timeout = true;
   }
 
-  bool blocking = !base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
-                  block_on_next_commit_;
+  bool blocking = block_on_next_commit_;
   block_on_next_commit_ = false;
 
   bool scroll_and_viewport_changes_synced = false;
@@ -279,9 +279,9 @@ void ProxyMain::BeginMainFrame(
   // to track animation states such that they are cleaned up properly.
   layer_tree_host_->AnimateLayers(frame_args.frame_time);
 
-  // If NonBlockingCommit is enabled, and the previous BeginMainFrame has not
-  // yet completed commit on the impl thread, then the above call to
-  // AnimateLayers should have blocked until the previous commit finished.
+  // If the previous BeginMainFrame has not yet completed commit on the impl
+  // thread, then the above call to AnimateLayers should have blocked until the
+  // previous commit finished.
   DCHECK(!layer_tree_host_->in_commit());
 
   // Recreates all UI resources if the compositor thread evicted UI resources
@@ -493,8 +493,6 @@ void ProxyMain::BeginMainFrame(
 
 void ProxyMain::DidCompleteCommit(int source_frame_number,
                                   CommitTimestamps commit_timestamps) {
-  if (!base::FeatureList::IsEnabled(features::kNonBlockingCommit))
-    return;
   if (layer_tree_host_)
     layer_tree_host_->CommitComplete(source_frame_number, commit_timestamps);
 }
@@ -530,8 +528,10 @@ void ProxyMain::NotifyImageDecodeRequestFinished(int request_id,
   layer_tree_host_->NotifyImageDecodeFinished(request_id, decode_succeeded);
 }
 
-void ProxyMain::NotifyTransitionRequestFinished(uint32_t sequence_id) {
-  layer_tree_host_->NotifyTransitionRequestsFinished({sequence_id});
+void ProxyMain::NotifyTransitionRequestFinished(
+    uint32_t sequence_id,
+    const viz::ViewTransitionElementResourceRects& rects) {
+  layer_tree_host_->NotifyTransitionRequestsFinished(sequence_id, rects);
 }
 
 bool ProxyMain::IsStarted() const {
@@ -827,6 +827,9 @@ bool ProxyMain::MainFrameWillHappenForTesting() {
 }
 
 void ProxyMain::ReleaseLayerTreeFrameSink() {
+  TRACE_EVENT0("cc", "ProxyMain::ReleaseLayerTreeFrameSink");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.ProxyMain.ReleaseLayerTreeFrameSink");
   DCHECK(IsMainThread());
   frame_sink_bound_weak_factory_.InvalidateWeakPtrs();
   DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);

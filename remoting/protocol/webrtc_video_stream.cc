@@ -284,6 +284,12 @@ WebrtcVideoStream::~WebrtcVideoStream() {
   }
 
   if (peer_connection_ && transceiver_) {
+    // Stop the video-stream before removing it from the peer-connection.
+    // Otherwise, it will continue to be listed in
+    // peer_connection_->GetSenders(), and may interfere with bandwidth
+    // estimation - b/366055325.
+    transceiver_->StopStandard();
+
     // Ignore any errors here, as this may return an error if the
     // peer-connection has been closed.
     peer_connection_->RemoveTrackOrError(transceiver_->sender());

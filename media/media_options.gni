@@ -112,7 +112,7 @@ declare_args() {
   enable_media_drm_storage = is_android || is_castos
 
   # Enable HLS manifest parser and demuxer.
-  enable_hls_demuxer = proprietary_codecs && is_android
+  enable_hls_demuxer = proprietary_codecs
 
   # Enable inclusion of the HEVC/H265 parser and also enable HEVC/H265 decoding
   # with hardware acceleration assist. Enabled by default for fuzzer builds,
@@ -124,6 +124,11 @@ declare_args() {
   # Enable inclusion of VVC/H.266 parser/demuxer, and also enable VVC/H.266 decoding
   # with hardware acceleration provided by platform. Disabled by default for all builds.
   enable_platform_vvc = false
+
+  # Determines if a GpuChannel is needed between media capture utility process
+  # and gpu process for a given platform.
+  enable_gpu_channel_media_capture = is_linux || is_win || is_chromeos_ash ||
+                                     is_mac || is_android || is_fuchsia
 }
 
 # Use another declare_args() to allow dependence on args defined above.
@@ -146,9 +151,11 @@ declare_args() {
 }
 
 declare_args() {
-  platform_has_optional_hevc_support =
+  platform_has_optional_hevc_decode_support =
       enable_platform_hevc &&
       (is_win || is_chromeos || is_linux || is_apple || is_android)
+  platform_has_optional_hevc_encode_support =
+      enable_platform_hevc && (is_win || is_apple || is_android)
 }
 
 assert(!enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,

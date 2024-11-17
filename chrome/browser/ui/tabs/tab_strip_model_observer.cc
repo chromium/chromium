@@ -14,14 +14,19 @@
 
 using content::WebContents;
 
-TabStripModelChange::RemovedTab::RemovedTab(content::WebContents* contents,
-                                            int index,
-                                            RemoveReason remove_reason,
-                                            std::optional<SessionID> session_id)
+TabStripModelChange::RemovedTab::RemovedTab(
+    content::WebContents* contents,
+    int index,
+    RemoveReason remove_reason,
+    tabs::TabInterface::DetachReason tab_detach_reason,
+    std::optional<SessionID> session_id,
+    tabs::TabInterface* tab)
     : contents(contents),
       index(index),
       remove_reason(remove_reason),
-      session_id(session_id) {}
+      tab_detach_reason(tab_detach_reason),
+      session_id(session_id),
+      tab(tab) {}
 TabStripModelChange::RemovedTab::~RemovedTab() = default;
 TabStripModelChange::RemovedTab::RemovedTab(RemovedTab&& other) = default;
 
@@ -225,7 +230,7 @@ void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
 
 void TabStripModelObserver::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    tabs::TabModel* tab,
+    tabs::TabInterface* tab,
     int index) {}
 
 void TabStripModelObserver::TabStripEmpty() {

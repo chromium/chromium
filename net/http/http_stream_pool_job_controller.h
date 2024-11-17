@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "net/base/load_states.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
@@ -48,6 +49,12 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
       bool enable_alternative_services,
       const NetLogWithSource& net_log);
 
+  // Requests that enough connections/sessions for `num_streams` be opened.
+  // `callback` is only invoked when the return value is `ERR_IO_PENDING`.
+  int Preconnect(HttpStreamPoolSwitchingInfo switching_info,
+                 size_t num_streams,
+                 CompletionOnceCallback callback);
+
   // HttpStreamPool::Job::Delegate implementation:
   void OnStreamReady(Job* job,
                      std::unique_ptr<HttpStream> stream,
@@ -68,6 +75,15 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   void SetPriority(RequestPriority priority) override;
 
  private:
+  QuicSessionPool* quic_session_pool();
+  SpdySessionPool* spdy_session_pool();
+
+  // Calls the request's Complete() and tells the delegate that `stream` is
+  // ready. Used when there is an existing QUIC/SPDY session that can serve
+  // the request.
+  void CallRequestComplete(std::unique_ptr<HttpStream> stream,
+                           NextProto negotiated_protocol);
+
   // Sets the result of `job`.
   void SetJobResult(Job* job, int status);
 
@@ -88,6 +104,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
 
   AlternativeServiceInfo alternative_service_info_;
   NetworkAnonymizationKey network_anonymization_key_;
+  ProxyInfo proxy_info_;
 
   raw_ptr<HttpStreamRequest::Delegate> delegate_;
   raw_ptr<HttpStreamRequest> request_;
@@ -98,6 +115,8 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   std::unique_ptr<Job> alternative_job_;
   // Set to `OK` when the alternative job is not needed.
   std::optional<int> alternative_job_result_;
+
+  base::WeakPtrFactory<JobController> weak_ptr_factory_{this};
 };
 
 }  // namespace net

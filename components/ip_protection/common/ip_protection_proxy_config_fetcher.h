@@ -22,7 +22,7 @@ class IpProtectionProxyConfigFetcher {
  public:
   using GetProxyConfigCallback = base::OnceCallback<void(
       const std::optional<std::vector<::net::ProxyChain>>&,
-      const std::optional<ip_protection::GeoHint>&)>;
+      const std::optional<GeoHint>&)>;
 
   virtual ~IpProtectionProxyConfigFetcher();
 

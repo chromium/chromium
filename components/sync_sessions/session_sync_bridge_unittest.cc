@@ -210,7 +210,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
     real_processor_.reset();
   }
 
-  void StartSyncing(const std::vector<SessionSpecifics>& remote_data = {}) {
+  void ConnectSync() {
     syncer::DataTypeActivationRequest request;
     request.error_handler = base::DoNothing();
     request.cache_guid = kLocalCacheGuid;
@@ -225,7 +225,10 @@ class SessionSyncBridgeTest : public ::testing::Test {
     // interactions with the worker happen.
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
+  }
 
+  void SendInitialRemoteData(
+      const std::vector<SessionSpecifics>& remote_data = {}) {
     sync_pb::DataTypeState state = GetDataTypeStateWithInitialSyncDone();
     syncer::UpdateResponseDataList initial_updates;
     for (const SessionSpecifics& specifics : remote_data) {
@@ -233,6 +236,11 @@ class SessionSyncBridgeTest : public ::testing::Test {
     }
     real_processor_->OnUpdateReceived(state, std::move(initial_updates),
                                       /*gc_directive=*/std::nullopt);
+  }
+
+  void StartSyncing(const std::vector<SessionSpecifics>& remote_data = {}) {
+    ConnectSync();
+    SendInitialRemoteData(remote_data);
   }
 
   std::map<std::string, std::unique_ptr<EntityData>> GetAllData() {
@@ -1089,20 +1097,108 @@ TEST_F(SessionSyncBridgeTest, ShouldDisableSyncAndReenable) {
   AddWindow(kWindowId);
   AddTab(kWindowId, "http://foo.com/", kTabId);
 
+  const std::string kForeignSessionTag = "foreignsessiontag";
+  const int kForeignWindowId = 2000001;
+  const int kForeignTabId = 2000002;
+  const int kForeignTabNodeId = 2003;
+
+  const sync_pb::SessionSpecifics foreign_header =
+      CreateHeaderSpecificsWithOneTab(kForeignSessionTag, kForeignWindowId,
+                                      kForeignTabId);
+  const sync_pb::SessionSpecifics foreign_tab =
+      CreateTabSpecifics(kForeignSessionTag, kForeignWindowId, kForeignTabId,
+                         kForeignTabNodeId, "http://baz.com/");
+
   InitializeBridge();
-  StartSyncing();
+  StartSyncing({foreign_header, foreign_tab});
 
   const std::string header_storage_key =
       SessionStore::GetHeaderStorageKey(kLocalCacheGuid);
   ASSERT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(
                   MatchesHeader(kLocalCacheGuid, {kWindowId}, {kTabId})));
+  const std::string foreign_header_storage_key =
+      SessionStore::GetHeaderStorageKey(kForeignSessionTag);
+  ASSERT_THAT(GetDataForCommit(foreign_header_storage_key), NotNull());
   ASSERT_THAT(GetAllData(), Not(IsEmpty()));
 
   EXPECT_CALL(mock_processor(), ModelReadyToSync).Times(0);
   real_processor()->OnSyncStopping(syncer::CLEAR_METADATA);
 
   StartSyncing();
+  // The local session should've been re-added.
+  EXPECT_THAT(GetDataForCommit(header_storage_key),
+              EntityDataHasSpecifics(
+                  MatchesHeader(kLocalCacheGuid, {kWindowId}, {kTabId})));
+  // But the foreign session should be gone.
+  EXPECT_THAT(GetDataForCommit(foreign_header_storage_key), IsNull());
+}
+
+TEST_F(SessionSyncBridgeTest, ShouldPauseSyncAndReenable) {
+  const int kWindowId = 1000001;
+  const int kTabId = 1000002;
+
+  AddWindow(kWindowId);
+  AddTab(kWindowId, "http://foo.com/", kTabId);
+
+  const std::string kForeignSessionTag = "foreignsessiontag";
+  const int kForeignWindowId = 2000001;
+  const int kForeignTabId = 2000002;
+  const int kForeignTabNodeId = 2003;
+
+  const sync_pb::SessionSpecifics foreign_header =
+      CreateHeaderSpecificsWithOneTab(kForeignSessionTag, kForeignWindowId,
+                                      kForeignTabId);
+  const sync_pb::SessionSpecifics foreign_tab =
+      CreateTabSpecifics(kForeignSessionTag, kForeignWindowId, kForeignTabId,
+                         kForeignTabNodeId, "http://baz.com/");
+
+  InitializeBridge();
+  StartSyncing({foreign_header, foreign_tab});
+
+  const std::string header_storage_key =
+      SessionStore::GetHeaderStorageKey(kLocalCacheGuid);
+  ASSERT_THAT(GetDataForCommit(header_storage_key),
+              EntityDataHasSpecifics(
+                  MatchesHeader(kLocalCacheGuid, {kWindowId}, {kTabId})));
+  const std::string foreign_header_storage_key =
+      SessionStore::GetHeaderStorageKey(kForeignSessionTag);
+  ASSERT_THAT(GetDataForCommit(foreign_header_storage_key), NotNull());
+  ASSERT_THAT(GetAllData(), Not(IsEmpty()));
+
+  // Mimic that sync gets paused, e.g. due to an auth error.
+  EXPECT_CALL(mock_processor(), ModelReadyToSync).Times(0);
+  real_processor()->OnSyncStopping(syncer::KEEP_METADATA);
+
+  StartSyncing();
+  // The data in the store should still be there.
+  ASSERT_THAT(GetDataForCommit(header_storage_key),
+              EntityDataHasSpecifics(
+                  MatchesHeader(kLocalCacheGuid, {kWindowId}, {kTabId})));
+  EXPECT_THAT(GetDataForCommit(foreign_header_storage_key), NotNull());
+}
+
+TEST_F(SessionSyncBridgeTest,
+       ShouldPauseSyncAndReenableWithoutInitialSyncDone) {
+  const int kWindowId = 1000001;
+  const int kTabId = 1000002;
+
+  AddWindow(kWindowId);
+  AddTab(kWindowId, "http://foo.com/", kTabId);
+
+  InitializeBridge();
+  // Connect sync, but do *not* complete the initial download.
+  ConnectSync();
+
+  // Mimic that sync gets paused, e.g. due to an auth error, *before* the
+  // initial download was completed.
+  EXPECT_CALL(mock_processor(), ModelReadyToSync).Times(0);
+  real_processor()->OnSyncStopping(syncer::KEEP_METADATA);
+
+  StartSyncing();
+  // The data in the store should still be there.
+  const std::string header_storage_key =
+      SessionStore::GetHeaderStorageKey(kLocalCacheGuid);
   ASSERT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(
                   MatchesHeader(kLocalCacheGuid, {kWindowId}, {kTabId})));

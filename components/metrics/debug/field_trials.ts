@@ -332,7 +332,8 @@ export class FieldTrialsAppElement extends CustomElement {
     const trialRow = this.findTrialRow(trial);
     if (trialRow) {
       for (const row of trialRow.experimentRows) {
-        row.setForceEnabled(group.forceEnabled && row.group.hash == group.hash);
+        row.setForceEnabled(
+            group.forceEnabled && row.group.hash === group.hash);
       }
     }
 

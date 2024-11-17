@@ -78,7 +78,7 @@ public class PaymentRequestShippingAddressAndOptionTest {
     @MediumTest
     @Feature({"Payments"})
     public void testShippingAddressFormat_BottomSheet() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
@@ -102,7 +102,7 @@ public class PaymentRequestShippingAddressAndOptionTest {
     @MediumTest
     @Feature({"Payments"})
     public void testShippingAddressFormat_FullSheet() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
         // Focus on a section other that shipping addresses to enter fullsheet mode.
@@ -129,7 +129,7 @@ public class PaymentRequestShippingAddressAndOptionTest {
     @MediumTest
     @Feature({"Payments"})
     public void testShippingAddressFormat_Expanded() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
@@ -145,8 +145,8 @@ public class PaymentRequestShippingAddressAndOptionTest {
                         .toString()
                         .equals(
                                 "Jon Doe\n"
-                                        + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
-                                        + "555-555-5555"));
+                                    + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
+                                    + "555-555-5555"));
 
         // Make sure that the second profile's shipping label also includes the country.
         Assert.assertTrue(
@@ -156,8 +156,8 @@ public class PaymentRequestShippingAddressAndOptionTest {
                         .toString()
                         .equals(
                                 "Fred Doe\n"
-                                        + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
-                                        + "555-555-5555"));
+                                    + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
+                                    + "555-555-5555"));
     }
 
     /** Verifies that the shipping address format of a new address is as expected. */
@@ -165,7 +165,7 @@ public class PaymentRequestShippingAddressAndOptionTest {
     @MediumTest
     @Feature({"Payments"})
     public void testShippingAddressFormat_NewAddress() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
@@ -200,7 +200,7 @@ public class PaymentRequestShippingAddressAndOptionTest {
     @Feature({"Payments"})
     public void testEditShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -227,7 +227,7 @@ public class PaymentRequestShippingAddressAndOptionTest {
     @Feature({"Payments"})
     public void testEditShippingAddressAndClickAndroidBackButtonShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectShippingAddressRowIsSelected(0);
@@ -251,7 +251,7 @@ public class PaymentRequestShippingAddressAndOptionTest {
     @Feature({"Payments"})
     public void testAddShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -278,7 +278,7 @@ public class PaymentRequestShippingAddressAndOptionTest {
     @Feature({"Payments"})
     public void testAddShippingAddressAndClickAndroidBackButtonShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectShippingAddressRowIsSelected(0);

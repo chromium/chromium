@@ -4,20 +4,27 @@
 
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/ui_base_features.h"
 
-void NewTabPageFeaturePromoHelper::RecordPromoFeatureUsage(
+void NewTabPageFeaturePromoHelper::RecordPromoFeatureUsageAndClosePromo(
     const base::Feature& feature,
     content::WebContents* web_contents) {
-  UserEducationService::MaybeNotifyPromoFeatureUsed(
-      web_contents->GetBrowserContext(), feature);
+  if (auto* const interface =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              web_contents)) {
+    interface->NotifyFeaturePromoFeatureUsed(
+        feature, FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
 }
 
 // For testing purposes only.
@@ -37,21 +44,14 @@ bool NewTabPageFeaturePromoHelper::DefaultSearchProviderIsGoogle(
 void NewTabPageFeaturePromoHelper::MaybeShowFeaturePromo(
     const base::Feature& iph_feature,
     content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser || !DefaultSearchProviderIsGoogle(browser->profile())) {
+  if (!DefaultSearchProviderIsGoogle(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
     return;
   }
-  if (auto* const browser_window = browser->window()) {
-    browser_window->MaybeShowFeaturePromo(iph_feature);
-  }
-}
-
-void NewTabPageFeaturePromoHelper::CloseFeaturePromo(
-    const base::Feature& iph_feature,
-    content::WebContents* web_contents) {
-  if (auto* const browser_window =
-          BrowserWindow::FindBrowserWindowWithWebContents(web_contents)) {
-    browser_window->CloseFeaturePromo(iph_feature);
+  if (auto* const interface =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              web_contents)) {
+    interface->MaybeShowFeaturePromo(iph_feature);
   }
 }
 

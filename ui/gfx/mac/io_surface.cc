@@ -86,8 +86,7 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBA_1010102:
     case gfx::BufferFormat::YVU_420:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -356,8 +355,8 @@ void IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   }
 }
 
-GFX_EXPORT base::apple::ScopedCFTypeRef<IOSurfaceRef>
-IOSurfaceMachPortToIOSurface(
+COMPONENT_EXPORT(GFX)
+base::apple::ScopedCFTypeRef<IOSurfaceRef> IOSurfaceMachPortToIOSurface(
     ScopedRefCountedIOSurfaceMachPort io_surface_mach_port) {
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface;
   if (!io_surface_mach_port) {

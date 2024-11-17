@@ -125,6 +125,8 @@ ClientSummarizedResultType GetClientSummarizedResultType(
            ClientSummarizedResultType::kUrl},
           {OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH,
            ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER,
+           ClientSummarizedResultType::kUrl},
       });
 
   const auto it = kResultTypesToClientSummarizedResultTypes->find(type);
@@ -256,9 +258,9 @@ void GetScoringSignalsForLogging(const OmniboxScoringSignals& scoring_signals,
 
 }  // namespace
 
-OmniboxMetricsProvider::OmniboxMetricsProvider() {}
+OmniboxMetricsProvider::OmniboxMetricsProvider() = default;
 
-OmniboxMetricsProvider::~OmniboxMetricsProvider() {}
+OmniboxMetricsProvider::~OmniboxMetricsProvider() = default;
 
 void OmniboxMetricsProvider::OnRecordingEnabled() {
   subscription_ = OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(

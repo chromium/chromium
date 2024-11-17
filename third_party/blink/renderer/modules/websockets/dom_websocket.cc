@@ -176,7 +176,6 @@ DOMWebSocket::DOMWebSocket(ExecutionContext* context)
       buffered_amount_(0),
       consumed_buffered_amount_(0),
       buffered_amount_after_close_(0),
-      binary_type_(kBinaryTypeBlob),
       subprotocol_(""),
       extensions_(""),
       event_queue_(MakeGarbageCollected<EventQueue>(this)),
@@ -448,27 +447,12 @@ String DOMWebSocket::extensions() const {
   return extensions_;
 }
 
-String DOMWebSocket::binaryType() const {
-  switch (binary_type_) {
-    case kBinaryTypeBlob:
-      return "blob";
-    case kBinaryTypeArrayBuffer:
-      return "arraybuffer";
-  }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+V8BinaryType DOMWebSocket::binaryType() const {
+  return V8BinaryType(binary_type_);
 }
 
-void DOMWebSocket::setBinaryType(const String& binary_type) {
-  if (binary_type == "blob") {
-    binary_type_ = kBinaryTypeBlob;
-    return;
-  }
-  if (binary_type == "arraybuffer") {
-    binary_type_ = kBinaryTypeArrayBuffer;
-    return;
-  }
-  NOTREACHED_IN_MIGRATION();
+void DOMWebSocket::setBinaryType(const V8BinaryType& binary_type) {
+  binary_type_ = binary_type.AsEnum();
 }
 
 const AtomicString& DOMWebSocket::InterfaceName() const {
@@ -549,7 +533,7 @@ void DOMWebSocket::DidReceiveBinaryMessage(
     return;
 
   switch (binary_type_) {
-    case kBinaryTypeBlob: {
+    case V8BinaryType::Enum::kBlob: {
       auto blob_data = std::make_unique<BlobData>();
       for (const auto& span : data) {
         blob_data->AppendBytes(base::as_bytes(span));
@@ -560,7 +544,7 @@ void DOMWebSocket::DidReceiveBinaryMessage(
       break;
     }
 
-    case kBinaryTypeArrayBuffer:
+    case V8BinaryType::Enum::kArraybuffer:
       DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(data);
       event_queue_->Dispatch(
           MessageEvent::Create(array_buffer, origin_string_));

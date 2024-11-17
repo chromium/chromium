@@ -46,23 +46,21 @@ public final class StringUtils {
         Context context = ContextUtils.getApplicationContext();
 
         if (progress.isIndeterminate() && progress.value == 0) {
-            return context.getResources().getString(R.string.download_started);
+            return context.getString(R.string.download_started);
         }
 
         switch (progress.unit) {
             case OfflineItemProgressUnit.PERCENTAGE:
                 return progress.isIndeterminate()
-                        ? context.getResources().getString(R.string.download_started)
+                        ? context.getString(R.string.download_started)
                         : percentageForUi(progress.getPercentage());
             case OfflineItemProgressUnit.BYTES:
                 String bytes = DownloadUtils.getStringForBytes(context, progress.value);
                 if (progress.isIndeterminate()) {
-                    return context.getResources()
-                            .getString(R.string.download_ui_indeterminate_bytes, bytes);
+                    return context.getString(R.string.download_ui_indeterminate_bytes, bytes);
                 } else {
                     String total = DownloadUtils.getStringForBytes(context, progress.max);
-                    return context.getResources()
-                            .getString(R.string.download_ui_determinate_bytes, bytes, total);
+                    return context.getString(R.string.download_ui_determinate_bytes, bytes, total);
                 }
             case OfflineItemProgressUnit.FILES:
                 if (progress.isIndeterminate()) {
@@ -225,8 +223,8 @@ public final class StringUtils {
     private static String filesLeftForUi(Context context, Progress progress) {
         int filesLeft = (int) (progress.max - progress.value);
         return filesLeft == 1
-                ? context.getResources().getString(R.string.one_file_left)
-                : context.getResources().getString(R.string.files_left, filesLeft);
+                ? context.getString(R.string.one_file_left)
+                : context.getString(R.string.files_left, filesLeft);
     }
 
     @NativeMethods

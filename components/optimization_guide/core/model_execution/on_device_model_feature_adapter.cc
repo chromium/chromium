@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/model_execution/simple_response_parser.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
@@ -29,6 +30,30 @@ OnDeviceModelFeatureAdapter::OnDeviceModelFeatureAdapter(
       redactor_(Redactor::FromProto(config.output_config().redact_rules())),
       parser_(
           ResponseParserRegistry::Get().CreateParser(config_.output_config())) {
+  // Set limits values in `token_limits_`.
+  auto& input_config = config_.input_config();
+  auto& output_config = config_.output_config();
+  token_limits_.max_tokens = features::GetOnDeviceModelMaxTokens();
+  token_limits_.min_context_tokens =
+      input_config.has_min_context_tokens()
+          ? input_config.min_context_tokens()
+          : static_cast<uint32_t>(
+                features::GetOnDeviceModelMinTokensForContext());
+  token_limits_.max_context_tokens =
+      input_config.has_max_context_tokens()
+          ? input_config.max_context_tokens()
+          : static_cast<uint32_t>(
+                features::GetOnDeviceModelMaxTokensForContext());
+  token_limits_.max_execute_tokens =
+      input_config.has_max_execute_tokens()
+          ? input_config.max_execute_tokens()
+          : static_cast<uint32_t>(
+                features::GetOnDeviceModelMaxTokensForExecute());
+  token_limits_.max_output_tokens =
+      output_config.has_max_output_tokens()
+          ? output_config.max_output_tokens()
+          : static_cast<uint32_t>(
+                features::GetOnDeviceModelMaxTokensForOutput());
 }
 
 OnDeviceModelFeatureAdapter::~OnDeviceModelFeatureAdapter() = default;
@@ -75,6 +100,10 @@ RedactResult OnDeviceModelFeatureAdapter::Redact(
                     GetStringNameForModelExecutionFeature(config_.feature())}),
       elapsed_timer.Elapsed());
   return redact_result;
+}
+
+bool OnDeviceModelFeatureAdapter::ShouldParseResponse(bool is_complete) const {
+  return is_complete || !parser_->SuppressParsingIncompleteResponse();
 }
 
 void OnDeviceModelFeatureAdapter::ParseResponse(
@@ -135,6 +164,10 @@ std::optional<SamplingParams> OnDeviceModelFeatureAdapter::MaybeSamplingParams()
 
 const proto::Any& OnDeviceModelFeatureAdapter::GetFeatureMetadata() const {
   return config_.feature_metadata();
+}
+
+const TokenLimits& OnDeviceModelFeatureAdapter::GetTokenLimits() const {
+  return token_limits_;
 }
 
 }  // namespace optimization_guide

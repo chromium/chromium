@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +30,7 @@ class PlusAddressCreationControllerDesktop
 
   // PlusAddressCreationController implementation:
   void OfferCreation(const url::Origin& main_frame_origin,
+                     bool is_manual_fallback,
                      PlusAddressCallback callback) override;
   void TryAgainToReservePlusAddress() override;
   void OnRefreshClicked() override;
@@ -63,11 +65,15 @@ class PlusAddressCreationControllerDesktop
   void OnPlusAddressReserved(const PlusProfileOrError& maybe_plus_profile);
   // Autofills `plus_address` in the targeted field by running callback_.
   void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
+  // Shows an applicable user perception survey after the generated plus address
+  // was accepted.
+  void TriggerUserPerceptionSurvey(hats::SurveyType survey_type);
 
   base::WeakPtr<PlusAddressCreationControllerDesktop> GetWeakPtr();
 
   std::unique_ptr<PlusAddressCreationDialogDelegate> dialog_delegate_;
   url::Origin relevant_origin_;
+  bool is_manual_fallback_ = false;
   PlusAddressCallback callback_;
   bool suppress_ui_for_testing_ = false;
   // This is set by OnPlusAddressReserved and cleared when the dialog is closed.

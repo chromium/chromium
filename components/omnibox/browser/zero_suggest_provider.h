@@ -49,16 +49,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
     kRemoteSendURL = 2,
   };
 
-  // Returns the type of results that should be generated for the given context;
-  // however, it does not check whether or not a suggest request can be made.
-  // Those checks must be done using
-  // BaseSearchProvider::CanSendSuggestRequestWithoutPageURL() for the
-  // kRemoteNoURL variant and
-  // BaseSearchProvider::CanSendSuggestRequestWithPageURL() for the
-  // kRemoteSendURL variant.
-  // This method is static to avoid depending on the provider state.
-  static ResultType ResultTypeToRun(const AutocompleteInput& input);
-
   // Creates and returns an instance of this provider.
   static ZeroSuggestProvider* Create(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener);
@@ -66,11 +56,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Registers a preference used to cache the zero suggest response.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Called in Start() or StartPrefetch(), confirms whether zero-prefix
-  // suggestions are allowed in the given context and logs eligibility UMA
-  // metrics. Must be called exactly once. Otherwise the meaning of the the
-  // metrics it logs would change. This method is virtual to mock for testing.
-  virtual bool AllowZeroPrefixSuggestions(
+  // Returns the type of results that should be generated for the given context
+  // and their eligibility.
+  // This method is static to avoid depending on the provider state.
+  static std::pair<ResultType, bool> GetResultTypeAndEligibility(
       const AutocompleteProviderClient* client,
       const AutocompleteInput& input);
 

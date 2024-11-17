@@ -23,20 +23,15 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/gamepad/navigator_gamepad.h"
 
 #include "base/auto_reset.h"
-#include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gamepad_mapping_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -68,8 +63,6 @@ bool HasConnectionEventListeners(LocalDOMWindow* window) {
 
 // static
 const char NavigatorGamepad::kSupplementName[] = "NavigatorGamepad";
-const char kSecureContextBlocked[] =
-    "Access to the feature \"gamepad\" requires a secure context";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"gamepad\" is disallowed by permissions policy.";
 
@@ -100,10 +93,11 @@ void RecordGamepadsForIdentifiabilityStudy(
           .AddValue(gp->buttons().size())
           .AddValue(gp->connected())
           .AddToken(IdentifiabilityBenignStringToken(gp->id()))
-          .AddToken(IdentifiabilityBenignStringToken(gp->mapping()))
+          .AddToken(IdentifiabilityBenignStringToken(gp->mapping().AsString()))
           .AddValue(gp->timestamp());
       if (auto* vb = gp->vibrationActuator()) {
-        builder.AddToken(IdentifiabilityBenignStringToken(vb->type()));
+        builder.AddToken(
+            IdentifiabilityBenignStringToken(vb->type().AsString()));
       }
     }
   }
@@ -134,22 +128,6 @@ HeapVector<Member<Gamepad>> NavigatorGamepad::getGamepads(
   auto* navigator_gamepad = &NavigatorGamepad::From(navigator);
 
   ExecutionContext* context = navigator_gamepad->GetExecutionContext();
-  if (!context || !context->IsSecureContext()) {
-    if (base::FeatureList::IsEnabled(::features::kRestrictGamepadAccess)) {
-      exception_state.ThrowSecurityError(kSecureContextBlocked);
-      return HeapVector<Member<Gamepad>>();
-    } else {
-      context->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "getGamepad will now require Secure Context. "
-              "Please update your application accordingly. "
-              "For more information see "
-              "https://github.com/w3c/gamepad/pull/120"),
-          /*discard_duplicates=*/true);
-    }
-  }
 
   if (!context || !context->IsFeatureEnabled(
                       mojom::blink::PermissionsPolicyFeature::kGamepad)) {
@@ -241,10 +219,10 @@ GamepadHapticActuator* NavigatorGamepad::GetVibrationActuatorForGamepad(
   return vibration_actuators_[pad_index].Get();
 }
 
-void NavigatorGamepad::SetTouchEvents(const Gamepad& gamepad,
-                                      GamepadTouchVector& touch_events,
-                                      unsigned count,
-                                      const device::GamepadTouch* data) {
+void NavigatorGamepad::SetTouchEvents(
+    const Gamepad& gamepad,
+    GamepadTouchVector& touch_events,
+    base::span<const device::GamepadTouch> data) {
   int pad_index = gamepad.index();
   DCHECK_GE(pad_index, 0);
 
@@ -253,7 +231,7 @@ void NavigatorGamepad::SetTouchEvents(const Gamepad& gamepad,
 
   uint32_t the_id = 0u;
   TouchIdMap the_id_map{};
-  for (unsigned i = 0u; i < count; ++i) {
+  for (size_t i = 0u; i < data.size(); ++i) {
     if (auto search = id_map.find(data[i].touch_id); search != id_map.end()) {
       the_id = search->value;
     } else {

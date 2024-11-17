@@ -33,13 +33,18 @@ class ExtremeLightweightDetectorMallocShimsTest
  public:
   static void MultiprocessTestSetup() {
     allocator_shim::ConfigurePartitions(
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
         allocator_shim::EnableBrp(true),
+#else
+        allocator_shim::EnableBrp(false),
+#endif
         allocator_shim::EnableMemoryTagging(false),
         partition_alloc::TagViolationReportingMode::kDisabled,
         allocator_shim::BucketDistribution::kNeutral,
         allocator_shim::SchedulerLoopQuarantine(false),
         /*scheduler_loop_quarantine_capacity_in_bytes=*/0,
         allocator_shim::ZappingByFreeFlags(false),
+        allocator_shim::EventuallyZeroFreedMemory(false),
         allocator_shim::UsePoolOffsetFreelists(true),
         allocator_shim::UseSmallSingleSlotSpans(true));
     InstallExtremeLightweightDetectorHooks(

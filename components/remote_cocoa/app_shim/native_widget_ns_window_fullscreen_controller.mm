@@ -25,7 +25,7 @@ NativeWidgetNSWindowFullscreenController::
     : client_(client) {}
 
 NativeWidgetNSWindowFullscreenController::
-    ~NativeWidgetNSWindowFullscreenController() {}
+    ~NativeWidgetNSWindowFullscreenController() = default;
 
 void NativeWidgetNSWindowFullscreenController::EnterFullscreen(
     int64_t target_display_id) {

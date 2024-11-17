@@ -163,8 +163,7 @@ void XOSExchangeDataProvider::SetURL(const GURL& url,
     ui::AddString16ToVector(spec, &data);
     ui::AddString16ToVector(u"\n", &data);
     ui::AddString16ToVector(title, &data);
-    scoped_refptr<base::RefCountedMemory> mem(
-        base::RefCountedBytes::TakeVector(&data));
+    auto mem = base::MakeRefCounted<base::RefCountedBytes>(std::move(data));
 
     format_map_.Insert(x11::GetAtom(kMimeTypeMozillaURL), mem);
 
@@ -223,8 +222,7 @@ void XOSExchangeDataProvider::SetPickledData(const ClipboardFormatType& format,
 
   std::vector<unsigned char> bytes;
   bytes.insert(bytes.end(), data, data + pickle.size());
-  scoped_refptr<base::RefCountedMemory> mem(
-      base::RefCountedBytes::TakeVector(&bytes));
+  auto mem = base::MakeRefCounted<base::RefCountedBytes>(std::move(bytes));
 
   format_map_.Insert(x11::GetAtom(format.GetName().c_str()), mem);
 }
@@ -515,8 +513,7 @@ void XOSExchangeDataProvider::SetHtml(const std::u16string& html,
   bytes.push_back(0xFF);
   bytes.push_back(0xFE);
   ui::AddString16ToVector(html, &bytes);
-  scoped_refptr<base::RefCountedMemory> mem(
-      base::RefCountedBytes::TakeVector(&bytes));
+  auto mem = base::MakeRefCounted<base::RefCountedBytes>(std::move(bytes));
 
   format_map_.Insert(x11::GetAtom(kMimeTypeHTML), mem);
 }

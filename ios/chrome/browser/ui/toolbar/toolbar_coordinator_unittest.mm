@@ -45,8 +45,8 @@ class TestOmniboxPositionObserver : public OmniboxPositionBrowserAgentObserver {
 class ToolbarCoordinatorTest : public PlatformTest {
  public:
   ToolbarCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     // Setup all necessary handlers.
 
@@ -100,7 +100,7 @@ class ToolbarCoordinatorTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ToolbarCoordinator* coordinator_;
 };

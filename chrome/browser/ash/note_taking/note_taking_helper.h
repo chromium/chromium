@@ -17,7 +17,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -58,9 +57,6 @@ struct NoteTakingAppInfo {
 
   // True if this is the preferred note-taking app.
   bool preferred;
-
-  // Whether the app supports use on the Chrome OS lock screen.
-  LockScreenAppSupport lock_screen_support;
 };
 
 // Singleton class used to launch a note-taking app.
@@ -170,11 +166,6 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   // Sets the preferred note-taking app. |app_id| is a value from a
   // NoteTakingAppInfo object.
   void SetPreferredApp(Profile* profile, const std::string& app_id);
-
-  // Sets whether the preferred note taking app is allowed to run on the lock
-  // screen.
-  // Returns whether the app status changed.
-  bool SetPreferredAppEnabledOnLockScreen(Profile* profile, bool enabled);
 
   // Returns true if an app that can be used to take notes is available. UI
   // surfaces that call LaunchAppForNewNote() should be hidden otherwise.

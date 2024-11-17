@@ -6,7 +6,6 @@ module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -51,11 +50,6 @@ struct LoadModelParams {
 
   // List of adaptation ranks the model should support.
   array<uint32> adaptation_ranks;
-
-  // If this is true, the multiple sessions support will be enabled.
-  // The previous session will not be canceled when starting new session if
-  // this feature is enabled.
-  bool support_multiple_sessions;
 };
 
 struct TextSafetyModelAssets {
@@ -113,19 +107,17 @@ enum SafetyFeature {
 // A service which allows loading trusted models which are stored on-device and
 // which may process untrustworthy data.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
- RequireContext=sandbox.mojom.Context.kBrowser]
+    RequireContext=sandbox.mojom.Context.kBrowser]
 interface OnDeviceModelService {
   // Initializes a new model instance given `params`. If the model can not be
   // created the model pipe will be reset.
-  LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model) =>
-      (LoadModelResult result);
+  LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model)
+      => (LoadModelResult result);
 
   // Initializes a new TextSafetyModel with the provided params.
   // The model is disconnected on any errors with it.
   LoadTextSafetyModel(
-    TextSafetyModelParams params,
-    pending_receiver<TextSafetyModel> model
-  );
+      TextSafetyModelParams params, pending_receiver<TextSafetyModel> model);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() => (PerformanceClass performance_class);

@@ -1,17 +1,3 @@
 include_rules = [
   "+ios/chrome/browser/net/model",
 ]
-
-specific_include_rules = {
-  "chrome_browser_state.mm": [
-    # TODO(crbug.com/41237926): remove once the //ios/web public API allow
-    # access to that class.
-    "+ios/web/webui/url_data_manager_ios_backend.h"
-  ],
-  "test_chrome_browser_state.*": [
-    "+ios/chrome/browser/policy/model",
-    "+ios/chrome/browser/browser_state/model",
-    "+ios/chrome/browser/prefs/model",
-    "+ios/chrome/browser/supervised_user/model",
-  ],
-}

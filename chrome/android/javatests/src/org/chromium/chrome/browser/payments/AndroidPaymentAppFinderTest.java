@@ -19,6 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -377,7 +378,30 @@ public class AndroidPaymentAppFinderTest
      */
     @Test
     @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.UPDATE_PAYMENT_DETAILS_INTENT_FILTER_IN_PAYMENT_APP})
     public void testOneUrlMethodNameApp() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "BobPay",
+                "com.bobpay",
+                "https://bobpay.test/webpay",
+                /* signature= */ "01020304050607080900");
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
+        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
+    }
+
+    /**
+     * Same as `testOneUrlMethodNameApp()`, but the UPDATE_PAYMENT_DETAILS intent lookup is
+     * disabled.
+     */
+    @Test
+    @Feature({"Payments"})
+    @DisableFeatures({PaymentFeatureList.UPDATE_PAYMENT_DETAILS_INTENT_FILTER_IN_PAYMENT_APP})
+    public void testOneUrlMethodNameAppWithoutUpdatePaymentDetailsIntentLookup() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.test/webpay");
         mPackageManager.installPaymentApp(

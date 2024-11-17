@@ -4,6 +4,7 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +16,7 @@
 #include "base/unguessable_token.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 #include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
@@ -484,7 +486,10 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
                       /*background_task_runner=*/
                       base::ThreadPool::CreateSequencedTaskRunner(
                           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-                           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
+                           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      cleanup_task_disabled_for_testing_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kDisableSharedDictionaryStorageCleanupForTesting)) {
   disk_cache_.Initialize(cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
                          app_status_listener_getter,
@@ -720,6 +725,9 @@ void SharedDictionaryManagerOnDisk::ClearDataForIsolationKey(
 
 void SharedDictionaryManagerOnDisk::PostSerializedTask(
     std::unique_ptr<SerializedTaskInfo> task_info) {
+  if (cleanup_task_disabled_for_testing_) {
+    return;
+  }
   pending_serialized_task_info_.push_back(std::move(task_info));
   MaybeStartSerializedTask();
 }

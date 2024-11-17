@@ -40,7 +40,7 @@ class MandatoryReauthBubbleControllerImpl
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetCancelButtonText() const override;
   std::u16string GetExplanationText() const override;
-  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
 #if BUILDFLAG(IS_ANDROID)
   void OnClosed(JNIEnv* env, jint closed_reason);
 #endif

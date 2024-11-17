@@ -61,10 +61,8 @@ public class ClickToCallMessageHandler {
                 /* deleteIntent= */ null,
                 /* confirmIntent= */ null,
                 /* cancelIntent= */ null,
-                context.getResources()
-                        .getString(R.string.click_to_call_dialer_absent_notification_title),
-                context.getResources()
-                        .getString(R.string.click_to_call_dialer_absent_notification_text),
+                context.getString(R.string.click_to_call_dialer_absent_notification_title),
+                context.getString(R.string.click_to_call_dialer_absent_notification_text),
                 R.drawable.ic_error_outline_red_24dp,
                 R.drawable.ic_dialer_not_found_red_40dp,
                 R.color.google_red_600,
@@ -115,7 +113,7 @@ public class ClickToCallMessageHandler {
                 /* confirmIntent= */ null,
                 /* cancelIntent= */ null,
                 contentTitle,
-                context.getResources().getString(R.string.click_to_call_notification_text),
+                context.getString(R.string.click_to_call_notification_text),
                 R.drawable.ic_devices_16dp,
                 R.drawable.ic_dialer_icon_blue_40dp,
                 R.color.default_icon_color_accent1_baseline,

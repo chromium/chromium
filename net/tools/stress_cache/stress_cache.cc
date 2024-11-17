@@ -48,6 +48,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
+#include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
 #include "net/disk_cache/blockfile/stress_support.h"
 #include "net/disk_cache/disk_cache.h"
@@ -321,7 +322,8 @@ void StressTheCache(int iteration) {
   g_data = new Data();
   g_data->iteration = iteration;
   g_data->cache = new disk_cache::BackendImpl(
-      path, mask, cache_thread.task_runner().get(), net::DISK_CACHE, nullptr);
+      path, mask, /*cleanup_tracker=*/nullptr, cache_thread.task_runner().get(),
+      net::DISK_CACHE, nullptr);
   g_data->cache->SetMaxSize(cache_size);
   g_data->cache->SetFlags(disk_cache::kNoLoadProtection);
 
@@ -386,8 +388,8 @@ bool StartCrashThread() {
 
 void CrashHandler(const char* file,
                   int line,
-                  const std::string_view str,
-                  const std::string_view stack_trace) {
+                  std::string_view str,
+                  std::string_view stack_trace) {
   g_crashing = true;
   base::debug::BreakDebugger();
 }

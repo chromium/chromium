@@ -25,6 +25,7 @@ namespace blink {
 
 class LocalDOMWindow;
 class XRFrameTransport;
+class XRGPUProjectionLayer;
 class XRSession;
 class XRSystem;
 class XRWebGLLayer;
@@ -62,6 +63,9 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   void SubmitWebGLLayer(XRWebGLLayer*, bool was_changed);
   void UpdateWebGLLayerViewports(XRWebGLLayer*);
 
+  void SubmitWebGPULayer(XRGPUProjectionLayer*, bool was_queried);
+  void UpdateWebGPULayerViewports(XRGPUProjectionLayer*);
+
   void Dispose();
   void OnFocusChanged();
 
@@ -72,6 +76,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // Adds an ImmersiveSessionObserver. Observers will be automatically removed
   // by Oilpan when they are destroyed, and their WeakMember becomes null.
   void AddImmersiveSessionObserver(ImmersiveSessionObserver*);
+
+  bool DrawingIntoSharedBuffer() const;
 
   virtual void Trace(Visitor*) const;
 
@@ -115,11 +121,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // that inline session frame calls can be scheduled and that they are neither
   // served nor dropped if an immersive session is started while the inline
   // session was waiting to be served.
-  void OnPreDispatchInlineFrame(
-      XRSession* session,
-      double timestamp,
-      const std::optional<gpu::MailboxHolder>& output_mailbox_holder,
-      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
+  void OnPreDispatchInlineFrame(XRSession* session, double timestamp);
 
   // Updates the |first_immersive_frame_time_| and
   // |first_immersive_frame_time_delta_| members and returns the computed high

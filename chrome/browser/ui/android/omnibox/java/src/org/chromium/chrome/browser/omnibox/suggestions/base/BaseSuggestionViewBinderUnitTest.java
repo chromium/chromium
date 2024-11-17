@@ -32,6 +32,7 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
@@ -198,17 +199,17 @@ public class BaseSuggestionViewBinderUnitTest {
                                 mContext,
                                 OmniboxDrawableState.forColor(0),
                                 R.string.accessibility_omnibox_btn_refine,
-                                () -> {}),
+                                CallbackUtils.emptyRunnable()),
                         new Action(
                                 mContext,
                                 OmniboxDrawableState.forColor(0),
                                 R.string.accessibility_omnibox_btn_refine,
-                                () -> {}),
+                                CallbackUtils.emptyRunnable()),
                         new Action(
                                 mContext,
                                 OmniboxDrawableState.forColor(0),
                                 R.string.accessibility_omnibox_btn_refine,
-                                () -> {}));
+                                CallbackUtils.emptyRunnable()));
 
         final List<ImageView> actionButtons = mBaseView.getActionButtons();
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);

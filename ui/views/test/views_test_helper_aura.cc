@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/window.h"
 #include "ui/views/test/test_views_delegate.h"
 
@@ -30,7 +29,7 @@ ViewsTestHelperAura::ViewsTestHelperAura() {
                           : std::make_unique<aura::test::AuraTestHelper>();
 }
 
-#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
 ViewsTestHelperAura::~ViewsTestHelperAura() {
   // Ensure all Widgets (and Windows) are closed in unit tests.
   //

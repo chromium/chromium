@@ -45,19 +45,18 @@ public class JsSandboxService extends Service {
             new IJsSandboxService.Stub() {
                 @Override
                 public IJsSandboxIsolate createIsolate() {
-                    return new JsSandboxIsolate(JsSandboxService.this);
+                    return new JsSandboxIsolate();
                 }
 
                 @Override
                 public IJsSandboxIsolate createIsolateWithMaxHeapSizeBytes(long maxHeapSizeBytes) {
-                    return new JsSandboxIsolate(JsSandboxService.this, maxHeapSizeBytes);
+                    return new JsSandboxIsolate(maxHeapSizeBytes);
                 }
 
                 @Override
                 public IJsSandboxIsolate createIsolate2(
                         long maxHeapSizeBytes, IJsSandboxIsolateClient isolateClient) {
-                    return new JsSandboxIsolate(
-                            JsSandboxService.this, maxHeapSizeBytes, isolateClient);
+                    return new JsSandboxIsolate(maxHeapSizeBytes, isolateClient);
                 }
 
                 @Override

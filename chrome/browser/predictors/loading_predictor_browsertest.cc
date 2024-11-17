@@ -452,7 +452,9 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
     preconnect_manager_observer_ =
         std::make_unique<TestPreconnectManagerObserver>(
             loading_predictor_->preconnect_manager());
-    if (base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch)) {
+    if (base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) ||
+        base::FeatureList::IsEnabled(
+            blink::features::kLCPPPrefetchSubresource)) {
       prefetch_manager_observer_ =
           std::make_unique<TestPrefetchManagerObserver>(
               *loading_predictor_->prefetch_manager());
@@ -462,7 +464,10 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
     initializer.EnsurePredictorInitialized();
   }
 
-  void TearDownOnMainThread() override { loading_predictor_ = nullptr; }
+  void TearDownOnMainThread() override {
+    ResetPredictorState();
+    loading_predictor_ = nullptr;
+  }
 
   // Navigates to an URL without blocking until the navigation finishes.
   // Returns an observer that can be used to wait for the navigation
@@ -910,9 +915,30 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, PreconnectNonCors) {
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 }
 
+class LCPPBrowserTestBase : public LoadingPredictorBrowserTest {
+ public:
+  void NavigateAndWaitForLcpElement(
+      const GURL& url,
+      const base::Location& from_here = FROM_HERE) {
+    LcpElementLearnWaiter lcp_element_waiter(
+        loading_predictor()->resource_prefetch_predictor());
+    page_load_metrics::PageLoadMetricsTestWaiter waiter(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    waiter.AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                  TimingField::kLargestContentfulPaint);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url))
+        << from_here.ToString();
+    waiter.Wait();
+    // Navigate to about:blank to force recording a LCP element.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")))
+        << from_here.ToString();
+    lcp_element_waiter.Wait();
+  }
+};
+
 // TODO(crbug.com/40063266): isolate test per feature.  Currently, it has
 // test for script observer and fonts.
-class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
+class LCPCriticalPathPredictorBrowserTest : public LCPPBrowserTestBase {
  public:
   LCPCriticalPathPredictorBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -943,22 +969,6 @@ class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
     return locators;
   }
 
-  void NavigateAndWaitForLcpElement(const base::Location& from_here,
-                                    const GURL& url) {
-    LcpElementLearnWaiter lcp_element_waiter(
-        loading_predictor()->resource_prefetch_predictor());
-    page_load_metrics::PageLoadMetricsTestWaiter waiter(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    waiter.AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
-                                  TimingField::kLargestContentfulPaint);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url))
-        << from_here.ToString();
-    waiter.Wait();
-    // Navigate to about:blank to force recording a LCP element.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")))
-        << from_here.ToString();
-    lcp_element_waiter.Wait();
-  }
 
   std::vector<std::string> GetLCPPFonts(const GURL& url) {
     auto lcpp_stat =
@@ -1000,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(LCPCriticalPathPredictorBrowserTest,
   ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlC,
                                      /*expected_locator_count=*/0);
 
-  NavigateAndWaitForLcpElement(FROM_HERE, kUrlA);
+  NavigateAndWaitForLcpElement(kUrlA);
   // The locators should contain [lcp_element_for_a].
   std::vector<std::string> locators_1 =
       ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlA,
@@ -1015,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(LCPCriticalPathPredictorBrowserTest,
   ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlC,
                                      /*expected_locator_count=*/0);
 
-  NavigateAndWaitForLcpElement(FROM_HERE, kUrlB);
+  NavigateAndWaitForLcpElement(kUrlB);
   // The locators should contain [lcp_element_for_a, lcp_element_for_b].
   std::vector<std::string> locators_3 =
       ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlA,
@@ -1027,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(LCPCriticalPathPredictorBrowserTest,
   ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlC,
                                      /*expected_locator_count=*/0);
 
-  NavigateAndWaitForLcpElement(FROM_HERE, kUrlB);
+  NavigateAndWaitForLcpElement(kUrlB);
   std::vector<std::string> locators_5 =
       ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlA,
                                          /*expected_locator_count=*/2);
@@ -1057,20 +1067,80 @@ IN_PROC_BROWSER_TEST_F(LCPCriticalPathPredictorBrowserTest, LearnLCPPFont) {
 
   std::vector<std::string> expected;
   expected.push_back(kFontUrlA.spec());
-  NavigateAndWaitForLcpElement(FROM_HERE, kUrlA);
+  NavigateAndWaitForLcpElement(kUrlA);
   EXPECT_EQ(expected, GetLCPPFonts(kUrlA));
   EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlB));
   EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlC));
 
-  NavigateAndWaitForLcpElement(FROM_HERE, kUrlB);
+  NavigateAndWaitForLcpElement(kUrlB);
   EXPECT_EQ(expected, GetLCPPFonts(kUrlA));
   EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlB));
   EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlC));
 
-  NavigateAndWaitForLcpElement(FROM_HERE, kUrlC);
+  NavigateAndWaitForLcpElement(kUrlC);
   EXPECT_EQ(expected, GetLCPPFonts(kUrlA));
   EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlB));
   EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlC));
+}
+
+class LCPPPrefetchSubresourceTest : public LCPPBrowserTestBase {
+ public:
+  LCPPPrefetchSubresourceTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kLCPPPrefetchSubresource},
+        /*disabled_features=*/{features::kLoadingPredictorPrefetch,
+                               blink::features::kHttpDiskCachePrewarming});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LCPPBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        switches::kLoadingPredictorAllowLocalRequestForTesting);
+  }
+
+  GURL GetURL(const std::string& path) {
+    return embedded_test_server()->GetURL("a.test", path);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that prefetch uses LCP-learning subresources.
+IN_PROC_BROWSER_TEST_F(LCPPPrefetchSubresourceTest, Base) {
+  CHECK(
+      base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource));
+  CHECK(!base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  CHECK(
+      !base::FeatureList::IsEnabled(blink::features::kHttpDiskCachePrewarming));
+  const GURL url = GetURL("/predictors/preload.html");
+  NavigateAndWaitForLcpElement(url);
+  EXPECT_TRUE(prefetch_manager_observer()->results().empty());
+  auto lcpp_stat =
+      loading_predictor()->resource_prefetch_predictor()->GetLcppStat(
+          /*initiator_origin=*/std::nullopt, url);
+  EXPECT_TRUE(lcpp_stat.has_value());
+  const auto& subresource_urls = PredictFetchedSubresourceUrls(*lcpp_stat);
+  // Check LCP has learnt the subresources.
+  EXPECT_EQ(std::set<GURL>({GetURL("/predictors/red_rectangle.png"),
+                            GetURL("/predictors/style.css"),
+                            GetURL("/predictors/script.js"),
+                            GetURL("/predictors/font.ttf")}),
+            std::set<GURL>(subresource_urls.begin(), subresource_urls.end()));
+
+  EXPECT_TRUE(prefetch_manager_observer()->results().empty());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  prefetch_manager_observer()->WaitForPrefetchesForNavigation(url);
+  const auto results = prefetch_manager_observer()->results();
+  std::set<GURL> result_urls;
+  for (const auto& result : results) {
+    EXPECT_EQ(net::OK, result.status.error_code) << result.prefetch_url;
+    result_urls.insert(result.prefetch_url);
+  }
+  // font.tts prefetch is handled by kLCPPFontURLPredictor feature.
+  EXPECT_EQ(std::set<GURL>({GetURL("/predictors/style.css"),
+                            GetURL("/predictors/script.js")}),
+            result_urls);
 }
 
 class SuppressesLoadingPredictorOnSlowNetworkBrowserTest
@@ -2717,6 +2787,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameLoadingPredictorBrowserTest,
 
   // Send a response header with link dns-prefetch field.
   response.WaitForRequest();
+  ResetNetworkState();
+  ResetPredictorState();
   response.Send(
       base::StringPrintf("HTTP/1.1 200 OK\r\n"
                          "Content-Type: text/html; charset=utf-8\r\n"
@@ -2812,6 +2884,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameLoadingPredictorBrowserTest,
 
   // Send a response header with link dns-prefetch field.
   dns_prefetch_response.WaitForRequest();
+  ResetNetworkState();
+  ResetPredictorState();
   dns_prefetch_response.Send(
       base::StringPrintf("HTTP/1.1 200 OK\r\n"
                          "Content-Type: text/html; charset=utf-8\r\n"

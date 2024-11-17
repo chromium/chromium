@@ -32,10 +32,12 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 
 #include <cstring>
+#include <limits>
 
 #include "base/bits.h"
 #include "base/system/sys_info.h"
 #include "gin/array_buffer.h"
+#include "partition_alloc/oom.h"
 #include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -77,19 +79,25 @@ ArrayBufferContents::ArrayBufferContents(
     std::optional<size_t> max_num_elements,
     size_t element_byte_size,
     SharingType is_shared,
-    ArrayBufferContents::InitializationPolicy policy) {
+    ArrayBufferContents::InitializationPolicy policy,
+    AllocationFailureBehavior allocation_failure_behavior) {
   auto checked_length =
       base::CheckedNumeric<size_t>(num_elements) * element_byte_size;
   if (!checked_length.IsValid()) {
-    // The requested size is too big, we cannot allocate the memory and
-    // therefore just return.
+    // The requested size is too big.
+    if (allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
+      OOM_CRASH(std::numeric_limits<size_t>::max());
+    }
     return;
   }
   size_t length = checked_length.ValueOrDie();
 
   if (!max_num_elements) {
     // Create a fixed-length ArrayBuffer.
-    void* data = AllocateMemoryOrNull(length, policy);
+    void* data =
+        (allocation_failure_behavior == AllocationFailureBehavior::kCrash)
+            ? AllocateMemory<partition_alloc::AllocFlags::kNone>(length, policy)
+            : AllocateMemoryOrNull(length, policy);
     if (!data) {
       return;
     }
@@ -116,6 +124,14 @@ ArrayBufferContents::ArrayBufferContents(
     size_t max_length = max_checked_length.ValueOrDie();
     backing_store_ =
         v8::ArrayBuffer::NewResizableBackingStore(length, max_length);
+  }
+
+  if (allocation_failure_behavior == AllocationFailureBehavior::kCrash &&
+      !IsValid()) {
+    // All code paths that fail to allocate memory should crash. This is added
+    // as an extra precaution.
+    // TODO(crbug.com/369653504): Remove in March 2025 if there are no crashes.
+    OOM_CRASH(length);
   }
 }
 

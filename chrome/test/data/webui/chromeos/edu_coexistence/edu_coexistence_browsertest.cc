@@ -8,8 +8,6 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
-#include "chrome/test/base/chromeos/lacros_only_mocha_browser_test.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "content/public/test/browser_test.h"
@@ -36,33 +34,4 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceMochaTest, Controller) {
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceMochaTest, Ui) {
   RunEduCoexistenceTest("edu_coexistence_ui_test.js");
-}
-
-class EduCoexistenceWithArcRestrictionsMochaTest
-    : public LacrosOnlyMochaBrowserTest {
- protected:
-  EduCoexistenceWithArcRestrictionsMochaTest() {
-    set_test_loader_host(chrome::kChromeUIChromeSigninHost);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::standalone_browser::features::kLacrosProfileMigrationForceOff,
-        },
-        /*disabled=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-
-  void RunEduCoexistenceTest(const std::string& test_path) {
-    RunTest(base::StrCat({"chromeos/edu_coexistence/", test_path}),
-            "mocha.run()");
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-IN_PROC_BROWSER_TEST_F(EduCoexistenceWithArcRestrictionsMochaTest, App) {
-  RunEduCoexistenceTest("edu_coexistence_app_with_arc_picker_test.js");
 }

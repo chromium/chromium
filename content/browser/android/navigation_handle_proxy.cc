@@ -46,7 +46,7 @@ void NavigationHandleProxy::DidStart() {
       cpp_navigation_handle_->IsSameDocument(),
       cpp_navigation_handle_->IsRendererInitiated(),
       cpp_navigation_handle_->GetInitiatorOrigin()
-          ? cpp_navigation_handle_->GetInitiatorOrigin()->ToJavaObject()
+          ? cpp_navigation_handle_->GetInitiatorOrigin()->ToJavaObject(env)
           : nullptr,
       cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->IsPost(),

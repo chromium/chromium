@@ -271,7 +271,8 @@ static const ComputedStyle* ComputedStyleOfEnclosingTextNode(
   if (!position.IsOffsetInAnchor() || !position.ComputeContainerNode() ||
       !position.ComputeContainerNode()->IsTextNode())
     return nullptr;
-  return position.ComputeContainerNode()->GetComputedStyle();
+  return position.ComputeContainerNode()
+      ->GetComputedStyleForElementOrLayoutObject();
 }
 
 void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(

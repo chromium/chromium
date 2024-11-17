@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 
 // clang-format off
 #define CROSS_PLATFORM_COLOR_IDS \
@@ -357,6 +356,7 @@
   E_CPONLY(kColorListItemFolderIconForeground) \
   E_CPONLY(kColorListItemUrlFaviconBackground) \
   E_CPONLY(kColorLiveCaptionBubbleBackgroundDefault) \
+  E_CPONLY(kColorLiveCaptionBubbleButtonBackground) \
   E_CPONLY(kColorLiveCaptionBubbleButtonIcon) \
   E_CPONLY(kColorLiveCaptionBubbleButtonIconDisabled) \
   E_CPONLY(kColorLiveCaptionBubbleForegroundDefault) \
@@ -554,7 +554,7 @@
   E_CPONLY(kColorWebNativeControlSliderPressed) \
   E_CPONLY(kColorWindowBackground)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define CHROMEOS_ASH_COLOR_IDS \
   /* Colors for illustrations */ \
   E_CPONLY(kColorNativeColor1) \
@@ -572,10 +572,6 @@
   E_CPONLY(kColorNativeMutedColor) \
   E_CPONLY(kColorNativeComplementColor) \
   E_CPONLY(kColorNativeOnGradientColor)
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#define CHROMEOS_ASH_COLOR_IDS
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
   CHROMEOS_ASH_COLOR_IDS \
   /* NOTE: Nearly all of the following CrOS color ids will need to be re- */ \

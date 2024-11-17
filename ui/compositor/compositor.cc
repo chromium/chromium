@@ -27,7 +27,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
@@ -133,9 +132,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.gpu_rasterization_disabled =
       !features::IsUiGpuRasterizationEnabled();
 
-  if (command_line->HasSwitch(cc::switches::kUIShowCompositedLayerBorders)) {
+  if (command_line->HasSwitch(switches::kUIShowCompositedLayerBorders)) {
     std::string layer_borders_string = command_line->GetSwitchValueASCII(
-        cc::switches::kUIShowCompositedLayerBorders);
+        switches::kUIShowCompositedLayerBorders);
     std::vector<std::string_view> entries = base::SplitStringPiece(
         layer_borders_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (entries.empty()) {
@@ -145,12 +144,11 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
         const struct {
           const char* name;
           cc::DebugBorderType type;
-        } kBorders[] = {{cc::switches::kCompositedRenderPassBorders,
-                         cc::DebugBorderType::RENDERPASS},
-                        {cc::switches::kCompositedSurfaceBorders,
-                         cc::DebugBorderType::SURFACE},
-                        {cc::switches::kCompositedLayerBorders,
-                         cc::DebugBorderType::LAYER}};
+        } kBorders[] = {
+            {switches::kCompositedRenderPassBorders,
+             cc::DebugBorderType::RENDERPASS},
+            {switches::kCompositedSurfaceBorders, cc::DebugBorderType::SURFACE},
+            {switches::kCompositedLayerBorders, cc::DebugBorderType::LAYER}};
         for (const auto& border : kBorders) {
           if (border.name == entry) {
             settings.initial_debug_state.show_debug_borders.set(border.type);
@@ -161,20 +159,20 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
     }
   }
   settings.initial_debug_state.show_fps_counter =
-      command_line->HasSwitch(cc::switches::kUIShowFPSCounter);
+      command_line->HasSwitch(switches::kUIShowFPSCounter);
   settings.initial_debug_state.show_layer_animation_bounds_rects =
-      command_line->HasSwitch(cc::switches::kUIShowLayerAnimationBounds);
+      command_line->HasSwitch(switches::kUIShowLayerAnimationBounds);
   settings.initial_debug_state.show_paint_rects =
       command_line->HasSwitch(switches::kUIShowPaintRects);
   settings.initial_debug_state.show_property_changed_rects =
-      command_line->HasSwitch(cc::switches::kUIShowPropertyChangedRects);
+      command_line->HasSwitch(switches::kUIShowPropertyChangedRects);
   settings.initial_debug_state.show_surface_damage_rects =
-      command_line->HasSwitch(cc::switches::kUIShowSurfaceDamageRects);
+      command_line->HasSwitch(switches::kUIShowSurfaceDamageRects);
   settings.initial_debug_state.show_screen_space_rects =
-      command_line->HasSwitch(cc::switches::kUIShowScreenSpaceRects);
+      command_line->HasSwitch(switches::kUIShowScreenSpaceRects);
 
   settings.initial_debug_state.SetRecordRenderingStats(
-      command_line->HasSwitch(cc::switches::kEnableGpuBenchmarking));
+      command_line->HasSwitch(switches::kEnableGpuBenchmarking));
 
   settings.use_zero_copy = IsUIZeroCopyEnabled() && !features::IsUsingRawDraw();
 
@@ -194,7 +192,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.enable_elastic_overscroll = true;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Rasterized tiles must be overlay candidates to be forwarded.
   // This is very similar to the line above for Apple.
   settings.use_gpu_memory_buffer_resources =
@@ -230,8 +228,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.is_layer_tree_for_ui = true;
 
 #if DCHECK_IS_ON()
-  if (command_line->HasSwitch(cc::switches::kLogOnUIDoubleBackgroundBlur))
+  if (command_line->HasSwitch(switches::kLogOnUIDoubleBackgroundBlur)) {
     settings.log_on_ui_double_background_blur = true;
+  }
 #endif
 
   settings.enable_shared_image_cache_for_gpu =
@@ -287,15 +286,14 @@ Compositor::~Compositor() {
     power_monitor->RemovePowerSuspendObserver(this);
   }
 
-  for (auto& observer : observer_list_)
-    observer.OnCompositingShuttingDown(this);
+  observer_list_.Notify(&CompositorObserver::OnCompositingShuttingDown, this);
 
-  for (auto& observer : animation_observer_list_)
-    observer.OnCompositingShuttingDown(this);
+  animation_observer_list_.Notify(
+      &CompositorAnimationObserver::OnCompositingShuttingDown, this);
 
-  for (auto& observer : simple_begin_frame_observers_) {
-    observer.OnBeginFrameSourceShuttingDown();
-  }
+  simple_begin_frame_observers_.Notify(
+      &ui::HostBeginFrameObserver::SimpleBeginFrameObserver::
+          OnBeginFrameSourceShuttingDown);
 
   if (root_layer_)
     root_layer_->ResetCompositor();
@@ -358,9 +356,9 @@ void Compositor::SetLayerTreeFrameSink(
                                                   vsync_interval_);
     }
     display_private_->SetMaxVSyncAndVrr(max_vsync_interval_, vrr_state_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     display_private_->SetSupportedRefreshRates(seamless_refresh_rates_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   MaybeUpdateObserveBeginFrame();
@@ -380,8 +378,7 @@ void Compositor::SetExternalBeginFrameController(
 }
 
 void Compositor::OnChildResizing() {
-  for (auto& observer : observer_list_)
-    observer.OnCompositingChildResizing(this);
+  observer_list_.Notify(&CompositorObserver::OnCompositingChildResizing, this);
 }
 
 void Compositor::ScheduleDraw() {
@@ -548,9 +545,8 @@ void Compositor::SetBackgroundColor(SkColor color) {
 void Compositor::SetVisible(bool visible) {
   const bool changed = visible != IsVisible();
   if (changed) {
-    for (auto& observer : observer_list_) {
-      observer.OnCompositorVisibilityChanging(this, visible);
-    }
+    observer_list_.Notify(&CompositorObserver::OnCompositorVisibilityChanging,
+                          this, visible);
   }
 
   host_->SetVisible(visible);
@@ -561,9 +557,8 @@ void Compositor::SetVisible(bool visible) {
     display_private_->SetDisplayVisible(visible);
 
   if (changed) {
-    for (auto& observer : observer_list_) {
-      observer.OnCompositorVisibilityChanged(this, visible);
-    }
+    observer_list_.Notify(&CompositorObserver::OnCompositorVisibilityChanged,
+                          this, visible);
   }
 }
 
@@ -675,8 +670,7 @@ bool Compositor::HasObserver(const CompositorObserver* observer) const {
 void Compositor::AddAnimationObserver(CompositorAnimationObserver* observer) {
   animation_started_ = true;
   if (animation_observer_list_.empty()) {
-    for (auto& obs : observer_list_)
-      obs.OnFirstAnimationStarted(this);
+    observer_list_.Notify(&CompositorObserver::OnFirstAnimationStarted, this);
   }
   observer->Start();
   animation_observer_list_.AddObserver(observer);
@@ -688,8 +682,7 @@ void Compositor::RemoveAnimationObserver(
   if (!animation_observer_list_.HasObserver(observer))
     return;
 
-  for (auto& aobs : animation_observer_list_)
-    aobs.Check();
+  animation_observer_list_.Notify(&CompositorAnimationObserver::Check);
 
   animation_observer_list_.RemoveObserver(observer);
   if (animation_observer_list_.empty()) {
@@ -738,8 +731,7 @@ Compositor::GetScopedEventMetricsMonitor(
 }
 
 void Compositor::DidBeginMainFrame() {
-  for (auto& obs : observer_list_)
-    obs.OnDidBeginMainFrame(this);
+  observer_list_.Notify(&CompositorObserver::OnDidBeginMainFrame, this);
 }
 
 void Compositor::DidUpdateLayers() {
@@ -754,16 +746,16 @@ void Compositor::DidUpdateLayers() {
 
 void Compositor::BeginMainFrame(const viz::BeginFrameArgs& args) {
   DCHECK(!IsLocked());
-  for (auto& observer : animation_observer_list_)
-    observer.OnAnimationStep(args.frame_time);
+  animation_observer_list_.Notify(&CompositorAnimationObserver::OnAnimationStep,
+                                  args.frame_time);
   if (!animation_observer_list_.empty()) {
     host_->SetNeedsAnimate();
   } else if (animation_started_) {
     // When |animation_started_| is true but there are no animations observers
     // notify the compositor observers.
     animation_started_ = false;
-    for (auto& obs : observer_list_)
-      obs.OnFirstNonAnimatedFrameStarted(this);
+    observer_list_.Notify(&CompositorObserver::OnFirstNonAnimatedFrameStarted,
+                          this);
   }
 }
 
@@ -776,8 +768,6 @@ void Compositor::SendDamagedRectsRecursive(Layer* layer) {
   layer->SendDamagedRects();
   // Iterate using the size for the case of mutation during sending damaged
   // regions. https://crbug.com/1242257.
-  base::AutoReset<bool> setter(&(layer->sending_damaged_rects_for_descendants_),
-                               true);
   for (size_t i = 0; i < layer->children().size(); ++i)
     SendDamagedRectsRecursive(layer->children()[i]);
 }
@@ -808,8 +798,7 @@ void Compositor::DidCommit(int source_frame_number,
                            base::TimeTicks,
                            base::TimeTicks) {
   DCHECK(!IsLocked());
-  for (auto& observer : observer_list_)
-    observer.OnCompositingDidCommit(this);
+  observer_list_.Notify(&CompositorObserver::OnCompositingDidCommit, this);
 }
 
 std::unique_ptr<cc::BeginMainFrameMetrics>
@@ -830,8 +819,7 @@ void Compositor::NotifyThroughputTrackerResults(
 }
 
 void Compositor::DidReceiveCompositorFrameAckDeprecatedForCompositor() {
-  for (auto& observer : observer_list_)
-    observer.OnCompositingAckDeprecated(this);
+  observer_list_.Notify(&CompositorObserver::OnCompositingAckDeprecated, this);
 }
 
 void Compositor::DidPresentCompositorFrame(
@@ -841,15 +829,15 @@ void Compositor::DidPresentCompositorFrame(
       "cc,benchmark", "FramePresented",
       frame_timing_details.presentation_feedback.timestamp, "environment",
       "browser");
-  for (auto& observer : observer_list_)
-    observer.OnDidPresentCompositorFrame(
-        frame_token, frame_timing_details.presentation_feedback);
+  observer_list_.Notify(&CompositorObserver::OnDidPresentCompositorFrame,
+                        frame_token,
+                        frame_timing_details.presentation_feedback);
 }
 
 void Compositor::DidSubmitCompositorFrame() {
   base::TimeTicks start_time = base::TimeTicks::Now();
-  for (auto& observer : observer_list_)
-    observer.OnCompositingStarted(this, start_time);
+  observer_list_.Notify(&CompositorObserver::OnCompositingStarted, this,
+                        start_time);
 }
 
 void Compositor::FrameIntervalUpdated(base::TimeDelta interval) {
@@ -858,20 +846,19 @@ void Compositor::FrameIntervalUpdated(base::TimeDelta interval) {
 
 void Compositor::FrameSinksToThrottleUpdated(
     const base::flat_set<viz::FrameSinkId>& ids) {
-  for (auto& observer : observer_list_) {
-    observer.OnFrameSinksToThrottleUpdated(ids);
-  }
+  observer_list_.Notify(&CompositorObserver::OnFrameSinksToThrottleUpdated,
+                        ids);
 }
 
 void Compositor::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void Compositor::OnFrameTokenChanged(uint32_t frame_token,
                                      base::TimeTicks activation_time) {
   // TODO(yiyix, fsamuel): Implement frame token propagation for Compositor.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 Compositor::TrackerState::TrackerState() = default;
@@ -927,8 +914,8 @@ void Compositor::OnResume() {
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 void Compositor::OnCompleteSwapWithNewSize(const gfx::Size& size) {
-  for (auto& observer : observer_list_)
-    observer.OnCompositingCompleteSwapWithNewSize(this, size);
+  observer_list_.Notify(
+      &CompositorObserver::OnCompositingCompleteSwapWithNewSize, this, size);
 }
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
@@ -1018,7 +1005,7 @@ void Compositor::MaybeUpdateObserveBeginFrame() {
       host_begin_frame_observer_->GetBoundRemote());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void Compositor::SetSeamlessRefreshRates(
     const std::vector<float>& seamless_refresh_rates) {
   seamless_refresh_rates_ = seamless_refresh_rates;
@@ -1029,10 +1016,9 @@ void Compositor::SetSeamlessRefreshRates(
 }
 
 void Compositor::OnSetPreferredRefreshRate(float refresh_rate) {
-  for (auto& observer : observer_list_) {
-    observer.OnSetPreferredRefreshRate(this, refresh_rate);
-  }
+  observer_list_.Notify(&CompositorObserver::OnSetPreferredRefreshRate, this,
+                        refresh_rate);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui

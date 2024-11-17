@@ -37,8 +37,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d.h"
 
 namespace WTF {
 class String;
@@ -52,13 +50,8 @@ class PLATFORM_EXPORT LayoutPoint {
  public:
   constexpr LayoutPoint() = default;
   constexpr LayoutPoint(LayoutUnit x, LayoutUnit y) : x_(x), y_(y) {}
-  constexpr LayoutPoint(int x, int y) : x_(LayoutUnit(x)), y_(LayoutUnit(y)) {}
   constexpr explicit LayoutPoint(const gfx::PointF& point)
       : x_(point.x()), y_(point.y()) {}
-
-  constexpr explicit operator gfx::PointF() const {
-    return gfx::PointF(x_.ToFloat(), y_.ToFloat());
-  }
 
   // This is deleted to avoid unwanted lossy conversion from float or double to
   // LayoutUnit or int. Use explicit LayoutUnit constructor for each parameter
@@ -81,14 +74,6 @@ ALWAYS_INLINE constexpr bool operator==(const LayoutPoint& a,
 
 constexpr bool operator!=(const LayoutPoint& a, const LayoutPoint& b) {
   return !(a == b);
-}
-
-inline gfx::Point ToRoundedPoint(const LayoutPoint& point) {
-  return gfx::Point(point.X().Round(), point.Y().Round());
-}
-
-inline gfx::Vector2d ToRoundedVector2d(const LayoutPoint& p) {
-  return gfx::Vector2d(p.X().Round(), p.Y().Round());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutPoint&);

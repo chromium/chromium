@@ -30,12 +30,12 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<ChannelSelectorType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {CHANNEL_R, "R"},
-      {CHANNEL_G, "G"},
-      {CHANNEL_B, "B"},
-      {CHANNEL_A, "A"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "R",
+      "G",
+      "B",
+      "A",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
@@ -93,13 +93,11 @@ void SVGFEDisplacementMapElement::SvgAttributeChanged(
   if (attr_name == svg_names::kXChannelSelectorAttr ||
       attr_name == svg_names::kYChannelSelectorAttr ||
       attr_name == svg_names::kScaleAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
   if (attr_name == svg_names::kInAttr || attr_name == svg_names::kIn2Attr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

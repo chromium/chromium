@@ -59,6 +59,7 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kNearbyShareOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kNearbyPresenceOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kPeopleApiReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
+ {GaiaConstants::kContactsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kPhotosOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kTachyonOAuthScope, OAuth2ScopeRestriction::kSignedIn},
  #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

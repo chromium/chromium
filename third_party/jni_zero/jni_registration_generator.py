@@ -381,13 +381,7 @@ ${METHODS}
 
   if forwarding or not (options.use_proxy_hash
                         or options.enable_jni_multiplexing):
-    fields = string.Template("""\
-    public static final boolean TESTING_ENABLED = ${TESTING_ENABLED};
-    public static final boolean REQUIRE_MOCK = ${REQUIRE_MOCK};
-""").substitute({
-        'TESTING_ENABLED': str(options.enable_proxy_mocks).lower(),
-        'REQUIRE_MOCK': str(options.require_mocks).lower(),
-    })
+    fields = ''
   else:
     if options.enable_jni_multiplexing:
       fields = f'''\
@@ -441,7 +435,10 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
   ]
   non_proxy_natives_java_classes.sort()
 
-  sb(header_common.class_accessors(non_proxy_natives_java_classes, module_name))
+  if non_proxy_natives_java_classes:
+    sb('// Class Accessors.\n')
+    header_common.class_accessors(sb, non_proxy_natives_java_classes,
+                                  module_name)
 
   sb('\n// Forward declarations (methods).\n\n')
   for jni_obj in jni_objs:
@@ -718,8 +715,6 @@ def _write_depfile(depfile_path, first_gn_output, inputs):
 
 
 def main(parser, args):
-  if not args.enable_proxy_mocks and args.require_mocks:
-    parser.error('--require-mocks requires --enable-proxy-mocks.')
   if not args.header_path and args.manual_jni_registration:
     parser.error('--manual-jni-registration requires --header-path.')
   if not args.header_path and args.enable_jni_multiplexing:

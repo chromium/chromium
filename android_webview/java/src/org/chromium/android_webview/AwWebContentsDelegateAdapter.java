@@ -174,8 +174,8 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
             ResourceRequestBody postData,
             int disposition,
             boolean isRendererInitiated) {
-        // This is only called in chrome layers.
-        assert false;
+        // Not supported.  There are very few cases where this is called other than in //chrome
+        // and we don't expect them to matter for WebView.
     }
 
     @Override
@@ -226,15 +226,16 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     public void runFileChooser(
             final int processId,
             final int renderId,
-            final int modeFlags,
+            final int blinkFileChooserParamsMode,
             String acceptTypes,
             String title,
             String defaultFilename,
             boolean capture) {
-        int correctedModeFlags = FileModeConversionHelper.convertFileChooserMode(modeFlags);
+        int webChromeClientMode =
+                FileModeConversionHelper.convertFileChooserMode(blinkFileChooserParamsMode);
         AwContentsClient.FileChooserParamsImpl params =
                 new AwContentsClient.FileChooserParamsImpl(
-                        correctedModeFlags, acceptTypes, title, defaultFilename, capture);
+                        webChromeClientMode, acceptTypes, title, defaultFilename, capture);
 
         mContentsClient.showFileChooser(
                 new Callback<String[]>() {
@@ -249,12 +250,16 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
                         if (results == null) {
                             AwWebContentsDelegateJni.get()
                                     .filesSelectedInChooser(
-                                            processId, renderId, correctedModeFlags, null, null);
+                                            processId, renderId, webChromeClientMode, null, null);
                             return;
                         }
                         GetDisplayNameTask task =
                                 new GetDisplayNameTask(
-                                        mContext, processId, renderId, correctedModeFlags, results);
+                                        mContext,
+                                        processId,
+                                        renderId,
+                                        webChromeClientMode,
+                                        results);
                         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 },
@@ -400,6 +405,19 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
             Uri uri = Uri.parse(filePath);
             return ContentUriUtils.getDisplayName(
                     uri, mContext, MediaStore.MediaColumns.DISPLAY_NAME);
+        }
+    }
+
+    /** Handle zoom in/zoom out for ctrl + mouse wheel. */
+    @Override
+    public void contentsZoomChange(boolean zoomIn) {
+        boolean supportsZoom = mAwContents.getSettings().supportZoom();
+        if (supportsZoom) {
+            if (zoomIn) {
+                mAwContents.zoomIn();
+            } else {
+                mAwContents.zoomOut();
+            }
         }
     }
 }

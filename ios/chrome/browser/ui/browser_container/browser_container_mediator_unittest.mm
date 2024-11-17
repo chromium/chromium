@@ -40,8 +40,8 @@ using base::test::ios::kWaitForUIElementTimeout;
 class BrowserContainerMediatorTest : public PlatformTest {
  public:
   BrowserContainerMediatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     overlay_presenter_ = OverlayPresenter::FromBrowser(
         browser_.get(), OverlayModality::kWebContentArea);
     mediator_ = [[BrowserContainerMediator alloc]
@@ -57,7 +57,7 @@ class BrowserContainerMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeOverlayPresentationContext presentation_context_;
   raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;

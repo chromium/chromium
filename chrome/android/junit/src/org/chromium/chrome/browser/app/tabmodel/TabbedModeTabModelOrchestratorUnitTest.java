@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.DataInputStream;
 import java.util.List;
@@ -40,6 +41,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabbedModeTabModelOrchestratorUnitTest {
     @Mock private ChromeTabbedActivity mChromeActivity;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
@@ -90,6 +92,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
         orchestrator.createTabModels(
                 mChromeActivity,
+                mModalDialogManager,
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
@@ -106,6 +109,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         orchestrator = new TabbedModeTabModelOrchestratorApi31();
         orchestrator.createTabModels(
                 mChromeActivity,
+                mModalDialogManager,
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,

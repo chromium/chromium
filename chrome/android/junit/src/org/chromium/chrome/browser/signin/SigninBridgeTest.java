@@ -30,7 +30,6 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -77,8 +76,6 @@ public class SigninBridgeTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private Tab mTabMock;
 
     @Mock private Profile mProfileMock;
@@ -110,7 +107,7 @@ public class SigninBridgeTest {
         lenient()
                 .when(mIdentityServicesProviderMock.getSigninManager(mProfileMock))
                 .thenReturn(mSigninManagerMock);
-        mJniMocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsJniMock);
+        SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsJniMock);
     }
 
     @After

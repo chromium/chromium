@@ -63,8 +63,7 @@ void EnvInputStateController::UpdateStateForTouchEvent(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   const gfx::Point& location_in_root = event.root_location();
   const auto* root_window = window->GetRootWindow();

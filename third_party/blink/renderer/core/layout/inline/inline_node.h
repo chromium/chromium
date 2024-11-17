@@ -31,7 +31,7 @@ struct TextDiffRange;
 class CORE_EXPORT InlineNode : public LayoutInputNode {
  public:
   explicit InlineNode(LayoutBlockFlow*);
-  explicit InlineNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
+  InlineNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
   LayoutBlockFlow* GetLayoutBlockFlow() const {
     return To<LayoutBlockFlow>(box_.Get());

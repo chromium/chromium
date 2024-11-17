@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
+#include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -28,28 +29,23 @@ CSSKeywordValue* CSSKeywordValue::Create(const String& keyword,
 
 CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
   if (value.IsInheritedValue()) {
-    return MakeGarbageCollected<CSSKeywordValue>(
-        getValueName(CSSValueID::kInherit));
+    return MakeGarbageCollected<CSSKeywordValue>(CSSValueID::kInherit);
   }
   if (value.IsInitialValue()) {
-    return MakeGarbageCollected<CSSKeywordValue>(
-        getValueName(CSSValueID::kInitial));
+    return MakeGarbageCollected<CSSKeywordValue>(CSSValueID::kInitial);
   }
   if (value.IsUnsetValue()) {
-    return MakeGarbageCollected<CSSKeywordValue>(
-        getValueName(CSSValueID::kUnset));
+    return MakeGarbageCollected<CSSKeywordValue>(CSSValueID::kUnset);
   }
   if (value.IsRevertValue()) {
-    return MakeGarbageCollected<CSSKeywordValue>(
-        getValueName(CSSValueID::kRevert));
+    return MakeGarbageCollected<CSSKeywordValue>(CSSValueID::kRevert);
   }
   if (value.IsRevertLayerValue()) {
-    return MakeGarbageCollected<CSSKeywordValue>(
-        getValueName(CSSValueID::kRevertLayer));
+    return MakeGarbageCollected<CSSKeywordValue>(CSSValueID::kRevertLayer);
   }
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     return MakeGarbageCollected<CSSKeywordValue>(
-        getValueName(identifier_value->GetValueID()));
+        identifier_value->GetValueID());
   }
   if (const auto* ident_value = DynamicTo<CSSCustomIdentValue>(value)) {
     if (ident_value->IsKnownPropertyID()) {
@@ -59,14 +55,21 @@ CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
     }
     return MakeGarbageCollected<CSSKeywordValue>(ident_value->Value());
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  if (auto* scoped_keyword_value =
+          DynamicTo<cssvalue::CSSScopedKeywordValue>(value)) {
+    return MakeGarbageCollected<CSSKeywordValue>(
+        scoped_keyword_value->GetValueID());
+  }
+  NOTREACHED();
 }
 
 CSSKeywordValue* CSSKeywordValue::Create(const String& keyword) {
   DCHECK(!keyword.empty());
   return MakeGarbageCollected<CSSKeywordValue>(keyword);
 }
+
+CSSKeywordValue::CSSKeywordValue(CSSValueID keyword_value)
+    : keyword_value_(GetCSSValueNameAs<AtomicString>(keyword_value)) {}
 
 const String& CSSKeywordValue::value() const {
   return keyword_value_;

@@ -561,6 +561,83 @@ IN_PROC_BROWSER_TEST_P(
                     GetExperimentString()}));
 }
 
+class ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest
+    : public ProfileNetworkContextServiceBrowsertest,
+      public ::testing::WithParamInterface<net::features::DiskCacheBackend> {
+ public:
+  ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kDiskCacheBackendExperiment,
+        {{"backend", GetBackendParamValue()}});
+  }
+  ~ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest()
+      override = default;
+
+  const char* GetBackendParamValue() {
+    switch (GetParam()) {
+      case net::features::DiskCacheBackend::kSimple:
+        return "simple";
+      case net::features::DiskCacheBackend::kBlockfile:
+        return "blockfile";
+    }
+  }
+
+  const char* GetExperimentString() {
+    switch (GetParam()) {
+      case net::features::DiskCacheBackend::kSimple:
+        return "20241007-DiskCache-Simple";
+      case net::features::DiskCacheBackend::kBlockfile:
+        return "20241007-DiskCache-Blockfile";
+    }
+  }
+
+  base::HistogramTester histograms_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest,
+    PRE_TestCacheResetParameter) {
+  NavigateToCreateHttpCache();
+  CheckCacheResetStatus(&histograms_, false);
+
+  // At this point, we have already called the initialization.
+  // Verify that we have the correct values in the local_state.
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK_EQ(local_state->GetString("profile_network_context_service.http_"
+                                   "cache_finch_experiment_groups"),
+            base::StrCat({"None None None None ", GetExperimentString()}));
+
+  // Set the local state for the next test.
+  local_state->SetString(
+      "profile_network_context_service.http_cache_finch_experiment_groups",
+      "None None None None");
+}
+
+// The second time we load we know the state, which was "None None None None"
+// for the previous test, so we should see a reset being in an experiment.
+IN_PROC_BROWSER_TEST_P(
+    ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest,
+    TestCacheResetParameter) {
+  NavigateToCreateHttpCache();
+  CheckCacheResetStatus(&histograms_, true);
+
+  // At this point, we have already called the initialization.
+  // Verify that we have the correct values in the local_state.
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK_EQ(local_state->GetString("profile_network_context_service.http_"
+                                   "cache_finch_experiment_groups"),
+            base::StrCat({"None None None None ", GetExperimentString()}));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest,
+    testing::ValuesIn({net::features::DiskCacheBackend::kSimple,
+                       net::features::DiskCacheBackend::kBlockfile}));
+
 class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
  public:
   AmbientAuthenticationTestWithPolicy() {

@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -63,7 +64,7 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
       base::FeatureList::IsEnabled(
           features::kAutofillEnableEmailHeuristicOutsideForms);
   if (!form_tag_requirement_passed || form.ShouldRunHeuristics() ||
-      !form.ShouldRunHeuristicsForSingleFieldForms()) {
+      !form.ShouldRunHeuristicsForSingleFields()) {
     return false;
   }
   // Having met the prerequisites, now determine if there's a field whose
@@ -82,11 +83,9 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
 
 FormEventLoggerBase::FormEventLoggerBase(
     const std::string& form_type_name,
-    bool is_in_any_main_frame,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     AutofillClient* client)
     : form_type_name_(form_type_name),
-      is_in_any_main_frame_(is_in_any_main_frame),
       form_interactions_ukm_logger_(form_interactions_ukm_logger),
       client_(*client) {}
 
@@ -119,15 +118,6 @@ void FormEventLoggerBase::OnDidParseForm(const FormStructure& form) {
   Log(FORM_EVENT_DID_PARSE_FORM, form);
   RecordParseForm();
   has_parsed_form_ = true;
-}
-
-void FormEventLoggerBase::OnUserHideSuggestions(const FormStructure& form,
-                                                const AutofillField& field) {
-  Log(FORM_EVENT_USER_HIDE_SUGGESTIONS, form);
-  if (!has_logged_user_hide_suggestions_) {
-    has_logged_user_hide_suggestions_ = true;
-    Log(FORM_EVENT_USER_HIDE_SUGGESTIONS_ONCE, form);
-  }
 }
 
 void FormEventLoggerBase::OnDidShowSuggestions(
@@ -312,12 +302,6 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
         base::StrCat({"Autofill.FormEvents.",
                       FormTypeNameForLoggingToStringView(form_type)}));
     base::UmaHistogramEnumeration(name, event, NUM_FORM_EVENTS);
-
-    // Log again in a different histogram so that iframes can be analyzed on
-    // their own.
-    base::UmaHistogramEnumeration(
-        name + (is_in_any_main_frame_ ? ".IsInMainFrame" : ".IsInIFrame"),
-        event, NUM_FORM_EVENTS);
 
     // Allow specialized types of logging, e.g. splitting metrics in useful
     // ways.
@@ -604,7 +588,7 @@ void FormEventLoggerBase::UpdateFlowId() {
   flow_id_ = client_->GetCurrentFormInteractionsFlowId();
 }
 
-AutofillMetrics::FormEventSet FormEventLoggerBase::GetFormEvents(
+FormInteractionsUkmLogger::FormEventSet FormEventLoggerBase::GetFormEvents(
     FormGlobalId form_global_id) {
   return form_events_set_[form_global_id];
 }

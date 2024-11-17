@@ -68,7 +68,7 @@ class CORE_EXPORT MultipartImageResourceParser final
   MultipartImageResourceParser(const MultipartImageResourceParser&) = delete;
   MultipartImageResourceParser& operator=(const MultipartImageResourceParser&) =
       delete;
-  void AppendData(const char* bytes, wtf_size_t);
+  void AppendData(base::span<const char> bytes);
   void Finish();
   void Cancel() { is_cancelled_ = true; }
 

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/side_panel/lens/lens_core_tab_side_panel_helper.h"
 
-#include "chrome/browser/companion/core/constants.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/lens/buildflags.h"
@@ -18,7 +16,6 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"

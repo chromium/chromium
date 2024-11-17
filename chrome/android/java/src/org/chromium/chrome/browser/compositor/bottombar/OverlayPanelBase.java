@@ -22,12 +22,15 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /** Base abstract class for the Overlay Panel. */
-abstract class OverlayPanelBase implements OverlayPanelStateProvider {
+abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderObserver {
     /** The side padding of Bar icons in dps. */
     private static final float BAR_ICON_SIDE_PADDING_DP = 12.f;
 
@@ -138,9 +141,13 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
      *
      * @see OverlayPanel#shouldHideAndroidBrowserControls
      */
-    protected boolean mCanHideAndroidBrowserControls = true;
+    private boolean mCanHideAndroidBrowserControls = true;
 
     protected ObserverList<OverlayPanelStateProvider.Observer> mObservers = new ObserverList<>();
+
+    // State provider for Desktop Window.
+    private final DesktopWindowStateManager mDesktopWindowStateManager;
+    private float mAppHeaderHeightDp;
 
     // ============================================================================================
     // Constructor
@@ -149,10 +156,15 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
     /**
      * @param context The current Android {@link Context}.
      * @param toolbarHeightDp The current height of the toolbar in dp.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
-    public OverlayPanelBase(Context context, float toolbarHeightDp) {
+    public OverlayPanelBase(
+            Context context,
+            float toolbarHeightDp,
+            DesktopWindowStateManager desktopWindowStateManager) {
         mContext = context;
         mToolbarHeightDp = toolbarHeightDp;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mPxToDp = 1.f / mContext.getResources().getDisplayMetrics().density;
 
         mBarMarginSide = BAR_ICON_SIDE_PADDING_DP;
@@ -171,6 +183,13 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
         mProgressBarColor = SemanticColorUtils.getDefaultControlColorActive(context);
         mButtonPaddingDps =
                 (int) (mPxToDp * resources.getDimension(R.dimen.overlay_panel_button_padding));
+
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
+            if (mDesktopWindowStateManager.getAppHeaderState() != null) {
+                onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
+            }
+        }
     }
 
     // ============================================================================================
@@ -347,6 +366,13 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
     }
 
     /**
+     * @return The height of the tab (accounting for app headers) the panel is displayed on top of.
+     */
+    public float getTabHeightWithoutAppHeader() {
+        return getTabHeight() - mAppHeaderHeightDp;
+    }
+
+    /**
      * @return The maximum width of the Overlay Panel in pixels.
      */
     public int getMaximumWidthPx() {
@@ -392,12 +418,12 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
     }
 
     /**
-     * @return The Tab height adjustment needed for Android Browser controls that can never hide,
-     * or 0 if the Toolbar is allowed to hide. When the Toolbar cannot hide, it obscures part of
-     * the Base Page so the Overlay cannot use that part of the page height. Value in pixels.
+     * @return The Tab height adjustment needed for Android Browser controls that can never hide, or
+     *     0 if the Toolbar is allowed to hide. When the Toolbar cannot hide, it obscures part of
+     *     the Base Page so the Overlay cannot use that part of the page height. Value in pixels.
      */
     private float heightForNeverHideBrowserControls() {
-        return mCanHideAndroidBrowserControls ? 0.f : mToolbarHeightDp * mPxToDp;
+        return getCanHideAndroidBrowserControls() ? 0.f : mToolbarHeightDp * mPxToDp;
     }
 
     @VisibleForTesting
@@ -770,7 +796,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
      */
     protected float getExpandedHeight() {
         if (isFullWidthSizePanel()) {
-            return getTabHeight() * EXPANDED_PANEL_HEIGHT_PERCENTAGE;
+            return getTabHeightWithoutAppHeader() * EXPANDED_PANEL_HEIGHT_PERCENTAGE;
         } else {
             return (getTabHeight() - mToolbarHeightDp * mPxToDp) * EXPANDED_PANEL_HEIGHT_PERCENTAGE;
         }
@@ -780,12 +806,12 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
      * @return The maximized height of the panel in dps.
      */
     protected float getMaximizedHeight() {
-        return getTabHeight();
+        return getTabHeightWithoutAppHeader();
     }
 
     /**
      * @return The fraction of the distance the panel has to be to its next state before animating
-     *         itself there. Default is the panel must be half of the way to the next state.
+     *     itself there. Default is the panel must be half of the way to the next state.
      */
     protected float getThresholdToNextState() {
         return 0.5f;
@@ -881,7 +907,6 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
         float percentage = getStateCompletion(height, startState, endState);
 
         updatePanelSize(height);
-
         if (endState == PanelState.CLOSED || endState == PanelState.PEEKED) {
             updatePanelForCloseOrPeek(percentage);
         } else if (endState == PanelState.EXPANDED) {
@@ -1099,18 +1124,20 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
 
     /**
      * Calculates the target offset of the Base Page in order to achieve the desired offset
-     * specified by {@link #calculateBasePageDesiredOffset} while assuring that the Base
-     * Page will always fill the gap between the Panel and the top of the screen, because
-     * there's nothing to see below the Base Page layer. This method will take into
-     * consideration the Toolbar height, and adjust the offset accordingly, in order to
-     * move the Toolbar out of the view as the Panel expands.
+     * specified by {@link #calculateBasePageDesiredOffset} while assuring that the Base Page will
+     * always fill the gap between the Panel and the top of the screen, because there's nothing to
+     * see below the Base Page layer. This method will take into consideration the Toolbar height,
+     * and adjust the offset accordingly, in order to move the Toolbar out of the view as the Panel
+     * expands.
      *
      * @return The target offset Y in DPs.
      */
     private float calculateBasePageTargetY() {
-        // Only a fullscreen wide Panel should offset the base page. A small panel should
-        // always return zero to ensure the Base Page remains in the same position.
-        if (!isFullWidthSizePanel()) return 0.f;
+        // Only a fullscreen wide Panel in a window with the app header absent should offset the
+        // base page.
+        // A small panel should always return zero to ensure the Base Page remains in the same
+        // position.
+        if (!isFullWidthSizePanel() || mAppHeaderHeightDp > 0) return 0.f;
 
         // Start with the desired offset taking viewport offset into consideration and make sure
         // the result is <= 0 so the page moves up and not down.
@@ -1197,5 +1224,17 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
     public void setIsFullWidthSizePanelForTesting(boolean isFullWidthSizePanel) {
         mOverrideIsFullWidthSizePanelForTesting = true;
         mIsFullWidthSizePanelForTesting = isFullWidthSizePanel;
+    }
+
+    /** AppHeaderObserver implementation. */
+    @Override
+    public void onAppHeaderStateChanged(AppHeaderState newState) {
+        mAppHeaderHeightDp = newState.getAppHeaderHeight() * mPxToDp;
+    }
+
+    protected void destroy() {
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
+        }
     }
 }

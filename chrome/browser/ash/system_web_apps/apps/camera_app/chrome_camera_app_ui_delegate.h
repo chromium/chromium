@@ -56,6 +56,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
     CameraAppDialog& operator=(const CameraAppDialog&) = delete;
 
     static void ShowIntent(const std::string& queries,
+                           bool launch_in_dialog,
                            gfx::NativeWindow parent);
 
     // SystemWebDialogDelegate
@@ -195,7 +196,6 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   ~ChromeCameraAppUIDelegate() override;
 
   // ash::CameraAppUIDelegate
-  void SetLaunchDirectory() override;
   void PopulateLoadTimeData(content::WebUIDataSource* source) override;
   bool IsMetricsAndCrashReportingEnabled() override;
   void OpenFileInGallery(const std::string& name) override;

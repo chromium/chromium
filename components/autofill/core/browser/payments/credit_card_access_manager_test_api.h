@@ -96,7 +96,7 @@ class CreditCardAccessManagerTestApi {
 
   void OnDidGetUnmaskDetails(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details) {
+      payments::UnmaskDetails& unmask_details) {
     credit_card_access_manager_->OnDidGetUnmaskDetails(result, unmask_details);
   }
 

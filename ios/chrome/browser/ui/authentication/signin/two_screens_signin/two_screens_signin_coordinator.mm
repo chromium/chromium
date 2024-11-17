@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/logging/upgrade_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
@@ -51,7 +52,7 @@ using base::UserMetricsAction;
                        browser:(Browser*)browser
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction {
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  DCHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                                accessPoint:accessPoint];
@@ -69,11 +70,14 @@ using base::UserMetricsAction;
   [super start];
   if (self.accessPoint ==
       signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
     ChromeAccountManagerService* accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        ChromeAccountManagerServiceFactory::GetForProfile(
+            self.browser->GetProfile());
     // TODO(crbug.com/41352590): Need to add `CHECK(accountManagerService)`.
     [UpgradeSigninLogger logSigninStartedWithAccessPoint:self.accessPoint
+                                         identityManager:identityManager
                                    accountManagerService:accountManagerService];
   }
   _screenProvider = [[UnoSigninScreenProvider alloc] init];
@@ -114,8 +118,7 @@ using base::UserMetricsAction;
 - (void)finishPresentingScreens {
   __weak __typeof(self) weakSelf = self;
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   ProceduralBlock completion = ^{
@@ -190,8 +193,7 @@ using base::UserMetricsAction;
   _screenProvider = nil;
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionCallbackWithSigninResult:result
-                               completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
 }
 
 #pragma mark - FirstRunScreenDelegate

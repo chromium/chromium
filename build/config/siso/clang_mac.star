@@ -11,53 +11,12 @@ load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
+load("./mac_sdk.star", "mac_sdk")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
 def __filegroups(ctx):
-    sdk_includes = [
-        "*.framework",
-        "*.h",
-        "*.json",
-        "*.modulemap",
-        "Current",
-        "Frameworks",
-        "Headers",
-        "Modules",
-        "crt*.o",
-        "usr/include/c++/v1/*",
-        "usr/include/c++/v1/*/*",
-    ]
-    fg = {
-        "build/mac_files/xcode_binaries/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk:headers": {
-            "type": "glob",
-            "includes": sdk_includes,
-        },
-    }
-
-    if gn.args(ctx).get("use_remoteexec") == "true":
-        # precompute subtree for sysroot/frameworks for siso scandeps,
-        # which is not complex enough to handle C preprocessor tricks
-        # and need system include dirs when using deps log of -MMD.
-        # need to add new entries when new version is used.
-        #
-        # if use_remoteexec is not true, these dirs are not under exec root
-        # and failed to create filegroup for such dirs. crbug.com/352216756
-        gn_logs_data = gn_logs.read(ctx)
-        if gn_logs_data.get("mac_sdk_path"):
-            fg[ctx.fs.canonpath("./" + gn_logs_data.get("mac_sdk_path")) + ":headers"] = {
-                "type": "glob",
-                "includes": sdk_includes,
-            }
-        if gn_logs_data.get("ios_sdk_path"):
-            fg[ctx.fs.canonpath("./" + gn_logs_data.get("ios_sdk_path")) + ":headers"] = {
-                "type": "glob",
-                "includes": sdk_includes,
-            }
-
-    fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator.platform/Developer/Library/Frameworks") + ":headers"] = {
-        "type": "glob",
-        "includes": sdk_includes,
-    }
+    fg = {}
+    fg.update(mac_sdk.filegroups(ctx))
     fg.update(clang_all.filegroups(ctx))
     return fg
 

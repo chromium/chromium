@@ -4,9 +4,8 @@
 
 import type {ActivityLogExtensionPlaceholder, ExtensionsActivityLogElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
@@ -81,25 +80,24 @@ suite('ExtensionsActivityLogTest', function() {
         .shadowRoot!.querySelectorAll('activity-log-stream-item:not([hidden])');
   }
 
-  test('clicking on back button navigates to the details page', function() {
-    flush();
-
+  test('clicking on back button navigates to the details page', async () => {
     let currentPage = null;
     navigation.addListener(newPage => {
       currentPage = newPage;
     });
 
     activityLog.$.closeButton.click();
+    await microtasksFinished();
     assertDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: EXTENSION_ID});
   });
 
   test(
       'clicking on back button for a placeholder page navigates to list view',
-      function() {
+      async () => {
         activityLog.extensionInfo = {id: EXTENSION_ID, isPlaceholder: true};
 
-        flush();
+        await microtasksFinished();
 
         let currentPage = null;
         navigation.addListener(newPage => {
@@ -107,12 +105,11 @@ suite('ExtensionsActivityLogTest', function() {
         });
 
         activityLog.$.closeButton.click();
+        await microtasksFinished();
         assertDeepEquals(currentPage, {page: Page.LIST});
       });
 
   test('tab transitions', async () => {
-    await microtasksFinished();
-
     // Default view should be the history view.
     boundTestVisible('activity-log-history', true);
 
@@ -122,24 +119,24 @@ suite('ExtensionsActivityLogTest', function() {
 
     // One activity is recorded and should appear in the stream.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
-    flush();
+    await eventToPromise('viewport-filled', activityLog);
 
     boundTestVisible('activity-log-stream', true);
     assertEquals(1, getStreamItems().length);
 
     // Navigate back to the activity log history tab.
     activityLog.$.tabs.selected = 0;
+    await microtasksFinished();
 
     // Expect a refresh of the activity log.
     await proxyDelegate.whenCalled('getExtensionActivityLog');
     await microtasksFinished();
-    flush();
     boundTestVisible('activity-log-history', true);
 
     // Another activity is recorded, but should not appear in the stream as
     // the stream is inactive.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
-    flush();
+    await microtasksFinished();
 
     activityLog.$.tabs.selected = 1;
     await microtasksFinished();

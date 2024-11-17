@@ -6,8 +6,11 @@
 #define CONTENT_PUBLIC_BROWSER_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
+#include "services/media_session/public/cpp/media_image.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -34,6 +37,12 @@ class VideoPictureInPictureWindowController
   // call.
   virtual bool TogglePlayPause() = 0;
 
+  // Requests the player to begin playback.
+  virtual void Play() = 0;
+
+  // Requests the player to suspend playback.
+  virtual void Pause() = 0;
+
   // Called when the user interacts with the "Toggle Microphone" control.
   virtual void ToggleMicrophone() = 0;
 
@@ -49,9 +58,19 @@ class VideoPictureInPictureWindowController
   // Called when the user interacts with the "Next Slide" control.
   virtual void NextSlide() = 0;
 
+  // Called when the user interacts with the progress bar control.
+  virtual void SeekTo(base::TimeDelta time) = 0;
+
   // Returns the source bounds of the video, in the WebContents top-level
   // coordinate space, of the video before it enters picture in picture.
   virtual const gfx::Rect& GetSourceBounds() const = 0;
+
+  // Retrieves the SkBitmap of the given media_session::MediaImage.
+  virtual void GetMediaImage(
+      const media_session::MediaImage& image,
+      int minimum_size_px,
+      int desired_size_px,
+      MediaSession::GetMediaImageBitmapCallback callback) = 0;
 
   // Called to set the callback to notify the observers that window has been
   // created.

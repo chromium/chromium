@@ -9,6 +9,8 @@ assert(is_chromeos_ash)
 
 static_library("dbus") {
   sources = [
+    "arc_crosh_service_provider.cc",
+    "arc_crosh_service_provider.h",
     "arc_tracing_service_provider.cc",
     "arc_tracing_service_provider.h",
     "ash_dbus_helper.cc",
@@ -35,8 +37,6 @@ static_library("dbus") {
     "lock_to_single_user_service_provider.h",
     "machine_learning_decision_service_provider.cc",
     "machine_learning_decision_service_provider.h",
-    "metrics_event_service_provider.cc",
-    "metrics_event_service_provider.h",
     "mojo_connection_service_provider.cc",
     "mojo_connection_service_provider.h",
     "printers_service_provider.cc",
@@ -57,7 +57,6 @@ static_library("dbus") {
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
-    "//chromeos/ash/components/dbus:metrics_event_proto",
     "//chromeos/ash/components/dbus/services",
     "//chromeos/dbus/missive",
     "//components/reporting/proto:record_proto",
@@ -71,6 +70,7 @@ static_library("dbus") {
 
   deps = [
     "//ash/components/arc:arc_features",
+    "//ash/components/arc/session",
     "//ash/constants",
     "//ash/webui/shimless_rma",
     "//build:chromeos_buildflags",
@@ -197,6 +197,7 @@ static_library("dbus") {
 
 action("dbus_service_files") {
   sources = [
+    "org.chromium.ArcCroshServiceProvider.conf",
     "org.chromium.ArcTracing.conf",
     "org.chromium.ChromeFeaturesService.conf",
     "org.chromium.ComponentUpdaterService.conf",
@@ -209,7 +210,6 @@ action("dbus_service_files") {
     "org.chromium.LibvdaService.conf",
     "org.chromium.LockToSingleUser.conf",
     "org.chromium.MachineLearningDecisionService.conf",
-    "org.chromium.MetricsEventService.conf",
     "org.chromium.MojoConnectionService.conf",
     "org.chromium.NetworkProxyService.conf",
     "org.chromium.PrintersService.conf",
@@ -236,6 +236,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "arc_crosh_service_provider_unittest.cc",
     "arc_tracing_service_provider_unittest.cc",
     "chrome_features_service_provider_unittest.cc",
     "dlp_files_policy_service_provider_unittest.cc",
@@ -250,6 +251,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/ash/arc/tracing/test:test_support",
     "//chrome/browser/ash/net",
@@ -260,6 +263,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/services:test_support",
     "//chromeos/ash/components/dbus/system_proxy",
+    "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/dbus/dlp:dlp_proto",

@@ -99,7 +99,7 @@ TEST_P(HTMLDocumentParserLoadingTest,
       extent = s.length() - 1 - i;
       ASSERT_LT(extent, kPumpSize);
     }
-    String chunk(s.Characters8() + i, extent);
+    String chunk(s.Span8().subspan(i, extent));
     main_resource.Write(chunk);
     if (i >= script_end) {
       // Simulate the deferred script arriving before the parser-blocking one.

@@ -85,7 +85,7 @@ TEST_F(CborToValueTest, SuccesfulParseValues) {
     std::optional<std::string> error;
 
     parser.Parse(
-        test_case.input,
+        {test_case.input},
         base::BindOnce(&CopyResultCallback, std::ref(result), std::ref(error)));
 
     ASSERT_TRUE(result.has_value());
@@ -124,7 +124,7 @@ TEST_F(CborToValueTest, FailingParseValues) {
     std::optional<std::string> error;
 
     parser.Parse(
-        test_case.input,
+        {test_case.input},
         base::BindOnce(&CopyResultCallback, std::ref(result), std::ref(error)));
 
     ASSERT_TRUE(error.has_value());

@@ -8,9 +8,7 @@
 #include <tuple>
 
 #include "base/logging.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "crypto/features.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,9 +34,6 @@ class UnexportableKeySigningTest
 #if BUILDFLAG(IS_MAC)
   crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
       kTestKeychainAccessGroup};
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      crypto::kEnableMacUnexportableKeys};
 #endif  // BUILDFLAG(IS_MAC)
 };
 

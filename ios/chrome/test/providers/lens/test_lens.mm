@@ -61,7 +61,7 @@ std::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url) {
 
 void GenerateLensLoadParamsAsync(LensQuery* query,
                                  LensWebParamsCallback completion) {
-  NOTREACHED_IN_MIGRATION() << "Lens is not supported.";
+  NOTREACHED() << "Lens is not supported.";
 }
 
 }  // namespace provider

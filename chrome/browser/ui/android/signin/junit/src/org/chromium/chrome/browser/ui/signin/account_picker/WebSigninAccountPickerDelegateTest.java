@@ -31,7 +31,6 @@ import org.mockito.quality.Strictness;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -66,8 +65,6 @@ public class WebSigninAccountPickerDelegateTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private WebSigninBridge.Factory mWebSigninBridgeFactoryMock;
 
     @Mock private WebSigninBridge mWebSigninBridgeMock;
@@ -95,7 +92,7 @@ public class WebSigninAccountPickerDelegateTest {
     @Before
     public void setUp() {
         when(mTabMock.getProfile()).thenReturn(mProfileMock);
-        mJniMocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsJniMock);
+        SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsJniMock);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);

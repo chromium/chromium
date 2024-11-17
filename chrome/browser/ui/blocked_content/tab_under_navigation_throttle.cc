@@ -62,10 +62,6 @@ void LogTabUnderAttempt(content::NavigationHandle* handle) {
 
 }  // namespace
 
-BASE_FEATURE(kBlockTabUnders,
-             "BlockTabUnders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // static
 std::unique_ptr<content::NavigationThrottle>
 TabUnderNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
@@ -85,7 +81,6 @@ TabUnderNavigationThrottle::~TabUnderNavigationThrottle() = default;
 TabUnderNavigationThrottle::TabUnderNavigationThrottle(
     content::NavigationHandle* handle)
     : content::NavigationThrottle(handle),
-      block_(base::FeatureList::IsEnabled(kBlockTabUnders)),
       has_opened_popup_since_last_user_gesture_at_start_(
           HasOpenedPopupSinceLastUserGesture()),
       started_in_foreground_(handle->GetWebContents()->GetVisibility() ==
@@ -142,19 +137,11 @@ TabUnderNavigationThrottle::MaybeBlockNavigation() {
   }
 
   seen_tab_under_ = true;
-  content::WebContents* contents = navigation_handle()->GetWebContents();
 
   LogTabUnderAttempt(navigation_handle());
 
-  if (block_ && !TabUndersAllowedBySettings()) {
-    const std::string error =
-        base::StringPrintf(kBlockTabUnderFormatMessage,
-                           navigation_handle()->GetURL().spec().c_str());
-    contents->GetPrimaryMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError, error.c_str());
-    ShowUI();
-    return content::NavigationThrottle::CANCEL;
-  }
+  // We unconditionally proceed. There used to be a tab-under blocking
+  // experiment, but it never launched.
   return content::NavigationThrottle::PROCEED;
 }
 
@@ -187,17 +174,6 @@ bool TabUnderNavigationThrottle::HasOpenedPopupSinceLastUserGesture() const {
       blocked_content::PopupOpenerTabHelper::FromWebContents(contents);
   return popup_opener &&
          popup_opener->has_opened_popup_since_last_user_gesture();
-}
-
-bool TabUnderNavigationThrottle::TabUndersAllowedBySettings() const {
-  content::WebContents* contents = navigation_handle()->GetWebContents();
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(
-          Profile::FromBrowserContext(contents->GetBrowserContext()));
-  DCHECK(settings_map);
-  return settings_map->GetContentSetting(contents->GetLastCommittedURL(),
-                                         GURL(), ContentSettingsType::POPUPS) ==
-         CONTENT_SETTING_ALLOW;
 }
 
 content::NavigationThrottle::ThrottleCheckResult

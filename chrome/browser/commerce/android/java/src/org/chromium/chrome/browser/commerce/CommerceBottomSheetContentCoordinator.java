@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.CallbackController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -47,13 +48,11 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
     private View mCommerceBottomSheetContentContainer;
     private ModelList mModelList;
 
-    private final Context mContext;
     private CallbackController mCallbackController;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     public CommerceBottomSheetContentCoordinator(
             Context context, @NonNull BottomSheetController bottomSheetController) {
-        mContext = context;
         mModelList = new ModelList();
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
         adapter.registerType(
@@ -79,9 +78,20 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                             @NonNull State state) {
                         if (parent.getChildAdapterPosition(view) != 0) {
                             outRect.top =
-                                    mContext.getResources()
+                                    context.getResources()
                                             .getDimensionPixelOffset(
                                                     R.dimen.content_item_container_top_offset);
+                        }
+                    }
+                });
+
+        bottomSheetController.addObserver(
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetClosed(int reason) {
+                        mMediator.onBottomSheetClosed();
+                        for (CommerceBottomSheetContentProvider provider : mContentProviders) {
+                            provider.hideContentView();
                         }
                     }
                 });

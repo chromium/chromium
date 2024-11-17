@@ -142,7 +142,7 @@ void TestTraceProcessor::StartTrace(const TraceConfig& config,
   // Some tests run the tracing service on the main thread and StartBlocking()
   // can deadlock so use a RunLoop instead.
   base::RunLoop run_loop;
-  session_->SetOnStartCallback([&run_loop]() { run_loop.QuitWhenIdle(); });
+  session_->SetOnStartCallback([&run_loop] { run_loop.QuitWhenIdle(); });
   session_->Start();
   run_loop.Run();
 }

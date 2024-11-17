@@ -98,8 +98,7 @@ declare_args() {
   # nonsensical for said projects.
   clang_use_default_sample_profile =
       chrome_pgo_phase == 0 && build_with_chromium && is_official_build &&
-      ((is_android && (current_cpu == "arm" || current_cpu == "x86")) ||
-       chromeos_is_browser_only)
+      ((is_android && !is_high_end_android) || chromeos_is_browser_only)
 
   # This configuration is used to select a default profile in Chrome OS based on
   # the microarchitectures we are using. This is only used if
@@ -284,7 +283,6 @@ config("compiler") {
   ldflags = []
   defines = []
   configs = []
-  rustflags = []
 
   # System-specific flags. If your compiler flags apply to one of the
   # categories here, add it to the associated file to keep this shared config
@@ -369,7 +367,9 @@ config("compiler") {
         } else {
           cflags += [ "-fstack-protector" ]
         }
-      } else if ((is_posix && !is_chromeos && !is_nacl) || is_fuchsia) {
+      } else if (is_chromeos) {
+        cflags += [ "-fstack-protector-strong" ]
+      } else if ((is_posix && !is_nacl) || is_fuchsia) {
         if (current_os != "aix") {
           # Not available on aix.
           cflags += [ "-fstack-protector" ]
@@ -522,6 +522,12 @@ config("compiler") {
     # error.  "-lpthread" is added in //build/config:default_libs.
   }
 
+  # ChromeOS-specific compiler flags setup.
+  # ---------------------------------------
+  if (is_chromeos) {
+    cflags += [ "-Werror=poison-system-directories" ]
+  }
+
   # Clang-specific compiler flags setup.
   # ------------------------------------
   if (is_clang) {
@@ -608,6 +614,14 @@ config("compiler") {
       cflags += [ "/clang:-ffp-contract=off" ]
     } else {
       cflags += [ "-ffp-contract=off" ]
+    }
+
+    # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
+    # (excluding toolchains that use an older version of LLVM).
+    # TODO(crbug.com/376278218): This causes segfault on Linux ARM builds.
+    if (is_linux && !llvm_android_mainline && current_cpu != "arm" &&
+        default_toolchain != "//build/toolchain/cros:target") {
+      cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
   }
 
@@ -1042,6 +1056,9 @@ config("compiler") {
     # For deterministic builds, keep the local machine's current working
     # directory from appearing in build outputs.
     "-Zremap-cwd-prefix=.",
+
+    # We use clang-rt sanitizer runtimes.
+    "-Zexternal-clangrt",
   ]
 
   if (!is_win || force_rustc_color_output) {
@@ -1085,6 +1102,12 @@ config("compiler") {
   if (current_cpu == "arm64") {
     defines += [ "__ARM_NEON__=1" ]
   }
+}
+
+# Don't allow unstable features to be enabled by `#![feature()]` without
+# additional command line flags.
+config("disallow_unstable_features") {
+  rustflags = [ "-Zallow-features=" ]
 }
 
 config("libcxx_hardening") {
@@ -1218,8 +1241,7 @@ config("compiler_cpu_abi") {
         ]
       }
     } else if (current_cpu == "arm") {
-      if (is_clang && !is_android && !is_nacl &&
-          !(is_chromeos_lacros && is_chromeos_device)) {
+      if (is_clang && !is_android && !is_nacl && !is_chromeos_device) {
         cflags += [ "--target=arm-linux-gnueabihf" ]
         ldflags += [ "--target=arm-linux-gnueabihf" ]
       }
@@ -1234,7 +1256,7 @@ config("compiler_cpu_abi") {
       }
     } else if (current_cpu == "arm64") {
       if (is_clang && !is_android && !is_nacl && !is_fuchsia &&
-          !(is_chromeos_lacros && is_chromeos_device)) {
+          !is_chromeos_device) {
         cflags += [ "--target=aarch64-linux-gnu" ]
         ldflags += [ "--target=aarch64-linux-gnu" ]
       }
@@ -1944,18 +1966,12 @@ config("default_warnings") {
         cflags_cc += [
           # TODO(crbug.com/42050603): fix and reenable
           "-Wno-missing-field-initializers",
-
-          # TODO(https://crbug.com/324953188): fix and reenable
-          "-Wno-extra-qualification",
         ]
       }
 
       cflags += [
         # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
         "-Wno-cast-function-type",
-
-        # TODO(crbug.com/40286317): Evaluate and possibly enable.
-        "-Wno-vla-extension",
 
         # TODO(crbug.com/40284799): Fix and re-enable.
         "-Wno-thread-safety-reference-return",
@@ -1977,6 +1993,11 @@ config("default_warnings") {
 
         # TODO(crbug.com/356172342): Fix and re-enable.
         cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
+
+        if (llvm_force_head_revision) {
+          # TODO(crbug.com/376641662): Fix and re-enable.
+          cflags += [ "-Wno-nontrivial-memaccess" ]
+        }
       }
     }
 
@@ -2132,7 +2153,27 @@ config("chromium_code") {
         # Thread safety analysis. See base/thread_annotations.h and
         # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
         "-Wthread-safety",
+
+        # Warn on GNU extensions.
+        "-Wgnu",
+
+        # TODO(crbug.com/357081796): Try to enable these.
+        "-Wno-gnu-anonymous-struct",
+        "-Wno-gnu-conditional-omitted-operand",
+        "-Wno-gnu-include-next",
+        "-Wno-gnu-label-as-value",
+        "-Wno-gnu-redeclared-enum",
+        "-Wno-gnu-statement-expression",
+        "-Wno-gnu-zero-variadic-macro-arguments",
+        "-Wno-zero-length-array",
       ]
+
+      if (is_chromeos) {
+        cflags += [ "-Wno-gnu-offsetof-extensions" ]
+      }
+      if (is_ios) {
+        cflags += [ "-Wno-gnu-case-range" ]
+      }
     }
   }
 
@@ -2265,10 +2306,20 @@ config("export_dynamic") {
 # 2. Remove the thin_archive config, so that the .a file actually contains all
 #    .o files, instead of just references to .o files in the build directoy
 config("thin_archive") {
-  # The macOS and iOS default linker ld64 does not support reading thin
-  # archives.
-  if ((is_posix && !is_nacl && (!is_apple || use_lld)) || is_fuchsia) {
-    arflags = [ "-T" ]
+  if ((is_apple && use_lld) || (is_linux && !is_clang)) {
+    # The macOS and iOS linker ld64.ldd doesn't support thin archive without
+    # symbol table, gcc on linux also throws the error `archive has no index`.
+    arflags = [
+      "-T",
+      "-s",
+    ]
+  } else if ((is_posix && !is_nacl && (!is_apple || use_lld)) || is_fuchsia) {
+    # The macOS and iOS default linker ld64 does not support reading thin
+    # archives.
+    arflags = [
+      "-T",
+      "-S",
+    ]
   } else if (is_win && use_lld) {
     arflags = [ "/llvmlibthin" ]
   }

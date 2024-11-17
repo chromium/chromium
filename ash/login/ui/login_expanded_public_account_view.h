@@ -22,11 +22,16 @@
 
 class PrefRegistrySimple;
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 namespace ash {
 
 class MonitoringWarningView;
 class ArrowButtonView;
 struct LocaleItem;
+class LeftPaneView;
 class LoginUserView;
 class RightPaneView;
 class PublicAccountMonitoringInfoDialog;
@@ -90,7 +95,6 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   static gfx::Size GetPreferredSizePortrait();
 
   // views::View:
-  void Layout(PassKey) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // ui::EventHandler:
@@ -100,10 +104,10 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   void UseLandscapeLayout();
   void UsePortraitLayout();
 
-  raw_ptr<views::BoxLayout> layout_ = nullptr;
+  raw_ptr<views::BoxLayoutView> box_layout_view_ = nullptr;
   raw_ptr<LoginUserView> user_view_ = nullptr;
   raw_ptr<MonitoringWarningView> monitoring_warning_view_ = nullptr;
-  raw_ptr<views::View> left_pane_ = nullptr;
+  raw_ptr<LeftPaneView> left_pane_ = nullptr;
   raw_ptr<views::View> separator_ = nullptr;
   raw_ptr<RightPaneView> right_pane_ = nullptr;
   raw_ptr<ArrowButtonView> submit_button_ = nullptr;

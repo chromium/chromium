@@ -80,6 +80,13 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
       EARL_GREY_TEST_DISABLED(@"Disabled for iPad on iOS 17"); \
     }                                                          \
   }
+
+#define REQUIRE_PASSKEYS                                         \
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {              \
+    EARL_GREY_TEST_DISABLED(                                     \
+        @"This build configuration does not support passkeys."); \
+  }
+
 }  // namespace
 
 // Test case for the Password Sharing flow.
@@ -158,12 +165,6 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
       std::string("-") + password_manager::kEnableShareButtonUnbranded);
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  if ([self isRunningTest:@selector(testShareButtonDisabledWithJustPasskeys)] ||
-      [self isRunningTest:@selector
-            (testShareButtonEnabledWithMixOfPasswordsAndPasskeys)]) {
-    config.features_enabled.push_back(syncer::kSyncWebauthnCredentials);
-  }
-
   return config;
 }
 
@@ -180,7 +181,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
        forUserPref:password_manager::prefs::kPasswordSharingEnabled];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   // Reset preference to its non-default state (which should be the case
@@ -192,7 +193,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
       setBoolValue:YES
        forUserPref:password_manager::prefs::kPasswordSharingEnabled];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)testShareButtonVisibility {
@@ -276,6 +277,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 
 - (void)testShareButtonDisabledWithJustPasskeys {
   DISABLE_ON_IPAD_WITH_IOS_17
+  REQUIRE_PASSKEYS
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasskeyToStoreAndOpenDetails];
 
@@ -285,6 +287,7 @@ GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
 
 - (void)testShareButtonEnabledWithMixOfPasswordsAndPasskeys {
   DISABLE_ON_IPAD_WITH_IOS_17
+  REQUIRE_PASSKEYS
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasskeyAndPasswordToStoreAndOpenDetails];
 

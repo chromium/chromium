@@ -56,6 +56,7 @@ namespace blink {
 
 class ResourceLoadTiming;
 class ServiceWorkerRouterInfo;
+class UseCounter;
 
 // A ResourceResponse is a "response" object used in blink. Conceptually
 // it is https://fetch.spec.whatwg.org/#concept-response, but it contains
@@ -164,10 +165,10 @@ class PLATFORM_EXPORT ResourceResponse final {
   bool CacheControlContainsMustRevalidate() const;
   bool HasCacheValidatorFields() const;
   std::optional<base::TimeDelta> CacheControlMaxAge() const;
-  std::optional<base::Time> Date() const;
+  std::optional<base::Time> Date(UseCounter&) const;
   std::optional<base::TimeDelta> Age() const;
-  std::optional<base::Time> Expires() const;
-  std::optional<base::Time> LastModified() const;
+  std::optional<base::Time> Expires(UseCounter&) const;
+  std::optional<base::Time> LastModified(UseCounter&) const;
   // Will always return values >= 0.
   base::TimeDelta CacheControlStaleWhileRevalidate() const;
 

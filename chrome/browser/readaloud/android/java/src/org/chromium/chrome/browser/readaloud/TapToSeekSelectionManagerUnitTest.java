@@ -20,7 +20,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,7 +44,6 @@ public class TapToSeekSelectionManagerUnitTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private ReadAloudController mReadAloudController;
 
     @Mock private Profile mProfile;

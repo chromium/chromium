@@ -43,17 +43,17 @@
 namespace autofill::form_util {
 namespace {
 
-using autofill::mojom::ButtonTitleType;
-using blink::WebDocument;
-using blink::WebElement;
-using blink::WebElementCollection;
-using blink::WebFormControlElement;
-using blink::WebFormElement;
-using blink::WebInputElement;
-using blink::WebLocalFrame;
-using blink::WebNode;
-using blink::WebString;
-using blink::WebVector;
+using ::autofill::mojom::ButtonTitleType;
+using ::blink::WebDocument;
+using ::blink::WebElement;
+using ::blink::WebElementCollection;
+using ::blink::WebFormControlElement;
+using ::blink::WebFormElement;
+using ::blink::WebInputElement;
+using ::blink::WebLocalFrame;
+using ::blink::WebNode;
+using ::blink::WebString;
+using ::blink::WebVector;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -178,6 +178,27 @@ const char* kPoorMansPlaceholderNoHorizontalContainment = R"(
   <span class=overlapping_position_and_size>not a label</span>
 )";
 
+const char* kSelectWithDefaultOption = R"(
+  <select id=target>
+    <option>Select country</option>
+    <hr>
+    <optgroup label=Countries>
+      <option value=AT>Austria</option>
+      <option value=DE>Germany</option>
+    </optgroup>
+  </select>
+)";
+
+auto HasRendererIdOf(const WebFormElement& e) {
+  return Property("FormData::renderer_id()", &FormData::renderer_id,
+                  GetFormRendererId(e));
+}
+
+auto HasRendererIdOf(const WebFormControlElement& e) {
+  return Property("FormFieldData::renderer_id()", &FormFieldData::renderer_id,
+                  GetFieldRendererId(e));
+}
+
 void VerifyButtonTitleCache(const WebFormElement& form_target,
                             const ButtonTitleList& expected_button_titles,
                             const ButtonTitlesCache& actual_cache) {
@@ -201,7 +222,8 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   FormAutofillUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillReplaceCachedWebElementsByRendererIds},
+        {features::kAutofillReplaceCachedWebElementsByRendererIds,
+         features::kAutofillInferLabelFromDefaultSelectText},
         /*disabled_features=*/{});
   }
   ~FormAutofillUtilsTest() override = default;
@@ -473,7 +495,8 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
        kPoorMansPlaceholderPossiblyErrorMessage, u""},
       {"Poor man's placeholder: no horizontal containment",
        kPoorMansPlaceholderNoHorizontalContainment, u""},
-  };
+      {"Select with default option", kSelectWithDefaultOption,
+       u"Select country"}};
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.description);
     LoadHTML(test_case.html);
@@ -517,7 +540,9 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
       {"<dl><dt>label</dt><dd><input id='target'></dd></dl>",
        FormFieldData::LabelSource::kDdTag},
       {kPoorMansPlaceholderFullOverlap,
-       FormFieldData::LabelSource::kOverlayingLabel}};
+       FormFieldData::LabelSource::kOverlayingLabel},
+      {kSelectWithDefaultOption,
+       FormFieldData::LabelSource::kDefaultSelectText}};
 
   for (auto test_case : test_cases) {
     SCOPED_TRACE(testing::Message() << test_case.label_source);
@@ -550,9 +575,9 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
   WebFormElement form_target = GetFormElementById(GetDocument(), "target");
   ButtonTitlesCache cache;
 
-  autofill::ButtonTitleList actual = GetButtonTitles(form_target, &cache);
+  ButtonTitleList actual = GetButtonTitles(form_target, &cache);
 
-  autofill::ButtonTitleList expected = {
+  ButtonTitleList expected = {
       {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE}};
   EXPECT_EQ(expected, actual);
 
@@ -573,7 +598,7 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
   WebFormElement form_target = GetFormElementById(GetDocument(), "target");
   ButtonTitlesCache cache;
 
-  autofill::ButtonTitleList actual = GetButtonTitles(form_target, &cache);
+  ButtonTitleList actual = GetButtonTitles(form_target, &cache);
 
   int total_length = 0;
   for (const auto& [title, title_type] : actual) {
@@ -601,9 +626,9 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_NoCache) {
   LoadHTML(kHtml);
   WebFormElement form_target = GetFormElementById(GetDocument(), "target");
 
-  autofill::ButtonTitleList expected = {
+  ButtonTitleList expected = {
       {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE}};
-  autofill::ButtonTitleList actual =
+  ButtonTitleList actual =
       GetButtonTitles(form_target, /*button_titles_cache=*/nullptr);
   EXPECT_EQ(expected, actual);
 }
@@ -1009,6 +1034,61 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(FindFormAndFieldForFormControlElement(form_control), std::nullopt);
 }
 
+// Tests that Autofill form ownership follows Blink form's association, which,
+// in compliance with the HTML standard, associates forms with an unclosed
+// <form> element.
+// Regression test for crbug.com/347059988#comment40.
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_DramaticallyBadMarkup) {
+  auto is_ancestor = [](const WebElement& ancestor, WebNode descendant) {
+    do {
+      if (ancestor == descendant) {
+        return true;
+      }
+    } while ((descendant = descendant.ParentNode()));
+    return false;
+  };
+
+  // The following markup is intentionally bad!
+  LoadHTML(R"(
+    <!DOCTYPE html>
+    <div>
+      <form id=f1>
+        <div>
+          </form>
+          <form id=f2>
+        </div>
+    </div>
+    <input id=t>
+  )");
+  // This leads to the same DOM as
+  //   <div>
+  //     <form id=f1>
+  //       <div>
+  //         <form id=f2>
+  //         </form>
+  //       </div>
+  //     </form>
+  //   </div>
+  //   <input id=t>
+  // but it associates `t` with `f2`.
+
+  WebDocument doc = GetDocument();
+  auto f1 = GetElementById(doc, "f1").To<WebFormElement>();
+  auto f2 = GetElementById(doc, "f2").To<WebFormElement>();
+  auto t = GetElementById(doc, "t").To<WebInputElement>();
+
+  ASSERT_TRUE(is_ancestor(f1, f2));
+  ASSERT_FALSE(is_ancestor(f1, t));
+  ASSERT_EQ(t.Form(), f2);  // nocheck
+
+  EXPECT_THAT(FindFormAndFieldForFormControlElement(t),
+              Optional(Pair(AllOf(HasRendererIdOf(f1),
+                                  Property(&FormData::fields,
+                                           ElementsAre(HasRendererIdOf(t)))),
+                            _)));
+}
+
 // Tests the visibility detection of iframes.
 // This test checks many scenarios. It's intentionally not a parameterized test
 // for performance reasons.
@@ -1386,10 +1466,6 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
       <option value='first'>first</option>
       <option value='second' selected>second</option>
     </select>
-    <select id='unowned_selectlist'>
-      <option value='first'>first</option>
-      <option value='second' selected>second</option>
-    </select>
     <object id='unowned_object'></object>
 
     <form id='form'>
@@ -1404,10 +1480,6 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
         <option value='june'>june</option>
         <option value='july' selected>july</option>
       </select>
-      <selectlist name='form_selectlist' id='form_selectlist'>
-        <option value='june'>june</option>
-        <option value='july' selected>july</option>
-      </selectlist>
       <object id='form_object'></object>
     </form>
   )");
@@ -1416,15 +1488,13 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
   std::vector<WebFormControlElement> unowned_form_fields =
       form_util::GetOwnedFormControlsForTesting(doc, WebFormElement());
 
-  EXPECT_THAT(
-      unowned_form_fields,
-      ElementsAre(GetFormControlElementById(doc, "unowned_button"),
-                  GetFormControlElementById(doc, "unowned_fieldset"),
-                  GetFormControlElementById(doc, "unowned_input"),
-                  GetFormControlElementById(doc, "unowned_textarea"),
-                  GetFormControlElementById(doc, "unowned_output"),
-                  GetFormControlElementById(doc, "unowned_select"),
-                  GetFormControlElementById(doc, "unowned_selectlist")));
+  EXPECT_THAT(unowned_form_fields,
+              ElementsAre(GetFormControlElementById(doc, "unowned_button"),
+                          GetFormControlElementById(doc, "unowned_fieldset"),
+                          GetFormControlElementById(doc, "unowned_input"),
+                          GetFormControlElementById(doc, "unowned_textarea"),
+                          GetFormControlElementById(doc, "unowned_output"),
+                          GetFormControlElementById(doc, "unowned_select")));
 }
 
 // Tests that FormData::fields and FormData::child_frames are extracted fully
@@ -1578,10 +1648,10 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_WebFormElementToFormData) {
   LoadHTML(R"(
     <form id='form'>
       <input id='input'>
-      <selectlist name='form_selectlist' id='selectlist'>
+      <select name='form_select' id='select'>
         <option value='june'>june</option>
         <option value='july' selected>july</option>
-      </selectlist>
+      </select>
     </form>
   )");
 
@@ -1599,7 +1669,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_WebFormElementToFormData) {
                                       form_data.fields()[0]));
   }
 
-  WebElement element = GetElementById(doc, "selectlist");
+  WebElement element = GetElementById(doc, "select");
   ASSERT_TRUE(element);
   ASSERT_TRUE(element.IsFormControlElement());
   EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
@@ -2448,6 +2518,348 @@ TEST_F(FormAutofillUtilsTest, GetOwnedFormControlsRequiresConnectedness) {
   // want it.
   EXPECT_THAT(f.GetFormControlElements(), ElementsAre(t));  // nocheck
   EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f), IsEmpty());
+}
+
+// Tests that final-checkout-amount extraction extracts the
+// final-checkout-amount if the label node is in the subtree that is only one
+// ancestor up.
+TEST_F(FormAutofillUtilsTest, ExtractFinalCheckoutAmountFromDom_OneAncestorUp) {
+  std::vector<std::string> matches;
+  LoadHTML(R"(
+    <body>
+      <div>
+        <span>Total</span>
+        <div>$448.60</div>
+      </div>
+    </body>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.448.60$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/6),
+            "$448.60");
+}
+
+// Tests that final-checkout-amount extraction extracts the
+// final-checkout-amount if the label node is in the subtree that is many
+// ancestors up.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_ManyAncestorsUp) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>Total</div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>$56.70</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/6),
+            "$56.70");
+}
+
+// Tests that final-checkout-amount extraction extracts the
+// final-checkout-amount if the label node is in the subtree that is many
+// ancestors down.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_ManyAncestorsDown) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>$56.70</div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>
+                <div>Total</div>
+              </span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/2),
+            "$56.70");
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if the label node is more than
+// `number_of_ancestor_levels_to_search` up from the final-checkout-amount node.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_TooManyAncestorsUp_DoesNotMatch) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>Total</div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>$56.70</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/3)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction returns the first
+// final-checkout-amount match if there are multiple possible matches.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_MultiplePriceNodes_MatchesFirstOne) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>$56.70</span>
+              <span>Total</span>
+            </span>
+            <span>
+              <span>$56.71</span>
+              <span>Total</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  std::string final_checkout_amount = ExtractFinalCheckoutAmountFromDom(
+      document, price_regex, label_regex,
+      /*number_of_ancestor_levels_to_search=*/6);
+  EXPECT_TRUE(final_checkout_amount == "$56.70" ||
+              final_checkout_amount == "$56.71");
+}
+
+// Tests that final-checkout-amount extraction returns the closest final
+// checkout amount match if there are multiple possible matches. The closest
+// match is based on the lowest common ancestor between price node and label
+// node.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_MultiplePriceNodes_MatchesClosestOne) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>
+                <span>$56.70</span>
+              </span>
+              <span>Total</span>
+            </span>
+            <span>
+              <span>$56.71</span>
+              <span>Total</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/6),
+            "$56.71");
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if there are price nodes in the ancestor searches
+// containing the label node.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_MultiplePriceNodes_DoesNotMatch) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <div>Total</div>
+      <div>
+        <div>
+          <span>
+            <span>
+              <span>$56.70</span>
+            </span>
+            <span>
+              <span>$56.71</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/6)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if the ancestor search of one price node contains
+// multiple price nodes, and the ancestor search of the other one does not
+// contain the label node.
+TEST_F(
+    FormAutofillUtilsTest,
+    ExtractFinalCheckoutAmountFromDom_MultiplePriceNodesInAncestorSearchOfOne_DoesNotMatch) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <span>$56.71</span>
+      <span>
+        <div>Total</div>
+        <span>
+          <div>
+            <div>
+              <span>$56.70</span>
+            </div>
+          </div>
+        </span>
+      </span>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/3)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction matches a final-checkout-amount
+// if the ancestor search of one price node contains multiple price nodes, and
+// the ancestor search of the other one contains the label node and only one
+// price node.
+TEST_F(
+    FormAutofillUtilsTest,
+    ExtractFinalCheckoutAmountFromDom_MultiplePriceNodesInAncestorSearchOfOne_OtherAncestorPathOnlyHasOne_Matches) {
+  LoadHTML(R"(
+  <div>
+    <div>
+      <span>$56.71</span>
+      <div>
+        <div>
+          <span>
+            <div>Total</div>
+            <span>
+              <span>$56.70</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^(.56.70|.56.71)$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_EQ(ExtractFinalCheckoutAmountFromDom(
+                document, price_regex, label_regex,
+                /*number_of_ancestor_levels_to_search=*/6),
+            "$56.70");
+}
+
+// Tests that the final-checkout-amount extraction does not extract a final
+// checkout amount if there is no label node.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_NoLabelNode_DoesNotMatch) {
+  LoadHTML(R"(
+    <div>
+      <div>Not a label</div>
+      <span>$56.70</span>
+    </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/6)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if there are no price nodes.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFinalCheckoutAmountFromDom_NoPriceNodes_DoesNotMatch) {
+  LoadHTML(R"(
+  <div>
+      <div>Total</div>
+      <div>Not a final-checkout-amount</div>
+    </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/6)
+                  .empty());
+}
+
+// Tests that final-checkout-amount extraction does not extract a
+// final-checkout-amount if there are no label nodes and no price nodes.
+TEST_F(
+    FormAutofillUtilsTest,
+    ExtractFinalCheckoutAmountFromDom_NoPriceNodesAndNoLabelNodes_DoesNotMatch) {
+  LoadHTML(R"(
+    <div>
+      <div>Not a total node</div>
+      <div>Not a final-checkout-amount</div>
+    </div>)");
+  WebDocument document = GetDocument();
+  std::string_view price_regex = "^.56.70$";
+  std::string_view label_regex = "^Total$";
+
+  EXPECT_TRUE(ExtractFinalCheckoutAmountFromDom(
+                  document, price_regex, label_regex,
+                  /*number_of_ancestor_levels_to_search=*/6)
+                  .empty());
 }
 
 }  // namespace

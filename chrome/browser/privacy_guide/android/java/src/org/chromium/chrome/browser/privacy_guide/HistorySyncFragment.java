@@ -22,11 +22,12 @@ import org.chromium.components.sync.UserSelectableType;
 
 import java.util.Set;
 
-/** Controls the behaviour of the History Sync privacy guide page. */
+/** Controls the behavior of the History Sync privacy guide page. */
 public class HistorySyncFragment extends PrivacyGuideBasePage
         implements CompoundButton.OnCheckedChangeListener {
     private SyncService mSyncService;
     private boolean mInitialKeepEverythingSynced;
+    private MaterialSwitchWithText mHistorySyncSwitch;
 
     @Override
     public View onCreateView(
@@ -38,10 +39,10 @@ public class HistorySyncFragment extends PrivacyGuideBasePage
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mSyncService = SyncServiceFactory.getForProfile(getProfile());
 
-        MaterialSwitchWithText historySyncSwitch = view.findViewById(R.id.history_sync_switch);
-        historySyncSwitch.setChecked(PrivacyGuideUtils.isHistorySyncEnabled(getProfile()));
+        mHistorySyncSwitch = view.findViewById(R.id.history_sync_switch);
+        setHistorySyncSwitchState();
 
-        historySyncSwitch.setOnCheckedChangeListener(this);
+        mHistorySyncSwitch.setOnCheckedChangeListener(this);
 
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
@@ -49,12 +50,22 @@ public class HistorySyncFragment extends PrivacyGuideBasePage
             return;
         }
 
-        ((TextView) historySyncSwitch.findViewById(R.id.switch_text))
+        ((TextView) mHistorySyncSwitch.findViewById(R.id.switch_text))
                 .setText(R.string.privacy_guide_history_and_tabs_sync_toggle);
         ((PrivacyGuideExplanationItem) view.findViewById(R.id.history_sync_item_one))
                 .setSummaryText(
                         getContext()
                                 .getString(R.string.privacy_guide_history_and_tabs_sync_item_one));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setHistorySyncSwitchState();
+    }
+
+    private void setHistorySyncSwitchState() {
+        mHistorySyncSwitch.setChecked(PrivacyGuideUtils.isHistorySyncEnabled(getProfile()));
     }
 
     @Override

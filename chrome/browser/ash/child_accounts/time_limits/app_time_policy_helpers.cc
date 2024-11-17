@@ -67,8 +67,7 @@ apps::AppType PolicyStringToAppType(const std::string& app_type) {
   if (app_type == "UNKNOWN")
     return apps::AppType::kUnknown;
 
-  NOTREACHED_IN_MIGRATION();
-  return apps::AppType::kUnknown;
+  NOTREACHED();
 }
 
 std::string AppTypeToPolicyString(apps::AppType app_type) {
@@ -104,7 +103,7 @@ std::string AppTypeToPolicyString(apps::AppType app_type) {
     case apps::AppType::kUnknown:
       return "UNKNOWN";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 AppRestriction PolicyStringToAppRestriction(const std::string& restriction) {
@@ -113,8 +112,7 @@ AppRestriction PolicyStringToAppRestriction(const std::string& restriction) {
   if (restriction == "TIME_LIMIT")
     return AppRestriction::kTimeLimit;
 
-  NOTREACHED_IN_MIGRATION();
-  return AppRestriction::kUnknown;
+  NOTREACHED();
 }
 
 std::string AppRestrictionToPolicyString(const AppRestriction& restriction) {
@@ -124,8 +122,7 @@ std::string AppRestrictionToPolicyString(const AppRestriction& restriction) {
     case AppRestriction::kTimeLimit:
       return "TIME_LIMIT";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

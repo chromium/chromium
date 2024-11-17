@@ -4,15 +4,21 @@
 
 #include "chrome/browser/ui/tabs/tab_model.h"
 
+#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/views/widget/widget.h"
 
 namespace tabs {
 
@@ -111,6 +117,24 @@ void TabModel::OnReparented(TabCollection* parent,
   parent_collection_ = parent;
 }
 
+void TabModel::SetPinned(bool pinned) {
+  if (pinned_ == pinned) {
+    return;
+  }
+
+  pinned_ = pinned;
+  pinned_state_changed_callback_list_.Notify(this, pinned_);
+}
+
+void TabModel::SetGroup(std::optional<tab_groups::TabGroupId> group) {
+  if (group_ == group) {
+    return;
+  }
+
+  group_ = group;
+  group_changed_callback_list_.Notify(this, group_);
+}
+
 void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
   will_enter_background_callback_list_.Notify(this);
 }
@@ -120,8 +144,12 @@ void TabModel::WillDetach(base::PassKey<TabStripModel>,
   will_detach_callback_list_.Notify(this, reason);
 }
 
+void TabModel::DidInsert(base::PassKey<TabStripModel>) {
+  did_insert_callback_list_.Notify(this);
+}
+
 content::WebContents* TabModel::GetContents() const {
-  return contents();
+  return contents_;
 }
 
 base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
@@ -148,6 +176,21 @@ base::CallbackListSubscription TabModel::RegisterWillDetach(
   return will_detach_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription TabModel::RegisterDidInsert(
+    TabInterface::DidInsertCallback callback) {
+  return did_insert_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterPinnedStateChanged(
+    TabInterface::PinnedStateChangedCallback callback) {
+  return pinned_state_changed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterGroupChanged(
+    TabInterface::GroupChangedCallback callback) {
+  return group_changed_callback_list_.Add(std::move(callback));
+}
+
 bool TabModel::CanShowModalUI() const {
   return !showing_modal_ui_;
 }
@@ -168,8 +211,32 @@ tabs::TabFeatures* TabModel::GetTabFeatures() {
   return tab_features_.get();
 }
 
-uint32_t TabModel::GetTabHandle() {
+std::unique_ptr<views::Widget> TabModel::CreateAndShowTabScopedWidget(
+    views::WidgetDelegate* delegate) {
+  // TODO(kylixrd): Remove the use of constrained window API.
+  return base::WrapUnique(
+      constrained_window::ShowWebModalDialogViews(delegate, GetContents()));
+}
+
+bool TabModel::IsPinned() const {
+  return pinned_;
+}
+
+std::optional<tab_groups::TabGroupId> TabModel::GetGroup() const {
+  return group_;
+}
+
+uint32_t TabModel::GetTabHandle() const {
   return GetHandle().raw_value();
+}
+
+void TabModel::Close() {
+  auto* window_interface = GetBrowserWindowInterface();
+  auto* tab_strip = window_interface->GetTabStripModel();
+  CHECK(tab_strip);
+  const int tab_idx = tab_strip->GetIndexOfTab(this);
+  CHECK(tab_idx != TabStripModel::kNoTab);
+  tab_strip->CloseWebContentsAt(tab_idx, TabCloseTypes::CLOSE_NONE);
 }
 
 void TabModel::OnTabStripModelChanged(
@@ -180,7 +247,7 @@ void TabModel::OnTabStripModelChanged(
     return;
   }
 
-  if (selection.new_contents == contents()) {
+  if (selection.new_contents == GetContents()) {
     did_enter_foreground_callback_list_.Notify(this);
     return;
   }
@@ -203,8 +270,8 @@ TabModel::ScopedTabModalUIImpl::~ScopedTabModalUIImpl() {
 
 void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("web_contents", contents());
-  dict.Add("pinned", pinned());
+  dict.Add("web_contents", GetContents());
+  dict.Add("pinned", IsPinned());
   dict.Add("blocked", blocked());
 }
 
@@ -251,8 +318,7 @@ TabInterface* TabInterface::MaybeGetFromContents(
 
 // static
 TabInterface* TabInterface::MaybeGetFromHandle(uint32_t handle_id) {
-  auto& helper = internal::HandleHelper<TabModel, int>::GetInstance();
-  return helper.LookupObject(handle_id);
+  return TabHandle(handle_id).Get();
 }
 
 }  // namespace tabs

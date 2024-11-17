@@ -35,11 +35,10 @@ static constexpr base::TimeDelta kBackgroundUrgentProtectionTime =
 // Time during which a tab cannot be discarded after having played audio.
 static constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
 
-class TabLifecycleUnitExternalImpl;
-
 // Represents a tab.
 class TabLifecycleUnitSource::TabLifecycleUnit
     : public LifecycleUnitBase,
+      public TabLifecycleUnitExternal,
       public content::WebContentsObserver {
  public:
   // |observers| is a list of observers to notify when the discarded state or
@@ -90,7 +89,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
   std::u16string GetTitle() const override;
   base::TimeTicks GetLastFocusedTimeTicks() const override;
-  base::Time GetLastFocusedTime() const override;
   base::ProcessHandle GetProcessHandle() const override;
   SortKey GetSortKey() const override;
   content::Visibility GetVisibility() const override;
@@ -104,10 +102,16 @@ class TabLifecycleUnitSource::TabLifecycleUnit
                uint64_t memory_footprint_estimate) override;
   ukm::SourceId GetUkmSourceId() const override;
 
-  // Implementations of some functions from TabLifecycleUnitExternal. These are
-  // actually called by an instance of TabLifecycleUnitExternalImpl.
-  bool IsAutoDiscardable() const;
-  void SetAutoDiscardable(bool auto_discardable);
+  // TabLifecycleUnitExternal:
+  content::WebContents* GetWebContents() const override;
+  bool IsAutoDiscardable() const override;
+  void SetAutoDiscardable(bool auto_discardable) override;
+  bool DiscardTab(mojom::LifecycleUnitDiscardReason reason,
+                  uint64_t memory_footprint_estimate) override;
+  mojom::LifecycleUnitState GetTabState() const override;
+
+  // LifecycleUnit and TabLifecycleUnitExternal:
+  base::Time GetLastFocusedTime() const override;
 
  protected:
   friend class TabManagerTest;
@@ -196,8 +200,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // TimeTicks() if the tab was never "recently audible", last time at which the
   // tab was "recently audible" otherwise.
   base::TimeTicks recently_audible_time_;
-
-  std::unique_ptr<TabLifecycleUnitExternalImpl> external_impl_;
 };
 
 }  // namespace resource_coordinator

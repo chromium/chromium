@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -62,13 +61,6 @@ enum class RestoreAction {
   kMaxValue = kCloseNotByUser,
 };
 
-// Returns true if FullRestoreService can be created to restore/launch Lacros
-// during the system startup phase when all of the below conditions are met:
-// 1. The FullRestoreForLacros flag is enabled.
-// 2. Lacros is enabled.
-// 3. FullRestoreService can be created for the primary profile.
-bool MaybeCreateFullRestoreServiceForLacros();
-
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
 class FullRestoreService : public KeyedService,
@@ -90,13 +82,15 @@ class FullRestoreService : public KeyedService,
     virtual void OnInformedRestoreContentsDataUpdated() = 0;
   };
 
-  static FullRestoreService* GetForProfile(Profile* profile);
-  static void MaybeCloseNotification(Profile* profile);
-
   explicit FullRestoreService(Profile* profile);
   FullRestoreService(const FullRestoreService&) = delete;
   FullRestoreService& operator=(const FullRestoreService&) = delete;
   ~FullRestoreService() override;
+
+  // If the last session was sanitized, skip showing any full restore UI. It is
+  // a static function since the pref gets reset before a `FullRestoreService`
+  // is created.
+  static void SetLastSessionSanitized();
 
   FullRestoreAppLaunchHandler* app_launch_handler() {
     return app_launch_handler_.get();
@@ -146,8 +140,7 @@ class FullRestoreService : public KeyedService,
   //     first one is for apps, and the second one is for windows.
   //   - The data from session restore is a single vector.
   // We build a map to avoid doing a O(n) search each loop of the former.
-  using SessionWindowsMap =
-      base::flat_map<int, crosapi::mojom::SessionWindowPtr>;
+  using SessionWindowsMap = base::flat_map<int, sessions::SessionWindow*>;
 
   // KeyedService:
   void Shutdown() override;
@@ -186,8 +179,6 @@ class FullRestoreService : public KeyedService,
                        bool read_error);
   void OnGotAllSessionsAsh(
       const std::vector<SessionWindows>& all_session_windows);
-  void OnGotAllSessionsLacros(
-      std::vector<crosapi::mojom::SessionWindowPtr> all_session_windows);
 
   // Called when session information is ready to be processed. Constructs the
   // object needed to show the informed restore dialog. It will be passed to ash

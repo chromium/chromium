@@ -87,8 +87,12 @@ class RTCSessionDescription;
 class RTCSessionDescriptionInit;
 class RTCStatsReport;
 class ScriptState;
+class V8RTCIceGatheringState;
+class V8RTCIceConnectionState;
+class V8RTCPeerConnectionState;
 class V8RTCPeerConnectionErrorCallback;
 class V8RTCSessionDescriptionCallback;
+class V8RTCSignalingState;
 class V8UnionMediaStreamTrackOrString;
 class V8VoidFunction;
 
@@ -157,7 +161,7 @@ class MODULES_EXPORT RTCPeerConnection final
   RTCSessionDescription* currentRemoteDescription() const;
   RTCSessionDescription* pendingRemoteDescription() const;
 
-  String signalingState() const;
+  V8RTCSignalingState signalingState() const;
 
   RTCConfiguration* getConfiguration(ScriptState*) const;
   void setConfiguration(ScriptState*, const RTCConfiguration*, ExceptionState&);
@@ -178,11 +182,11 @@ class MODULES_EXPORT RTCPeerConnection final
                                               V8RTCPeerConnectionErrorCallback*,
                                               ExceptionState&);
 
-  String iceGatheringState() const;
+  V8RTCIceGatheringState iceGatheringState() const;
 
-  String iceConnectionState() const;
+  V8RTCIceConnectionState iceConnectionState() const;
 
-  String connectionState() const;
+  V8RTCPeerConnectionState connectionState() const;
 
   std::optional<bool> canTrickleIceCandidates() const;
 

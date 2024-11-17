@@ -149,7 +149,11 @@ public class BackgroundTaskSchedulerUmaTest {
         assertEquals(
                 BackgroundTaskSchedulerUma.BACKGROUND_SAFETY_HUB,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.SAFETY_HUB_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 33);
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_AUXILIARY_SEARCH_DONATE,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
+                        TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID));
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 34);
     }
 
     @Test

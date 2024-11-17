@@ -48,8 +48,7 @@ std::u16string GetTitle(
       // Intentionally falling through to NOTREACHED().
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 std::u16string GetButtonLabel(
@@ -65,8 +64,7 @@ std::u16string GetButtonLabel(
       // Intentionally falling through to NOTREACHED().
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 std::u16string GetDialogText(
@@ -101,8 +99,7 @@ std::u16string GetDialogText(
     case ash::login::SecurityTokenSessionController::Behavior::kIgnore:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 }  // namespace

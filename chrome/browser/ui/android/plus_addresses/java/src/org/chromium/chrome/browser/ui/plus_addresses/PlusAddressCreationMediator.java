@@ -8,8 +8,9 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.CONFIRM_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
-import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.LOADING_INDICATOR_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PLUS_ADDRESS_LOADING_VIEW_VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_ENABLED;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
@@ -55,6 +56,8 @@ import org.chromium.url.GURL;
     private final TabModel mTabModel;
     private final PlusAddressCreationViewBridge mBridge;
     private PropertyModel mModel;
+    @Nullable private String mProposedPlusAddress;
+    @Nullable private PlusAddressCreationErrorStateInfo mErrorStateInfo;
 
     /**
      * Creates the mediator.
@@ -97,23 +100,27 @@ import org.chromium.url.GURL;
     }
 
     void updateProposedPlusAddress(String plusAddress) {
-        mModel.set(PROPOSED_PLUS_ADDRESS, plusAddress);
+        mProposedPlusAddress = plusAddress;
+        mModel.set(PLUS_ADDRESS_LOADING_VIEW_VISIBLE, false);
+    }
+
+    @Override
+    public void onPlusAddressLoadingViewHidden() {
+        mModel.set(PLUS_ADDRESS_ICON_VISIBLE, true);
+        mModel.set(PROPOSED_PLUS_ADDRESS, mProposedPlusAddress);
         mModel.set(REFRESH_ICON_ENABLED, true);
         mModel.set(CONFIRM_BUTTON_ENABLED, true);
     }
 
-    void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
-        if (errorStateInfo == null) {
-            mModel.set(CONFIRM_BUTTON_ENABLED, false);
-            mModel.set(CONFIRM_BUTTON_VISIBLE, true);
-            if (mModel.get(SHOW_ONBOARDING_NOTICE)) {
-                mModel.set(CANCEL_BUTTON_VISIBLE, true);
-            }
-            mModel.set(LEGACY_ERROR_REPORTING_INSTRUCTION_VISIBLE, true);
+    void showError(PlusAddressCreationErrorStateInfo errorStateInfo) {
+        if (mModel.get(LOADING_INDICATOR_VISIBLE)) {
+            // If the loading view is visible, hide it first and then show the error screen to avoid
+            // UI glitches.
+            mErrorStateInfo = errorStateInfo;
             mModel.set(LOADING_INDICATOR_VISIBLE, false);
-            return;
+        } else {
+            mModel.set(ERROR_STATE_INFO, errorStateInfo);
         }
-        mModel.set(ERROR_STATE_INFO, errorStateInfo);
     }
 
     void hideRefreshButton() {
@@ -137,6 +144,8 @@ import org.chromium.url.GURL;
                         R.string.plus_address_model_refresh_temporary_label_content_android));
         mModel.set(REFRESH_ICON_ENABLED, false);
         mModel.set(CONFIRM_BUTTON_ENABLED, false);
+        mModel.set(PLUS_ADDRESS_ICON_VISIBLE, false);
+        mModel.set(PLUS_ADDRESS_LOADING_VIEW_VISIBLE, true);
         mBridge.onRefreshClicked();
     }
 
@@ -145,9 +154,17 @@ import org.chromium.url.GURL;
         mModel.set(REFRESH_ICON_ENABLED, false);
         mModel.set(CONFIRM_BUTTON_ENABLED, false);
         mModel.set(CONFIRM_BUTTON_VISIBLE, false);
-        mModel.set(CANCEL_BUTTON_VISIBLE, false);
+        mModel.set(CANCEL_BUTTON_VISIBLE, mModel.get(SHOW_ONBOARDING_NOTICE));
         mModel.set(LOADING_INDICATOR_VISIBLE, true);
         mBridge.onConfirmRequested();
+    }
+
+    @Override
+    public void onConfirmationLoadingViewHidden() {
+        if (mModel.get(VISIBLE) && mErrorStateInfo != null) {
+            mModel.set(ERROR_STATE_INFO, mErrorStateInfo);
+            mErrorStateInfo = null;
+        }
     }
 
     @Override
@@ -174,6 +191,7 @@ import org.chromium.url.GURL;
 
     @Override
     public void onPromptDismissed() {
+        mModel.set(VISIBLE, false);
         mBridge.onPromptDismissed();
     }
 
@@ -189,6 +207,7 @@ import org.chromium.url.GURL;
     // EmptyBottomSheetObserver overridden methods follow:
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
+        mModel.set(VISIBLE, false);
         // Swipe to dismiss should record cancel metrics.
         if (reason == StateChangeReason.SWIPE) {
             mBridge.onCanceled();

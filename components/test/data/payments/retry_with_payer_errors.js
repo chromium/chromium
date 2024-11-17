@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-var gShowPromise = null;
-var gPaymentResponse = null;
+let gShowPromise = null;
+let gPaymentResponse = null;
 
 /**
  * Launches the PaymentRequest UI
@@ -13,7 +13,7 @@ var gPaymentResponse = null;
  * Legacy entry-point for basic-card tests; to be removed.
  */
 function buy() {
-  var options = {
+  const options = {
     requestPayerEmail: true,
     requestPayerName: true,
     requestPayerPhone: true,
@@ -34,7 +34,7 @@ function buy() {
  *        objects.
  */
 function buyWithMethods(methodData) {
-  var options = {
+  const options = {
     requestPayerEmail: true,
     requestPayerName: true,
     requestPayerPhone: true,

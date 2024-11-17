@@ -96,13 +96,7 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
                                     parentPlatformSessionData.contentCaptureSession,
                                     frame.getUrl(),
                                     frame.getFavicon());
-            AutofillId autofillId =
-                    PlatformAPIWrapper.getInstance()
-                            .newAutofillId(
-                                    parentPlatformSessionData.contentCaptureSession,
-                                    mPlatformSession.getRootPlatformSessionData().autofillId,
-                                    frame.getId());
-            autofillId = notifyViewAppeared(parentPlatformSessionData, frame);
+            AutofillId autofillId = notifyViewAppeared(parentPlatformSessionData, frame);
             platformSessionData = new PlatformSessionData(session, autofillId);
             mPlatformSession
                     .getFrameIdToPlatformSessionData()

@@ -106,7 +106,7 @@ FakeSSLClientSocket::FakeSSLClientSocket(
   std::memcpy(write_buf_->data(), kSslClientHello, std::size(kSslClientHello));
 }
 
-FakeSSLClientSocket::~FakeSSLClientSocket() {}
+FakeSSLClientSocket::~FakeSSLClientSocket() = default;
 
 int FakeSSLClientSocket::Read(net::IOBuffer* buf,
                               int buf_len,

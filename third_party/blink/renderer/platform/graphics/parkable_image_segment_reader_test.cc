@@ -77,7 +77,7 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
 TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
   const size_t kDataSize = 3.5 * 4096;
   char data[kDataSize];
-  PrepareReferenceData(data, kDataSize);
+  PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
   auto parkable_image = ParkableImage::Create(kDataSize);
@@ -89,13 +89,16 @@ TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
 
   auto segment_reader = parkable_image->CreateSegmentReader();
   segment_reader->LockData();
+  auto data_span = base::as_byte_span(data);
 
-  const char* segment;
   size_t position = 0;
-  for (size_t length = segment_reader->GetSomeData(segment, position); length;
-       length = segment_reader->GetSomeData(segment, position)) {
-    ASSERT_EQ(0, memcmp(segment, data + position, length));
-    position += length;
+  for (base::span<const uint8_t> segment =
+           segment_reader->GetSomeData(position);
+       !segment.empty(); segment = segment_reader->GetSomeData(position)) {
+    ASSERT_LE(position, data_span.size());
+    ASSERT_LE(segment.size(), data_span.size() - position);
+    EXPECT_EQ(data_span.subspan(position, segment.size()), segment);
+    position += segment.size();
   }
   EXPECT_EQ(position, kDataSize);
 
@@ -105,7 +108,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
 TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
   const size_t kDataSize = 3.5 * 4096;
   char data[kDataSize];
-  PrepareReferenceData(data, kDataSize);
+  PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
   auto parkable_image = ParkableImage::Create(kDataSize);
@@ -118,13 +121,16 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
   auto segment_reader = parkable_image->CreateSegmentReader();
   segment_reader->LockData();
   auto sk_data = segment_reader->GetAsSkData();
+  auto sk_data_span = base::span(sk_data->bytes(), sk_data->size());
 
-  const char* segment;
   size_t position = 0;
-  for (size_t length = segment_reader->GetSomeData(segment, position); length;
-       length = segment_reader->GetSomeData(segment, position)) {
-    ASSERT_FALSE(memcmp(segment, sk_data->bytes() + position, length));
-    position += length;
+  for (base::span<const uint8_t> segment =
+           segment_reader->GetSomeData(position);
+       !segment.empty(); segment = segment_reader->GetSomeData(position)) {
+    ASSERT_LE(position, sk_data_span.size());
+    ASSERT_LE(segment.size(), sk_data_span.size() - position);
+    EXPECT_EQ(sk_data_span.subspan(position, segment.size()), segment);
+    position += segment.size();
   }
   EXPECT_EQ(position, kDataSize);
 
@@ -134,7 +140,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
 TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
   const size_t kDataSize = 3.5 * 4096;
   char data[kDataSize];
-  PrepareReferenceData(data, kDataSize);
+  PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
   auto parkable_image = ParkableImage::Create(kDataSize);

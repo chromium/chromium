@@ -9,19 +9,18 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace drive {
 
 class DriveService;
 
 // Singleton that owns all instances of DriveService and associates them with
-// instances of ChromeBrowserState.
+// instances of ProfileIOS.
 class DriveServiceFactory final : public BrowserStateKeyedServiceFactory {
  public:
   static DriveService* GetForProfile(ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static DriveService* GetForBrowserState(ProfileIOS* profile);
   static DriveServiceFactory* GetInstance();
 
  private:

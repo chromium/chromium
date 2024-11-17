@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -36,7 +37,7 @@ class BaseThread : public SimpleThread {
 
   ~BaseThread() override = default;
 
-  const std::string& thread_name() { return thread_name_; }
+  const std::string& thread_name() const LIFETIME_BOUND { return thread_name_; }
   void SetStartTime() { start_time_ = Time::Now(); }
   bool ShouldStop() { return stop_.load(std::memory_order_relaxed); }
   void Stop() {

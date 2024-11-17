@@ -120,10 +120,7 @@ enum ItemType : NSInteger {
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierOptions];
 
   if (_showSetUpList) {
-    NSString* listSymbolName = kListBulletRectangleSymbol;
-    if (@available(iOS 16.0, *)) {
-      listSymbolName = kListBulletClipboardSymbol;
-    }
+    NSString* listSymbolName = kListBulletClipboardSymbol;
     _setUpListToggle =
         [self switchItemWithType:ItemTypeToggleSetUpList
                            title:content_suggestions::SetUpListTitleString()
@@ -144,10 +141,7 @@ enum ItemType : NSInteger {
          toSectionWithIdentifier:SectionIdentifierOptions];
   }
   if (IsTabResumptionEnabled()) {
-    NSString* listSymbolName = kLaptopAndIphoneSymbol;
-    if (@available(iOS 16.0, *)) {
-      listSymbolName = kMacbookAndIPhoneSymbol;
-    }
+    NSString* listSymbolName = kMacbookAndIPhoneSymbol;
     _tabResumptionToggle = [self
         switchItemWithType:ItemTypeToggleTabResumption
                      title:l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_TITLE)

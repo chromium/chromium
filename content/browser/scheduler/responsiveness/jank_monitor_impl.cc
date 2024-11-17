@@ -214,7 +214,7 @@ void JankMonitorImpl::DestroyOnMonitorThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_checker_);
   DCHECK(timer_);
 
-  timer_->AbandonAndStop();
+  timer_->Stop();
   timer_ = nullptr;
   timer_running_ = false;
 }

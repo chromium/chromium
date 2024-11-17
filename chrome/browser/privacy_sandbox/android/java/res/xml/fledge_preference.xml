@@ -48,6 +48,6 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
         android:key="fledge_page_footer"
-        android:summary="@string/settings_fledge_page_footer"/>
+        android:summary="@string/settings_fledge_page_footer_new"/>
 
 </PreferenceScreen>

@@ -318,6 +318,15 @@ public class UrlBarMediatorUnitTest {
                 mMediator.getReplacementCutCopyText("www.test.com/foo", 0, 16));
     }
 
+    @Test
+    public void setUrlBarHintText() {
+        mMediator.setUrlBarHintText(R.string.hub_search_empty_hint);
+        Assert.assertEquals(R.string.hub_search_empty_hint, mModel.get(UrlBarProperties.HINT_TEXT));
+        mMediator.setUrlBarHintText(R.string.hub_search_empty_hint_incognito);
+        Assert.assertEquals(
+                R.string.hub_search_empty_hint_incognito, mModel.get(UrlBarProperties.HINT_TEXT));
+    }
+
     private static SpannableStringBuilder spannable(String text) {
         return new SpannableStringBuilder(text);
     }

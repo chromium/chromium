@@ -217,22 +217,19 @@ TEST_P(SupervisedUserExtensionsManagerTest,
     EXPECT_FALSE(manager_->MustRemainInstalled(extension.get(), &error_2));
     EXPECT_TRUE(error_2.empty());
 
-    std::u16string error_3;
     extensions::disable_reason::DisableReason reason =
         extensions::disable_reason::DISABLE_NONE;
-    EXPECT_TRUE(
-        manager_->MustRemainDisabled(extension.get(), &reason, &error_3));
+    EXPECT_TRUE(manager_->MustRemainDisabled(extension.get(), &reason));
     EXPECT_EQ(extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED,
               reason);
-    EXPECT_FALSE(error_3.empty());
+
+    std::u16string error_3;
+    EXPECT_TRUE(manager_->UserMayModifySettings(extension.get(), &error_3));
+    EXPECT_TRUE(error_3.empty());
 
     std::u16string error_4;
-    EXPECT_TRUE(manager_->UserMayModifySettings(extension.get(), &error_4));
+    EXPECT_TRUE(manager_->UserMayInstall(extension.get(), &error_4));
     EXPECT_TRUE(error_4.empty());
-
-    std::u16string error_5;
-    EXPECT_TRUE(manager_->UserMayInstall(extension.get(), &error_5));
-    EXPECT_TRUE(error_5.empty());
   }
 
 #if DCHECK_IS_ON()
@@ -346,10 +343,9 @@ TEST_P(SupervisedUserExtensionsManagerTest,
                                   /*page_ordinal=*/syncer::StringOrdinal());
 
   extensions::disable_reason::DisableReason reason;
-  std::u16string error;
   EXPECT_FALSE(manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
-  EXPECT_TRUE(manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason,
-                                           &error));
+  EXPECT_TRUE(
+      manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason));
 
   histogram_tester.ExpectTotalCount(
       extensions::kExtensionApprovalsCountOnExtensionToggleHistogramName, 0);
@@ -394,8 +390,7 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   EXPECT_EQ(is_extension_approved,
             manager_->IsExtensionAllowed(*extn_with_switch_on.get()));
   EXPECT_EQ(is_extension_approved,
-            !manager_->MustRemainDisabled(extn_with_switch_on.get(), &reason,
-                                          &error));
+            !manager_->MustRemainDisabled(extn_with_switch_on.get(), &reason));
   EXPECT_EQ(is_extension_approved,
             profile()
                 ->GetPrefs()
@@ -467,10 +462,9 @@ TEST_P(SupervisedUserExtensionsManagerTest,
                                   /*page_ordinal=*/syncer::StringOrdinal());
 
   extensions::disable_reason::DisableReason reason;
-  std::u16string error;
   EXPECT_FALSE(manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
-  EXPECT_TRUE(manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason,
-                                           &error));
+  EXPECT_TRUE(
+      manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason));
 
   // Set the Extensions switch to ON. The extension should have been granted
   // parent approval when the SkipParentApprovalToInstallExtension preference is
@@ -483,8 +477,7 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   EXPECT_EQ(is_extension_approved,
             manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
   EXPECT_EQ(is_extension_approved,
-            !manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason,
-                                          &error));
+            !manager_->MustRemainDisabled(extn_with_switch_off.get(), &reason));
   EXPECT_EQ(is_extension_approved,
             profile()
                 ->GetPrefs()

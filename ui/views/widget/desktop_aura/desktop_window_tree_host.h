@@ -10,6 +10,7 @@
 
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
@@ -98,14 +99,14 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   //
   // Implementations must deal with these two code paths. In general, this is
   // done by having the WindowTreeHost subclass override ShowImpl() to call this
-  // function: Show(ui::SHOW_STATE_NORMAL, gfx::Rect()). A subtle
+  // function: Show(ui::mojom::WindowShowState::kNormal, gfx::Rect()). A subtle
   // ramification is the implementation of this function can *not* call
   // WindowTreeHost::Show(), and the implementation of this must perform the
   // same work as WindowTreeHost::Show(). This means setting the visibility of
   // the compositor, window() and DesktopNativeWidgetAura::content_window()
   // appropriately. Some subclasses set the visibility of window() in the
   // constructor and assume it's always true.
-  virtual void Show(ui::WindowShowState show_state,
+  virtual void Show(ui::mojom::WindowShowState show_state,
                     const gfx::Rect& restore_bounds) = 0;
 
   virtual bool IsVisible() const = 0;
@@ -115,8 +116,9 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void StackAtTop() = 0;
   virtual bool IsStackedAbove(aura::Window* window) = 0;
   virtual void CenterWindow(const gfx::Size& size) = 0;
-  virtual void GetWindowPlacement(gfx::Rect* bounds,
-                                  ui::WindowShowState* show_state) const = 0;
+  virtual void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const = 0;
   virtual gfx::Rect GetWindowBoundsInScreen() const = 0;
   virtual gfx::Rect GetClientAreaBoundsInScreen() const = 0;
   virtual gfx::Rect GetRestoredBounds() const = 0;

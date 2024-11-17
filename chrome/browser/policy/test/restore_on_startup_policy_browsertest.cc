@@ -44,8 +44,8 @@ namespace policy {
 namespace {
 
 constexpr const char* kRestoredURLs[] = {
-    "http://aaa.com/empty.html",
-    "http://bbb.com/empty.html",
+    "https://aaa.com/empty.html",
+    "https://bbb.com/empty.html",
 };
 
 bool IsNonSwitchArgument(const base::CommandLine::StringType& s) {
@@ -61,12 +61,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
                                    public testing::WithParamInterface<void (
                                        RestoreOnStartupPolicyTest::*)(void)> {
  public:
-  RestoreOnStartupPolicyTest() {
-    // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
-    // disable this feature.
-    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
-  }
-
+  RestoreOnStartupPolicyTest() = default;
   ~RestoreOnStartupPolicyTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {

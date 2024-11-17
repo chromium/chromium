@@ -37,7 +37,7 @@ namespace {
 #if !BUILDFLAG(IS_ANDROID)
 std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>
 IsolatedWebAppBrowsingDataToDelegateEntries(
-    base::flat_map<url::Origin, int64_t> isolated_web_app_browsing_data) {
+    base::flat_map<url::Origin, uint64_t> isolated_web_app_browsing_data) {
   std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry> entries;
   for (auto const& [origin, size] : isolated_web_app_browsing_data) {
     entries.emplace_back(

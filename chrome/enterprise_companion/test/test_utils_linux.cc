@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,10 +17,16 @@ namespace enterprise_companion {
 
 namespace {
 
+constexpr char kTestExe[] = "enterprise_companion_test";
+
 class TestMethodsLinux : public TestMethods {
  public:
   TestMethodsLinux() = default;
   ~TestMethodsLinux() override = default;
+
+  base::FilePath GetTestExePath() override {
+    return base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
+  }
 
   void ExpectInstalled() override {
     TestMethods::ExpectInstalled();

@@ -18,7 +18,8 @@ dictionary AIRewriterCreateOptions {
 
 [
   Exposed=(Window,Worker),
-  RuntimeEnabled=AIRewriterAPI
+  RuntimeEnabled=AIRewriterAPI,
+  SecureContext
 ]
 interface AIRewriterFactory {
   [

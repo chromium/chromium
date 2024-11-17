@@ -18,9 +18,11 @@ enum class ContentSuggestionsTileType {
 @interface ContentSuggestionsTileView : UIView <UIPointerInteractionDelegate>
 
 // Initializes view with tile `type` to allow for different layout
-// configurations.
+// configurations. If `inMagicStack`, the view will be inside the magic stack,
+// otherwise it will be in content suggestions view.
 - (instancetype)initWithFrame:(CGRect)frame
-                     tileType:(ContentSuggestionsTileType)type;
+                     tileType:(ContentSuggestionsTileType)type
+                 inMagicStack:(BOOL)inMagicStack;
 
 // Container for the image view. Used in subclasses.
 @property(nonatomic, strong, readonly) UIView* imageContainerView;

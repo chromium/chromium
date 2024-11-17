@@ -9,8 +9,10 @@ The current API version is 2.0. All future 2.x versions are guaranteed to
 either be backwards-compatible with existing tests, or the authors will update
 the API calls for you.
 
-This page provides technical documentation. For a cookbook/FAQ/troubleshooting
-guide, see our [Kombucha Playbook](https://goto.google.com/kombucha-playbook).
+**This page provides a technical summary only.**
+
+**For a detailed guide, including cookbook, FAQ, and troubleshooting, see the
+[Kombucha Playbook](https://goto.google.com/kombucha-playbook).**
 
  - [Changelog](#changelog)
  - [Known Issues](#known-issues-and-incompatibilities)
@@ -86,7 +88,8 @@ verbs, like `Check()` and `Do()` don't care about specific elements.
 Verbs fall into a number of different categories:
 - **Do** performs an action you specify.
 - **Log** prints its arguments to the output at log level `INFO`.
-  See [Logging](#logging) below.
+  See [Logging](#logging) below. **DumpElements** and **DumpElementsInContext**
+  are also covered in that section.
 - **Check** verbs ensure that some condition is true; if it is not, the test
   fails. Some *Check* verbs use `Matcher`s, some use callbacks, etc. Examples
   include:
@@ -146,6 +149,8 @@ Verbs fall into a number of different categories:
     - `ScrollIntoView()` [Views, Browser]
       - Recommended before doing anything that needs the screen coordinates of
         a UI or DOM element that is in a scrollable container.
+    - `ClickElement()` [Browser]
+      - For use with instrumented webcontents; see below.
 - **Mouse** verbs simulate mouse input to the entire application, and are
   therefore only reliable in test fixtures that run as exclusive processes (e.g.
   interactive_browser_tests). Examples include:
@@ -305,6 +310,14 @@ RunTestSequence(
       " square of current value: ", [&x](){ return x*x; }));
 ```
 
+#### Dumping the UI Element Tree
+
+Another way to inspect test state is with `DumpElements` and
+`DumpElementsInContext` which emit a tree of all UI elements or all elements
+within the current context (respectively) for debugging purposes.
+
+Note: this dump automatically happens when a test fails.
+
 ### Modifiers
 
 A modifier wraps around a step or steps and change their behavior.
@@ -334,6 +347,15 @@ RunTestSequence(
 
 - **InContext** allows the modified verb (or verbs) to execute in the specified context instead of
   the default context for the sequence. Example:
+
+- **InSameContextAs** allows the modified verb (or verbs) to find an element in the same context
+  as an element you specify, either by name, or by identifier. The element will be located in any
+  context and should be unique. Example:
+```cpp
+RunTestSequence(
+    InAnyContext(NameElementRelative(kBaseElementId, kNamedElement, &FindMyDialog)),
+    InSameContextAs(kNamedElement, PressButton(kMyButton)));
+```
 
 ```cpp
 Browser* const incognito = CreateIncognitoBrowser();
@@ -876,6 +898,20 @@ likely that Kombucha is missing some common verb that would cover your use case.
 Please reach out to us!
 
 ## Changelog
+
+### Q4 2024
+
+UI Element hierarchy now printed on test failure.
+ - Includes View and Widget hierarchy (for Views tests)
+ - Indicates activation and focus (when available)
+ - Indicates current active context in the test
+
+### Q2 2024
+
+Moved from synchronous to asynchronous execution of step callbacks by default.
+ - Eliminates the need for `FlushEvents()`
+ - Makes tests less likely to flake due to order-of-operations
+ - Makes tests more likely to uncover race conditions in systems under test
 
 ### March 2023
 

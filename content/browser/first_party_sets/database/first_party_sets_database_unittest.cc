@@ -83,7 +83,7 @@ class FirstPartySetsDatabaseTest : public testing::Test {
 
   void CloseDatabase() { db_.reset(); }
 
-  static base::FilePath GetSqlFilePath(const std::string sql_file_name) {
+  static base::FilePath GetSqlFilePath(std::string_view sql_file_name) {
     base::FilePath path;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
     path = path.AppendASCII("content/test/data/first_party_sets/");

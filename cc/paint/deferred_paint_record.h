@@ -9,7 +9,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_export.h"
-#include "cc/paint/paint_record.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace cc {
@@ -17,11 +16,9 @@ namespace cc {
 class CC_PAINT_EXPORT DeferredPaintRecord
     : public base::RefCountedThreadSafe<DeferredPaintRecord> {
  public:
-  virtual bool IsCanvasDeferredPaintRecord() const;
   virtual bool IsPaintWorkletInput() const;
   virtual gfx::SizeF GetSize() const = 0;
   virtual bool NeedsLayer() const;
-  virtual PaintRecord GetPaintRecord();
 
   // True if all the animated frames are opaque. Can be false only if animated
   // frames are colors.

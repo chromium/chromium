@@ -78,7 +78,7 @@ public class RtlGestureNavIphController implements Destroyable {
         mUnhandledGestureCount++;
         if (mUnhandledGestureCount >= mUnhandledGestureThreshold) {
             Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
-            if (tracker.shouldTriggerHelpUI(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION)) {
+            if (tracker.shouldTriggerHelpUi(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION)) {
                 show();
                 mUnhandledGestureCount = 0;
             }
@@ -101,7 +101,7 @@ public class RtlGestureNavIphController implements Destroyable {
         assert shouldShowOnNonEmptyStack();
         if (tab.canGoBack() || tab.canGoForward()) {
             Tracker tracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
-            if (tracker.shouldTriggerHelpUI(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION)) {
+            if (tracker.shouldTriggerHelpUi(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION)) {
                 show();
                 mRtlGestureNavTabObserver.destroy();
                 mRtlGestureNavTabObserver = null;
@@ -128,7 +128,7 @@ public class RtlGestureNavIphController implements Destroyable {
 
     private boolean wouldShowIph() {
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
-        return tracker.wouldTriggerHelpUI(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION);
+        return tracker.wouldTriggerHelpUi(FeatureConstants.IPH_RTL_GESTURE_NAVIGATION);
     }
 
     @VisibleForTesting

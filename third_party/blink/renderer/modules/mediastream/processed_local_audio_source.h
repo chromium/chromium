@@ -92,12 +92,6 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
 
   void SetOutputDeviceForAec(const std::string& output_device_id);
 
-  // Returns true if ProcessedLocalAudioSource produces audio at the processing
-  // sample rate, false if it outputs audio at the device sample rate. This only
-  // applies for stream type DEVICE_AUDIO_CAPTURE, for other stream types the
-  // output is always at the processing sample rate.
-  static bool OutputAudioAtProcessingSampleRate();
-
  protected:
   // MediaStreamAudioSource implementation.
   void* GetClassIdentifier() const final;
@@ -110,8 +104,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   void Capture(const media::AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
                const media::AudioGlitchInfo& glitch_info,
-               double volume,
-               bool key_pressed) override;
+               double volume) override;
   void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
                       const std::string& message) override;
   void OnCaptureMuted(bool is_muted) override;

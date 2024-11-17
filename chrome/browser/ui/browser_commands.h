@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
+#include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -176,7 +177,7 @@ void SaveIban(Browser* browser);
 void ShowMandatoryReauthOptInPrompt(Browser* browser);
 void MigrateLocalCards(Browser* browser);
 void SaveAutofillAddress(Browser* browser);
-void ShowVirtualCardManualFallbackBubble(Browser* browser);
+void ShowFilledCardInformationBubble(Browser* browser);
 void ShowVirtualCardEnrollBubble(Browser* browser);
 void StartTabOrganizationRequest(Browser* browser);
 void ShowTranslateBubble(Browser* browser);
@@ -206,6 +207,7 @@ void FindPrevious(Browser* browser);
 void FindInPage(Browser* browser, bool find_next, bool forward_direction);
 void ShowTabSearch(Browser* browser);
 void CloseTabSearch(Browser* browser);
+void ShowTabDeclutter(Browser* browser);
 bool CanCloseFind(Browser* browser);
 void CloseFind(Browser* browser);
 void Zoom(Browser* browser, content::PageZoom zoom);
@@ -223,7 +225,10 @@ void ToggleDevToolsWindow(Browser* browser,
                           DevToolsOpenedByAction opened_by);
 bool CanOpenTaskManager();
 // Opens task manager UI. Note that |browser| can be nullptr as input.
-void OpenTaskManager(Browser* browser);
+// StartAction denotes which location the task manager UI was started from.
+void OpenTaskManager(
+    Browser* browser,
+    task_manager::StartAction start_action = task_manager::StartAction::kOther);
 void OpenFeedbackDialog(Browser* browser,
                         feedback::FeedbackSource source,
                         const std::string& description_template = std::string(),
@@ -241,7 +246,7 @@ void ToggleRequestTabletSite(Browser* browser);
 // using its mobile version layout. Note it won't take effect until the web
 // contents is reloaded.
 void SetAndroidOsForTabletSite(content::WebContents* current_tab);
-void ToggleFullscreenMode(Browser* browser);
+void ToggleFullscreenMode(Browser* browser, bool user_initiated = false);
 void ClearCache(Browser* browser);
 bool IsDebuggerAttachedToCurrentTab(Browser* browser);
 void CopyURL(Browser* browser, content::WebContents* web_contents);

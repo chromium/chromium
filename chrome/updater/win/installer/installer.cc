@@ -25,13 +25,19 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
+#include "base/win/atl.h"
 #include "base/win/elevation_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_localalloc.h"
@@ -46,8 +52,10 @@
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
+#include "chrome/updater/win/installer/splash_wnd.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "third_party/wtl/include/atlapp.h"
 
 namespace updater {
 
@@ -65,6 +73,42 @@ std::string ExtractTag() {
              ? tagging::BinaryReadTagString(base::FilePath(path.get()))
              : std::string();
 }
+
+// Shows a splash screen "Initializing...".
+base::ScopedClosureRunner CreateSplashScreen() {
+  HWND splash_hwnd = nullptr;
+  if (GetCommandLineLegacyCompatible().HasSwitch(kSilentSwitch)) {
+    return base::ScopedClosureRunner(base::BindOnce([] {}));
+  }
+
+  InitializeThreadPool("windows-installer");
+  base::WaitableEvent ui_initialized_event;
+  base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     [](base::WaitableEvent& event, HWND& splash_hwnd) {
+                       ui::SplashWnd splash;
+                       splash.Create(nullptr);
+                       splash.ShowWindow(SW_SHOW);
+                       splash_hwnd = splash.m_hWnd;
+                       event.Signal();
+
+                       WTL::CMessageLoop().Run();
+                     },
+                     std::ref(ui_initialized_event), std::ref(splash_hwnd)));
+
+  ui_initialized_event.Wait();
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](HWND splash_hwnd) {
+        ::SendMessage(splash_hwnd, WM_CLOSE, 0, 0);
+        base::ThreadPoolInstance::Get()->Shutdown();
+      },
+      splash_hwnd));
+}
+
 }  // namespace
 
 // This structure passes data back and forth for the processing
@@ -384,6 +428,8 @@ ProcessExitResult InstallerMain(HMODULE module) {
   InitLogging(scope);
   VLOG(1) << command_line.GetCommandLineString();
 
+  base::ScopedClosureRunner cleanup(CreateSplashScreen());
+
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
   // Parse configuration from the command line and resources.
@@ -463,6 +509,8 @@ ProcessExitResult InstallerMain(HMODULE module) {
       !setup_path.append(L"\\bin\\updater.exe")) {
     exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
   }
+
+  cleanup.RunAndReset();
 
   if (exit_code.IsSuccess()) {
     exit_code = RunSetup(setup_path.get(), cmd_line_args.get());

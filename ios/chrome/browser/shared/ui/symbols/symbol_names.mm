@@ -266,8 +266,17 @@ NSString* const kPencilSymbol = @"pencil";
 NSString* const kMagicStackSymbol = @"wand.and.stars.inverse";
 NSString* const kDiscoverFeedSymbol = @"newspaper";
 NSString* const kFilterSymbol = @"line.3.horizontal.decrease.circle";
+NSString* const kSelectedFilterSymbol =
+    @"line.3.horizontal.decrease.circle.fill";
 NSString* const kPersonTwoSymbol = @"person.2";
 NSString* const kSquareFilledOnSquareSymbol = @"square.filled.on.square";
+NSString* const kPauseButton = @"pause.circle";
+NSString* const kPlayButton = @"play.circle";
+NSString* const kFolderSymbol = @"folder";
+NSString* const kCartSymbol = @"cart";
+NSString* const kArrowUTurnForwardSymbol = @"arrow.uturn.forward";
+NSString* const kIPhoneAndArrowForwardSymbol = @"iphone.and.arrow.forward";
+NSString* const kPersonPlusSymbol = @"person.crop.circle.badge.plus";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

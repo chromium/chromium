@@ -85,8 +85,7 @@ float Fps2MaxQP(float fps) {
           kFPS2QPTradeoffs[i].qp, kFPS2QPTradeoffs[i + 1].qp);
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0.0f;
+  NOTREACHED();
 }
 
 // Returns the FPS value related to the Max QP value. The returned value is
@@ -100,8 +99,7 @@ float MaxQP2Fps(int max_qp) {
       return kFPS2QPTradeoffs[i + 1].fps;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0.0f;
+  NOTREACHED();
 }
 }  // namespace
 
@@ -396,7 +394,7 @@ void H264RateController::EstimateInterFrameQP(size_t temporal_id,
     base_layer.update_long_term_qp(GetInterFrameLongTermQP(temporal_id));
   }
 
-  curr_layer.update_long_term_qp(std::clamp(curr_layer.long_term_qp(),
+  curr_layer.update_long_term_qp(std::clamp(base_layer.long_term_qp(),
                                             curr_layer.min_qp(),
                                             h264_rate_control_util::kQPMax));
 

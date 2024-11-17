@@ -85,11 +85,12 @@ scoped_refptr<base::RefCountedMemory> LoadUserImageFrameForScaleFactor(
   gfx::ImageSkia* image =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
-  auto data = base::MakeRefCounted<base::RefCountedBytes>();
-  gfx::PNGCodec::EncodeBGRASkBitmap(image->GetRepresentation(scale).GetBitmap(),
-                                    false /* discard transparency */,
-                                    &data->as_vector());
-  return data;
+  std::optional<std::vector<uint8_t>> png_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(
+          image->GetRepresentation(scale).GetBitmap(),
+          /*discard_transparency=*/false);
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      png_data.value_or(std::vector<uint8_t>()));
 }
 
 scoped_refptr<base::RefCountedMemory> GetUserImageFrame(
@@ -108,15 +109,15 @@ scoped_refptr<base::RefCountedMemory> GetUserImageFrame(
   if (image_format != user_manager::UserImage::FORMAT_PNG)
     return image_bytes;
   // Extract first frame by re-encoding image.
-  SkBitmap bitmap;
-  if (!gfx::PNGCodec::Decode(image_bytes->front(), image_bytes->size(),
-                             &bitmap)) {
+  SkBitmap bitmap = gfx::PNGCodec::Decode(*image_bytes);
+  if (bitmap.isNull()) {
     return nullptr;
   }
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes);
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false /* discard transparency */,
-                                    &data->as_vector());
-  return data;
+
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      encoded.value_or(std::vector<uint8_t>()));
 }
 
 scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
@@ -141,18 +142,18 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
         return GetUserImageFrame(user->image_bytes(), user->image_format(),
                                  frame);
       } else {
-        scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes);
-        gfx::PNGCodec::EncodeBGRASkBitmap(*user->GetImage().bitmap(),
-                                          false /* discard transparency */,
-                                          &data->as_vector());
-        return data;
+        std::optional<std::vector<uint8_t>> encoded =
+            gfx::PNGCodec::EncodeBGRASkBitmap(*user->GetImage().bitmap(),
+                                              /*discard_transparency=*/false);
+        return base::MakeRefCounted<base::RefCountedBytes>(
+            encoded.value_or(std::vector<uint8_t>()));
       }
     }
     if (user->image_is_stub()) {
       return LoadUserImageFrameForScaleFactor(IDR_LOGIN_DEFAULT_USER, frame,
                                               scale_factor);
     }
-    NOTREACHED_IN_MIGRATION() << "User with custom image missing data bytes";
+    NOTREACHED() << "User with custom image missing data bytes";
   } else {
     LOG(ERROR) << "User not found: " << account_id.GetUserEmail();
   }

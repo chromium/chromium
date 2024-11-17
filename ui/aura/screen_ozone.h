@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 #include "ui/display/screen.h"
 #include "ui/ozone/public/platform_screen.h"
@@ -45,10 +44,10 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
   display::Display GetPrimaryDisplay() const override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   std::unique_ptr<display::Screen::ScreenSaverSuspender> SuspendScreenSaver()
       override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
   bool IsScreenSaverActive() const override;
   base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;
@@ -58,11 +57,6 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
       const gfx::GpuExtraInfo& gpu_extra_info) override;
   std::optional<float> GetPreferredScaleFactorForWindow(
       gfx::NativeWindow window) const override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  display::TabletState GetTabletState() const override;
-  void OverrideTabletStateForTesting(
-      display::TabletState tablet_state) override;
-#endif
 
   // Returns the NativeWindow associated with the AcceleratedWidget.
   virtual gfx::NativeWindow GetNativeWindowFromAcceleratedWidget(
@@ -74,7 +68,7 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   ui::PlatformScreen* platform_screen() { return platform_screen_.get(); }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   class ScreenSaverSuspenderOzone
       : public display::Screen::ScreenSaverSuspender {
    public:
@@ -92,7 +86,7 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
     std::unique_ptr<ui::PlatformScreen::PlatformScreenSaverSuspender>
         suspender_;
   };
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   gfx::AcceleratedWidget GetAcceleratedWidgetForWindow(
       aura::Window* window) const;

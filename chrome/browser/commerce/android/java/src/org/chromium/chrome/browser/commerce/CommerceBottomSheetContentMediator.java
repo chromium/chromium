@@ -34,7 +34,7 @@ public class CommerceBottomSheetContentMediator {
         mCommerceBottomSheetContentContainer = commerceBottomSheetContentContainer;
     }
 
-    public void onContentReady(@Nullable PropertyModel model) {
+    void onContentReady(@Nullable PropertyModel model) {
         mContentReadyCount++;
 
         if (model == null) {
@@ -61,8 +61,13 @@ public class CommerceBottomSheetContentMediator {
         requestToShowBottomSheetIfReady();
     }
 
-    public void timeOut() {
+    void timeOut() {
         showBottomSheet();
+    }
+
+    void onBottomSheetClosed() {
+        mModelList.clear();
+        mContentReadyCount = 0;
     }
 
     private boolean isValidPropertyModel(PropertyModel model) {

@@ -97,8 +97,7 @@ bool LayoutSVGBlock::CheckForImplicitTransformChange(
     case ETransformBox::kBorderBox:
       return bbox_changed;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void LayoutSVGBlock::UpdateTransformBeforeLayout() {
@@ -194,11 +193,6 @@ void LayoutSVGBlock::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
   SVGLayoutSupport::MapAncestorToLocal(*this, ancestor, transform_state, flags);
   // Convert from local SVG coordinates to local HTML coordinates.
   transform_state.Move(PhysicalLocation());
-}
-
-PhysicalRect LayoutSVGBlock::VisualRectInDocument(VisualRectFlags flags) const {
-  NOT_DESTROYED();
-  return SVGLayoutSupport::VisualRectInAncestorSpace(*this, *View(), flags);
 }
 
 bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(

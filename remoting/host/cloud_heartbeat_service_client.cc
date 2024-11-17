@@ -29,11 +29,10 @@ using UpdateRemoteAccessHostRequest =
 
 CloudHeartbeatServiceClient::CloudHeartbeatServiceClient(
     const std::string& directory_id,
-    const std::string& api_key,
     OAuthTokenGetter* oauth_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : directory_id_(directory_id),
-      client_(api_key, oauth_token_getter, url_loader_factory) {}
+      client_(oauth_token_getter, url_loader_factory) {}
 
 CloudHeartbeatServiceClient::~CloudHeartbeatServiceClient() = default;
 
@@ -116,7 +115,7 @@ void CloudHeartbeatServiceClient::MakeUpdateRemoteAccessHostCall(
     std::optional<std::string> signaling_id,
     std::optional<std::string> offline_reason,
     CloudServiceClient::UpdateRemoteAccessHostCallback callback) {
-  auto* host_version = STRINGIZE(VERSION);
+  constexpr auto* host_version = STRINGIZE(VERSION);
   client_.UpdateRemoteAccessHost(directory_id_, host_version, signaling_id,
                                  offline_reason, GetHostOperatingSystemName(),
                                  GetHostOperatingSystemVersion(),
@@ -128,13 +127,19 @@ void CloudHeartbeatServiceClient::RunHeartbeatResponseCallback(
     const ProtobufHttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!status.ok()) {
+    OnError(std::move(callback), status);
+    return;
+  }
+
   // Cloud hosts always require session authorization and do not support
-  // changing the email address of the primary user.
+  // changing the email address of the primary user. This service client always
+  // uses 'lite' heartbeats.
   // TODO: joedow - Return wait interval from the service and pass it through.
   std::move(callback).Run(status, /*wait_interval=*/std::nullopt,
                           /*primary_user_email=*/"",
                           /*require_session_authorization=*/true,
-                          /*use_lite_heartbeat=*/std::nullopt);
+                          /*use_lite_heartbeat=*/true);
 }
 
 }  // namespace remoting

@@ -25,13 +25,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 
+#include <array>
 #include <iterator>
 
 #include "base/metrics/histogram_functions.h"
@@ -153,9 +149,7 @@ InputEvent::InputType InputTypeFromCommandType(EditingCommandType command_type,
     case CommandType::kInsertUnorderedList:
       return InputType::kInsertUnorderedList;
     case CommandType::kCreateLink:
-      return RuntimeEnabledFeatures::InputTypeSupportInsertLinkEnabled()
-                 ? InputType::kInsertLink
-                 : InputType::kNone;
+      return InputType::kInsertLink;
 
     // Deletion.
     case CommandType::kDelete:
@@ -294,8 +288,7 @@ static bool ExecuteApplyParagraphStyle(LocalFrame& frame,
       frame.GetEditor().ApplyParagraphStyle(style, input_type);
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ExpandSelectionToGranularity(LocalFrame& frame,
@@ -443,8 +436,7 @@ static bool ExecuteDelete(LocalFrame& frame,
               : 0);
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static bool DeleteWithDirection(LocalFrame& frame,
@@ -668,8 +660,7 @@ static bool ExecuteForwardDelete(LocalFrame& frame,
         return false;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static bool ExecuteIgnoreSpelling(LocalFrame& frame,
@@ -1178,8 +1169,7 @@ static bool EnabledDelete(LocalFrame& frame,
       // range if non-empty, otherwise removes a character
       return EnabledInEditableText(frame, event, source);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static bool EnabledInRichlyEditableText(LocalFrame& frame,
@@ -1368,8 +1358,7 @@ static String ValueDefaultParagraphSeparator(const EditorInternalCommand&,
       return html_names::kPTag.LocalName();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 static String ValueFormatBlock(const EditorInternalCommand&,
@@ -1398,7 +1387,7 @@ static bool CanNotExecuteWhenDisabled(LocalFrame&, EditorCommandSource) {
 
 static const EditorInternalCommand* InternalCommand(
     const String& command_name) {
-  static const EditorInternalCommand kEditorCommands[] = {
+  static const auto kEditorCommands = std::to_array<EditorInternalCommand>({
       // Lists all commands in blink::EditingCommandType.
       // Must be ordered by |commandType| for index lookup.
       // Covered by unit tests in editing_command_test.cc
@@ -1905,7 +1894,7 @@ static const EditorInternalCommand* InternalCommand(
        ClipboardCommands::ExecutePasteFromImageURL,
        SupportedFromMenuOrKeyBinding, EnabledInEditableText, StateNone,
        ValueStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
-  };
+  });
   // Handles all commands except EditingCommandType::Invalid.
   static_assert(
       std::size(kEditorCommands) + 1 ==
@@ -2138,8 +2127,7 @@ bool EditorCommand::IsSupported() const {
     case EditorCommandSource::kDOM:
       return command_->is_supported_from_dom(frame_);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool EditorCommand::IsEnabled(Event* triggering_event) const {

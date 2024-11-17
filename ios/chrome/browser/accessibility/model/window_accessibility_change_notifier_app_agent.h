@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_ACCESSIBILITY_MODEL_WINDOW_ACCESSIBILITY_CHANGE_NOTIFIER_APP_AGENT_H_
 #define IOS_CHROME_BROWSER_ACCESSIBILITY_MODEL_WINDOW_ACCESSIBILITY_CHANGE_NOTIFIER_APP_AGENT_H_
 
-#import "ios/chrome/app/application_delegate/app_state_agent.h"
+#import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
 
 // An app agent that montitors the number of visible (that is: active) scenes
 // and provides accessibility notifications when this count changes.
-@interface WindowAccessibilityChangeNotifierAppAgent : NSObject <AppStateAgent>
+@interface WindowAccessibilityChangeNotifierAppAgent : SceneObservingAppAgent
 @end
 
 #endif  // IOS_CHROME_BROWSER_ACCESSIBILITY_MODEL_WINDOW_ACCESSIBILITY_CHANGE_NOTIFIER_APP_AGENT_H_

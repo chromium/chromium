@@ -273,9 +273,6 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Tracker for delete requests to the history service.
   base::CancelableTaskTracker delete_task_tracker_;
 
-  // The list of URLs that are in the process of being deleted.
-  std::set<GURL> urls_to_be_deleted_;
-
   // Timer used to implement a timeout on a Web History response.
   std::unique_ptr<base::OneShotTimer> web_history_timer_;
 

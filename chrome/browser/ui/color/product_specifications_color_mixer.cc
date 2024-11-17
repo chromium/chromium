@@ -40,14 +40,12 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHoverOnSubtle};
   mixer[kColorProductSpecificationsLink] = {ui::kColorSysPrimary};
   mixer[kColorProductSpecificationsPageBackground] = {ui::kColorSysSurface2};
-  mixer[kColorProductSpecificationsPrimaryTitle] = {
-      ui::kColorPrimaryForeground};
-  mixer[kColorProductSpecificationsSecondaryTitle] = {
-      ui::kColorSysOnSurfaceSecondary};
   mixer[kColorProductSpecificationsSummaryBackground] = {
       ui::kColorPrimaryBackground};
   mixer[kColorProductSpecificationsSummaryBackgroundDragging] = {
-      ui::kColorSysStateRippleNeutralOnSubtle};
+      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorProductSpecificationsTonalButtonBackground] = {
       ui::kColorSysTonalContainer};
+  mixer[kColorProductSpecificationsTonalButtonIcon] = {
+      ui::kColorSysOnTonalContainer};
 }

@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -61,7 +60,6 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                     .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
     @Mock private Profile mProfile;
@@ -75,8 +73,7 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(
-                ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+        ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
 
         doReturn(true).when(mIncognitoProfile).isOffTheRecord();
@@ -155,6 +152,12 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
         runOnUiThreadBlocking(
                 () -> {
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
+                            R.drawable.status_view_ripple);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                            R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
@@ -179,6 +182,12 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                             new PermissionIconResource(locationIcon, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
+                            R.drawable.status_view_ripple);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                            R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });
@@ -200,6 +209,12 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                             new PermissionIconResource(storeIconDrawable, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
+                            R.drawable.status_view_ripple);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                            R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });

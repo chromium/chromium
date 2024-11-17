@@ -12,10 +12,15 @@ class TimeDelta;
 namespace ash {
 
 // Tracking login events for Smart Lock metrics.
-// This enum is used to define the buckets for an enumerated UMA histogram. Those UMA histograms use the deprecated "EasyUnlock" name to refer to Smart Lock. 
-// Hence,
+// This enum is used to define the buckets for an enumerated UMA histogram and
+// must be kept in sync with EasyUnlockAuthEvent enum found at
+// //tools/metrics/histograms/metadata/cross_device/enums.xml.
+// Those UMA histograms use the deprecated "EasyUnlock" name to refer to Smart
+// Lock. Hence,
 //   (a) existing enumerated constants should never be deleted or reordered, and
 //   (b) new constants should only be appended at the end of the enumeration.
+//
+// LINT.IfChange(SmartLockAuthEvent)
 enum SmartLockAuthEvent {
   // User is successfully authenticated using Smart Lock.
   SMART_LOCK_SUCCESS = 0,
@@ -77,6 +82,7 @@ enum SmartLockAuthEvent {
 
   SMART_LOCK_AUTH_EVENT_COUNT  // Must be the last entry.
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:SmartLockAuthEvent)
 
 void RecordSmartLockDidUserManuallyUnlockPhone(bool did_unlock);
 void RecordSmartLockSigninDuration(const base::TimeDelta& duration);

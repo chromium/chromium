@@ -175,12 +175,12 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
 
   void AuthenticatorAdded(FidoDiscoveryBase* discovery,
                           FidoAuthenticator* authenticator) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                             FidoAuthenticator* authenticator) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  protected:
@@ -505,8 +505,7 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
   }
 }
 
-// Gardener 2024-06-18: Disabled due to asan failures (crbug.com/347287026).
-TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadata) {
+TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
   if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {
         {AuthenticatorType::kICloudKeychain,
@@ -533,8 +532,7 @@ TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadata) {
   }
 }
 
-// Gardener 2024-06-18: Disabled due to asan failures (crbug.com/347287026).
-TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadataWithAllowlist) {
+TEST_F(iCloudKeychainTest, FetchCredentialMetadataWithAllowlist) {
   if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {
         {AuthenticatorType::kICloudKeychain,

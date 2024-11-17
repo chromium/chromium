@@ -19,7 +19,6 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/subresource_filter/content/browser/safe_browsing_child_navigation_throttle.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -367,7 +366,8 @@ class ContentSubresourceFilterThrottleManager
   // keeps track of the throttle that is carrying out that computation, so that
   // the result can be retrieved when the navigation is ready to commit. Keyed
   // by navigation id.
-  std::map<int64_t, ActivationStateComputingNavigationThrottle*>
+  std::map<int64_t,
+           raw_ptr<ActivationStateComputingNavigationThrottle, CtnExperimental>>
       ongoing_activation_throttles_;
 
   // The set of navigations that have passed through ReadyToCommitNavigation,

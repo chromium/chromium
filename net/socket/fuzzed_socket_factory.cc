@@ -40,16 +40,14 @@ class FailingSSLClientSocket : public SSLClientSocket {
   int Read(IOBuffer* buf,
            int buf_len,
            CompletionOnceCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
-    return ERR_UNEXPECTED;
+    NOTREACHED();
   }
 
   int Write(IOBuffer* buf,
             int buf_len,
             CompletionOnceCallback callback,
             const NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTREACHED_IN_MIGRATION();
-    return ERR_UNEXPECTED;
+    NOTREACHED();
   }
 
   int SetReceiveBufferSize(int32_t size) override { return OK; }
@@ -90,15 +88,11 @@ class FailingSSLClientSocket : public SSLClientSocket {
                            std::string_view context,
                            unsigned char* out,
                            unsigned int outlen) override {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   // SSLClientSocket implementation:
-  std::vector<uint8_t> GetECHRetryConfigs() override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
-  }
+  std::vector<uint8_t> GetECHRetryConfigs() override { NOTREACHED(); }
 
  private:
   NetLogWithSource net_log_;

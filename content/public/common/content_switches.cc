@@ -213,9 +213,6 @@ const char kDisableNotifications[]          = "disable-notifications";
 // Disable Pepper3D.
 const char kDisablePepper3d[]               = "disable-pepper-3d";
 
-// Disables compositor-accelerated touch-screen pinch gestures.
-const char kDisablePinch[]                  = "disable-pinch";
-
 // Disables the Presentation API.
 const char kDisablePresentationAPI[]        = "disable-presentation-api";
 
@@ -422,13 +419,6 @@ const char kEnableViewport[]                = "enable-viewport";
 // Enable the Vtune profiler support.
 const char kEnableVtune[]                   = "enable-vtune-support";
 
-// Enable the WebAuthn Mojo Testing API. This is a way to interact with the
-// virtual authenticator environment through a mojo interface and is supported
-// only to run web-platform-tests on content shell.
-// Removal of this deprecated API is blocked on crbug.com/937369.
-const char kEnableWebAuthDeprecatedMojoTestingApi[] =
-    "enable-web-auth-deprecated-mojo-testing-api";
-
 // Enables WebGL developer extensions which are not generally exposed
 // to the web platform.
 const char kEnableWebGLDeveloperExtensions[] =
@@ -604,11 +594,6 @@ const char kProtectedAudiencesConsentedDebugToken[] =
 // touchpad and touchscreen, and set to '2' to enable it only for touchscreen.
 // Defaults to disabled.
 const char kPullToRefresh[] = "pull-to-refresh";
-
-// Specifies the minimum amount of time, in seconds, that must pass before
-// consecutive quota change events can be fired. Set the value to '0' to disable
-// the debounce mechanimsm.
-const char kQuotaChangeEventInterval[] = "quota-change-event-interval";
 
 // Reduce the accept-language http header, and only send one language in the
 // request header: https://github.com/Tanych/accept-language.
@@ -870,13 +855,6 @@ const char kWebOtpBackendAuto[] = "web-otp-backend-auto";
 // Disables encryption of RTP Media for WebRTC. When Chrome embeds Content, it
 // ignores this switch on its stable and beta channels.
 const char kDisableWebRtcEncryption[]      = "disable-webrtc-encryption";
-
-// Enables negotiation of encrypted header extensions from RFC 6904 for SRTP
-// in WebRTC.
-// See https://tools.ietf.org/html/rfc6904 for further information.
-// TODO(crbug.com/40623740): Remove this.
-const char kEnableWebRtcSrtpEncryptedHeaders[] =
-    "enable-webrtc-srtp-encrypted-headers";
 
 // Enforce IP Permission check. TODO(guoweis): Remove this once the feature is
 // not under finch and becomes the default.

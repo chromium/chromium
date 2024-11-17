@@ -60,8 +60,7 @@ ClipboardContentType ClipboardContentTypeFromContentType(ContentType type) {
   } else if ([type isEqualToString:ContentTypeImage]) {
     return ClipboardContentType::Image;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ClipboardContentType::Text;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -238,7 +237,7 @@ void ClipboardRecentContentIOS::GetRecentImageFromClipboard(
   }];
 }
 
-ClipboardRecentContentIOS::~ClipboardRecentContentIOS() {}
+ClipboardRecentContentIOS::~ClipboardRecentContentIOS() = default;
 
 base::TimeDelta ClipboardRecentContentIOS::GetClipboardContentAge() const {
   return base::Seconds(

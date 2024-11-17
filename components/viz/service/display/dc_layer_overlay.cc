@@ -59,22 +59,15 @@ enum DCLayerResult {
   DC_LAYER_FAILED_NOT_DAMAGED = 15,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED = 16,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_TONE_MAPPING = 17,
-  DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA = 18,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA [[deprecated]] = 18,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG = 19,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT = 20,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN [[deprecated]] = 21,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010 = 22,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_UNSUPPORTED_COLORSPACE = 23,
-  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_UNSUPPORTED_COLORSPACE,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_PQ10 = 24,
+  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_PQ10,
 };
-
-bool IsCompatibleHDRMetadata(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
-  return hdr_metadata &&
-         ((hdr_metadata->smpte_st_2086 &&
-           hdr_metadata->smpte_st_2086->IsValid()) ||
-          (hdr_metadata->cta_861_3 && hdr_metadata->cta_861_3->IsValid()));
-}
 
 DCLayerResult ValidateYUVOverlay(
     const gfx::ProtectedVideoType& protected_video_type,
@@ -115,13 +108,17 @@ DCLayerResult ValidateYUVOverlay(
   }
 
   if (video_color_space.IsHDR()) {
-    // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
-    // hdr metadata is still missing. Missing `smpte_st_2086` or `cta_861_3`
-    // could always causes intel driver crash when in HDR overlay mode, and
-    // technically as long as one of the `smpte_st_2086` or `cta_861_3` exists
-    // could solve the crash issue.
-    if (!IsCompatibleHDRMetadata(hdr_metadata)) {
-      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
+    // We allow HDR10 overlays to be created without metadata if the input
+    // stream is BT.2020 and the transfer function is PQ (Perceptual
+    // Quantizer). For this combination, the corresponding DXGI color space is
+    // DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020 (full range RGB),
+    // DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020 (studio range RGB)
+    // DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020 (studio range YUV)
+    if ((video_color_space.GetPrimaryID() !=
+         gfx::ColorSpace::PrimaryID::BT2020) ||
+        (video_color_space.GetTransferID() !=
+         gfx::ColorSpace::TransferID::PQ)) {
+      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_PQ10;
     }
 
     // Do not promote hdr overlay if buffer is not in 10bit P010 format. as this
@@ -187,54 +184,6 @@ DCLayerResult ValidateTextureQuad(
   return DC_LAYER_SUCCESS;
 }
 
-void FromTextureQuad(const TextureDrawQuad* quad,
-                     const gfx::Transform& transform_to_root_target,
-                     const DisplayResourceProvider* resource_provider,
-                     OverlayCandidate* dc_layer) {
-  dc_layer->resource_id = quad->resource_id();
-  dc_layer->plane_z_order = 1;
-  dc_layer->resource_size_in_pixels = quad->resource_size_in_pixels();
-  dc_layer->uv_rect =
-      gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
-  dc_layer->display_rect = gfx::RectF(quad->rect);
-  // Quad rect is in quad content space so both quad to target, and target to
-  // root transforms must be applied to it.
-  gfx::Transform quad_to_root_transform;
-  if (quad->y_flipped) {
-    quad_to_root_transform.Scale(1.0, -1.0);
-    quad_to_root_transform.PostTranslate(
-        0.0, dc_layer->resource_size_in_pixels.height());
-  }
-  quad_to_root_transform.PostConcat(
-      quad->shared_quad_state->quad_to_target_transform);
-  quad_to_root_transform.PostConcat(transform_to_root_target);
-  // Flatten transform to 2D since DirectComposition doesn't support 3D
-  // transforms.  This only applies when non axis aligned overlays are enabled.
-  quad_to_root_transform.Flatten();
-  dc_layer->transform = quad_to_root_transform;
-
-  if (quad->shared_quad_state->clip_rect) {
-    // Clip rect is in quad target space, and must be transformed to root target
-    // space.
-    dc_layer->clip_rect = transform_to_root_target.MapRect(
-        quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
-  }
-
-  dc_layer->color_space = resource_provider->GetColorSpace(quad->resource_id());
-  dc_layer->hdr_metadata =
-      resource_provider->GetHDRMetadata(quad->resource_id());
-
-  dc_layer->protected_video_type = quad->protected_video_type;
-  // Both color space and protected_video_type are hard-coded for stream video.
-  // TODO(crbug.com/40878556): Consider using quad->protected_video_type.
-  if (quad->is_stream_video) {
-    dc_layer->color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                                            gfx::ColorSpace::TransferID::BT709);
-    dc_layer->protected_video_type =
-        gfx::ProtectedVideoType::kHardwareProtected;
-  }
-}
-
 DCLayerResult IsUnderlayAllowed(const DrawQuad* quad) {
   if (quad->ShouldDrawWithBlending() &&
       !quad->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
@@ -272,7 +221,7 @@ bool IsOccluded(
       const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(quad);
       auto render_pass_it = render_pass_filters.find(rpdq->render_pass_id);
       if (render_pass_it != render_pass_filters.end()) {
-        auto* filters = render_pass_it->second;
+        auto* filters = render_pass_it->second.get();
         overlap_rect = gfx::RectF(
             GetExpandedRectWithPixelMovingForegroundFilter(*rpdq, *filters));
         has_pixel_moving_filter = true;
@@ -543,42 +492,40 @@ ValidateDrawQuadResult ValidateDrawQuad(
     const int allowed_yuv_overlay_count,
     const int processed_yuv_overlay_count,
     const bool allow_promotion_hinting) {
+  if (it->material != DrawQuad::Material::kTextureContent) {
+    return {.code = DC_LAYER_FAILED_UNSUPPORTED_QUAD};
+  }
+
   ValidateDrawQuadResult result;
-  switch (it->material) {
-    case DrawQuad::Material::kTextureContent: {
-      const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
 
-      if (tex_quad->is_stream_video) {
-        // Stream video quads contain Media Foundation dcomp surface which is
-        // always presented as overlay.
-        result.code = DC_LAYER_SUCCESS;
-      } else {
-        result.code = ValidateTextureQuad(
-            tex_quad, backdrop_filter_rects, has_overlay_support,
-            has_p010_video_processor_support, allowed_yuv_overlay_count,
-            processed_yuv_overlay_count, resource_provider);
-      }
+  const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(*it);
 
-      result.is_yuv_overlay = tex_quad->is_video_frame;
+  result.is_yuv_overlay = quad->is_video_frame;
 
-      if (allow_promotion_hinting) {
-        // If this quad has marked itself as wanting promotion hints then get
-        // the associated mailbox.
-        ResourceId id = tex_quad->resource_id();
-        if (resource_provider->DoesResourceWantPromotionHint(id)) {
-          result.promotion_hint_mailbox = resource_provider->GetMailbox(id);
-        }
-      }
-    } break;
+  if (allow_promotion_hinting) {
+    // If this quad has marked itself as wanting promotion hints then get
+    // the associated mailbox.
+    ResourceId id = quad->resource_id();
+    if (resource_provider->DoesResourceWantPromotionHint(id)) {
+      result.promotion_hint_mailbox = resource_provider->GetMailbox(id);
+    }
+  }
 
-    default:
-      result.code = DC_LAYER_FAILED_UNSUPPORTED_QUAD;
-      break;
+  if (quad->is_stream_video) {
+    // Stream video quads contain Media Foundation dcomp surface which is
+    // always presented as overlay.
+    result.code = DC_LAYER_SUCCESS;
+  } else {
+    result.code = ValidateTextureQuad(
+        quad, backdrop_filter_rects, has_overlay_support,
+        has_p010_video_processor_support, allowed_yuv_overlay_count,
+        processed_yuv_overlay_count, resource_provider);
   }
 
   return result;
 }
 
+// |it| must point to a |TextureDrawQuad|.
 void FromDrawQuad(const DisplayResourceProvider* resource_provider,
                   const AggregatedRenderPass* render_pass,
                   bool is_page_fullscreen_mode,
@@ -590,17 +537,55 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
           ? IsPossibleFullScreenLetterboxing(it, render_pass->quad_list.end(),
                                              render_pass->output_rect)
           : false;
-  switch (it->material) {
-    case DrawQuad::Material::kTextureContent: {
-      const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
-      FromTextureQuad(tex_quad, render_pass->transform_to_root_target,
-                      resource_provider, &dc_layer);
-      if (tex_quad->is_video_frame) {
-        processed_yuv_overlay_count++;
-      }
-    } break;
-    default:
-      NOTREACHED_IN_MIGRATION();
+
+  const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(*it);
+  dc_layer.resource_id = quad->resource_id();
+  dc_layer.resource_size_in_pixels =
+      resource_provider->GetResourceBackedSize(quad->resource_id());
+  dc_layer.uv_rect =
+      gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
+  dc_layer.display_rect = gfx::RectF(quad->rect);
+  dc_layer.format =
+      resource_provider->GetSharedImageFormat(quad->resource_id());
+  dc_layer.color = quad->background_color;
+
+  // Quad rect is in quad content space so both quad to target, and target to
+  // root transforms must be applied to it.
+  gfx::Transform quad_to_root_transform;
+  if (quad->y_flipped) {
+    quad_to_root_transform.Scale(1.0, -1.0);
+    quad_to_root_transform.PostTranslate(
+        0.0, dc_layer.resource_size_in_pixels.height());
+  }
+  quad_to_root_transform.PostConcat(
+      quad->shared_quad_state->quad_to_target_transform);
+  quad_to_root_transform.PostConcat(render_pass->transform_to_root_target);
+  // Flatten transform to 2D since DirectComposition doesn't support 3D
+  // transforms.  This only applies when non axis aligned overlays are enabled.
+  quad_to_root_transform.Flatten();
+  dc_layer.transform = quad_to_root_transform;
+
+  if (quad->shared_quad_state->clip_rect) {
+    // Clip rect is in quad target space, and must be transformed to root target
+    // space.
+    dc_layer.clip_rect = render_pass->transform_to_root_target.MapRect(
+        quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
+  }
+
+  dc_layer.color_space = resource_provider->GetColorSpace(quad->resource_id());
+  dc_layer.hdr_metadata =
+      resource_provider->GetHDRMetadata(quad->resource_id());
+
+  dc_layer.protected_video_type = quad->protected_video_type;
+  // Both color space and protected_video_type are hard-coded for stream video.
+  // TODO(crbug.com/40878556): Consider using quad->protected_video_type.
+  if (quad->is_stream_video) {
+    dc_layer.color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                                           gfx::ColorSpace::TransferID::BT709);
+    dc_layer.protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
+  }
+  if (quad->is_video_frame) {
+    processed_yuv_overlay_count++;
   }
 }
 
@@ -1240,12 +1225,19 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
   // Underlays are less efficient, so attempt regular overlays first. We can
   // only check for occlusion within a render pass.
   if (is_overlay) {
+    dc_layer.plane_z_order = 1;
     ProcessForOverlay(render_pass, it, previous_frame_state,
                       current_frame_state);
   } else {
+    // Assign decreasing z-order so that underlays processed earlier, and hence
+    // which are above the subsequent underlays, are placed above in the direct
+    // composition visual tree. The z-orders are assigned relative to other
+    // underlays in its render pass, not relative to the total number of
+    // underlays across all render passes.
+    dc_layer.plane_z_order = -1 - overlay_data.promoted_overlays.size();
     ProcessForUnderlay(render_pass, it, quad_rect_in_target_space,
                        previous_frame_state, global_overlay_state, overlay_data,
-                       current_frame_state, dc_layer);
+                       current_frame_state);
   }
 
   current_frame_state.overlay_rects.push_back(
@@ -1288,42 +1280,9 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     const RenderPassPreviousFrameState& previous_frame_state,
     const GlobalOverlayState& global_overlay_state,
     RenderPassOverlayData& overlay_data,
-    RenderPassCurrentFrameState& current_frame_state,
-    OverlayCandidate& dc_layer) {
-  // Assign decreasing z-order so that underlays processed earlier, and hence
-  // which are above the subsequent underlays, are placed above in the direct
-  // composition visual tree. The z-orders are assigned relative to other
-  // underlays in its render pass, not relative to the total number of underlays
-  // across all render passes.
-  dc_layer.plane_z_order = -1 - overlay_data.promoted_overlays.size();
-
-  // If the video is translucent and uses SrcOver blend mode, we can achieve the
-  // same result as compositing with video on top if we replace video quad with
-  // a solid color quad with DstOut blend mode, and rely on SrcOver blending
-  // of the root surface with video on bottom. Essentially,
-  //
-  // SrcOver_quad(V, B, V_alpha) = SrcOver_premul(DstOut(BLACK, B, V_alpha), V)
-  // where
-  //    V is the video quad
-  //    B is the background
-  //    SrcOver_quad uses opacity of source quad (V_alpha)
-  //    SrcOver_premul uses alpha channel and assumes premultipled alpha
-  //
-  // This also applies to quads with a mask filter for rounded corners.
+    RenderPassCurrentFrameState& current_frame_state) {
   bool is_opaque = false;
-
-  if (it->ShouldDrawWithBlending() &&
-      it->shared_quad_state->blend_mode == SkBlendMode::kSrcOver) {
-    render_pass->ReplaceExistingQuadWithSolidColor(it, SkColors::kBlack,
-                                                   SkBlendMode::kDstOut);
-  } else {
-    // When the opacity == 1.0, drawing with transparent will be done without
-    // blending and will have the proper effect of completely clearing the
-    // layer.
-    render_pass->ReplaceExistingQuadWithSolidColor(it, SkColors::kTransparent,
-                                                   SkBlendMode::kSrcOver);
-    is_opaque = true;
-  }
+  render_pass->ReplaceExistingQuadWithHolePunch(it, &is_opaque);
 
   const bool display_rect_unchanged =
       render_pass->output_rect == previous_frame_state.display_rect;

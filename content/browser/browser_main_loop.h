@@ -55,7 +55,6 @@ class SystemMessageWindowWin;
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 class DeviceMonitorLinux;
 #endif
-class UserInputMonitor;
 }  // namespace media
 
 namespace midi {
@@ -169,9 +168,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   media::AudioSystem* audio_system() const { return audio_system_.get(); }
   MediaStreamManager* media_stream_manager() const {
     return media_stream_manager_.get();
-  }
-  media::UserInputMonitor* user_input_monitor() const {
-    return user_input_monitor_.get();
   }
   MediaKeysListenerManagerImpl* media_keys_listener_manager() const {
     return media_keys_listener_manager_.get();
@@ -347,9 +343,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   // BEGIN Members initialized in |PostCreateThreads()| ------------------------
   // ***************************************************************************
   std::unique_ptr<MediaKeysListenerManagerImpl> media_keys_listener_manager_;
-
-  // |user_input_monitor_| has to outlive |audio_manager_|, so declared first.
-  std::unique_ptr<media::UserInputMonitor> user_input_monitor_;
 
   // Support for out-of-process Data Decoder.
   std::unique_ptr<data_decoder::ServiceProvider> data_decoder_service_provider_;

@@ -189,6 +189,8 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   bool cache_eviction_task_queued_ = false;
   bool expired_entry_deletion_task_queued_ = false;
 
+  bool cleanup_task_disabled_for_testing_ = false;
+
   base::WeakPtrFactory<SharedDictionaryManagerOnDisk> weak_factory_{this};
 };
 

@@ -63,8 +63,7 @@ int GetCommandArgumentCount(CommandType command) {
       return 0;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 int GetDefaultSizeOfVectorIcon(const VectorIcon& icon) {

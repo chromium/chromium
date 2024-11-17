@@ -86,7 +86,7 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   TestVariationsServiceClient& operator=(const TestVariationsServiceClient&) =
       delete;
 
-  ~TestVariationsServiceClient() override {}
+  ~TestVariationsServiceClient() override = default;
 
   // VariationsServiceClient:
   base::Version GetVersionForSimulation() override { return base::Version(); }
@@ -157,7 +157,7 @@ class TestVariationsService : public VariationsService {
   TestVariationsService(const TestVariationsService&) = delete;
   TestVariationsService& operator=(const TestVariationsService&) = delete;
 
-  ~TestVariationsService() override {}
+  ~TestVariationsService() override = default;
 
   GURL interception_url() { return interception_url_; }
   void set_intercepts_fetch(bool value) { intercepts_fetch_ = value; }
@@ -249,7 +249,7 @@ class TestVariationsServiceObserver : public VariationsService::Observer {
   TestVariationsServiceObserver& operator=(
       const TestVariationsServiceObserver&) = delete;
 
-  ~TestVariationsServiceObserver() override {}
+  ~TestVariationsServiceObserver() override = default;
 
   void OnExperimentChangesDetected(Severity severity) override {
     switch (severity) {

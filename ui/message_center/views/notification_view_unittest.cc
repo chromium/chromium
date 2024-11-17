@@ -8,7 +8,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -38,7 +37,7 @@
 #include "ui/views/widget/widget_utils.h"
 
 // ChromeOS/Ash uses `AshNotificationView` instead of `NotificationView`.
-static_assert(!BUILDFLAG(IS_CHROMEOS_ASH));
+static_assert(!BUILDFLAG(IS_CHROMEOS));
 
 namespace message_center {
 
@@ -72,15 +71,6 @@ SkColor DeriveMinContrastColor(SkColor foreground, SkColor background) {
   EXPECT_GE(contrast_ratio, color_utils::kMinimumReadableContrastRatio);
   return contrast_color;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns the same value as AshColorProvider::Get()->
-// GetContentLayerColor(ContentLayerType::kIconColorPrimary).
-SkColor GetAshIconColorPrimary(bool is_dark_mode) {
-  return is_dark_mode ? SkColorSetRGB(0xE8, 0xEA, 0xED)
-                      : SkColorSetRGB(0x5F, 0x63, 0x68);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class NotificationTestDelegate : public NotificationDelegate {
  public:
@@ -622,14 +612,8 @@ TEST_F(NotificationViewTest, AppIconWebAppNotification) {
   EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorTRANSPARENT),
             color_utils::SkColorToRgbaString(app_icon_view->getColor(8, 8)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(color_utils::SkColorToRgbaString(
-                GetAshIconColorPrimary(/*is_dark_mode=*/false)),
-            color_utils::SkColorToRgbaString(app_icon_view->getColor(0, 0)));
-#else
   EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorYELLOW),
             color_utils::SkColorToRgbaString(app_icon_view->getColor(0, 0)));
-#endif
 }
 
 TEST_F(NotificationViewTest, PreferredSize) {

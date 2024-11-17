@@ -355,8 +355,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
     response->set_content("<html><head><title>greens</title></head></html>");
     return std::move(response);
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::move(response);
+  NOTREACHED();
 }
 
 // Serves image URLs.
@@ -391,8 +390,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
         static_cast<const char*>(image_data.bytes), image_data.length));
     return std::move(response);
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::move(response);
+  NOTREACHED();
 }
 
 // Opens the page security info bubble.
@@ -482,9 +480,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey stopWatcher];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey stopWatcher];
-  [super tearDown];
+  [super tearDownHelper];
   [ReadingListAppInterface resetConnectionType];
 }
 
@@ -1141,7 +1139,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Copy Link context menu action for a reading list entry.
-- (void)testContextMenuCopyLink {
+// TODO(crbug.com/378900884): Flaky on ios simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testContextMenuCopyLink DISABLED_testContextMenuCopyLink
+#else
+#define MAYBE_testContextMenuCopyLink testContextMenuCopyLink
+#endif
+- (void)MAYBE_testContextMenuCopyLink {
   AddEntriesAndOpenReadingList();
   LongPressEntry(kReadTitle);
 
@@ -1175,7 +1179,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
-- (void)testContextMenuMarkAsReadAndBack {
+// TODO(crbug.com/378900884): Flaky on ios simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testContextMenuMarkAsReadAndBack \
+  DISABLED_testContextMenuMarkAsReadAndBack
+#else
+#define MAYBE_testContextMenuMarkAsReadAndBack testContextMenuMarkAsReadAndBack
+#endif
+- (void)MAYBE_testContextMenuMarkAsReadAndBack {
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();

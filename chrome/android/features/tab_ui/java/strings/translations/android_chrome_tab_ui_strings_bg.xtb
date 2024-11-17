@@ -7,8 +7,10 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Създадено преди <ph name="NUM_YEARS_ONE" /> година}other{Създадено преди <ph name="NUM_YEARS_MANY" /> години}}</translation>
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1197088940767939838">оранжево</translation>
-<translation id="125153950246128346">Докоснете, за да видите друг раздел</translation>
 <translation id="1273910660700874265">Опции за групата раздели „<ph name="TITLE_OF_GROUP" />“</translation>
+<translation id="1293272072740285747">Запазете тази група, за да добавяте раздели по-късно, или я изтрийте, ако вече не ви е нужна.
+
+Ако я изтриете, всички хора незабавно ще загубят достъп до групата раздели „<ph name="TITLE_OF_GROUP" />“ и тя ще бъде изтрита от всички устройства.</translation>
 <translation id="1340839264183302272">Напускане на групата</translation>
 <translation id="1419023007528516122">Това действие ще изтрие групата за постоянно от устройството ви</translation>
 <translation id="1486715732399361704">Тук можете да намерите всичките си групи раздели</translation>
@@ -38,6 +40,7 @@
 <translation id="2569352796411618312">Предложение: <ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Към сайта</translation>
+<translation id="2671423594960767771">Споделяне на групата</translation>
 <translation id="2677748264148917807">Излизане</translation>
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Добавихте <ph name="ONE_ADDED" /> раздел, променихте <ph name="ANY_CHANGED" /> и затворихте <ph name="ANY_CLOSED" />}other{Добавихте <ph name="MANY_ADDED" /> раздела, променихте <ph name="ANY_CHANGED" /> и затворихте <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Създадено преди <ph name="NUM_HOURS_ONE" /> час}other{Създадено преди <ph name="NUM_HOURS_MANY" /> часа}}</translation>
@@ -54,25 +57,22 @@
 <translation id="3078350928901129212">Цвят на иконата на групата раздели: <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">оценка</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Добавихте <ph name="ONE_ADDED" /> раздел и затворихте <ph name="ANY_CHANGED" />}other{Добавихте <ph name="MANY_ADDED" /> раздела и затворихте <ph name="ANY_CHANGED" />}}</translation>
-<translation id="3291470810748040983">Ще получите сигнал, когато цената в отворен раздел е по-ниска</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
 <translation id="3547352561153509682">Това действие ще изтрие групата от всички устройства, на които сте влезли в профила <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Скриване на диалоговия прозорец за неактивните раздели</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Миниизобр. на опции за споделяне.</translation>
+<translation id="3810973564298564668">Управление</translation>
 <translation id="381219490185664296">Искате ли да разгрупирате разделите?</translation>
-<translation id="3882834874697329510">За да получавате сигнал, когато цената в отворен раздел е по-ниска, включете известията от настройките.</translation>
 <translation id="3940195383040445971">Проследяване на цените в разделите</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Добавяне на раздела в група}other{Групиране на разделите}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивен раздел}other{<ph name="TABS_COUNT_MANY" /> неактивни раздела}}</translation>
 <translation id="3969565576924904454">Отваряне на „<ph name="TITLE_OF_GROUP" />“</translation>
-<translation id="3996880007329611795">Получаване на известия</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Създадено преди <ph name="NUM_DAYS_ONE" /> ден}other{Създадено преди <ph name="NUM_DAYS_MANY" /> дни}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
 <translation id="4139634748112164403">Разделите ще останат отворени на това устройство, но групата ще бъде изтрита за постоянно</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Затваряне на групата „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Затваряне на групата „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="4159784952369912983">лилаво</translation>
-<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="427987768447457592">Нова група раздели</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Променихте <ph name="ONE_CHANGED" /> раздел и затворихте <ph name="ANY_CLOSED" />}other{Променихте <ph name="MANY_CHANGED" /> раздела и затворихте <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Неактивно</translation>
@@ -94,21 +94,21 @@
 <translation id="5007392906805964215">Преглед</translation>
 <translation id="5073204694187207510">Скриване на решетката на цял екран</translation>
 <translation id="5076161749301278626">Искате ли да видите отзивите за магазина?</translation>
-<translation id="5082793167783849073">Сравнявайте бързо страници, като създадете група. За да започнете, докоснете и задръжте дадена връзка.</translation>
 <translation id="5094423602314093681">Искате ли да премахнете разделите и да изтриете групата?</translation>
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Добавихте <ph name="ONE_ADDED" /> раздел}other{Добавихте <ph name="MANY_ADDED" /> раздела}}</translation>
 <translation id="5161254044473106830">Изисква се заглавие</translation>
-<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Затваряне на групата раздели с <ph name="TABS_COUNT_ONE" /> раздел.}other{Затваряне на групата раздели с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="5339733443032484186">Последният ви раздел</translation>
 <translation id="5400836586163650660">сиво</translation>
 <translation id="5490235265819901748">Групата с раздели е разгъната</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Затваряне на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Затваряне на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="5556417849629758491">Преглед на информацията за магазина – опцията е близо до горната част на екрана</translation>
+<translation id="5615302411300498438">Запазете тази група, за да добавяте раздели по-късно, или я напуснете.
+
+Ако я напуснете, незабавно ще загубите достъп до групата раздели „<ph name="TITLE_OF_GROUP" />“.</translation>
 <translation id="5627941783489838464">Няма актуализации на разделите</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Възстановяване на раздела}other{Възстановяване на разделите}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> връзка от Chrome}other{<ph name="TABS_COUNT_MANY" /> връзки от Chrome}}</translation>
-<translation id="575494663145460764">Искате ли да получавате сигнали за понижение на цените?</translation>
 <translation id="58326064309361797">Преместете с плъзгане разделите, за да ги групирате</translation>
 <translation id="5901630391730855834">Жълто</translation>
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Преглед на информацията за магазина</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Преместване на раздела наляво</translation>
+<translation id="6590332670428149473">Отваряне на менюто с действия за споделената група раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят</translation>
 <translation id="6615455863669487791">Покажете ми</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Променихте <ph name="ONE_CHANGED" /> раздел}other{Променихте <ph name="MANY_CHANGED" /> раздела}}</translation>
 <translation id="6694634756612002311">Управление на споделянето</translation>
@@ -137,7 +138,6 @@
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Разгъване на споделената група раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на споделената група раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Споделяне на раздела}other{Споделяне на разделите}}</translation>
 <translation id="7129458170538955174">Информацията за този магазин е отворена на половината височина</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Затваряне на групата раздели „<ph name="TITLE_OF_GROUP" />“ с <ph name="TABS_COUNT_ONE" /> раздел.}other{Затваряне на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="7204204600596740190">Режим за избор на няколко раздела</translation>
 <translation id="7211038039686180558">Групите раздели се запазват и актуализират автоматично на всички устройства, на които сте влезли в профила си</translation>
 <translation id="731648547091221002">Избрахте: <ph name="COLOR_NAME" /></translation>
@@ -177,19 +177,19 @@
 <translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Добавихте <ph name="ONE_ADDED" /> раздел и затворихте <ph name="ANY_CLOSED" />}other{Добавихте <ph name="MANY_ADDED" /> раздела и затворихте <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всички устройства</translation>
 <translation id="8633025649649592204">Скорошна активност</translation>
+<translation id="8635399646025169806">Искате ли да запазите групата раздели?</translation>
 <translation id="870736955561925754">Искате ли да затворите раздела и да изтриете групата?</translation>
 <translation id="8714939927607906138">По-ниска цена</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Активността ви в съответните раздели в режим „инкогнито“ ще бъде премахната от това устройство</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Създадено преди <ph name="NUM_MONTHS_ONE" /> месец}other{Създадено преди <ph name="NUM_MONTHS_MANY" /> месеца}}</translation>
+<translation id="8804742093141782941">Запазване на групата</translation>
 <translation id="8820741577754260431">Преглед на пониженията на цените от разделите ви</translation>
 <translation id="8887921976452567404">Затворените раздели и групи могат да бъдат отворени отново от секциите „Скорошни раздели“ и „Групи раздели“.</translation>
 <translation id="8915916167043355778">Затваряне на всички</translation>
-<translation id="8926389886865778422">Без повторно питане</translation>
-<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели с <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="9090098097337832354">Информацията за този магазин е затворена</translation>
 <translation id="9111228330448174435">Показване на диалогов прозорец при създаване на нова група раздели</translation>
-<translation id="9150694013019234766">Превключвайте между разделите в групата в долната част на екрана</translation>
+<translation id="9114502155681725011">Отваряне на менюто с действия за групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят</translation>
 <translation id="9169594135889675189">Добавяне на нов раздел към групата</translation>
 <translation id="9216898458513705996">Разделите ще останат отворени на това устройство, но групата ще бъде изтрита от всички устройства, на които сте влезли в профила <ph name="USER_EMAIL" /></translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>

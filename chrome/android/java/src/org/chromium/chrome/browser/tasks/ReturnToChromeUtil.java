@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
@@ -34,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -86,7 +86,7 @@ public final class ReturnToChromeUtil {
             ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_RETURN_TIME,
                     HOME_SURFACE_RETURN_TIME_SECONDS_PARAM,
-                    28800); // 8 hours
+                    14400); // 4 hours
 
     private ReturnToChromeUtil() {}
 

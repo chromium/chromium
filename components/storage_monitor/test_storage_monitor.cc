@@ -28,7 +28,7 @@ TestStorageMonitor::TestStorageMonitor() : init_called_(false) {
 #endif
 }
 
-TestStorageMonitor::~TestStorageMonitor() {}
+TestStorageMonitor::~TestStorageMonitor() = default;
 
 // static
 TestStorageMonitor* TestStorageMonitor::CreateAndInstall() {

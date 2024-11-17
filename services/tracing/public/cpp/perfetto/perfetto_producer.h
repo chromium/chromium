@@ -32,18 +32,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
 
   virtual ~PerfettoProducer();
 
-  // Setup the shared memory buffer and data sources for startup tracing.
-  // Returns false on failure. Can be called on any thread.
-  bool SetupStartupTracing(const base::trace_event::TraceConfig&,
-                           bool privacy_filtering_enabled);
-
-  // Schedules the startup tracing timeout if active.
-  void OnThreadPoolAvailable();
-
-  // See SharedMemoryArbiter::CreateStartupTraceWriter.
-  std::unique_ptr<perfetto::TraceWriter> CreateStartupTraceWriter(
-      uint16_t target_buffer_reservation_id);
-
   // See SharedMemoryArbiter::BindStartupTargetBuffer. Should be called on the
   // producer's task runner.
   virtual void BindStartupTargetBuffer(
@@ -94,22 +82,11 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // producer's sequence is reset while it is connected).
   void ResetSequenceForTesting();
 
-  void set_startup_tracing_timeout_for_testing(base::TimeDelta timeout) {
-    startup_tracing_timeout_ = timeout;
-  }
-
  protected:
   friend class MockProducerHost;
 
   // May be called on any thread.
   virtual bool SetupSharedMemoryForStartupTracing() = 0;
-
-  // The PerfettoProducer subclass should call this once the startup tracing
-  // session was taken over by the tracing service.
-  // TODO(eseckler): Consider refactoring this into e.g. a delegate interface.
-  void OnStartupTracingComplete();
-
-  bool IsStartupTracingActive();
 
   // TODO(crbug.com/40574594): Find a good compromise between performance and
   // data granularity (mainly relevant to running with small buffer sizes
@@ -142,21 +119,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  void MaybeScheduleStartupTracingTimeout();
-  void OnStartupTracingTimeout();
-
-  // If a startup tracing session is not taken over by the service after this
-  // delay, the startup session will be aborted and its data lost. This is to
-  // catch situations where e.g. a subprocess is spawned with startup tracing
-  // flags, but the tracing session got disabled in the service while it was
-  // initializing (in which case, the tracing service will not tell the
-  // subprocess to start tracing after it connects).
-  base::TimeDelta startup_tracing_timeout_ = base::Seconds(60);
-
   const raw_ptr<base::tracing::PerfettoTaskRunner, DanglingUntriaged>
       task_runner_;
-
-  std::atomic<bool> startup_tracing_active_{false};
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<PerfettoProducer> weak_ptr_factory_{this};

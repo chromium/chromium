@@ -38,12 +38,11 @@ extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
 // promotion model. Kill switches are required for all ML model-backed features.
 BASE_FEATURE(kWebAppsEnableMLModelForPromotion,
              "WebAppsEnableMLModelForPromotion",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 extern const base::FeatureParam<double> kWebAppsMLGuardrailResultReportProb(
     &kWebAppsEnableMLModelForPromotion,
     "guardrail_report_prob",
@@ -56,6 +55,10 @@ extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage(
     &kWebAppsEnableMLModelForPromotion,
     "max_days_to_store_guardrails",
     kTotalDaysToStoreMLGuardrails);
+
+BASE_FEATURE(kBypassAppBannerEngagementChecks,
+             "BypassAppBannerEngagementChecks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace webapps

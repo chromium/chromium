@@ -77,7 +77,7 @@ ColorMatrixFilterOperation* ResolveColorMatrix(
   }
 
   return MakeGarbageCollected<ColorMatrixFilterOperation>(
-      *values, FilterOperation::OperationType::kColorMatrix);
+      *std::move(values), FilterOperation::OperationType::kColorMatrix);
 }
 
 struct KernelMatrix {

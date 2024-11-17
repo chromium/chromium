@@ -36,12 +36,12 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "content/public/common/content_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -112,17 +112,6 @@ void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
       }).Then(run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class ContentBrowserClientMock : public ChromeContentBrowserClient {
- public:
-  MOCK_METHOD(void,
-              CheckGetAllScreensMediaAllowed,
-              (content::RenderFrameHost * render_frame_host,
-               base::OnceCallback<void(bool)> callback),
-              (override));
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -512,166 +501,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, OpenAndImmediatelyCloseDocument) {
 
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class GetAllScreensMediaOffscreenApiTest : public OffscreenApiTest {
- public:
-  GetAllScreensMediaOffscreenApiTest() = default;
-  ~GetAllScreensMediaOffscreenApiTest() override = default;
-
-  void SetUpOnMainThread() override {
-    OffscreenApiTest::SetUpOnMainThread();
-    browser_client_ = std::make_unique<ContentBrowserClientMock>();
-    content::SetBrowserClientForTesting(browser_client_.get());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    OffscreenApiTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitFromCommandLine(
-        /*enable_features=*/
-        "GetAllScreensMedia",
-        /*disable_features=*/"");
-  }
-
- protected:
-  ContentBrowserClientMock& content_browser_client() {
-    return *browser_client_;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ContentBrowserClientMock> browser_client_;
-};
-
-// This test checks if the `getAllScreensMedia` API is available and fully
-// functional in offscreen documents on ChromeOS ash.
-IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
-                       GetAllScreensMediaAllowed) {
-  // This test corresponds to a critical user journey (CUJ)
-  // (go/cros-cuj-tracker) for ChromeOS commercial.
-  // This tag links the test to a CUJ and allows close tracking whether a user
-  // journey is fully functional.
-  base::AddTagToTestResult("feature_id",
-                           "screenplay-f3601ae4-bff7-495a-a51f-3c0997a46445");
-  EXPECT_CALL(content_browser_client(),
-              CheckGetAllScreensMediaAllowed(testing::_, testing::_))
-      .WillOnce(testing::Invoke([](content::RenderFrameHost* render_frame_host,
-                                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      }));
-  static constexpr char kManifest[] =
-      R"({
-           "name": "Offscreen Document Test",
-           "manifest_version": 3,
-           "version": "0.1",
-           "background": {"service_worker": "background.js"},
-           "permissions": ["offscreen"]
-         })";
-  // An offscreen document that knows how to capture all screens.
-  static constexpr char kOffscreenJs[] =
-      R"(
-        'use strict';
-
-        let streams;
-
-        async function captureAllScreens() {
-          try {
-            streams = await navigator.mediaDevices.getAllScreensMedia();
-            if (streams === null || streams.length == 0) {
-              return false;
-            }
-
-            let allStreamsOk = true;
-            streams.forEach((stream) => {
-              const videoTracks = stream.getVideoTracks();
-              if (videoTracks.length == 0) {
-                allStreamsOk = false;
-                return;
-              }
-
-              const videoTrack = videoTracks[0];
-              if (typeof videoTrack.screenDetailed !== "function") {
-                allStreamsOk = false;
-                return;
-              }
-            });
-
-            chrome.test.sendScriptResult(allStreamsOk);
-            return;
-          } catch(e) {
-            console.error('Unexcpected exception: ' + e);
-            chrome.test.sendScriptResult(false);
-          }
-        }
-
-        function stopCapture() {
-          streams.forEach((stream) => {
-            stream.getVideoTracks()[0].stop();
-          });
-        }
-
-        chrome.runtime.onMessage.addListener(async (msg) => {
-          if (msg == 'capture') {
-            await captureAllScreens();
-          } else if (msg == 'stop') {
-            stopCapture();
-          } else {
-            console.error('Unexpected message: ' + msg);
-          }
-        })
-        R)";
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Blank.");
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
-                     R"(
-    <html>
-      <script src="offscreen.js"></script>
-      <meta http-equiv="Content-Security-Policy"
-        content="object-src 'none'; base-uri 'none';
-        script-src 'strict-dynamic'
-        'sha256-Y55VppSZfjQ4A035BPDo9OMXignyoxRXv+KKCZpnWiM=';
-        require-trusted-types-for 'script';trusted-types a;">
-    </html>
-    )");
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.js"), kOffscreenJs);
-
-  scoped_refptr<const Extension> extension =
-      LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  // Create a new offscreen document for audio playback and wait for it to load.
-  OffscreenDocumentManager* manager = OffscreenDocumentManager::Get(profile());
-  ProgrammaticallyCreateOffscreenDocument(*extension, *profile(),
-                                          "DISPLAY_MEDIA");
-  OffscreenDocumentHost* document =
-      manager->GetOffscreenDocumentForExtension(*extension);
-  ASSERT_TRUE(document);
-  content::WaitForLoadStop(document->host_contents());
-
-  // Begin the screen capture.
-  {
-    base::Value result = BackgroundScriptExecutor::ExecuteScript(
-        profile(), extension->id(), "chrome.runtime.sendMessage('capture');",
-        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
-    ASSERT_TRUE(result.is_bool());
-    EXPECT_TRUE(result.GetBool());
-  }
-
-  // The document should be kept alive.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(manager->GetOffscreenDocumentForExtension(*extension));
-
-  // Now, stop the capture.
-  {
-    BackgroundScriptExecutor::ExecuteScriptAsync(
-        profile(), extension->id(), "chrome.runtime.sendMessage('stop');");
-  }
-
-  // TODO(crbug.com/40267351): Add check if document gets shut down after the
-  // screen capture with `getAllScreensMedia` is stopped.
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(crbug.com/40272130): Failing on Windows.
 #if BUILDFLAG(IS_WIN)

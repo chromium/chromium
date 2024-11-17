@@ -4,6 +4,8 @@
 
 component("utils") {
   sources = [
+    "check_for_service_and_start.cc",
+    "check_for_service_and_start.h",
     "name_has_owner.cc",
     "name_has_owner.h",
   ]
@@ -11,5 +13,19 @@ component("utils") {
   deps = [
     "//base",
     "//dbus",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "check_for_service_and_start_unittest.cc" ]
+  deps = [
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//dbus",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

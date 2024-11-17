@@ -5,9 +5,8 @@
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 interface ChromeEventWithDispatch extends
     ChromeEvent<(data: chrome.developerPrivate.EventData) => void> {
@@ -43,7 +42,7 @@ suite('ExtensionManagerTest', function() {
     return manager.shadowRoot!.querySelector('extensions-item-list')!.apps;
   }
 
-  test('ItemListVisibility', function() {
+  test('ItemListVisibility', async () => {
     function getExtensionByName(name: string):
         chrome.developerPrivate.ExtensionInfo|null {
       return getExtensions().find(el => el.name === name) || null;
@@ -67,7 +66,7 @@ suite('ExtensionManagerTest', function() {
       event_type: chrome.developerPrivate.EventType.UNINSTALLED,
       item_id: extension.id,
     });
-    flush();
+    await microtasksFinished();
     assertFalse(listHasItemWithName('My extension 1'));
 
     target.dispatch<chrome.developerPrivate.EventData>({
@@ -75,7 +74,7 @@ suite('ExtensionManagerTest', function() {
       item_id: extension.id,
       extensionInfo: extension,
     });
-    flush();
+    await microtasksFinished();
     assertTrue(listHasItemWithName('My extension 1'));
   });
 
@@ -95,17 +94,17 @@ suite('ExtensionManagerTest', function() {
     assertTrue(hasAppWithName('Packaged App Test'));
   });
 
-  test('ChangePages', function() {
+  test('ChangePages', async () => {
     // We start on the item list.
     manager.shadowRoot!.querySelector(
                            'extensions-sidebar')!.$.sectionsExtensions.click();
-    flush();
+    await microtasksFinished();
     assertViewActive('extensions-item-list');
 
     // Switch: item list -> keyboard shortcuts.
     manager.shadowRoot!.querySelector(
                            'extensions-sidebar')!.$.sectionsShortcuts.click();
-    flush();
+    await microtasksFinished();
     assertViewActive('extensions-keyboard-shortcuts');
 
     // Switch: item list -> detail view.
@@ -116,26 +115,26 @@ suite('ExtensionManagerTest', function() {
         item.shadowRoot!.querySelector<HTMLElement>('#detailsButton');
     assertTrue(!!detailsButton);
     detailsButton.click();
-    flush();
+    await microtasksFinished();
     assertViewActive('extensions-detail-view');
 
     // Switch: detail view -> keyboard shortcuts.
     manager.shadowRoot!.querySelector(
                            'extensions-sidebar')!.$.sectionsShortcuts.click();
-    flush();
+    await microtasksFinished();
     assertViewActive('extensions-keyboard-shortcuts');
 
     // We get back on the item list.
     manager.shadowRoot!.querySelector(
                            'extensions-sidebar')!.$.sectionsExtensions.click();
-    flush();
+    await microtasksFinished();
     assertViewActive('extensions-item-list');
   });
 
   test('CloseDrawerOnNarrowModeExit', async function() {
     manager.$.toolbar.narrow = true;
     const toolbar = manager.$.toolbar.$.toolbar;
-    await toolbar.updateComplete;
+    await microtasksFinished();
     toolbar.shadowRoot!.querySelector<HTMLElement>('#menuButton')!.click();
 
     await eventToPromise('cr-drawer-opened', manager);
@@ -146,27 +145,30 @@ suite('ExtensionManagerTest', function() {
     await eventToPromise('close', drawer);
   });
 
-  test('PageTitleUpdate', function() {
+  test('PageTitleUpdate', async () => {
     assertEquals('Extensions', document.title);
 
     // Open details view with a valid ID.
     navigation.navigateTo(
         {page: Page.DETAILS, extensionId: 'ldnnhddmnhbkjipkidpdiheffobcpfmf'});
-    flush();
+    await microtasksFinished();
     assertEquals('Extensions - My extension 1', document.title);
 
     // Navigate back to the list view and check the page title.
     navigation.navigateTo({page: Page.LIST});
-    flush();
+    await microtasksFinished();
     assertEquals('Extensions', document.title);
   });
 
-  test('NavigateToSitePermissionsFail', function() {
-    assertFalse(manager.enableEnhancedSiteControls);
+  // Tests that navigating to site permissions pages is a no-op when
+  // enableEnhancedSiteControls is false.
+  test('NavigateToSitePermissionsFail', async () => {
+    manager.enableEnhancedSiteControls = false;
+    await microtasksFinished();
 
     // Try to open the site permissions page.
     navigation.navigateTo({page: Page.SITE_PERMISSIONS});
-    flush();
+    await microtasksFinished();
 
     // Should be re-routed to the main page with enableEnhancedSiteControls
     // set to false.
@@ -174,27 +176,28 @@ suite('ExtensionManagerTest', function() {
 
     // Try to open the site permissions all-sites page.
     navigation.navigateTo({page: Page.SITE_PERMISSIONS_ALL_SITES});
-    flush();
+    await microtasksFinished();
 
     // Should be re-routed to the main page.
     assertViewActive('extensions-item-list');
   });
 
-  test('NavigateToSitePermissionsSuccess', function() {
-    // Set the enableEnhancedSiteControls flag to true.
+  // Test that navigating to site permissions pages opens the corresponding page
+  // when enableEnhancedSiteControls is true.
+  test('NavigateToSitePermissionsSuccess', async () => {
     manager.enableEnhancedSiteControls = true;
-    flush();
+    await microtasksFinished();
 
     // Try to open the site permissions page. The navigation should succeed
     // with enableEnhancedSiteControls set to true.
     navigation.navigateTo({page: Page.SITE_PERMISSIONS});
-    flush();
+    await microtasksFinished();
     assertViewActive('extensions-site-permissions');
 
     // Try to open the site permissions all-sites page. The navigation
     // should succeed.
     navigation.navigateTo({page: Page.SITE_PERMISSIONS_ALL_SITES});
-    flush();
+    await microtasksFinished();
     assertViewActive('extensions-site-permissions-by-site');
   });
 });

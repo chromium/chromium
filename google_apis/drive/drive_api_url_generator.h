@@ -99,7 +99,7 @@ class DriveApiUrlGenerator {
 
   // Returns a URL for "multipart upload" of a new file that sends both metadata
   // and file content in a single HTTP post.
-  GURL GetMultipartUploadNewFileUrl(bool set_modified_date) const;
+  GURL GetMultipartUploadNewFileUrl(bool set_modified_date, bool convert) const;
 
   // Returns a URL for "multipart upload" of an existing file specified by
   // |resource_id| that sends both metadata and file content in a single HTTP

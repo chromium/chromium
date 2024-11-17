@@ -8,10 +8,12 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "net/cert/x509_util.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
 
@@ -41,7 +43,9 @@ namespace {
 
 ServerCertificateDatabase::ServerCertificateDatabase(
     const base::FilePath& storage_dir) {
-  InitInternal(storage_dir);
+  auto status = InitInternal(storage_dir);
+
+  CHECK(status == sql::InitStatus::INIT_OK);
 }
 
 ServerCertificateDatabase::~ServerCertificateDatabase() = default;
@@ -108,6 +112,7 @@ bool ServerCertificateDatabase::InsertOrUpdateCert(
       SQL_FROM_HERE,
       "INSERT OR REPLACE INTO certificates(sha256hash_hex, der_cert, "
       "trust_settings) VALUES(?,?,?)"));
+  DCHECK(insert_statement.is_valid());
   insert_statement.BindString(0, cert_info.sha256hash_hex);
   insert_statement.BindBlob(1, cert_info.der_cert);
   insert_statement.BindBlob(2, base::as_byte_span(proto_bytes));
@@ -123,6 +128,7 @@ ServerCertificateDatabase::RetrieveAllCertificates() {
       "SELECT sha256hash_hex, der_cert, trust_settings FROM certificates";
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectAllCerts));
+  DCHECK(statement.is_valid());
   while (statement.Step()) {
     ServerCertificateDatabase::CertInformation cert_info;
     cert_info.sha256hash_hex = statement.ColumnString(0);
@@ -139,6 +145,29 @@ ServerCertificateDatabase::RetrieveAllCertificates() {
   return certs;
 }
 
+uint32_t ServerCertificateDatabase::RetrieveCertificatesCount() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSqlSelectCertsCount[] =
+      "SELECT COUNT(*) FROM certificates";
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectCertsCount));
+  DCHECK(statement.is_valid());
+  if (!statement.Step()) {
+    return 0;
+  }
+  return statement.ColumnInt(0);
+}
+
+bool ServerCertificateDatabase::DeleteCertificate(
+    const std::string& sha256hash_hex) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Statement delete_statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM certificates WHERE sha256hash_hex=?"));
+  DCHECK(delete_statement.is_valid());
+  delete_statement.BindString(0, sha256hash_hex);
+  return delete_statement.Run() && db_.GetLastChangeCount() > 0;
+}
+
 ServerCertificateDatabase::CertInformation::CertInformation() = default;
 ServerCertificateDatabase::CertInformation::~CertInformation() = default;
 ServerCertificateDatabase::CertInformation::CertInformation(
@@ -146,5 +175,53 @@ ServerCertificateDatabase::CertInformation::CertInformation(
 ServerCertificateDatabase::CertInformation&
 ServerCertificateDatabase::CertInformation::operator=(
     ServerCertificateDatabase::CertInformation&& other) = default;
+
+std::optional<bssl::CertificateTrustType>
+ServerCertificateDatabase::GetUserCertificateTrust(
+    const net::ServerCertificateDatabase::CertInformation& cert_info) {
+  using chrome_browser_server_certificate_database::CertificateTrust;
+  switch (cert_info.cert_metadata.trust().trust_type()) {
+    case CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED:
+      return bssl::CertificateTrustType::UNSPECIFIED;
+    case CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED:
+      return bssl::CertificateTrustType::DISTRUSTED;
+    case CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED: {
+      auto parsed = bssl::ParsedCertificate::Create(
+          net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
+          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+
+      if (!parsed) {
+        return std::nullopt;
+      }
+
+      // If basic constraints are missing, assume that is_ca is set.
+      bool isCA = !parsed->has_basic_constraints() ||
+                  (parsed->has_basic_constraints() &&
+                   parsed->basic_constraints().is_ca);
+
+      bool has_names = parsed->has_subject_alt_names() &&
+                       !(parsed->subject_alt_names()->dns_names.empty() &&
+                         parsed->subject_alt_names()->ip_addresses.empty());
+
+      if (isCA) {
+        if (has_names) {
+          return bssl::CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF;
+        } else {
+          return bssl::CertificateTrustType::TRUSTED_ANCHOR;
+        }
+      }
+
+      // isCA = false
+      if (has_names) {
+        return bssl::CertificateTrustType::TRUSTED_LEAF;
+      } else {
+        return std::nullopt;
+      }
+    }
+    case CertificateTrust::CERTIFICATE_TRUST_TYPE_UNKNOWN:
+    default:
+      return std::nullopt;
+  }
+}
 
 }  // namespace net

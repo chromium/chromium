@@ -40,8 +40,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocati
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -112,8 +112,8 @@ public class MultiInstanceManager
      * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for the
      *     associated activity.
-     * @param desktopWindowStateProviderSupplier A supplier for the {@link
-     *     DesktopWindowStateProvider} instance.
+     * @param desktopWindowStateManagerSupplier A supplier for the {@link DesktopWindowStateManager}
+     *     instance.
      * @return {@link MultiInstanceManager} object or {@code null} on the platform it is not needed.
      */
     public @Nullable static MultiInstanceManager create(
@@ -123,7 +123,7 @@ public class MultiInstanceManager
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
-            Supplier<DesktopWindowStateProvider> desktopWindowStateProviderSupplier) {
+            Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return new MultiInstanceManagerApi31(
                     activity,
@@ -132,7 +132,7 @@ public class MultiInstanceManager
                     activityLifecycleDispatcher,
                     modalDialogManagerSupplier,
                     menuOrKeyboardActionController,
-                    desktopWindowStateProviderSupplier);
+                    desktopWindowStateManagerSupplier);
         } else {
             return new MultiInstanceManager(
                     activity,

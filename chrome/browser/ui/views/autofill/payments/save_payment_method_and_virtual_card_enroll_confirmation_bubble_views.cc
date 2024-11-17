@@ -21,7 +21,7 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
     SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews(
         views::View* anchor_view,
         content::WebContents* web_contents,
-        base::OnceCallback<void(PaymentsBubbleClosedReason)>
+        base::OnceCallback<void(PaymentsUiClosedReason)>
             controller_hide_callback,
         SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params)
     : AutofillLocationBarBubble(anchor_view, web_contents),
@@ -43,7 +43,7 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::Hide() {
   CloseBubble();
   if (!controller_hide_callback_.is_null()) {
     std::move(controller_hide_callback_)
-        .Run(GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        .Run(GetPaymentsUiClosedReasonFromWidget(GetWidget()));
   }
 }
 
@@ -61,8 +61,9 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::AddedToWidget
                                      .set_bottom(0)));
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
   }
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string
@@ -73,7 +74,7 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::GetWindowTitle() c
 void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::WindowClosing() {
   if (!controller_hide_callback_.is_null()) {
     std::move(controller_hide_callback_)
-        .Run(GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        .Run(GetPaymentsUiClosedReasonFromWidget(GetWidget()));
   }
 }
 

@@ -22,6 +22,7 @@
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
@@ -38,6 +39,7 @@
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
+#include "ui/views/corewm/tooltip_aura.h"
 #include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -50,12 +52,6 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone_linux.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/views/corewm/tooltip_lacros.h"
-#else
-#include "ui/views/corewm/tooltip_aura.h"
 #endif
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(views::DesktopWindowTreeHostPlatform*)
@@ -72,17 +68,17 @@ namespace {
 // destroyed.
 std::list<gfx::AcceleratedWidget>* open_windows_ = nullptr;
 
-bool DetermineInactivity(ui::WindowShowState show_state) {
-  if (show_state != ui::SHOW_STATE_DEFAULT &&
-      show_state != ui::SHOW_STATE_NORMAL &&
-      show_state != ui::SHOW_STATE_INACTIVE &&
-      show_state != ui::SHOW_STATE_MAXIMIZED) {
+bool DetermineInactivity(ui::mojom::WindowShowState show_state) {
+  if (show_state != ui::mojom::WindowShowState::kDefault &&
+      show_state != ui::mojom::WindowShowState::kNormal &&
+      show_state != ui::mojom::WindowShowState::kInactive &&
+      show_state != ui::mojom::WindowShowState::kMaximized) {
     // It will behave like SHOW_STATE_NORMAL.
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   // See comment in PlatformWindow::Show().
-  return show_state == ui::SHOW_STATE_INACTIVE;
+  return show_state == ui::mojom::WindowShowState::kInactive;
 }
 
 ui::PlatformWindowOpacity GetPlatformWindowOpacity(
@@ -169,14 +165,6 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
     }
   }
   properties.inhibit_keyboard_shortcuts = params.inhibit_keyboard_shortcuts;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Set restore members for windows to know ids upon creation. See the
-  // corresponding comment in Widget::InitParams.
-  properties.restore_session_id = params.restore_session_id;
-  properties.restore_window_id = params.restore_window_id;
-  properties.restore_window_id_source = params.restore_window_id_source;
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -347,11 +335,7 @@ void DesktopWindowTreeHostPlatform::OnActiveWindowChanged(bool active) {
 
 std::unique_ptr<corewm::Tooltip>
 DesktopWindowTreeHostPlatform::CreateTooltip() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::make_unique<corewm::TooltipLacros>();
-#else
   return std::make_unique<corewm::TooltipAura>();
-#endif
 }
 
 std::unique_ptr<aura::client::DragDropClient>
@@ -374,6 +358,8 @@ void DesktopWindowTreeHostPlatform::Close() {
   // closed, do nothing.
   if (close_widget_factory_.HasWeakPtrs() || !platform_window())
     return;
+
+  platform_window()->PrepareForShutdown();
 
   GetContentWindow()->Hide();
 
@@ -398,8 +384,6 @@ void DesktopWindowTreeHostPlatform::CloseNow() {
 #if BUILDFLAG(IS_OZONE)
   SetWmDropHandler(platform_window(), nullptr);
 #endif
-
-  platform_window()->PrepareForShutdown();
 
   ReleaseCapture();
   if (native_widget_delegate_)
@@ -433,7 +417,7 @@ aura::WindowTreeHost* DesktopWindowTreeHostPlatform::AsWindowTreeHost() {
   return this;
 }
 
-void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
+void DesktopWindowTreeHostPlatform::Show(ui::mojom::WindowShowState show_state,
                                          const gfx::Rect& restore_bounds) {
   OnAcceleratedWidgetMadeVisible(true);
   if (compositor())
@@ -442,7 +426,7 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
   platform_window()->Show(DetermineInactivity(show_state));
 
   switch (show_state) {
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       platform_window()->Maximize();
       if (!restore_bounds.IsEmpty()) {
         // Enforce |restored_bounds_in_pixels_| since calling Maximize() could
@@ -450,10 +434,10 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
         platform_window()->SetRestoredBoundsInDIP(restore_bounds);
       }
       break;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       platform_window()->Minimize();
       break;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       SetFullscreen(true, display::kInvalidDisplayId);
       break;
     default:
@@ -461,8 +445,8 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
   }
 
   if (native_widget_delegate_->CanActivate()) {
-    if (show_state != ui::SHOW_STATE_INACTIVE &&
-        show_state != ui::SHOW_STATE_MINIMIZED) {
+    if (show_state != ui::mojom::WindowShowState::kInactive &&
+        show_state != ui::mojom::WindowShowState::kMinimized) {
       Activate();
     }
 
@@ -474,7 +458,7 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
     // focused view from getting focused. See https://crbug.com/515594 for
     // example.
     native_widget_delegate_->SetInitialFocus(
-        IsActive() ? show_state : ui::SHOW_STATE_INACTIVE);
+        IsActive() ? show_state : ui::mojom::WindowShowState::kInactive);
   }
 
   // compositor()->SetVisible(true) might have already led to content_window
@@ -534,19 +518,19 @@ void DesktopWindowTreeHostPlatform::CenterWindow(const gfx::Size& size) {
 
 void DesktopWindowTreeHostPlatform::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   *bounds = GetRestoredBounds();
 
   if (IsFullscreen())
-    *show_state = ui::SHOW_STATE_FULLSCREEN;
+    *show_state = ui::mojom::WindowShowState::kFullscreen;
   else if (IsMinimized())
-    *show_state = ui::SHOW_STATE_MINIMIZED;
+    *show_state = ui::mojom::WindowShowState::kMinimized;
   else if (IsMaximized())
-    *show_state = ui::SHOW_STATE_MAXIMIZED;
+    *show_state = ui::mojom::WindowShowState::kMaximized;
   else if (!IsActive())
-    *show_state = ui::SHOW_STATE_INACTIVE;
+    *show_state = ui::mojom::WindowShowState::kInactive;
   else
-    *show_state = ui::SHOW_STATE_NORMAL;
+    *show_state = ui::mojom::WindowShowState::kNormal;
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::GetWindowBoundsInScreen() const {
@@ -619,7 +603,7 @@ bool DesktopWindowTreeHostPlatform::IsActive() const {
 void DesktopWindowTreeHostPlatform::Maximize() {
   platform_window()->Maximize();
   if (IsMinimized())
-    Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+    Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
 }
 
 void DesktopWindowTreeHostPlatform::Minimize() {
@@ -629,7 +613,7 @@ void DesktopWindowTreeHostPlatform::Minimize() {
 
 void DesktopWindowTreeHostPlatform::Restore() {
   platform_window()->Restore();
-  Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+  Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
 }
 
 bool DesktopWindowTreeHostPlatform::IsMaximized() const {
@@ -777,8 +761,8 @@ void DesktopWindowTreeHostPlatform::SetFullscreen(bool fullscreen,
 }
 
 bool DesktopWindowTreeHostPlatform::IsFullscreen() const {
-  return ui::IsPlatformWindowStateFullscreen(
-      platform_window()->GetPlatformWindowState());
+  return platform_window()->GetPlatformWindowState() ==
+         ui::PlatformWindowState::kFullScreen;
 }
 
 void DesktopWindowTreeHostPlatform::SetOpacity(float opacity) {
@@ -886,7 +870,7 @@ gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
 }
 
 void DesktopWindowTreeHostPlatform::ShowImpl() {
-  Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+  Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
 }
 
 void DesktopWindowTreeHostPlatform::HideImpl() {
@@ -1053,16 +1037,11 @@ gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToDIP(
 
 gfx::PointF DesktopWindowTreeHostPlatform::ConvertScreenPointToLocalDIP(
     const gfx::Point& screen_in_pixels) const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // lacros should not use this.
-  NOTREACHED();
-#else
   // TODO(crbug.com/40222832): DIP should use gfx::PointF. Fix this as
   // a part of cleanup work(crbug.com/1318279).
   gfx::Point local_dip(screen_in_pixels);
   ConvertScreenInPixelsToDIP(&local_dip);
   return gfx::PointF(local_dip);
-#endif
 }
 
 gfx::Insets DesktopWindowTreeHostPlatform::ConvertInsetsToPixels(
@@ -1101,11 +1080,6 @@ Widget* DesktopWindowTreeHostPlatform::GetWidget() {
 const Widget* DesktopWindowTreeHostPlatform::GetWidget() const {
   return native_widget_delegate_ ? native_widget_delegate_->AsWidget()
                                  : nullptr;
-}
-
-views::corewm::TooltipController*
-DesktopWindowTreeHostPlatform::tooltip_controller() {
-  return desktop_native_widget_aura_->tooltip_controller();
 }
 
 void DesktopWindowTreeHostPlatform::ScheduleRelayout() {

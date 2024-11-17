@@ -22,7 +22,12 @@ build_webui("build") {
     "filter_chips.ts",
     "history_embeddings.ts",
   ]
-  non_web_component_files = [ "browser_proxy.ts" ]
+  non_web_component_files = [
+    "browser_proxy.ts",
+    "result_image.html.ts",
+    "result_image.ts",
+  ]
+  css_files = [ "result_image.css" ]
   icons_html_files = [ "icons.html" ]
   html_to_wrapper_template = "detect"
 
@@ -33,6 +38,7 @@ build_webui("build") {
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/history_embeddings"
   ts_composite = true
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/history:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

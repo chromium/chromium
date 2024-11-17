@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_metrics_utils.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_task_environment.h"

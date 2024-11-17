@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Google ਨੇਮ ਸਰਵਰ</translation>
+<translation id="1170788066030116158">ਫ਼ੋਟੋ ਖਿੱਚਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="1172970565351728681">ਲਗਭਗ <ph name="REMAINING_TIME" /> ਬਾਕੀ</translation>
 <translation id="1173894706177603556">ਮੁੜ-ਨਾਮਕਰਨ ਕਰੋ</translation>
 <translation id="1173916544412572294">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" />%, ਵੇਰਵੇ</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">ਪ੍ਰਮਾਣਿਕਰਨ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੂੰ ਰਿਮੋਟਲੀ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4394214039309501350">ਬਾਹਰੀ ਲਿੰਕ</translation>
 <translation id="4394980935660306080">ਇਸ ਹਫ਼ਤੇ ਦੀ ਸ਼ੁਰੂਆਤ ਵਿੱਚ</translation>
+<translation id="4397435965699247285">OneDrive ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="4398096759193130964">ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ ਜਾਂ ਇਨ੍ਹਾਂ ਨੂੰ ਰੱਦੀ ਤੋਂ ਬਾਹਰ ਕਿਸੇ ਨਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਘਸੀਟੋ</translation>
 <translation id="4401287888955153199">ਸਭ ਐਕਸਟ੍ਰੈਕਟ ਕਰੋ</translation>
 <translation id="4410695710508688828">ਐਕਸਟਰੈਕਟ ਕਰਨ ਦੀ ਕਾਰਵਾਈ ਅਸਫਲ ਰਹੀ। <ph name="ERROR_MESSAGE" /></translation>

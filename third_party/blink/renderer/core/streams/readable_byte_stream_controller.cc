@@ -158,7 +158,7 @@ void ReadableByteStreamController::close(ScriptState* script_state,
   }
 
   // 3. Perform ? ReadableByteStreamControllerClose(this).
-  Close(script_state, this, exception_state);
+  Close(script_state, this);
 }
 
 void ReadableByteStreamController::enqueue(ScriptState* script_state,
@@ -209,8 +209,7 @@ void ReadableByteStreamController::error(ScriptState* script_state,
 
 void ReadableByteStreamController::Close(
     ScriptState* script_state,
-    ReadableByteStreamController* controller,
-    ExceptionState& exception_state) {
+    ReadableByteStreamController* controller) {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-close
   // 1. Let stream be controller.[[stream]].
   ReadableStream* const stream = controller->controlled_readable_stream_;
@@ -238,11 +237,12 @@ void ReadableByteStreamController::Close(
     //   b. If firstPendingPullInto’s bytes filled > 0,
     if (first_pending_pull_into->bytes_filled > 0) {
       //     i. Let e be a new TypeError exception.
-      exception_state.ThrowTypeError("Cannot close while responding");
-      v8::Local<v8::Value> e = exception_state.GetException();
+      v8::Local<v8::Value> e = V8ThrowException::CreateTypeError(
+          script_state->GetIsolate(), "Cannot close while responding");
       //     ii. Perform ! ReadableByteStreamControllerError(controller, e).
       Error(script_state, controller, e);
       //     iii. Throw e.
+      V8ThrowException::ThrowException(script_state->GetIsolate(), e);
       return;
     }
   }
@@ -399,8 +399,7 @@ void ReadableByteStreamController::Enqueue(
     //   b. Perform !
     //   ReadableByteStreamControllerProcessPullIntoDescriptorsUsing
     //   Queue(controller).
-    ProcessPullIntoDescriptorsUsingQueue(script_state, controller,
-                                         exception_state);
+    ProcessPullIntoDescriptorsUsingQueue(script_state, controller);
     DCHECK(!exception_state.HadException());
   } else {
     // 11. Otherwise,
@@ -478,11 +477,12 @@ void ReadableByteStreamController::EnqueueDetachedPullIntoToQueue(
 
 void ReadableByteStreamController::ProcessPullIntoDescriptorsUsingQueue(
     ScriptState* script_state,
-    ReadableByteStreamController* controller,
-    ExceptionState& exception_state) {
+    ReadableByteStreamController* controller) {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-process-pull-into-descriptors-using-queue
   // 1. Assert: controller.[[closeRequested]] is false.
   DCHECK(!controller->close_requested_);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::TryCatch try_catch(isolate);
   // 2. While controller.[[pendingPullIntos]] is not empty,
   while (!controller->pending_pull_intos_.empty()) {
     //   a. If controller.[[queueTotalSize]] is 0, return.
@@ -495,24 +495,23 @@ void ReadableByteStreamController::ProcessPullIntoDescriptorsUsingQueue(
     //   c. If ! ReadableByteStreamControllerFillPullIntoDescriptorFromQueue(
     //   controller, pullIntoDescriptor) is true,
     if (FillPullIntoDescriptorFromQueue(controller, pull_into_descriptor,
-                                        exception_state)) {
+                                        PassThroughException(isolate))) {
       //     i. Perform !
       //     ReadableByteStreamControllerShiftPendingPullInto(controller).
       ShiftPendingPullInto(controller);
       //     ii. Perform ! ReadableByteStreamControllerCommitPullIntoDescriptor(
       //     controller.[[stream]], pullIntoDescriptor).
-      CommitPullIntoDescriptor(script_state,
-                               controller->controlled_readable_stream_,
-                               pull_into_descriptor, exception_state);
-      DCHECK(!exception_state.HadException());
+      CommitPullIntoDescriptor(
+          script_state, controller->controlled_readable_stream_,
+          pull_into_descriptor, PassThroughException(isolate));
+      DCHECK(!try_catch.HasCaught());
     }
-    if (exception_state.HadException()) {
+    if (try_catch.HasCaught()) {
       // Instead of returning a rejection, which is inconvenient here,
       // call ControllerError(). The only difference this makes is that it
       // happens synchronously, but that should not be observable.
       ReadableByteStreamController::Error(script_state, controller,
-                                          exception_state.GetException());
-      exception_state.ClearException();
+                                          try_catch.Exception());
       return;
     }
   }
@@ -625,12 +624,9 @@ void ReadableByteStreamController::CallPullIfNeeded(
     const Member<ReadableByteStreamController> controller_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), pull_promise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolveFunction>(controller)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(controller)));
+  StreamThenPromise(script_state, pull_promise,
+                    MakeGarbageCollected<ResolveFunction>(controller),
+                    MakeGarbageCollected<RejectFunction>(controller));
 }
 
 ReadableByteStreamController::PullIntoDescriptor*
@@ -837,25 +833,20 @@ void ReadableByteStreamController::SetUp(
   // 15. Let startPromise be a promise resolved with startResult.
   // The conversion of startResult to a promise happens inside start_algorithm
   // in this implementation.
-  v8::Local<v8::Promise> start_promise;
-  if (!start_algorithm->Run(script_state, exception_state)
-           .ToLocal(&start_promise)) {
-    if (!exception_state.HadException()) {
-      exception_state.ThrowException(
-          static_cast<int>(DOMExceptionCode::kInvalidStateError),
-          "start algorithm failed with no exception thrown");
-    }
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
+  auto start_promise = start_algorithm->Run(script_state);
+  if (start_promise.IsEmpty()) {
+    CHECK(rethrow_scope.HasCaught());
     return;
   }
-  DCHECK(!exception_state.HadException());
 
-  class ResolveFunction final : public PromiseHandler {
+  class ResolveFunction final
+      : public ThenCallable<IDLUndefined, ResolveFunction> {
    public:
     explicit ResolveFunction(ReadableByteStreamController* controller)
         : controller_(controller) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
+    void React(ScriptState* script_state) {
       // 16. Upon fulfillment of startPromise,
       //   a. Set controller.[[started]] to true.
       controller_->started_ = true;
@@ -870,40 +861,36 @@ void ReadableByteStreamController::SetUp(
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLUndefined, ResolveFunction>::Trace(visitor);
     }
 
    private:
     const Member<ReadableByteStreamController> controller_;
   };
 
-  class RejectFunction final : public PromiseHandler {
+  class RejectFunction final : public ThenCallable<IDLAny, RejectFunction> {
    public:
     explicit RejectFunction(ReadableByteStreamController* controller)
         : controller_(controller) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> r) override {
+    void React(ScriptState* script_state, ScriptValue r) {
       // 17. Upon rejection of startPromise with reason r,
       //   a. Perform ! ReadableByteStreamControllerError(controller, r).
-      Error(script_state, controller_, r);
+      Error(script_state, controller_, r.V8Value());
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectFunction>::Trace(visitor);
     }
 
    private:
     const Member<ReadableByteStreamController> controller_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), start_promise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolveFunction>(controller)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(controller)));
+  start_promise.Then(script_state,
+                     MakeGarbageCollected<ResolveFunction>(controller),
+                     MakeGarbageCollected<RejectFunction>(controller));
 }
 
 void ReadableByteStreamController::SetUpFromUnderlyingSource(
@@ -1205,7 +1192,7 @@ void ReadableByteStreamController::PullInto(
         ctor = &CreateAsArrayBufferView<DOMBigUint64Array>;
         break;
       case DOMArrayBufferView::kTypeDataView:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   // 5. Let byteOffset be view.[[ByteOffset]].
@@ -1213,15 +1200,20 @@ void ReadableByteStreamController::PullInto(
   // 6. Let byteLength be view.[[ByteLength]].
   const size_t byte_length = view->byteLength();
   // 7. Let bufferResult be TransferArrayBuffer(view.[[ViewedArrayBuffer]]).
-  DOMArrayBuffer* buffer =
-      TransferArrayBuffer(script_state, view->buffer(), exception_state);
-  // 8. If bufferResult is an abrupt completion,
-  if (exception_state.HadException()) {
-    //  a. Perform readIntoRequest's error steps, given bufferResult.[[Value]].
-    read_into_request->ErrorSteps(script_state, exception_state.GetException());
-    //  b. Return.
-    exception_state.ClearException();
-    return;
+  DOMArrayBuffer* buffer = nullptr;
+  {
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    buffer =
+        TransferArrayBuffer(script_state, view->buffer(),
+                            PassThroughException(script_state->GetIsolate()));
+    // 8. If bufferResult is an abrupt completion,
+    if (try_catch.HasCaught()) {
+      //  a. Perform readIntoRequest's error steps, given
+      //     bufferResult.[[Value]].
+      read_into_request->ErrorSteps(script_state, try_catch.Exception());
+      //  b. Return.
+      return;
+    }
   }
   // 9. Let buffer be bufferResult.[[Value]].
 
@@ -1258,13 +1250,16 @@ void ReadableByteStreamController::PullInto(
     //   a. If !
     //   ReadableByteStreamControllerFillPullIntoDescriptorFromQueue(controller,
     //   pullIntoDescriptor) is true,
-    if (FillPullIntoDescriptorFromQueue(controller, pull_into_descriptor,
-                                        exception_state)) {
+    v8::TryCatch try_catch(script_state->GetIsolate());
+    if (FillPullIntoDescriptorFromQueue(
+            controller, pull_into_descriptor,
+            PassThroughException(script_state->GetIsolate()))) {
       //     i. Let filledView be !
       //     ReadableByteStreamControllerConvertPullIntoDescriptor(pullIntoDescriptor).
       DOMArrayBufferView* filled_view = ConvertPullIntoDescriptor(
-          script_state, pull_into_descriptor, exception_state);
-      DCHECK(!exception_state.HadException());
+          script_state, pull_into_descriptor,
+          PassThroughException(script_state->GetIsolate()));
+      DCHECK(!try_catch.HasCaught());
       //     ii. Perform !
       //     ReadableByteStreamControllerHandleQueueDrain(controller).
       HandleQueueDrain(script_state, controller);
@@ -1273,13 +1268,12 @@ void ReadableByteStreamController::PullInto(
       //     iv. Return.
       return;
     }
-    if (exception_state.HadException()) {
+    if (try_catch.HasCaught()) {
       // Instead of returning a rejection, which is inconvenient here,
       // call ControllerError(). The only difference this makes is that it
       // happens synchronously, but that should not be observable.
       ReadableByteStreamController::Error(script_state, controller,
-                                          exception_state.GetException());
-      exception_state.ClearException();
+                                          try_catch.Exception());
       return;
     }
     //   b. If controller.[[closeRequested]] is true,
@@ -1438,8 +1432,7 @@ void ReadableByteStreamController::RespondInReadableState(
     EnqueueDetachedPullIntoToQueue(controller, pull_into_descriptor);
     //   b. Perform !
     //   ReadableByteStreamControllerProcessPullIntoDescriptorsUsingQueue(controller).
-    ProcessPullIntoDescriptorsUsingQueue(script_state, controller,
-                                         exception_state);
+    ProcessPullIntoDescriptorsUsingQueue(script_state, controller);
     //   c. Return.
     return;
   }
@@ -1482,8 +1475,7 @@ void ReadableByteStreamController::RespondInReadableState(
   DCHECK(!exception_state.HadException());
   // 10. Perform !
   // ReadableByteStreamControllerProcessPullIntoDescriptorsUsingQueue(controller).
-  ProcessPullIntoDescriptorsUsingQueue(script_state, controller,
-                                       exception_state);
+  ProcessPullIntoDescriptorsUsingQueue(script_state, controller);
   DCHECK(!exception_state.HadException());
 }
 

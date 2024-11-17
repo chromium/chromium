@@ -615,7 +615,7 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Counts for each command sent. Note that PhoneHubMessageType also includes
-    message types that are recieved by CrOS. Those will always have a zero value
+    message types that are received by CrOS. Those will always have a zero value
     in this histogram.
   </summary>
 </histogram>

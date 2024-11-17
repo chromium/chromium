@@ -39,6 +39,7 @@
 #include <cstdlib>
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,13 +74,10 @@ TEST(SharedBufferTest, getAsBytes) {
   shared_buffer->Append(test_data2, strlen(test_data2));
 
   const size_t size = shared_buffer->size();
-  auto data = std::make_unique<char[]>(size);
-  ASSERT_TRUE(shared_buffer->GetBytes(data.get(), size));
+  auto data = base::HeapArray<uint8_t>::Uninit(size);
+  ASSERT_TRUE(shared_buffer->GetBytes(data));
 
-  char expected_concatenation[] = "HelloWorldGoodbye";
-  ASSERT_EQ(strlen(expected_concatenation), size);
-  EXPECT_EQ(0, memcmp(expected_concatenation, data.get(),
-                      strlen(expected_concatenation)));
+  EXPECT_EQ(base::byte_span_from_cstring("HelloWorldGoodbye"), data.as_span());
 }
 
 TEST(SharedBufferTest, getPartAsBytes) {
@@ -99,9 +97,10 @@ TEST(SharedBufferTest, getPartAsBytes) {
       {17, "HelloWorldGoodbye"}, {7, "HelloWo"}, {3, "Hel"},
   };
   for (TestData& test : test_data) {
-    auto data = std::make_unique<char[]>(test.size);
-    ASSERT_TRUE(shared_buffer->GetBytes(data.get(), test.size));
-    EXPECT_EQ(0, memcmp(test.expected, data.get(), test.size));
+    auto data = base::HeapArray<uint8_t>::Uninit(test.size);
+    ASSERT_TRUE(shared_buffer->GetBytes(data));
+    EXPECT_EQ(std::string_view(test.expected, test.size),
+              base::as_string_view(data));
   }
 }
 
@@ -122,8 +121,8 @@ TEST(SharedBufferTest, getAsBytesLargeSegments) {
   shared_buffer->Append(vector2);
 
   const size_t size = shared_buffer->size();
-  auto data = std::make_unique<char[]>(size);
-  ASSERT_TRUE(shared_buffer->GetBytes(data.get(), size));
+  auto data = base::HeapArray<uint8_t>::Uninit(size);
+  ASSERT_TRUE(shared_buffer->GetBytes(data));
 
   ASSERT_EQ(0x4000U + 0x4000U + 0x4000U, size);
   int position = 0;
@@ -310,19 +309,19 @@ TEST(SharedBufferIteratorTest, SingleSegment) {
   auto it = buffer->cbegin();
   ASSERT_NE(it, buffer->cend());
 
-  EXPECT_EQ(String(it->data(), it->size()), "hello");
+  EXPECT_EQ(String(base::as_bytes(*it)), "hello");
 
   ++it;
 
   EXPECT_EQ(it, buffer->cend());
 
   it = buffer->GetIteratorAt(static_cast<size_t>(0));
-  EXPECT_EQ(String(it->data(), it->size()), "hello");
+  EXPECT_EQ(String(base::as_bytes(*it)), "hello");
 
   it = buffer->GetIteratorAt(static_cast<size_t>(1));
-  EXPECT_EQ(String(it->data(), it->size()), "ello");
+  EXPECT_EQ(String(base::as_bytes(*it)), "ello");
   it = buffer->GetIteratorAt(static_cast<size_t>(4));
-  EXPECT_EQ(String(it->data(), it->size()), "o");
+  EXPECT_EQ(String(base::as_bytes(*it)), "o");
   EXPECT_EQ(buffer->GetIteratorAt(static_cast<size_t>(5)), buffer->cend());
 }
 

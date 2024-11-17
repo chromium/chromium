@@ -4,12 +4,127 @@
 
 #include "chrome/browser/dips/dips_navigation_flow_detector.h"
 
-#include "chrome/browser/dips/dips_service.h"
+#include "base/rand_util.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+
+namespace {
+// Types that qualify a navigation for the DIPS.TrustIndicator.DirectNavigation
+// UKM event. Should only contain core page transition types (no qualifiers).
+constexpr const std::array<ui::PageTransition, 2>&
+    kDirectNavigationPageTransitions{
+        ui::PAGE_TRANSITION_TYPED,
+        ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+    };
+
+bool IsPageTransitionDirectNavigation(ui::PageTransition page_transition) {
+  for (auto& direct_navigation_type : kDirectNavigationPageTransitions) {
+    if (ui::PageTransitionCoreTypeIs(page_transition, direct_navigation_type)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+dips::DirectNavigationSource ToDirectNavigationSource(
+    ui::PageTransition page_transition) {
+  if (ui::PageTransitionCoreTypeIs(page_transition,
+                                   ui::PAGE_TRANSITION_TYPED)) {
+    return dips::kOmnibar;
+  }
+  if (ui::PageTransitionCoreTypeIs(page_transition,
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
+    return dips::kBookmark;
+  }
+  return dips::kUnknown;
+}
+
+// Looks for a redirect to the current page that qualifies as a server-redirect
+// exit from a suspected tracker flow (i.e., a single-hop server-side redirect)
+// and returns it, if one exists. Returns nullptr otherwise.
+const DIPSRedirectInfo* GetEntrypointExitServerRedirect(
+    const DIPSRedirectContext& redirect_context) {
+  size_t num_redirects = redirect_context.size();
+  if (num_redirects == 0) {
+    return nullptr;
+  }
+
+  size_t most_recent_redirect_index = num_redirects - 1;
+  const DIPSRedirectInfo* most_recent_redirect =
+      &redirect_context[most_recent_redirect_index];
+  if (most_recent_redirect->redirect_type != DIPSRedirectType::kServer) {
+    return nullptr;
+  }
+
+  bool is_single_hop_server_redirect =
+      most_recent_redirect_index == 0 ||
+      redirect_context[most_recent_redirect_index - 1].redirect_type !=
+          DIPSRedirectType::kServer;
+  if (!is_single_hop_server_redirect) {
+    return nullptr;
+  }
+
+  return most_recent_redirect;
+}
+
+const DIPSRedirectInfo* GetFirstServerRedirect(
+    const DIPSRedirectContext& redirect_context) {
+  size_t num_redirects = redirect_context.size();
+  if (num_redirects == 0) {
+    return nullptr;
+  }
+
+  int redirect_index = num_redirects - 1;
+  const DIPSRedirectInfo* first_server_redirect = nullptr;
+  while (redirect_index >= 0) {
+    const DIPSRedirectInfo* redirect = &redirect_context[redirect_index];
+    if (redirect->redirect_type != DIPSRedirectType::kServer) {
+      break;
+    }
+    first_server_redirect = redirect;
+    redirect_index -= 1;
+  }
+  return first_server_redirect;
+}
+
+void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
+                                 ukm::SourceId entrypoint_source_id,
+                                 int32_t flow_id,
+                                 DIPSRedirectType exit_redirect_type) {
+  ukm::builders::DIPS_SuspectedTrackerFlowReferrer(referrer_source_id)
+      .SetFlowId(flow_id)
+      .Record(ukm::UkmRecorder::Get());
+
+  ukm::builders::DIPS_SuspectedTrackerFlowEntrypoint(entrypoint_source_id)
+      .SetExitRedirectType(static_cast<int64_t>(exit_redirect_type))
+      .SetFlowId(flow_id)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void MaybeEmitDirectNavigationUkm(content::NavigationHandle* navigation_handle,
+                                  const DIPSRedirectContext& redirect_context) {
+  if (!IsPageTransitionDirectNavigation(
+          navigation_handle->GetPageTransition())) {
+    return;
+  }
+
+  const DIPSRedirectInfo* first_server_redirect =
+      GetFirstServerRedirect(redirect_context);
+  ukm::SourceId source_id = first_server_redirect
+                                ? first_server_redirect->url.source_id
+                                : navigation_handle->GetNextPageUkmSourceId();
+
+  ukm::builders::DIPS_TrustIndicator_DirectNavigation(source_id)
+      .SetNavigationSource(
+          ToDirectNavigationSource(navigation_handle->GetPageTransition()))
+      .Record(ukm::UkmRecorder::Get());
+}
+}  // namespace
 
 namespace dips {
 
@@ -22,36 +137,53 @@ PageVisitInfo::PageVisitInfo() {
   did_page_have_successful_waa = false;
   was_navigation_to_page_user_initiated = std::nullopt;
   was_navigation_to_page_renderer_initiated = std::nullopt;
-  did_site_have_prior_activation_record = std::nullopt;
 }
 
 PageVisitInfo::PageVisitInfo(PageVisitInfo&& other) = default;
 
+PageVisitInfo& PageVisitInfo::operator=(PageVisitInfo&& other) = default;
+
+bool PageVisitInfo::WasNavigationToPageClientRedirect() const {
+  return was_navigation_to_page_renderer_initiated.has_value() &&
+         *was_navigation_to_page_renderer_initiated &&
+         was_navigation_to_page_user_initiated.has_value() &&
+         !*was_navigation_to_page_user_initiated;
+}
+
+EntrypointInfo::EntrypointInfo(const DIPSRedirectInfo& server_redirect_info,
+                               const dips::PageVisitInfo& exit_page_info)
+    : site(server_redirect_info.site),
+      source_id(server_redirect_info.url.source_id),
+      had_triggering_storage_access(
+          server_redirect_info.access_type == SiteDataAccessType::kWrite ||
+          server_redirect_info.access_type == SiteDataAccessType::kReadWrite),
+      was_referral_client_redirect(
+          exit_page_info.WasNavigationToPageClientRedirect()) {}
+
+EntrypointInfo::EntrypointInfo(
+    const dips::PageVisitInfo& client_redirector_info)
+    : site(client_redirector_info.site),
+      source_id(client_redirector_info.source_id),
+      had_triggering_storage_access(
+          client_redirector_info.did_page_access_storage ||
+          client_redirector_info.did_page_access_cookies),
+      was_referral_client_redirect(
+          client_redirector_info.WasNavigationToPageClientRedirect()) {}
+
 }  // namespace dips
 
 DipsNavigationFlowDetector::DipsNavigationFlowDetector(
-    content::WebContents* web_contents,
-    DIPSService* dips_service)
+    content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DipsNavigationFlowDetector>(*web_contents),
-      current_page_visit_info_(dips::PageVisitInfo()),
-      dips_service_(dips_service) {}
+      current_page_visit_info_(dips::PageVisitInfo()) {
+  redirect_chain_observation_.Observe(
+      RedirectChainDetector::FromWebContents(web_contents));
+}
 
 DipsNavigationFlowDetector::~DipsNavigationFlowDetector() = default;
 
-/* static */
-void DipsNavigationFlowDetector::MaybeCreateForWebContents(
-    content::WebContents* web_contents) {
-  DIPSService* dips_service =
-      DIPSService::Get(web_contents->GetBrowserContext());
-  if (!dips_service) {
-    return;
-  }
-
-  DipsNavigationFlowDetector::CreateForWebContents(web_contents, dips_service);
-}
-
-void DipsNavigationFlowDetector::DidFinishNavigation(
+void DipsNavigationFlowDetector::OnNavigationCommitted(
     content::NavigationHandle* navigation_handle) {
   bool primary_page_changed = navigation_handle->IsInPrimaryMainFrame() &&
                               !navigation_handle->IsSameDocument() &&
@@ -69,17 +201,12 @@ void DipsNavigationFlowDetector::DidFinishNavigation(
   }
 
   bool is_first_page_load_in_tab = current_page_visit_info_->site.empty();
-  if (!is_first_page_load_in_tab) {
-    if (previous_page_visit_info_) {
-      two_pages_ago_visit_info_.emplace(std::move(*previous_page_visit_info_));
-    }
-    if (current_page_visit_info_) {
-      previous_page_visit_info_.emplace(std::move(*current_page_visit_info_));
-    }
-    current_page_visit_info_.emplace(dips::PageVisitInfo());
-  }
 
-  CheckIfSiteHadPriorActivation(current_page_url);
+  two_pages_ago_visit_info_ = std::move(previous_page_visit_info_);
+  previous_page_visit_info_ = std::move(current_page_visit_info_);
+  current_page_visit_info_.emplace();
+
+  current_page_visit_info_->url = current_page_url;
   current_page_visit_info_->site = GetSiteForDIPS(current_page_url);
   current_page_visit_info_->source_id = render_frame_host->GetPageUkmSourceId();
   current_page_visit_info_->was_navigation_to_page_renderer_initiated =
@@ -87,6 +214,10 @@ void DipsNavigationFlowDetector::DidFinishNavigation(
   current_page_visit_info_->was_navigation_to_page_user_initiated =
       !navigation_handle->IsRendererInitiated() ||
       navigation_handle->HasUserGesture();
+  if (navigation_cookie_access_url_ == current_page_url) {
+    current_page_visit_info_->did_page_access_cookies = true;
+  }
+  navigation_cookie_access_url_ = std::nullopt;
 
   base::Time now = clock_->Now();
   if (!is_first_page_load_in_tab) {
@@ -97,39 +228,30 @@ void DipsNavigationFlowDetector::DidFinishNavigation(
   }
   last_page_change_time_ = now;
 
-  MaybeEmitUkmForPreviousPage();
-}
+  MaybeEmitDirectNavigationUkm(
+      navigation_handle,
+      redirect_chain_observation_.GetSource()->CommittedRedirectContext());
+  MaybeEmitNavFlowNodeUkmForPreviousPage();
 
-void DipsNavigationFlowDetector::CheckIfSiteHadPriorActivation(GURL url) {
-  dips_service_->DidSiteHaveInteractionSince(
-      url, base::Time::Min(),
-      base::BindOnce(&DipsNavigationFlowDetector::GotDipsInteraction,
-                     weak_factory_.GetWeakPtr(),
-                     current_page_visit_info_->site));
-}
-
-void DipsNavigationFlowDetector::GotDipsInteraction(
-    std::string site_read_state_for,
-    bool had_interaction) {
-  // If the site we got state for is not the current site, then the DIPS DB read
-  // didn't return until after the site was navigated away from. In that case,
-  // we've already emitted UKM (or decided not to emit) for that page, so
-  // discard the value.
-  if (site_read_state_for != current_page_visit_info_->site) {
-    return;
+  int32_t flow_id = static_cast<int32_t>(base::RandUint64());
+  const DIPSRedirectInfo* server_redirect_entrypoint_exit =
+      GetEntrypointExitServerRedirect(
+          redirect_chain_observation_.GetSource()->CommittedRedirectContext());
+  if (server_redirect_entrypoint_exit != nullptr) {
+    MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
+        server_redirect_entrypoint_exit, flow_id);
+  } else {
+    MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit(flow_id);
+    MaybeEmitInFlowInteraction(flow_id);
   }
-  current_page_visit_info_->did_site_have_prior_activation_record =
-      had_interaction;
 }
 
-void DipsNavigationFlowDetector::MaybeEmitUkmForPreviousPage() {
-  if (!CanEmitUkmForPreviousPage()) {
+void DipsNavigationFlowDetector::MaybeEmitNavFlowNodeUkmForPreviousPage() {
+  if (!CanEmitNavFlowNodeUkmForPreviousPage()) {
     return;
   }
 
-  ukm::builders::DIPS_NavigationFlowNode builder(
-      previous_page_visit_info_->source_id);
-  builder
+  ukm::builders::DIPS_NavigationFlowNode(previous_page_visit_info_->source_id)
       .SetWerePreviousAndNextSiteSame(two_pages_ago_visit_info_->site ==
                                       current_page_visit_info_->site)
       .SetDidHaveUserActivation(
@@ -144,12 +266,126 @@ void DipsNavigationFlowDetector::MaybeEmitUkmForPreviousPage() {
           *previous_page_visit_info_->was_navigation_to_page_user_initiated)
       .SetWasExitUserInitiated(
           *current_page_visit_info_->was_navigation_to_page_user_initiated)
-      .SetVisitDurationMilliseconds(bucketized_previous_page_visit_duration_);
-  if (previous_page_visit_info_->did_site_have_prior_activation_record) {
-    builder.SetDidSiteHavePreviousUserActivation(
-        *previous_page_visit_info_->did_site_have_prior_activation_record);
+      .SetVisitDurationMilliseconds(bucketized_previous_page_visit_duration_)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+bool DipsNavigationFlowDetector::CanEmitNavFlowNodeUkmForPreviousPage() const {
+  bool page_is_in_series_of_three = two_pages_ago_visit_info_.has_value() &&
+                                    !two_pages_ago_visit_info_->site.empty() &&
+                                    previous_page_visit_info_.has_value() &&
+                                    !previous_page_visit_info_->site.empty() &&
+                                    current_page_visit_info_.has_value() &&
+                                    !current_page_visit_info_->site.empty();
+  if (!page_is_in_series_of_three) {
+    return false;
   }
-  builder.Record(ukm::UkmRecorder::Get());
+
+  bool page_has_valid_source_id =
+      previous_page_visit_info_->source_id != ukm::kInvalidSourceId;
+  bool site_had_triggering_storage_access =
+      previous_page_visit_info_->did_page_access_cookies ||
+      previous_page_visit_info_->did_page_access_storage;
+  bool is_site_different_from_prior_page =
+      previous_page_visit_info_->site != two_pages_ago_visit_info_->site;
+  bool is_site_different_from_next_page =
+      previous_page_visit_info_->site != current_page_visit_info_->site;
+
+  return page_has_valid_source_id && site_had_triggering_storage_access &&
+         is_site_different_from_prior_page && is_site_different_from_next_page;
+}
+
+void DipsNavigationFlowDetector::
+    MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
+        const DIPSRedirectInfo* exit_info,
+        int32_t flow_id) {
+  if (!CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(exit_info)) {
+    return;
+  }
+
+  EmitSuspectedTrackerFlowUkm(previous_page_visit_info_->source_id,
+                              exit_info->url.source_id, flow_id,
+                              DIPSRedirectType::kServer);
+}
+
+bool DipsNavigationFlowDetector::
+    CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(
+        const DIPSRedirectInfo* exit_info) const {
+  if (!previous_page_visit_info_.has_value() || exit_info == nullptr ||
+      !current_page_visit_info_.has_value()) {
+    return false;
+  }
+
+  dips::EntrypointInfo entrypoint_info_for_server_redirect_exit(
+      *exit_info, *current_page_visit_info_);
+  return CanEmitSuspectedTrackerFlowUkm(
+      *previous_page_visit_info_, entrypoint_info_for_server_redirect_exit,
+      *current_page_visit_info_);
+}
+
+void DipsNavigationFlowDetector::
+    MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit(int32_t flow_id) {
+  if (!CanEmitSuspectedTrackerFlowUkmForClientRedirectExit()) {
+    return;
+  }
+
+  EmitSuspectedTrackerFlowUkm(two_pages_ago_visit_info_->source_id,
+                              previous_page_visit_info_->source_id, flow_id,
+                              DIPSRedirectType::kClient);
+}
+
+bool DipsNavigationFlowDetector::
+    CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() const {
+  bool page_is_in_series_of_three = two_pages_ago_visit_info_.has_value() &&
+                                    previous_page_visit_info_.has_value() &&
+                                    current_page_visit_info_.has_value();
+  if (!page_is_in_series_of_three) {
+    return false;
+  }
+
+  std::optional<bool> is_exit_client_redirect =
+      current_page_visit_info_->WasNavigationToPageClientRedirect();
+  if (!is_exit_client_redirect.has_value() ||
+      !is_exit_client_redirect.value()) {
+    return false;
+  }
+
+  dips::EntrypointInfo entrypoint_info(previous_page_visit_info_.value());
+  return CanEmitSuspectedTrackerFlowUkm(two_pages_ago_visit_info_.value(),
+                                        entrypoint_info,
+                                        current_page_visit_info_.value());
+}
+
+bool DipsNavigationFlowDetector::CanEmitSuspectedTrackerFlowUkm(
+    const dips::PageVisitInfo& referrer_page_info,
+    const dips::EntrypointInfo& entrypoint_info,
+    const dips::PageVisitInfo& exit_page_info) const {
+  bool referrer_has_valid_source_id =
+      referrer_page_info.source_id != ukm::kInvalidSourceId;
+  bool entrypoint_has_valid_source_id =
+      entrypoint_info.source_id != ukm::kInvalidSourceId;
+  bool is_entrypoint_site_different_from_referrer =
+      entrypoint_info.site != referrer_page_info.site;
+  bool is_entrypoint_site_different_from_exit_page =
+      entrypoint_info.site != exit_page_info.site;
+
+  return referrer_has_valid_source_id && entrypoint_has_valid_source_id &&
+         is_entrypoint_site_different_from_referrer &&
+         is_entrypoint_site_different_from_exit_page &&
+         entrypoint_info.had_triggering_storage_access &&
+         entrypoint_info.was_referral_client_redirect;
+}
+
+void DipsNavigationFlowDetector::MaybeEmitInFlowInteraction(int32_t flow_id) {
+  if (!CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() ||
+      !previous_page_visit_info_->did_page_receive_user_activation) {
+    return;
+  }
+
+  ukm::builders::DIPS_TrustIndicator_InFlowInteraction(
+      previous_page_visit_info_->source_id)
+      .SetFlowId(flow_id)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void DipsNavigationFlowDetector::OnCookiesAccessed(
@@ -157,7 +393,8 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
     const content::CookieAccessDetails& details) {
   // Ignore notifications for prerenders, fenced frames, etc., and for blocked
   // access attempts.
-  if (!IsInPrimaryPage(render_frame_host) || details.blocked_by_policy) {
+  if (!dips::IsOrWasInPrimaryPage(render_frame_host) ||
+      details.blocked_by_policy) {
     return;
   }
   // Attribute accesses by iframes to the first-party page they're embedded in.
@@ -166,18 +403,10 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
   if (!first_party_url.has_value()) {
     return;
   }
-  const std::string first_party_site = GetSiteForDIPS(first_party_url.value());
   // DIPS mitigations are only turned on when non-CHIPS 3PCs are blocked, so
   // mirror that behavior by ignoring non-CHIPS 3PC accesses.
   if (!HasCHIPS(details.cookie_access_result_list) &&
       !IsSameSiteForDIPS(first_party_url.value(), details.url)) {
-    return;
-  }
-  // If the site we received the cookie access notification for is not the same
-  // as the current site, that means that site has since been navigated away
-  // from. In that case, we've already emitted UKM (or decided not to emit) for
-  // that page, so ignore the notification.
-  if (first_party_site != current_page_visit_info_->site) {
     return;
   }
 
@@ -215,8 +444,16 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
   // For accesses in main frame navigations, only count writes, as the browser
   // sends cookies automatically and so sites have no control over whether they
   // read cookies or not.
-  if (details.type == network::mojom::CookieAccessDetails_Type::kChange) {
+  if (details.type != CookieOperation::kChange) {
+    return;
+  }
+
+  if (details.url == current_page_visit_info_->url) {
     current_page_visit_info_->did_page_access_cookies = true;
+  } else {
+    // This notification might be for an in-progress navigation, so we should
+    // remember this notification until the next navigation finishes.
+    navigation_cookie_access_url_ = details.url;
   }
 }
 
@@ -241,6 +478,10 @@ void DipsNavigationFlowDetector::WebAuthnAssertionRequestSucceeded(
     return;
   }
   current_page_visit_info_->did_page_have_successful_waa = true;
+}
+
+void DipsNavigationFlowDetector::WebContentsDestroyed() {
+  redirect_chain_observation_.Reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DipsNavigationFlowDetector);

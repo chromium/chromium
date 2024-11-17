@@ -31,7 +31,7 @@
 
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -60,8 +60,7 @@ class PLATFORM_EXPORT FormDataElement final {
       int64_t file_start,
       int64_t file_length,
       const std::optional<base::Time>& expected_file_modification_time);
-  FormDataElement(const String& blob_uuid,
-                  scoped_refptr<BlobDataHandle> optional_handle);
+  explicit FormDataElement(scoped_refptr<BlobDataHandle> handle);
   explicit FormDataElement(scoped_refptr<WrappedDataPipeGetter>);
 
   FormDataElement(const FormDataElement&);
@@ -75,20 +74,17 @@ class PLATFORM_EXPORT FormDataElement final {
   enum Type { kData, kEncodedFile, kEncodedBlob, kDataPipe } type_;
   Vector<char> data_;
   String filename_;
-  String blob_uuid_;
-  scoped_refptr<BlobDataHandle> optional_blob_data_handle_;
+  // Non-null IFF the type is kEncodedBlob.
+  scoped_refptr<BlobDataHandle> blob_data_handle_;
   int64_t file_start_;
   int64_t file_length_;
   std::optional<base::Time> expected_file_modification_time_;
   scoped_refptr<WrappedDataPipeGetter> data_pipe_getter_;
 };
 
+// Only used as a test helper.
 PLATFORM_EXPORT bool operator==(const FormDataElement& a,
                                 const FormDataElement& b);
-
-inline bool operator!=(const FormDataElement& a, const FormDataElement& b) {
-  return !(a == b);
-}
 
 class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   USING_FAST_MALLOC(EncodedFormData);
@@ -114,14 +110,19 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   FormDataType GetType() const;
 
   static scoped_refptr<EncodedFormData> Create();
-  static scoped_refptr<EncodedFormData> Create(const void*, wtf_size_t);
-  static scoped_refptr<EncodedFormData> Create(base::span<const char>);
+  static scoped_refptr<EncodedFormData> Create(base::span<const uint8_t>);
+  static scoped_refptr<EncodedFormData> Create(base::span<const char> chars) {
+    return Create(base::as_bytes(chars));
+  }
   static scoped_refptr<EncodedFormData> Create(SegmentedBuffer&&);
   scoped_refptr<EncodedFormData> Copy() const;
   scoped_refptr<EncodedFormData> DeepCopy() const;
   ~EncodedFormData();
 
-  void AppendData(const void* data, wtf_size_t);
+  void AppendData(base::span<const uint8_t> data);
+  void AppendData(base::span<const char> data) {
+    AppendData(base::as_bytes(data));
+  }
   void AppendData(SegmentedBuffer&&);
   void AppendFile(const String& file_path,
                   const std::optional<base::Time>& expected_modification_time);
@@ -130,8 +131,7 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
       int64_t start,
       int64_t length,
       const std::optional<base::Time>& expected_modification_time);
-  void AppendBlob(const String& blob_uuid,
-                  scoped_refptr<BlobDataHandle> optional_handle);
+  void AppendBlob(scoped_refptr<BlobDataHandle> handle);
   void AppendDataPipe(scoped_refptr<WrappedDataPipeGetter> handle);
 
   void Flatten(Vector<char>&) const;  // omits files
@@ -180,12 +180,9 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   bool contains_password_data_;
 };
 
+// Only used as a test helper.
 inline bool operator==(const EncodedFormData& a, const EncodedFormData& b) {
   return a.Elements() == b.Elements();
-}
-
-inline bool operator!=(const EncodedFormData& a, const EncodedFormData& b) {
-  return !(a == b);
 }
 
 }  // namespace blink

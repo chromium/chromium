@@ -209,6 +209,7 @@ void SegmentationPlatformServiceImpl::CollectTrainingData(
 
 void SegmentationPlatformServiceImpl::EnableMetrics(
     bool signal_collection_allowed) {
+  is_metrics_enabled_ = signal_collection_allowed;
   signal_handler_.EnableMetrics(signal_collection_allowed);
 }
 

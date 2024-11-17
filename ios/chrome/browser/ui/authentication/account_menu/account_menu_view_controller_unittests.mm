@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
@@ -102,32 +103,30 @@ class AccountMenuViewControllerTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
     fake_system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
     data_source_.accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     authentication_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
 
     AddPrimaryIdentity();
     AddSecondaryIdentity();
 
-    view_controller_ = [[AccountMenuViewController alloc]
-        initWithStyle:UITableViewStyleInsetGrouped];
+    view_controller_ = [[AccountMenuViewController alloc] init];
     mutator_ = OCMStrictProtocolMock(@protocol(AccountMenuMutator));
 
     view_controller_.dataSource = data_source_;
     view_controller_.mutator = mutator_;
+    navigation_controller_ = [[UINavigationController alloc]
+        initWithRootViewController:view_controller_];
     [view_controller_ viewDidLoad];
   }
 
@@ -137,8 +136,12 @@ class AccountMenuViewControllerTest : public PlatformTest {
   }
 
  protected:
+  // The navigation controller that displays the view_controller_.
+  // It is not used in test. However, it’s accessed by the view controller, so
+  // we must not let it be deallocated until tests are done.
+  UINavigationController* navigation_controller_;
   AccountMenuViewController* view_controller_;
-  ChromeAccountManagerService* account_manager_service_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
   id<AccountMenuMutator> mutator_;
   FakeAccountMenuDataSource* data_source_ =
       [[FakeAccountMenuDataSource alloc] init];
@@ -147,8 +150,8 @@ class AccountMenuViewControllerTest : public PlatformTest {
   NSIndexPath* path_for_sign_out_ = [NSIndexPath indexPathForRow:0 inSection:1];
   NSIndexPath* path_for_add_account_ = [NSIndexPath indexPathForRow:1
                                                           inSection:0];
-  AuthenticationService* authentication_service_;
-  FakeSystemIdentityManager* fake_system_identity_manager_;
+  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   base::UserActionTester user_actions_;
 
   // Verify that all mocks expectation are fulfilled.
@@ -157,7 +160,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
   }
 
   // The UITableView* of the account menu view controller.
-  UITableView* TableView() { return view_controller_.tableView; }
+  UITableView* TableView() { return view_controller_.view.subviews[0]; }
 
   //  Returns the cell at `path`.
   UITableViewCell* GetCell(NSIndexPath* path) {
@@ -178,7 +181,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
   // Expects that the cell at `path` is a `TableViewTextCell` whose label’s text
   // is `text`.
   void SelectCell(NSIndexPath* path) {
-    [view_controller_ tableView:TableView() didSelectRowAtIndexPath:path];
+    [TableView().delegate tableView:TableView() didSelectRowAtIndexPath:path];
   }
 
  private:
@@ -197,7 +200,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Test the view controller when it starts.
@@ -253,57 +256,6 @@ TEST_F(AccountMenuViewControllerTest, TestTapSignOut) {
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_Signout"));
 }
 
-// Tests tapping on the close button.
-TEST_F(AccountMenuViewControllerTest, TestTapClose) {
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-  if (idiom == UIUserInterfaceIdiomPad) {
-    // There is no close button on ipad.
-    return;
-  }
-  UIButton* closeButton = static_cast<UIButton*>(
-      view_controller_.navigationItem.rightBarButtonItem.customView);
-  OCMExpect([mutator_ viewControllerWantsToBeClosed:view_controller_]);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  [closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
-#pragma clang diagnostic pop
-  EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_Close"));
-}
-
-// Tests tapping on Manage your account.
-TEST_F(AccountMenuViewControllerTest, TestTapManageYourAccount) {
-  UIBarButtonItem* ellipsisButton =
-      view_controller_.navigationItem.leftBarButtonItem;
-  UIMenu* ellipsisMenu = static_cast<UIButton*>(ellipsisButton.customView).menu;
-  UIAction* manageYourAccountAction =
-      static_cast<UIAction*>(ellipsisMenu.children[0]);
-  // Cast the handler block into a form that we can execute
-  void (^manageYourAccountHandler)(id obj) =
-      [manageYourAccountAction valueForKey:@"handler"];
-  // Execute the block
-  OCMExpect([mutator_ didTapManageYourGoogleAccount]);
-  manageYourAccountHandler(manageYourAccountAction);
-  EXPECT_EQ(1,
-            user_actions_.GetActionCount("Signin_AccountMenu_ManageAccount"));
-}
-
-// Tests tapping on edit account list.
-TEST_F(AccountMenuViewControllerTest, TestTapEditAccountsList) {
-  UIBarButtonItem* ellipsisButton =
-      view_controller_.navigationItem.leftBarButtonItem;
-  UIMenu* ellipsisMenu = static_cast<UIButton*>(ellipsisButton.customView).menu;
-  UIAction* editAccountsListAction =
-      static_cast<UIAction*>(ellipsisMenu.children[1]);
-  // Cast the handler block into a form that we can execute
-  void (^editAccountsListHandler)(id obj) =
-      [editAccountsListAction valueForKey:@"handler"];
-  // Execute the block
-  OCMExpect([mutator_ didTapEditAccountList]);
-  editAccountsListHandler(editAccountsListAction);
-  EXPECT_EQ(1,
-            user_actions_.GetActionCount("Signin_AccountMenu_EditAccountList"));
-}
-
 #pragma mark - AccountMenuConsumer
 
 // Tests tapping on error action button.
@@ -342,7 +294,6 @@ TEST_F(AccountMenuViewControllerTest, TestSetError) {
 
   OCMExpect([mutator_ didTapErrorButton]);
   SelectCell(path_for_error_button);
-  EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_ErrorButton"));
 }
 
 // Tests that adding an account adds an extra row in the secondary account
@@ -351,7 +302,8 @@ TEST_F(AccountMenuViewControllerTest, TestAddAccount) {
   fake_system_identity_manager_->AddIdentity(kSecondaryIdentity2);
   [view_controller_
       updateAccountListWithGaiaIDsToAdd:@[ kSecondaryIdentity2.gaiaID ]
-                        gaiaIDsToRemove:@[]];
+                        gaiaIDsToRemove:@[]
+                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]];
   EXPECT_EQ(2, TableView().numberOfSections);
   // The secondary accounts and Add Account...
   EXPECT_EQ(3, [TableView() numberOfRowsInSection:0]);
@@ -364,7 +316,8 @@ TEST_F(AccountMenuViewControllerTest, TestAddAccount) {
 TEST_F(AccountMenuViewControllerTest, TestRemoveAccount) {
   [view_controller_
       updateAccountListWithGaiaIDsToAdd:@[]
-                        gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]];
+                        gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]
+                          gaiaIDsToKeep:@[]];
   EXPECT_EQ(2, TableView().numberOfSections);
   // No Secondary account. Just Add Account...
   EXPECT_EQ(1, [TableView() numberOfRowsInSection:0]);
@@ -382,3 +335,4 @@ TEST_F(AccountMenuViewControllerTest, TestUpdatePrimaryAccount) {
   // Sign Out
   EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
 }
+

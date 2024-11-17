@@ -92,6 +92,7 @@ class WebContentsViewMac : public WebContentsView,
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
+  void DestroyBackForwardTransitionAnimationManager() override;
 
   // RenderViewHostDelegateView:
   void StartDragging(const DropData& drop_data,

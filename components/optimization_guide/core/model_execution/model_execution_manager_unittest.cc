@@ -11,10 +11,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
+#include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/test/request_builder.h"
+#include "components/optimization_guide/core/model_execution/test/response_holder.h"
+#include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -23,6 +27,7 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -52,9 +57,8 @@ proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
 
 class FakeServiceController : public OnDeviceModelServiceController {
  public:
-  FakeServiceController() : OnDeviceModelServiceController(nullptr, nullptr) {}
-
-  void LaunchService() override {}
+  FakeServiceController()
+      : OnDeviceModelServiceController(nullptr, nullptr, base::DoNothing()) {}
 
   void MaybeUpdateSafetyModel(
       base::optional_ref<const ModelInfo> model_info) override {
@@ -89,7 +93,7 @@ class FakeModelProvider : public TestOptimizationGuideModelProvider {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -116,6 +120,8 @@ class ModelExecutionManagerTest : public testing::Test {
   }
   ~ModelExecutionManagerTest() override = default;
 
+  // Sets up most of the fields except `model_execution_manager_` and
+  // `component_manager_`, which are left to the test cases to set up.
   void SetUp() override {
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -123,15 +129,26 @@ class ModelExecutionManagerTest : public testing::Test {
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
     model_execution::prefs::RegisterLocalStatePrefs(local_state_->registry());
     service_controller_ = base::MakeRefCounted<FakeServiceController>();
-    CreateModelExecutionManager();
   }
 
   void CreateModelExecutionManager() {
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
         url_loader_factory_, local_state_.get(),
         identity_test_env_.identity_manager(), service_controller_,
-        &model_provider_, /*on_device_component_state_manager=*/nullptr,
+        &model_provider_,
+        component_manager_ ? component_manager_->get()->GetWeakPtr() : nullptr,
         &optimization_guide_logger_, nullptr);
+  }
+
+  void CreateComponentManager(bool should_observe) {
+    component_manager_ =
+        std::make_unique<TestOnDeviceModelComponentStateManager>(
+            local_state_.get());
+    component_manager_->get()->OnStartup();
+    task_environment_.FastForwardBy(base::Seconds(1));
+    if (should_observe) {
+      component_manager_->get()->AddObserver(model_execution_manager_.get());
+    }
   }
 
   bool SimulateResponse(const std::string& content,
@@ -151,6 +168,12 @@ class ModelExecutionManagerTest : public testing::Test {
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
+  }
+
+  void SetAutomaticIssueOfAccessTokens() {
+    identity_test_env()->MakePrimaryAccountAvailable(
+        "test_email", signin::ConsentLevel::kSignin);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
   ModelExecutionManager* model_execution_manager() {
@@ -173,6 +196,10 @@ class ModelExecutionManagerTest : public testing::Test {
     EXPECT_THAT(body_bytes, HasSubstr(message));
   }
 
+  void SetModelComponentReady() {
+    component_manager_->SetReady(base::FilePath());
+  }
+
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -182,7 +209,8 @@ class ModelExecutionManagerTest : public testing::Test {
   void Reset() { model_execution_manager_ = nullptr; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -191,101 +219,71 @@ class ModelExecutionManagerTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<FakeServiceController> service_controller_;
+  std::unique_ptr<TestOnDeviceModelComponentStateManager> component_manager_;
   FakeModelProvider model_provider_;
   OptimizationGuideLogger optimization_guide_logger_;
   std::unique_ptr<ModelExecutionManager> model_execution_manager_;
 };
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("a user typed this");
-  base::RunLoop run_loop;
+  ResponseHolder response_holder;
   model_execution_manager()->ExecuteModel(
-      ModelBasedCapabilityKey::kCompose, request,
-      /*log_ai_data_request=*/nullptr,
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             OptimizationGuideModelExecutionResult result,
-             std::unique_ptr<ModelQualityLogEntry> log_entry) {
-            EXPECT_FALSE(result.has_value());
-            EXPECT_NE(log_entry.get(), nullptr);
-            EXPECT_EQ(3u,  // ModelExecutionError::kPermissionDenied
-                      log_entry->log_ai_data_request()
-                          ->model_execution_info()
-                          .model_execution_error_enum());
-            run_loop->Quit();
-          },
-          &run_loop));
-  run_loop.Run();
+      ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, response_holder.GetCallback());
+  EXPECT_FALSE(response_holder.GetFinalStatus());
+  ASSERT_NE(response_holder.log_entry(), nullptr);
+  EXPECT_EQ(3u,  // ModelExecutionError::kPermissionDenied
+            response_holder.log_entry()
+                ->log_ai_data_request()
+                ->model_execution_info()
+                .model_execution_error_enum());
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.Result.Compose", false, 1);
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("a user typed this");
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  ResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
   model_execution_manager()->ExecuteModel(
-      ModelBasedCapabilityKey::kCompose, request,
-      /*log_ai_data_request=*/nullptr,
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             OptimizationGuideModelExecutionResult result,
-             std::unique_ptr<ModelQualityLogEntry> log_entry) {
-            EXPECT_TRUE(result.has_value());
-            auto response =
-                ParsedAnyMetadata<proto::ComposeResponse>(result.value());
-            EXPECT_EQ("foo response", response->output());
-            EXPECT_NE(log_entry, nullptr);
-            EXPECT_TRUE(log_entry->log_ai_data_request()
-                            ->mutable_compose()
-                            ->has_request());
-            EXPECT_TRUE(log_entry->log_ai_data_request()
-                            ->mutable_compose()
-                            ->has_response());
-            EXPECT_EQ(log_entry->log_ai_data_request()
-                          ->model_execution_info()
-                          .execution_id(),
-                      "test_id");
-            run_loop->Quit();
-          },
-          &run_loop));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
+      ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, response_holder.GetCallback());
   EXPECT_TRUE(SimulateSuccessfulResponse());
-  run_loop.Run();
+  EXPECT_TRUE(response_holder.GetFinalStatus());
+  EXPECT_EQ("foo response", response_holder.value());
+  EXPECT_NE(response_holder.log_entry(), nullptr);
+  EXPECT_TRUE(response_holder.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_request());
+  EXPECT_TRUE(response_holder.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_response());
+  EXPECT_EQ(response_holder.log_entry()
+                ->log_ai_data_request()
+                ->model_execution_info()
+                .execution_id(),
+            "test_id");
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.Result.Compose", true, 1);
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("a user typed this");
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  ResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
-  session->ExecuteModel(
-      request, base::BindRepeating(
-                   [](base::RunLoop* run_loop,
-                      OptimizationGuideModelStreamingExecutionResult result) {
-                     EXPECT_FALSE(result.response.has_value());
-                     EXPECT_EQ(OptimizationGuideModelExecutionError::
-                                   ModelExecutionError::kDisabled,
-                               result.response.error().error());
-                     EXPECT_EQ(result.log_entry, nullptr);
-                     run_loop->Quit();
-                   },
-                   &run_loop));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
+  session->ExecuteModel(UserInputRequest("a user typed this"),
+                        response_holder.GetStreamingCallback());
 
   std::string serialized_response;
   proto::ExecuteResponse execute_response;
@@ -294,7 +292,12 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
   execute_response.SerializeToString(&serialized_response);
   EXPECT_TRUE(SimulateResponse(serialized_response, net::HTTP_OK));
 
-  run_loop.Run();
+  EXPECT_FALSE(response_holder.GetFinalStatus());
+  EXPECT_EQ(
+      OptimizationGuideModelExecutionError::ModelExecutionError::kDisabled,
+      response_holder.error());
+  EXPECT_EQ(response_holder.log_entry(), nullptr);
+
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.ServerError.Compose",
       OptimizationGuideModelExecutionError::ModelExecutionError::kDisabled, 1);
@@ -304,40 +307,15 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
 
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelWithServerErrorAllowedForLogging) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("a user typed this");
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  ResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
-  session->ExecuteModel(
-      request, base::BindRepeating(
-                   [](base::RunLoop* run_loop,
-                      OptimizationGuideModelStreamingExecutionResult result) {
-                     EXPECT_FALSE(result.response.has_value());
-                     EXPECT_EQ(OptimizationGuideModelExecutionError::
-                                   ModelExecutionError::kUnsupportedLanguage,
-                               result.response.error().error());
-                     EXPECT_NE(result.log_entry, nullptr);
-                     // Check that the correct error state and error enum are
-                     // recorded:
-                     auto model_execution_info =
-                         result.log_entry->log_ai_data_request()
-                             ->model_execution_info();
-                     EXPECT_EQ(
-                         proto::ErrorState::ERROR_STATE_UNSUPPORTED_LANGUAGE,
-                         model_execution_info.error_response().error_state());
-                     EXPECT_EQ(
-                         7u,  // ModelExecutionError::kUnsupportedLanguage
-                         model_execution_info.model_execution_error_enum());
-                     run_loop->Quit();
-                   },
-                   &run_loop));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
+  session->ExecuteModel(UserInputRequest("a user typed this"),
+                        response_holder.GetStreamingCallback());
 
   std::string serialized_response;
   proto::ExecuteResponse execute_response;
@@ -346,7 +324,21 @@ TEST_F(ModelExecutionManagerTest,
   execute_response.SerializeToString(&serialized_response);
   EXPECT_TRUE(SimulateResponse(serialized_response, net::HTTP_OK));
 
-  run_loop.Run();
+  EXPECT_FALSE(response_holder.GetFinalStatus());
+  EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
+                kUnsupportedLanguage,
+            response_holder.error());
+  EXPECT_NE(response_holder.log_entry(), nullptr);
+  // Check that the correct error state and error enum are
+  // recorded:
+  auto model_execution_info = response_holder.log_entry()
+                                  ->log_ai_data_request()
+                                  ->model_execution_info();
+  EXPECT_EQ(proto::ErrorState::ERROR_STATE_UNSUPPORTED_LANGUAGE,
+            model_execution_info.error_response().error_state());
+  EXPECT_EQ(7u,  // ModelExecutionError::kUnsupportedLanguage
+            model_execution_info.model_execution_error_enum());
+
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.ServerError.Compose",
       OptimizationGuideModelExecutionError::ModelExecutionError::
@@ -357,13 +349,10 @@ TEST_F(ModelExecutionManagerTest,
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetOnDeviceOnly) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("a user typed this");
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose,
       SessionConfigParams{
@@ -379,41 +368,30 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetOnDeviceOnly) {
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetToServerOnly) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("a user typed this");
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  ResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose,
       SessionConfigParams{.execution_mode =
                               SessionConfigParams::ExecutionMode::kServerOnly});
-  session->ExecuteModel(
-      request, base::BindRepeating(
-                   [](base::RunLoop* run_loop,
-                      OptimizationGuideModelStreamingExecutionResult result) {
-                     EXPECT_TRUE(result.response.has_value());
-                     EXPECT_EQ("foo response",
-                               ParsedAnyMetadata<proto::ComposeResponse>(
-                                   result.response->response)
-                                   ->output());
-                     EXPECT_TRUE(result.response->is_complete);
-                     EXPECT_NE(result.log_entry, nullptr);
-                     EXPECT_TRUE(result.log_entry->log_ai_data_request()
-                                     ->mutable_compose()
-                                     ->has_request());
-                     EXPECT_TRUE(result.log_entry->log_ai_data_request()
-                                     ->mutable_compose()
-                                     ->has_response());
-                     run_loop->Quit();
-                   },
-                   &run_loop));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
+  session->ExecuteModel(UserInputRequest("a user typed this"),
+                        response_holder.GetStreamingCallback());
   EXPECT_TRUE(SimulateSuccessfulResponse());
-  run_loop.Run();
+
+  EXPECT_TRUE(response_holder.GetFinalStatus());
+  EXPECT_EQ("foo response", response_holder.value());
+  EXPECT_NE(response_holder.log_entry(), nullptr);
+  EXPECT_TRUE(response_holder.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_request());
+  EXPECT_TRUE(response_holder.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_response());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
@@ -431,41 +409,30 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelExecutionModeSetToServerOnly) {
 
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelExecutionModeExplicitlySetToDefault) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("a user typed this");
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  ResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose,
       SessionConfigParams{.execution_mode =
                               SessionConfigParams::ExecutionMode::kDefault});
-  session->ExecuteModel(
-      request, base::BindRepeating(
-                   [](base::RunLoop* run_loop,
-                      OptimizationGuideModelStreamingExecutionResult result) {
-                     EXPECT_TRUE(result.response.has_value());
-                     EXPECT_EQ("foo response",
-                               ParsedAnyMetadata<proto::ComposeResponse>(
-                                   result.response->response)
-                                   ->output());
-                     EXPECT_TRUE(result.response->is_complete);
-                     EXPECT_NE(result.log_entry, nullptr);
-                     EXPECT_TRUE(result.log_entry->log_ai_data_request()
-                                     ->mutable_compose()
-                                     ->has_request());
-                     EXPECT_TRUE(result.log_entry->log_ai_data_request()
-                                     ->mutable_compose()
-                                     ->has_response());
-                     run_loop->Quit();
-                   },
-                   &run_loop));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
+  session->ExecuteModel(UserInputRequest("a user typed this"),
+                        response_holder.GetStreamingCallback());
   EXPECT_TRUE(SimulateSuccessfulResponse());
-  run_loop.Run();
+
+  EXPECT_TRUE(response_holder.GetFinalStatus());
+  EXPECT_EQ("foo response", response_holder.value());
+  EXPECT_NE(response_holder.log_entry(), nullptr);
+  EXPECT_TRUE(response_holder.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_request());
+  EXPECT_TRUE(response_holder.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_response());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
@@ -482,39 +449,28 @@ TEST_F(ModelExecutionManagerTest,
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
 
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("a user typed this");
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  ResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
-  session->ExecuteModel(
-      request, base::BindRepeating(
-                   [](base::RunLoop* run_loop,
-                      OptimizationGuideModelStreamingExecutionResult result) {
-                     EXPECT_TRUE(result.response.has_value());
-                     EXPECT_EQ("foo response",
-                               ParsedAnyMetadata<proto::ComposeResponse>(
-                                   result.response->response)
-                                   ->output());
-                     EXPECT_TRUE(result.response->is_complete);
-                     EXPECT_NE(result.log_entry, nullptr);
-                     EXPECT_TRUE(result.log_entry->log_ai_data_request()
-                                     ->mutable_compose()
-                                     ->has_request());
-                     EXPECT_TRUE(result.log_entry->log_ai_data_request()
-                                     ->mutable_compose()
-                                     ->has_response());
-                     run_loop->Quit();
-                   },
-                   &run_loop));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
+  session->ExecuteModel(UserInputRequest("a user typed this"),
+                        response_holder.GetStreamingCallback());
   EXPECT_TRUE(SimulateSuccessfulResponse());
-  run_loop.Run();
+
+  EXPECT_TRUE(response_holder.GetFinalStatus());
+  EXPECT_EQ("foo response", response_holder.value());
+  EXPECT_NE(response_holder.log_entry(), nullptr);
+  EXPECT_TRUE(response_holder.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_request());
+  EXPECT_TRUE(response_holder.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_response());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
@@ -527,28 +483,18 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
 }
 
 TEST_F(ModelExecutionManagerTest, LogsContextToExecutionTimeHistogram) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   auto execute_model = [&] {
-    base::RunLoop run_loop;
-    proto::ComposeRequest request;
-    request.mutable_generate_params()->set_user_input("some test");
-    session->ExecuteModel(
-        request, base::BindRepeating(
-                     [](base::RunLoop* run_loop,
-                        OptimizationGuideModelStreamingExecutionResult result) {
-                       run_loop->Quit();
-                     },
-                     &run_loop));
-    identity_test_env()
-        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-            "access_token", base::Time::Max());
+    ResponseHolder response_holder;
+    session->ExecuteModel(UserInputRequest("some test"),
+                          response_holder.GetStreamingCallback());
     CheckPendingRequestMessage("some test");
     EXPECT_TRUE(SimulateSuccessfulResponse());
-    run_loop.Run();
+    EXPECT_TRUE(response_holder.GetFinalStatus());
   };
 
   constexpr char kHistogramName[] =
@@ -559,9 +505,7 @@ TEST_F(ModelExecutionManagerTest, LogsContextToExecutionTimeHistogram) {
   histogram_tester.ExpectTotalCount(kHistogramName, 0);
 
   // Just adding context should not log.
-  proto::ComposeRequest context;
-  context.mutable_generate_params()->set_user_input("context");
-  session->AddContext(context);
+  session->AddContext(UserInputRequest("context"));
   histogram_tester.ExpectTotalCount(kHistogramName, 0);
 
   // First execute call after context should log.
@@ -573,149 +517,104 @@ TEST_F(ModelExecutionManagerTest, LogsContextToExecutionTimeHistogram) {
   histogram_tester.ExpectTotalCount(kHistogramName, 1);
 
   // Add context again and execute should log.
-  session->AddContext(context);
+  session->AddContext(UserInputRequest("context"));
   execute_model();
   histogram_tester.ExpectTotalCount(kHistogramName, 2);
 }
 
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelWithPassthroughSessionAddContext) {
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  CreateModelExecutionManager();
+  ResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   // Message is added through AddContext().
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("some test");
-  session->AddContext(request);
+  session->AddContext(UserInputRequest("some test"));
   // ExecuteModel() uses empty message.
-  session->ExecuteModel(
-      proto::ComposeRequest(),
-      base::BindRepeating(
-          [](base::RunLoop* run_loop,
-             OptimizationGuideModelStreamingExecutionResult result) {
-            run_loop->Quit();
-          },
-          &run_loop));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
+  session->ExecuteModel(proto::ComposeRequest(),
+                        response_holder.GetStreamingCallback());
   CheckPendingRequestMessage("some test");
   EXPECT_TRUE(SimulateSuccessfulResponse());
-  run_loop.Run();
+  EXPECT_TRUE(response_holder.GetFinalStatus());
 }
 
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelWithPassthroughSessionMultipleAddContext) {
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  CreateModelExecutionManager();
+  ResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("first test");
-  session->AddContext(request);
-  request.mutable_generate_params()->set_user_input("second test");
-  session->AddContext(request);
+  session->AddContext(UserInputRequest("first test"));
+  session->AddContext(UserInputRequest("second test"));
   // ExecuteModel() uses empty message.
-  session->ExecuteModel(
-      proto::ComposeRequest(),
-      base::BindRepeating(
-          [](base::RunLoop* run_loop,
-             OptimizationGuideModelStreamingExecutionResult result) {
-            run_loop->Quit();
-          },
-          &run_loop));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
+  session->ExecuteModel(proto::ComposeRequest(),
+                        response_holder.GetStreamingCallback());
   CheckPendingRequestMessage("second test");
   EXPECT_TRUE(SimulateSuccessfulResponse());
-  run_loop.Run();
+  EXPECT_TRUE(response_holder.GetFinalStatus());
 }
 
 TEST_F(ModelExecutionManagerTest,
        ExecuteModelWithPassthroughSessionExecuteOverridesAddContext) {
-  base::RunLoop run_loop;
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  CreateModelExecutionManager();
+  ResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
   auto session = model_execution_manager()->StartSession(
       ModelBasedCapabilityKey::kCompose, /*config_params=*/std::nullopt);
   // First message is added through AddContext().
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("test_message");
-  session->AddContext(request);
+  session->AddContext(UserInputRequest("test message"));
   // ExecuteModel() adds a different message.
-  request.mutable_generate_params()->set_user_input("other test");
-  session->ExecuteModel(
-      request, base::BindRepeating(
-                   [](base::RunLoop* run_loop,
-                      OptimizationGuideModelStreamingExecutionResult result) {
-                     run_loop->Quit();
-                   },
-                   &run_loop));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
+  session->ExecuteModel(UserInputRequest("other test"),
+                        response_holder.GetStreamingCallback());
   CheckPendingRequestMessage("other test");
   EXPECT_TRUE(SimulateSuccessfulResponse());
-  run_loop.Run();
+  EXPECT_TRUE(response_holder.GetFinalStatus());
 }
 
 TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
+  CreateModelExecutionManager();
   base::HistogramTester histogram_tester;
-  proto::ComposeRequest request;
-  request.mutable_generate_params()->set_user_input("a user typed this");
-  base::RunLoop run_loop_old, run_loop_new;
+  ResponseHolder response_holder1, response_holder2;
 
-  identity_test_env()->MakePrimaryAccountAvailable(
-      "test_email", signin::ConsentLevel::kSignin);
+  SetAutomaticIssueOfAccessTokens();
 
   model_execution_manager()->ExecuteModel(
-      ModelBasedCapabilityKey::kCompose, request,
-      /*log_ai_data_request=*/nullptr,
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             OptimizationGuideModelExecutionResult result,
-             std::unique_ptr<ModelQualityLogEntry> log_entry) {
-            EXPECT_FALSE(result.has_value());
-            EXPECT_EQ(OptimizationGuideModelExecutionError::
-                          ModelExecutionError::kCancelled,
-                      result.error().error());
-            run_loop->Quit();
-          },
-          &run_loop_old));
+      ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, response_holder1.GetCallback());
 
   model_execution_manager()->ExecuteModel(
-      ModelBasedCapabilityKey::kCompose, request,
-      /*log_ai_data_request=*/nullptr,
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             OptimizationGuideModelExecutionResult result,
-             std::unique_ptr<ModelQualityLogEntry> log_entry) {
-            EXPECT_TRUE(result.has_value());
-            auto response =
-                ParsedAnyMetadata<proto::ComposeResponse>(result.value());
-            EXPECT_EQ("foo response", response->output());
-            EXPECT_NE(log_entry, nullptr);
-            EXPECT_TRUE(log_entry->log_ai_data_request()
-                            ->mutable_compose()
-                            ->has_request());
-            EXPECT_TRUE(log_entry->log_ai_data_request()
-                            ->mutable_compose()
-                            ->has_response());
-            EXPECT_EQ(log_entry->log_ai_data_request()
-                          ->model_execution_info()
-                          .execution_id(),
-                      "test_id");
-            run_loop->Quit();
-          },
-          &run_loop_new));
+      ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, response_holder2.GetCallback());
 
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", base::Time::Max());
   test_url_loader_factory()->EraseResponse(
       GURL(kOptimizationGuideServiceModelExecutionDefaultURL));
   EXPECT_TRUE(SimulateSuccessfulResponse());
-  run_loop_new.Run();
+
+  EXPECT_TRUE(response_holder2.GetFinalStatus());
+  EXPECT_EQ("foo response", response_holder2.value());
+  EXPECT_NE(response_holder2.log_entry(), nullptr);
+  EXPECT_TRUE(response_holder2.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_request());
+  EXPECT_TRUE(response_holder2.log_entry()
+                  ->log_ai_data_request()
+                  ->mutable_compose()
+                  ->has_response());
+  EXPECT_EQ(response_holder2.log_entry()
+                ->log_ai_data_request()
+                ->model_execution_info()
+                .execution_id(),
+            "test_id");
+
+  EXPECT_FALSE(response_holder1.GetFinalStatus());
+  EXPECT_EQ(
+      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled,
+      response_holder1.error());
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.Result.Compose", 2);
   histogram_tester.ExpectBucketCount(
@@ -725,6 +624,7 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
 }
 
 TEST_F(ModelExecutionManagerTest, DoesNotRegisterTextSafetyIfNotEnabled) {
+  CreateModelExecutionManager();
   EXPECT_FALSE(model_provider()->was_registered());
 }
 
@@ -741,13 +641,39 @@ class ModelExecutionManagerSafetyEnabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST_F(ModelExecutionManagerSafetyEnabledTest,
-       RegistersTextSafetyModelIfEnabled) {
+       RegistersTextSafetyModelWithOverrideModel) {
+  // Effectively, when an override is set, the model component will be ready
+  // before ModelExecutionManager can be added as an observer. Here we simulate
+  // that by simply setting up the component without adding
+  // ModelExecutionManager as an observer.
+  CreateComponentManager(/*should_observe=*/false);
+  SetModelComponentReady();
+  CreateModelExecutionManager();
+
   EXPECT_TRUE(model_provider()->was_registered());
 }
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest,
+       RegistersTextSafetyModelIfEnabled) {
+  CreateModelExecutionManager();
+  EXPECT_FALSE(model_provider()->was_registered());
+
+  // Text safety model should only be registered after the base model is ready.
+  local_state()->SetInteger(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass,
+      base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
+  CreateComponentManager(/*should_observe=*/true);
+  SetModelComponentReady();
+
+  EXPECT_TRUE(model_provider()->was_registered());
+}
+#endif
+
+TEST_F(ModelExecutionManagerSafetyEnabledTest,
        DoesNotNotifyServiceControllerWrongTarget) {
+  CreateModelExecutionManager();
   std::unique_ptr<ModelInfo> model_info =
       TestModelInfoBuilder().SetVersion(123).Build();
   model_execution_manager()->OnModelUpdated(
@@ -757,6 +683,7 @@ TEST_F(ModelExecutionManagerSafetyEnabledTest,
 }
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest, NotifiesServiceController) {
+  CreateModelExecutionManager();
   std::unique_ptr<ModelInfo> model_info =
       TestModelInfoBuilder().SetVersion(123).Build();
   model_execution_manager()->OnModelUpdated(
@@ -766,6 +693,7 @@ TEST_F(ModelExecutionManagerSafetyEnabledTest, NotifiesServiceController) {
 }
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest, UpdateLanguageDetection) {
+  CreateModelExecutionManager();
   const base::FilePath kTestPath{FILE_PATH_LITERAL("foo")};
   std::unique_ptr<ModelInfo> model_info = TestModelInfoBuilder()
                                               .SetVersion(123)
@@ -778,6 +706,7 @@ TEST_F(ModelExecutionManagerSafetyEnabledTest, UpdateLanguageDetection) {
 
 TEST_F(ModelExecutionManagerSafetyEnabledTest,
        NotRegisteredWhenDisabledByEnterprisePolicy) {
+  CreateModelExecutionManager();
   model_provider()->Reset();
   local_state()->SetInteger(
       model_execution::prefs::localstate::

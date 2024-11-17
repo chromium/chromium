@@ -22,7 +22,7 @@ PasswordManagerTabHelper* PasswordManagerTabHelper::GetOrCreateForWebState(
 }
 
 PasswordManagerTabHelper::PasswordManagerTabHelper(web::WebState* web_state) {}
-PasswordManagerTabHelper::~PasswordManagerTabHelper() {}
+PasswordManagerTabHelper::~PasswordManagerTabHelper() = default;
 
 void PasswordManagerTabHelper::ScriptMessageReceived(
     const web::ScriptMessage& message) {

@@ -29,6 +29,7 @@
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
+#include "base/win/atl.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
@@ -36,6 +37,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -350,6 +352,11 @@ bool AuthenticateUser(gfx::NativeWindow window,
       break;
     }
 
+    absl::Cleanup buffer_cleaner = [&cred_buffer, &cred_buffer_size] {
+      ::SecureZeroMemory(cred_buffer, cred_buffer_size);
+      ::CoTaskMemFree(cred_buffer);
+    };
+
     // While CredUIPromptForWindowsCredentials() shows the currently logged
     // on user by default, it can be changed at runtime.  This is important,
     // as it allows users to change to a different type of authentication
@@ -358,6 +365,7 @@ bool AuthenticateUser(gfx::NativeWindow window,
     // sure the user authenticated with the credentials of the currently
     // logged on user.
     err = validator.IsValid(auth_package, cred_buffer, cred_buffer_size);
+
     retval = err == ERROR_SUCCESS;
   } while (!retval && tries < kMaxPasswordRetries);
 

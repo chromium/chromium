@@ -13,7 +13,7 @@ namespace test {
 
 TestStore::TestStore() : ready_(false), init_called_(false) {}
 
-TestStore::~TestStore() {}
+TestStore::~TestStore() = default;
 
 bool TestStore::IsInitialized() {
   return ready_;

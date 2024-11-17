@@ -792,41 +792,6 @@ TEST_F(LayoutObjectTest,
   EXPECT_EQ(layout_object1, layout_object2);
 }
 
-TEST_F(LayoutObjectTest, VisualRect) {
-  class MockLayoutObject : public LayoutObject {
-   public:
-    MockLayoutObject() : LayoutObject(nullptr) {}
-    MOCK_CONST_METHOD0(VisualRectRespectsVisibility, bool());
-
-   private:
-    PhysicalRect LocalVisualRectIgnoringVisibility() const override {
-      return PhysicalRect(10, 10, 20, 20);
-    }
-    const char* GetName() const final { return "MockLayoutObject"; }
-    gfx::RectF LocalBoundingBoxRectForAccessibility() const final {
-      return gfx::RectF();
-    }
-  };
-
-  MockLayoutObject* mock_object = MakeGarbageCollected<MockLayoutObject>();
-  const auto& style = GetDocument().GetStyleResolver().InitialStyle();
-  mock_object->SetStyle(&style);
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
-
-  ComputedStyleBuilder builder(style);
-  builder.SetVisibility(EVisibility::kHidden);
-  mock_object->SetStyle(builder.TakeStyle(),
-                        LayoutObject::ApplyStyleChanges::kNo);
-  EXPECT_CALL(*mock_object, VisualRectRespectsVisibility())
-      .WillOnce(Return(true));
-  EXPECT_TRUE(mock_object->LocalVisualRect().IsEmpty());
-  EXPECT_CALL(*mock_object, VisualRectRespectsVisibility())
-      .WillOnce(Return(false));
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
-  mock_object->SetDestroyedForTesting();
-}
-
 TEST_F(LayoutObjectTest, DisplayContentsInlineWrapper) {
   SetBodyInnerHTML("<div id='div' style='display:contents;color:pink'>A</div>");
   Element* div = GetElementById("div");
@@ -1022,6 +987,26 @@ lime'>
              "\\u0421\\u0440\\u0435\\u045C\\u0435\\u043D "
              "\\u0440\\u043E\\u0434\\u0435\\u043D\\u0434\\u0435\\u043D\\n\""));
 }
+
+TEST_F(LayoutObjectTest, DumpDestroyedLayoutObject) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target"></div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  LayoutObject* layout_object = element->GetLayoutObject();
+  StringBuilder builder;
+  layout_object->DumpLayoutObject(builder, false, 0);
+  String result = builder.ToString();
+  EXPECT_FALSE(result.StartsWith("[DESTROYED] "));
+
+  element->remove();
+  UpdateAllLifecyclePhasesForTest();
+  builder.Clear();
+  layout_object->DumpLayoutObject(builder, false, 0);
+  result = builder.ToString();
+  EXPECT_TRUE(result.StartsWith("[DESTROYED] "));
+}
 #endif  // DCHECK_IS_ON()
 
 TEST_F(LayoutObjectTest, DisplayContentsSVGGElementInHTML) {
@@ -1129,6 +1114,12 @@ class LayoutObjectSimTest : public SimTest {
     return registry.HasEventHandlers(
         EventHandlerRegistry::EventHandlerClass::kTouchAction);
   }
+
+ protected:
+  static HitTestResult HitTestForOcclusion(const Element& target) {
+    const LayoutObject* object = target.GetLayoutObject();
+    return object->HitTestForOcclusion(VisualRectInDocument(*object));
+  }
 };
 
 TEST_F(LayoutObjectSimTest, TouchActionUpdatesSubframeEventHandler) {
@@ -1209,13 +1200,13 @@ TEST_F(LayoutObjectSimTest, HitTestForOcclusionInIframe) {
   auto* frame_owner_element = To<HTMLFrameOwnerElement>(iframe_element);
   Document* iframe_doc = frame_owner_element->contentDocument();
   Element* target = iframe_doc->getElementById(AtomicString("target"));
-  HitTestResult result = target->GetLayoutObject()->HitTestForOcclusion();
+  HitTestResult result = HitTestForOcclusion(*target);
   EXPECT_EQ(result.InnerNode(), target);
 
   Element* occluder = GetDocument().getElementById(AtomicString("occluder"));
   occluder->SetInlineStyleProperty(CSSPropertyID::kMarginTop, "-150px");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  result = target->GetLayoutObject()->HitTestForOcclusion();
+  result = HitTestForOcclusion(*target);
   EXPECT_EQ(result.InnerNode(), occluder);
 }
 

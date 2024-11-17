@@ -6,13 +6,15 @@
 
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
-#include "chrome/browser/ash/policy/skyvault/skyvault_test_base.h"
+#include "chrome/browser/ash/policy/skyvault/test/skyvault_test_base.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,7 +23,9 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+using policy::local_user_files::kUploadRootPrefix;
 using policy::local_user_files::SkyvaultOneDriveTest;
+using policy::local_user_files::UploadTrigger;
 
 namespace ash::cloud_upload {
 
@@ -44,6 +48,7 @@ class OdfsSkyvaultUploaderTest : public SkyvaultOneDriveTest {
 
  protected:
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
+  base::HistogramTester histogram_tester_;
 
   // Used to observe skyvault notifications during tests.
   base::RepeatingCallback<void(const message_center::Notification&)>
@@ -62,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   EXPECT_CALL(progress_callback, Run(/*bytes_transferred=*/230096));
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   EXPECT_EQ(upload_callback.Get<bool>(), true);
 
@@ -70,31 +75,41 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
   CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
 }
 
-IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUploadWithTarget) {
+// Tests an upload to a specific folder and relative path on OneDrive.
+IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
+                       SuccessfulUploadWithRelativePath) {
   SetUpMyFiles();
   SetUpODFS();
+
+  const std::string test_dir = "TestFolder";
+  base::FilePath test_dir_path = CreateTestDir(test_dir, my_files_dir());
   const std::string test_file_name = "video_long.ogv";
-  base::FilePath source_file_path =
-      CopyTestFile(test_file_name, my_files_dir());
-  const std::string target_path = "ChromeOS Device";
+  base::FilePath source_file_path = CopyTestFile(test_file_name, test_dir_path);
 
   // Start the upload workflow and end the test once the upload callback is run.
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<
       storage::FileSystemURL,
-      std::optional<policy::local_user_files::MigrationUploadError>>
+      std::optional<policy::local_user_files::MigrationUploadError>,
+      base::FilePath>
       upload_callback;
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kMigration,
-      progress_callback.Get(), upload_callback.GetCallback(),
-      base::FilePath(target_path));
+      profile(), source_file_path,
+      /*relative_source_path=*/base::FilePath(test_dir),
+      /*upload_root=*/kUploadRootPrefix, UploadTrigger::kMigration,
+      progress_callback.Get(), upload_callback.GetCallback());
 
-  auto [url, error] = upload_callback.Get();
+  auto [url, error, upload_root_path] = upload_callback.Get();
   EXPECT_FALSE(error.has_value());
   EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(GetODFS(profile())->GetFileSystemInfo().mount_path().Append(
+                kUploadRootPrefix),
+            upload_root_path);
   // Check that the source file has been moved to OneDrive.
-  CheckPathExistsOnODFS(
-      base::FilePath("/").AppendASCII(target_path).AppendASCII(test_file_name));
+  CheckPathExistsOnODFS(base::FilePath("/")
+                            .AppendASCII(kUploadRootPrefix)
+                            .AppendASCII(test_dir)
+                            .AppendASCII(test_file_name));
 }
 
 IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, CancelledUpload) {
@@ -108,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, CancelledUpload) {
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   base::WeakPtr<OdfsSkyvaultUploader> uploader = OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   uploader->Cancel();
   EXPECT_EQ(upload_callback.Get<bool>(), false);
@@ -133,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailToUploadDueToMemoryError) {
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   EXPECT_EQ(upload_callback.Get<bool>(), false);
 
@@ -170,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   added_run_loop.Run();
 
@@ -191,6 +206,11 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
 
   // Check that the source file has been moved to OneDrive.
   CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Download.OneDrive.SignInError", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Download.OneDrive.SignInError", true, 0);
 }
 
 // Test that when the OneDrive file system isn't mounted, the sign-in required
@@ -210,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, UploadTrigger::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   added_run_loop.Run();
 
@@ -228,6 +248,11 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
   EXPECT_EQ(upload_callback.Get<bool>(), false);
   ASSERT_FALSE(
       display_service_tester_->GetNotification(notification_id).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Download.OneDrive.SignInError", false, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Download.OneDrive.SignInError", true, 1);
 }
 
 }  // namespace ash::cloud_upload

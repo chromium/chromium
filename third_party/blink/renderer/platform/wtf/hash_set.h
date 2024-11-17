@@ -81,6 +81,11 @@ class HashSet {
   HashSet(std::initializer_list<ValueType> elements);
   HashSet& operator=(std::initializer_list<ValueType> elements);
 
+  // Useful for constructing from, for example, STL and base sets.
+  template <typename It>
+    requires(std::forward_iterator<It>)
+  HashSet(It begin, It end);
+
   void swap(HashSet& ref) { impl_.swap(ref.impl_); }
 
   unsigned size() const;
@@ -124,8 +129,19 @@ class HashSet {
   AddResult AddWithTranslator(T&&);
 
   // Does nothing if the value is not found.
+  // NOTE: You cannot continue using an iterator after erase()
+  // (no modifications are allowed during iteration). Consider erase_if()
+  // or RemoveAll().
   void erase(ValuePeekInType);
   void erase(iterator);
+
+  // Erases all elements for which pred(element) returns true.
+  //
+  // The predicate should have a signature compatible with:
+  //   bool pred(const ValueType&);
+  template <typename Pred>
+  void erase_if(Pred pred);
+
   void clear();
   template <typename Collection>
   void RemoveAll(const Collection& to_be_removed) {
@@ -216,6 +232,18 @@ auto HashSet<Value, Traits, Allocator>::operator=(
     std::initializer_list<ValueType> elements) -> HashSet& {
   *this = HashSet(std::move(elements));
   return *this;
+}
+
+template <typename Value, typename Traits, typename Allocator>
+template <typename It>
+  requires(std::forward_iterator<It>)
+HashSet<Value, Traits, Allocator>::HashSet(It begin, It end) {
+  if constexpr (std::random_access_iterator<It>) {
+    ReserveCapacityForSize(base::checked_cast<wtf_size_t>(end - begin));
+  }
+  for (; begin != end; ++begin) {
+    insert(*begin);
+  }
 }
 
 template <typename T, typename U, typename V>
@@ -316,6 +344,12 @@ inline void HashSet<T, U, V>::erase(iterator it) {
 template <typename T, typename U, typename V>
 inline void HashSet<T, U, V>::erase(ValuePeekInType value) {
   erase(find(value));
+}
+
+template <typename T, typename U, typename V>
+template <typename Pred>
+inline void HashSet<T, U, V>::erase_if(Pred pred) {
+  impl_.erase_if(std::forward<Pred>(pred));
 }
 
 template <typename T, typename U, typename V>

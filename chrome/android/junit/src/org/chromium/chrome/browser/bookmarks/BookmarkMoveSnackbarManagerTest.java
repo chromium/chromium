@@ -43,10 +43,10 @@ import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
+/** Unit tests for {@link BookmarkMoveSnackbarManager}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-/** Unit tests for {@link BookmarkMoveSnackbarManager}. */
 public class BookmarkMoveSnackbarManagerTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

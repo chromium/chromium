@@ -404,8 +404,7 @@ bool SslHmacChannelAuthenticator::HandleAuthBytesRead(int read_result) {
     return true;
   }
 
-  if (!VerifyAuthBytes(std::string(base::as_string_view(
-          auth_read_buf_->everything().first(kAuthDigestLength))))) {
+  if (!VerifyAuthBytes(auth_read_buf_->everything().first(kAuthDigestLength))) {
     LOG(WARNING) << "Mismatched authentication";
     NotifyError(net::ERR_FAILED);
     return false;
@@ -417,8 +416,8 @@ bool SslHmacChannelAuthenticator::HandleAuthBytesRead(int read_result) {
 }
 
 bool SslHmacChannelAuthenticator::VerifyAuthBytes(
-    const std::string& received_auth_bytes) {
-  DCHECK(received_auth_bytes.length() == kAuthDigestLength);
+    base::span<const uint8_t> bytes) {
+  CHECK_EQ(bytes.size(), kAuthDigestLength);
 
   // Compute expected auth bytes.
   std::string auth_bytes = GetAuthBytes(
@@ -429,8 +428,7 @@ bool SslHmacChannelAuthenticator::VerifyAuthBytes(
     return false;
   }
 
-  return crypto::SecureMemEqual(received_auth_bytes.data(), &(auth_bytes[0]),
-                                kAuthDigestLength);
+  return crypto::SecureMemEqual(bytes, base::as_byte_span(auth_bytes));
 }
 
 void SslHmacChannelAuthenticator::CheckDone(bool* callback_called) {

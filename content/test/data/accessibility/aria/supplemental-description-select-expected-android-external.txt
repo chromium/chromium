@@ -1,0 +1,8 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View text:"Volvo" hint:"choose a car" viewIdResName:"cars" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="comboBoxSelect", clickableScore="300", hint="choose a car", roleDescription="menu pop up button"]
+++++++View viewIdResName:"select-options" notVisibleToUser actions:[AX_FOCUS] bundle:[chromeRole="menuListPopup"]
+++++++++View text:"Volvo" clickable focusable selected actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
+++++++++View text:"Saab" clickable focusable notVisibleToUser actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
+++++++++View text:"Opel" clickable focusable notVisibleToUser actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
+++++++++View text:"Audi" clickable focusable notVisibleToUser actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]

@@ -122,7 +122,9 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
   // byte pointers to other types is problematic and can cause UB. String should
   // provide a way to copy directly to a byte array without forcing the caller
   // to do this case.
-  data.CopyTo(reinterpret_cast<UChar*>(data_buffer.data()), 0, data.length());
+  data.CopyTo(
+      base::span(reinterpret_cast<UChar*>(data_buffer.data()), data.length()),
+      0);
 
   return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));
 }

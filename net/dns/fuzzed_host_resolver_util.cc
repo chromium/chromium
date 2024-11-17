@@ -408,7 +408,7 @@ class FuzzedHostResolverManager : public HostResolverManager {
     // The only DnsClient that is supported is the one created by the
     // FuzzedHostResolverManager since that DnsClient contains the necessary
     // fuzzing logic.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

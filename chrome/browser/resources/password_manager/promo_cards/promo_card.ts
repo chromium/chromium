@@ -11,6 +11,8 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl} from '../sync_browser_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,7 +32,7 @@ export enum PromoCardId {
   ACCESS_ON_ANY_DEVICE = 'access_on_any_device_promo',
   RELAUNCH_CHROME = 'relaunch_chrome_promo',
   MOVE_PASSWORDS = 'move_passwords_promo',
-  SCREENLOCK_REAUTH = 'screenlock_reauth_promo',
+  SCREENLOCK_REAUTH = 'screenlock_reauth_promo',  // Obsolete
 }
 
 /**
@@ -46,7 +48,7 @@ enum PromoCardMetricId {
   UNUSED_ACCESS_ON_ANY_DEVICE = 3,
   RELAUNCH_CHROME = 4,
   MOVE_PASSWORDS = 5,
-  SCREENLOCK_REAUTH = 6,
+  // SCREENLOCK_REAUTH = 6, Obsolete
   // Must be last.
   COUNT = 7,
 }
@@ -109,7 +111,7 @@ export class PromoCardElement extends PromoCardElementBase {
     return sanitizeInnerHtml(this.promoCard.description);
   }
 
-  private async onActionButtonClick_() {
+  private onActionButtonClick_() {
     switch (this.promoCard.id) {
       case PromoCardId.CHECKUP:
         const params = new URLSearchParams();
@@ -126,22 +128,16 @@ export class PromoCardElement extends PromoCardElementBase {
         recordPromoCardAction(PromoCardMetricId.RELAUNCH_CHROME);
         break;
       case PromoCardId.MOVE_PASSWORDS:
+        if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
+          SyncBrowserProxyImpl.getInstance().openBatchUpload(
+              BatchUploadPasswordsEntryPoint.PROMO_CARD);
+          return;
+        }
+
         this.dispatchEvent(new CustomEvent(
             'move-passwords-clicked', {bubbles: true, composed: true}));
         recordPromoCardAction(PromoCardMetricId.MOVE_PASSWORDS);
         return;
-      case PromoCardId.SCREENLOCK_REAUTH:
-        recordPromoCardAction(PromoCardMetricId.SCREENLOCK_REAUTH);
-        await PasswordManagerImpl.getInstance()
-            .switchBiometricAuthBeforeFillingState()
-            .then(result => {
-              if (result) {
-                this.dispatchEvent(new CustomEvent(
-                    'biometric-auth-before-filling-enabled',
-                    {bubbles: true, composed: true}));
-              }
-            });
-        break;
       default:
         assertNotReached();
     }

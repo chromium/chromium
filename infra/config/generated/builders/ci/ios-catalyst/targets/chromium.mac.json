@@ -1,0 +1,8 @@
+{
+  "ios-catalyst": {
+    "additional_compile_targets": [
+      "ios/chrome/app:chrome",
+      "ios/chrome/test:all_fuzzer_tests"
+    ]
+  }
+}

@@ -12,19 +12,18 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ui/gfx/image/image.h"
 
 class Browser;
 class SidePanelCoordinator;
+class SidePanelEntryScope;
 
 // LensSidePanelCoordinator handles the creation and registration of the
 // LensUnifiedSidePanelEntry.
 class LensSidePanelCoordinator
     : public BrowserUserData<LensSidePanelCoordinator>,
-      public SidePanelViewStateObserver,
       public SidePanelEntryObserver,
       public TemplateURLServiceObserver {
  public:
@@ -44,6 +43,11 @@ class LensSidePanelCoordinator
   bool OpenResultsInNewTabForTesting();
 
   bool IsLaunchButtonEnabledForTesting();
+
+  base::WeakPtr<lens::LensUnifiedSidePanelView>
+  GetLensUnifiedSidePanelViewForTesting() {
+    return lens_side_panel_view_;
+  }
 
  private:
   friend class BrowserUserData<LensSidePanelCoordinator>;
@@ -84,11 +88,9 @@ class LensSidePanelCoordinator
   // TemplateURLServiceObserver
   void OnTemplateURLServiceChanged() override;
 
-  // SidePanelViewStateObserver
-  void OnSidePanelDidClose() override;
-
   std::unique_ptr<views::View> CreateLensWebView(
-      const content::OpenURLParams& params);
+      const content::OpenURLParams& params,
+      SidePanelEntryScope& scope);
 
   raw_ptr<TemplateURLService> template_url_service_;
   base::WeakPtr<lens::LensUnifiedSidePanelView> lens_side_panel_view_;

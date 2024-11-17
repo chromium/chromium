@@ -16,6 +16,12 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/app_service/launch_result_type.h",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
+  "+chrome/browser/enterprise/util/affiliation.h",
+  "+chrome/browser/extensions/extension_service.h",
+  "+chrome/browser/extensions/test_extension_environment.h",
+  "+chrome/browser/extensions/test_extension_system.h",
+  "+chrome/browser/gcm/gcm_profile_service_factory.h",
+  "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
   "+chrome/browser/login_detection/login_detection_util.h",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles/profile.h",
@@ -30,13 +36,29 @@ include_rules = [
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/tabs/tab_enums.h",
+  "+chrome/browser/ui/tabs/tab_strip_model_delegate.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
-  "+chrome/browser/ui/chromeos/window_pin_util.h",
   "+chrome/test/base/in_process_browser_test.h",
   "+chrome/test/base/testing_browser_process.h",
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",
   "+chrome/test/base/browser_with_test_window_test.h",
-  "+components/sessions/core/session_id.h"
-
+  "+chrome/browser/ash/settings/device_settings_service.h",
+  "+components/sessions",
+  # Files needed by babelorca/
+  "+chrome/browser/accessibility/live_caption/live_caption_controller_factory.h",
+  "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
+  "+chrome/browser/speech/speech_recognition_client_browser_interface.h",
+  "+chrome/browser/speech/speech_recognition_client_browser_interface_factory.h",
+  "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
+  "+chrome/browser/browser_process.h",
 ]
+
+specific_include_rules = {
+    "on_task_locked_session_window_tracker_browsertest.cc": [
+        "+chrome/app/chrome_command_ids.h",
+        "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
+        "+chrome/common/chrome_paths.h",
+        "+chrome/test/base/ui_test_utils.h"
+    ]
+}

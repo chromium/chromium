@@ -43,12 +43,12 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
   // belongs to.
   class Observer {
    public:
-    Observer() {}
+    Observer() = default;
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     virtual void OnManagerInitialized(content::DownloadManager* manager) {}
     virtual void OnManagerGoingDown(content::DownloadManager* manager) {}

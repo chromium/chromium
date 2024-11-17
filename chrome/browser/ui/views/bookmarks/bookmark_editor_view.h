@@ -17,9 +17,10 @@
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -74,7 +75,6 @@ class BookmarkEditorView : public BookmarkEditor,
   };
 
   BookmarkEditorView(Profile* profile,
-                     const bookmarks::BookmarkNode* parent,
                      const EditDetails& details,
                      BookmarkEditor::Configuration configuration,
                      BookmarkEditor::OnSaveCallback on_save_callback);
@@ -111,9 +111,10 @@ class BookmarkEditorView : public BookmarkEditor,
   void Show(gfx::NativeWindow parent);
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
  private:
   friend class BookmarkEditorViewTest;
@@ -237,10 +238,6 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // The text field used for editing the title.
   raw_ptr<views::Textfield> title_tf_ = nullptr;
-
-  // Initial parent to select. Is only used if |details_.existing_node| is
-  // NULL.
-  raw_ptr<const bookmarks::BookmarkNode> parent_;
 
   const EditDetails details_;
 

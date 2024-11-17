@@ -335,6 +335,15 @@ class CrostiniManager : public KeyedService,
                        bool force,
                        CrostiniResultCallback callback);
 
+  // Checks the arguments for exporting a vm disk image via
+  // ConciergeClient::ImportDiskImage. |callback| is called immedaitely if the
+  // arguments are bad, or after the method call finishes.
+  // using DiskImageCallback = base::OnceCallback<void(CrostiniResult result)>;
+  void ImportDiskImage(guest_os::GuestId vm_id,
+                       std::string user_id_hash,
+                       base::FilePath import_path,
+                       CrostiniResultCallback callback);
+
   // Checks the arguments for exporting an Lxd container via
   // CiceroneClient::ExportLxdContainer. |callback| is called immediately if the
   // arguments are bad, or after the method call finishes.
@@ -704,6 +713,12 @@ class CrostiniManager : public KeyedService,
       guest_os::GuestId vm_id,
       std::optional<vm_tools::concierge::ExportDiskImageResponse> response);
 
+  // Callback for ConciergeClient::ImportDiskImage. Called after the Concierge
+  // service method finishes.
+  void OnImportDiskImage(
+      guest_os::GuestId vm_id,
+      std::optional<vm_tools::concierge::ImportDiskImageResponse> response);
+
   // Callback for CiceroneClient::CreateLxdContainer. May indicate the container
   // is still being created, in which case we will wait for an
   // OnLxdContainerCreated event.
@@ -842,7 +857,7 @@ class CrostiniManager : public KeyedService,
 
   // Tries to query Concierge for the type of disk the named VM has then emits a
   // metric logging the type. Mostly happens async and best-effort.
-  void EmitVmDiskTypeMetric(const std::string vm_name);
+  void EmitVmDiskTypeMetric(const std::string& vm_name);
 
   // Runs things that should happened whenever a container shutdowns e.g.
   // triggering observers.

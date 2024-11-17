@@ -83,7 +83,7 @@ CreateChromeSignoutConfirmationPromptDialogModel(
     case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
       title_string_id =
           IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_TITLE;
-      body_string_id = CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_BODY;
+      body_string_id = IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_BODY;
       ok_string_id = IDS_SCREEN_LOCK_SIGN_OUT;
       break;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:

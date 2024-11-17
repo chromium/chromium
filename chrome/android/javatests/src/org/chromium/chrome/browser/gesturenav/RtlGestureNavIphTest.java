@@ -75,17 +75,17 @@ public class RtlGestureNavIphTest {
         }
 
         @Override
-        public boolean shouldTriggerHelpUI(String feature) {
+        public boolean shouldTriggerHelpUi(String feature) {
             return true;
         }
 
         @Override
-        public TriggerDetails shouldTriggerHelpUIWithSnooze(String feature) {
+        public TriggerDetails shouldTriggerHelpUiWithSnooze(String feature) {
             return null;
         }
 
         @Override
-        public boolean wouldTriggerHelpUI(String feature) {
+        public boolean wouldTriggerHelpUi(String feature) {
             return true;
         }
 
@@ -156,20 +156,15 @@ public class RtlGestureNavIphTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=IPH_RtlGestureNavigation<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:availability/any/"
-                + "event_trigger/"
-                + "name%3Artl_gesture_iph_trigger;comparator%3A==0;window%3A30;storage%3A365/"
-                + "event_used/"
-                + "name%3Artl_gesture_iph_show;comparator%3A==0;window%3A365;storage%3A365/"
-                + "session_rate/<1"
-    })
+    @EnableFeatures(
+            "IPH_RtlGestureNavigation:availability/any"
+                + "/event_trigger/name%3Artl_gesture_iph_trigger;comparator%3A==0;window%3A30;storage%3A365"
+                + "/event_used/name%3Artl_gesture_iph_show;comparator%3A==0;window%3A365;storage%3A365"
+                + "/session_rate/<1")
     public void testShowIphOnFailedSwipe() throws InterruptedException {
         mRtlGestureNavIphController =
                 ((TabbedRootUiCoordinator)
-                                (mActivityTestRule.getActivity().getRootUiCoordinatorForTesting()))
+                                mActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
                         .getRtlGestureNavIphControllerForTesting();
         Assert.assertFalse(mRtlGestureNavIphController.shouldShowOnNonEmptyStack());
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE_2));
@@ -217,21 +212,15 @@ public class RtlGestureNavIphTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "enable-features=IPH_RtlGestureNavigation<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:availability/any/"
-                + "event_trigger/"
-                + "name%3Artl_gesture_iph_trigger;comparator%3A==0;window%3A30;storage%3A365/"
-                + "event_used/"
-                + "name%3Artl_gesture_iph_show;comparator%3A==0;window%3A365;storage%3A365/"
-                + "session_rate/<1/"
-                + "x_trigger/non-empty-stack"
-    })
+    @EnableFeatures(
+            "IPH_RtlGestureNavigation:availability/any"
+                + "/event_trigger/name%3Artl_gesture_iph_trigger;comparator%3A==0;window%3A30;storage%3A365"
+                + "/event_used/name%3Artl_gesture_iph_show;comparator%3A==0;window%3A365;storage%3A365"
+                + "/session_rate/<1/x_trigger/non-empty-stack")
     public void testShowIphOnNonEmptyHistoryStack() throws InterruptedException {
         mRtlGestureNavIphController =
                 ((TabbedRootUiCoordinator)
-                                (mActivityTestRule.getActivity().getRootUiCoordinatorForTesting()))
+                                mActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
                         .getRtlGestureNavIphControllerForTesting();
         Assert.assertTrue(mRtlGestureNavIphController.shouldShowOnNonEmptyStack());
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE_2));

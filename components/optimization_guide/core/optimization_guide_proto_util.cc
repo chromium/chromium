@@ -514,6 +514,8 @@ optimization_guide::proto::AXStringAttribute StringAttributeToProto(
     case ax::mojom::StringAttribute::kContainerLiveStatus:
       return optimization_guide::proto::AXStringAttribute::
           AX_SA_CONTAINERLIVESTATUS;
+    case ax::mojom::StringAttribute::kDateTime:
+      return optimization_guide::proto::AXStringAttribute::AX_SA_DATETIME;
     case ax::mojom::StringAttribute::kDescription:
       return optimization_guide::proto::AXStringAttribute::AX_SA_DESCRIPTION;
     case ax::mojom::StringAttribute::kDisplay:
@@ -531,8 +533,8 @@ optimization_guide::proto::AXStringAttribute StringAttributeToProto(
           AX_SA_IMAGEANNOTATION;
     case ax::mojom::StringAttribute::kImageDataUrl:
       return optimization_guide::proto::AXStringAttribute::AX_SA_IMAGEDATAURL;
-    case ax::mojom::StringAttribute::kInnerHtml:
-      return optimization_guide::proto::AXStringAttribute::AX_SA_INNERHTML;
+    case ax::mojom::StringAttribute::kMathContent:
+      return optimization_guide::proto::AXStringAttribute::AX_SA_MATHCONTENT;
     case ax::mojom::StringAttribute::kInputType:
       return optimization_guide::proto::AXStringAttribute::AX_SA_INPUTTYPE;
     case ax::mojom::StringAttribute::kKeyShortcuts:
@@ -637,6 +639,8 @@ optimization_guide::proto::AXIntAttribute IntAttributeToProto(
       return optimization_guide::proto::AXIntAttribute::AX_IA_NAMEFROM;
     case ax::mojom::IntAttribute::kDescriptionFrom:
       return optimization_guide::proto::AXIntAttribute::AX_IA_DESCRIPTIONFROM;
+    case ax::mojom::IntAttribute::kDetailsFrom:
+      return optimization_guide::proto::AXIntAttribute::AX_IA_DETAILSFROM;
     case ax::mojom::IntAttribute::kActivedescendantId:
       return optimization_guide::proto::AXIntAttribute::
           AX_IA_ACTIVEDESCENDANTID;
@@ -718,6 +722,8 @@ optimization_guide::proto::AXIntAttribute IntAttributeToProto(
     case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
       return optimization_guide::proto::AXIntAttribute::
           AX_IA_ARIANOTIFICATIONPRIORITYDEPRECATED;
+    case ax::mojom::IntAttribute::kMaxLength:
+      return optimization_guide::proto::AXIntAttribute::AX_IA_MAXLENGTH;
   }
 }
 
@@ -821,6 +827,8 @@ optimization_guide::proto::AXIntListAttribute IntListAttributeToProto(
     case ax::mojom::IntListAttribute::kIndirectChildIds:
       return optimization_guide::proto::AXIntListAttribute::
           AX_ILA_INDIRECTCHILDIDS;
+    case ax::mojom::IntListAttribute::kActionsIds:
+      return optimization_guide::proto::AXIntListAttribute::AX_ILA_ACTIONSIDS;
     case ax::mojom::IntListAttribute::kControlsIds:
       return optimization_guide::proto::AXIntListAttribute::AX_ILA_CONTROLSIDS;
     case ax::mojom::IntListAttribute::kDetailsIds:
@@ -1019,6 +1027,13 @@ void PopulateAXNode(const ui::AXNodeData& source,
 }
 
 }  // namespace
+
+proto::Any AnyWrapProto(const google::protobuf::MessageLite& m) {
+  optimization_guide::proto::Any any;
+  any.set_type_url("type.googleapis.com/" + m.GetTypeName());
+  m.SerializeToString(any.mutable_value());
+  return any;
+}
 
 void PopulateAXTreeUpdateProto(
     const ui::AXTreeUpdate& source,

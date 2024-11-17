@@ -16,7 +16,7 @@ OverlayStateObserverImpl::Create(
     StateChangedCB state_changed_cb) {
   if (overlay_state_service_provider) {
     return base::WrapUnique(new OverlayStateObserverImpl(
-        overlay_state_service_provider, mailbox, state_changed_cb));
+        overlay_state_service_provider, mailbox, std::move(state_changed_cb)));
   }
   return nullptr;
 }

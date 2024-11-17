@@ -74,7 +74,7 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetMetadata) {
   auto make_metadata = [&]() {
     // Use non-default values to ensure serialization/deserialization works
     // properly.
-    return net::FirstPartySetMetadata(&frame_entry, &top_frame_entry);
+    return net::FirstPartySetMetadata(frame_entry, top_frame_entry);
   };
 
   net::FirstPartySetMetadata original = make_metadata();

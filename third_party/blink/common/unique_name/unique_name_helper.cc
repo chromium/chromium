@@ -39,10 +39,7 @@ class PendingChildFrameAdapter : public UniqueNameHelper::FrameAdapter {
     // child to include it in the count.
     return parent_->GetChildCount();
   }
-  int GetChildCount() const override {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  int GetChildCount() const override { NOTREACHED(); }
   std::vector<std::string> CollectAncestorNames(
       BeginPoint begin_point,
       bool (*should_stop)(std::string_view)) const override {
@@ -69,8 +66,7 @@ constexpr char kDynamicFrameMarker[] = "<!--dynamicFrame";
 constexpr size_t kMaxRequestedNameSize = 80;
 
 bool IsNameWithFramePath(std::string_view name) {
-  return base::StartsWith(name, kFramePathPrefix) &&
-         base::EndsWith(name, "-->") &&
+  return name.starts_with(kFramePathPrefix) && name.ends_with("-->") &&
          (kFramePathPrefixLength + kFramePathSuffixLength) < name.size();
 }
 

@@ -63,6 +63,11 @@ struct OmniboxPopupSelection {
     // button is focused. Pressing enter will attempt to remove this suggestion.
     FOCUSED_BUTTON_REMOVE_SUGGESTION,
 
+    // `NULL_RESULT_MESSAGE` IPH match types are not normally focusable, but
+    // their links still need to be tab-accessible, so this state is available
+    // when such a match has an IPH URL link.
+    FOCUSED_IPH_LINK,
+
     // Whenever new line state is added, accessibility label for current
     // selection should be revisited
     // (`OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection()`).
@@ -111,12 +116,12 @@ struct OmniboxPopupSelection {
   // Returns true if the control represented by this selection's `state` is
   // present on the match for `line` in given `result`.
   bool IsControlPresentOnMatch(const AutocompleteResult& result,
-                               PrefService* pref_service) const;
+                               const PrefService* pref_service) const;
 
   // Returns the next selection after this one in given `result`.
   OmniboxPopupSelection GetNextSelection(
       const AutocompleteResult& result,
-      PrefService* pref_service,
+      const PrefService* pref_service,
       TemplateURLService* template_url_service,
       Direction direction,
       Step step) const;
@@ -125,7 +130,7 @@ struct OmniboxPopupSelection {
   //  This is a utility function to support `GetNextSelection`.
   static std::vector<OmniboxPopupSelection> GetAllAvailableSelectionsSorted(
       const AutocompleteResult& result,
-      PrefService* pref_service,
+      const PrefService* pref_service,
       TemplateURLService* template_url_service,
       Direction direction,
       Step step);

@@ -6,7 +6,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import './scan_settings_section.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';

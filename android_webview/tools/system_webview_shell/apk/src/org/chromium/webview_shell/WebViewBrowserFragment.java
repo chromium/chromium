@@ -213,7 +213,7 @@ public class WebViewBrowserFragment extends Fragment {
     }
 
     /** Background Async Task to download file */
-    class DownloadFileFromURL extends AsyncTask<String> {
+    static class DownloadFileFromURL extends AsyncTask<String> {
         private String mFileUrl;
         private String mNameOfFile;
         private static final String DEFAULT_FILE_NAME = "default-filename";
@@ -362,7 +362,7 @@ public class WebViewBrowserFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ViewGroup viewGroup = (ViewGroup) (mWebView.getParent());
+        ViewGroup viewGroup = (ViewGroup) mWebView.getParent();
         viewGroup.removeView(mWebView);
         mWebView.destroy();
         mWebView = null;

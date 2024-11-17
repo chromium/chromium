@@ -37,7 +37,6 @@ class GameControlsTestBase : public ash::AshTestBase {
   void TearDown() override;
 
   std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<TouchInjector, DanglingUntriaged> touch_injector_;

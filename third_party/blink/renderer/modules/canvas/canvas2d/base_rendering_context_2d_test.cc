@@ -46,11 +46,13 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
+#include "third_party/blink/renderer/platform/graphics/pattern.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -71,18 +73,22 @@
 namespace blink {
 namespace {
 
+using ::blink_testing::ClearRectFlags;
 using ::blink_testing::FillFlags;
 using ::blink_testing::ParseFilter;
 using ::blink_testing::RecordedOpsAre;
 using ::blink_testing::RecordedOpsView;
 using ::cc::ClipPathOp;
 using ::cc::ClipRectOp;
+using ::cc::ConcatOp;
 using ::cc::DrawColorOp;
+using ::cc::DrawImageRectOp;
 using ::cc::DrawRectOp;
 using ::cc::DrawVerticesOp;
 using ::cc::PaintFlags;
 using ::cc::PaintImage;
 using ::cc::PaintOpEq;
+using ::cc::PaintOpIs;
 using ::cc::PaintShader;
 using ::cc::RestoreOp;
 using ::cc::SaveLayerAlphaOp;
@@ -153,7 +159,7 @@ class TestRenderingContext2D final
     return execution_context_.Get();
   }
 
-  bool HasAlpha() const override { return false; }
+  bool HasAlpha() const override { return true; }
 
   void SetContextLost(bool context_lost) { context_lost_ = context_lost; }
   bool isContextLost() const override { return context_lost_; }
@@ -233,6 +239,1040 @@ BeginLayerOptions* FilterOption(blink::V8TestingScope& scope,
   BeginLayerOptions* options = BeginLayerOptions::Create();
   options->setFilter(ParseFilter(scope, filter));
   return options;
+}
+
+// Tests a plain fillRect.
+TEST(BaseRenderingContextCompositingTests, FillRect) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<TranslateOp>(4, 5),
+                             PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                                   FillFlags())));
+}
+
+// Tests a fillRect with a CanvasPattern.
+TEST(BaseRenderingContextCompositingTests, Pattern) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  auto* pattern = MakeGarbageCollected<CanvasPattern>(
+      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
+
+  context->setFillStyle(scope.GetIsolate(),
+                        pattern->ToV8(scope.GetScriptState()),
+                        scope.GetExceptionState());
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags flags = FillFlags();
+  flags.setShader(PaintShader::MakeColor(SkColors::kTransparent));
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(
+                  PaintOpEq<TranslateOp>(4, 5),
+                  PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), flags)));
+}
+
+// Tests a plain drawImage.
+TEST(BaseRenderingContextCompositingTests, DrawImage) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  context->translate(4, 5);
+  context->drawImage(bitmap, 0, 0, 10, 10, 0, 0, 10, 10, exception_state);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<TranslateOp>(4, 5),
+                             PaintOpIs<DrawImageRectOp>()));
+}
+
+// Tests drawing with context filter.
+TEST(BaseRenderingContextCompositingTests, Filter) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags filter_flags;
+  filter_flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          // TODO: crbug.com/364549423 - No need to reset matrix, it's
+          // already identity.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          // TODO: crbug.com/364549423 - Evaluate whether the filter could be
+          // applied on the DrawRectOp directly.
+          PaintOpEq<SaveLayerOp>(filter_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), FillFlags()),
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests drawing with context filter and a transform.
+TEST(BaseRenderingContextCompositingTests, FilterTransform) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags filter_flags;
+  filter_flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<TranslateOp>(4, 5),
+                             PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                                          0, 1, 0, 0,  //
+                                                          0, 0, 1, 0,  //
+                                                          0, 0, 0, 1)),
+                             PaintOpEq<SaveLayerOp>(filter_flags),
+                             PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                                          0, 1, 0, 5,  //
+                                                          0, 0, 1, 0,  //
+                                                          0, 0, 0, 1)),
+                             PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                                   FillFlags()),
+                             PaintOpEq<RestoreOp>(),
+                             PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                                          0, 1, 0, 5,  //
+                                                          0, 0, 1, 0,  //
+                                                          0, 0, 0, 1))));
+}
+
+// Tests drawing with a shadow.
+TEST(BaseRenderingContextCompositingTests, Shadow) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  // TODO: crbug.com/364549423 - Remove draw-looper.
+  cc::PaintFlags shadow_flags = FillFlags();
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+                                Color::FromRGB(255, 0, 0),
+                                DrawLooperBuilder::kShadowIgnoresTransforms,
+                                DrawLooperBuilder::kShadowRespectsAlpha);
+  draw_looper_builder.AddUnmodifiedContent();
+  shadow_flags.setLooper(draw_looper_builder.DetachDrawLooper());
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<TranslateOp>(4, 5),
+                             PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                                   shadow_flags)));
+}
+
+// Tests the "copy" composite operation, which is handled as a special case
+// clearing the canvas before draw.
+TEST(BaseRenderingContextCompositingTests, CopyOp) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setGlobalCompositeOperation("copy");
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags = FillFlags();
+  composite_flags.setBlendMode(SkBlendMode::kSrc);
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          PaintOpEq<TranslateOp>(4, 5),
+          // TODO: crbug.com/364549423 - Evaluate which is faster between
+          // clearing the frame buffer manually and using a layer with a `kSrc`
+          // blend mode.
+          PaintOpEq<DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                composite_flags)));
+}
+
+// Tests drawing with a blending operation.
+TEST(BaseRenderingContextCompositingTests, Multiply) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setGlobalCompositeOperation("multiply");
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags = FillFlags();
+  composite_flags.setBlendMode(SkBlendMode::kMultiply);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<TranslateOp>(4, 5),
+                             PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                                   composite_flags)));
+}
+
+// Tests drawing with a composite operation.
+TEST(BaseRenderingContextCompositingTests, DstOut) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setGlobalCompositeOperation("destination-out");
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags = FillFlags();
+  composite_flags.setBlendMode(SkBlendMode::kDstOut);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<TranslateOp>(4, 5),
+                             PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                                   composite_flags)));
+}
+
+// Tests drawing with a composite operation operating on the full surface. These
+// ops impact all pixels, even those outside the drawn shape.
+TEST(BaseRenderingContextCompositingTests, SrcIn) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setGlobalCompositeOperation("source-in");
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          // TODO: crbug.com/364549423 - No need to reset matrix, it's
+          // already identity.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), FillFlags()),
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests composite ops operating on the full surface. These ops impact all
+// pixels, even those outside the drawn shape.
+TEST(BaseRenderingContextCompositingTests, SrcInTransform) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setGlobalCompositeOperation("source-in");
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          PaintOpEq<TranslateOp>(4, 5),
+          // TODO: crbug.com/364549423 - No need to reset matrix, source-in
+          // isn't impacted by transforms.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          // TODO: crbug.com/364549423 - Evaluate whether the composite op could
+          // be applied on the DrawRectOp directly.
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), FillFlags()),
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests drawing with context filter and a "copy" composite operation. The copy
+// op should clear previous drawing but the filter should be applied as normal.
+TEST(BaseRenderingContextCompositingTests, FilterCopyOp) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
+  context->setGlobalCompositeOperation("copy");
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags filter_flags;
+  filter_flags.setBlendMode(SkBlendMode::kSrc);
+  filter_flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          // TODO: crbug.com/364549423 - No need to reset matrix, it's
+          // already identity.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          // TODO: crbug.com/364549423 - Evaluate which is faster between
+          // clearing the frame buffer manually and using a layer with a `kSrc`
+          // blend mode.
+          PaintOpEq<SaveLayerOp>(filter_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), FillFlags()),
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests drawing with context filter, a shadow and a "copy" composite operation.
+// The copy op should clear previous drawing and the shadow shouldn't be
+// rasterized, but the filter should be applied as normal.
+TEST(BaseRenderingContextCompositingTests, FilterShadowCopyOp) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setFilter(scope.GetScriptState(), MakeBlurCanvasFilter(20.0f));
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setGlobalCompositeOperation("copy");
+  context->fillRect(1, 1, 5, 5);
+
+  sk_sp<cc::PaintFilter> blur_filter =
+      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr);
+
+  cc::PaintFlags shadow_flags = FillFlags();
+  shadow_flags.setBlendMode(SkBlendMode::kSrc);
+  // TODO: crbug.com/364549423 - The `ComposePaintFilter`s are useless here.
+  shadow_flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
+      sk_make_sp<ComposePaintFilter>(nullptr, nullptr), blur_filter));
+
+  // TODO: crbug.com/364549423 - Remove draw-looper.
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+                                Color::FromRGB(255, 0, 0),
+                                DrawLooperBuilder::kShadowIgnoresTransforms,
+                                DrawLooperBuilder::kShadowRespectsAlpha);
+  shadow_flags.setLooper(draw_looper_builder.DetachDrawLooper());
+
+  cc::PaintFlags foreground_flags;
+  foreground_flags.setBlendMode(SkBlendMode::kSrc);
+  foreground_flags.setImageFilter(blur_filter);
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          // TODO: crbug.com/364549423 - No need to reset matrix, it's
+          // already identity.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          // TODO: crbug.com/364549423 - There is no need to draw a shadow, it
+          // will be overwritten by the foreground right afterwards.
+          PaintOpEq<SaveLayerOp>(shadow_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), FillFlags()),
+          PaintOpEq<RestoreOp>(),  //
+          PaintOpEq<SaveLayerOp>(foreground_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), FillFlags()),
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests a shadow with a "copy" composite operation, which is handled as a
+// special case clearing the canvas before draw. Thus, the shadow shouldn't be
+// drawn since the foreground overwrites it.
+TEST(BaseRenderingContextCompositingTests, ShadowCopyOp) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setGlobalCompositeOperation("copy");
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags = FillFlags();
+  composite_flags.setBlendMode(SkBlendMode::kSrc);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<TranslateOp>(4, 5),
+                             PaintOpEq<DrawColorOp>(SkColors::kTransparent,
+                                                    SkBlendMode::kSrc),
+                             PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                                   composite_flags)));
+}
+
+// Tests fillRect with a shadow and a globalCompositeOperator that can't be
+// implemented using a `DropShadowPaintFilter` (it requires separate compositing
+// of the shadow and foreground.
+TEST(BaseRenderingContextCompositingTests, ShadowMultiply) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setGlobalCompositeOperation("multiply");
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kMultiply);
+
+  // TODO: crbug.com/364549423 - Remove draw-looper.
+  cc::PaintFlags shadow_only_flags = FillFlags();
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+                                Color::FromRGB(255, 0, 0),
+                                DrawLooperBuilder::kShadowIgnoresTransforms,
+                                DrawLooperBuilder::kShadowRespectsAlpha);
+  shadow_only_flags.setLooper(draw_looper_builder.DetachDrawLooper());
+
+  cc::PaintFlags foreground_flags = FillFlags();
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          // TODO: crbug.com/364549423 - No need to reset matrix, it's
+          // already identity.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                shadow_only_flags),
+          PaintOpEq<RestoreOp>(),  //
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), foreground_flags),
+          PaintOpEq<RestoreOp>(),                   //
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests fillRect with a shadow and a globalCompositeOperator that can't be
+// implemented using a `DropShadowPaintFilter` (it requires separate compositing
+// of the shadow and foreground.
+TEST(BaseRenderingContextCompositingTests, ShadowMultiplyTransform) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setGlobalCompositeOperation("multiply");
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kMultiply);
+
+  // TODO: crbug.com/364549423 - Remove draw-looper.
+  cc::PaintFlags shadow_only_flags = FillFlags();
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+                                Color::FromRGB(255, 0, 0),
+                                DrawLooperBuilder::kShadowIgnoresTransforms,
+                                DrawLooperBuilder::kShadowRespectsAlpha);
+  shadow_only_flags.setLooper(draw_looper_builder.DetachDrawLooper());
+
+  cc::PaintFlags foreground_flags = FillFlags();
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<TranslateOp>(4, 5),
+                             PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                                          0, 1, 0, 0,  //
+                                                          0, 0, 1, 0,  //
+                                                          0, 0, 0, 1)),
+                             PaintOpEq<SaveLayerOp>(composite_flags),
+                             PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                                          0, 1, 0, 5,  //
+                                                          0, 0, 1, 0,  //
+                                                          0, 0, 0, 1)),
+                             PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                                   shadow_only_flags),
+                             PaintOpEq<RestoreOp>(),  //
+                             PaintOpEq<SaveLayerOp>(composite_flags),
+                             PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                                          0, 1, 0, 5,  //
+                                                          0, 0, 1, 0,  //
+                                                          0, 0, 0, 1)),
+                             PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                                   foreground_flags),
+                             PaintOpEq<RestoreOp>(),
+                             PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                                          0, 1, 0, 5,  //
+                                                          0, 0, 1, 0,  //
+                                                          0, 0, 0, 1))));
+}
+
+// Tests fillRect with a shadow and a composite op that can be implemented using
+// a `DropShadowPaintFilter`.
+TEST(BaseRenderingContextCompositingTests, ShadowDstOutTransform) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setGlobalCompositeOperation("destination-out");
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  // TODO: crbug.com/364549423 - Remove draw-looper.
+  cc::PaintFlags flags = FillFlags();
+  flags.setBlendMode(SkBlendMode::kDstOut);
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+                                Color::FromRGB(255, 0, 0),
+                                DrawLooperBuilder::kShadowIgnoresTransforms,
+                                DrawLooperBuilder::kShadowRespectsAlpha);
+  draw_looper_builder.AddUnmodifiedContent();
+  flags.setLooper(draw_looper_builder.DetachDrawLooper());
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(
+                  PaintOpEq<TranslateOp>(4, 5),
+                  PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), flags)));
+}
+
+// Tests a fillRect with a shadow and a composite op operating on the full
+// surface. These ops impact all pixels, even those outside the drawn shape.
+TEST(BaseRenderingContextCompositingTests, ShadowSrcIn) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setGlobalCompositeOperation("source-in");
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  // TODO: crbug.com/364549423 - Remove draw-looper.
+  cc::PaintFlags shadow_only_flags = FillFlags();
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+                                Color::FromRGB(255, 0, 0),
+                                DrawLooperBuilder::kShadowIgnoresTransforms,
+                                DrawLooperBuilder::kShadowRespectsAlpha);
+  shadow_only_flags.setLooper(draw_looper_builder.DetachDrawLooper());
+
+  cc::PaintFlags foreground_flags = FillFlags();
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          // TODO: crbug.com/364549423 - No need to reset matrix, it's
+          // already identity.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                shadow_only_flags),
+          PaintOpEq<RestoreOp>(),  //
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), foreground_flags),
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests a fillRect with a shadow and a composite op operating on the full
+// surface. These ops impact all pixels, even those outside the drawn shape.
+TEST(BaseRenderingContextCompositingTests, ShadowSrcInTransform) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setGlobalCompositeOperation("source-in");
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  // TODO: crbug.com/364549423 - Remove draw-looper.
+  cc::PaintFlags shadow_only_flags = FillFlags();
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddShadow(/*offset=*/{2, 3}, /*blur=*/2,
+                                Color::FromRGB(255, 0, 0),
+                                DrawLooperBuilder::kShadowIgnoresTransforms,
+                                DrawLooperBuilder::kShadowRespectsAlpha);
+  shadow_only_flags.setLooper(draw_looper_builder.DetachDrawLooper());
+
+  cc::PaintFlags foreground_flags = FillFlags();
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          PaintOpEq<TranslateOp>(4, 5),
+          // TODO: crbug.com/364549423 - Undoing the transform has no effect
+          // because a draw-looper is used. Without the draw-looper, the shadow
+          // would need to be applied on the layer, not the draw op.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5),
+                                shadow_only_flags),
+          PaintOpEq<RestoreOp>(),  //
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), foreground_flags),
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests a fillRect with a shadow and a CanvasPattern.
+TEST(BaseRenderingContextCompositingTests, ShadowPattern) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  auto* pattern = MakeGarbageCollected<CanvasPattern>(
+      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
+
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setFillStyle(scope.GetIsolate(),
+                        pattern->ToV8(scope.GetScriptState()),
+                        scope.GetExceptionState());
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags shadow_flags = FillFlags();
+  shadow_flags.setShader(PaintShader::MakeColor(SkColors::kTransparent));
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
+      2.0f, 3.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  // TODO: crbug.com/364549423 - The `ComposePaintFilter`s are useless here.
+  sk_sp<cc::PaintFilter> background_filter = sk_make_sp<ComposePaintFilter>(
+      sk_make_sp<ComposePaintFilter>(nullptr, shadow_filter), nullptr);
+  shadow_flags.setImageFilter(background_filter);
+
+  cc::PaintFlags pattern_flags = FillFlags();
+  pattern_flags.setShader(PaintShader::MakeColor(SkColors::kTransparent));
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          // TODO: crbug.com/364549423 - No need to reset matrix, it's already
+          // identity.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<SaveLayerOp>(shadow_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), pattern_flags),
+          PaintOpEq<RestoreOp>(),  //
+          // TODO: crbug.com/364549423 - The layer shouldn't be needed here.
+          PaintOpEq<SaveLayerOp>(PaintFlags()),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), pattern_flags),
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests a fillRect with a shadow, a CanvasPattern and a transform.
+TEST(BaseRenderingContextCompositingTests, ShadowPatternTransform) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  auto* pattern = MakeGarbageCollected<CanvasPattern>(
+      Image::NullImage(), Pattern::kRepeatModeXY, /*origin_clean=*/true);
+
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setFillStyle(scope.GetIsolate(),
+                        pattern->ToV8(scope.GetScriptState()),
+                        scope.GetExceptionState());
+  context->translate(4, 5);
+  context->fillRect(1, 1, 5, 5);
+
+  cc::PaintFlags shadow_flags = FillFlags();
+  shadow_flags.setShader(PaintShader::MakeColor(SkColors::kTransparent));
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
+      2.0f, 3.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  // TODO: crbug.com/364549423 - The `ComposePaintFilter`s are useless here.
+  sk_sp<cc::PaintFilter> background_filter = sk_make_sp<ComposePaintFilter>(
+      sk_make_sp<ComposePaintFilter>(nullptr, shadow_filter), nullptr);
+  shadow_flags.setImageFilter(background_filter);
+
+  cc::PaintFlags pattern_flags = FillFlags();
+  pattern_flags.setShader(PaintShader::MakeColor(SkColors::kTransparent));
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          PaintOpEq<TranslateOp>(4, 5),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<SaveLayerOp>(shadow_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), pattern_flags),
+          PaintOpEq<RestoreOp>(),  //
+          // TODO: crbug.com/364549423 - The layer shouldn't be needed here.
+          PaintOpEq<SaveLayerOp>(PaintFlags()),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), pattern_flags),
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests a drawImage with a shadow.
+TEST(BaseRenderingContextCompositingTests, ShadowDrawImage) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->drawImage(bitmap, 0, 0, 10, 10, 0, 0, 10, 10, exception_state);
+
+  cc::PaintFlags shadow_flags;
+  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+      2.0f, 3.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          // TODO: crbug.com/364549423 - No need to reset matrix, it's already
+          // identity.
+          PaintOpEq<SaveOp>(),
+          PaintOpEq<ConcatOp>(SkM44(1, 0, 0, 0,  //
+                                    0, 1, 0, 0,  //
+                                    0, 0, 1, 0,  //
+                                    0, 0, 0, 1)),
+          PaintOpEq<SaveLayerOp>(SkRect::MakeXYWH(0, 0, 10, 10), shadow_flags),
+          PaintOpEq<ConcatOp>(SkM44(1, 0, 0, 0,  //
+                                    0, 1, 0, 0,  //
+                                    0, 0, 1, 0,  //
+                                    0, 0, 0, 1)),
+          PaintOpIs<DrawImageRectOp>(),  //
+          PaintOpEq<RestoreOp>(),        //
+          PaintOpEq<RestoreOp>()));
+}
+
+// Tests a drawImage with a shadow and a transform.
+TEST(BaseRenderingContextCompositingTests, ShadowDrawImageTransform) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->translate(4, 5);
+  context->drawImage(bitmap, 0, 0, 10, 10, 0, 0, 10, 10, exception_state);
+
+  cc::PaintFlags shadow_flags;
+  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+      2.0f, 3.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(PaintOpEq<TranslateOp>(4, 5),  //
+                             PaintOpEq<SaveOp>(),
+                             PaintOpEq<ConcatOp>(SkM44(1, 0, 0, -4,  //
+                                                       0, 1, 0, -5,  //
+                                                       0, 0, 1, 0,   //
+                                                       0, 0, 0, 1)),
+                             PaintOpEq<SaveLayerOp>(
+                                 SkRect::MakeXYWH(4, 5, 10, 10), shadow_flags),
+                             PaintOpEq<ConcatOp>(SkM44(1, 0, 0, 4,  //
+                                                       0, 1, 0, 5,  //
+                                                       0, 0, 1, 0,  //
+                                                       0, 0, 0, 1)),
+                             PaintOpIs<DrawImageRectOp>(),
+                             PaintOpEq<RestoreOp>(),  //
+                             PaintOpEq<RestoreOp>()));
+}
+
+// Tests a drawImage with a shadow and a composite operation requiring an extra
+// layer (requires `CompositedDraw`).
+TEST(BaseRenderingContextCompositingTests, DrawImageShadowSrcIn) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->setGlobalCompositeOperation("source-in");
+  context->drawImage(bitmap, 0, 0, 10, 10, 0, 0, 10, 10, exception_state);
+
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  cc::PaintFlags shadow_flags;
+  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+      2.0f, 3.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr));
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          // TODO: crbug.com/364549423 - No need to reset matrix, it's already
+          // identity.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          // TODO: crbug.com/364549423 - Check whether two nested layers are
+          // needed here. set and unset right afterwards.
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<SaveOp>(),
+          PaintOpEq<ConcatOp>(SkM44(1, 0, 0, 0,  //
+                                    0, 1, 0, 0,  //
+                                    0, 0, 1, 0,  //
+                                    0, 0, 0, 1)),
+          PaintOpEq<SaveLayerOp>(SkRect::MakeXYWH(0, 0, 10, 10), shadow_flags),
+          PaintOpEq<ConcatOp>(SkM44(1, 0, 0, 0,  //
+                                    0, 1, 0, 0,  //
+                                    0, 0, 1, 0,  //
+                                    0, 0, 0, 1)),
+          PaintOpIs<DrawImageRectOp>(),  //
+          PaintOpEq<RestoreOp>(),        //
+          PaintOpEq<RestoreOp>(),        //
+          PaintOpEq<RestoreOp>(),        //
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpIs<DrawImageRectOp>(),  //
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
+}
+
+// Tests a drawImage with a shadow, a transform and a composite operation
+// requiring an extra layer (requires `CompositedDraw`).
+TEST(BaseRenderingContextCompositingTests, DrawImageShadowSrcInTransform) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  auto* bitmap = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  context->setShadowBlur(2);
+  context->setShadowOffsetX(2);
+  context->setShadowOffsetY(3);
+  context->setShadowColor("red");
+  context->translate(4, 5);
+  context->setGlobalCompositeOperation("source-in");
+  context->drawImage(bitmap, 0, 0, 10, 10, 0, 0, 10, 10, exception_state);
+
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  cc::PaintFlags shadow_flags;
+  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+      2.0f, 3.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr));
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(
+          PaintOpEq<TranslateOp>(4, 5),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                       0, 1, 0, 0,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          // TODO: crbug.com/364549423 - Check whether two nested layers are
+          // needed here. set and unset right afterwards.
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          // TODO: crbug.com/364549423 - Matrix shouldn't be set and unset right
+          // afterwards.
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpEq<SaveOp>(),
+          PaintOpEq<ConcatOp>(SkM44(1, 0, 0, -4,  //
+                                    0, 1, 0, -5,  //
+                                    0, 0, 1, 0,   //
+                                    0, 0, 0, 1)),
+          PaintOpEq<SaveLayerOp>(SkRect::MakeXYWH(4, 5, 10, 10), shadow_flags),
+          PaintOpEq<ConcatOp>(SkM44(1, 0, 0, 4,  //
+                                    0, 1, 0, 5,  //
+                                    0, 0, 1, 0,  //
+                                    0, 0, 0, 1)),
+          PaintOpIs<DrawImageRectOp>(),  //
+          PaintOpEq<RestoreOp>(),        //
+          PaintOpEq<RestoreOp>(),        //
+          PaintOpEq<RestoreOp>(),        //
+          PaintOpEq<SaveLayerOp>(composite_flags),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1)),
+          PaintOpIs<DrawImageRectOp>(),  //
+          PaintOpEq<RestoreOp>(),
+          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                       0, 1, 0, 5,  //
+                                       0, 0, 1, 0,  //
+                                       0, 0, 0, 1))));
 }
 
 TEST(BaseRenderingContextLayerTests, ContextLost) {
@@ -1325,10 +2365,11 @@ TEST(BaseRenderingContextLayerGlobalStateTests, CopyCompositeOp) {
                       exception_state);
   context->endLayer(exception_state);
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(
-                  PaintOpEq<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrc),
-                  PaintOpEq<SaveLayerAlphaOp>(1.0f), PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc),
+          PaintOpEq<SaveLayerAlphaOp>(1.0f), PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests,
@@ -1365,7 +2406,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
       RecordedOpsAre(
           PaintOpEq<TranslateOp>(6, 7),
           DrawRecordOpEq(
-              PaintOpEq<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrc),
+              PaintOpEq<DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc),
               PaintOpEq<SaveOp>(),
               PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
                                            0, 1, 0, 0,  //
@@ -1679,11 +2720,10 @@ TEST(BaseRenderingContextResetTest, DiscardsRenderStates) {
   EXPECT_EQ(context->OpenedLayerCount(), 0);
 
   // `reset` discards all paint ops and reset the canvas content.
-  cc::PaintFlags reset_rect_flags;
   EXPECT_THAT(context->FlushRecorder(),
               RecordedOpsAre(PaintOpEq<DrawRectOp>(
                   SkRect::MakeXYWH(0, 0, context->Width(), context->Height()),
-                  reset_rect_flags)));
+                  ClearRectFlags())));
 
   // The recording should now be empty:
   ASSERT_THAT(RecordedOpsView(context->FlushRecorder()), IsEmpty());

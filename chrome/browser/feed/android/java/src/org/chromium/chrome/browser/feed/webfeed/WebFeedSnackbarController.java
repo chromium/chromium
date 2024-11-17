@@ -167,7 +167,7 @@ public class WebFeedSnackbarController {
                         ? FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE
                         : FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE;
         if (TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile())
-                .shouldTriggerHelpUI(feature)) {
+                .shouldTriggerHelpUi(feature)) {
             if (followFromFeed == StreamKind.FOLLOWING) {
                 Runnable launchSnackbar = null;
                 if (isActive) {

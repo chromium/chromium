@@ -35,9 +35,9 @@ ChildCallStackProfileCollector::ProfileState&
 ChildCallStackProfileCollector::ProfileState::operator=(ProfileState&&) =
     default;
 
-ChildCallStackProfileCollector::ChildCallStackProfileCollector() {}
+ChildCallStackProfileCollector::ChildCallStackProfileCollector() = default;
 
-ChildCallStackProfileCollector::~ChildCallStackProfileCollector() {}
+ChildCallStackProfileCollector::~ChildCallStackProfileCollector() = default;
 
 void ChildCallStackProfileCollector::SetParentProfileCollector(
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector>

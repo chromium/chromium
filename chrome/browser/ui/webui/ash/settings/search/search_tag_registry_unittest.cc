@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 
+#include <array>
+
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_concept.h"
@@ -39,8 +41,8 @@ class FakeObserver : public SearchTagRegistry::Observer {
 
 // Note: Copied from printing_section.cc but does not need to stay in sync with
 // it.
-const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPrintingSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PRINTING_ADD_PRINTER,
        mojom::kPrintingDetailsSubpagePath,
        mojom::SearchResultIcon::kPrinter,
@@ -62,7 +64,7 @@ const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_PRINTING_ALT1, IDS_OS_SETTINGS_TAG_PRINTING_ALT2,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace

@@ -23,12 +23,13 @@ RTCEncodedVideoFrameDelegate::RTCEncodedVideoFrameDelegate(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame)
     : webrtc_frame_(std::move(webrtc_frame)) {}
 
-String RTCEncodedVideoFrameDelegate::Type() const {
+V8RTCEncodedVideoFrameType::Enum RTCEncodedVideoFrameDelegate::Type() const {
   base::AutoLock lock(lock_);
   if (!webrtc_frame_)
-    return "empty";
+    return V8RTCEncodedVideoFrameType::Enum::kEmpty;
 
-  return webrtc_frame_->IsKeyFrame() ? "key" : "delta";
+  return webrtc_frame_->IsKeyFrame() ? V8RTCEncodedVideoFrameType::Enum::kKey
+                                     : V8RTCEncodedVideoFrameType::Enum::kDelta;
 }
 
 uint32_t RTCEncodedVideoFrameDelegate::RtpTimestamp() const {
@@ -61,12 +62,11 @@ DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateDataBuffer(
     }
 
     auto data = webrtc_frame_->GetData();
-    contents =
-        ArrayBufferContents(data.size(), 1, ArrayBufferContents::kNotShared,
-                            ArrayBufferContents::kDontInitialize);
-    if (!contents.Data()) [[unlikely]] {
-      OOM_CRASH(data.size());
-    }
+    contents = ArrayBufferContents(
+        data.size(), 1, ArrayBufferContents::kNotShared,
+        ArrayBufferContents::kDontInitialize,
+        ArrayBufferContents::AllocationFailureBehavior::kCrash);
+    CHECK(contents.IsValid());
     contents.ByteSpan().copy_from(data);
   }
   return DOMArrayBuffer::Create(std::move(contents));

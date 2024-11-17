@@ -78,6 +78,8 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
       return os << "OneDriveIntegration";
     case WebAppManagement::Type::kSync:
       return os << "Sync";
+    case WebAppManagement::Type::kUserInstalled:
+      return os << "UserInstalled";
     case WebAppManagement::Type::kIwaShimlessRma:
       return os << "IwaShimlessRma";
     case WebAppManagement::Type::kIwaPolicy:
@@ -101,6 +103,7 @@ bool IsIwaType(WebAppManagement::Type type) {
     case WebAppManagement::kWebAppStore:
     case WebAppManagement::kOneDriveIntegration:
     case WebAppManagement::kSync:
+    case WebAppManagement::kUserInstalled:
     case WebAppManagement::kApsDefault:
     case WebAppManagement::kDefault:
       return false;

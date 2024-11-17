@@ -47,6 +47,7 @@ import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
+import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.BuildInfo;
@@ -81,7 +82,6 @@ public class WebViewChromiumAwInit {
     // TODO(gsennton): store aw-objects instead of adapters here
     // Initialization guarded by mLock.
     private AwBrowserContext mDefaultBrowserContext;
-    private AwTracingController mTracingController;
     private SharedStatics mSharedStatics;
     private GeolocationPermissionsAdapter mDefaultGeolocationPermissions;
     private CookieManagerAdapter mDefaultCookieManager;
@@ -185,6 +185,10 @@ public class WebViewChromiumAwInit {
                 return;
             }
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                TrackExitReasons.startTrackingStartup();
+            }
+
             final Context context = ContextUtils.getApplicationContext();
 
             JNIUtils.setClassLoader(WebViewChromiumAwInit.class.getClassLoader());
@@ -285,7 +289,7 @@ public class WebViewChromiumAwInit {
                 mDefaultWebStorage =
                         new WebStorageAdapter(
                                 mFactory, defaultBrowserContext.getQuotaManagerBridge());
-                mAwTracingController = getTracingController();
+                mAwTracingController = new AwTracingController();
                 mDefaultServiceWorkerController =
                         defaultBrowserContext.getServiceWorkerController();
                 mAwProxyController = new AwProxyController();
@@ -485,13 +489,6 @@ public class WebViewChromiumAwInit {
                         new AwNetworkChangeNotifierRegistrationPolicy(), forceUpdateNetworkState);
             }
         }
-    }
-
-    public AwTracingController getTracingController() {
-        if (mTracingController == null) {
-            mTracingController = new AwTracingController();
-        }
-        return mTracingController;
     }
 
     // Only on UI thread.

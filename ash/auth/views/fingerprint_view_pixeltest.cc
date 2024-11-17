@@ -132,12 +132,12 @@ TEST_F(FingerprintViewPixelTest, AvailableWithFailedAttemptTest) {
   // To avoid flakiness we just verify the first and last frames.
   test_api.ShowFirstFrame();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "AvailableWithFailedAttemptFirstFrame", /*revision_number=*/0,
+      "AvailableWithFailedAttemptFirstFrame", /*revision_number=*/1,
       fingerprint_view_));
 
   test_api.ShowLastFrame();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "AvailableWithFailedAttemptLastFrame", /*revision_number=*/0,
+      "AvailableWithFailedAttemptLastFrame", /*revision_number=*/1,
       fingerprint_view_));
 }
 

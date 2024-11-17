@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -16,17 +17,21 @@
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_view_controller.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -45,7 +50,7 @@ class PasswordCheckupCoordinatorTest
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     // Add test password store and affiliation service. Used by the mediator.
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
@@ -63,9 +68,8 @@ class PasswordCheckupCoordinatorTest
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = std::move(builder).Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
     // SettingsCommands, it must be mocked as well.
@@ -88,6 +92,8 @@ class PasswordCheckupCoordinatorTest
     // Needed for verifying behavior when auth is required.
     mock_reauth_module_.shouldSkipReAuth = NO;
     mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+
+    push_notification_service_ = ios::provider::CreatePushNotificationService();
 
     coordinator_ = [[PasswordCheckupCoordinator alloc]
         initWithBaseNavigationController:base_navigation_controller_
@@ -133,7 +139,10 @@ class PasswordCheckupCoordinatorTest
 
   web::WebTaskEnvironment task_environment_;
   SceneState* scene_state_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<PushNotificationService> push_notification_service_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
   UINavigationController* base_navigation_controller_ = nil;

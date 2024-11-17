@@ -4,4 +4,5 @@ include_rules = [
   "+third_party/boringssl/src/include",
   "+third_party/openscreen/src/cast/common/certificate/proto",
   "+third_party/openscreen/src/cast/common/public",
+  "+third_party/openscreen/src/platform/base",
 ]

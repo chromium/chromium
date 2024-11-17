@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/mouse_event_manager.h"
@@ -74,8 +75,7 @@ const AtomicString& MouseEventNameForPointerEventInputType(
     case WebInputEvent::Type::kPointerMove:
       return event_type_names::kMousemove;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_atom;
+      NOTREACHED();
   }
 }
 
@@ -190,7 +190,11 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   if (Node* target_node = target->ToNode()) {
     if (event_type == event_type_names::kPointerdown ||
         event_type == event_type_names::kPointerup) {
+      // Per spec, run the popover light dismiss actions first, which will take
+      // care of light dismissing popovers, including nested popovers. Then run
+      // dialog light dismiss.
       HTMLElement::HandlePopoverLightDismiss(*pointer_event, *target_node);
+      HTMLDialogElement::HandleDialogLightDismiss(*pointer_event, *target_node);
     }
   }
 
@@ -1110,16 +1114,21 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
             mouse_event, &last_mouse_position, nullptr));
   }
 
-  // Dispatch the click event if applicable.
   if (!mouse_target) {
     consider_click_dispatch = false;
   }
+
+  Element* captured_click_target = nullptr;
   if (consider_click_dispatch) {
-    Element* captured_click_target =
+    // Remember the capture target for the click dispatch later, if applicable.
+    captured_click_target =
         GetEffectiveTargetForPointerEvent(nullptr, pointer_event->pointerId());
-    mouse_event_manager_->DispatchMouseClickIfNeeded(
-        mouse_target, captured_click_target, mouse_event,
-        pointer_event->pointerId(), pointer_event->pointerType());
+    // Dispatch the click event only when the flag is disabled.
+    if (!RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
+      mouse_event_manager_->DispatchMouseClickIfNeeded(
+          mouse_target, captured_click_target, mouse_event,
+          pointer_event->pointerId(), pointer_event->pointerType());
+    }
   }
 
   if (pointer_event->type() == event_type_names::kPointerup ||
@@ -1144,6 +1153,19 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
                      BoundaryEventDispatchTracksNodeRemovalEnabled()) {
         target = NonDeletedElementTarget(target, pointer_event);
       }
+
+      // Dispatch the click event if applicable, when the flag is enabled.
+      if (consider_click_dispatch &&
+          RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
+        ProcessPendingPointerCapture(pointer_event);
+        mouse_event_manager_->DispatchMouseClickIfNeeded(
+            mouse_target, captured_click_target, mouse_event,
+            pointer_event->pointerId(), pointer_event->pointerType());
+        // TODO(https://crbug.com/40851596): The following call to
+        // `ProcessCaptureAndPositionOfPointerEvent()` does not see any pending
+        // capture.  Clean this up after the flag is enabled.
+      }
+
       ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
                                               &mouse_event);
     } else {

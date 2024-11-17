@@ -53,3 +53,7 @@ ExtensionSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<ExtensionSyncService>(
       Profile::FromBrowserContext(context));
 }
+
+bool ExtensionSyncServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}

@@ -47,7 +47,7 @@ MetricsLogStore::MetricsLogStore(PrefService* local_state,
                          signing_key,
                          logs_event_manager) {}
 
-MetricsLogStore::~MetricsLogStore() {}
+MetricsLogStore::~MetricsLogStore() = default;
 
 void MetricsLogStore::LoadPersistedUnsentLogs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

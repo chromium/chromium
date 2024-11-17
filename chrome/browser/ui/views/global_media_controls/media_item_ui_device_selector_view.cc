@@ -260,9 +260,9 @@ void MediaItemUIDeviceSelectorView::UpdateAvailableAudioDevices(
           : media::AudioDeviceDescription::kDefaultDeviceId);
 
   UpdateVisibility();
-  for (auto& observer : observers_) {
-    observer.OnMediaItemUIDeviceSelectorUpdated(device_entry_ui_map_);
-  }
+  observers_.Notify(
+      &MediaItemUIDeviceSelectorObserver::OnMediaItemUIDeviceSelectorUpdated,
+      device_entry_ui_map_);
   if (media_item_ui_) {
     media_item_ui_->OnDeviceSelectorViewDevicesChanged(
         device_entry_views_container_->children().size() > 0);
@@ -494,9 +494,9 @@ void MediaItemUIDeviceSelectorView::OnDevicesUpdated(
   device_entry_views_container_->DeprecatedLayoutImmediately();
 
   UpdateVisibility();
-  for (auto& observer : observers_) {
-    observer.OnMediaItemUIDeviceSelectorUpdated(device_entry_ui_map_);
-  }
+  observers_.Notify(
+      &MediaItemUIDeviceSelectorObserver::OnMediaItemUIDeviceSelectorUpdated,
+      device_entry_ui_map_);
   if (media_item_ui_) {
     media_item_ui_->OnDeviceSelectorViewDevicesChanged(
         device_entry_views_container_->children().size() > 0);

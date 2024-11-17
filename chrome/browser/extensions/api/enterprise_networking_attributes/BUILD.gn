@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("enterprise_networking_attributes") {
+  sources = [
+    "enterprise_networking_attributes_api.cc",
+    "enterprise_networking_attributes_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//chromeos/crosapi/mojom",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/extensions/api",
+    "//net",
+  ]
+}

@@ -68,7 +68,6 @@ blink_platform_sources("scheduler") {
     "common/tracing_helper.h",
     "common/ukm_task_sampler.cc",
     "common/ukm_task_sampler.h",
-    "common/web_scheduling_priority.cc",
     "common/web_thread_scheduler.cc",
     "common/worker_pool.cc",
     "main_thread/agent_group_scheduler_impl.cc",

@@ -24,6 +24,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -1205,7 +1206,9 @@ class SimpleGetRunner {
     int offset = read_buffer_->offset();
     read_buffer_->SetCapacity(offset + data.size());
     auto span = base::as_byte_span(data);
-    read_buffer_->everything().subspan(offset, span.size()).copy_from(span);
+    read_buffer_->everything()
+        .subspan(base::checked_cast<size_t>(offset), span.size())
+        .copy_from(span);
     read_buffer_->set_offset(offset + span.size());
   }
 
@@ -2374,10 +2377,8 @@ TEST(HttpStreamParser, ReceiveOneByteAtATime) {
 
   get_runner.SetupParserAndSendRequest();
   get_runner.ReadHeaders();
-  std::string header_value;
-  EXPECT_TRUE(get_runner.response_info()->headers->GetNormalizedHeader(
-      "Foo", &header_value));
-  EXPECT_EQ("Bar", header_value);
+  EXPECT_EQ(get_runner.response_info()->headers->GetNormalizedHeader("Foo"),
+            "Bar");
   int read_lengths[] = {1, 1, 0};
   EXPECT_EQ(kResponseBody,
             get_runner.ReadBody(kResponseBody.size(), read_lengths));

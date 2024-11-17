@@ -73,10 +73,12 @@ function setupEvents() {
   const billing =
       interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
   const blockedInterception = interstitialType === 'BLOCKED_INTERCEPTION';
-  const insecureForm = interstitialType == 'INSECURE_FORM';
-  const httpsOnly = interstitialType == 'HTTPS_ONLY';
+  const insecureForm = interstitialType === 'INSECURE_FORM';
+  const httpsOnly = interstitialType === 'HTTPS_ONLY';
   const enterpriseBlock = interstitialType === 'ENTERPRISE_BLOCK';
   const enterpriseWarn = interstitialType === 'ENTERPRISE_WARN';
+  const managedProfileRequired =
+      interstitialType === 'MANAGED_PROFILE_REQUIRED';
   const supervisedUserVerify = interstitialType === 'SUPERVISED_USER_VERIFY';
   const supervisedUserVerifySubframe =
       interstitialType === 'SUPERVISED_USER_VERIFY_SUBFRAME';
@@ -114,6 +116,8 @@ function setupEvents() {
     body.classList.add('enterprise-block');
   } else if (enterpriseWarn) {
     body.classList.add('enterprise-warn');
+  } else if (managedProfileRequired) {
+    body.classList.add('managed-profile-required');
   } else if (supervisedUserVerify) {
     body.classList.add('supervised-user-verify');
   } else if (supervisedUserVerifySubframe) {
@@ -152,6 +156,7 @@ function setupEvents() {
         case 'SAFEBROWSING':
         case 'ENTERPRISE_BLOCK':
         case 'ENTERPRISE_WARN':
+        case 'MANAGED_PROFILE_REQUIRED':
         case 'ORIGIN_POLICY':
           sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
           break;
@@ -244,7 +249,7 @@ function setupEvents() {
   const detailsButton = document.querySelector('#details-button');
   if (captivePortal || billing || lookalike || insecureForm || httpsOnly ||
       enterpriseWarn || enterpriseBlock || supervisedUserVerify ||
-      supervisedUserVerifySubframe) {
+      managedProfileRequired || supervisedUserVerifySubframe) {
     // Captive portal, billing, lookalike pages, insecure form, enterprise warn,
     // enterprise block, and HTTPS only mode interstitials don't
     // have details buttons.

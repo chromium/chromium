@@ -22,8 +22,8 @@
 class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
  public:
   SetUpListDefaultBrowserPromoCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     window_ = [[UIWindow alloc] init];
     window_.rootViewController = [[UIViewController alloc] init];
     [window_ addSubview:window_.rootViewController.view];
@@ -43,7 +43,7 @@ class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIWindow* window_;
   SetUpListDefaultBrowserPromoCoordinator* coordinator_;

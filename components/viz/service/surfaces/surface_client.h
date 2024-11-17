@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/threading/platform_thread.h"
+#include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/viz_service_export.h"
@@ -99,7 +100,7 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
 
   virtual bool IsVideoCaptureStarted() = 0;
 
-  virtual base::flat_set<base::PlatformThreadId> GetThreadIds() = 0;
+  virtual std::vector<Thread> GetThreads() = 0;
 };
 
 }  // namespace viz

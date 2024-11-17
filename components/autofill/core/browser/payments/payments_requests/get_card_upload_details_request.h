@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill::payments {
@@ -30,7 +30,7 @@ class GetCardUploadDetailsRequest : public PaymentsRequest {
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
       const int64_t billing_customer_number,
-      PaymentsNetworkInterface::UploadCardSource upload_card_source);
+      UploadCardSource upload_card_source);
   GetCardUploadDetailsRequest(const GetCardUploadDetailsRequest&) = delete;
   GetCardUploadDetailsRequest& operator=(
     const GetCardUploadDetailsRequest&) = delete;
@@ -67,7 +67,7 @@ class GetCardUploadDetailsRequest : public PaymentsRequest {
   std::unique_ptr<base::Value::Dict> legal_message_;
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   const int billable_service_number_;
-  PaymentsNetworkInterface::UploadCardSource upload_card_source_;
+  UploadCardSource upload_card_source_;
   const int64_t billing_customer_number_;
 };
 

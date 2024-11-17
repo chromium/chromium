@@ -6,11 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_DEVICE_LOST_INFO_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_lost_reason.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class V8GPUDeviceLostReason;
 
 class GPUDeviceLostInfo : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -23,11 +26,11 @@ class GPUDeviceLostInfo : public ScriptWrappable {
   GPUDeviceLostInfo& operator=(const GPUDeviceLostInfo&) = delete;
 
   // gpu_device_lost_info.idl
-  const String& reason() const;
+  V8GPUDeviceLostReason reason() const;
   const String& message() const;
 
  private:
-  String reason_;
+  V8GPUDeviceLostReason::Enum reason_;
   String message_;
 };
 

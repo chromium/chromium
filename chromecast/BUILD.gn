@@ -32,7 +32,7 @@ group("all") {
   data_deps = []
   deps = [ "//chromecast/build:archive" ]
   if (is_android) {
-    deps += [ ":cast_shell_apk" ]
+    deps += [ ":cast_browser_apk" ]
   } else if (!is_fuchsia) {
     data_deps += [
       ":cast_browser",
@@ -543,6 +543,7 @@ if (!is_fuchsia) {
     sources = [
       "$root_gen_dir/chromecast/app/shell_resources.pak",
       "$root_gen_dir/components/cast/named_message_port_connector/named_message_port_connector_resources.pak",
+      "$root_gen_dir/components/metrics/metrics_url_constants.pak",
       "$root_gen_dir/content/content_resources.pak",
       "$root_gen_dir/content/gpu_resources.pak",
       "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
@@ -562,6 +563,7 @@ if (!is_fuchsia) {
     deps = [
       "//chromecast/app:resources",
       "//components/cast/named_message_port_connector:resources",
+      "//components/metrics:url_constants",
       "//content:content_resources",
       "//content/browser/resources/gpu:resources",
       "//mojo/public/js:resources",
@@ -617,11 +619,11 @@ buildflag_header("chromecast_buildflags") {
 }
 
 if (is_android) {
-  android_assets("cast_shell_apk_assets") {
+  android_assets("cast_browser_apk_assets") {
     sources = [ "$root_out_dir/assets/cast_shell.pak" ]
 
     deps = [
-      ":cast_shell_apk_locale_assets",
+      ":cast_browser_apk_locale_assets",
       ":cast_shell_pak",
       "//gin:v8_snapshot_assets",
       "//third_party/icu:icu_assets",
@@ -629,7 +631,7 @@ if (is_android) {
     disable_compression = true
   }
 
-  android_assets("cast_shell_apk_locale_assets") {
+  android_assets("cast_browser_apk_locale_assets") {
     renaming_sources = []
     renaming_destinations = []
 
@@ -644,7 +646,7 @@ if (is_android) {
     disable_compression = true
   }
 
-  android_apk("cast_shell_apk") {
+  android_apk("cast_browser_apk") {
     enable_lint = true
     lint_baseline_file = "android/lint-baseline.xml"
     lint_suppressions_file = "android/lint-suppressions.xml"
@@ -656,15 +658,15 @@ if (is_android) {
     min_sdk_version = 24
     target_sdk_version = 33
 
-    shared_libraries = [ "//chromecast/android:libcast_shell_android" ]
+    shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
     srcjar_deps =
-        [ "//chromecast/android:libcast_shell_android__jni_registration" ]
+        [ "//chromecast/android:libcast_browser_android__jni_registration" ]
 
     deps = [
-      ":cast_shell_apk_assets",
+      ":cast_browser_apk_assets",
       "//base:base_java",
       "//build/android:build_java",
-      "//chromecast/android:libcast_shell_android",
+      "//chromecast/android:libcast_browser_android",
       "//chromecast/browser/android:cast_shell_java",
       "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
       "//third_party/jni_zero:jni_zero_java",

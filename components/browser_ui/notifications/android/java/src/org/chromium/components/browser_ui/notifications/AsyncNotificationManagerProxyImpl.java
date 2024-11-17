@@ -6,12 +6,11 @@ package org.chromium.components.browser_ui.notifications;
 
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
-import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
@@ -25,15 +24,12 @@ import java.util.stream.Collectors;
  * Default implementation of the AsyncNotificationManagerProxy, which passes through all calls to
  * the normal Android Notification Manager.
  */
-public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManagerProxy {
+/* package */ class AsyncNotificationManagerProxyImpl implements AsyncNotificationManagerProxy {
     private static final String TAG = "AsyncNotifManager";
-    private final Context mContext;
     private final NotificationManagerCompat mNotificationManager;
 
-    /** Get a AsyncNotificationManagerProxyImpl for a provided context. */
-    public AsyncNotificationManagerProxyImpl(@NonNull Context context) {
-        mContext = context;
-        mNotificationManager = NotificationManagerCompat.from(mContext);
+    public AsyncNotificationManagerProxyImpl() {
+        mNotificationManager = NotificationManagerCompat.from(ContextUtils.getApplicationContext());
     }
 
     @Override

@@ -408,8 +408,7 @@ std::u16string ReplaceStringPlaceholders(
           /*should_escape_multiple_placeholder_prefixes*/ true,
           /*is_strict_mode*/ false, offsets);
 
-  DCHECK(replacement);
-  return replacement.value();
+  return std::move(replacement).value();
 }
 
 std::string ReplaceStringPlaceholders(std::string_view format_string,
@@ -422,8 +421,7 @@ std::string ReplaceStringPlaceholders(std::string_view format_string,
           /*should_escape_multiple_placeholder_prefixes*/ true,
           /*is_strict_mode*/ false, offsets);
 
-  DCHECK(replacement);
-  return replacement.value();
+  return std::move(replacement).value();
 }
 
 std::u16string ReplaceStringPlaceholders(const std::u16string& format_string,
@@ -439,16 +437,31 @@ std::u16string ReplaceStringPlaceholders(const std::u16string& format_string,
   return result;
 }
 
+size_t strlcpy(span<char> dst, std::string_view src) {
+  return internal::lcpyT(dst, src);
+}
+
+size_t u16cstrlcpy(span<char16_t> dst, std::u16string_view src) {
+  return internal::lcpyT(dst, src);
+}
+
+size_t wcslcpy(span<wchar_t> dst, std::wstring_view src) {
+  return internal::lcpyT(dst, src);
+}
+
 size_t strlcpy(char* dst, const char* src, size_t dst_size) {
-  return internal::lcpyT(dst, src, dst_size);
+  return internal::lcpyT(
+      UNSAFE_TODO(base::span(dst, dst_size), std::string_view(src)));
 }
 
 size_t u16cstrlcpy(char16_t* dst, const char16_t* src, size_t dst_size) {
-  return internal::lcpyT(dst, src, dst_size);
+  return internal::lcpyT(UNSAFE_TODO(base::span(dst, dst_size)),
+                         std::u16string_view(src));
 }
 
 size_t wcslcpy(wchar_t* dst, const wchar_t* src, size_t dst_size) {
-  return internal::lcpyT(dst, src, dst_size);
+  return internal::lcpyT(UNSAFE_TODO(base::span(dst, dst_size)),
+                         std::wstring_view(src));
 }
 
 }  // namespace base

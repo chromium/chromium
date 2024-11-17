@@ -35,8 +35,10 @@ class FakeDeskSyncBridge : public DeskModel {
   size_t GetEntryCount() const override;
   size_t GetSaveAndRecallDeskEntryCount() const override;
   size_t GetDeskTemplateEntryCount() const override;
+  size_t GetCoralEntryCount() const override;
   size_t GetMaxSaveAndRecallDeskEntryCount() const override;
   size_t GetMaxDeskTemplateEntryCount() const override;
+  size_t GetMaxCoralEntryCount() const override;
   std::set<base::Uuid> GetAllEntryUuids() const override;
   bool IsReady() const override;
   // Whether this sync bridge is syncing local data to sync. This sync bridge

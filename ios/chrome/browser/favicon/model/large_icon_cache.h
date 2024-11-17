@@ -21,7 +21,7 @@ struct LargeIconResult;
 //
 // Example usage:
 //   LargeIconCache* large_icon_cache =
-//       IOSChromeLargeIconServiceFactory::GetForBrowserState(browser_state);
+//       IOSChromeLargeIconServiceFactory::GetForProfile(profile);
 //   std::unique_ptr<favicon_base::LargeIconResult> icon =
 //       large_icon_cache->GetCachedResult(...);
 //

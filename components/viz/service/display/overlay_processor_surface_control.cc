@@ -62,7 +62,7 @@ OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl() {
   }
 }
 
-OverlayProcessorSurfaceControl::~OverlayProcessorSurfaceControl() {}
+OverlayProcessorSurfaceControl::~OverlayProcessorSurfaceControl() = default;
 
 bool OverlayProcessorSurfaceControl::IsOverlaySupported() const {
   return true;

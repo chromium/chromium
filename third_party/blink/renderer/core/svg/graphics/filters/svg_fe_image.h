@@ -44,8 +44,8 @@ class FEImage final : public FilterEffect {
   // depend on the value of color-interpolation-filters.
   void SetOperatingInterpolationSpace(InterpolationSpace) override {}
 
-  WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                          int indention) const override;
+  StringBuilder& ExternalRepresentation(StringBuilder&,
+                                        wtf_size_t indent) const override;
 
   void Trace(Visitor*) const override;
 

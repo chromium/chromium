@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -29,11 +30,9 @@ SkBitmap CreateBitmap() {
 
 // Used in `FetchWallpaper` to create a fake JPEG image.
 std::string CreateJpgBytes() {
-  SkBitmap bitmap = CreateBitmap();
-  std::vector<unsigned char> data;
-
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
-  return std::string(data.begin(), data.end());
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(CreateBitmap(), /*quality=*/100);
+  return std::string(base::as_string_view(data.value()));
 }
 
 std::vector<ash::SeaPenImage> MakeFakeImageResults() {

@@ -849,7 +849,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
     EXPECT_EQ(base::make_span(decoder_buffer_to_send->data(),
                               decoder_buffer_to_send->size()),
               base::make_span(kEncodedData, std::size(kEncodedData)));
-    ASSERT_TRUE(decoder_buffer_to_send->side_data().has_value());
+    ASSERT_TRUE(decoder_buffer_to_send->has_side_data());
     EXPECT_EQ(decoder_buffer_to_send->side_data()->secure_handle,
               kSecureHandle);
   }
@@ -932,11 +932,10 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   EXPECT_EQ(received_decoded_video_frame_1->natural_size(),
             kDecodedFrame1NaturalSize);
   EXPECT_EQ(received_decoded_video_frame_1->ColorSpace(), gfx::ColorSpace());
-  ASSERT_TRUE(received_decoded_video_frame_1->HasTextures());
-  ASSERT_EQ(received_decoded_video_frame_1->NumTextures(), 1u);
-  EXPECT_EQ(received_decoded_video_frame_1->mailbox_holder(0).mailbox,
+  ASSERT_TRUE(received_decoded_video_frame_1->HasSharedImage());
+  EXPECT_EQ(received_decoded_video_frame_1->shared_image()->mailbox(),
             kDecodedFrame1Mailbox);
-  EXPECT_EQ(received_decoded_video_frame_1->mailbox_holder(0).sync_token,
+  EXPECT_EQ(received_decoded_video_frame_1->acquire_sync_token(),
             kDecodedFrame1SharedImageSyncToken);
   EXPECT_TRUE(
       received_decoded_video_frame_1->metadata().read_lock_fences_enabled);
@@ -1003,11 +1002,10 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   EXPECT_EQ(received_decoded_video_frame_2->natural_size(),
             kDecodedFrame2NaturalSize);
   EXPECT_EQ(received_decoded_video_frame_2->ColorSpace(), gfx::ColorSpace());
-  ASSERT_TRUE(received_decoded_video_frame_2->HasTextures());
-  ASSERT_EQ(received_decoded_video_frame_2->NumTextures(), 1u);
-  EXPECT_EQ(received_decoded_video_frame_2->mailbox_holder(0).mailbox,
+  ASSERT_TRUE(received_decoded_video_frame_2->HasSharedImage());
+  EXPECT_EQ(received_decoded_video_frame_2->shared_image()->mailbox(),
             kDecodedFrame1Mailbox);
-  EXPECT_EQ(received_decoded_video_frame_2->mailbox_holder(0).sync_token,
+  EXPECT_EQ(received_decoded_video_frame_2->acquire_sync_token(),
             kDecodedFrame2SharedImageSyncToken);
   EXPECT_TRUE(
       received_decoded_video_frame_2->metadata().read_lock_fences_enabled);
@@ -1086,11 +1084,10 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
             kDecodedFrame2NaturalSize);
   EXPECT_EQ(received_decoded_video_frame_3->ColorSpace(),
             kDecodedFrame3ColorSpace);
-  ASSERT_TRUE(received_decoded_video_frame_3->HasTextures());
-  ASSERT_EQ(received_decoded_video_frame_3->NumTextures(), 1u);
-  EXPECT_EQ(received_decoded_video_frame_3->mailbox_holder(0).mailbox,
+  ASSERT_TRUE(received_decoded_video_frame_3->HasSharedImage());
+  EXPECT_EQ(received_decoded_video_frame_3->shared_image()->mailbox(),
             kDecodedFrame3Mailbox);
-  EXPECT_EQ(received_decoded_video_frame_3->mailbox_holder(0).sync_token,
+  EXPECT_EQ(received_decoded_video_frame_3->acquire_sync_token(),
             kDecodedFrame3SharedImageSyncToken);
   EXPECT_TRUE(
       received_decoded_video_frame_3->metadata().read_lock_fences_enabled);
@@ -1171,11 +1168,10 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   EXPECT_EQ(received_decoded_video_frame_4->natural_size(),
             kDecodedFrame4NaturalSize);
   EXPECT_EQ(received_decoded_video_frame_4->ColorSpace(), gfx::ColorSpace());
-  ASSERT_TRUE(received_decoded_video_frame_4->HasTextures());
-  ASSERT_EQ(received_decoded_video_frame_4->NumTextures(), 1u);
-  EXPECT_EQ(received_decoded_video_frame_4->mailbox_holder(0).mailbox,
+  ASSERT_TRUE(received_decoded_video_frame_4->HasSharedImage());
+  EXPECT_EQ(received_decoded_video_frame_4->shared_image()->mailbox(),
             kDecodedFrame4Mailbox);
-  EXPECT_EQ(received_decoded_video_frame_4->mailbox_holder(0).sync_token,
+  EXPECT_EQ(received_decoded_video_frame_4->acquire_sync_token(),
             kDecodedFrame4SharedImageSyncToken);
   EXPECT_TRUE(
       received_decoded_video_frame_4->metadata().read_lock_fences_enabled);

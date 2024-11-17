@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
-#include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 
 namespace content {
@@ -168,8 +167,6 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     return;
   }
 
-  uint32_t texture_target = GL_TEXTURE_EXTERNAL_OES;
-
   // No need to wait on any sync token as the SharedImage |mailbox_| should be
   // ready for use.
   if (!dcomp_texture_resources_) {
@@ -184,32 +181,19 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     // DCOMPTextureBacking's constructor uses to initialize
     // ClearTrackingSharedImageBacking.
     scoped_refptr<gpu::ClientSharedImage> shared_image;
-    if (base::FeatureList::IsEnabled(
-            media::kVideoFrameUseClientSITextureTarget)) {
-      // If the VideoFrame will be using the texture target from this
-      // ClientSharedImage, then we need to ensure that the ClientSI holds the
-      // correct texture target (which is *not* the texture target that
-      // ClientSharedImage would compute internally for these parameters).
-      // NOTE: We do this only under the killswitch because it changes the
-      // texture target that the ClientSI is holding and thus has potential
-      // other behavioral implications.
-      shared_image =
-          sii->NotifyMailboxAdded(mailbox_, viz::SinglePlaneFormat::kBGRA_8888,
-                                  natural_size_, gfx::ColorSpace::CreateSRGB(),
-                                  kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                      gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                      gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-                                  texture_target);
-    } else {
-      shared_image =
-          sii->NotifyMailboxAdded(mailbox_, viz::SinglePlaneFormat::kBGRA_8888,
-                                  natural_size_, gfx::ColorSpace::CreateSRGB(),
-                                  kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                      gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                      gpu::SHARED_IMAGE_USAGE_RASTER_READ);
-    }
+
+    // Ensure that the ClientSI holds the correct texture target (which is *not*
+    // the texture target that ClientSharedImage would compute internally for
+    // these parameters).
+    shared_image =
+        sii->NotifyMailboxAdded(mailbox_, viz::SinglePlaneFormat::kBGRA_8888,
+                                natural_size_, gfx::ColorSpace::CreateSRGB(),
+                                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                    gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+                                GL_TEXTURE_EXTERNAL_OES);
+
     CHECK(shared_image);
     dcomp_texture_resources_ =
         base::MakeRefCounted<DCOMPTextureMailboxResources>(
@@ -220,7 +204,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
       dcomp_texture_resources_->GetSharedImage();
 
   auto frame = media::VideoFrame::WrapSharedImage(
-      media::PIXEL_FORMAT_BGRA, shared_image, gpu::SyncToken(), texture_target,
+      media::PIXEL_FORMAT_BGRA, shared_image, gpu::SyncToken(),
       base::BindPostTask(
           media_task_runner_,
           base::BindOnce(&OnReleaseVideoFrame, dcomp_texture_resources_)),
@@ -257,8 +241,8 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   auto video_frame_texture = media::VideoFrame::WrapMappableSharedImage(
-      shared_image, sync_token, GL_TEXTURE_2D, base::NullCallback(),
-      gfx::Rect(natural_size), natural_size, base::TimeDelta::Min());
+      shared_image, sync_token, base::NullCallback(), gfx::Rect(natural_size),
+      natural_size, base::TimeDelta::Min());
   video_frame_texture->metadata().wants_promotion_hint = true;
   video_frame_texture->metadata().allow_overlay = true;
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dialog_padding_sides"
+        android:layout_marginVertical="16dp"
+        android:text="@string/media_capture_picker_dialog_subtitle_text"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        app:leading="@dimen/text_size_large_leading" />
+
+    <include layout="@layout/media_capture_picker_list"/>
+</LinearLayout>

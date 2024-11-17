@@ -37,8 +37,7 @@ std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
       return stream << "kFloated";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return stream;
+  NOTREACHED();
 }
 
 WindowStateType ToWindowStateType(ui::mojom::WindowShowState state) {
@@ -56,8 +55,7 @@ WindowStateType ToWindowStateType(ui::mojom::WindowShowState state) {
     case ui::mojom::WindowShowState::kFullscreen:
       return WindowStateType::kFullscreen;
     case ui::mojom::WindowShowState::kEnd:
-      NOTREACHED_IN_MIGRATION();
-      return WindowStateType::kDefault;
+      NOTREACHED();
   }
 }
 
@@ -83,8 +81,7 @@ ui::mojom::WindowShowState ToWindowShowState(WindowStateType type) {
     case WindowStateType::kTrustedPinned:
       return ui::mojom::WindowShowState::kFullscreen;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::WindowShowState::kDefault;
+  NOTREACHED();
 }
 
 bool IsPinnedWindowStateType(WindowStateType type) {

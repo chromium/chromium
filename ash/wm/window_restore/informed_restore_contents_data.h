@@ -30,14 +30,19 @@ struct ASH_EXPORT InformedRestoreContentsData {
     kUpdate,
   };
 
+  struct TabInfo {
+    TabInfo();
+    TabInfo(const GURL& url, const std::string& title = std::string());
+    GURL url;
+    std::string title;
+  };
+
   struct AppInfo {
     AppInfo(const std::string& id, const std::string& title, int window_id);
     AppInfo(const std::string& app_id,
             const std::string& title,
             int window_id,
-            const std::vector<GURL>& tab_urls,
-            const size_t tab_count,
-            uint64_t lacros_profile_id);
+            std::vector<TabInfo> tab_infos);
     AppInfo(const AppInfo&);
     ~AppInfo();
 
@@ -55,17 +60,8 @@ struct ASH_EXPORT InformedRestoreContentsData {
     // corresponding content data gets updated.
     int window_id;
 
-    // Used by browser only. Urls of up to 5 tabs including the active tab. Used
-    // to retrieve favicons.
-    std::vector<GURL> tab_urls;
-
-    // Used by browser only. The total number of tabs, including ones not listed
-    // in `tab_urls`.
-    size_t tab_count = 0u;
-
-    // Used by lacros-browser only. Used to fetch the favicon from the favicon
-    // service associated with this id.
-    uint64_t lacros_profile_id = 0;
+    // Used by browser only. Urls of the browser's tabs and their titles.
+    std::vector<TabInfo> tab_infos;
   };
 
   using AppsInfos = std::vector<AppInfo>;

@@ -87,8 +87,7 @@ void SmsProvider::RecordParsingStatus(SmsParsingStatus status) {
       NotifyFailure(FailureType::kSmsNotParsed_kGURLNotValid);
       break;
     case SmsParsingStatus::kParsed:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

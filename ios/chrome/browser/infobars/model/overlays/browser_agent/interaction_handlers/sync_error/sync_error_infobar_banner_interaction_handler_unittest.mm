@@ -21,14 +21,14 @@
 class SyncErrorInfobarBannerInteractionHandlerTest : public PlatformTest {
  public:
   SyncErrorInfobarBannerInteractionHandlerTest() {
-    TestChromeBrowserState::Builder builder;
-    chrome_browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
     id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSyncError,
-        std::make_unique<MockSyncErrorInfoBarDelegate>(
-            chrome_browser_state_.get(), presenter));
+        std::make_unique<MockSyncErrorInfoBarDelegate>(profile_.get(),
+                                                       presenter));
   }
 
   MockSyncErrorInfoBarDelegate& mock_delegate() {
@@ -38,7 +38,7 @@ class SyncErrorInfobarBannerInteractionHandlerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
   std::unique_ptr<InfoBarIOS> infobar_;
 };

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/test_timeouts.h"
@@ -27,8 +28,8 @@
 class ParcelTrackingMediatorTest : public PlatformTest {
  public:
   ParcelTrackingMediatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     std::vector<commerce::ParcelTrackingStatus> parcels;
@@ -81,9 +82,9 @@ class ParcelTrackingMediatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  FakeUrlLoadingBrowserAgent* url_loader_;
+  raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;
   ParcelTrackingMediator* mediator_;
   id delegate_;

@@ -83,8 +83,7 @@ ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
   webnn_context_provider_->CreateWebNNContext(
       webnn::mojom::blink::CreateContextOptions::New(
           ConvertBlinkDeviceTypeToMojo(options->deviceType()),
-          ConvertBlinkPowerPreferenceToMojo(options->powerPreference()),
-          options->numThreads()),
+          ConvertBlinkPowerPreferenceToMojo(options->powerPreference())),
       WTF::BindOnce(
           [](ML* ml, ScriptPromiseResolver<MLContext>* resolver,
              MLContextOptions* options,
@@ -107,7 +106,7 @@ ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
 
             resolver->Resolve(MakeGarbageCollected<MLContext>(
                 context, options->deviceType(), options->powerPreference(),
-                options->numThreads(), std::move(result->get_success())));
+                std::move(result->get_success())));
           },
           WrapPersistent(this), WrapPersistent(resolver),
           WrapPersistent(options)));

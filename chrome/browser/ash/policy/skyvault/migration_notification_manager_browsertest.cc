@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/test/gmock_callback_support.h"
@@ -11,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -23,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/filename_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy::local_user_files {
@@ -61,6 +65,9 @@ class MigrationNotificationManagerParamTest
     : public MigrationNotificationManagerTest,
       public ::testing::WithParamInterface<CloudProvider> {
  public:
+  MigrationNotificationManagerParamTest() {
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+  }
   static std::string ParamToName(const testing::TestParamInfo<ParamType> info) {
     switch (info.param) {
       case CloudProvider::kGoogleDrive:
@@ -74,10 +81,12 @@ class MigrationNotificationManagerParamTest
 
  protected:
   CloudProvider CloudProvider() { return GetParam(); }
+
+  base::ScopedTempDir temp_dir_;
 };
 
-// Tests that a progress notification is shown, and closed when CloseAll() is
-// called.
+// Tests that a progress notification is shown, and closed when
+// CloseNotifications() is called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
                        ShowMigrationProgressNotification) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
@@ -85,12 +94,12 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
   manager()->ShowMigrationProgressNotification(CloudProvider());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 }
 
-// Tests that a completed notification is shown, and closed when CloseAll() is
-// called.
+// Tests that a completed notification is shown, and closed when
+// CloseNotifications() is called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
                        ShowMigrationCompletedNotification) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
@@ -100,26 +109,62 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
       /*destination_path=*/base::FilePath());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 }
 
-// Tests that an error notification is shown, and closed when CloseAll() is
-// called.
+// Tests that an error notification is shown, and closed when
+// CloseNotifications() is called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
-                       ShowMigrationErrorNotification) {
+                       ShowMigrationErrorNotification_CloseNotifications) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->ShowMigrationErrorNotification(CloudProvider(), base::FilePath(),
-                                            /*errors=*/{});
+  manager()->ShowMigrationErrorNotification(
+      CloudProvider(), kUploadRootPrefix,
+      /*error_log_path=*/
+      base::FilePath(kErrorLogFileBasePath).Append(kErrorLogFileName));
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
+}
+
+// Tests that clicking on the "Review error log" button on an error notification
+// correctly openes the passed path in the browser and closes the notification.
+IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
+                       ShowMigrationErrorNotification_ReviewErrorLog) {
+  const base::FilePath error_log_path =
+      temp_dir_.GetPath().Append(kErrorLogFileName);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CHECK(WriteFile(error_log_path,
+                    "/home/chronos/user/MyFiles/Downloads/test_file.txt - "
+                    "Something went wrong. Try again."));
+    CHECK(base::PathExists(error_log_path));
+  }
+
+  EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
+
+  manager()->ShowMigrationErrorNotification(CloudProvider(), kUploadRootPrefix,
+                                            error_log_path);
+  EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
+
+  const GURL error_log_url = net::FilePathToFileURL(error_log_path);
+  EXPECT_NE(
+      error_log_url,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec());
+
+  tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
+                         kSkyVaultMigrationNotificationId, 0, std::nullopt);
+
+  EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
+  EXPECT_EQ(
+      error_log_url,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec());
 }
 
 // Tests that a policy configuration error notification is shown, and closed
-// when CloseAll() is called.
+// when CloseNotifications() is called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
                        ShowConfigurationErrorNotification) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
@@ -127,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
   manager()->ShowConfigurationErrorNotification(CloudProvider());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 }
 
@@ -165,10 +210,10 @@ IN_PROC_BROWSER_TEST_F(MigrationNotificationManagerTest,
   EXPECT_EQ(sign_in_future_2.Get(), base::File::Error::FILE_ERROR_FAILED);
 }
 
-// Tests that when a sign in notification is closed by CloseAll(), all
+// Tests that when a sign in notification is closed by CloseNotifications(), all
 // requesters to sign in are notified.
 IN_PROC_BROWSER_TEST_F(MigrationNotificationManagerTest,
-                       ShowSignInNotification_CloseAll) {
+                       ShowSignInNotification_CloseNotifications) {
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
   // Check that only one notification is added.
@@ -187,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(MigrationNotificationManagerTest,
       manager()->ShowOneDriveSignInNotification(sign_in_future_2.GetCallback());
   EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
-  manager()->CloseAll();
+  manager()->CloseNotifications();
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 
   // Both callbacks should run.
@@ -195,7 +240,8 @@ IN_PROC_BROWSER_TEST_F(MigrationNotificationManagerTest,
   EXPECT_EQ(sign_in_future_2.Get(), base::File::Error::FILE_ERROR_FAILED);
 }
 
-// Tests that a migration dialog is shown, and closed when CloseAll() is called.
+// Tests that a migration dialog is shown, and closed when CloseDialog() is
+// called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest, ShowDialog) {
   EXPECT_FALSE(LocalFilesMigrationDialog::GetDialog());
 
@@ -218,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest, ShowDialog) {
   content::WebContents* web_contents = web_ui->GetWebContents();
   content::WebContentsDestroyedWatcher watcher(web_contents);
 
-  manager()->CloseAll();
+  manager()->CloseDialog();
   watcher.Wait();
 
   EXPECT_FALSE(LocalFilesMigrationDialog::GetDialog());

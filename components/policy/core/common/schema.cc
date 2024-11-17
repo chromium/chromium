@@ -321,8 +321,7 @@ base::expected<void, std::string> ValidateAttributesAndTypes(
     begin = kAttributesAndTypesForString;
     end = kAttributesAndTypesForStringEnd;
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Type should be a valid schema type or '$ref'.";
+    NOTREACHED() << "Type should be a valid schema type or '$ref'.";
   }
 
   base::Value::Type expected_type = base::Value::Type::NONE;

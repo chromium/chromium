@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -24,16 +25,11 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/with_crosapi_param.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/webapps/common/web_app_id.h"
-
-using web_app::test::CrosapiParam;
-using web_app::test::WithCrosapiParam;
 
 namespace app_list::test {
 
@@ -42,9 +38,7 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
   HelpAppSearchBrowserTestBase() {
     // TODO: Remove parameterization on kProductivityLauncher.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{ash::features::kProductivityLauncher, {{"enable_continue", "true"}}},
-         {{ash::features::kHelpAppLauncherSearch}, {}}},
-        {});
+        {{}, {{ash::features::kHelpAppLauncherSearch}, {}}}, {});
   }
 
   ~HelpAppSearchBrowserTestBase() override = default;
@@ -339,27 +333,10 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
                                       -20424143, 1);
 }
 
-class HelpAppSwaSearchBrowserTest : public HelpAppSearchBrowserTestBase,
-                                    public WithCrosapiParam {
- public:
-  HelpAppSwaSearchBrowserTest() = default;
-  ~HelpAppSwaSearchBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    if (browser() == nullptr) {
-      // Create a new Ash browser window so test code using browser() can work
-      // even when Lacros is the only browser.
-      // TODO(crbug.com/40270051): Remove uses of browser() from such tests.
-      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
-      SelectFirstBrowser();
-    }
-    HelpAppSearchBrowserTestBase::SetUpOnMainThread();
-    VerifyLacrosStatus();
-  }
-};
+using HelpAppSwaSearchBrowserTest = HelpAppSearchBrowserTestBase;
 
 // Test that Help App shows up normally even when suggestion chip should show.
-IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
+IN_PROC_BROWSER_TEST_F(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
   ash::SystemWebAppManager::GetForTest(GetProfile())
       ->InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
@@ -369,30 +346,24 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
       {ash::AppListSearchResultType::kZeroStateHelpApp,
        ash::AppListSearchResultType::kZeroStateApp});
 
-  auto* result = FindResult(web_app::kHelpAppId);
+  auto* result = FindResult(ash::kHelpAppId);
   ASSERT_TRUE(result);
   // Has regular app name as title.
   EXPECT_EQ(base::UTF16ToASCII(result->title()), "Explore");
 }
 
-IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
+IN_PROC_BROWSER_TEST_F(HelpAppSwaSearchBrowserTest, Launch) {
   Profile* profile = browser()->profile();
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
-  const webapps::AppId app_id = web_app::kHelpAppId;
+  const webapps::AppId app_id = ash::kHelpAppId;
 
   ShowAppListAndWaitForZeroStateResults(
       {ash::AppListSearchResultType::kZeroStateHelpApp,
        ash::AppListSearchResultType::kZeroStateApp});
 
-  auto* result = FindResult(web_app::kHelpAppId);
+  auto* result = FindResult(ash::kHelpAppId);
   ASSERT_TRUE(result);
   result->Open(ui::EF_NONE);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HelpAppSwaSearchBrowserTest,
-                         ::testing::Values(CrosapiParam::kDisabled,
-                                           CrosapiParam::kEnabled),
-                         WithCrosapiParam::ParamToString);
 
 }  // namespace app_list::test

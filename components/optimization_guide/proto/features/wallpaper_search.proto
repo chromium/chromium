@@ -8,6 +8,8 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -19,12 +21,17 @@ option java_outer_classname = "WallpaperSearchProto";
 // refer to http://go/chrome-intelligence-feature-protos (Google-internal link),
 // and then changes will be synced with Chrome automatically.
 
+// Next ID: 6
 message WallpaperSearchLoggingData {
   WallpaperSearchRequest request = 1;
 
   WallpaperSearchResponse response = 2;
 
   WallpaperSearchQuality quality = 3;
+
+  ModelExecutionInfo model_execution_info = 4;
+
+  reserved 5;
 }
 
 // Next ID: 3

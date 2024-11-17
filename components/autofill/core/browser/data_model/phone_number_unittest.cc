@@ -968,7 +968,7 @@ INSTANTIATE_TEST_SUITE_P(
                                 {PHONE_HOME_WHOLE_NUMBER,
                                  base::FeatureList::IsEnabled(
                                      features::kAutofillInferCountryCallingCode)
-                                     ? u"49891234567"
+                                     ? u"+49891234567"
                                      : u"0891234567"},
                                 {PHONE_HOME_CITY_AND_NUMBER, u"0891234567"}}},
         // While we expected a PHONE_HOME_CITY_AND_NUMBER, the user entered an

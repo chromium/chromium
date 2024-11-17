@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -47,9 +46,9 @@ class BatterySaverHelpPromoTest
         button, ui::test::InteractionTestUtil::InputType::kMouse);
   }
 
-  BrowserFeaturePromoController* GetFeaturePromoController() {
-    return static_cast<BrowserFeaturePromoController*>(
-        browser()->window()->GetFeaturePromoController());
+  user_education::FeaturePromoControllerCommon* GetFeaturePromoController() {
+    return static_cast<user_education::FeaturePromoControllerCommon*>(
+        browser()->window()->GetFeaturePromoControllerForTesting());
   }
 };
 

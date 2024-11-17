@@ -17,10 +17,14 @@ dictionary IdentityProviderConfig {
   [RuntimeEnabled=FedCmIdPRegistration] DOMString type;
 };
 
+dictionary IdentityProviderField {
+  required USVString name;
+};
+
 dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   USVString nonce;
   DOMString loginHint;
   [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
-  [RuntimeEnabled=FedCmAuthz] sequence<USVString> fields;
-  [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
+  [RuntimeEnabled=FedCmAuthz] sequence<(USVString or IdentityProviderField)> fields;
+  [RuntimeEnabled=FedCmAuthz] any params;
 };

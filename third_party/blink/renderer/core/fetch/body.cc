@@ -108,6 +108,17 @@ class BodyArrayBufferConsumer final : public BodyConsumerBase {
   }
 };
 
+class BodyUint8ArrayConsumer final : public BodyConsumerBase {
+ public:
+  using BodyConsumerBase::BodyConsumerBase;
+  using ResolveType = NotShared<DOMUint8Array>;
+
+  void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer* array_buffer) override {
+    ResolveLater<ResolveType>(WrapPersistent(
+        DOMUint8Array::Create(array_buffer, 0, array_buffer->ByteLength())));
+  }
+};
+
 class BodyFormDataConsumer final : public BodyConsumerBase {
  public:
   using BodyConsumerBase::BodyConsumerBase;
@@ -151,16 +162,15 @@ class BodyJsonConsumer final : public BodyConsumerBase {
       return;
     ScriptState::Scope scope(Resolver()->GetScriptState());
     v8::Isolate* isolate = Resolver()->GetScriptState()->GetIsolate();
-    v8::Local<v8::String> input_string = V8String(isolate, string);
-    v8::TryCatch trycatch(isolate);
-    v8::Local<v8::Value> parsed;
-    if (v8::JSON::Parse(Resolver()->GetScriptState()->GetContext(),
-                        input_string)
-            .ToLocal(&parsed)) {
-      ResolveLater<ResolveType>(WrapPersistent(WrapDisallowNew(
-          ScriptValue(Resolver()->GetScriptState()->GetIsolate(), parsed))));
-    } else
-      Resolver()->Reject(trycatch.Exception());
+    v8::TryCatch try_catch(isolate);
+    v8::Local<v8::Value> parsed =
+        FromJSONString(Resolver()->GetScriptState(), string);
+    if (try_catch.HasCaught()) {
+      Resolver()->Reject(try_catch.Exception());
+      return;
+    }
+    ResolveLater<ResolveType>(
+        WrapPersistent(WrapDisallowNew(ScriptValue(isolate, parsed))));
   }
 };
 
@@ -249,6 +259,20 @@ ScriptPromise<Blob> Body::blob(ScriptState* script_state,
 
   return LoadAndConvertBody<BodyBlobConsumer>(script_state, create_loader,
                                               on_no_body, exception_state);
+}
+
+ScriptPromise<NotShared<DOMUint8Array>> Body::bytes(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  auto on_no_body =
+      [](ScriptPromiseResolver<NotShared<DOMUint8Array>>* resolver) {
+        resolver->Resolve(
+            NotShared<DOMUint8Array>(DOMUint8Array::Create(size_t{0})));
+      };
+
+  return LoadAndConvertBody<BodyUint8ArrayConsumer>(
+      script_state, &FetchDataLoader::CreateLoaderAsArrayBuffer, on_no_body,
+      exception_state);
 }
 
 ScriptPromise<FormData> Body::formData(ScriptState* script_state,

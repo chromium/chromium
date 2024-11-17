@@ -16,12 +16,12 @@
 
 class Profile;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace chromeos {
 class DeviceLocalAccountManagementPolicyProvider;
 class SigninScreenPolicyProvider;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace value_store {
 class ValueStoreFactory;
@@ -142,7 +142,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
 
     std::unique_ptr<UninstallPingSender> uninstall_ping_sender_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     std::unique_ptr<chromeos::DeviceLocalAccountManagementPolicyProvider>
         device_local_account_management_policy_provider_;
     std::unique_ptr<chromeos::SigninScreenPolicyProvider>

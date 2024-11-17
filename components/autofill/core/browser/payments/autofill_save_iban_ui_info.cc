@@ -22,16 +22,18 @@ AutofillSaveIbanUiInfo& AutofillSaveIbanUiInfo::operator=(
 AutofillSaveIbanUiInfo::~AutofillSaveIbanUiInfo() = default;
 
 static AutofillSaveIbanUiInfo CreateAutofillSaveIbanUiInfo(
+    bool is_server_save,
     int logo_icon_id,
-    const std::u16string& iban_label,
+    const std::u16string& iban_value,
     const std::u16string& title_text,
     const std::u16string& description_text,
     const std::u16string& accept_text,
     const std::u16string& cancel_text,
     const LegalMessageLines& legal_message_lines) {
   AutofillSaveIbanUiInfo ui_info;
+  ui_info.is_server_save = is_server_save;
   ui_info.logo_icon_id = logo_icon_id;
-  ui_info.iban_label = iban_label;
+  ui_info.iban_value = iban_value;
   ui_info.title_text = title_text;
   ui_info.description_text = description_text;
   ui_info.accept_text = accept_text;
@@ -43,9 +45,10 @@ static AutofillSaveIbanUiInfo CreateAutofillSaveIbanUiInfo(
 
 // static
 AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForLocalSave(
-    const std::u16string& iban_label) {
+    const std::u16string& iban_value) {
   return CreateAutofillSaveIbanUiInfo(
-      /*logo_icon_id=*/0, iban_label,
+      /*is_server_save=*/false,
+      /*logo_icon_id=*/0, iban_value,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_LOCAL),
       /*description_text=*/std::u16string(),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT),
@@ -55,10 +58,10 @@ AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForLocalSave(
 
 // static
 AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForUploadSave(
-    const std::u16string& iban_label,
+    const std::u16string& iban_value,
     const LegalMessageLines& legal_message_lines) {
   return CreateAutofillSaveIbanUiInfo(
-      IDR_AUTOFILL_GOOGLE_PAY, iban_label,
+      /*is_server_save=*/true, IDR_AUTOFILL_GOOGLE_PAY, iban_value,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT),

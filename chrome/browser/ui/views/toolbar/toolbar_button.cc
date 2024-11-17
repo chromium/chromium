@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -35,6 +34,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -124,6 +124,10 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
+
+  if (model_) {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+  }
 }
 
 ToolbarButton::~ToolbarButton() = default;
@@ -195,28 +199,20 @@ void ToolbarButton::UpdateColorsAndInsets() {
   }
 
   // Apply new border with target insets.
-
   std::optional<SkColor> border_color =
       highlight_color_animation_.GetBorderColor();
-  if (!GetBorder() || target_insets != GetInsets() ||
-      last_border_color_ != border_color ||
-      last_paint_insets_ != paint_insets) {
-    if (ShouldPaintBorder() && border_color) {
-      int border_thickness_dp = GetText().empty()
-                                    ? kBorderThicknessDpWithoutLabel
-                                    : kBorderThicknessDpWithLabel;
-      // Create a border with insets totalling |target_insets|, split into
-      // painted insets (matching the background) and internal padding to
-      // position child views correctly.
-      std::unique_ptr<views::Border> border = views::CreateRoundedRectBorder(
-          border_thickness_dp, highlight_radius, paint_insets, *border_color);
-      const gfx::Insets extra_insets = target_insets - border->GetInsets();
-      SetBorder(views::CreatePaddedBorder(std::move(border), extra_insets));
-    } else {
-      SetBorder(views::CreateEmptyBorder(target_insets));
-    }
-    last_border_color_ = border_color;
-    last_paint_insets_ = paint_insets;
+  if (ShouldPaintBorder() && border_color) {
+    int border_thickness_dp = GetText().empty() ? kBorderThicknessDpWithoutLabel
+                                                : kBorderThicknessDpWithLabel;
+    // Create a border with insets totalling |target_insets|, split into
+    // painted insets (matching the background) and internal padding to
+    // position child views correctly.
+    std::unique_ptr<views::Border> border = views::CreateRoundedRectBorder(
+        border_thickness_dp, highlight_radius, paint_insets, *border_color);
+    const gfx::Insets extra_insets = target_insets - border->GetInsets();
+    SetBorder(views::CreatePaddedBorder(std::move(border), extra_insets));
+  } else {
+    SetBorder(views::CreateEmptyBorder(target_insets));
   }
 
   // Update spacing on the outer-side of the label to match the current
@@ -485,12 +481,6 @@ void ToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
   LabelButton::OnGestureEvent(event);
 }
 
-void ToolbarButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-  if (model_)
-    node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
-}
-
 std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
   // Suppress tooltip when IPH is showing.
   // TODO(crbug.com/40258442): Investigate if we should suppress tooltip for all
@@ -499,9 +489,10 @@ std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
                                     : views::LabelButton::GetTooltipText(p);
 }
 
-void ToolbarButton::ShowContextMenuForViewImpl(View* source,
-                                               const gfx::Point& point,
-                                               ui::MenuSourceType source_type) {
+void ToolbarButton::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   if (!GetEnabled())
     return;
 
@@ -526,13 +517,13 @@ bool ToolbarButton::ShouldShowInkdropAfterIphInteraction() {
   return true;
 }
 
-void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
+void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
   if (!ShouldShowMenu())
     return;
 
   gfx::Rect menu_anchor_bounds = GetAnchorBoundsInScreen();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // A window won't overlap between displays on ChromeOS.
   // Use the left bound of the display on which
   // the menu button exists.

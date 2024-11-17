@@ -37,9 +37,6 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
         void contactsRetrieved(ArrayList<ContactDetails> contacts);
     }
 
-    // The current context to use.
-    private Context mContext;
-
     // The content resolver to use for looking up contacts.
     private ContentResolver mContentResolver;
 
@@ -75,7 +72,6 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
             boolean includeEmails,
             boolean includeTel,
             boolean includeAddresses) {
-        mContext = context;
         mContentResolver = context.getContentResolver();
         mCallback = callback;
         mIncludeNames = includeNames;

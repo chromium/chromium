@@ -23,8 +23,8 @@
 class FamilyPromoCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    browser_ = std::make_unique<TestBrowser>(
-        TestChromeBrowserState::Builder().Build().get());
+    browser_ =
+        std::make_unique<TestBrowser>(TestProfileIOS::Builder().Build().get());
 
     mock_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
@@ -63,8 +63,8 @@ TEST_F(FamilyPromoCoordinatorTest,
       [coordinator conformsToProtocol:@protocol(FamilyPromoActionHandler)]);
 
   OCMExpect([mock_application_commands_handler_
-      closeSettingsUIAndOpenURL:[OCMArg checkWithBlock:^BOOL(
-                                            OpenNewTabCommand* command) {
+      closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
+                                                OpenNewTabCommand* command) {
         return command.URL == GURL("https://myaccount.google.com/family/"
                                    "create?utm_source=cpwd");
       }]]);
@@ -87,8 +87,8 @@ TEST_F(FamilyPromoCoordinatorTest,
       [coordinator conformsToProtocol:@protocol(FamilyPromoActionHandler)]);
 
   OCMExpect([mock_application_commands_handler_
-      closeSettingsUIAndOpenURL:[OCMArg checkWithBlock:^BOOL(
-                                            OpenNewTabCommand* command) {
+      closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
+                                                OpenNewTabCommand* command) {
         return command.URL == GURL("https://myaccount.google.com/family/"
                                    "details?utm_source=cpwd");
       }]]);

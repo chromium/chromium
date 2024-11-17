@@ -92,7 +92,7 @@ void ShowBetaForum(Browser* browser);
 void ShowSlow(Browser* browser);
 
 // Constructs a settings GURL for the specified |sub_page|.
-GURL GetSettingsUrl(const std::string& sub_page);
+GURL GetSettingsUrl(std::string_view sub_page);
 
 // Returns true if |browser| is a trusted popup window containing a page with
 // matching |scheme| (or any trusted popup if |scheme| is empty).
@@ -102,9 +102,8 @@ bool IsTrustedPopupWindowWithScheme(const Browser* browser,
 // Various things that open in a settings UI.
 // NOTE: For Chrome OS settings, use SettingsWindowManager::ShowOSSettings().
 void ShowSettings(Browser* browser);
-void ShowSettingsSubPage(Browser* browser, const std::string& sub_page);
-void ShowSettingsSubPageForProfile(Profile* profile,
-                                   const std::string& sub_page);
+void ShowSettingsSubPage(Browser* browser, std::string_view sub_page);
+void ShowSettingsSubPageForProfile(Profile* profile, std::string_view sub_page);
 void ShowContentSettingsExceptions(Browser* browser,
                                    ContentSettingsType content_settings_type);
 void ShowContentSettingsExceptionsForProfile(
@@ -120,7 +119,7 @@ void ShowSiteSettingsFileSystem(Browser* browser, const GURL& url);
 void ShowContentSettings(Browser* browser,
                          ContentSettingsType content_settings_type);
 void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
-                                        const std::string& sub_page);
+                                        std::string_view sub_page);
 void ShowClearBrowsingDataDialog(Browser* browser);
 void ShowPasswordManager(Browser* browser);
 void ShowPasswordDetailsPage(Browser* browser,
@@ -150,11 +149,13 @@ void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            ash::settings::AppManagementEntryPoint entry_point);
 
+void ShowGraduationApp(Profile* profile);
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Constructs an OS settings GURL for the specified `sub_page`.
-GURL GetOSSettingsUrl(const std::string& sub_page);
+GURL GetOSSettingsUrl(std::string_view sub_page);
 
 void ShowPrintManagementApp(Profile* profile);
 

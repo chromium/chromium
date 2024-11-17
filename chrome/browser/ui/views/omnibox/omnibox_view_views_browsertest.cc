@@ -17,7 +17,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
@@ -82,6 +81,8 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.h"
+#include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
@@ -305,9 +306,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectAllOnClick) {
   ASSERT_NO_FATAL_FAILURE(ClickBrowserWindowCenter());
   ASSERT_NO_FATAL_FAILURE(Click(ui_controls::MIDDLE,
                                 click_location, click_location));
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 #else
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
@@ -840,8 +839,21 @@ class OmniboxViewViewsUIATest : public OmniboxViewViewsTest {
     ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(safearray));
   }
 
+  // Enables accessibility for the test, while this is not necessary to set or
+  // retrieve most accessible attributes (most are cached no matter what), it is
+  // necessary to enable the behavior that is enabled by
+  // view::OnAccessibilityInitializing(). See more info for that in the View
+  // header file.
+  void EnableDeferredLoadingAccessibility() {
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(ui::AXMode::kNativeAPIs);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
+
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 };
 
 // Omnibox fires the right events when the popup opens/closes with UIA turned
@@ -899,6 +911,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
+  EnableDeferredLoadingAccessibility();
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
   OmniboxViewViews* omnibox_view_views =
@@ -1061,9 +1074,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeInitRespectsIME) {
 // Looks like the same problem as in the SelectAllOnClick().
 // Tracked in: https://crbug.com/915591
 // Test is also flaky on Linux: https://crbug.com/1157250
-// Click goes to the popup widget, but doesn't sets focus to the popup view if
-// it's a separate accelerated widget on Lacros: https://crbug.com/329271186
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_HandleExternalProtocolURLs DISABLED_HandleExternalProtocolURLs
 #else
 #define MAYBE_HandleExternalProtocolURLs HandleExternalProtocolURLs
@@ -1147,8 +1158,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_HandleExternalProtocolURLs) {
 }
 
 // SendKeyPressSync times out on Mac, probably due to https://crbug.com/824418.
-// TODO(crbug.com/332299695): Also fails on lacros.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DefaultTypedNavigationsToHttps_ZeroSuggest_NoUpgrade \
   DISABLED_DefaultTypedNavigationsToHttps_ZeroSuggest_NoUpgrade
 #else

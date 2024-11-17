@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expressions.h"
-#include "components/autofill/core/browser/data_model/autofill_i18n_stopwords.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
@@ -31,15 +30,13 @@ namespace autofill::i18n_model_definition {
 namespace {
 using i18n_model_definition::kAutofillFormattingRulesMap;
 using i18n_model_definition::kAutofillModelRules;
-using i18n_model_definition::kAutofillModelStopwords;
 using i18n_model_definition::kAutofillParsingRulesMap;
 
 // Adjacency mapping, stores for each field type X the list of field types
 // which are children of X.
 using TreeDefinition = base::flat_map<FieldType, base::span<const FieldType>>;
 
-using TreeEdgesList =
-    base::span<const autofill::i18n_model_definition::FieldTypeDescription>;
+using TreeEdgesList = base::span<const FieldTypeDescription>;
 
 // Address lines are currently the only computed types. These are are shared by
 // all countries.
@@ -80,7 +77,7 @@ std::u16string GetFormattingExpressionOverrides(
 // Note that nodes do not own their children, rather pointers to them. All
 // `AddressComponent` nodes are owned by the `AddressComponentsStore`.
 std::unique_ptr<AddressComponent> BuildTreeNode(
-    autofill::FieldType type,
+    FieldType type,
     std::vector<AddressComponent*> children) {
   switch (type) {
     case ADDRESS_HOME_ADDRESS:
@@ -158,6 +155,9 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case NAME_LAST_CONJUNCTION:
     case NAME_LAST_SECOND:
     case NAME_HONORIFIC_PREFIX:
+    case ALTERNATIVE_FULL_NAME:
+    case ALTERNATIVE_FAMILY_NAME:
+    case ALTERNATIVE_GIVEN_NAME:
     case PHONE_HOME_NUMBER:
     case PHONE_HOME_CITY_CODE:
     case PHONE_HOME_COUNTRY_CODE:
@@ -375,16 +375,6 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
                                               : std::nullopt;
 }
 
-std::optional<std::u16string_view> GetStopwordsExpression(
-    FieldType field_type,
-    AddressCountryCode country_code) {
-  auto it = kAutofillModelStopwords.find({country_code.value(), field_type});
-  if (it == kAutofillModelStopwords.end()) {
-    return std::nullopt;
-  }
-  return it->second;
-}
-
 bool IsTypeEnabledForCountry(FieldType field_type,
                              AddressCountryCode country_code) {
   if (!IsCustomHierarchyAvailableForCountry(country_code)) {
@@ -435,6 +425,11 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
 
   if (country_code == AddressCountryCode("IT") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseITAddressModel)) {
+    return false;
+  }
+
+  if (country_code == AddressCountryCode("NL") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseNLAddressModel)) {
     return false;
   }
 

@@ -20,17 +20,18 @@ namespace {
 
 const char kDescriberName[] = "FrameNodeImpl";
 
-std::string ViewportIntersectionStateToString(
-    std::optional<ViewportIntersectionState> viewport_intersection_state) {
-  if (!viewport_intersection_state.has_value()) {
+std::string ViewportIntersectionToString(
+    std::optional<ViewportIntersection> viewport_intersection) {
+  if (!viewport_intersection.has_value()) {
     return "Nullopt";
   }
 
-  switch (*viewport_intersection_state) {
-    case ViewportIntersectionState::kNotIntersecting:
-      return "Not intersecting";
-    case ViewportIntersectionState::kIntersecting:
-      return "Intersecting";
+  if (viewport_intersection->is_intersecting_large_area()) {
+    return "Intersecting (Large area)";
+  } else if (viewport_intersection->is_intersecting()) {
+    return "Intersecting (Not large area)";
+  } else {
+    return "Not intersecting";
   }
 }
 
@@ -95,9 +96,8 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("is_audible", impl->is_audible_.value());
   ret.Set("is_capturing_media_stream",
           impl->is_capturing_media_stream_.value());
-  ret.Set("viewport_intersection_state",
-          ViewportIntersectionStateToString(
-              impl->viewport_intersection_state_.value()));
+  ret.Set("viewport_intersection",
+          ViewportIntersectionToString(impl->viewport_intersection_.value()));
   ret.Set("visibility", FrameNodeVisibilityToString(impl->visibility_.value()));
   ret.Set("resource_context", impl->GetResourceContext().ToString());
 

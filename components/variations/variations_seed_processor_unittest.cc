@@ -147,7 +147,7 @@ class TestOverrideStringCallback {
   TestOverrideStringCallback& operator=(const TestOverrideStringCallback&) =
       delete;
 
-  virtual ~TestOverrideStringCallback() {}
+  virtual ~TestOverrideStringCallback() = default;
 
   const VariationsSeedProcessor::UIStringOverrideCallback& callback() const {
     return callback_;
@@ -742,7 +742,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
     DISABLE_GROUP,
   };
 
-  const char kDefaultGroup[] = "Default";
+  const char kTestDefaultGroup[] = "Default";
   const char kEnabledGroup[] = "Enabled";
   const char kDisabledGroup[] = "Disabled";
   const char kForcedOnGroup[] = "ForcedOn";
@@ -761,7 +761,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
       // Check what happens without and command-line forcing flags - that the
       // |one_hundred_percent_group| gets correctly selected and does the right
       // thing w.r.t. to affecting the feature / activating the trial.
-      {ToRawRef(kFeatureOffByDefault), "", "", DEFAULT_GROUP, kDefaultGroup,
+      {ToRawRef(kFeatureOffByDefault), "", "", DEFAULT_GROUP, kTestDefaultGroup,
        false, true},
       {ToRawRef(kFeatureOffByDefault), "", "", ENABLE_GROUP, kEnabledGroup,
        true, true},
@@ -769,7 +769,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
        false, true},
 
       // Do the same as above, but for kFeatureOnByDefault feature.
-      {ToRawRef(kFeatureOnByDefault), "", "", DEFAULT_GROUP, kDefaultGroup,
+      {ToRawRef(kFeatureOnByDefault), "", "", DEFAULT_GROUP, kTestDefaultGroup,
        true, true},
       {ToRawRef(kFeatureOnByDefault), "", "", ENABLE_GROUP, kEnabledGroup, true,
        true},
@@ -829,8 +829,8 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
     VariationsSeed seed;
     Study* study = seed.add_study();
     study->set_name("Study1");
-    study->set_default_experiment_name(kDefaultGroup);
-    AddExperiment(kDefaultGroup, group == DEFAULT_GROUP ? 1 : 0, study);
+    study->set_default_experiment_name(kTestDefaultGroup);
+    AddExperiment(kTestDefaultGroup, group == DEFAULT_GROUP ? 1 : 0, study);
 
     Study::Experiment* feature_enable =
         AddExperiment(kEnabledGroup, group == ENABLE_GROUP ? 1 : 0, study);

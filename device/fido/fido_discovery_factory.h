@@ -69,14 +69,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       const std::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
           qr_generator_key);
 
-  // set_android_accessory_params configures values necessary for discovering
-  // Android AOA devices. The |aoa_request_description| is a string that is sent
-  // to the device to describe the type of request and may appears in
-  // permissions UI on the device.
-  virtual void set_android_accessory_params(
-      mojo::Remote<device::mojom::UsbDeviceManager>,
-      std::string aoa_request_description);
-
   void set_network_context_factory(
       NetworkContextFactory network_context_factory) {
     network_context_factory_ = std::move(network_context_factory);
@@ -160,9 +152,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   std::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;
   uintptr_t nswindow_ = 0;
 #endif  // BUILDFLAG(IS_MAC)
-  std::optional<mojo::Remote<device::mojom::UsbDeviceManager>>
-      usb_device_manager_;
-  std::string aoa_request_description_;
   NetworkContextFactory network_context_factory_;
   std::optional<std::vector<CableDiscoveryData>> cable_data_;
   std::optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;

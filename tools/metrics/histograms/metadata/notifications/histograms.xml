@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Notifications.Actions" enum="NotificationActionType"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>dewittj@chromium.org</owner>
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
@@ -128,8 +128,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Android.IntentProcessedInParallel"
+    units="intents" expires_after="2025-04-13">
+  <owner>peter@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records the number of notification that are processed in parallel. A sample
+    is recorded when a new intent is received by TrampolineActivity and
+    forwarded to Chrome. Measured on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Notifications.Android.IntentStartToFinishDuration.{NativeInitialized}"
+    units="ms" expires_after="2025-04-13">
+  <owner>peter@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records how long it takes from receiving a notification in the
+    TrampolineActivity to finish processing the notification. A sample is
+    recorded when a qualified notification is processed. Measured on Android.
+  </summary>
+  <token key="NativeInitialized">
+    <variant name="NativeInitialized"
+        summary="Native was initialized when receiving the intent."/>
+    <variant name="NativeUninitialized"
+        summary="Native was not initialized when receiving the intent."/>
+  </token>
+</histogram>
+
+<histogram name="Notifications.Android.IntentStartToNativeInitializedDuration"
+    units="ms" expires_after="2025-04-13">
+  <owner>peter@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records how long it takes from receiving a notification in the
+    TrampolineActivity to finish initializing the native library. A sample is
+    recorded the first time native library is initialized upon receiving a
+    notification intent. Measured on Android.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Android.JobIsAlreadyPending{IntentAction}"
-    enum="Boolean" expires_after="2025-02-10">
+    enum="Boolean" expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -145,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobNativeStartupDuration{IntentAction}"
-    units="ms" expires_after="2025-02-10">
+    units="ms" expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -163,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobPendingReason{IntentAction}"
-    enum="NotificationPendingJobReason" expires_after="2025-02-10">
+    enum="NotificationPendingJobReason" expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -179,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobScheduleResult{IntentAction}"
-    enum="BooleanSuccess" expires_after="2025-02-10">
+    enum="BooleanSuccess" expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>
   <owner>engey@chromium.org</owner>
   <summary>
@@ -194,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobStage{IntentAction}"
-    enum="NotificationJobStage" expires_after="2025-02-10">
+    enum="NotificationJobStage" expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -210,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.JobStartDelay{IntentAction}" units="ms"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <summary>
@@ -386,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Cros.Actions.{NotificationAction}"
-    enum="NotificationTypeDetailed" expires_after="2025-02-10">
+    enum="NotificationTypeDetailed" expires_after="2025-04-13">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -605,7 +646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.NonPersistentNotificationThirdPartyCount"
-    enum="Boolean" expires_after="2025-02-08">
+    enum="Boolean" expires_after="2025-04-13">
   <owner>awillia@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -630,7 +671,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Notifications.NotificationHelper.NotificationActivatorPrimaryStatus"
     enum="NotificationHelperNotificationActivatorPrimaryStatus"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -734,7 +775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PerNotificationActions"
-    enum="NotificationActionType" expires_after="2025-02-23">
+    enum="NotificationActionType" expires_after="2025-04-27">
   <owner>dewittj@chromium.org</owner>
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
@@ -824,7 +865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationActionCount"
-    units="buttons" expires_after="2025-03-09">
+    units="buttons" expires_after="2025-05-11">
   <owner>peter@chromium.org</owner>
   <summary>
     The number of action buttons the developer provided for a persistent Web
@@ -843,7 +884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationThirdPartyCount"
-    enum="Boolean" expires_after="2025-02-08">
+    enum="Boolean" expires_after="2025-04-13">
   <owner>awillia@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -951,18 +992,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.CloseStatus"
-    enum="WindowsNotificationCloseStatus" expires_after="2024-09-01">
+    enum="WindowsNotificationCloseStatus" expires_after="2025-03-09">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of Close requests in NotificationPlatformBridgeWin (Windows
     only). Logged whenever a notification is closed. Note: Not logged after M98
-    until end of August 2022, and also not at the beginning of Sept 2023.
+    until end of August 2022, and also not at the beginning of Sept 2023 and
+    Sept 2024.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.CreateToastManagerErrorCode"
-    enum="Hresult" expires_after="2024-09-01">
+    enum="Hresult" expires_after="2025-03-09">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -970,12 +1012,12 @@ chromium-metrics-reviews@google.com.
     toast manager fails. This provides a more detailed error in the cases the
     histogram Notifications.Windows.DisplayStatus reported
     CREATE_TOAST_NOTIFIER_WITH_ID_FAILED. Note: Not logged after M89 until end
-    of August 2022, and also not at the beginning of Sept 2023.
+    of August 2022, and also not at the beginning of Sept 2023 and Sept 2024.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayFailure" enum="Hresult"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1000,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.Windows.GetDisplayedLaunchIdStatus"
     enum="WindowsNotificationGetDisplayedLaunchIdStatus"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

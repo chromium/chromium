@@ -126,8 +126,7 @@ void KioskAppUpdateService::OnRebootRequested(Reason reason) {
           extensions::api::runtime::OnRestartRequiredReason::kPeriodic;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown reboot reason=" << reason;
-      return;
+      NOTREACHED() << "Unknown reboot reason=" << reason;
   }
 
   extensions::RuntimeEventRouter::DispatchOnRestartRequiredEvent(

@@ -92,18 +92,6 @@
       "targets_spec_directory": "src/infra/config/generated/builders/try/android-cronet-x64-dbg-14-tests/targets"
     }
   },
-  "$build/code_coverage": {
-    "coverage_test_types": [
-      "unit",
-      "overall"
-    ],
-    "use_clang_coverage": true,
-    "use_java_coverage": true
-  },
-  "$build/flakiness": {
-    "check_for_flakiness": true,
-    "check_for_flakiness_with_resultdb": true
-  },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics",
@@ -111,11 +99,15 @@
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "output_local_strategy": "greedy",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150
   },
@@ -127,6 +119,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.android",
-  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

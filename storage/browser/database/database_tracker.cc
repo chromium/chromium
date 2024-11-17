@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -665,10 +666,7 @@ int64_t DatabaseTracker::GetDBFileSize(const std::string& origin_identifier,
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   base::FilePath db_file_name = GetFullDBFilePath(origin_identifier,
                                                   database_name);
-  int64_t db_file_size = 0;
-  if (!base::GetFileSize(db_file_name, &db_file_size))
-    db_file_size = 0;
-  return db_file_size;
+  return base::GetFileSize(db_file_name).value_or(0);
 }
 
 int64_t DatabaseTracker::SeedOpenDatabaseInfo(

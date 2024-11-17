@@ -27,10 +27,6 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
-namespace content_settings {
-class CookieSettings;
-}
-
 class DIPSServiceImpl;
 class GURL;
 
@@ -40,6 +36,14 @@ class RedirectHeuristicTabHelper
       public RedirectChainDetector::Observer {
  public:
   ~RedirectHeuristicTabHelper() override;
+
+  // this enum should match CookieHeuristicInteractionType in
+  // tools/metrics/ukm/ukm.xml
+  enum class InteractionType {
+    Authentication = 0,
+    UserActivation = 1,
+    NoInteraction = 2,
+  };
 
   static std::set<std::string> AllSitesFollowingFirstParty(
       content::WebContents* web_contents,
@@ -62,6 +66,7 @@ class RedirectHeuristicTabHelper
       const content::CookieAccessDetails& details,
       const size_t sites_passed_count,
       bool is_current_interaction,
+      bool is_user_activation_interaction,
       std::optional<base::Time> last_user_interaction_time);
 
   // Create all eligible RedirectHeuristic grants for the current redirect
@@ -80,11 +85,11 @@ class RedirectHeuristicTabHelper
   void WebContentsDestroyed() override;
 
   // Start RedirectChainDetector::Observer overrides:
-  void OnNavigationCommitted() override;
+  void OnNavigationCommitted(
+      content::NavigationHandle* navigation_handle) override;
 
   raw_ptr<RedirectChainDetector> detector_;
   raw_ptr<DIPSServiceImpl> dips_service_;
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
   std::optional<base::Time> last_commit_timestamp_;
 

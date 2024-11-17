@@ -30,7 +30,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/webui/file_manager/untrusted_resources/grit/file_manager_untrusted_resources_map.h"
 #include "base/command_line.h"
@@ -43,13 +43,17 @@
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #endif  // BUILDFLAG(ENABLE_INK)
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include <utility>
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/grit/pdf_resources_map.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#include "chrome/grit/tts_engine_resources_map.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 namespace extensions {
 
@@ -85,7 +89,7 @@ class ChromeComponentExtensionResourceManager::Data {
 
 ChromeComponentExtensionResourceManager::Data::Data() {
   static const webui::ResourcePath kExtraComponentExtensionResources[] = {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {"web_store/webstore_icon_128.png", IDR_WEBSTORE_APP_ICON_128},
     {"web_store/webstore_icon_16.png", IDR_WEBSTORE_APP_ICON_16},
 #else
@@ -93,7 +97,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
     {"web_store/webstore_icon_16.png", IDR_WEBSTORE_ICON_16},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // These icons may be replaced with "IDR_DEBUG_CHROME_APP_ICON_{32,192}"
     // in "chrome/browser/apps/app_service/app_icon/app_icon_reader.cc"
     // or "chrome/browser/ui/views/frame/browser_view.cc"
@@ -107,7 +111,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
     {"pdf/ink/ink_lib_binary.js", IDR_MEDIA_APP_EXPORT_CANVAS_BIN_JS},
     {"pdf/ink/ink_loader.js", IDR_MEDIA_APP_INK_JS},
 #endif  // BUILDFLAG(ENABLE_INK)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   };
 
   AddComponentResourceEntries(kComponentExtensionResources,
@@ -115,7 +119,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
   AddComponentResourceEntries(kExtraComponentExtensionResources,
                               std::size(kExtraComponentExtensionResources));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Add Files app JS modules resources.
   AddComponentResourceEntries(kFileManagerResources, kFileManagerResourcesSize);
   AddComponentResourceEntries(kFileManagerGenResources,
@@ -165,6 +169,10 @@ ChromeComponentExtensionResourceManager::Data::Data() {
         std::move(pdf_viewer_replacements);
   }
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  AddComponentResourceEntries(kTtsEngineResources, kTtsEngineResourcesSize);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 void ChromeComponentExtensionResourceManager::Data::AddComponentResourceEntries(
@@ -218,7 +226,7 @@ ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
 
   LazyInitData();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (extension_id == extension_misc::kFilesManagerAppId) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     // Disable $i18n{} template JS string replacement during JS code coverage.

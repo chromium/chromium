@@ -124,7 +124,7 @@ namespace {
 
 BASE_FEATURE(kSkipUnnecessaryThreadHopsForParseHeaders,
              "SkipUnnecessaryThreadHopsForParseHeaders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 class NavigationLoaderInterceptorBrowserContainer
     : public NavigationLoaderInterceptor {
@@ -462,10 +462,9 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
                      rhs->observe_browsing_topics));
   CHECK(mojo::Equals(adjusted_lhs->allow_cross_origin_event_reporting,
                      rhs->allow_cross_origin_event_reporting));
-  NOTREACHED_IN_MIGRATION()
-      << "The parsed headers don't match, but we don't know which "
-         "field does not match. Please add a DCHECK before this one "
-         "checking for the missing field.";
+  NOTREACHED() << "The parsed headers don't match, but we don't know which "
+                  "field does not match. Please add a DCHECK before this one "
+                  "checking for the missing field.";
 }
 #endif  // NDEBUG
 
@@ -874,7 +873,7 @@ NavigationURLLoaderImpl::CreateNonNetworkLoaderFactory(
                 request_info.initiator_process_id,
                 *request_info.initiator_document_token)
           : nullptr,
-      &terminal_external_protocol);
+      request_info.isolation_info, &terminal_external_protocol);
   if (terminal_external_protocol) {
     return std::make_pair(
         /*is_cacheable=*/false,
@@ -998,6 +997,10 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     head->load_timing.service_worker_ready_time =
         head_update_params_.load_timing_info.service_worker_ready_time;
   }
+  if (head_update_params_.initial_service_worker_status.has_value()) {
+    head->initial_service_worker_status =
+        head_update_params_.initial_service_worker_status;
+  }
   if (!head_update_params_.router_info.is_null()) {
     head->service_worker_router_info =
         std::move(head_update_params_.router_info);
@@ -1109,12 +1112,10 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
   }
 
   network::mojom::URLResponseHead* head_ptr = head.get();
-  // Record ServiceWorker Static Routing API metrics. This is only recorded
-  // when the API is used.
-  if (head_ptr->service_worker_router_info) {
-    RecordServiceWorkerRouterEvaluationResults(
-        head_ptr->service_worker_router_info.get());
-  }
+
+  // Record ServiceWorker and the Static Routing API metrics.
+  MaybeRecordServiceWorkerMainResourceInfo(head);
+
   auto on_receive_response = base::BindOnce(
       &NavigationURLLoaderImpl::NotifyResponseStarted,
       weak_factory_.GetWeakPtr(), std::move(head),
@@ -1172,7 +1173,7 @@ void NavigationURLLoaderImpl::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     OnUploadProgressCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationURLLoaderImpl::OnTransferSizeUpdated(
@@ -1834,38 +1835,54 @@ void NavigationURLLoaderImpl::RecordReceivedResponseUkmForOutermostMainFrame() {
   received_accept_ch_frame_ = false;
 }
 
-void NavigationURLLoaderImpl::RecordServiceWorkerRouterEvaluationResults(
-    network::mojom::ServiceWorkerRouterInfo* router_info) {
-  // Check if `matched_source_type` and `actual_source_type` exists. If
-  // `matched_source_type` exists, `actual_source_type` should also exist.
-  // Likewise, if `matched_source_type` does not exist, `actual_source_type`
-  // should also not exist.
-  CHECK_EQ(router_info->matched_source_type.has_value(),
-           router_info->actual_source_type.has_value());
+void NavigationURLLoaderImpl::MaybeRecordServiceWorkerMainResourceInfo(
+    const network::mojom::URLResponseHeadPtr& head) {
+  CHECK(head);
+  if (!head->initial_service_worker_status.has_value() &&
+      !head->service_worker_router_info) {
+    return;
+  }
+
   ukm::builders::ServiceWorker_MainResourceLoadCompleted builder(
       ukm_source_id_);
 
-  if (router_info->evaluation_worker_status) {
-    builder.SetWorkerStatusOnEvaluation(
-        static_cast<int64_t>(*router_info->evaluation_worker_status));
-  }
+  CHECK(head->initial_service_worker_status.has_value());
+  builder.SetInitialWorkerStatus(
+      static_cast<int64_t>(head->initial_service_worker_status.value()));
 
-  if (router_info->matched_source_type) {
-    builder.SetMatchedFirstRouterSourceType(
-        static_cast<int64_t>(*router_info->matched_source_type));
+  if (head->service_worker_router_info) {
+    network::mojom::ServiceWorkerRouterInfo* router_info =
+        head->service_worker_router_info.get();
+    if (router_info->evaluation_worker_status.has_value()) {
+      builder.SetWorkerStatusOnEvaluation(
+          static_cast<int64_t>(router_info->evaluation_worker_status.value()));
+    }
+    // Check if `matched_source_type` and `actual_source_type` exists. If
+    // `matched_source_type` exists, `actual_source_type` should also exist.
+    // Likewise, if `matched_source_type` does not exist, `actual_source_type`
+    // should also not exist.
+    CHECK_EQ(router_info->matched_source_type.has_value(),
+             router_info->actual_source_type.has_value());
+    if (router_info->matched_source_type) {
+      builder.SetMatchedFirstRouterSourceType(
+          static_cast<int64_t>(*router_info->matched_source_type));
+      if (router_info->matched_source_type ==
+          network::mojom::ServiceWorkerRouterSourceType::kCache) {
+        builder.SetCacheLookupTime(
+            router_info->cache_lookup_time.InMilliseconds());
+      }
+    }
+    if (router_info->actual_source_type) {
+      builder.SetActualRouterSourceType(
+          static_cast<int64_t>(*router_info->actual_source_type));
+    }
+    builder
+        .SetRouterRuleCount(ukm::GetExponentialBucketMinForCounts1000(
+            router_info->route_rule_num))
+        .SetRouterEvaluationTime(
+            router_info->router_evaluation_time.InMicroseconds());
   }
-
-  if (router_info->actual_source_type) {
-    builder.SetActualRouterSourceType(
-        static_cast<int64_t>(*router_info->actual_source_type));
-  }
-
-  builder
-      .SetRouterRuleCount(ukm::GetExponentialBucketMinForCounts1000(
-          router_info->route_rule_num))
-      .SetRouterEvaluationTime(
-          router_info->router_evaluation_time.InMicroseconds())
-      .Record(ukm::UkmRecorder::Get());
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace content

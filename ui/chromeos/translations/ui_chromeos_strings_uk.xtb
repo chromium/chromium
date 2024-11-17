@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Клавіатура хангул (анмате)</translation>
 <translation id="1155759005174418845">Каталанська</translation>
 <translation id="1168100932582989117">Сервери імен Google</translation>
+<translation id="1170788066030116158">Дата створення</translation>
 <translation id="1172970565351728681">Залишилося приблизно <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1173916544412572294">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Докладніше</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Сертифікат автентифікації відхилений дистанційно</translation>
 <translation id="4394214039309501350">Зовнішнє посилання</translation>
 <translation id="4394980935660306080">Раніше цього тижня</translation>
+<translation id="4397435965699247285">Папка OneDrive недоступна в режимі офлайн</translation>
 <translation id="4398096759193130964">Відновіть об’єкти або перетягніть їх із кошика в нову папку</translation>
 <translation id="4401287888955153199">Видобути все</translation>
 <translation id="4410695710508688828">Не вдалося виконати операцію видобування. <ph name="ERROR_MESSAGE" /></translation>

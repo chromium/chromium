@@ -42,23 +42,22 @@ import java.util.List;
  */
 public class PriceTrackingNotificationBridge {
     private static final String TAG = "PriceTrackNotif";
-    private final long mNativePriceTrackingNotificationBridge;
     private final PriceDropNotifier mNotifier;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
 
     /**
      * Construct a {@link PriceTrackingNotificationBridge} object from native code.
+     *
      * @param nativePriceTrackingNotificationBridge The native JNI object pointer.
      * @param notifier {@link PriceDropNotifier} used to create the actual notification in tray.
      * @param notificationManager {@link PriceDropNotificationManager} used to check price drop
-     *         notification channel.
+     *     notification channel.
      */
     @VisibleForTesting
     PriceTrackingNotificationBridge(
             long nativePriceTrackingNotificationBridge,
             PriceDropNotifier notifier,
             PriceDropNotificationManager notificationManager) {
-        mNativePriceTrackingNotificationBridge = nativePriceTrackingNotificationBridge;
         mNotifier = notifier;
         mPriceDropNotificationManager = notificationManager;
     }
@@ -68,7 +67,7 @@ public class PriceTrackingNotificationBridge {
             long nativePriceTrackingNotificationBridge, Profile profile) {
         return new PriceTrackingNotificationBridge(
                 nativePriceTrackingNotificationBridge,
-                PriceDropNotifier.create(ContextUtils.getApplicationContext(), profile),
+                new PriceDropNotifier(profile),
                 PriceDropNotificationManagerFactory.create(profile));
     }
 

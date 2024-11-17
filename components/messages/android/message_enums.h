@@ -79,6 +79,8 @@ enum class MessageScopeType {
 //
 // A Java counterpart is generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
+//
+// LINT.IfChange(MessageIdentifier)
 enum class MessageIdentifier {
   INVALID_MESSAGE = 0,
   SAVE_PASSWORD = 1,
@@ -133,9 +135,16 @@ enum class MessageIdentifier {
   VIRTUAL_CARD_ENROLL_FAILURE = 50,
   PROMPT_HATS_QUICK_DELETE = 51,
   PROMPT_HATS_SAFETY_HUB = 52,
+  DEFAULT_BROWSER_PROMO = 53,
+  TAB_REMOVED_THROUGH_COLLABORATION = 54,
+  TAB_NAVIGATED_THROUGH_COLLABORATION = 55,
+  COLLABORATION_MEMBER_ADDED = 56,
+  COLLABORATION_REMOVED = 57,
+  CCT_ACCOUNT_MISMATCH_NOTICE = 58,
   // Insert new values before this line.
   COUNT
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:MessageIdentifier)
 
 // The behavior the message should follow when the primary button is clicked,
 // after running the primary action callback.

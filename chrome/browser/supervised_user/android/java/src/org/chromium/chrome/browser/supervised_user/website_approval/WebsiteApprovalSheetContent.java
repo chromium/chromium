@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.DialogTitle;
@@ -97,8 +98,8 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.parent_website_approval_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.parent_website_approval_content_description);
     }
 
     @Override

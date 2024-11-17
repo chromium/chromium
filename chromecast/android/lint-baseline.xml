@@ -7,7 +7,7 @@
         errorLine1="  &lt;application android:name=&quot;org.chromium.chromecast.shell.CastApplication&quot; android:icon=&quot;@drawable/ic_settings_cast&quot;>"
         errorLine2="   ~~~~~~~~~~~">
         <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
+            file="gen/chromecast/cast_browser_apk__lint/AndroidManifest.xml"
             line="37"
             column="4"/>
     </issue>
@@ -29,7 +29,7 @@
         errorLine1="    &lt;activity android:name=&quot;org.chromium.chromecast.shell.CastWebContentsActivity&quot; android:theme=&quot;@style/CastShellTheme&quot; android:exported=&quot;true&quot; android:hardwareAccelerated=&quot;true&quot; android:launchMode=&quot;singleInstance&quot; android:screenOrientation=&quot;landscape&quot; android:taskAffinity=&quot;.CastWebContentsActivity&quot; android:supportsPictureInPicture=&quot;true&quot; android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|screenLayout|smallestScreenSize|uiMode&quot; android:excludeFromRecents=&quot;false&quot; android:noHistory=&quot;false&quot; android:showWhenLocked=&quot;true&quot;>"
         errorLine2="                                                                                                                                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
+            file="gen/chromecast/cast_browser_apk__lint/AndroidManifest.xml"
             line="71"
             column="217"/>
     </issue>
@@ -49,7 +49,7 @@
         id="RtlEnabled"
         message="The project references RTL attributes, but does not explicitly enable or disable RTL support with `android:supportsRtl` in the manifest">
         <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"/>
+            file="gen/chromecast/cast_browser_apk__lint/AndroidManifest.xml"/>
     </issue>
 
 </issues>

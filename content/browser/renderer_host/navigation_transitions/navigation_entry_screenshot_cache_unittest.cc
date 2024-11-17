@@ -79,10 +79,13 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
   // controller of `tab`.
   void CacheScreenshot(WebContents* tab, int entry_id, SkColor color) {
     const auto& bitmap = GetBitmapOfColor(color);
+    auto& controller = static_cast<WebContentsImpl*>(tab)->GetController();
+    auto* entry = controller.GetEntryWithUniqueID(entry_id);
     auto* cache = GetCacheForTab(tab);
     cache->SetScreenshot(
         nullptr,
-        std::make_unique<NavigationEntryScreenshot>(bitmap, entry_id, true),
+        std::make_unique<NavigationEntryScreenshot>(
+            bitmap, entry->navigation_transition_data().unique_id(), true),
         false);
   }
 

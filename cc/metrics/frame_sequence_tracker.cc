@@ -43,6 +43,10 @@ const char* FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
       return "SETMainThreadAnimation";
     case FrameSequenceTrackerType::kSETCompositorAnimation:
       return "SETCompositorAnimation";
+    case FrameSequenceTrackerType::kCompositorRasterAnimation:
+      return "RasterAnimation";
+    case FrameSequenceTrackerType::kCompositorNativeAnimation:
+      return "NativePropertyAnimation";
     case FrameSequenceTrackerType::kMaxType:
       return "";
   }

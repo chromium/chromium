@@ -124,7 +124,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
   void AddResponse(const GURL& url,
                    net::HttpStatusCode http_status,
-                   const std::string mime_type,
+                   const std::string& mime_type,
                    const std::string& content) {
     auto head = network::mojom::URLResponseHead::New();
     std::string raw_header = "HTTP/1.1 " + base::NumberToString(http_status) +
@@ -168,7 +168,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
       const char* test_data,
       net::HttpStatusCode http_status = net::HTTP_OK,
       const std::string& mime_type = "application/json",
-      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget) {
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kPassive) {
     GURL config_url(kTestConfigUrl);
     AddResponse(config_url, http_status, mime_type, test_data);
 
@@ -927,13 +927,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingMinSize) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest,
-       ParseConfigSupportsOtherAccountButtonMode) {
+       ParseConfigSupportsOtherAccountActiveMode) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
 
   const char test_json[] = R"({
   "modes": {
-    "button": {
+    "active": {
       "supports_use_other_account": true
     }
   }
@@ -943,7 +943,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
       test_json, net::HTTP_OK, "application/json",
-      blink::mojom::RpMode::kButton);
+      blink::mojom::RpMode::kActive);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -951,13 +951,13 @@ TEST_F(IdpNetworkRequestManagerTest,
 }
 
 TEST_F(IdpNetworkRequestManagerTest,
-       ParseConfigSupportsOtherAccountWidgetMode) {
+       ParseConfigSupportsOtherAccountPassiveMode) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
 
   const char test_json[] = R"({
   "modes": {
-    "widget": {
+    "passive": {
       "supports_use_other_account": true
     }
   }
@@ -967,7 +967,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
       test_json, net::HTTP_OK, "application/json",
-      blink::mojom::RpMode::kWidget);
+      blink::mojom::RpMode::kPassive);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -981,7 +981,7 @@ TEST_F(IdpNetworkRequestManagerTest,
 
   const char test_json[] = R"({
   "modes": {
-    "button": {
+    "active": {
       "supports_use_other_account": true
     }
   }
@@ -991,7 +991,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
       test_json, net::HTTP_OK, "application/json",
-      blink::mojom::RpMode::kWidget);
+      blink::mojom::RpMode::kPassive);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -1004,10 +1004,10 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
 
   const char test_json[] = R"({
   "modes": {
-    "button": {
+    "active": {
       "supports_use_other_account": false
     },
-    "widget": {
+    "passive": {
       "supports_use_other_account": true
     }
   }
@@ -1017,7 +1017,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
       test_json, net::HTTP_OK, "application/json",
-      blink::mojom::RpMode::kButton);
+      blink::mojom::RpMode::kActive);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -1026,11 +1026,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigUseOtherAccountDisabled) {
   base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmUseOtherAccount);
+  // Disables both flags since this feature can be enabled by the other.
+  list.InitWithFeatures(
+      {}, {features::kFedCmUseOtherAccount, features::kFedCmButtonMode});
 
   const char test_json[] = R"({
   "modes": {
-    "widget": {
+    "passive": {
       "supports_use_other_account": true
     }
   }

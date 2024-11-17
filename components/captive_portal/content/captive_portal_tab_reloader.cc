@@ -55,7 +55,7 @@ CaptivePortalTabReloader::CaptivePortalTabReloader(
       slow_ssl_load_time_(base::Seconds(kDefaultSlowSSLTimeSeconds)),
       open_login_tab_callback_(open_login_tab_callback) {}
 
-CaptivePortalTabReloader::~CaptivePortalTabReloader() {}
+CaptivePortalTabReloader::~CaptivePortalTabReloader() = default;
 
 void CaptivePortalTabReloader::OnLoadStart(bool is_ssl) {
   provisional_main_frame_load_ = true;
@@ -173,7 +173,7 @@ void CaptivePortalTabReloader::OnCaptivePortalResults(
       return;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -233,8 +233,7 @@ void CaptivePortalTabReloader::SetState(State new_state) {
       DCHECK_EQ(STATE_NONE, new_state);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   state_ = new_state;

@@ -16,8 +16,8 @@ features:
   per_profile: true
   user_only: true
 supported_on:
-- chrome.*:124-
-- android:124-
+- chrome.*:130-
+- android:130-
 future_on:
 - chrome_os
 - fuchsia

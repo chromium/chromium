@@ -4,14 +4,17 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './shared_style.css.js';
 import './privacy_sandbox_dialog_learn_more.js';
+import './privacy_sandbox_privacy_policy_dialog.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrivacySandboxDialogBrowserProxy} from './privacy_sandbox_dialog_browser_proxy.js';
 import {PrivacySandboxDialogMixin} from './privacy_sandbox_dialog_mixin.js';
 import {getTemplate} from './privacy_sandbox_dialog_notice_step.html.js';
 
@@ -34,7 +37,80 @@ export class PrivacySandboxDialogNoticeStepElement extends
         type: Boolean,
         observer: 'onNoticeLearnMoreExpandedChanged',
       },
+
+      siteSuggestedAdsLearnMoreExpanded_: {
+        type: Boolean,
+        observer: 'onNoticeSiteSuggestedAdsLearnMoreExpanded_',
+      },
+
+      adMeasurementLearnMoreExpanded_: {
+        type: Boolean,
+        observer: 'onNoticeAdMeasurementLearnMoreExpandedChanged',
+      },
+
+      /**
+       * If true, the privacy policy text is hyperlinked.
+       */
+      isPrivacyPolicyLinkEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * If true, the notice page is hidden.
+       * On load, this page should not be hidden.
+       */
+      hideNoticePage_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * If true, the Ads API UX Enhancement should be shown.
+       */
+      shouldShowV2_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'isPrivacySandboxAdsApiUxEnhancementsEnabled');
+        },
+      },
     };
+  }
+
+  private isPrivacyPolicyLinkEnabled_: boolean;
+  private hideNoticePage_: boolean;
+  private shouldShowV2_: boolean;
+
+  private loadPrivacyPolicyOnExpand_(newValue: boolean, oldValue: boolean) {
+    // When the expand is triggered, if the iframe hasn't been loaded yet,
+    // load it the first time the learn more expand section is clicked.
+    if (newValue && !oldValue) {
+      if (!this.shadowRoot!.querySelector('#privacyPolicyDialog')) {
+        PrivacySandboxDialogBrowserProxy.getInstance()
+            .shouldShowPrivacySandboxPrivacyPolicy()
+            .then(isPrivacyPolicyLinkEnabled => {
+              this.isPrivacyPolicyLinkEnabled_ = isPrivacyPolicyLinkEnabled;
+            });
+      }
+    }
+  }
+
+  private onNoticeSiteSuggestedAdsLearnMoreExpanded_(
+      newValue: boolean, oldValue: boolean) {
+    this.loadPrivacyPolicyOnExpand_(newValue, oldValue);
+    this.onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(newValue, oldValue);
+  }
+
+  private onBackButtonClicked_() {
+    this.hideNoticePage_ = false;
+    // Send focus back to privacy policy link for a11y screen reader.
+    this.shadowRoot!.querySelector<HTMLElement>(
+                        '#privacyPolicyLinkV2')!.focus();
+  }
+
+  private onPrivacyPolicyLinkClicked_() {
+    this.hideNoticePage_ = true;
   }
 }
 

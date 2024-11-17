@@ -170,9 +170,9 @@ TEST_F(StackSamplingRecorderTest, TruncatesExistingFileToEmpty) {
   recorder_->SetSuccessfullyCollectedCounts({});
   recorder_->WriteFileHelper();
 
-  int64_t file_size = -1;
-  EXPECT_TRUE(base::GetFileSize(output_path_, &file_size));
-  EXPECT_EQ(file_size, 0L);
+  std::optional<int64_t> file_size = base::GetFileSize(output_path_);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(file_size.value(), 0L);
 }
 
 TEST_F(StackSamplingRecorderTest, TruncatesExistingFileWithLessData) {

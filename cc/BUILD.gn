@@ -471,6 +471,8 @@ cc_component("cc") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/metrics/dwa:dwa_builders",
+    "//components/metrics/dwa/mojom",
     "//components/miracle_parameter/common",
     "//components/viz/client",
     "//device/base/synchronization",

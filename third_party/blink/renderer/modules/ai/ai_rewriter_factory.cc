@@ -8,7 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_create_options.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_session_create_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_rewriter.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -31,7 +31,7 @@ mojom::blink::AIRewriterTone ToMojoAIRewriterTone(V8AIRewriterTone tone) {
     case V8AIRewriterTone::Enum::kMoreCasual:
       return mojom::blink::AIRewriterTone::kMoreCasual;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 mojom::blink::AIRewriterLength ToMojoAIRewriterLength(V8AIRewriterLength tone) {
@@ -43,20 +43,22 @@ mojom::blink::AIRewriterLength ToMojoAIRewriterLength(V8AIRewriterLength tone) {
     case V8AIRewriterLength::Enum::kLonger:
       return mojom::blink::AIRewriterLength::kLonger;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
                              public mojom::blink::AIManagerCreateRewriterClient,
-                             public AIMojoSessionCreateClient<AIRewriter> {
+                             public AIMojoClient<AIRewriter> {
  public:
-  CreateRewriterClient(AI* ai,
+  CreateRewriterClient(ScriptState* script_state,
+                       AI* ai,
                        ScriptPromiseResolver<AIRewriter>* resolver,
                        AbortSignal* signal,
                        V8AIRewriterTone tone,
                        V8AIRewriterLength length,
                        String shared_context_string)
-      : AIMojoSessionCreateClient(ai, resolver, signal),
+      : AIMojoClient(script_state, ai, resolver, signal),
+        ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         shared_context_string_(shared_context_string),
         tone_(tone),
@@ -65,7 +67,7 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    GetAI()->GetAIRemote()->CreateRewriter(
+    ai_->GetAIRemote()->CreateRewriter(
         std::move(client_remote),
         mojom::blink::AIRewriterCreateOptions::New(
             shared_context_string_, ToMojoAIRewriterTone(tone),
@@ -77,7 +79,8 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
   CreateRewriterClient& operator=(const CreateRewriterClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
-    AIMojoSessionCreateClient::Trace(visitor);
+    AIMojoClient::Trace(visitor);
+    visitor->Trace(ai_);
     visitor->Trace(receiver_);
   }
 
@@ -88,8 +91,8 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
     }
     if (rewriter) {
       GetResolver()->Resolve(MakeGarbageCollected<AIRewriter>(
-          GetAI()->GetExecutionContext(), GetAI()->GetTaskRunner(),
-          std::move(rewriter), shared_context_string_, tone_, length_));
+          ai_->GetExecutionContext(), ai_->GetTaskRunner(), std::move(rewriter),
+          shared_context_string_, tone_, length_));
     } else {
       GetResolver()->Reject(DOMException::Create(
           kExceptionMessageUnableToCreateRewriter,
@@ -98,11 +101,13 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
     Cleanup();
   }
 
+  void ResetReceiver() override { receiver_.reset(); }
+
  private:
+  Member<AI> ai_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateRewriterClient,
                    CreateRewriterClient>
       receiver_;
-  // `resolver_` will be reset on Cleanup().
   const String shared_context_string_;
   const V8AIRewriterTone tone_;
   const V8AIRewriterLength length_;
@@ -128,14 +133,14 @@ ScriptPromise<AIRewriter> AIRewriterFactory::create(
     return ScriptPromise<AIRewriter>();
   }
   CHECK(options);
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    ThrowAbortedException(exception_state);
-    return ScriptPromise<AIRewriter>();
-  }
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AIRewriter>>(script_state);
   auto promise = resolver->Promise();
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
+  }
 
   if (!ai_->GetAIRemote().is_connected()) {
     RejectPromiseWithInternalError(resolver);
@@ -143,7 +148,7 @@ ScriptPromise<AIRewriter> AIRewriterFactory::create(
   }
 
   MakeGarbageCollected<CreateRewriterClient>(
-      ai_, resolver, signal, options->tone(), options->length(),
+      script_state, ai_, resolver, signal, options->tone(), options->length(),
       options->getSharedContextOr(String()));
   return promise;
 }

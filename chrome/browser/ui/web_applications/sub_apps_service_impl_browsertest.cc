@@ -922,7 +922,9 @@ IN_PROC_BROWSER_TEST_F(
   // Verify that the stadalone install is NOT installed and registered as a
   // sub-app.
   EXPECT_NE(parent_app_id_, standalone_app->parent_app_id());
-  EXPECT_TRUE(standalone_app->HasOnlySource(WebAppManagement::kSync));
+  EXPECT_TRUE(WebAppManagementTypes(
+                  {WebAppManagement::kSync, WebAppManagement::kUserInstalled})
+                  .HasAll(standalone_app->GetSources()));
   EXPECT_FALSE(standalone_app->IsSubAppInstalledApp());
 
   UninstallParentApp();
@@ -938,7 +940,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(std::nullopt, standalone_app->parent_app_id());
 
   // Verify that the standalone app no longer has the sub-app install source.
-  EXPECT_TRUE(standalone_app->HasOnlySource(WebAppManagement::kSync));
+  EXPECT_TRUE(WebAppManagementTypes(
+                  {WebAppManagement::kSync, WebAppManagement::kUserInstalled})
+                  .HasAll(standalone_app->GetSources()));
 }
 
 /********** Tests for the List API call. **********/

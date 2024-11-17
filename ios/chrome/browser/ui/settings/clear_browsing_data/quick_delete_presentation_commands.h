@@ -7,6 +7,10 @@
 
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 
+namespace browsing_data {
+enum class TimePeriod;
+}
+
 // Commands related to actions within the Quick Delete UI.
 @protocol QuickDeletePresentationCommands
 
@@ -20,7 +24,7 @@
 
 // Method invoked when the user taps the Browsing Data row to open a page to
 // curate the list of selected browsing data to be deleted.
-- (void)showBrowsingDataPage;
+- (void)showBrowsingDataPageWithTimeRange:(browsing_data::TimePeriod)timeRange;
 
 // Trigger the tabs closure animation along with the actual closure of the
 // WebStates within the deletion time frame. It also indicates if reloading tabs
@@ -33,8 +37,9 @@
                             forceWebStatesReload:(BOOL)forceWebStatesReload;
 
 // Method invoked on deletion in progress to block other windows to avoid having
-// multiple deletions occur concurrently.
-- (void)blockOtherWindows;
+// multiple deletions occur concurrently. Returns whether the block was
+// successful.
+- (BOOL)blockOtherScenesIfPossible;
 
 // Method invoked on deletion completed to release other blocked windows.
 - (void)releaseOtherWindows;

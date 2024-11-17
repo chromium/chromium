@@ -37,6 +37,7 @@
 namespace blink {
 
 class Navigator;
+class V8XRSessionMode;
 class XRFrameProvider;
 class XRSession;
 class XRSessionInit;
@@ -88,13 +89,13 @@ class XRSystem final : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(devicechange, kDevicechange)
 
   ScriptPromise<IDLUndefined> supportsSession(ScriptState*,
-                                              const String&,
+                                              const V8XRSessionMode&,
                                               ExceptionState& exception_state);
   ScriptPromise<IDLBoolean> isSessionSupported(ScriptState*,
-                                               const String&,
+                                               const V8XRSessionMode&,
                                                ExceptionState& exception_state);
   ScriptPromise<XRSession> requestSession(ScriptState*,
-                                          const String&,
+                                          const V8XRSessionMode&,
                                           XRSessionInit*,
                                           ExceptionState& exception_state);
 
@@ -373,7 +374,7 @@ class XRSystem final : public EventTarget,
                          const String& message);
 
   void InternalIsSessionSupported(ScriptPromiseResolverBase*,
-                                  const String&,
+                                  const V8XRSessionMode&,
                                   ExceptionState& exception_state,
                                   bool throw_on_unsupported);
 
@@ -382,7 +383,7 @@ class XRSystem final : public EventTarget,
       const PendingRequestSessionQuery& query);
 
   RequestedXRSessionFeatureSet ParseRequestedFeatures(
-      const HeapVector<ScriptValue>& features,
+      const Vector<String>& features,
       const device::mojom::blink::XRSessionMode& session_mode,
       XRSessionInit* session_init,
       mojom::ConsoleMessageLevel error_level);

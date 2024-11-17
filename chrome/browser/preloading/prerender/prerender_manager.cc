@@ -18,8 +18,11 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading.h"
@@ -63,6 +66,15 @@ void AttachBookmarkBarNavigationHandleUserData(
   page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
       navigation_handle, page_load_metrics::NavigationHandleUserData::
                              InitiatorLocation::kBookmarkBar);
+}
+
+bool IsSearchUrl(content::WebContents& web_contents, const GURL& url) {
+  auto* profile = Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  return template_url_service &&
+         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+             url);
 }
 
 }  // namespace
@@ -180,6 +192,10 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
   content::PreloadingURLMatchCallback same_url_matcher =
       content::PreloadingData::GetSameURLMatcher(prerendering_url);
 
+  if (IsSearchUrl(*web_contents(), prerendering_url)) {
+    return nullptr;
+  }
+
   // Create new PreloadingAttempt and pass all the values corresponding to
   // this prerendering attempt for Prerender.
   content::PreloadingAttempt* preloading_attempt =
@@ -219,11 +235,13 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
   bookmark_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kBookmarkBarMetricSuffix,
+      /*no_vary_search_expected=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       // Considering the characteristics of triggers (e.g., the duration from
       // trigger to activation), warm-up is not enabled for now on this trigger.
       // Please see crbug and its doc for more details.
       /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback));
@@ -236,6 +254,10 @@ base::WeakPtr<content::PrerenderHandle>
 PrerenderManager::StartPrerenderNewTabPage(
     const GURL& prerendering_url,
     content::PreloadingPredictor predictor) {
+  if (IsSearchUrl(*web_contents(), prerendering_url)) {
+    return nullptr;
+  }
+
   // Helpers to create content::PreloadingAttempt.
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents());
@@ -278,11 +300,13 @@ PrerenderManager::StartPrerenderNewTabPage(
   new_tab_page_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kNewTabPageMetricSuffix,
+      /*no_vary_search_expected=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       // Considering the characteristics of triggers (e.g., the duration from
       // trigger to activation), warm-up is not enabled for now on this trigger.
       // Please see crbug and its doc for more details.
       /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback));
@@ -341,9 +365,11 @@ PrerenderManager::StartPrerenderDirectUrlInput(
   direct_url_input_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kDirectUrlInputMetricSuffix,
+      /*no_vary_search_expected=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       /*should_warm_up_compositor=*/true,
+      /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified, &preloading_attempt,
       /*url_match_predicate=*/{}, /*prerender_navigation_handle_callback=*/{});
 
@@ -374,17 +400,16 @@ void PrerenderManager::StartPrerenderSearchResult(
 
   content::PreloadingHoldbackStatus holdback_status_override =
       content::PreloadingHoldbackStatus::kUnspecified;
-  if (base::FeatureList::IsEnabled(features::kPrerenderDSEHoldback)) {
-    holdback_status_override = content::PreloadingHoldbackStatus::kHoldback;
-  }
 
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       web_contents()->StartPrerendering(
           prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDefaultSearchEngineMetricSuffix,
+          /*no_vary_search_expected=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*should_warm_up_compositor=*/true, holdback_status_override,
+          /*should_warm_up_compositor=*/true,
+          /*should_prepare_paint_tree=*/true, holdback_status_override,
           preloading_attempt.get(), std::move(url_match_predicate),
           /*prerender_navigation_handle_callback=*/{});
 

@@ -165,10 +165,8 @@ SavePackageFilePicker::SavePackageFilePicker(
       save_types_.push_back(content::SAVE_PAGE_TYPE_AS_ONLY_HTML);
     }
 
-    if (can_save_as_complete_) {
-      AddSingleFileFileTypeInfo(&file_type_info);
-      save_types_.push_back(content::SAVE_PAGE_TYPE_AS_MHTML);
-    }
+    AddSingleFileFileTypeInfo(&file_type_info);
+    save_types_.push_back(content::SAVE_PAGE_TYPE_AS_MHTML);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     AddCompleteFileTypeInfo(&file_type_info, extra_extension);

@@ -8,6 +8,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/ActivityUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/TabHidingType.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/ZoomController.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/accessibility/AccessibilityTabHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkModel.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkUtils.java",
@@ -46,7 +47,7 @@ include_rules = [
   "+chrome/browser/incognito/android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
   "+chrome/browser/password_check/android/java/src/org/chromium/chrome/browser/password_check/PasswordCheckUkmRecorder.java",
   "+chrome/browser/profiles/android/java/src/org/chromium/chrome/browser/profiles/Profile.java",
-  "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
+  "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilter.java",
   "+chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarManager.java",
   "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/TabObscuringHandler.java",
   "+chrome/browser/feature_engagement/java/src/org/chromium/chrome/browser/feature_engagement/TrackerFactory.java",
@@ -67,12 +68,11 @@ specific_include_rules = {
   'HistoricalTabModelObserver\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
-    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilter.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilter.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelObserver.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
     "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupColorUtils.java",
     "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtils.java",
-    "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
   ],
   'HistoricalTabSaver\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
@@ -87,6 +87,9 @@ specific_include_rules = {
   ],
   'RequestDesktopUtils\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java",
+  ],
+  'TabContextMenuItemDelegate\.java': [
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupFeatureUtils.java",
   ],
   'TabImpl\.java': [
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
@@ -114,6 +117,7 @@ specific_include_rules = {
     "+components/navigation_interception/android/java/src/org/chromium/components/navigation_interception",
     "+components/prefs/android/java/src/org/chromium/components/prefs/PrefService.java",
     "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
+    "+components/sensitive_content/android/java/src/org/chromium/components/sensitive_content/SensitiveContentClient.java",
     "+components/user_prefs/android/java/src/org/chromium/components/user_prefs/UserPrefs.java",
     "+components/version_info/android",
   ],

@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 
 // This mirrors `download::DownloadItem::DownloadState`, anything added or
 // removed here must also be added or removed there.
-[Stable, Extensible]
+[Extensible]
 enum DownloadState {
     [Default] kUnknown = 0,
     kInProgress,
@@ -20,7 +20,7 @@ enum DownloadState {
 
 // This mirrors `download::DownloadDangerType`, anything added or removed here
 // must also be added or removed there.
-[Stable, Extensible]
+[Extensible]
 enum DownloadDangerType {
   [Default] kDownloadDangerTypeInvalid = -1,
   kDownloadDangerTypeNotDangerous = 0,
@@ -51,7 +51,7 @@ enum DownloadDangerType {
 
 // This mirrors `download::DownloadItem::InsecureDownloadStatus`, anything
 // added or removed here must also be added or removed there.
-[Stable, Extensible, RenamedFrom="crosapi.mojom.DownloadMixedContentStatus"]
+[Extensible, RenamedFrom="crosapi.mojom.DownloadMixedContentStatus"]
 enum InsecureDownloadStatus {
   [Default] kInvalid = -1,
   kUnknown = 0,
@@ -71,7 +71,7 @@ enum InsecureDownloadStatus {
 //
 // Next MinVersion: 5
 // Next ID: 20
-[Stable, RenamedFrom="crosapi.mojom.DownloadEvent"]
+[RenamedFrom="crosapi.mojom.DownloadEvent"]
 struct DownloadItem {
   DownloadState state@0;
   mojo_base.mojom.FilePath target_file_path@1;
@@ -100,7 +100,7 @@ struct DownloadItem {
 //
 // Next MinVersion: 2
 // Next ID: 6
-[Stable, Uuid="eccf720b-538a-4943-a6fd-d073639c4140"]
+[Uuid="eccf720b-538a-4943-a6fd-d073639c4140"]
 interface DownloadControllerClient {
   // Returns all downloads, no matter the type or state, sorted chronologically
   // by start time. This method will ultimately invoke
@@ -134,7 +134,7 @@ interface DownloadControllerClient {
 //
 // Next MinVersion: 2
 // Next ID: 4
-[Stable, Uuid="c3d8bd4b-1fc9-4529-aeb2-76770b0ad1c3"]
+[Uuid="c3d8bd4b-1fc9-4529-aeb2-76770b0ad1c3"]
 interface DownloadController {
   // Binds the DownloadControllerClient interface, which allows the
   // DownloadController implemented in ash-chrome to communicate with its client

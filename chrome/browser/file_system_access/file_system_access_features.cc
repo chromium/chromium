@@ -8,13 +8,6 @@
 
 namespace features {
 
-#if BUILDFLAG(IS_WIN)
-// Enables blocking local UNC path on Windows for the File System Access API.
-BASE_FEATURE(kFileSystemAccessLocalUNCPathBlock,
-             "kFileSystemAccessLocalUNCPathBlock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables persistent permissions for the File System Access API.
 BASE_FEATURE(kFileSystemAccessPersistentPermissions,
              "kFileSystemAccessPersistentPermissions",
@@ -23,11 +16,6 @@ BASE_FEATURE(kFileSystemAccessPersistentPermissions,
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-
-// Enables the updated Page Info UI for the persistent permissions feature.
-BASE_FEATURE(kFileSystemAccessPersistentPermissionsUpdatedPageInfo,
-             "kFileSystemAccessPersistentPermissionsUpdatedPageInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables performing the blocklist check on a full absolute path, which
 // resolves any symbolic link.

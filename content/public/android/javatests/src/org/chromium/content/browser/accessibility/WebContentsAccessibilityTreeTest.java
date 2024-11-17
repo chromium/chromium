@@ -9,7 +9,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sClassNameMatcher;
 
 import android.annotation.SuppressLint;
-import android.os.Build.VERSION_CODES;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.SmallTest;
@@ -1165,6 +1164,48 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_supplementalDescriptionAnnotate() {
+        performAriaTest("supplemental-description-annotate.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_supplementalDescriptionButtonLabel() {
+        performAriaTest("supplemental-description-button-label.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_supplementalDescriptionImageButton() {
+        performAriaTest("supplemental-description-image-button.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_supplementalDescriptionLinks() {
+        performAriaTest("supplemental-description-links.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_supplementalDescriptionNav() {
+        performAriaTest("supplemental-description-nav.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_supplementalDescriptionRegion() {
+        performAriaTest("supplemental-description-region.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_supplementalDescriptionSelect() {
+        performAriaTest("supplemental-description-select.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_toggleButtonExpandCollapse() {
         performAriaTest("toggle-button-expand-collapse.html");
     }
@@ -1577,8 +1618,8 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_elementClassIdSrcAttr() {
-        performHtmlTest("element-class-id-src-attr.html");
+    public void test_elementClassIdAttr() {
+        performHtmlTest("element-class-id-attr.html");
     }
 
     @Test
@@ -1611,7 +1652,6 @@ public class WebContentsAccessibilityTreeTest {
         performHtmlTest("figure.html");
     }
 
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.O, message = "https://crbug.com/1376954")
     @Test
     @SmallTest
     public void test_fixedWidthText() {

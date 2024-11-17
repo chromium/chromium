@@ -13,11 +13,11 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_test_util.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -62,8 +62,8 @@ base::FilePath GetCalendarFilePath() {
 class SafariDownloadCoordinatorTest : public PlatformTest {
  protected:
   SafariDownloadCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     base_view_controller_ = [[UIViewController alloc] init];
     coordinator_ = [[SafariDownloadCoordinator alloc]
         initWithBaseViewController:base_view_controller_
@@ -86,10 +86,10 @@ class SafariDownloadCoordinatorTest : public PlatformTest {
         browser_->GetWebStateList()->GetWebStateAt(0));
   }
 
-  // Needed for test browser state created by TestBrowser().
+  // Needed for test profile created by TestBrowser().
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   SafariDownloadCoordinator* coordinator_;

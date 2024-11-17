@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
@@ -14,7 +15,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
@@ -22,7 +22,7 @@
 
 namespace gfx {
 
-struct GFX_EXPORT OverlayPlaneData {
+struct COMPONENT_EXPORT(GFX) OverlayPlaneData {
   OverlayPlaneData();
   OverlayPlaneData(
       int z_order,

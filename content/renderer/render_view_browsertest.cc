@@ -64,7 +64,7 @@
 #include "content/test/test_render_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/mojom/base/text_direction.mojom-blink.h"
+#include "mojo/public/mojom/base/text_direction.mojom.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -90,6 +90,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
@@ -1126,7 +1127,7 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
       /*web_view=*/nullptr,
-      /*previous_frame_token=*/remote_child_frame_token,
+      /*previous_frame_token=*/blink::FrameToken(remote_child_frame_token),
       /*opener_frame_token=*/std::nullopt,
       /*parent_frame_token=*/std::nullopt,
       /*previous_sibling_frame_token=*/std::nullopt,
@@ -1195,7 +1196,7 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       TestRenderFrame::CreateStubFrameReceiver(),
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
-      /*web_view=*/nullptr, child_remote_frame_token,
+      /*web_view=*/nullptr, blink::FrameToken(child_remote_frame_token),
       /*opener_frame_token=*/std::nullopt,
       /*parent_frame_token=*/web_frame->GetFrameToken(),
       /*previous_sibling_frame_token=*/std::nullopt,
@@ -3228,11 +3229,26 @@ TEST_F(RenderViewImplTest, OriginTrialDisabled) {
 
   // Set the document URL.
   LoadHTMLWithUrlOverride(kHTMLWithNoOriginTrial, "https://example.test/");
+
+  // Get the web document and V8 context, to test the overloads of the check.
   blink::WebFrame* web_frame = frame()->GetWebFrame();
   ASSERT_TRUE(web_frame);
   ASSERT_TRUE(web_frame->IsWebLocalFrame());
-  blink::WebDocument web_doc = web_frame->ToWebLocalFrame()->GetDocument();
-  EXPECT_FALSE(blink::WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
+  blink::WebLocalFrame* web_local_frame = web_frame->ToWebLocalFrame();
+  blink::WebDocument web_doc = web_local_frame->GetDocument();
+  v8::Isolate* isolate = Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> v8_context = web_local_frame->MainWorldScriptContext();
+
+  // Verify the runtime feature is not enabled by either the origin trial or the
+  // static flag.
+  EXPECT_FALSE(
+      blink::WebOriginTrials::IsOriginTrialsSampleAPIEnabled(&web_doc));
+  EXPECT_FALSE(
+      blink::WebOriginTrials::IsOriginTrialsSampleAPIEnabled(v8_context));
+  EXPECT_FALSE(
+      blink::WebRuntimeFeatures::IsOriginTrialsSampleAPIEnabledByRuntimeFlag());
+
   // Reset the origin trial policy.
   blink::TrialTokenValidator::ResetOriginTrialPolicyGetter();
 }
@@ -3261,11 +3277,25 @@ TEST_F(RenderViewImplTest, OriginTrialEnabled) {
 
   // Set the document URL so the origin is correct for the trial.
   LoadHTMLWithUrlOverride(kHTMLWithOriginTrial, "https://example.test/");
+
+  // Get the web document and V8 context, to test the overloads of the check.
   blink::WebFrame* web_frame = frame()->GetWebFrame();
   ASSERT_TRUE(web_frame);
   ASSERT_TRUE(web_frame->IsWebLocalFrame());
-  blink::WebDocument web_doc = web_frame->ToWebLocalFrame()->GetDocument();
-  EXPECT_TRUE(blink::WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
+  blink::WebLocalFrame* web_local_frame = web_frame->ToWebLocalFrame();
+  blink::WebDocument web_doc = web_local_frame->GetDocument();
+  v8::Isolate* isolate = Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> v8_context = web_local_frame->MainWorldScriptContext();
+
+  // Verify the runtime feature is only enabled by the origin trial, not also by
+  // the static flag.
+  EXPECT_TRUE(blink::WebOriginTrials::IsOriginTrialsSampleAPIEnabled(&web_doc));
+  EXPECT_TRUE(
+      blink::WebOriginTrials::IsOriginTrialsSampleAPIEnabled(v8_context));
+  EXPECT_FALSE(
+      blink::WebRuntimeFeatures::IsOriginTrialsSampleAPIEnabledByRuntimeFlag());
+
   // Reset the origin trial policy.
   blink::TrialTokenValidator::ResetOriginTrialPolicyGetter();
 }

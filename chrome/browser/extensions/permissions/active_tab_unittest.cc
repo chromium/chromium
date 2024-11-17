@@ -138,8 +138,7 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
       case PERMITTED_NONE:
         return !script && !capture;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   bool IsBlocked(const scoped_refptr<const Extension>& extension_refptr,

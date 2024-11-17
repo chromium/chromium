@@ -73,7 +73,7 @@ void KerberosInBrowserDialog::OnDialogClosed(const std::string& json_retval) {
         ProfileManager::GetActiveUserProfile(),
         /*sub_page=*/"kerberos/kerberosAccounts");
   } else if (!json_retval.empty()) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   SystemWebDialogDelegate::OnDialogClosed(json_retval);

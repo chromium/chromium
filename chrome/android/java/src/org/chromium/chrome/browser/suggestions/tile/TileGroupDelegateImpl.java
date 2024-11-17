@@ -41,6 +41,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
                             WindowOpenDisposition.OFF_THE_RECORD));
 
     private final Context mContext;
+    private final Profile mProfile;
     private final SnackbarManager mSnackbarManager;
     private final SuggestionsNavigationDelegate mNavigationDelegate;
     private final MostVisitedSites mMostVisitedSites;
@@ -54,6 +55,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             SuggestionsNavigationDelegate navigationDelegate,
             SnackbarManager snackbarManager) {
         mContext = context;
+        mProfile = profile;
         mSnackbarManager = snackbarManager;
         mNavigationDelegate = navigationDelegate;
         mMostVisitedSites =
@@ -81,7 +83,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             recordOpenedTile(item);
         }
 
-        if (ChromeFeatureList.sMostVisitedTilesReselect.isEnabled()) {
+        if (ChromeFeatureList.sMostVisitedTilesReselect.isEnabled() && tileIsReselectable(item)) {
             if (mNavigationDelegate.maybeSelectTabWithUrl(url)) {
                 return;
             }
@@ -187,5 +189,11 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         if (MVTilesClickForUserAction.contains(windowDisposition)) {
             RecordUserAction.record("Suggestions.Tile.Tapped.NewTabPage");
         }
+    }
+
+    private boolean tileIsReselectable(Tile tile) {
+        // Search suggestions should not reselect existing tab; a new search is always conducted to
+        // ensure freshness.
+        return !TileUtils.isSearchTile(mProfile, tile);
     }
 }

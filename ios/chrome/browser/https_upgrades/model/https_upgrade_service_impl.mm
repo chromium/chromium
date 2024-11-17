@@ -15,13 +15,12 @@ namespace {
 const base::TimeDelta kDeltaDefaultExpiration = base::Days(15);
 }  // namespace
 
-HttpsUpgradeServiceImpl::HttpsUpgradeServiceImpl(ChromeBrowserState* context)
+HttpsUpgradeServiceImpl::HttpsUpgradeServiceImpl(ProfileIOS* context)
     : clock_(new base::DefaultClock()),
       context_(context),
-      allowlist_(
-          ios::HostContentSettingsMapFactory::GetForBrowserState(context),
-          clock_.get(),
-          kDeltaDefaultExpiration) {
+      allowlist_(ios::HostContentSettingsMapFactory::GetForProfile(context),
+                 clock_.get(),
+                 kDeltaDefaultExpiration) {
   DCHECK(context_);
 }
 

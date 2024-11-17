@@ -10,7 +10,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIPHController;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,8 +20,8 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 public class CustomTabAppMenuHelper {
     private static boolean sAppHistoryEnabled = HistoryManager.isAppSpecificHistoryEnabled();
 
-    /** Returns {@link CustomTabHistoryIPHController} if history menu is enabled on CCT. */
-    public static CustomTabHistoryIPHController maybeCreateHistoryIPHController(
+    /** Returns {@link CustomTabHistoryIphController} if history menu is enabled on CCT. */
+    public static CustomTabHistoryIphController maybeCreateHistoryIphController(
             AppMenuCoordinator appMenuCoordinator,
             Activity activity,
             ActivityTabProvider activityTabProvider,
@@ -31,7 +31,7 @@ public class CustomTabAppMenuHelper {
 
         boolean hasPackageName = intentDataProvider.getClientPackageNameIdentitySharing() != null;
         return showHistoryItem(hasPackageName, intentDataProvider.getUiType())
-                ? new CustomTabHistoryIPHController(
+                ? new CustomTabHistoryIphController(
                         activity,
                         activityTabProvider,
                         profileSupplier,

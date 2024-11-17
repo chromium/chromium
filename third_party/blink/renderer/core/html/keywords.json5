@@ -67,34 +67,34 @@
     "static",
     "invisible",
 
-    // invokeaction attribute
+    // command attribute
     // https://open-ui.org/components/invokers.explainer/
     "auto",
     // invokeaction for popovers
-    "togglePopover",
-    "hidePopover",
-    "showPopover",
+    "toggle-popover",
+    "hide-popover",
+    "show-popover",
     // invokeaction for dialog
-    "showModal",
+    "show-modal",
     "close",
     // invokeaction for details
     "toggle",
     "close",
     "open",
     // invokeaction for input and select
-    "showPicker",
+    "show-picker",
     // invokeaction for number input
-    "stepUp",
-    "stepDown",
+    "step-up",
+    "step-down",
     // invokeaction for fullscreen
-    "toggleFullscreen",
-    "requestFullscreen",
-    "exitFullscreen",
+    "toggle-fullscreen",
+    "request-fullscreen",
+    "exit-fullscreen",
     // invokeaction for audio and video
-    "playpause",
+    "play-pause",
     "pause",
     "play",
-    "toggleMuted",
+    "toggle-muted",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used
@@ -102,10 +102,12 @@
     "eager",
     "auto",
 
-    // popover attribute (experimental)
-    // https://github.com/openui/open-ui/blob/main/research/src/pages/popup/popup.research.explainer.mdx
+    // popover attribute
+    // https://html.spec.whatwg.org/multipage/popover.html#dom-popover
     "auto",
     "manual",
+    // Experimental popover=hint value
+    // https://open-ui.org/components/popover-hint.research.explainer/
     "hint",
 
     // popovertargetaction attribute
@@ -114,6 +116,12 @@
     "show",
     "hide",
     "hover",
+
+    // dialog closedby attribute
+    // See https://github.com/whatwg/html/pull/10737.
+    "any",
+    "closerequest",
+    "none",
 
     // referrerpolicy attribute
     // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies

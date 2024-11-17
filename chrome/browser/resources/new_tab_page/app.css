@@ -24,9 +24,10 @@
   --ntp-menu-shadow:
       var(--color-new-tab-page-menu-inner-shadow) 0 1px 2px 0,
       var(--color-new-tab-page-menu-outer-shadow) 0 2px 6px 2px;
-  --ntp-module-width: var(--ntp-search-box-width);
-  --ntp-module-layout-width: var(--ntp-search-box-width);
-  --ntp-module-border-radius: 5px;
+  --ntp-module-width: 360px;
+  --ntp-module-layout-width: 360px;
+  --ntp-module-border-radius: 16px;
+  --ntp-module-item-border-radius: 12px;
   --ntp-protected-icon-background-color: transparent;
   --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
 }
@@ -58,7 +59,7 @@
 
 /*A module width of 768px with 18px gaps on each side. */
 @media (min-width: 804px) {
-  :host([wide-modules-enabled_]) {
+  :host {
     --ntp-module-layout-width: 768px;
     --ntp-module-width: 768px;
   }
@@ -69,13 +70,6 @@ cr-most-visited {
       var(--color-new-tab-page-add-shortcut-background);
   --add-shortcut-foreground-color:
       var(--color-new-tab-page-add-shortcut-foreground);
-}
-
-:host([modules-redesigned-enabled_]) {
-  --ntp-module-border-radius: 16px;
-  --ntp-module-item-border-radius: 12px;
-  --ntp-module-layout-width: 360px;
-  --ntp-module-width: 360px;
 }
 
 :host([show-background-image_]) {
@@ -233,7 +227,7 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
 }
 
 :host([show-background-image_]) #customizeButton,
-:host([wallpaper-search-button-enabled_]) #customizeButton,
+:host([show-wallpaper-search-button_]) #customizeButton,
 :host([show-wallpaper-search_]) #wallpaperSearchButton {
   box-shadow: none;
   padding-inline-end: 0;
@@ -272,13 +266,11 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
 }
 
 @media (max-width: 1110px) {
-  :host([modules-redesigned-enabled_][modules-shown-to-user])
-      .customize-text {
+  :host([modules-shown-to-user]) .customize-text {
     display: none;
   }
 
-  :host([modules-redesigned-enabled_][modules-shown-to-user])
-      .customize-button {
+  :host([modules-shown-to-user]) .customize-button {
     padding-inline-end: 0;
     padding-inline-start: 8px;
   }

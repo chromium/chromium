@@ -9,18 +9,26 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -94,8 +102,8 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_IMAGES_ENROLLMENT_TIMEOUT_DARK_SVG},
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
-      {"tangible_sync_style_shared_lit.css.js",
-       IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_LIT_CSS_JS},
+      {"tangible_sync_style_shared.css.js",
+       IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS},
       {"tangible_sync_style_shared.css.js",
        IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS},
   };
@@ -125,11 +133,17 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT);
   source->AddLocalizedString("continueLabel", IDS_APP_CONTINUE);
   source->AddLocalizedString("confirmLabel", IDS_CONFIRM);
+  source->AddLocalizedString("closeLabel", IDS_CLOSE);
+  source->AddLocalizedString("retryLabel",
+                             IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_RETRY_LABEL);
   source->AddLocalizedString("linkDataText",
                              IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX);
 
   source->AddLocalizedString("profileDisclosureTitle",
                              IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TITLE);
+  source->AddLocalizedString(
+      "profileOidcDisclosureTitle",
+      IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE);
   source->AddLocalizedString(
       "profileDisclosureSubtitle",
       IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE);
@@ -162,11 +176,12 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
                              IDS_ENTERPRISE_OIDC_WELCOME_ERROR_TITLE);
   source->AddLocalizedString("errorSubtitle",
                              IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE);
-  source->AddLocalizedString("separateBrowsingDataTitle",
-                             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TITLE);
   source->AddLocalizedString(
-      "signinIntoChrome",
-      IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT);
+      "separateBrowsingDataTitle",
+      IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE);
+  source->AddLocalizedString(
+      "valuePropositionTitle",
+      IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_SUGGESTED_TITLE);
   source->AddLocalizedString("valuePropSubtitle",
                              IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE);
 
@@ -187,6 +202,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
                          features::kEnterpriseUpdatedProfileCreationScreen));
   source->AddBoolean("showLinkDataCheckbox", false);
   source->AddBoolean("isModalDialog", false);
+  source->AddBoolean("isOidcDialog", false);
   source->AddBoolean("enforcedByPolicy", false);
   source->AddInteger("initialState",
                      ManagedUserProfileNoticeHandler::State::kDisclosure);
@@ -197,36 +213,48 @@ ManagedUserProfileNoticeUI::~ManagedUserProfileNoticeUI() = default;
 void ManagedUserProfileNoticeUI::Initialize(
     Browser* browser,
     ManagedUserProfileNoticeUI::ScreenType type,
-    const AccountInfo& account_info,
-    bool profile_creation_required_by_policy,
-    bool show_link_data_option,
-    signin::SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback) {
-  auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
-      browser, type, profile_creation_required_by_policy, show_link_data_option,
-      account_info, std::move(process_user_choice_callback),
-      std::move(done_callback));
-  handler_ = handler.get();
-
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+        create_param) {
+  auto* profile = Profile::FromWebUI(web_ui());
   base::Value::Dict update_data;
   if (type ==
       ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
     update_data.Set("isModalDialog", true);
 
-    int title_id = profile_creation_required_by_policy
+    int title_id = create_param->profile_creation_required_by_policy
                        ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
                        : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE;
+    if (create_param->profile_creation_required_by_policy) {
+      std::string manager =
+          signin_util::IsProfileSeparationEnforcedByProfile(
+              profile, create_param->account_info.email)
+              ? chrome::GetEnterpriseAccountDomain(*profile).value_or(
+                    std::string())
+              : enterprise_util::GetDomainFromEmail(
+                    create_param->account_info.email);
+      update_data.Set(
+          "valuePropositionTitle",
+          manager.empty()
+              ? l10n_util::GetStringUTF16(
+                    IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE)
+              : l10n_util::GetStringFUTF16(
+                    IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_KNOWN_DOMAIN_TITLE,
+                    base::UTF8ToUTF16(manager)));
+    }
     update_data.Set("enterpriseProfileWelcomeTitle",
                     l10n_util::GetStringUTF16(title_id));
 
-    update_data.Set("showLinkDataCheckbox", show_link_data_option);
+    update_data.Set("showLinkDataCheckbox",
+                    create_param->show_link_data_option);
     update_data.Set("initialState",
                     ManagedUserProfileNoticeHandler::State::kValueProposition);
-    update_data.Set("enforcedByPolicy", profile_creation_required_by_policy);
+    update_data.Set("enforcedByPolicy",
+                    create_param->profile_creation_required_by_policy);
   } else if (type == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
     update_data.Set("initialState",
                     ManagedUserProfileNoticeHandler::State::kDisclosure);
     update_data.Set("isModalDialog", true);
+    update_data.Set("isOidcDialog", true);
     update_data.Set(
         "enterpriseProfileWelcomeTitle",
         l10n_util::GetStringUTF16(IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE));
@@ -241,9 +269,51 @@ void ManagedUserProfileNoticeUI::Initialize(
                 profile_management::features::kOidcAuthProfileManagement));
 #endif
   }
+  if (create_param->account_info.IsManaged()) {
+    update_data.Set(
+        "profileDisclosureSubtitle",
+        l10n_util::GetStringFUTF16(
+            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE,
+            base::UTF8ToUTF16(enterprise_util::GetDomainFromEmail(
+                create_param->account_info.email))));
+  }
+
+  if (!create_param->account_info.IsManaged()) {
+    update_data.Set(
+        "separateBrowsingDataTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE));
+  } else if (create_param->account_info.capabilities.can_use_edu_features() ==
+             signin::Tribool::kTrue) {
+    update_data.Set("separateBrowsingDataTitle",
+                    l10n_util::GetStringUTF16(
+                        IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE));
+  }
+
+  // Change the text so that the "(Recommended)" label is not shown when the
+  // admin has set merging data as the default option.
+  bool profile_separation_data_migration_settings_optout =
+      profile->GetPrefs()->GetInteger(
+          prefs::kProfileSeparationDataMigrationSettings) == 2;
+  bool check_link_data_checkbox_by_default_from_legacy_policy =
+      g_browser_process->local_state()->GetBoolean(
+          prefs::kEnterpriseProfileCreationKeepBrowsingData);
+  if (create_param->show_link_data_option &&
+      (profile_separation_data_migration_settings_optout ||
+       check_link_data_checkbox_by_default_from_legacy_policy)) {
+    update_data.Set(
+        "separateBrowsingDataChoiceTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_NOT_RECOMMENDED));
+  }
+
   content::WebUIDataSource::Update(
-      Profile::FromWebUI(web_ui()),
-      chrome::kChromeUIManagedUserProfileNoticeHost, std::move(update_data));
+      profile, chrome::kChromeUIManagedUserProfileNoticeHost,
+      std::move(update_data));
+
+  auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
+      browser, type, std::move(create_param));
+  handler_ = handler.get();
 
   web_ui()->AddMessageHandler(std::move(handler));
 }

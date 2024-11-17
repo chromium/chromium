@@ -319,7 +319,7 @@ void NetworkStateNotifier::NotifyObserverOnTaskRunner(
           state.save_data);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -331,8 +331,7 @@ NetworkStateNotifier::ObserverListMap& NetworkStateNotifier::GetObserverMapFor(
     case ObserverType::kOnLineState:
       return on_line_state_observers_;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return connection_observers_;
+      NOTREACHED();
   }
 }
 

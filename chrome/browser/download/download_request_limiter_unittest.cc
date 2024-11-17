@@ -108,7 +108,7 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
         event = std::make_unique<blink::WebTouchEvent>();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     event->SetType(type);
     state->DidGetUserInteraction(*event);

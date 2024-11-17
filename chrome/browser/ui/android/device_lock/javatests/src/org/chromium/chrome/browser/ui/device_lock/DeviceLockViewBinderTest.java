@@ -169,7 +169,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testDeviceLockView_uiEnabled_showsEnabledUI() {
+    public void testDeviceLockView_uiEnabled_showsEnabledUi() {
         mViewModel.set(UI_ENABLED, true);
 
         assertEquals(
@@ -183,7 +183,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testDeviceLockView_uiDisabled_showsDisabledUI() {
+    public void testDeviceLockView_uiDisabled_showsDisabledUi() {
         mViewModel.set(UI_ENABLED, false);
 
         assertEquals(

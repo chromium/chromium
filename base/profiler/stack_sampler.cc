@@ -23,6 +23,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/tagging.h"
+#endif
+
 // IMPORTANT NOTE: Some functions within this implementation are invoked while
 // the target thread is suspended so it must not do any allocation from the
 // heap, including indirectly via use of DCHECK/CHECK or other logging
@@ -168,6 +172,14 @@ void StackSampler::RecordStackFrames(StackBuffer* stack_buffer,
                                      PlatformThreadId thread_id,
                                      base::OnceClosure done_callback) {
   DCHECK(stack_buffer);
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+  // Disable MTE during this function because this function indiscriminately
+  // reads stack frames, some of which belong to system libraries, not Chrome
+  // itself. With stack tagging, some bytes on the stack have MTE tags different
+  // from the stack pointer tag.
+  partition_alloc::SuspendTagCheckingScope suspend_tag_checking_scope;
+#endif
 
   if (record_sample_callback_) {
     record_sample_callback_.Run();

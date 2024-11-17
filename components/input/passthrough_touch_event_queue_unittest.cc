@@ -51,7 +51,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
         last_acked_event_state_(blink::mojom::InputEventResultState::kUnknown),
         slop_length_dips_(0) {}
 
-  ~PassthroughTouchEventQueueTest() override {}
+  ~PassthroughTouchEventQueueTest() override = default;
 
   // testing::Test
   void SetUp() override {

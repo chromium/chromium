@@ -106,7 +106,7 @@ class ParkableImageSegmentReader : public SegmentReader {
  public:
   explicit ParkableImageSegmentReader(scoped_refptr<ParkableImage> image);
   size_t size() const override;
-  size_t GetSomeData(const char*& data, size_t position) const override;
+  base::span<const uint8_t> GetSomeData(size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
   void LockData() override;
   void UnlockData() override;
@@ -125,10 +125,10 @@ size_t ParkableImageSegmentReader::size() const {
   return available_;
 }
 
-size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
-                                               size_t position) const {
+base::span<const uint8_t> ParkableImageSegmentReader::GetSomeData(
+    size_t position) const {
   if (!parkable_image_) {
-    return 0;
+    return {};
   }
 
   base::AutoLock lock(parkable_image_->impl_->lock_);
@@ -136,8 +136,7 @@ size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
 
   RWBuffer::ROIter iter(parkable_image_->impl_->rw_buffer_.get(), available_);
   size_t position_of_block = 0;
-
-  return RWBufferGetSomeData(iter, position_of_block, data, position);
+  return RWBufferGetSomeData(iter, position_of_block, position);
 }
 
 sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
@@ -221,7 +220,7 @@ scoped_refptr<SharedBuffer> ParkableImageImpl::Data() {
   scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create();
   ROBuffer::Iter it(ro_buffer.get());
   do {
-    shared_buffer->Append(static_cast<const char*>(it.data()), it.size());
+    shared_buffer->Append(it.data(), it.size());
   } while (it.Next());
 
   return shared_buffer;
@@ -346,7 +345,7 @@ void ParkableImageImpl::WriteToDiskInBackground(
 
   base::ElapsedTimer timer;
   auto metadata = ParkableImageManager::Instance().data_allocator().Write(
-      std::move(reserved_chunk), vector.data());
+      std::move(reserved_chunk), base::as_byte_span(vector));
   base::TimeDelta elapsed = timer.Elapsed();
 
   // Acquire the lock again after writing.
@@ -458,10 +457,9 @@ bool ParkableImageImpl::MaybePark(
 // static
 size_t ParkableImageImpl::ReadFromDiskIntoBuffer(
     DiskDataMetadata* on_disk_metadata,
-    void* buffer,
-    size_t capacity) {
+    base::span<uint8_t> buffer) {
   size_t size = on_disk_metadata->size();
-  DCHECK(size <= capacity);
+  DCHECK_LE(size, buffer.size());
   ParkableImageManager::Instance().data_allocator().Read(*on_disk_metadata,
                                                          buffer);
   return size;

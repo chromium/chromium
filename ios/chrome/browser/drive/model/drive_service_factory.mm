@@ -26,11 +26,6 @@ DriveService* DriveServiceFactory::GetForProfile(ProfileIOS* profile) {
 }
 
 // static
-DriveService* DriveServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 DriveServiceFactory* DriveServiceFactory::GetInstance() {
   static base::NoDestructor<DriveServiceFactory> instance;
   return instance.get();
@@ -48,7 +43,8 @@ DriveServiceFactory::~DriveServiceFactory() = default;
 
 std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
+      !base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
     return nullptr;
   }
 
@@ -61,14 +57,12 @@ std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
   ApplicationContext* application_context = GetApplicationContext();
   drive::DriveServiceConfiguration configuration{};
   configuration.sso_service = application_context->GetSingleSignOnService();
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  configuration.pref_service = chrome_browser_state->GetPrefs();
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  configuration.pref_service = profile->GetPrefs();
   configuration.identity_manager =
-      IdentityManagerFactory::GetForProfile(chrome_browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   configuration.account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          chrome_browser_state);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   return ios::provider::CreateDriveService(configuration);
 }
 

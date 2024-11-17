@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sensitive_content/features.h"
 #include "components/viz/common/features.h"
+#include "content/public/common/content_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwFeatureMap_jni.h"
@@ -28,9 +29,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewBackForwardCache,
     &features::kWebViewDisplayCutout,
     &features::kWebViewDragDropFiles,
-    &features::kWebViewExitReasonMetric,
     &::features::kWebViewFrameRateHints,
     &features::kWebViewInvokeZoomPickerOnGSU,
+    &features::kWebViewLazyFetchHandWritingIcon,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
     &features::kWebViewUseMetricsUploadService,
@@ -38,7 +39,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewXRequestedWithHeaderControl,
     &features::kWebViewRestrictSensitiveContent,
     &metrics::kAndroidMetricsAsyncMetricLogging,
-    &features::kWebViewZoomKeyboardShortcuts,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &features::kWebViewSupervisedUserSiteDetection,
     &features::kWebViewSupervisedUserSiteBlock,
@@ -55,6 +55,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &base::features::kPostGetMyMemoryStateToBackground,
     &sensitive_content::features::kSensitiveContent,
     &features::kWebViewWebauthn,
+    &::features::kPrefetchBrowserInitiatedTriggers,
 };
 
 // static

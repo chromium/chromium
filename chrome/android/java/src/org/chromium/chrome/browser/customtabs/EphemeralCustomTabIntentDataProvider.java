@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
+import org.chromium.chrome.browser.IntentHandler.IncognitoCctCallerId;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
@@ -52,12 +53,11 @@ public class EphemeralCustomTabIntentDataProvider extends CustomTabIntentDataPro
 
     private static boolean isEphemeralTabRequested(Intent intent) {
         if (!ChromeFeatureList.sCctEphemeralMode.isEnabled()) return false;
-        return IntentUtils.safeGetBooleanExtra(
-                intent, IntentHandler.EXTRA_ENABLE_EPHEMERAL_BROWSING, false);
+        return IntentUtils.safeGetBooleanExtra(intent, EXTRA_ENABLE_EPHEMERAL_BROWSING, false);
     }
 
-    public @IntentHandler.IncognitoCCTCallerId int getFeatureIdForMetricsCollection() {
-        return IncognitoCCTCallerId.EPHEMERAL_TAB;
+    public @IntentHandler.IncognitoCctCallerId int getFeatureIdForMetricsCollection() {
+        return IncognitoCctCallerId.EPHEMERAL_TAB;
     }
 
     public static boolean isValidEphemeralTabIntent(Intent intent) {

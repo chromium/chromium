@@ -25,6 +25,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -262,16 +263,19 @@ public class FakePasswordStoreAndroidBackendTest {
 
     private void fillPasswordStore() {
         mBackend.addLogin(
-                sPwdWithLocalData.toByteArray(), sTestAccount, () -> {}, unexpected -> fail());
+                sPwdWithLocalData.toByteArray(),
+                sTestAccount,
+                CallbackUtils.emptyRunnable(),
+                unexpected -> fail());
         mBackend.addLogin(
                 sPwdWithLocalDataBlocklisted.toByteArray(),
                 sTestAccount,
-                () -> {},
+                CallbackUtils.emptyRunnable(),
                 unexpected -> fail());
         mBackend.addLogin(
                 sPwdWithLocalDataNoOrigin.toByteArray(),
                 sTestAccount,
-                () -> {},
+                CallbackUtils.emptyRunnable(),
                 unexpected -> fail());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }

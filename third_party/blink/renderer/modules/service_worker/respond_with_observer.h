@@ -7,19 +7,19 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 class ExecutionContext;
-class ScriptPromiseUntyped;
 class ScriptState;
 class ScriptValue;
-class WaitUntilObserver;
 
 // This is a base class to implement respondWith. The respondWith has the three
 // types of results: fulfilled, rejected and not called. Derived classes for
@@ -31,22 +31,36 @@ class MODULES_EXPORT RespondWithObserver
  public:
   virtual ~RespondWithObserver() = default;
 
+  template <typename IDLType, typename Derived>
+  void RespondWith(ScriptState* script_state,
+                   const ScriptPromise<IDLType>& script_promise,
+                   ThenCallable<IDLType, Derived>* on_fulfill,
+                   ExceptionState& exception_state) {
+    if (!StartRespondWith(exception_state)) {
+      return;
+    }
+    has_started_ = true;
+    auto next_promise =
+        script_promise.Then(script_state, on_fulfill,
+                            MakeGarbageCollected<RespondWithReject>(this));
+    // 3. `Add r to the extend lifetime promises.`
+    // 4. `Increment the pending promises count by one.`
+    // This is accomplised by WaitUntil().
+    bool will_wait =
+        observer_->WaitUntil(script_state, next_promise, exception_state);
+    // If the WaitUntilObserver won't observe the response promise, the event
+    // can end before the response result is reported back to the
+    // ServiceWorkerContextClient, which it doesn't expect (e.g., for fetch
+    // events, RespondToFetchEvent*() must be called before
+    // DidHandleFetchEvent()). So WaitUntilObserver must observe the promise and
+    // call our callbacks before it determines the event is done.
+    DCHECK(will_wait);
+  }
+
   void WillDispatchEvent();
   void DidDispatchEvent(ScriptState*, DispatchEventResult dispatch_result);
-
-  // Observes the given promise and calls OnResponseRejected() or
-  // OnResponseFulfilled() when it settles. It also keeps the event alive by
-  // telling the event's WaitUntilObserver to observe the promise. The result of
-  // RespondWith() is therefore reported back before the event finishes.
-  void RespondWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
-
   // Called when the respondWith() promise was rejected.
   virtual void OnResponseRejected(mojom::ServiceWorkerResponseError) = 0;
-
-  // Called when the respondWith() promise was fulfilled.
-  virtual void OnResponseFulfilled(ScriptState*,
-                                   const ScriptValue&,
-                                   const ExceptionContext&) = 0;
 
   // Called when the event handler finished without calling respondWith().
   virtual void OnNoResponse(ScriptState*) = 0;
@@ -56,22 +70,29 @@ class MODULES_EXPORT RespondWithObserver
  protected:
   RespondWithObserver(ExecutionContext*, int event_id, WaitUntilObserver*);
 
-  bool WaitUntil(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
+  class RespondWithReject final
+      : public ThenCallable<IDLAny, RespondWithReject, IDLAny> {
+   public:
+    explicit RespondWithReject(RespondWithObserver* observer)
+        : observer_(observer) {}
+    void Trace(Visitor* visitor) const final;
+    ScriptValue React(ScriptState*, ScriptValue);
+
+   private:
+    Member<RespondWithObserver> observer_;
+  };
+
+  bool WaitUntil(ScriptState*,
+                 const ScriptPromise<IDLUndefined>&,
+                 ExceptionState&);
 
   const int event_id_;
   base::TimeTicks event_dispatch_time_;
 
  private:
-  class ThenFunction;
+  bool has_started_ = false;
 
-  void ResponseWasRejected(mojom::ServiceWorkerResponseError,
-                           const ScriptValue&);
-  void ResponseWasFulfilled(ScriptState* state,
-                            const ExceptionContext&,
-                            const ScriptValue&);
-
-  enum State { kInitial, kPending, kDone };
-  State state_;
+  bool StartRespondWith(ExceptionState&);
 
   // RespondWith should ensure the ExtendableEvent is alive until the promise
   // passed to RespondWith is resolved. The lifecycle of the ExtendableEvent

@@ -40,15 +40,14 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-        base::BindLambdaForTesting([&file_path]() {
+        base::BindLambdaForTesting([&file_path]() -> std::optional<int64_t> {
           base::ScopedBlockingCall scoped_blocking_call(
               FROM_HERE, base::BlockingType::WILL_BLOCK);
-          int64_t file_size;
-          EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
-          return file_size;
+          return base::GetFileSize(file_path);
         }),
         base::BindLambdaForTesting(
-            [&run_loop, &expected_size](int64_t file_size) {
+            [&run_loop, &expected_size](std::optional<int64_t> file_size) {
+              ASSERT_TRUE(file_size.has_value());
               EXPECT_EQ(expected_size, file_size);
               run_loop.Quit();
             }));

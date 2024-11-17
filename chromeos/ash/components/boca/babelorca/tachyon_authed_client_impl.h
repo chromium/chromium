@@ -38,9 +38,8 @@ class TachyonAuthedClientImpl : public TachyonAuthedClient {
       std::string request_string) override;
 
  private:
-  void OnRequestProtoSerialized(
-      std::unique_ptr<RequestDataWrapper> request_data,
-      std::optional<std::string> request_string);
+  void OnRequestSerialized(std::unique_ptr<RequestDataWrapper> request_data,
+                           std::optional<std::string> request_string);
 
   void StartAuthedRequestInternal(
       std::unique_ptr<RequestDataWrapper> request_data,

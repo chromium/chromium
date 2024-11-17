@@ -81,6 +81,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
@@ -244,7 +245,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     public void testIdentityDiscWithSignin() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
-        mSigninTestRule.addAccountThenSignin(EMAIL, NAME);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
         //  is implemented.
         ThreadUtils.runOnUiThreadBlocking(mTab::reload);
@@ -254,8 +255,8 @@ public class IdentityDiscControllerTest {
                         .getString(
                                 R.string
                                         .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                FULL_NAME,
-                                EMAIL);
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
@@ -303,15 +304,15 @@ public class IdentityDiscControllerTest {
     @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSigninAndEnableSync() {
         // Identity Disc should be shown on sign-in state change without NTP refresh.
-        mSigninTestRule.addAccountThenSigninAndEnableSync(EMAIL, NAME);
+        mSigninTestRule.addAccountThenSigninAndEnableSync(TestAccounts.ACCOUNT1);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string
                                         .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                FULL_NAME,
-                                EMAIL);
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
         // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
         ViewUtils.isEventuallyVisible(
                 allOf(
@@ -440,15 +441,15 @@ public class IdentityDiscControllerTest {
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testIdentityDisc_signedIn(boolean nightModeEnabled) throws IOException {
         // Sign-in and wait for the user profile image to appear.
-        mSigninTestRule.addAccountThenSignin(EMAIL, NAME);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string
                                         .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                FULL_NAME,
-                                EMAIL);
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
@@ -488,7 +489,7 @@ public class IdentityDiscControllerTest {
     }
 
     private @StringRes int getSignedOutAvatarDescription() {
-        return (SigninUtils.shouldShowNewSigninFlow())
+        return SigninUtils.shouldShowNewSigninFlow()
                 ? R.string.accessibility_toolbar_btn_signed_out_identity_disc
                 : R.string.accessibility_toolbar_btn_signed_out_with_sync_identity_disc;
     }

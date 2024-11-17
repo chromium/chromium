@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -19,9 +20,15 @@ namespace {
 constexpr std::string_view kAssertionFailedPlaceholder = "SIGNATURE_FAILED";
 
 std::string DecryptToken(const HybridEncryptionKey& ephemeral_key,
-                         std::string_view encrypted_token) {
+                         std::string_view base64_encrypted_token) {
+  std::optional<std::vector<uint8_t>> encrypted_token = base::Base64UrlDecode(
+      base64_encrypted_token, base::Base64UrlDecodePolicy::IGNORE_PADDING);
+  if (!encrypted_token.has_value()) {
+    return std::string();
+  }
+
   std::optional<std::vector<uint8_t>> decryption_result =
-      ephemeral_key.Decrypt(base::as_byte_span(encrypted_token));
+      ephemeral_key.Decrypt(*encrypted_token);
   if (!decryption_result.has_value()) {
     return std::string();
   }
@@ -47,8 +54,8 @@ void TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion(
   if (assertion.empty()) {
     // Even if the assertion failed, we want to make a server request because
     // the server doesn't verify assertions during dark launch.
-    // TODO(b/263253212): fail here immediately after the feature is fully
-    // launched.
+    // TODO(crbug.com/377942773): fail here immediately after the feature is
+    // fully launched.
     assertion = kAssertionFailedPlaceholder;
   } else if (ephemeral_key.has_value()) {
     fetcher_->SetTokenDecryptor(

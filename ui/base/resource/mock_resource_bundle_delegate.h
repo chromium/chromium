@@ -27,6 +27,7 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
                               const std::string& locale));
   MOCK_METHOD1(GetImageNamed, gfx::Image(int resource_id));
   MOCK_METHOD1(GetNativeImageNamed, gfx::Image(int resource_id));
+  MOCK_CONST_METHOD1(HasDataResource, bool(int resource_id));
   MOCK_METHOD2(LoadDataResourceBytes,
                base::RefCountedMemory*(int resource_id,
                                        ResourceScaleFactor scale_factor));

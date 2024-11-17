@@ -21,8 +21,8 @@ android_library("java") {
 
   srcjar_deps = [ ":jni_headers" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/profiles/OTRProfileID.java",
     "java/src/org/chromium/chrome/browser/profiles/OriginalProfileSupplier.java",
+    "java/src/org/chromium/chrome/browser/profiles/OtrProfileId.java",
     "java/src/org/chromium/chrome/browser/profiles/Profile.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKey.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKeyUtil.java",
@@ -36,7 +36,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/chrome/browser/profiles/OTRProfileID.java",
+    "java/src/org/chromium/chrome/browser/profiles/OtrProfileId.java",
     "java/src/org/chromium/chrome/browser/profiles/Profile.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKey.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKeyUtil.java",

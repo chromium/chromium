@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -58,10 +59,10 @@ public class MenuSheetContentUnitTest {
         }
 
         @Override
-        public int getSheetContentDescriptionStringId() {
+        public @NonNull String getSheetContentDescription(Context context) {
             // "Options menu"
             // Automatically appended: "Swipe down to close."
-            return R.string.readaloud_options_menu_description;
+            return context.getString(R.string.readaloud_options_menu_description);
         }
     }
 

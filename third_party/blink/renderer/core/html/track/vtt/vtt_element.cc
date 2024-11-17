@@ -63,8 +63,7 @@ static const QualifiedName& NodeTypeToTagName(VttNodeType node_type) {
       return v_tag;
     case VttNodeType::kNone:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return c_tag;  // Make the compiler happy.
+      NOTREACHED();
   }
 }
 
@@ -116,7 +115,7 @@ HTMLElement* VTTElement::CreateEquivalentHTMLElement(Document& document) {
           document.CreateRawElement(html_names::kRtTag, CreateElementFlags());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   html_element->setAttribute(html_names::kClassAttr,

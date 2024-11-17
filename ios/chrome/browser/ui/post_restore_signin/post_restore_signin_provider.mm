@@ -60,7 +60,7 @@
   if ((self = [super init])) {
     _browser = browser;
     _syncUserSettings =
-        SyncServiceFactory::GetForBrowserState(_browser->GetProfile())
+        SyncServiceFactory::GetForProfile(_browser->GetProfile())
             ->GetUserSettings();
     _prefService = browser->GetProfile()->GetPrefs();
     _accountInfo = GetPreRestoreIdentity(_prefService);
@@ -164,7 +164,7 @@
   DCHECK(self.handler);
 
   __weak __typeof(self) weakSelf = self;
-  ShowSigninCommandCompletionCallback callback =
+  ShowSigninCommandCompletionCallback completion =
       ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
         if (result == SigninCoordinatorResultSuccess) {
           [weakSelf signinDone];
@@ -177,7 +177,7 @@
                             ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:callback];
+             completion:completion];
   [self.handler showSignin:command];
 }
 

@@ -50,6 +50,10 @@ TEST_F(PaymentsWindowUserConsentDialogControllerImplTest,
       controller()->GetOkButtonLabel(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_OK_BUTTON_LABEL_VCN_3DS));
+  EXPECT_EQ(
+      controller()->GetAcceptanceAccessibilityAnnouncement(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_ACCEPTANCE_ACCESSIBILITY_ANNOUNCEMENT));
 }
 
 // Tests that the accept callback is triggered when the dialog is accepted.

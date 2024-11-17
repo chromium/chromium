@@ -21,9 +21,6 @@ import org.chromium.ui.base.LocalizationUtils;
 
 /** The view portion of the PWA Universal Install bottom sheet. */
 public class PwaUniversalInstallBottomSheetView {
-    private static final int APP_ICON_SIZE_DP = 40;
-    private static final int APP_ICON_CORNER_RADIUS_DP = 20;
-    private static final int APP_ICON_TEXT_SIZE_DP = 24;
 
     // The details of the bottom sheet.
     private View mContentView;

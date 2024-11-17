@@ -43,6 +43,7 @@ namespace blink {
 
 class Animation;
 class CallbackFunctionTest;
+class CanvasRenderingContext;
 class DOMArrayBuffer;
 class DOMPoint;
 class DOMRect;
@@ -61,7 +62,6 @@ class HTMLIFrameElement;
 class HTMLInputElement;
 class HTMLMediaElement;
 class HTMLSelectElement;
-class HTMLSelectListElement;
 class HTMLVideoElement;
 class HitTestLayerRectList;
 class HitTestLocation;
@@ -74,7 +74,6 @@ class LocalFrame;
 class Location;
 class Node;
 class OriginTrialsTest;
-class OffscreenCanvas;
 class Page;
 class Range;
 class ReadableStream;
@@ -236,8 +235,6 @@ class Internals final : public ScriptWrappable {
                                  unsigned start_offset,
                                  unsigned end_offset,
                                  bool);
-  void setMarkedTextMatchesAreHighlighted(Document*, bool);
-
   String viewportAsText(Document*,
                         float device_pixel_ratio,
                         int available_width,
@@ -453,8 +450,6 @@ class Internals final : public ScriptWrappable {
   int selectPopupItemStyleFontHeight(Node*, int);
   void resetTypeAheadSession(HTMLSelectElement*);
 
-  void resetSelectListTypeAheadSession(HTMLSelectListElement*);
-
   StaticSelection* getDragCaret();
   StaticSelection* getSelectionInFlatTree(DOMWindow*, ExceptionState&);
   Node* visibleSelectionAnchorNode();
@@ -474,7 +469,7 @@ class Internals final : public ScriptWrappable {
 
   ScriptPromise<IDLAny> createResolvedPromise(ScriptState*, ScriptValue);
   ScriptPromise<IDLAny> createRejectedPromise(ScriptState*, ScriptValue);
-  ScriptPromise<IDLAny> addOneToPromise(ScriptState*, ScriptPromiseUntyped);
+  ScriptPromise<IDLLong> addOneToPromise(ScriptState*, ScriptPromise<IDLLong>);
   ScriptPromise<IDLAny> promiseCheck(ScriptState*,
                                      int32_t,
                                      bool,
@@ -508,11 +503,7 @@ class Internals final : public ScriptWrappable {
 
   bool isInCanvasFontCache(Document*, const String&);
   unsigned canvasFontCacheMaxFonts();
-  void forceLoseCanvasContext(HTMLCanvasElement* canvas,
-                              const String& context_type);
-
-  void forceLoseCanvasContext(OffscreenCanvas* offscreencanvas,
-                              const String& context_type);
+  void forceLoseCanvasContext(CanvasRenderingContext* context);
   void disableCanvasAcceleration(HTMLCanvasElement* canvas);
 
   String selectedHTMLForClipboard();
@@ -638,6 +629,8 @@ class Internals final : public ScriptWrappable {
 
   ScriptPromise<IDLUndefined> exemptUrlFromNetworkRevocation(ScriptState*,
                                                              const String& url);
+  String lastCompiledScriptFileName(Document* document);
+  bool lastCompiledScriptUsedCodeCache(Document* document);
 
  private:
   Document* ContextDocument() const;

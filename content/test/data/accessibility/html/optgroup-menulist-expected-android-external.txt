@@ -1,6 +1,6 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++View text:"Transformer" viewIdResName:"menulist" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="comboBoxSelect", clickableScore="300", roleDescription="menu pop up button"]
+++++View text:"Random Transformer" hint:"Transformer" viewIdResName:"menulist" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="comboBoxSelect", clickableScore="300", hint="Transformer", roleDescription="menu pop up button"]
 ++++++View viewIdResName:"select-options" notVisibleToUser actions:[AX_FOCUS] bundle:[chromeRole="menuListPopup"]
 ++++++++View text:"Random Transformer" clickable focusable selected actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
 ++++++++View text:"group 1" notVisibleToUser actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group", clickableScore="100"]

@@ -7,8 +7,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUI;
-import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageTitleUI;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUi;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageTitleUi;
 
 import java.util.concurrent.TimeUnit;
 
@@ -202,26 +202,26 @@ public class MerchantViewerConfig {
         return defaultValue;
     }
 
-    public static int getTrustSignalsMessageTitleUI() {
-        int defaultUI = MessageTitleUI.VIEW_STORE_INFO;
+    public static int getTrustSignalsMessageTitleUi() {
+        int defaultUi = MessageTitleUi.VIEW_STORE_INFO;
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                     TRUST_SIGNALS_MESSAGE_TITLE_UI_PARAM,
-                    defaultUI);
+                    defaultUi);
         }
-        return defaultUI;
+        return defaultUi;
     }
 
-    public static int getTrustSignalsMessageDescriptionUI() {
-        int defaultUI = MessageDescriptionUI.RATING_AND_REVIEWS;
+    public static int getTrustSignalsMessageDescriptionUi() {
+        int defaultUi = MessageDescriptionUi.RATING_AND_REVIEWS;
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                     TRUST_SIGNALS_MESSAGE_DESCRIPTION_UI_PARAM,
-                    defaultUI);
+                    defaultUi);
         }
-        return defaultUI;
+        return defaultUi;
     }
 
     public static boolean isTrustSignalsMessageDisabledForImpactStudy() {

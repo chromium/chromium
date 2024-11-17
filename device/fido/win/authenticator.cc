@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -24,6 +25,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -35,6 +37,8 @@
 namespace device {
 
 namespace {
+
+WinWebAuthnApiAuthenticator::TestObserver* g_observer = nullptr;
 
 AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
   AuthenticatorSupportedOptions options;
@@ -86,7 +90,67 @@ void FilterFoundCredentials(
   found_creds->erase(remove_it, found_creds->end());
 }
 
+void SignalUnknownCredentialBlocking(WinWebAuthnApi* api,
+                                     const std::vector<uint8_t>& credential_id,
+                                     const std::string& relying_party_id) {
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnHelloSignal) || !api ||
+      !api->IsAvailable() || !api->SupportsSilentDiscovery()) {
+    FIDO_LOG(DEBUG) << "SignalUnknownCredential unavailable for Windows Hello";
+    return;
+  }
+  std::vector<DiscoverableCredentialMetadata> credentials =
+      device::AuthenticatorEnumerateCredentialsBlocking(
+          api, base::UTF8ToUTF16(relying_party_id), /*is_incognito=*/false)
+          .second;
+  const auto credential_it = std::ranges::find_if(
+      credentials, [credential_id](const auto& credential) {
+        return credential.cred_id == credential_id;
+      });
+  if (credential_it == credentials.end()) {
+    FIDO_LOG(DEBUG) << "Unknown credential not found on Windows Hello";
+    return;
+  }
+  FIDO_LOG(DEBUG) << "Removing unknown Windows Hello credential";
+  api->DeletePlatformCredential(credential_id);
+}
+
+void SignalAllAcceptedCredentialsBlocking(
+    WinWebAuthnApi* api,
+    const std::string& relying_party_id,
+    const std::vector<uint8_t>& user_id,
+    const std::vector<std::vector<uint8_t>>& all_accepted_credential_ids) {
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnHelloSignal) || !api ||
+      !api->IsAvailable() || !api->SupportsSilentDiscovery()) {
+    FIDO_LOG(DEBUG)
+        << "SignalAllAcceptedCredentials unavailable for Windows Hello";
+    return;
+  }
+  FIDO_LOG(DEBUG)
+      << "Removing Windows Hello credentials not on accepted credentials list";
+  std::vector<DiscoverableCredentialMetadata> credentials =
+      device::AuthenticatorEnumerateCredentialsBlocking(
+          api, base::UTF8ToUTF16(relying_party_id), /*is_incognito=*/false)
+          .second;
+  for (const DiscoverableCredentialMetadata& credential : credentials) {
+    if (credential.user.id != user_id ||
+        std::ranges::find(all_accepted_credential_ids, credential.cred_id) !=
+            all_accepted_credential_ids.end()) {
+      continue;
+    }
+    FIDO_LOG(DEBUG) << "Removing credential "
+                    << base::HexEncode(credential.cred_id);
+    api->DeletePlatformCredential(credential.cred_id);
+  }
+}
+
 }  // namespace
+
+// static
+void WinWebAuthnApiAuthenticator::SetGlobalObserverForTesting(
+    TestObserver* observer) {
+  CHECK(!observer || !g_observer);
+  g_observer = observer;
+}
 
 // static
 void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -105,22 +169,6 @@ void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
             return api->IsUserVerifyingPlatformAuthenticatorAvailable(
                        &result) == S_OK &&
                    result == TRUE;
-          },
-          api),
-      std::move(callback));
-}
-
-// static
-void WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
-    WinWebAuthnApi* api,
-    base::OnceCallback<void(bool is_available)> callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(
-          [](WinWebAuthnApi* api) {
-            return api && api->IsAvailable() && api->SupportsSilentDiscovery();
           },
           api),
       std::move(callback));
@@ -166,6 +214,47 @@ void WinWebAuthnApiAuthenticator::DeletePlatformCredential(
       std::move(callback));
 }
 
+// static
+void WinWebAuthnApiAuthenticator::SignalUnknownCredential(
+    WinWebAuthnApi* api,
+    const std::vector<uint8_t>& credential_id,
+    const std::string& relying_party_id) {
+  base::OnceClosure reply = base::DoNothing();
+  if (g_observer) {
+    reply = base::BindOnce(&TestObserver::OnSignalUnknownCredential,
+                           // Unretained is fine here since this is test only.
+                           base::Unretained(g_observer));
+  }
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(SignalUnknownCredentialBlocking, api, credential_id,
+                     relying_party_id),
+      std::move(reply));
+}
+
+// static
+void WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
+    WinWebAuthnApi* api,
+    const std::string& relying_party_id,
+    const std::vector<uint8_t>& user_id,
+    const std::vector<std::vector<uint8_t>>& all_accepted_credential_ids) {
+  base::OnceClosure reply = base::DoNothing();
+  if (g_observer) {
+    reply = base::BindOnce(&TestObserver::OnSignalAllAcceptedCredentials,
+                           // Unretained is fine here since this is test only.
+                           base::Unretained(g_observer));
+  }
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(SignalAllAcceptedCredentialsBlocking, api,
+                     relying_party_id, user_id, all_accepted_credential_ids),
+      std::move(reply));
+}
+
 WinWebAuthnApiAuthenticator::WinWebAuthnApiAuthenticator(
     HWND current_window,
     WinWebAuthnApi* win_api)
@@ -192,8 +281,7 @@ void WinWebAuthnApiAuthenticator::MakeCredential(
     MakeCredentialCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_pending_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   is_pending_ = true;
 
@@ -303,7 +391,7 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
 }
 
 void WinWebAuthnApiAuthenticator::GetTouch(base::OnceClosure callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WinWebAuthnApiAuthenticator::Cancel() {

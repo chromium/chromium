@@ -33,7 +33,7 @@ class LockManagerInvalidBucketTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  LockManager lock_manager_;
+  LockManager<storage::BucketId> lock_manager_;
   mojo::PendingRemote<blink::mojom::LockManager> pending_remote_;
   mojo::PendingReceiver<blink::mojom::LockManager> pending_receiver_;
   mojo::Remote<blink::mojom::LockManager> remote_;
@@ -78,7 +78,7 @@ TEST_F(LockManagerInvalidBucketTest, RequestLock) {
   TestLockRequest request(std::move(pending_receiver));
 
   GetRemote()->RequestLock("lock", blink::mojom::LockMode::EXCLUSIVE,
-                           LockManager::WaitMode::WAIT,
+                           blink::mojom::LockManager::WaitMode::WAIT,
                            std::move(pending_remote));
 
   request.WaitForCallback();

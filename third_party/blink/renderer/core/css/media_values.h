@@ -141,6 +141,29 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
     return SnappedFlags() !=
            static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
   }
+  // For evaluating scroll-state(overflowing: left/right)
+  virtual ContainerOverflowingFlags OverflowingHorizontal() const {
+    return static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  }
+  // For evaluating scroll-state(overflowing: top/bottom)
+  virtual ContainerOverflowingFlags OverflowingVertical() const {
+    return static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  }
+  // For evaluating scroll-state(overflowing: inline-start/inline-end)
+  virtual ContainerOverflowingFlags OverflowingInline() const {
+    return static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  }
+  // For evaluating scroll-state(overflowing: block-start/block-end)
+  virtual ContainerOverflowingFlags OverflowingBlock() const {
+    return static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  }
+  // For boolean context evaluation
+  bool Overflowing() const {
+    return OverflowingHorizontal() != static_cast<ContainerOverflowingFlags>(
+                                          ContainerOverflowing::kNone) ||
+           OverflowingVertical() != static_cast<ContainerOverflowingFlags>(
+                                        ContainerOverflowing::kNone);
+  }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }

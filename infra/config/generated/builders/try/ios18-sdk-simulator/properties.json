@@ -39,7 +39,8 @@
           "builder": "ios18-sdk-simulator",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios18-sdk-simulator/targets"
     }
   },
   "$build/reclient": {
@@ -65,5 +66,5 @@
   },
   "builder_group": "tryserver.chromium.mac",
   "recipe": "chromium_trybot",
-  "xcode_build_version": "16a242d"
+  "xcode_build_version": "16b5100e"
 }

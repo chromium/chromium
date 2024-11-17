@@ -45,9 +45,9 @@ std::atomic<bool> is_quarantine_initialized = false;
 // The PartitionRoot used by the PartitionAlloc-Everywhere (i.e. PartitionAlloc
 // as malloc), which is also the target partition root of the quarantine.
 // Since LightweightQuarantineRoot is designed to be used for a certain
-// PartitionRoot and LightweightQuarantineBranch::Quarantine() cannot handle
-// an object in an unknown root, the Extreme LUD performs only for the objects
-// in this PartitionRoot.
+// PartitionRoot and LightweightQuarantineBranch::QuarantineWithAcquiringLock()
+// cannot handle an object in an unknown root, the Extreme LUD performs only for
+// the objects in this PartitionRoot.
 partition_alloc::PartitionRoot* lightweight_quarantine_partition_root;
 // A raw pointer to the LightweightQuarantineBranch as the fast path to the
 // object. This bypasses the access check and indirect access due to the
@@ -180,16 +180,28 @@ inline bool Quarantine(void* object) {
     return false;
   }
 
+  if (lightweight_quarantine_partition_root->IsDirectMapped(slot_span))
+      [[unlikely]] {
+    // Direct-mapped allocations get immediately unmapped when being
+    // deallocated, so the following accesses to the memory will cause crash
+    // unless the address gets re-mapped again. Plus, direct-mapped allocations
+    // tend to be very large, and zapping is more costful. So, we don't
+    // quarantine the direct-mapped allocations.
+    return false;
+  }
+
   size_t usable_size = root->GetSlotUsableSize(slot_span);
   ExtremeLightweightDetectorUtil::Zap(object, usable_size);
 
   uintptr_t slot_start = root->ObjectToSlotStart(object);
   if (usable_size <= init_options.object_size_threshold_in_bytes) [[likely]] {
-    lightweight_quarantine_branch_for_small_objects->Quarantine(
-        object, slot_span, slot_start, usable_size);
+    lightweight_quarantine_branch_for_small_objects
+        ->QuarantineWithAcquiringLock(object, slot_span, slot_start,
+                                      usable_size);
   } else {
-    lightweight_quarantine_branch_for_large_objects->Quarantine(
-        object, slot_span, slot_start, usable_size);
+    lightweight_quarantine_branch_for_large_objects
+        ->QuarantineWithAcquiringLock(object, slot_span, slot_start,
+                                      usable_size);
   }
 
   return true;

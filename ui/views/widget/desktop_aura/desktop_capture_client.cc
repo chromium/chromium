@@ -98,8 +98,8 @@ void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
     }
   }  // else case is capture is remaining in our root, nothing to do.
 
-  for (auto& observer : observers_)
-    observer.OnCaptureChanged(old_capture_window, capture_window_);
+  observers_.Notify(&aura::client::CaptureClientObserver::OnCaptureChanged,
+                    old_capture_window, capture_window_);
 }
 
 void DesktopCaptureClient::ReleaseCapture(aura::Window* window) {

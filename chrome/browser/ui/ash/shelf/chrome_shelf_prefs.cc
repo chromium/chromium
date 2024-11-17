@@ -16,6 +16,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/webui/mall/app_id.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
@@ -38,7 +39,6 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/prefs_migration_uma.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -48,8 +48,8 @@
 #include "chrome/browser/ui/ash/default_pinned_apps/default_pinned_apps.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -361,45 +361,41 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
   }
 }
 
-void AddContainerAppPinIfNeeded(
+void AddGeminiAppPinIfNeeded(
     Profile* profile,
     ShelfControllerHelper* helper,
     app_list::AppListSyncableService* syncable_service) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!chromeos::features::IsContainerAppPreinstallEnabled()) {
+  if (!chromeos::features::IsGeminiAppPreinstallEnabled()) {
     return;
   }
 
-  if (!profile->GetPrefs()
-           ->GetList(prefs::kShelfContainerAppPinRolls)
-           .empty()) {
+  if (!profile->GetPrefs()->GetList(prefs::kShelfGeminiAppPinRolls).empty()) {
     return;
   }
 
-  const std::string app_id = web_app::kContainerAppId;
-
-  if (!helper->IsAppDefaultInstalled(profile, app_id)) {
+  if (!helper->IsAppDefaultInstalled(profile, ash::kGeminiAppId)) {
     return;
   }
 
   const app_list::AppListSyncableService::SyncItem* sync_item =
-      syncable_service->GetSyncItem(app_id);
+      syncable_service->GetSyncItem(ash::kGeminiAppId);
   if (sync_item && sync_item->item_pin_ordinal.IsValid()) {
     if (sync_item->is_user_pinned.value_or(true)) {
       ScopedListPrefUpdate update(profile->GetPrefs(),
-                                  prefs::kShelfContainerAppPinRolls);
+                                  prefs::kShelfGeminiAppPinRolls);
       update->Append("v1");
     }
     return;
   }
 
-  // Pin the container app before chrome.
-  syncable_service->SetPinPosition(app_id,
+  // Pin the Gemini app before Chrome.
+  syncable_service->SetPinPosition(ash::kGeminiAppId,
                                    CreateFirstPinPosition(syncable_service),
                                    /*is_policy_initiated=*/false);
   {
     ScopedListPrefUpdate update(profile->GetPrefs(),
-                                prefs::kShelfContainerAppPinRolls);
+                                prefs::kShelfGeminiAppPinRolls);
     update->Append("v1");
   }
 #endif  // GOOGLE_CHROME_BRANDING
@@ -410,15 +406,6 @@ void AddContainerAppPinIfNeeded(
 void AddMallPinIfNeeded(Profile* profile,
                         app_list::AppListSyncableService* syncable_service) {
   if (!base::FeatureList::IsEnabled(chromeos::features::kCrosMall)) {
-    return;
-  }
-
-  // When Mall SWA is disabled, always pin the Mall web app if it is not
-  // already pinned. There is no option to unpin the web app.
-  if (!chromeos::features::IsCrosMallSwaEnabled()) {
-    InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
-                                                 {{web_app::kMallAppId}},
-                                                 /*is_policy_initiated=*/false);
     return;
   }
 
@@ -462,7 +449,7 @@ void ChromeShelfPrefs::RegisterProfilePrefs(
       prefs::kShelfDefaultPinLayoutRolls,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterListPref(
-      prefs::kShelfContainerAppPinRolls,
+      prefs::kShelfGeminiAppPinRolls,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterListPref(
       prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor,
@@ -584,7 +571,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
   }
 
   if (IsSafeToApplyDefaultPinLayout(profile_)) {
-    AddContainerAppPinIfNeeded(profile_, helper, syncable_service);
+    AddGeminiAppPinIfNeeded(profile_, helper, syncable_service);
     AddMallPinIfNeeded(profile_, syncable_service);
   }
 

@@ -136,6 +136,13 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   base::WeakPtr<SafeBrowsingUrlCheckerImpl> WeakPtr();
 
+ protected:
+  scoped_refptr<UrlCheckerDelegate> url_checker_delegate() {
+    return url_checker_delegate_.get();
+  }
+
+  base::WeakPtr<web::WebState> web_state() { return weak_web_state_; }
+
  private:
   using CompleteCheckResult = SafeBrowsingLookupMechanism::CompleteCheckResult;
 

@@ -131,7 +131,7 @@ class MessageCenterImpl : public MessageCenter,
                                    const std::optional<int>& button_index,
                                    const std::optional<std::u16string>& reply);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Schedules an async task to remove notifications if all of the following
   // conditions are met:
   // 1. The notification limit feature is enabled.
@@ -151,7 +151,7 @@ class MessageCenterImpl : public MessageCenter,
   // Used to schedule a cleaning task.
   // NOTE: Used only if the notification limit feature is enabled.
   base::OneShotTimer overlimit_handler_timer_;
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const std::unique_ptr<LockScreenController> lock_screen_controller_;
 
@@ -174,7 +174,7 @@ class MessageCenterImpl : public MessageCenter,
   MessageCenterStatsCollector stats_collector_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // A scoped class to override the params of the notification limit feature.
 // NOTE: There should be at the most one instance at any given time.
 class MESSAGE_CENTER_EXPORT ScopedNotificationLimitOverrider {
@@ -189,7 +189,7 @@ class MESSAGE_CENTER_EXPORT ScopedNotificationLimitOverrider {
   const size_t overriding_limit;
   const size_t overriding_target_count;
 };
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace message_center
 

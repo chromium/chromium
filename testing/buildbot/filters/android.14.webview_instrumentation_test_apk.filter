@@ -1,6 +1,2 @@
 # crbug.com/351017155
 -org.chromium.android_webview.test.VariationsSeedLoaderTest.testFinchSeedExpirationAgeFlag
-
-# crbug.com/354846826
--org.chromium.android_webview.test.AwAutofillTest.testNoEventSentToAutofillServiceForFocusedDatalist
--org.chromium.android_webview.test.AwAutofillTest.testCrossFrameCommit

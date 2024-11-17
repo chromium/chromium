@@ -57,24 +57,25 @@ void SetAppIdForWebContents(Profile* profile,
   if (!web_app::AreWebAppsEnabled(profile)) {
     return;
   }
-  extensions::TabHelper::CreateForWebContents(web_contents);
-  web_app::WebAppTabHelper::CreateForWebContents(web_contents);
+  auto* extension_helper = extensions::TabHelper::FromWebContents(web_contents);
+  auto* web_app_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  if (!extension_helper || !web_app_helper) {
+    return;
+  }
+
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           app_id);
   if (extension) {
     DCHECK(extension->is_app());
-    web_app::WebAppTabHelper::FromWebContents(web_contents)
-        ->SetAppId(std::nullopt);
-    extensions::TabHelper::FromWebContents(web_contents)
-        ->SetExtensionAppById(app_id);
+    web_app_helper->SetAppId(std::nullopt);
+    extension_helper->SetExtensionAppById(app_id);
   } else {
     bool app_installed = IsAppReady(profile, app_id);
-    web_app::WebAppTabHelper::FromWebContents(web_contents)
-        ->SetAppId(app_installed ? std::optional<webapps::AppId>(app_id)
-                                 : std::nullopt);
-    extensions::TabHelper::FromWebContents(web_contents)
-        ->SetExtensionAppById(std::string());
+    web_app_helper->SetAppId(
+        app_installed ? std::optional<webapps::AppId>(app_id) : std::nullopt);
+    extension_helper->SetExtensionAppById(std::string());
   }
 }
 

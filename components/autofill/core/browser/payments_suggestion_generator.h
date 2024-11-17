@@ -32,7 +32,7 @@ class FormFieldData;
 class Iban;
 
 // Describes the suggestions returned by
-// `GetSuggestionsForCreditCards()`.
+// `GetCreditCardOrCvcFieldSuggestions()`.
 struct CreditCardSuggestionSummary {
   // Whether any card has card-linked offers.
   bool with_offer = false;
@@ -45,15 +45,25 @@ struct CreditCardSuggestionSummary {
   autofill_metrics::SuggestionRankingContext ranking_context;
 };
 
-// Returns a mapping of credit card guid values to virtual card last fours for
-// standalone CVC field. Cards will only be added to the returned map if they
-// have usage data on the webpage and the VCN last four was found on webpage
-// DOM.
-base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-GetVirtualCreditCardsForStandaloneCvcField(
-    const PaymentsDataManager& data_manager,
-    const url::Origin& origin,
-    const std::vector<std::string>& four_digit_combinations_in_dom);
+// Generates suggestions for all available credit cards based on the
+// `trigger_field_type`, `trigger_field`, `trigger_source`,
+// `four_digit_combinations_in_dom`. `summary` contains metadata about the
+// returned suggestions.
+// `autofilled_last_four_digits_in_form_for_suggestion_filtering` is a list of
+// card number last four that will be used for suggestion filtering. This is
+// used to avoid showing suggestions that is unrelated to the cards that have
+// already been autofilled in the form.
+std::vector<Suggestion> GetSuggestionsForCreditCards(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    AutofillSuggestionTriggerSource trigger_source,
+    CreditCardSuggestionSummary& summary,
+    bool should_show_scan_credit_card,
+    bool should_show_cards_from_account,
+    const std::vector<std::string>& four_digit_combinations_in_dom,
+    const std::vector<std::u16string>&
+        autofilled_last_four_digits_in_form_for_suggestion_filtering);
 
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `trigger_source`.
@@ -63,11 +73,12 @@ GetVirtualCreditCardsForStandaloneCvcField(
 // showing suggestions that is unrelated to the cards that have already been
 // autofilled in the form.
 // TODO(crbug.com/40916587): Implement last four extraction from the DOM.
-std::vector<Suggestion> GetSuggestionsForCreditCards(
+std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
-    const base::flat_set<std::u16string>&
-        last_four_set_for_cvc_suggestion_filtering,
+    const std::vector<std::string>& four_digit_combinations_in_dom,
+    const std::vector<std::u16string>&
+        autofilled_last_four_digits_in_form_for_suggestion_filtering,
     FieldType trigger_field_type,
     AutofillSuggestionTriggerSource trigger_source,
     bool should_show_scan_credit_card,
@@ -77,7 +88,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
 // Generates suggestions for standalone CVC fields. These only apply to
 // virtual cards that are saved on file to a merchant. In these cases,
 // we only display the virtual card option and do not show FPAN option.
-std::vector<Suggestion> GetSuggestionsForVirtualCardStandaloneCvc(
+std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
@@ -152,6 +163,16 @@ Suggestion CreateCreditCardSuggestionForTest(
 // Exposes `ShouldShowVirtualCardOption` in tests.
 bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,
                                         const AutofillClient& client);
+
+// Filter `cards_to_suggest` for CVC fields based on parameters such as field
+// type, four digit combinations found in the DOM (if any were found), and the
+// autofilled last four digits in the form.
+void FilterCardsToSuggestForCvcFields(
+    FieldType trigger_field_type,
+    const base::flat_set<std::string>& four_digit_combinations_in_dom,
+    const base::flat_set<std::u16string>&
+        autofilled_last_four_digits_in_form_for_suggestion_filtering,
+    std::vector<CreditCard>& cards_to_suggest);
 
 }  // namespace autofill
 

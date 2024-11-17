@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/download/model/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
@@ -18,6 +17,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/url_util.h"
@@ -41,9 +41,8 @@ void BrowserDownloadService::OnDownloadCreated(
     web::WebState* web_state,
     std::unique_ptr<web::DownloadTask> task) {
   // When a prerendered page tries to download a file, cancel the download.
-  PrerenderService* prerender_service =
-      PrerenderServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  PrerenderService* prerender_service = PrerenderServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   if (prerender_service &&
       prerender_service->IsWebStatePrerendered(web_state)) {
     return;

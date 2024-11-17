@@ -16,15 +16,12 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
-#include "chrome/browser/companion/core/constants.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -81,11 +78,6 @@ void PinnedToolbarActionsModel::UpdatePinnedState(
     // At a minimum, incognito should be read-only. Guest mode should not be
     // able to modify the prefs either.
     return;
-  }
-
-  if (action_id == kActionSidePanelShowSearchCompanion) {
-    pref_service_->SetBoolean(prefs::kPinnedSearchCompanionMigrationComplete,
-                              true);
   }
 
   const bool is_pinned = Contains(action_id);
@@ -221,41 +213,6 @@ void PinnedToolbarActionsModel::UpdatePinnedActionIds() {
   }
 }
 
-void PinnedToolbarActionsModel::MaybeUpdateSearchCompanionPinnedState(
-    bool companion_should_be_default_pinned) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  // Checks if the search companion action id is present beceause in tests this
-  // model can be created before the browser actions are initialized if testing
-  // factories are added to create this model. This prevents failures when the
-  // companion feature is enabled.
-  if (pref_service_->GetBoolean(
-          prefs::kPinnedSearchCompanionMigrationComplete) ||
-      !CanUpdate() ||
-      !actions::ActionIdMap::ActionIdToString(
-           kActionSidePanelShowSearchCompanion)
-           .has_value()) {
-    return;
-  }
-
-  if (!companion::IsCompanionFeatureEnabled()) {
-    // prefs::kSidePanelCompanionEntryPinnedToToolbar is not registered when
-    // companion is disabled.
-    return;
-  }
-
-  if (!pref_service_->GetUserPrefValue(
-          prefs::kSidePanelCompanionEntryPinnedToToolbar)) {
-    UpdateSearchCompanionDefaultState(companion_should_be_default_pinned);
-    return;
-  }
-
-  UpdatePinnedState(kActionSidePanelShowSearchCompanion,
-                    /*should_pin=*/pref_service_->GetBoolean(
-                        prefs::kSidePanelCompanionEntryPinnedToToolbar));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
 void PinnedToolbarActionsModel::ResetToDefault() {
   pref_service_->ClearPref(prefs::kShowHomeButton);
   pref_service_->ClearPref(prefs::kShowForwardButton);
@@ -292,29 +249,6 @@ void PinnedToolbarActionsModel::MaybeMigrateChromeLabsPinnedState() {
 const std::vector<actions::ActionId>&
 PinnedToolbarActionsModel::PinnedActionIds() const {
   return pinned_action_ids_;
-}
-
-void PinnedToolbarActionsModel::UpdateSearchCompanionDefaultState(
-    bool companion_should_be_default_pinned) {
-  bool is_valid_pin = !Contains(kActionSidePanelShowSearchCompanion) &&
-                      companion_should_be_default_pinned;
-  bool is_valid_unpin = Contains(kActionSidePanelShowSearchCompanion) &&
-                        !companion_should_be_default_pinned;
-
-  std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
-  const std::optional<std::string>& id = actions::ActionIdMap::ActionIdToString(
-      kActionSidePanelShowSearchCompanion);
-  // The ActionId should have a string equivalent.
-  CHECK(id.has_value());
-
-  if (is_valid_pin) {
-    updated_pinned_action_ids.push_back(kActionSidePanelShowSearchCompanion);
-  } else if (is_valid_unpin) {
-    std::erase(updated_pinned_action_ids, kActionSidePanelShowSearchCompanion);
-  }
-
-  // Updating the pref causes `UpdatePinnedActionIds()` to be called.
-  UpdatePref(updated_pinned_action_ids);
 }
 
 void PinnedToolbarActionsModel::UpdatePref(

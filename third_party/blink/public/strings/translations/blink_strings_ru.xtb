@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Обычный</translation>
 <translation id="1591562245178063882">В этом месяце</translation>
 <translation id="1637811476055996098">Выбрать файлы</translation>
-<translation id="1680090928918677457">Использовать камеру</translation>
 <translation id="1729654308190250600">Введите адрес электронной почты.</translation>
 <translation id="1758486001363313524">Другое…</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Длина текста не должна превышать <ph name="MAX_CHARACTERS" /> симв. (сейчас <ph name="CURRENT_LENGTH" /> симв.).</translation>
 <translation id="2247351761944213033">Неделя <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Трек <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Доступ к камере и микрофону разрешен</translation>
 <translation id="2507943997699731163">Заполните это поле.</translation>
 <translation id="2613802280814924224">Введите допустимое значение. Ближайшее допустимое значение: <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Отправить</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Минимально допустимое количество символов: <ph name="MIN_CHARACTERS" />. Длина текста сейчас: <ph name="CURRENT_LENGTH" />.</translation>
 <translation id="383465348367842624">Часть адреса до символа "<ph name="ATSIGN" />" не должна содержать символ "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Обычный режим</translation>
-<translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
 <translation id="4360991593054037559">Введите допустимое значение. Ближайшие допустимые значения: <ph name="VALID_VALUE_LOW" /> и <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Сведения</translation>
-<translation id="4663373278480897665">Доступ к камере разрешен</translation>
 <translation id="4664250907885839816">Часть адреса после символа "<ph name="ATSIGN" />" не должна содержать символ "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Воспроизведение в режиме "Картинка в картинке"</translation>
-<translation id="4792862212177489858">Разрешить доступ к геоданным</translation>
 <translation id="4812940957355064477">Введите число.</translation>
-<translation id="49269513399674318">Использовать микрофон</translation>
 <translation id="4975562563186953947">Выбрано: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Включить звук</translation>
 <translation id="49969490063480558">Введите часть адреса после символа "<ph name="ATSIGN" />". Адрес "<ph name="INVALIDADDRESS" />" неполный.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Не удалось загрузить плагин</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Текст должен быть не короче <ph name="MIN_CHARACTERS" /> симв. Длина текста сейчас: 1 символ.</translation>
-<translation id="7080893216867146095">Доступ к геоданным разрешен</translation>
 <translation id="709897737746224366">Введите данные в указанном формате.</translation>
-<translation id="7134810312945846184">Использовать микрофон и камеру</translation>
 <translation id="7263440858009898357">Выберите один из пунктов списка.</translation>
 <translation id="7364796246159120393">Выберите файл</translation>
 <translation id="739024184232394898">Другое…</translation>

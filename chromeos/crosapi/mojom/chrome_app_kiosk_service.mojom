@@ -5,7 +5,6 @@
 module crosapi.mojom;
 
 // Set of parameters required to install the kiosk app from a cached location.
-[Stable]
 struct AppInstallParams {
   // Id of the primary kiosk app.
   string id@0;
@@ -17,7 +16,7 @@ struct AppInstallParams {
   bool is_store_app@3;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum ChromeKioskInstallResult {
   [Default] kUnknown = 0,
   // Installation completed successfully, kiosk is ready to launch.
@@ -32,7 +31,7 @@ enum ChromeKioskInstallResult {
   kPrimaryAppNotKioskEnabled = 5,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum ChromeKioskLaunchResult {
   [Default] kUnknown = 0,
   // Launch of kiosk app was successful.
@@ -48,7 +47,6 @@ enum ChromeKioskLaunchResult {
 //
 // Next MinVersion: 1
 // Next ID: 1
-[Stable]
 interface ChromeKioskLaunchController {
   // Trigger a full install of the kiosk app into Lacros chrome.
   // Note that this contains the finalization below, so the caller is expected
@@ -70,7 +68,7 @@ interface ChromeKioskLaunchController {
 //
 // Next MinVersion: 1
 // Next ID: 1
-[Stable, Uuid="7aca9ca3-6d25-450d-83ee-1a0069df0eb3"]
+[Uuid="7aca9ca3-6d25-450d-83ee-1a0069df0eb3"]
 interface ChromeAppKioskService{
   // Binds the ChromeAppKioskInstaller interface, which allows the
   // Kiosk startup process running in ash-chrome to trigger the installation of

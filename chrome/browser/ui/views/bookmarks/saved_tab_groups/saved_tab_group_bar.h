@@ -11,11 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
-#include "components/saved_tab_groups/saved_tab_group_model.h"
-#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/internal/saved_tab_group_model.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "content/public/browser/page.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
@@ -43,7 +41,6 @@ class SavedTabGroupOverflowButton;
 // for rendering the SavedTabGroupButtons with the bounds that are defined by
 // its parent, BookmarkBarView.
 class SavedTabGroupBar : public views::AccessiblePaneView,
-                         public SavedTabGroupModelObserver,
                          public TabGroupSyncService::Observer,
                          public views::WidgetObserver {
   METADATA_HEADER(SavedTabGroupBar, views::AccessiblePaneView)
@@ -79,24 +76,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void OnPaint(gfx::Canvas* canvas) override;
   void Layout(PassKey) override;
 
-  // SavedTabGroupModelObserver
-  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
-  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
-  void SavedTabGroupLocalIdChanged(const base::Uuid& saved_group_id) override;
-  void SavedTabGroupUpdatedLocally(
-      const base::Uuid& group_guid,
-      const std::optional<base::Uuid>& tab_guid) override;
-  void SavedTabGroupReorderedLocally() override;
-  void SavedTabGroupReorderedFromSync() override;
-  void SavedTabGroupTabMovedLocally(const base::Uuid& group_guid,
-                                    const base::Uuid& tab_guid) override;
-  void SavedTabGroupAddedFromSync(const base::Uuid& guid) override;
-  void SavedTabGroupRemovedFromSync(
-      const SavedTabGroup& removed_group) override;
-  void SavedTabGroupUpdatedFromSync(
-      const base::Uuid& group_guid,
-      const std::optional<base::Uuid>& tab_guid) override;
-
   // TabGroupSyncService::Observer
   void OnInitialized() override;
   void OnTabGroupAdded(const SavedTabGroup& group,
@@ -124,6 +103,10 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   bool IsOverflowButtonVisible();
 
+  // Returns the number of currently visible groups. Does not include the
+  // overflow button or button housed in its view.
+  int GetNumberOfVisibleGroups() const;
+
  private:
   // Overrides the View methods needed to be a drop target for saved tab groups.
   class OverflowMenu;
@@ -136,9 +119,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // `SavedTabGroupBar`.
   void SavedTabGroupRemoved(const base::Uuid& guid);
 
-  // Updates the button (color, name, tab list) denoted by `guid` in the
-  // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
-  void SavedTabGroupUpdated(const base::Uuid& guid);
+  // Updates (adds/updates/removes) the button denoted by `guid` when calling
+  // add/update methods.
+  void UpsertSavedTabGroupButton(const base::Uuid& guid);
 
   // Reorders all groups in the bookmarks to match the state of
   // `saved_tab_group_model_`.
@@ -189,10 +172,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // TODO: Move implementation inside of STGOverflowButton.
   void HideOverflowButton();
   void ShowOverflowButton();
-
-  // Returns the number of currently visible groups. Does not include the
-  // overflow button or button housed in its view.
-  int GetNumberOfVisibleGroups() const;
 
   // Updates the visibilites of all buttons up to `last_index_visible`. The
   // overflow button will be displayed based on `should_show_overflow`.
@@ -267,8 +246,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // animate or not.
   const bool animations_enabled_ = true;
 
-  // Whether the kTabGroupsSaveUIUpdate flag is enabled.
-  const bool v2_ui_enabled_;
+  // Determines if we should use the updated SavedTabGroups UI.
+  const bool ui_update_enabled_;
 
   // Returns WeakPtrs used in GetPageNavigatorGetter(). Used to ensure
   // safety if BookmarkBarView is deleted after getting the callback.

@@ -46,8 +46,6 @@ using SecureContextRequired = autofill::AutofillAgent::SecureContextRequired;
 using UserGestureRequired = autofill::AutofillAgent::UserGestureRequired;
 using UsesKeyboardAccessoryForSuggestions =
     autofill::AutofillAgent::UsesKeyboardAccessoryForSuggestions;
-using EnableHeavyFormDataScraping =
-    autofill::PasswordAutofillAgent::EnableHeavyFormDataScraping;
 
 constexpr char kAddressPrefix[] = "geo:0,0?q=";
 constexpr char kEmailPrefix[] = "mailto:";
@@ -159,8 +157,8 @@ void PopulateHitTestData(const GURL& absolute_link_url,
 AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
   auto password_autofill_agent =
-      std::make_unique<autofill::PasswordAutofillAgent>(
-          render_frame, &registry_, EnableHeavyFormDataScraping(false));
+      std::make_unique<autofill::PasswordAutofillAgent>(render_frame,
+                                                        &registry_);
   new AutofillAgent(
       render_frame,
       {ExtractAllDatalists(true), FocusRequiresScroll(false),
@@ -196,10 +194,6 @@ bool AwRenderFrameExt::OnAssociatedInterfaceRequestForFrame(
 }
 
 void AwRenderFrameExt::DidCreateDocumentElement() {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebViewHitTestInBlinkOnTouchStart)) {
-    return;
-  }
   render_frame()->GetWebFrame()->AddHitTestOnTouchStartCallback(
       base::BindRepeating(&AwRenderFrameExt::HandleHitTestResult,
                           base::Unretained(this)));
@@ -243,21 +237,6 @@ void AwRenderFrameExt::FocusedElementChanged(const blink::WebElement& element) {
                       element.IsEditable(), data.get());
 
   GetFrameHost()->UpdateHitTestData(std::move(data));
-}
-
-// Only main frame needs to *receive* the hit test request, because all we need
-// is to get the blink::webView object and invoke a the hitTestResultForTap API
-// from it.
-void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
-                               const gfx::SizeF& touch_area) {
-  blink::WebView* webview = GetWebView();
-  if (!webview)
-    return;
-
-  const blink::WebHitTestResult result = webview->HitTestResultForTap(
-      gfx::Point(touch_center.x(), touch_center.y()),
-      gfx::Size(touch_area.width(), touch_area.height()));
-  HandleHitTestResult(result);
 }
 
 void AwRenderFrameExt::HandleHitTestResult(

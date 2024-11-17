@@ -137,6 +137,10 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
     return evaluator->SnapContainerChanged(snapped);
   }
 
+  Change StyleContainerChanged(ContainerQueryEvaluator* evaluator) {
+    return evaluator->StyleContainerChanged();
+  }
+
   bool EvalAndAdd(ContainerQueryEvaluator* evaluator,
                   const ContainerQuery& query,
                   Change change = Change::kNearestContainer) {
@@ -331,7 +335,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
 
   // Calling StyleContainerChanged without changing the style should not produce
   // a change.
-  EXPECT_EQ(Change::kNone, evaluator->StyleContainerChanged());
+  EXPECT_EQ(Change::kNone, StyleContainerChanged(evaluator));
   EXPECT_EQ(3u, GetResults(evaluator).size());
 
   const bool inherited = true;
@@ -344,7 +348,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
-  EXPECT_EQ(Change::kNone, evaluator->StyleContainerChanged());
+  EXPECT_EQ(Change::kNone, StyleContainerChanged(evaluator));
   EXPECT_EQ(3u, GetResults(evaluator).size());
 
   // Set --foo: bar. Should trigger change.
@@ -354,7 +358,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
-  EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
+  EXPECT_EQ(Change::kNearestContainer, StyleContainerChanged(evaluator));
   EXPECT_EQ(0u, GetResults(evaluator).size());
 
   // Set --bar: foo. Should trigger change because size part also matches.
@@ -365,7 +369,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
-  EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
+  EXPECT_EQ(Change::kNearestContainer, StyleContainerChanged(evaluator));
   EXPECT_EQ(0u, GetResults(evaluator).size());
 }
 

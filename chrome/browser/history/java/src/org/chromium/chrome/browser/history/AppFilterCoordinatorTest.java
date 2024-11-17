@@ -114,7 +114,8 @@ public class AppFilterCoordinatorTest {
                 getActivity().getWindow(),
                 KeyboardVisibilityDelegate.getInstance(),
                 () -> activityContentView,
-                () -> 0);
+                () -> 0,
+                /* desktopWindowStateManager= */ null);
     }
 
     private void onAppUpdated(AppInfo appInfo) {
@@ -137,10 +138,12 @@ public class AppFilterCoordinatorTest {
         final int defaultMaxHeight = rowHeight * MAX_VISIBLE_ITEM_COUNT;
 
         int rowCount = MAX_VISIBLE_ITEM_COUNT - 1;
-        assertEquals(rowHeight * rowCount, calcSheetHeight(rowHeight, baseHeight, rowCount));
+        assertEquals(
+                rowHeight * ((long) rowCount), calcSheetHeight(rowHeight, baseHeight, rowCount));
 
         rowCount = MAX_VISIBLE_ITEM_COUNT;
-        assertEquals(rowHeight * rowCount, calcSheetHeight(rowHeight, baseHeight, rowCount));
+        assertEquals(
+                rowHeight * ((long) rowCount), calcSheetHeight(rowHeight, baseHeight, rowCount));
 
         rowCount = MAX_VISIBLE_ITEM_COUNT + 1;
         assertEquals(defaultMaxHeight, calcSheetHeight(rowHeight, baseHeight, rowCount));
@@ -152,7 +155,8 @@ public class AppFilterCoordinatorTest {
         final int maxHeight = (int) (smallBase * MAX_SHEET_HEIGHT_RATIO);
 
         rowCount = 2;
-        assertEquals(rowHeight * rowCount, calcSheetHeight(rowHeight, smallBase, rowCount));
+        assertEquals(
+                rowHeight * ((long) rowCount), calcSheetHeight(rowHeight, smallBase, rowCount));
 
         rowCount = MAX_VISIBLE_ITEM_COUNT;
         assertEquals(maxHeight, calcSheetHeight(rowHeight, smallBase, rowCount));

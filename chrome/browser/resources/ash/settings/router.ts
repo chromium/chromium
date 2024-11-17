@@ -7,8 +7,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {castExists} from './assert_extras.js';
 import {isRevampWayfindingEnabled} from './common/load_time_booleans.js';
-import {RouteObserverMixinInterface} from './common/route_observer_mixin.js';
-import {createRoutes, OsSettingsRoutes, PATH_REDIRECTS, Route} from './os_settings_routes.js';
+import type {RouteObserverMixinInterface} from './common/route_observer_mixin.js';
+import type {OsSettingsRoutes} from './os_settings_routes.js';
+import {createRoutes, PATH_REDIRECTS, Route} from './os_settings_routes.js';
 
 export {Route};
 

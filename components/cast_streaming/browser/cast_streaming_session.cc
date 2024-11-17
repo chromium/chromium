@@ -147,7 +147,7 @@ void CastStreamingSession::ReceiverSessionClient::PreloadAudioBuffer(
   preloaded_audio_buffer_ = std::move(buffer);
   if (playback_command_dispatcher_ && !ongoing_session_has_video()) {
     playback_command_dispatcher_->TryStartPlayback(
-        (*preloaded_audio_buffer_)->timestamp);
+        (*preloaded_audio_buffer_)->get_data()->timestamp);
   }
 }
 
@@ -161,7 +161,7 @@ void CastStreamingSession::ReceiverSessionClient::PreloadVideoBuffer(
   preloaded_video_buffer_ = std::move(buffer);
   if (playback_command_dispatcher_ && ongoing_session_has_video()) {
     playback_command_dispatcher_->TryStartPlayback(
-        (*preloaded_video_buffer_)->timestamp);
+        (*preloaded_video_buffer_)->get_data()->timestamp);
   }
 }
 

@@ -375,10 +375,11 @@ def _views_perftests(estimated_runtime=7):
                           estimated_runtime=estimated_runtime)
 
 
-def _crossbench_speedometer3_0(estimated_runtime=60):
+def _crossbench_speedometer3_0(estimated_runtime=60, arguments=None):
   return CrossbenchConfig('speedometer3.crossbench',
                           'speedometer_3.0',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
 def _crossbench_motionmark1_3(estimated_runtime=360):
@@ -391,6 +392,13 @@ def _crossbench_jetstream2_1(estimated_runtime=180):
   return CrossbenchConfig('jetstream2.crossbench',
                           'jetstream_2.2',
                           estimated_runtime=estimated_runtime)
+
+
+def _crossbench_loadline_phone(estimated_runtime=60, arguments=None):
+  return CrossbenchConfig('loadline_phone.crossbench',
+                          'loadline-phone',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
@@ -410,8 +418,9 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 ])
 
 # TODO(b/338630584): Remove it when other benchmarks can be run on Android.
-_CROSSBENCH_SPEEDOMETER = frozenset([
-    _crossbench_speedometer3_0(),
+_CROSSBENCH_ANDROID = frozenset([
+    _crossbench_speedometer3_0(arguments=['--fileserver']),
+    _crossbench_loadline_phone(arguments=['--repeat=1']),
 ])
 
 _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite(
@@ -492,7 +501,7 @@ _MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
-    # _dawn_perf_tests(330),    # b/332611618
+    _dawn_perf_tests(330),
     _tint_benchmark(),
     _views_perftests(),
 ])
@@ -501,6 +510,18 @@ _MAC_LOW_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
 ])
 _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
+    _load_library_perf_tests(),
+])
+_MAC_INTEL_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
+    'blink_perf.display_locking',
+    'v8.runtime_stats.top_25',
+    'rendering.desktop',
+])
+_MAC_INTEL_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(300),
+    _dawn_perf_tests(330),
+    _tint_benchmark(),
+    _views_perftests(),
     _load_library_perf_tests(),
 ])
 _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
@@ -630,7 +651,6 @@ _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
     ])
 _ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
-    _tint_benchmark(),
 ])
 _ANDROID_PIXEL6_PGO_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
@@ -739,6 +759,13 @@ MAC_LOW_END_LAPTOP_PGO = PerfPlatform(
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS,
     pinpoint_only=True)
+MAC_INTEL = PerfPlatform('mac-intel-perf',
+                         'Mac Mini 8,1, Core i7 3.2 GHz',
+                         _MAC_INTEL_BENCHMARK_CONFIGS,
+                         24,
+                         'mac',
+                         executables=_MAC_INTEL_EXECUTABLE_CONFIGS,
+                         crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 MAC_M1_MINI_2020 = PerfPlatform(
     'mac-m1_mini_2020-perf',
     'Mac M1 Mini 2020',
@@ -832,6 +859,24 @@ WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
                           'win',
                           executables=_WIN_11_EXECUTABLE_CONFIGS,
                           pinpoint_only=True)
+WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
+    'win-arm64-snapdragon-plus-perf',
+    'Windows Dell Snapdragon Plus',
+    _WIN_10_BENCHMARK_CONFIGS,
+    1,
+    'win',
+    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL,
+    is_fyi=True)
+WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
+    'win-arm64-snapdragon-elite-perf',
+    'Windows Dell Snapdragon Elite',
+    _WIN_10_BENCHMARK_CONFIGS,
+    1,
+    'win',
+    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL,
+    is_fyi=True)
 
 # Android
 ANDROID_PIXEL4 = PerfPlatform('android-pixel4-perf',
@@ -850,7 +895,10 @@ ANDROID_PIXEL4_PGO = PerfPlatform(
     pinpoint_only=True)
 ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
     'android-pixel4_webview-perf', 'Android R',
-    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 40, 'android')
+    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 23, 'android')
+ANDROID_PIXEL4_WEBVIEW_PGO = PerfPlatform(
+    'android-pixel4_webview-perf-pgo', 'Android R',
+    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
 # TODO(crbug.com/307958700): Switch shard number back to a higher number around
 #                            28 once more devices are procured. Temporarily use
 #                            15 to avoid high contention in the pixel6 pool.
@@ -860,7 +908,7 @@ ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               14,
                               'android',
                               executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS,
-                              crossbench=_CROSSBENCH_SPEEDOMETER)
+                              crossbench=_CROSSBENCH_ANDROID)
 ANDROID_PIXEL6_PGO = PerfPlatform(
     'android-pixel6-perf-pgo',
     'Android U',
@@ -868,7 +916,7 @@ ANDROID_PIXEL6_PGO = PerfPlatform(
     8,
     'android',
     executables=_ANDROID_PIXEL6_PGO_EXECUTABLE_CONFIGS,
-    crossbench=_CROSSBENCH_SPEEDOMETER)
+    crossbench=_CROSSBENCH_ANDROID)
 ANDROID_PIXEL6_PRO = PerfPlatform(
     'android-pixel6-pro-perf',
     'Android T',

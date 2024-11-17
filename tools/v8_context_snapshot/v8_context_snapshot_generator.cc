@@ -38,6 +38,11 @@ int main(int argc, char** argv) {
   const bool kRemoveRecognizedFlags = true;
   v8::V8::SetFlagsFromCommandLine(&argc, argv, kRemoveRecognizedFlags);
   base::CommandLine::Init(argc, argv);
+
+  // Initialize an empty feature list for gin startup.
+  auto early_access_feature_list = std::make_unique<base::FeatureList>();
+  // This should be called after CommandLine::Init().
+  base::FeatureList::SetInstance(std::move(early_access_feature_list));
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot();
 #endif

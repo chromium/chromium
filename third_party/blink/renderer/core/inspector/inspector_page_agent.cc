@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 
 #include <memory>
@@ -178,7 +173,8 @@ Resource* CachedResource(LocalFrame* frame,
   Resource* cached_resource = document->Fetcher()->CachedResource(url);
   if (!cached_resource) {
     cached_resource = MemoryCache::Get()->ResourceForURL(
-        url, document->Fetcher()->GetCacheIdentifier(url));
+        url, document->Fetcher()->GetCacheIdentifier(
+                 url, /*skip_service_worker=*/false));
   }
   if (!cached_resource)
     cached_resource = loader->ResourceForURL(url);
@@ -1052,7 +1048,7 @@ void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
     return;
   }
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
-  if (!script_state) {
+  if (!script_state || !v8_session_) {
     return;
   }
 
@@ -1077,7 +1073,7 @@ void InspectorPageAgent::EvaluateScriptOnNewDocument(
                       *DOMWrapperWorld::EnsureIsolatedWorld(
                           ToIsolate(window->GetFrame()), world->GetWorldId()));
   }
-  if (!script_state) {
+  if (!script_state || !v8_session_) {
     return;
   }
 
@@ -1563,7 +1559,7 @@ InspectorPageAgent::BuildObjectForResourceTree(LocalFrame* frame) {
             .setContentSize(cached_resource->GetResponse().DecodedBodyLength())
             .build();
     std::optional<base::Time> last_modified =
-        cached_resource->GetResponse().LastModified();
+        cached_resource->GetResponse().LastModified(*frame->GetDocument());
     if (last_modified) {
       resource_object->setLastModified(
           last_modified.value().InSecondsFSinceUnixEpoch());
@@ -1821,11 +1817,11 @@ protocol::Response InspectorPageAgent::setFontFamilies(
         "Font families can only be set once");
   }
 
-  if (!for_scripts.has_value()) {
+  if (!for_scripts) {
     for_scripts =
         std::make_unique<protocol::Array<protocol::Page::ScriptFontFamilies>>();
   }
-  auto& script_fonts = for_scripts.value();
+  auto& script_fonts = *for_scripts;
   script_fonts.push_back(protocol::Page::ScriptFontFamilies::create()
                              .setScript(blink::web_pref::kCommonScript)
                              .setFontFamilies(std::move(font_families))
@@ -1992,6 +1988,11 @@ void InspectorPageAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspector_resource_content_loader_);
   visitor->Trace(isolated_worlds_);
   InspectorBaseAgent::Trace(visitor);
+}
+
+void InspectorPageAgent::Dispose() {
+  InspectorBaseAgent::Dispose();
+  v8_session_ = nullptr;
 }
 
 protocol::Response InspectorPageAgent::getOriginTrials(

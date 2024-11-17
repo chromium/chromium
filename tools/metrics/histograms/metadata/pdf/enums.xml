@@ -102,6 +102,30 @@ chromium-metrics-reviews@google.com.
   <int value="72" label="Paste"/>
   <int value="73" label="FindInPageFirst"/>
   <int value="74" label="FindInPage"/>
+  <int value="75" label="CopySearchifiedFirst"/>
+  <int value="76" label="CopySearchified"/>
+  <int value="77" label="FindInPageSearchifiedFirst"/>
+  <int value="78" label="FindInPageSearchified"/>
+  <int value="79" label="EnterInk2AnnotationModeFirst"/>
+  <int value="80" label="EnterInk2AnnotationMode"/>
+  <int value="81" label="ExitInk2AnnotationModeFirst"/>
+  <int value="82" label="ExitInk2AnnotationMode"/>
+  <int value="83" label="SaveWithInk2AnnotationFirst"/>
+  <int value="84" label="SaveWithInk2Annotation"/>
+  <int value="85" label="SelectInk2BrushEraserFirst"/>
+  <int value="86" label="SelectInk2BrushEraser"/>
+  <int value="87" label="SelectInk2BrushHighlighterFirst"/>
+  <int value="88" label="SelectInk2BrushHighlighter"/>
+  <int value="89" label="SelectInk2BrushPenFirst"/>
+  <int value="90" label="SelectInk2BrushPen"/>
+  <int value="91" label="UndoInk2First"/>
+  <int value="92" label="UndoInk2"/>
+  <int value="93" label="RedoInk2First"/>
+  <int value="94" label="RedoInk2"/>
+  <int value="95" label="OpenInk2SidePanelFirst"/>
+  <int value="96" label="OpenInk2SidePanel"/>
+  <int value="97" label="OpenInk2BottomToolbarFirst"/>
+  <int value="98" label="OpenInk2BottomToolbar"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

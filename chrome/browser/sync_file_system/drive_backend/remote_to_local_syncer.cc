@@ -139,7 +139,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     if (remote_metadata_ && !remote_metadata_->has_details()) {
       token->RecordLog("Missing details of a remote file: " +
                        remote_metadata_->file_id());
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     token->RecordLog("Missing remote metadata case.");
 
@@ -169,9 +169,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     token->RecordLog(base::StringPrintf(
         "Missing synced_details of an active tracker: %" PRId64,
         dirty_tracker_->tracker_id()));
-    NOTREACHED_IN_MIGRATION();
-    SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
 
   DCHECK(dirty_tracker_->has_synced_details());
@@ -196,9 +194,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
             metadata_database()->GetSyncRootTrackerID());
 
   if (!BuildFileSystemURL(metadata_database(), *dirty_tracker_, &url_)) {
-    NOTREACHED_IN_MIGRATION();
-    SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
 
   DCHECK(url_.is_valid());
@@ -215,9 +211,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     DCHECK(synced_details.missing());
     token->RecordLog("Found a stray missing tracker: " +
                      dirty_tracker_->file_id());
-    NOTREACHED_IN_MIGRATION();
-    SyncCompleted(std::move(token), SYNC_STATUS_OK);
-    return;
+    NOTREACHED();
   }
 
   // Most of remote_details field is valid from here.
@@ -229,18 +223,14 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
         " type: (local) %d vs (remote) %d",
         dirty_tracker_->file_id().c_str(), synced_details.file_kind(),
         remote_details.file_kind()));
-    NOTREACHED_IN_MIGRATION();
-    SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
   DCHECK_EQ(synced_details.file_kind(), remote_details.file_kind());
 
   if (synced_details.file_kind() == FILE_KIND_UNSUPPORTED) {
     token->RecordLog("Found an unsupported active file: " +
                      remote_metadata_->file_id());
-    NOTREACHED_IN_MIGRATION();
-    SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
   DCHECK(remote_details.file_kind() == FILE_KIND_FILE ||
          remote_details.file_kind() == FILE_KIND_FOLDER);
@@ -261,9 +251,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
           dirty_tracker_->parent_tracker_id(), &parent_tracker)) {
     token->RecordLog("Missing parent tracker for a non sync-root tracker: " +
                      dirty_tracker_->file_id());
-    NOTREACHED_IN_MIGRATION();
-    SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
 
   if (!HasFolderAsParent(remote_details, parent_tracker.file_id())) {
@@ -421,9 +409,7 @@ void RemoteToLocalSyncer::DidGetRemoteMetadata(
   }
 
   if (!entry) {
-    NOTREACHED_IN_MIGRATION();
-    SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
 
   status = metadata_database()->UpdateByFileResource(*entry);
@@ -662,9 +648,7 @@ void RemoteToLocalSyncer::DidListFolderContent(
   }
 
   if (!file_list) {
-    NOTREACHED_IN_MIGRATION();
-    SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
 
   children->reserve(children->size() + file_list->items().size());

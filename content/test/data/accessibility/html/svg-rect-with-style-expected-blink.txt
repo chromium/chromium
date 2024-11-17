@@ -1,0 +1,5 @@
+rootWebArea fontFamily='Tinos' fontSize=16.00 fontWeight=400.00
+++genericContainer ignored fontFamily='Tinos'
+++++genericContainer fontFamily='Tinos' fontSize=16.00 fontWeight=400.00
+++++++svgRoot fontFamily='Tinos' fontSize=16.00 fontWeight=400.00
+++++++++graphicsSymbol fontFamily='Cousine' name='xyz' fontSize=99.00 fontWeight=900.00

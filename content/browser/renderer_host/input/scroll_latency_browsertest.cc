@@ -111,7 +111,7 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
     // we ensure secondary GestureScrollUpdates update the animation
     // instead of starting a new one.
     command_line->AppendSwitchASCII(
-        cc::switches::kCCScrollAnimationDurationForTesting, "10000000");
+        switches::kCCScrollAnimationDurationForTesting, "10000000");
   }
 
   void LoadURL() {
@@ -246,10 +246,18 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
       0, "EventLatency.GestureScrollUpdate.TotalLatency2"));
 }
 
+// TODO(crbug.com/370658912) heap-use-after-free on Win ASAN.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ScrollingEventLatencyTrace DISABLED_ScrollingEventLatencyTrace
+#else
+#define MAYBE_ScrollingEventLatencyTrace ScrollingEventLatencyTrace
+#endif  // BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+
 // A basic smoke test verifying that key scroll-related events are recorded
 // during scrolling. This test performs a simple scroll and expects to see three
 // EventLatency events with the correct types.
-IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingEventLatencyTrace) {
+IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
+                       MAYBE_ScrollingEventLatencyTrace) {
   LoadURL();
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("input.scrolling");

@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">సాధారణ</translation>
 <translation id="1591562245178063882">ఈ నెల</translation>
 <translation id="1637811476055996098">ఫైళ్లను ఎంచుకోండి</translation>
-<translation id="1680090928918677457">కెమెరాను ఉపయోగించండి</translation>
 <translation id="1729654308190250600">దయచేసి ఖాళీ-కాని ఈమెయిల్‌ అడ్రస్‌ను నమోదు చేయండి.</translation>
 <translation id="1758486001363313524">ఇతర...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">దయచేసి ఈ వచనాన్ని <ph name="MAX_CHARACTERS" /> అక్షరాలకు లేదా అంతకంటే తక్కువకు తగ్గించండి (మీరు ప్రస్తుతం <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />వ వారం, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ట్రాక్ <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">కెమెరా మరియు మైక్రోఫోన్ అనుమతించబడ్డాయి</translation>
 <translation id="2507943997699731163">దయచేసి ఈ ఫీల్డ్‌ను పూర్తి చేయండి.</translation>
 <translation id="2613802280814924224">దయచేసి చెల్లుబాటు అయ్యే విలువను నమోదు చేయండి. <ph name="VALID_VALUE" /> అనేది సమీప చెల్లుబాటు విలువ.</translation>
 <translation id="2653659639078652383">సమర్పించు</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />'కి ముందు ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
 <translation id="3846214748874656680">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
-<translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
 <translation id="4360991593054037559">దయచేసి చెల్లుబాటు అయ్యే విలువను నమోదు చేయండి. <ph name="VALID_VALUE_LOW" /> మరియు <ph name="VALID_VALUE_HIGHER" /> అనేవి రెండు సమీప చెల్లుబాటు విలువలు.</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
-<translation id="4663373278480897665">కెమెరా అనుమతించబడింది</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'కి తర్వాత ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
 <translation id="4718048029184481307">చిత్రంలో చిత్రం మోడ్‌లో ప్లే అవుతోంది</translation>
-<translation id="4792862212177489858">లొకేషన్‌ను షేర్ చేయండి</translation>
 <translation id="4812940957355064477">దయచేసి సంఖ్యను నమోదు చేయండి.</translation>
-<translation id="49269513399674318">మైక్రోఫోన్‌ను ఉపయోగించండి</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ఎంచుకోబడ్డాయి</translation>
 <translation id="4992066212339426712">అన్‌మ్యూట్ చేయి</translation>
 <translation id="49969490063480558">దయచేసి '<ph name="ATSIGN" />'కి తర్వాత ఉన్న భాగాన్ని నమోదు చేయండి. '<ph name="INVALIDADDRESS" />' అసంపూర్ణంగా ఉంది.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">ప్లగ్ఇన్‌‌ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు 1 అక్షరాన్ని ఉపయోగిస్తున్నారు).</translation>
-<translation id="7080893216867146095">లొకేషన్ షేరింగ్ అనుమతించబడింది</translation>
 <translation id="709897737746224366">దయచేసి రిక్వెస్ట్ చేసిన ఫార్మాటింగ్‌ను సరిపోల్చండి.</translation>
-<translation id="7134810312945846184">మైక్రోఫోన్, కెమెరాను ఉపయోగించండి</translation>
 <translation id="7263440858009898357">దయచేసి లిస్ట్‌లోని ఒక అంశాన్ని ఎంచుకోండి.</translation>
 <translation id="7364796246159120393">ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="739024184232394898">ఇతర...</translation>

@@ -8,14 +8,15 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/accept_ch_frame_observer.mojom";
 import "services/network/public/mojom/attribution.mojom";
-import "services/network/public/mojom/url_loader_network_service_observer.mojom";
+import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
-import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
-import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
+import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/data_pipe_getter.mojom";
+import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
@@ -28,11 +29,11 @@ import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
-import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/trust_token_access_observer.mojom";
+import "services/network/public/mojom/trust_tokens.mojom";
+import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_bundle_handle.mojom";
-import "services/network/public/mojom/accept_ch_frame_observer.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -97,6 +98,13 @@ struct TrustedUrlRequestParams {
   pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer;
 
   pending_remote<DevToolsObserver>? devtools_observer;
+
+  // Observer which should be notified when this URLRequest leads to an
+  // access of a device bound session. This include registration or
+  // deferral. If this is set to non-null, the observer passed in
+  // URLLoaderFactoryParams will be ignored.
+  pending_remote<DeviceBoundSessionAccessObserver>?
+      device_bound_session_observer;
 
   // Specifies the security state of the client, for cases when the
   // URLLoaderFactory is shared among multiple clients.
@@ -521,14 +529,14 @@ struct URLRequest {
   // ok.
   StorageAccessApiStatus storage_access_api_status;
 
- // Indicates whether web or OS-level Attribution Reporting is supported.
+  // Indicates whether web or OS-level Attribution Reporting is supported.
   AttributionSupport attribution_reporting_support;
 
   // Indicates the value of the request's `Attribution-Reporting-Eligible`
   // header; how this header is interpreted depends on the context in which
   // the request is made.
   AttributionReportingEligibility attribution_reporting_eligibility =
-    AttributionReportingEligibility.kUnset;
+      AttributionReportingEligibility.kUnset;
 
   // When applicable, indicates the token of an Attribution Reporting API
   // eligible navigation request to which the current request is associated.
@@ -543,6 +551,10 @@ struct URLRequest {
   // TODO(crbug.com/40255884): Remove this flag when we launch
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled = false;
+
+  // The socket tag to associate this request with. This is typically set by the
+  // embedder.
+  SocketTag socket_tag;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.
@@ -599,4 +611,13 @@ union DataElement {
   DataElementFile file;
   DataElementDataPipe data_pipe;
   DataElementChunkedDataPipe chunked_data_pipe;
+};
+
+// Typemapped to net::SocketTag.
+struct SocketTag {
+  [EnableIf=is_android]
+  uint32 uid;
+
+  [EnableIf=is_android]
+  int32 tag;
 };

@@ -409,20 +409,19 @@ void ContentDecryptionModuleAdapter::InitializeVideoDecoder(
 void ContentDecryptionModuleAdapter::DecryptAndDecodeAudio(
     scoped_refptr<media::DecoderBuffer> encrypted,
     AudioDecodeCB audio_decode_cb) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "ContentDecryptionModuleAdapter does not support audio decoding";
 }
 
 void ContentDecryptionModuleAdapter::DecryptAndDecodeVideo(
     scoped_refptr<media::DecoderBuffer> encrypted,
     VideoDecodeCB video_decode_cb) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "ContentDecryptionModuleAdapter does not support video decoding";
 }
 
 void ContentDecryptionModuleAdapter::ResetDecoder(StreamType stream_type) {
-  NOTREACHED_IN_MIGRATION()
-      << "ContentDecryptionModuleAdapter does not support decoding";
+  NOTREACHED() << "ContentDecryptionModuleAdapter does not support decoding";
 }
 
 void ContentDecryptionModuleAdapter::DeinitializeDecoder(
@@ -536,7 +535,9 @@ void ContentDecryptionModuleAdapter::OnDecrypt(
   decrypted->set_timestamp(encrypted->timestamp());
   decrypted->set_duration(encrypted->duration());
   decrypted->set_is_key_frame(encrypted->is_key_frame());
-  decrypted->set_side_data(encrypted->side_data());
+  if (encrypted->has_side_data()) {
+    decrypted->set_side_data(encrypted->side_data()->Clone());
+  }
 
   if (decrypt_config_out)
     decrypted->set_decrypt_config(std::move(decrypt_config_out));

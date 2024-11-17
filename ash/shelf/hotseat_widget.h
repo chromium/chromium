@@ -108,6 +108,8 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // hotseat background.
   void UpdateTranslucentBackground();
 
+  void InitializeAccessibilityProperties();
+
   // Calculates the hotseat y position for |hotseat_target_state| in screen
   // coordinates.
   int CalculateHotseatYInScreen(HotseatState hotseat_target_state) const;

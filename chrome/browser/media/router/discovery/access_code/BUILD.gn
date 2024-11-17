@@ -78,16 +78,5 @@ if (!is_android) {
       "//services/preferences/public/cpp",
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-    if (is_chromeos_lacros) {
-      sources += [
-        "access_code_cast_pref_updater_lacros.cc",
-        "access_code_cast_pref_updater_lacros.h",
-      ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
-    }
   }
 }

@@ -28,6 +28,8 @@ static_library("tablet_mode") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",
@@ -36,73 +38,45 @@ static_library("tablet_mode") {
     "//ui/base",
     "//ui/display",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ui/webui/ash/system_web_dialog" ]
-  }
 }
 
-if (is_chromeos_ash) {
-  source_set("unit_tests") {
-    testonly = true
+source_set("unit_tests") {
+  testonly = true
 
-    sources = [ "chrome_content_browser_client_tablet_mode_part_unittest.cc" ]
+  sources = [ "chrome_content_browser_client_tablet_mode_part_unittest.cc" ]
 
-    deps = [
-      ":tablet_mode",
-      "//extensions/common:common_constants",
-      "//testing/gtest",
-      "//url",
-    ]
-  }
-
-  source_set("browser_tests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = [
-      "chrome_content_browser_client_tablet_mode_part_browsertest.cc",
-      "tablet_mode_page_behavior_browsertest.cc",
-    ]
-
-    deps = [
-      "//chrome/browser",
-      "//chrome/browser/ash/system_web_apps",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui/ash/system_web_apps",
-      "//chrome/browser/ui/chromeos",
-      "//chrome/browser/ui/chromeos:test_support",
-      "//chrome/common",
-      "//chrome/common:constants",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-      "//components/prefs",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//third_party/blink/public/common:headers",
-    ]
-  }
+  deps = [
+    ":tablet_mode",
+    "//extensions/common:common_constants",
+    "//testing/gtest",
+    "//url",
+  ]
 }
 
-if (is_chromeos_lacros) {
-  source_set("lacros_chrome_browsertests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "tablet_mode_page_behavior_browsertest.cc" ]
+  sources = [
+    "chrome_content_browser_client_tablet_mode_part_browsertest.cc",
+    "tablet_mode_page_behavior_browsertest.cc",
+  ]
 
-    deps = [
-      "//chrome/browser",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui/chromeos:test_support",
-      "//chrome/common",
-      "//chrome/test:test_support",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//third_party/blink/public/common:headers",
-    ]
-  }
+  deps = [
+    "//chrome/browser",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/chromeos:test_support",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//third_party/blink/public/common:headers",
+  ]
 }

@@ -43,6 +43,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   static CSSValue* Create(const Length& value, float zoom);
 
   WTF::String CssText() const;
+  unsigned Hash() const;
 
   bool IsNumericLiteralValue() const {
     return class_type_ == kNumericLiteralClass;
@@ -52,6 +53,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return IsNumericLiteralValue() || IsMathFunctionValue();
   }
   bool IsIdentifierValue() const { return class_type_ == kIdentifierClass; }
+  bool IsScopedKeywordValue() const {
+    return class_type_ == kScopedKeywordClass;
+  }
   bool IsValuePair() const { return class_type_ == kValuePairClass; }
   bool IsValueList() const { return class_type_ >= kValueListClass; }
 
@@ -176,6 +180,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsGridIntegerRepeatValue() const {
     return class_type_ == kGridIntegerRepeatClass;
   }
+  bool IsGridRepeatValue() const {
+    return IsGridAutoRepeatValue() || IsGridIntegerRepeatValue();
+  }
   bool IsPendingSubstitutionValue() const {
     return class_type_ == kPendingSubstitutionValueClass;
   }
@@ -201,9 +208,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsLightDarkValuePair() const {
     return class_type_ == kLightDarkValuePairClass;
   }
-  bool IsAppearanceAutoBaseSelectValuePair() const {
-    return class_type_ == kAppearanceAutoBaseSelectValuePairClass;
-  }
 
   bool IsScrollValue() const { return class_type_ == kScrollClass; }
   bool IsViewValue() const { return class_type_ == kViewClass; }
@@ -214,6 +218,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsRelativeColorValue() const {
     return class_type_ == kRelativeColorClass;
   }
+
+  bool IsRepeatValue() const { return class_type_ == kRepeatClass; }
 
   bool HasFailedOrCanceledSubresources() const;
   bool MayContainUrl() const;
@@ -232,6 +238,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsScopedValue() const { return !needs_tree_scope_population_; }
 
+  const CSSValue* UntaintedCopy() const;
+
 #if DCHECK_IS_ON()
   WTF::String ClassTypeToString() const;
 #endif
@@ -247,6 +255,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kNumericLiteralClass,
     kMathFunctionClass,
     kIdentifierClass,
+    kScopedKeywordClass,
     kColorClass,
     kColorMixClass,
     kCounterClass,
@@ -256,7 +265,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kURIClass,
     kValuePairClass,
     kLightDarkValuePairClass,
-    kAppearanceAutoBaseSelectValuePairClass,
     kScrollClass,
     kViewClass,
     kRatioClass,
@@ -337,6 +345,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kGridAutoRepeatClass,
     kGridIntegerRepeatClass,
     kAxisClass,
+    kRepeatClass,
     // Do not append non-list class types here.
   };
 
@@ -381,6 +390,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // Used for use counting of such situations (to see if we can try to remove
   // the functionality).
   uint8_t was_quirky_ : 1 = false;
+
+  // See css_attr_value_tainting.h.
+  uint8_t attr_tainted_ : 1 = false;
 
  private:
   const uint8_t class_type_;  // ClassType

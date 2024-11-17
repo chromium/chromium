@@ -5,6 +5,7 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 
 #include <tuple>
+#include <utility>
 
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -40,7 +41,9 @@ FirstPartySetEntry::FirstPartySetEntry(
     SchemefulSite primary,
     SiteType site_type,
     std::optional<FirstPartySetEntry::SiteIndex> site_index)
-    : primary_(primary), site_type_(site_type), site_index_(site_index) {
+    : primary_(std::move(primary)),
+      site_type_(site_type),
+      site_index_(site_index) {
   switch (site_type_) {
     case SiteType::kPrimary:
     case SiteType::kService:
@@ -55,7 +58,7 @@ FirstPartySetEntry::FirstPartySetEntry(SchemefulSite primary,
                                        SiteType site_type,
                                        uint32_t site_index)
     : FirstPartySetEntry(
-          primary,
+          std::move(primary),
           site_type,
           std::make_optional(FirstPartySetEntry::SiteIndex(site_index))) {}
 
@@ -85,9 +88,8 @@ std::optional<net::SiteType> FirstPartySetEntry::DeserializeSiteType(
     case static_cast<int>(net::SiteType::kService):
       return net::SiteType::kService;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown SiteType: " << value;
+      NOTREACHED() << "Unknown SiteType: " << value;
   }
-  return std::nullopt;
 }
 
 std::string FirstPartySetEntry::GetDebugString() const {

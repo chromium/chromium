@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("site_data_proto") {
@@ -16,6 +17,8 @@ static_library("performance_manager") {
     "browser_child_process_watcher.h",
     "decorators/frame_visibility_decorator.cc",
     "decorators/frame_visibility_decorator.h",
+    "decorators/important_frame_decorator.cc",
+    "decorators/important_frame_decorator.h",
     "decorators/page_aggregator.cc",
     "decorators/page_aggregator.h",
     "decorators/page_aggregator_data.cc",
@@ -169,7 +172,6 @@ static_library("performance_manager") {
     "public/graph/node_state.h",
     "public/graph/node_type.h",
     "public/graph/page_node.h",
-    "public/graph/policies/background_tab_loading_policy.h",
     "public/graph/process_node.h",
     "public/graph/system_node.h",
     "public/graph/worker_node.h",
@@ -198,12 +200,15 @@ static_library("performance_manager") {
     "public/resource_attribution/resource_types.h",
     "public/resource_attribution/type_helpers.h",
     "public/resource_attribution/worker_context.h",
+    "public/scenarios/performance_scenario_observer.h",
+    "public/scenarios/performance_scenarios.h",
+    "public/tracing_support.h",
     "public/user_tuning/prefs.h",
     "public/user_tuning/tab_revisit_tracker.h",
     "public/v8_memory/v8_detailed_memory.h",
     "public/v8_memory/v8_detailed_memory_any_seq.h",
     "public/v8_memory/web_memory.h",
-    "public/viewport_intersection_state.h",
+    "public/viewport_intersection.h",
     "public/voting/optional_voting_channel.h",
     "public/voting/voting.h",
     "registered_objects.h",
@@ -240,10 +245,19 @@ static_library("performance_manager") {
     "resource_attribution/worker_client_pages.cc",
     "resource_attribution/worker_client_pages.h",
     "resource_attribution/worker_context.cc",
+    "scenarios/loading_scenario_data.cc",
+    "scenarios/loading_scenario_data.h",
+    "scenarios/loading_scenario_observer.cc",
+    "scenarios/loading_scenario_observer.h",
+    "scenarios/performance_scenario_data.cc",
+    "scenarios/performance_scenario_data.h",
+    "scenarios/performance_scenario_oberver.cc",
+    "scenarios/performance_scenarios.cc",
     "service_worker_context_adapter.cc",
     "service_worker_context_adapter.h",
     "tab_helper_frame_node_source.cc",
     "tab_helper_frame_node_source.h",
+    "tracing_support.cc",
     "user_tuning/prefs.cc",
     "user_tuning/tab_revisit_tracker.cc",
     "v8_memory/v8_context_tracker.cc",
@@ -260,6 +274,7 @@ static_library("performance_manager") {
     "v8_memory/web_memory_aggregator.h",
     "v8_memory/web_memory_impl.cc",
     "v8_memory/web_memory_impl.h",
+    "viewport_intersection.cc",
     "worker_watcher.cc",
     "worker_watcher.h",
   ]
@@ -267,6 +282,7 @@ static_library("performance_manager") {
   deps = [
     "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
+    "//components/guest_view/buildflags",
     "//components/metrics",
     "//components/pref_registry:pref_registry",
     "//components/prefs:prefs",
@@ -286,6 +302,10 @@ static_library("performance_manager") {
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+  }
 
   if (!is_android) {
     sources += [
@@ -354,6 +374,7 @@ source_set("unit_tests") {
   sources = [
     "decorators/decorators_utils_unittest.cc",
     "decorators/frame_visibility_decorator_unittest.cc",
+    "decorators/important_frame_decorator_unittest.cc",
     "decorators/page_aggregator_unittest.cc",
     "decorators/page_live_state_decorator_unittest.cc",
     "decorators/page_load_tracker_decorator_unittest.cc",
@@ -411,6 +432,8 @@ source_set("unit_tests") {
     "resource_attribution/resource_contexts_unittest.cc",
     "resource_attribution/type_helpers_unittest.cc",
     "resource_attribution/worker_context_unittest.cc",
+    "scenarios/loading_scenario_observer_unittest.cc",
+    "scenarios/performance_scenarios_unittest.cc",
     "test_support/mock_graphs_unittest.cc",
     "user_tuning/prefs_unittest.cc",
     "user_tuning/tab_revisit_tracker_unittest.cc",

@@ -8,7 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.components.autofill.PaymentsBubbleClosedReason;
+import org.chromium.components.autofill.PaymentsUiClosedReason;
 
 /** JNI wrapper for C++ MandatoryReauthBubbleController. Delegates calls from Java to native. */
 @JNINamespace("autofill")
@@ -29,7 +29,7 @@ class MandatoryReauthOptInBottomSheetControllerBridge
     }
 
     @Override
-    public void onClosed(@PaymentsBubbleClosedReason int closedReason) {
+    public void onClosed(@PaymentsUiClosedReason int closedReason) {
         if (mNativeMandatoryReauthBubbleControllerImpl != 0) {
             MandatoryReauthOptInBottomSheetControllerBridgeJni.get()
                     .onClosed(mNativeMandatoryReauthBubbleControllerImpl, closedReason);
@@ -46,6 +46,6 @@ class MandatoryReauthOptInBottomSheetControllerBridge
     interface Natives {
         void onClosed(
                 long nativeMandatoryReauthBubbleControllerImpl,
-                @PaymentsBubbleClosedReason int closedReason);
+                @PaymentsUiClosedReason int closedReason);
     }
 }

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
@@ -75,12 +74,12 @@ component("wm") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//ui/aura",
     "//ui/base",
     "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/mojom:mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/color",
     "//ui/compositor",
     "//ui/display",
@@ -101,7 +100,7 @@ component("wm") {
     "//ui/resources",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "core/ime_util_chromeos.cc",
       "core/ime_util_chromeos.h",
@@ -116,7 +115,7 @@ static_library("test_support") {
     "test/testing_cursor_client_observer.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "test/wm_test_helper.cc",
       "test/wm_test_helper.h",
@@ -163,7 +162,6 @@ test("wm_unittests") {
     ":wm",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
@@ -196,7 +194,7 @@ test("wm_unittests") {
     data_deps += [ "//ui/resources:ui_test_pak_data_200_percent" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "core/ime_util_chromeos_unittest.cc" ]
   }
 

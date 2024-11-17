@@ -81,6 +81,16 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount;
 // default apps (for Browser & Search) in Android.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kClayBlocking);
+
+// Enables the alternative behaviour for the connection to the default apps
+// choice internal backend in Android.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kClayBackendConnectionV2);
+
+// Enables showing a snackbar when users change their default search engine in
+// Android.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kClaySnackbar);
 #endif
 
 // Kill switch to revert the fix of using assistedQueryStats for prefetch source
@@ -96,6 +106,12 @@ BASE_DECLARE_FEATURE(kRemoveSearchboxStatsParamFromPrefetchRequests);
 // Switch guarding TemplateURL reconciliation mechanism.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kTemplateUrlReconciliation);
+
+// Parameter associated with kTemplateUrlReconciliation flag.
+// When set to <true>, reconciliation is performed with all known Search Engine
+// definitions.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+extern const base::FeatureParam<bool> kReconcileWithAllKnownEngines;
 
 }  // namespace switches
 

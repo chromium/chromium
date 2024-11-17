@@ -16,7 +16,7 @@ ImmediateCriticalClosure::ImmediateCriticalClosure(std::string_view task_name,
   CHECK(!closure_.is_null());
 }
 
-ImmediateCriticalClosure::~ImmediateCriticalClosure() {}
+ImmediateCriticalClosure::~ImmediateCriticalClosure() = default;
 
 void ImmediateCriticalClosure::Run() {
   CHECK(!closure_.is_null());
@@ -29,7 +29,7 @@ PendingCriticalClosure::PendingCriticalClosure(std::string_view task_name,
   CHECK(!closure_.is_null());
 }
 
-PendingCriticalClosure::~PendingCriticalClosure() {}
+PendingCriticalClosure::~PendingCriticalClosure() = default;
 
 void PendingCriticalClosure::Run() {
   CHECK(!closure_.is_null());

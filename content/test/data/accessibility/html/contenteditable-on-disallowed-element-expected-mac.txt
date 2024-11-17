@@ -1,13 +1,13 @@
 AXWebArea
 ++AXTextArea AXValue='value'
 ++AXTextField AXValue='value'
-++AXGroup AXValue='option'
-++++AXGroup AXValue='option'
-++AXGroup AXTitle='<newline>' AXValue='<newline>'
-++AXGroup
-++AXGroup AXDescription='To get missing image descriptions, open the context menu.'
+++AXTextArea AXValue='option'
+++++AXTextArea AXValue='option'
+++AXTextArea AXTitle='<newline>' AXValue='<newline>'
+++AXTextArea
+++AXTextArea AXDescription='To get missing image descriptions, open the context menu.'
 ++AXStaticText AXValue=' '
-++AXGroup AXDescription='Unable to play media.'
+++AXTextArea AXDescription='Unable to play media.'
 ++++AXGroup
 ++++AXGroup
 ++++++AXButton AXDescription='play'
@@ -20,4 +20,4 @@ AXWebArea
 ++++++AXPopUpButton AXDescription='show more media controls'
 ++++++++AXGroup
 ++++AXSlider AXDescription='video time scrubber' AXValue=0
-++AXGroup
+++AXTextArea

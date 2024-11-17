@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Geolocation.Android.LocationPermissionState"
-    enum="AndroidLocationPermissionState" expires_after="2025-01-26">
+    enum="AndroidLocationPermissionState" expires_after="2025-03-30">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -32,20 +32,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.CoreLocationProvider.Accuracy" units="meter"
+    expires_after="2025-03-30">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the accuracy value (in meters) of a valid Geoposition. Values above
+    10000 meters are considered very inaccurate and are categorized into the
+    overflow bucket. This cap prioritizes accuracy resolution in the lower
+    range.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.CoreLocationProvider.ErrorCode"
     enum="CoreLocationErrorCode" expires_after="2025-07-01">
   <owner>alvinji@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records an enumeration value corresponding to the specific error encountered
     by the CoreLocationProvider while obtaining the device's location.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.CoreLocationProvider.SessionResult"
+    enum="CoreLocationSessionResult" expires_after="2025-09-01">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the overall result of a geolocation session using the
+    CoreLocationProvider. This metric captures the CoreLocationSessionResult
+    representing the final outcome of the session, which could be a success
+    result or any error encountered that prevented the provider from obtaining a
+    valid position. If the session result is kCoreLocationError then the
+    specific error reported by the platform is recorded in the
+    Geolocation.CoreLocationProvider.ErrorCode metric.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.CoreLocationProvider.TimeToFirstPosition"
+    units="ms" expires_after="2025-07-01">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the time duration for getting the first valid Geoposition.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.GeolocationImpl.ClientId"
-    enum="GeolocationClientId" expires_after="2025-01-12">
+    enum="GeolocationClientId" expires_after="2025-03-23">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records an enumeration value when a GeolocationImpl requests the next
     location estimate. The recorded value identifies the client that created the
@@ -75,7 +111,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.LocationProviderManager.Mode"
     enum="LocationProviderManagerMode" expires_after="2026-09-10">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the mode of the LocationProviderManager that acquires a valid
     Geoposition.
@@ -85,24 +121,24 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.LocationProviderManager.Source"
     enum="LocationProviderManagerSource" expires_after="2026-09-10">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the location provider source of the LocationProviderManager that
     acquires a valid Geoposition.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.LocationProviderWinrt.Accuracy" enum="Hresult"
+<histogram name="Geolocation.LocationProviderWinrt.Accuracy" units="meter"
     expires_after="2026-09-15">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>Records the accuracy value of a valid Geoposition.</summary>
 </histogram>
 
 <histogram name="Geolocation.LocationProviderWinrt.CreateGeoposition"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the HRESULT error code encountered when creating a mojom Geoposition
     object.
@@ -112,7 +148,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.LocationProviderWinrt.ErrorStatus"
     enum="WindowsDevicesGeolocationPositionStatus" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records an enumeration value representing the system position status that is
     considered an error status.
@@ -122,7 +158,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.LocationProviderWinrt.OnPositionChanged"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the HRESULT error code encountered when processing a position
     changed event.
@@ -132,7 +168,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.LocationProviderWinrt.OnStatusChanged"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the HRESULT error code encountered when processing a status changed
     event.
@@ -142,7 +178,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.LocationProviderWinrt.PositionSource"
     enum="WindowsDevicesGeolocationPositionSource" expires_after="2026-09-15">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records an enumeration value representing the position source for generating
     a valid Geoposition.
@@ -152,17 +188,29 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.LocationProviderWinrt.RegisterCallbacks"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the HRESULT error code encountered when registering callbacks for
     position and stauts changed events.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.LocationProviderWinrt.SessionResult"
+    enum="Hresult" expires_after="2026-09-15">
+  <owner>chengweih@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the overall result of a geolocation session using the
+    LocationProviderWinrt. This metric captures the HRESULT representing the
+    final outcome of the session, which could be a success (S_OK) or any error
+    encountered that prevented the provider from obtaining a valid position.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.LocationProviderWinrt.StartProvider"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the HRESULT error code encountered when starting the Windows
     platform geolocation provider.
@@ -172,21 +220,43 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.LocationProviderWinrt.TimeToFirstPosition"
     units="ms" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the time duration for getting the first valid Geoposition.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.NetworkLocationRequest.Event"
-    enum="NetworkLocationRequestEvent" expires_after="2025-03-09">
-  <owner>mattreynolds@chromium.org</owner>
+<histogram name="Geolocation.NetworkLocationProvider.SessionResult"
+    enum="NetworkLocationRequestResult" expires_after="2025-04-17">
+  <owner>alvinji@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
-    Events in NetworkLocationRequest.
+    Records the overall result of a geolocation session using the
+    NetworkLocationProvider. This metric captures the
+    NetworkLocationRequestResult representing the final outcome of the session,
+    which could be a success result or first error encountered that prevented
+    the provider from obtaining a valid position. Noted that a short-lived
+    session without a position or error updated is not recorded.
+  </summary>
+</histogram>
 
-    Warning: this histogram was expired after M85 and brought back 2021-04-23;
-    data may be missing.
+<histogram name="Geolocation.NetworkLocationProvider.TimeToFirstPosition"
+    units="ms" expires_after="2025-04-17">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the time duration between starting the provider and getting the
+    first valid Geoposition for NetworkLocationProvider.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.NetworkLocationRequest.Accuracy" units="meter"
+    expires_after="2025-10-15">
+  <owner>chengweih@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the accuracy value of a valid Geoposition from the
+    NetworkLocationProvider.
   </summary>
 </histogram>
 
@@ -202,7 +272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.ResponseCode"
-    enum="HttpResponseCode" expires_after="2025-03-09">
+    enum="HttpResponseCode" expires_after="2025-05-11">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -213,10 +283,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.NetworkLocationRequest.Source"
-    enum="NetworkLocationRequestSource" expires_after="2025-02-23">
+<histogram name="Geolocation.NetworkLocationRequest.Result"
+    enum="NetworkLocationRequestResult" expires_after="2025-03-09">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the outcome of a network location request, indicating whether the
+    request succeeded, was canceled, or failed due to various reasons such as
+    network errors, invalid responses, or malformed data. This histogram helps
+    track the distribution of different outcomes for network location requests.
+
+    Note: Before M131, this histogram was originally named
+    Geolocation.NetworkLocationRequest.Event.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.NetworkLocationRequest.Source"
+    enum="NetworkLocationRequestSource" expires_after="2025-04-27">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records an enumeration value when a network request has been sent to the
     network location service. The recorded value identifies the provider that
@@ -225,9 +310,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.PublicIpAddressGeolocator.ClientId"
-    enum="GeolocationClientId" expires_after="2024-09-01">
+    enum="GeolocationClientId" expires_after="2025-03-23">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records an enumeration value when a PublicIpAddressGeolocator requests the
     next location estimate. The recorded value identifies the client that
@@ -238,7 +323,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.SystemGeolocationSourceWin.CheckAccessError"
     enum="Hresult" expires_after="2025-05-27">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the HRESULT error code encountered while checking location access
     status on Windows.
@@ -249,7 +334,7 @@ chromium-metrics-reviews@google.com.
     name="Geolocation.SystemGeolocationSourceWin.CreateAppCapabilityError"
     enum="Hresult" expires_after="2025-05-27">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the HRESULT error code encountered while creating the location app
     capability object on Windows.
@@ -260,7 +345,7 @@ chromium-metrics-reviews@google.com.
     name="Geolocation.SystemGeolocationSourceWin.InitialPermissionStatus"
     enum="LocationSystemPermissionStatus" expires_after="2025-05-27">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records an enumeration value representing the current system location
     permission state when SystemGeolocationSourceWin is initialized at browser
@@ -271,7 +356,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.SystemGeolocationSourceWin.LaunchSettingsResult"
     enum="Hresult" expires_after="2025-05-27">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the HRESULT error code encountered while launching the Windows
     settings page, or S_OK if the settings page was launched without errors.
@@ -282,7 +367,7 @@ chromium-metrics-reviews@google.com.
     name="Geolocation.SystemGeolocationSourceWin.PermissionStatusChanged"
     enum="LocationSystemPermissionStatus" expires_after="2025-05-27">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records an enumeration value representing the current system location
     permission state when SystemGeolocationSourceWin detects that the system
@@ -295,7 +380,7 @@ chromium-metrics-reviews@google.com.
     name="Geolocation.SystemGeolocationSourceWin.PermissionStatusChangedAfterPrompt"
     enum="LocationSystemPermissionStatus" expires_after="2025-05-27">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records an enumeration value representing the system location permission
     state following the first location permission state change after the Windows
@@ -306,7 +391,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Geolocation.SystemGeolocationSourceWin.RequestAccessResult"
     enum="Hresult" expires_after="2025-05-27">
   <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
+  <owner>device-dev@chromium.org</owner>
   <summary>
     Records the HRESULT error code encountered while requesting location access,
     or S_OK if location access was requested without errors.

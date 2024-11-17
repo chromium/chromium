@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -99,7 +100,7 @@ void GuestOsHandler::HandleRemoveGuestOsSharedPath(
   std::string vm_name = args[1].GetString();
   std::string path = args[2].GetString();
 
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->UnsharePath(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->UnsharePath(
       vm_name, base::FilePath(path),
       /*unpersist=*/true,
       base::BindOnce(&GuestOsHandler::OnGuestOsSharedPathRemoved,

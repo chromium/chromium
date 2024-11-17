@@ -387,6 +387,18 @@ void GraphInfoBuilder::BuildReshape(uint64_t input_operand_id,
       mojom::Operation::NewReshape(std::move(reshape)));
 }
 
+void GraphInfoBuilder::BuildScatterElements(uint64_t input_operand_id,
+                                            uint64_t indices_operand_id,
+                                            uint64_t updates_operand_id,
+                                            uint64_t output_operand_id,
+                                            uint32_t axis) {
+  mojom::ScatterElementsPtr scatter_elements = mojom::ScatterElements::New(
+      input_operand_id, indices_operand_id, updates_operand_id,
+      output_operand_id, axis, "");
+  graph_info_->operations.push_back(
+      mojom::Operation::NewScatterElements(std::move(scatter_elements)));
+}
+
 void GraphInfoBuilder::BuildScatterND(uint64_t input_operand_id,
                                       uint64_t indices_operand_id,
                                       uint64_t updates_operand_id,
@@ -486,19 +498,17 @@ void GraphInfoBuilder::BuildWhere(uint64_t condition_operand_id,
 
 void GraphInfoBuilder::BuildSlice(uint64_t input_operand_id,
                                   uint64_t output_operand_id,
-                                  std::vector<uint32_t> starts,
-                                  std::vector<uint32_t> sizes) {
-  CHECK(starts.size() == sizes.size());
+                                  base::span<const uint32_t> starts,
+                                  base::span<const uint32_t> sizes,
+                                  base::span<const uint32_t> strides) {
+  CHECK_EQ(starts.size(), sizes.size());
+  CHECK_EQ(starts.size(), strides.size());
   mojom::SlicePtr slice = mojom::Slice::New();
   slice->input_operand_id = input_operand_id;
   slice->output_operand_id = output_operand_id;
-  for (uint32_t i = 0; i < starts.size(); ++i) {
-    mojom::StartAndSizePtr start_and_size = mojom::StartAndSize::New();
-    start_and_size->start = starts[i];
-    start_and_size->size = sizes[i];
-    slice->starts_and_sizes.push_back(std::move(start_and_size));
+  for (size_t i = 0; i < starts.size(); ++i) {
+    slice->ranges.emplace_back(starts[i], sizes[i], strides[i]);
   }
-
   graph_info_->operations.push_back(
       mojom::Operation::NewSlice(std::move(slice)));
 }
@@ -558,6 +568,9 @@ ContextProperties GetContextPropertiesForTesting() {
        /*greater_or_equal_input=*/SupportedDataTypes::All(),
        /*lesser_input=*/SupportedDataTypes::All(),
        /*lesser_or_equal_input=*/SupportedDataTypes::All(),
+       /*logical_and_input=*/DataTypeConstraint::kUint8,
+       /*logical_or_input=*/DataTypeConstraint::kUint8,
+       /*logical_xor_input=*/DataTypeConstraint::kUint8,
        /*logical_not_input=*/SupportedDataTypes::All(),
        /*logical_output=*/SupportedDataTypes::All(),
        /*abs_input=*/SupportedDataTypes::All(),
@@ -618,6 +631,8 @@ ContextProperties GetContextPropertiesForTesting() {
        /*relu_input=*/SupportedDataTypes::All(),
        /*resample2d_input=*/SupportedDataTypes::All(),
        /*reshape_input=*/SupportedDataTypes::All(),
+       /*scatter_elements_input=*/SupportedDataTypes::All(),
+       /*scatter_elements_indices=*/SupportedDataTypes::All(),
        /*scatter_nd_input=*/SupportedDataTypes::All(),
        /*scatter_nd_indices=*/SupportedDataTypes::All(),
        /*sigmoid_input=*/SupportedDataTypes::All(),

@@ -14,26 +14,32 @@ source_set("lens") {
   public = [
     "lens_overlay_controller.h",
     "lens_overlay_entry_point_controller.h",
-    "lens_overlay_invocation_source.h",
+    "lens_overlay_gen204_controller.h",
+    "lens_overlay_image_helper.h",
     "lens_overlay_side_panel_navigation_throttle.h",
     "lens_overlay_untrusted_ui.h",
     "lens_side_panel_untrusted_ui.h",
-    "search_bubble_ui.h",
   ]
-  friend = [ ":*" ]
+  friend = [
+    ":*",
+
+    # TODO(crbug.com/375491451): This short-term solution allows Ash Chrome to # depend on Lens Overlay directly for expediency. Remove this when the
+    # long-term refactor to separate clients is implemented.
+    "//chrome/browser/ui/ash/capture_mode",
+  ]
   sources = [
     "lens_overlay_blur_layer_delegate.cc",
     "lens_overlay_blur_layer_delegate.h",
     "lens_overlay_colors.h",
     "lens_overlay_controller.cc",
-    "lens_overlay_controller_glue.cc",
-    "lens_overlay_controller_glue.h",
-    "lens_overlay_dismissal_source.h",
     "lens_overlay_entry_point_controller.cc",
     "lens_overlay_event_handler.cc",
     "lens_overlay_event_handler.h",
+    "lens_overlay_gen204_controller.cc",
     "lens_overlay_image_helper.cc",
     "lens_overlay_image_helper.h",
+    "lens_overlay_languages_controller.cc",
+    "lens_overlay_languages_controller.h",
     "lens_overlay_proto_converter.cc",
     "lens_overlay_proto_converter.h",
     "lens_overlay_query_controller.cc",
@@ -54,13 +60,8 @@ source_set("lens") {
     "lens_permission_bubble_controller.h",
     "lens_preselection_bubble.cc",
     "lens_preselection_bubble.h",
-    "lens_search_bubble_controller.cc",
-    "lens_search_bubble_controller.h",
     "lens_side_panel_untrusted_ui.cc",
     "ref_counted_lens_overlay_client_logs.h",
-    "search_bubble_page_handler.cc",
-    "search_bubble_page_handler.h",
-    "search_bubble_ui.cc",
   ]
 
   public_deps = [
@@ -69,7 +70,10 @@ source_set("lens") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/find_in_page",
+    "//components/lens",
     "//content/public/browser",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   deps = [
@@ -86,8 +90,6 @@ source_set("lens") {
     "//chrome/browser/profiles",
     "//chrome/browser/resources/lens/overlay:resources",
     "//chrome/browser/resources/lens/overlay:resources_grit",
-    "//chrome/browser/resources/lens/overlay/search_bubble:resources",
-    "//chrome/browser/resources/lens/overlay/search_bubble:resources_grit",
     "//chrome/browser/resources/lens/shared:resources",
     "//chrome/browser/resources/lens/shared:resources_grit",
     "//chrome/browser/search",
@@ -97,6 +99,7 @@ source_set("lens") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/hats",
     "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/toolbar",
@@ -109,6 +112,7 @@ source_set("lens") {
     "//components/base32",
     "//components/constrained_window",
     "//components/endpoint_fetcher",
+    "//components/feature_engagement/public",
     "//components/input",
     "//components/language/core/common",
     "//components/lens:enterprise_policy",
@@ -122,6 +126,7 @@ source_set("lens") {
     "//components/sync/service",
     "//components/sync_preferences",
     "//components/unified_consent",
+    "//components/user_education/webui",
     "//components/variations",
     "//components/variations:variations_mojom",
     "//components/version_info:channel",
@@ -129,6 +134,7 @@ source_set("lens") {
     "//components/zoom",
     "//google_apis",
     "//google_apis/common:common",
+    "//google_apis/common:request_util",
     "//mojo/public/cpp/bindings",
     "//net",
     "//net/traffic_annotation",
@@ -143,6 +149,7 @@ source_set("lens") {
     "//ui/gfx:gfx",
     "//ui/gfx/codec:codec",
     "//ui/gfx/geometry:geometry",
+    "//ui/menus",
     "//ui/views",
     "//ui/webui",
     "//url",
@@ -150,7 +157,20 @@ source_set("lens") {
 
   if (enable_pdf) {
     deps += [ "//components/pdf/browser" ]
+    public_deps += [ "//pdf/mojom" ]
   }
+}
+
+source_set("test_query_controller") {
+  sources = [
+    "test_lens_overlay_query_controller.cc",
+    "test_lens_overlay_query_controller.h",
+  ]
+
+  deps = [
+    ":lens",
+    "//google_apis/common",
+  ]
 }
 
 source_set("browser_tests") {
@@ -162,11 +182,13 @@ source_set("browser_tests") {
   ]
   deps = [
     ":lens",
+    ":test_query_controller",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin/e2e_tests:test_support",
     "//chrome/browser/sync",
     "//chrome/browser/themes",
     "//chrome/browser/ui",
@@ -174,16 +196,21 @@ source_set("browser_tests") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/find_bar",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/hats:test_support",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//components/constrained_window",
+    "//components/feature_engagement/public",
     "//components/lens:enterprise_policy",
     "//components/lens:features",
     "//components/lens/proto/server:proto",
     "//components/permissions:test_support",
     "//components/prefs",
     "//components/renderer_context_menu",
+    "//components/signin/public/identity_manager:test_support",
     "//components/ukm:test_support",
     "//content/public/browser",
     "//content/public/common",
@@ -191,6 +218,7 @@ source_set("browser_tests") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//pdf:features",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/base",
     "//ui/base:types",
     "//ui/compositor",
@@ -215,6 +243,7 @@ source_set("interactive_ui_tests") {
   ]
   deps = [
     ":lens",
+    ":test_query_controller",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
@@ -223,7 +252,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/themes",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/feature_engagement/public",
@@ -240,7 +269,9 @@ source_set("interactive_ui_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "lens_overlay_gen204_controller_unittest.cc",
     "lens_overlay_image_helper_unittest.cc",
+    "lens_overlay_languages_controller_unittest.cc",
     "lens_overlay_proto_converter_unittest.cc",
     "lens_overlay_query_controller_unittest.cc",
     "lens_overlay_request_id_generator_unittest.cc",
@@ -249,11 +280,13 @@ source_set("unit_tests") {
   ]
   deps = [
     ":lens",
+    ":test_query_controller",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/search_engines",
     "//chrome/browser/themes",
     "//chrome/test:test_support",
     "//components/base32",

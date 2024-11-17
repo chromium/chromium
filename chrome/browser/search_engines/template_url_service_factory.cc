@@ -25,7 +25,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "rlz/buildflags/buildflags.h"
@@ -40,7 +40,8 @@
 
 // static
 TemplateURLService* TemplateURLServiceFactory::GetForProfile(Profile* profile) {
-  TRACE_EVENT0("loading", "TemplateURLServiceFactory::GetForProfile");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
+              "TemplateURLServiceFactory::GetForProfile");
 
   return static_cast<TemplateURLService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
@@ -128,7 +129,7 @@ TemplateURLServiceFactory::BuildServiceInstanceForBrowserContext(
 void TemplateURLServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   DefaultSearchManager::RegisterProfilePrefs(registry);
-  EnterpriseSiteSearchManager::RegisterProfilePrefs(registry);
+  EnterpriseSearchManager::RegisterProfilePrefs(registry);
   TemplateURLService::RegisterProfilePrefs(registry);
 }
 

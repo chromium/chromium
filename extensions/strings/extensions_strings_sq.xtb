@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Vlera hyrëse për çelësin privat duhet të jetë një shteg i vlefshëm.</translation>
 <translation id="388442998277590542">Faqja e opsioneve <ph name="OPTIONS_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="3984413272403535372">Gabim gjatë nënshkrimit të shtesës.</translation>
-<translation id="4115165561519362854">Administratori i kësaj pajisjeje kërkon që <ph name="EXTENSION_NAME" /> të ketë një version minimal të <ph name="EXTENSION_VERSION" />. Nuk mund të aktivizohet derisa të jetë përditësuar në atë version (ose më të lartë).</translation>
 <translation id="4233778200880751280">Faqja informuese <ph name="ABOUT_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="471800408830181311">Dështoi të nxjerrë çelësin privat.</translation>
 <translation id="4811956658694082538">Nuk mundi të instalonte paketën sepse një vegël pësoi ndërprerje aksidentale. Provo rifillimin e Chrome dhe provo sërish.</translation>

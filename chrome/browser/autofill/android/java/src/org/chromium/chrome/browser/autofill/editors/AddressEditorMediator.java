@@ -97,7 +97,6 @@ class AddressEditorMediator {
     private List<AutofillAddressUiComponent> mVisibleEditorFields;
     @Nullable private String mCustomDoneButtonText;
     private boolean mAllowDelete;
-    private boolean mShouldTriggerDoneCallbackBeforeCloseAnimation;
 
     @Nullable private PropertyModel mEditorModel;
 
@@ -192,10 +191,6 @@ class AddressEditorMediator {
 
     public void setAllowDelete(boolean allowDelete) {
         mAllowDelete = allowDelete;
-    }
-
-    public void setShouldTriggerDoneCallbackBeforeCloseAnimation(boolean shouldTrigger) {
-        mShouldTriggerDoneCallbackBeforeCloseAnimation = shouldTrigger;
     }
 
     void setCustomDoneButtonText(@Nullable String customDoneButtonText) {

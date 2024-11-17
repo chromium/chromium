@@ -44,7 +44,7 @@ class ArcSurveyServiceTest : public testing::Test {
     arc_service_manager_.set_browser_context(nullptr);
   }
 
-  void OnTaskCreated(int32_t task_id, const std::string package_name) {
+  void OnTaskCreated(int32_t task_id, const std::string& package_name) {
     arc_survey_service_->OnTaskCreated(task_id, package_name, "" /* activity */,
                                        "" /* intent */, 0 /* session_id */);
   }

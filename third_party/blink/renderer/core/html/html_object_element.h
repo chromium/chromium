@@ -60,7 +60,7 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   bool HasFallbackContent() const override;
   bool UseFallbackContent() const override;
 
-  bool IsFormControlElement() const override { return false; }
+  bool IsObjectElement() const override { return true; }
 
   bool IsEnumeratable() const override { return true; }
 
@@ -72,10 +72,8 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
 
   // Implementations of constraint validation API.
   // Note that the object elements are always barred from constraint validation.
-  String validationMessage() const override { return String(); }
   bool checkValidity() { return true; }
   bool reportValidity() { return true; }
-  void setCustomValidity(const String&) override {}
 
   bool CanContainRangeEndPoint() const override { return UseFallbackContent(); }
 
@@ -141,13 +139,6 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   bool use_fallback_content_ : 1;
 };
 
-// Like To<HTMLObjectElement>() but accepts a ListedElement as input
-// instead of a Node.
-const HTMLObjectElement* ToHTMLObjectElementFromListedElement(
-    const ListedElement*);
-const HTMLObjectElement& ToHTMLObjectElementFromListedElement(
-    const ListedElement&);
-
 template <>
 struct DowncastTraits<HTMLObjectElement> {
   static bool AllowFrom(const HTMLFrameOwnerElement& element) {
@@ -164,6 +155,9 @@ struct DowncastTraits<HTMLObjectElement> {
     // true if `node` is derived from `Element`.
     return node.IsHTMLElement() &&
            IsA<HTMLObjectElement>(UnsafeTo<HTMLElement>(node));
+  }
+  static bool AllowFrom(const ListedElement& control) {
+    return control.IsObjectElement();
   }
 };
 

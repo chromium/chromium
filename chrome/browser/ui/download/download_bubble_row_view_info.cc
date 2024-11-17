@@ -315,8 +315,7 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
     // Deprecated
     case FailState::NETWORK_INSTABILITY:
     case FailState::CANNOT_DOWNLOAD:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case FailState::NO_FAILURE:
       return;
   }
@@ -336,8 +335,7 @@ void DownloadBubbleRowViewInfo::PopulateForTailoredWarning(
     case TailoredWarningType::kCookieTheftWithAccountInfo:
       return PopulateDangerousUiPattern();
     case TailoredWarningType::kNoTailoredWarning: {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
   }
 }
@@ -364,4 +362,9 @@ void DownloadBubbleRowViewInfo::Reset() {
   has_subpage_ = false;
   primary_button_command_ = std::nullopt;
   progress_bar_ = DownloadBubbleProgressBar::NoProgressBar();
+}
+
+bool DownloadBubbleRowViewInfo::ShouldShowDeepScanNotice() const {
+  return ShouldShowDeepScanPromptNotice(model_->profile(),
+                                        model_->GetDangerType());
 }

@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
@@ -160,7 +159,6 @@ component("gl") {
 
   deps = [
     ":buildflags",
-    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//ui/base:ozone_buildflags",
     "//ui/gfx/mojom",
@@ -353,7 +351,10 @@ component("gl") {
 
     libs = [ "android" ]
 
-    deps += [ ":gl_jni_headers" ]
+    deps += [
+      ":gl_jni_headers",
+      "//third_party/angle:angle_gpu_info_util",
+    ]
   }
 
   if (is_android || is_chromeos || is_linux) {
@@ -562,14 +563,16 @@ group("gl_unittests_ozone") {
 
 if (is_android) {
   generate_jar_jni("surface_jni_headers") {
-    classes = [ "android/view/Surface.class" ]
+    classes = [
+      "android/view/Surface.class",
+      "android/window/InputTransferToken.class",
+    ]
   }
 
   generate_jni("gl_jni_headers") {
     sources = [
+      "../android/java/src/org/chromium/ui/gl/ChromeSurfaceTexture.java",
       "../android/java/src/org/chromium/ui/gl/ScopedJavaSurfaceControl.java",
-      "../android/java/src/org/chromium/ui/gl/SurfaceTextureListener.java",
-      "../android/java/src/org/chromium/ui/gl/SurfaceTexturePlatformWrapper.java",
     ]
     public_deps = [ ":surface_jni_headers" ]
   }

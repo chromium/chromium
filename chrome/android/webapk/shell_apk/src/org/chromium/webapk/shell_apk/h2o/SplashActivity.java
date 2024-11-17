@@ -27,6 +27,7 @@ import org.chromium.webapk.lib.common.WebApkMetaDataUtils;
 import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserLauncherParams;
 import org.chromium.webapk.shell_apk.HostBrowserUtils;
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 import org.chromium.webapk.shell_apk.LaunchHostBrowserSelector;
 import org.chromium.webapk.shell_apk.WebApkUtils;
 
@@ -151,8 +152,11 @@ public class SplashActivity extends Activity {
                         new LaunchHostBrowserSelector.Callback() {
                             @Override
                             public void onBrowserSelected(
-                                    String hostBrowserPackageName, boolean dialogShown) {
-                                if (hostBrowserPackageName == null) {
+                                    @Nullable
+                                            PackageNameAndComponentName
+                                                    hostBrowserPackageNameAndComponentName,
+                                    boolean dialogShown) {
+                                if (hostBrowserPackageNameAndComponentName == null) {
                                     finish();
                                     return;
                                 }
@@ -160,7 +164,7 @@ public class SplashActivity extends Activity {
                                         HostBrowserLauncherParams.createForIntent(
                                                 SplashActivity.this,
                                                 getIntent(),
-                                                hostBrowserPackageName,
+                                                hostBrowserPackageNameAndComponentName,
                                                 dialogShown,
                                                 /* launchTimeMs= */ -1,
                                                 splashShownTimeMs);

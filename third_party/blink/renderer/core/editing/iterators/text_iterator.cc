@@ -473,9 +473,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
           // sibling shadow root, if any.
           const auto* shadow_root = DynamicTo<ShadowRoot>(node_);
           if (!shadow_root) {
-            NOTREACHED_IN_MIGRATION();
-            should_stop_ = true;
-            return;
+            NOTREACHED();
           }
           if (shadow_root->IsOpen()) {
             // We are the shadow root; exit from here and go back to
@@ -573,7 +571,7 @@ void TextIteratorAlgorithm<Strategy>::HandleReplacedElement() {
     return;
 
   LayoutObject* layout_object = node_->GetLayoutObject();
-  if (layout_object->Style()->UsedVisibility() != EVisibility::kVisible &&
+  if (layout_object->Style()->Visibility() != EVisibility::kVisible &&
       !IgnoresStyleVisibility()) {
     return;
   }
@@ -684,8 +682,7 @@ static bool ShouldEmitNewlinesBeforeAndAfterNode(const Node& node) {
   }
 
   return !r->IsInline() && r->IsLayoutBlock() &&
-         !r->IsFloatingOrOutOfFlowPositioned() && !r->IsBody() &&
-         !r->IsRubyText();
+         !r->IsFloatingOrOutOfFlowPositioned() && !r->IsBody();
 }
 
 template <typename Strategy>
@@ -772,7 +769,7 @@ bool TextIteratorAlgorithm<Strategy>::ShouldRepresentNodeOffsetZero() {
   // unrendered content, we would create VisiblePositions on every call to this
   // function without this check.
   if (!node_->GetLayoutObject() ||
-      node_->GetLayoutObject()->Style()->UsedVisibility() !=
+      node_->GetLayoutObject()->Style()->Visibility() !=
           EVisibility::kVisible ||
       (node_->GetLayoutObject()->IsLayoutBlockFlow() &&
        !To<LayoutBlock>(node_->GetLayoutObject())->Size().height &&

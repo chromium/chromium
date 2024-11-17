@@ -477,7 +477,7 @@ public class BookmarkUtils {
         } else {
             // Use "New tab" as title for both incognito and regular NTP.
             if (url.getSpec().equals(UrlConstants.NTP_URL)) {
-                title = context.getResources().getString(R.string.new_tab_title);
+                title = context.getString(R.string.new_tab_title);
             }
 
             bookmarkId =
@@ -756,8 +756,6 @@ public class BookmarkUtils {
      * @param type The bookmark type of the folder.
      * @return The tint used on the bookmark folder icon.
      */
-    // TODO(crbug.com/40282037): This function isn't used in the new bookmarks manager, remove it
-    // after android-improved-bookmarks is the default.
     public static ColorStateList getFolderIconTint(Context context, @BookmarkType int type) {
         if (type == BookmarkType.READING_LIST) {
             return ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorAccent1(context));

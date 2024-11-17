@@ -78,16 +78,19 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kCoral:
-      AddItemWithIcon(base::to_underlying(CommandId::kCoralNewDesk),
-                      u"New Coral Desk", CreateIconForMenuItem(kCoralOpenIcon));
-      AddItemWithIcon(base::to_underlying(CommandId::kCoralSaveForLater),
-                      u"Save Coral For Later",
-                      CreateIconForMenuItem(kSaveDeskForLaterIcon));
+      // TODO(zxdan): Localize the strings.
+      AddItemWithIcon(base::to_underlying(CommandId::kCoralNewDesk), u"Open",
+                      CreateIconForMenuItem(kCoralOpenIcon));
+      if (features::IsCoralSavedDeskFeatureEnabled() &&
+          !display::Screen::GetScreen()->InTabletMode()) {
+        AddItemWithIcon(base::to_underlying(CommandId::kCoralSaveForLater),
+                        u"Save group for later",
+                        CreateIconForMenuItem(kSaveDeskForLaterIcon));
+      }
       AddSeparator(ui::NORMAL_SEPARATOR);
       add_hide_suggestion_item();
-      // TODO(yulunwu) Replace with product name.
       AddItemWithIcon(base::to_underlying(CommandId::kHideCoralSuggestions),
-                      u"Hide all coral suggestions",
+                      u"Don't suggest group to resume",
                       CreateIconForMenuItem(kForbidIcon));
       break;
     default:
@@ -107,7 +110,7 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
                            : IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_CELSIUS));
   }
 
-  // Add feedback menu for Coral
+  // Add feedback menu for Coral.
   if (chip_type == BirchSuggestionType::kCoral) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddItemWithIcon(base::to_underlying(CommandId::kProvideFeedback),

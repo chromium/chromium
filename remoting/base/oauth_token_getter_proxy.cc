@@ -17,17 +17,15 @@ void ResolveCallback(
     OAuthTokenGetter::TokenCallback on_access_token,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     OAuthTokenGetter::Status status,
-    const std::string& user_email,
-    const std::string& access_token,
-    const std::string& scopes) {
+    const OAuthTokenInfo& token_info) {
   if (!original_task_runner->RunsTasksInCurrentSequence()) {
     original_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(on_access_token), status,
-                                  user_email, access_token, scopes));
+        FROM_HERE,
+        base::BindOnce(std::move(on_access_token), status, token_info));
     return;
   }
 
-  std::move(on_access_token).Run(status, user_email, access_token, scopes);
+  std::move(on_access_token).Run(status, token_info);
 }
 
 }  // namespace

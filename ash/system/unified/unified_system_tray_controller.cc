@@ -128,7 +128,7 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
       qs_view->AddSliderView(volume_slider_controller_->CreateView());
   views::AsViewClass<QuickSettingsSlider>(
       views::AsViewClass<UnifiedVolumeView>(unified_volume_view_)->slider())
-      ->set_is_toggleable_volume_slider(true);
+      ->SetIsToggleableVolumeSlider(true);
 
   brightness_slider_controller_ =
       std::make_unique<UnifiedBrightnessSliderController>(

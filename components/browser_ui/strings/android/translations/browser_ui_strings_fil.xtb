@@ -4,13 +4,16 @@
 <translation id="1006017844123154345">Buksan Online</translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
+<translation id="1070329623210597193">Mga file na puwedeng tingnan o i-edit ng site na ito</translation>
 <translation id="1073417869336441572">Tulungan kaming pahusayin ang Chrome sa pamamagitan ng pagsasabi sa amin kung bakit mo pinayagan ang third-party na cookies. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
+<translation id="1085696779717592361">Gamitin ang Chrome Bilang Default</translation>
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1192844206376121885">Ide-delete nito ang lahat ng data at cookies na na-store ng <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1240190568154816272">Mga tip sa Chrome</translation>
 <translation id="1242008676835033345">Naka-embed sa <ph name="WEBSITE_URL" /></translation>
+<translation id="1263609676484797429">I-tap ang Mga App &gt; Mga default na app</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">Para makatipid ka ng data, na-optimize ng Google ang mga larawan ng page na ito.</translation>
 <translation id="129382876167171263">Lalabas dito ang mga file na na-save ng mga website</translation>
@@ -49,6 +52,7 @@
 <translation id="1979673356880165407">Mas palakihin o mas paliitin ang text at mga larawan para sa lahat ng site na binibisita mo</translation>
 <translation id="1984937141057606926">Pinapayagan, maliban ang third-party</translation>
 <translation id="1985247341569771101">Kapag naka-on, magagamit ng mga site ang mga sensor sa paggalaw ng iyong device. Kapag naka-off, hindi makakagamit ng mga sensor sa paggalaw ang mga site.</translation>
+<translation id="1985716030964443178">Ire-reset nito ang lahat ng site sa iyong listahan sa default na pag-zoom</translation>
 <translation id="1989112275319619282">Mag-browse</translation>
 <translation id="1994173015038366702">URL ng site</translation>
 <translation id="2004697686368036666">Posibleng hindi gumana ang mga feature sa ilang site</translation>
@@ -64,6 +68,7 @@
 <translation id="2182457891543959921">Magtanong bago payagan ang mga site na gumawa ng 3D na mapa ng iyong kapaligiran o subaybayan ang posisyon ng camera (inirerekomenda)</translation>
 <translation id="2185965788978862351">Ide-delete nito ang <ph name="DATASIZE" /> na data at cookies na na-store ng mga site o app sa iyong Home screen.</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
+<translation id="2215727959747642672">Pag-edit ng file</translation>
 <translation id="2228071138934252756">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong camera, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
 <translation id="2238944249568001759">Mga iminumungkahing paghahanap batay sa iyong huling tab</translation>
@@ -73,10 +78,9 @@
 <translation id="228293613124499805">Posibleng nagse-save ng data sa iyong device ang karamihan sa mga site na binibisita mo, kadalasan para mapaganda ang iyong experience sa pamamagitan ng pag-save ng mga preference mo o impormasyong shine-share mo sa site. Inirerekomenda naming panatilihing naka-on ang setting na ito.</translation>
 <translation id="2289270750774289114">Magtanong kapag gusto ng isang site na tumuklas ng mga Bluetooth device na nasa malapit (inirerekomenda)</translation>
 <translation id="2315043854645842844">Hindi sinusuportahan ng operating system ang pagpipilian ng certificate sa panig ng kliyente.</translation>
-<translation id="2321958826496381788">I-drag ang slider hanggang sa mabasa mo ito nang kumportable. Dapat ay halos ganito kalaki ang text pagkatapos mag-double tap sa isang talata.</translation>
+<translation id="2356926036049612643">V8 optimizer</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2379925928934107488">Ilapat ang madilim na tema sa mga site kapag ginagamit ng Chrome ang madilim na tema, kapag posible</translation>
-<translation id="2387895666653383613">Pag-scale ng text</translation>
 <translation id="2390272837142897736">Dagdagan ang pag-zoom</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{Pinapayagan ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
@@ -86,7 +90,6 @@
 <translation id="244264527810019436">Posibleng hindi gumana sa Incognito mode ang mga feature sa ilang site</translation>
 <translation id="2442870161001914531">Palaging hilingin ang pang-desktop na site</translation>
 <translation id="2469312991797799607">Ide-delete ng pagkilos na ito ang lahat ng data at cookies para sa <ph name="ORIGIN" /> at lahat ng site sa ilalim nito</translation>
-<translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
 <translation id="2490684707762498678">Pinapamahalaan ng <ph name="APP_NAME" /></translation>
@@ -96,16 +99,20 @@
 <translation id="2570922361219980984">Naka-off din ang access sa lokasyon para sa device na ito. I-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Pinalawak - i-click upang i-collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
+<translation id="2588271083332682494">Mag-ayos gamit ang mga grupo ng tab</translation>
+<translation id="2594832159966169099">Pamahalaan ang seguridad ng V8</translation>
 <translation id="2597457036804169544">Huwag ilapat ang madilim na tema sa mga site</translation>
 <translation id="2606760465469169465">Awtomatikong pag-verify</translation>
 <translation id="2621115761605608342">Payagan ang JavaScript para sa isang partikular na site.</translation>
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2677748264148917807">Umalis</translation>
-<translation id="2678468611080193228">Subukang payagan nang pansamantala ang third-party na cookies, na nangangahulugan na mas mahina ang proteksyon pero mas malamang na gumana ang mga feature ng site</translation>
+<translation id="2682367912565197520">I-delete ang naka-save na level ng pag-zoom</translation>
 <translation id="2683434792633810741">I-delete at i-reset?</translation>
 <translation id="2713106313042589954">I-off ang camera</translation>
 <translation id="2717722538473713889">Mga email address</translation>
+<translation id="2726059656860238749">Ilunsad ang Chrome nang nakatuon ang Omnibox, na binabawasan ang tagal ng pag-start up sa mga low-end na device.</translation>
 <translation id="2750481671343847896">Puwedeng magpakita ang mga site ng mga prompt sa pag-sign in mula sa mga serbisyo ng pagkakakilanlan.</translation>
+<translation id="2787357173144933081">Simulan ang Omnibox</translation>
 <translation id="2790501146643349491">Kapag naka-on, matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data. Kapag naka-off, hindi matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data.</translation>
 <translation id="2822354292072154809">Sigurado ka bang gusto mong i-reset ang lahat ng pahintulot sa site para sa <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Mag-request ng mobile view</translation>
@@ -124,6 +131,7 @@
 <translation id="3069226013421428034">Payagan ang third-party na pag-sign in para sa partikular na site.</translation>
 <translation id="310297983047869047">Nakaraang slide</translation>
 <translation id="3109724472072898302">Naka-collapse</translation>
+<translation id="310979712355504754">Tanggalin lahat</translation>
 <translation id="3114012059975132928">Player ng video</translation>
 <translation id="3115898365077584848">Ipakita ang Impormasyon</translation>
 <translation id="3123473560110926937">Naka-block sa ilang site</translation>
@@ -137,17 +145,18 @@
 <translation id="3242646949159196181">Kapag naka-on, makakapag-play ng tunog ang mga site. Kapag naka-off, hindi makakapag-play ng tunog ang mga site.</translation>
 <translation id="3273479183583863618">Mga pagbaba ng presyo sa mga tab</translation>
 <translation id="3277252321222022663">Payagan ang mga site na i-access ang mga sensor (inirerekomenda)</translation>
+<translation id="327891165872793509">Nililimitahan ng Chrome ang karamihan sa mga site sa paggamit ng mga third-party na cookies para ma-track ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang access sa third-party na cookies<ph name="END_LINK" />.</translation>
 <translation id="3285500645985761267">Payagan ang mga kaugnay na site na makita ang iyong aktibidad sa grupo</translation>
 <translation id="3295019059349372795">Kabanata 11: The Wonderful Emerald City of Oz</translation>
 <translation id="3295602654194328831">Itago ang Impormasyon</translation>
 <translation id="3328801116991980348">Impormasyon ng site</translation>
 <translation id="3333961966071413176">Lahat ng contact</translation>
+<translation id="3360338140203645771">I-delete ang mga naka-save na level ng pag-zoom?</translation>
 <translation id="3362437373201486687">Nagsa-scan ng mga Bluetooth device</translation>
 <translation id="3386292677130313581">Magtanong bago payagan ang mga site na malaman ang iyong lokasyon (inirerekomenda)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Naka-block ang third-party na cookies</translation>
 <translation id="3448554387819310837">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong camera. Kapag naka-off, hindi magagamit ng mga site ang iyong camera.</translation>
-<translation id="3465378418721443318">{DAYS,plural, =1{Magba-block ulit ang Chrome ng cookies bukas}one{# araw bago mag-block ulit ang Chrome ng cookies}other{# na araw bago mag-block ulit ang Chrome ng cookies}}</translation>
 <translation id="3521663503435878242">Mga site sa ilalim ng <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Huwag payagan ang mga site na i-track ang iyong mga kamay</translation>
 <translation id="3536227077203206203">Pinapayagan sa ngayon</translation>
@@ -163,6 +172,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}one{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}other{<ph name="RWS_MEMBERS_COUNT" /> na site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}}</translation>
 <translation id="3697164069658504920">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga USB device. Kapag naka-off, hindi makakagamit ng mga USB device ang mga site.</translation>
 <translation id="3707034683772193706">Puwedeng mag-save ng kaunting impormasyon sa Chrome ang isang site na binibisita mo, para lang ma-validate na hindi ka bot</translation>
+<translation id="3709818294139939629">Inalis ang file access ng site</translation>
 <translation id="3721953990244350188">I-dismiss at ipakita ang susunod na available na pagkilos</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3763247130972274048">Mag-double tap sa kaliwa o kanan ng video para lumaktaw nang 10s</translation>
@@ -181,6 +191,7 @@
 <translation id="3908288065506437185">I-block ang mga third-party na cookie sa Incognito mode</translation>
 <translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Posibleng hindi gumana ang ilang feature. Puwede pa ring gumamit ng third-party na cookie ang mga nauugnay na site.</translation>
+<translation id="3922092564198021702">Sa iyong telepono, buksan ang Mga Setting</translation>
 <translation id="3933121352599513978">I-collapse ang mga hindi gustong request (inirerekomenda)</translation>
 <translation id="3955193568934677022">Pahintulutan ang mga site na mag-play ng pinoprotektahang content (inirerekomenda)</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
@@ -207,6 +218,7 @@
 <translation id="4338831206024587507">Lahat ng site sa ilalim ng <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Pigilan ang mga site na malaman kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="4412992751769744546">Payagan ang third-party na cookies</translation>
+<translation id="4419929467120297501">Bina-block ng Chrome ang mga site sa paggamit ng third-party na cookies para masubaybayan ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang access sa third-party na cookies<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Mga pop-up at pag-redirect</translation>
 <translation id="443552056913301231">Ide-delete ng pagkilos na ito ang lahat ng lokal na data, kabilang ang cookies, at ire-reset nito ang lahat ng pahintulot para sa <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">I-mute ang tunog para sa isang partikular na site.</translation>
@@ -228,15 +240,16 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">I-on ang Ligtas na Pag-browse</translation>
 <translation id="4811450222531576619">Alamin ang tungkol sa source at paksa nito</translation>
+<translation id="4816495437032298535">Naka-save na pag-zoom para sa mga site</translation>
 <translation id="4836046166855586901">Magtanong kapag gusto ng site na alamin kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="483914009762354899">Isama ang lahat ng site sa ilalim ng domain na ito</translation>
 <translation id="4883854917563148705">Hindi puwedeng i-reset ang mga pinapamahalaang setting</translation>
 <translation id="4887024562049524730">Magtanong bago payagan ang mga site na gamitin ang iyong virtual reality device at data (inirerekomenda)</translation>
+<translation id="4936863036653376783">Mahahanap mo ang iyong mga grupo sa seksyon ng grupo ng tab sa lahat ng device mo</translation>
 <translation id="4953688446973710931">Kapag naka-on, puwedeng hilingin ng mga site na awtomatikong mag-download ng maraming file. Kapag naka-off, hindi awtomatikong makakapag-download ng maraming file ang mga site.</translation>
 <translation id="4962975101802056554">Bawiin ang lahat ng pahintulot para sa device</translation>
 <translation id="497421865427891073">Sumulong</translation>
 <translation id="4976702386844183910">Huling binisita noong <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Pinayagan mo ang third-party na cookies para sa site na ito</translation>
 <translation id="4994033804516042629">Walang nakitang contact</translation>
 <translation id="4996978546172906250">Ibahagi gamit ang</translation>
 <translation id="5001526427543320409">Mga third-party na cookie</translation>
@@ -263,6 +276,7 @@
 <translation id="5246825184569358663">Ide-delete ng pagkilos na ito ang lahat ng lokal na data, kabilang ang cookies, at ire-reset nito ang lahat ng pahintulot para sa <ph name="DOMAIN" /> at lahat ng site sa ilalim nito</translation>
 <translation id="5264323282659631142">Alisin ang '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">I-drag mula sa itaas at pindutin ang button na bumalik upang lumabas sa full screen.</translation>
+<translation id="5292915569214461965">Na-block mo ang mga site sa paggamit ng third-party na cookies para masubaybayan ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang access sa third-party na cookies<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng impormayong na-save ng mga ito tungkol sa iyo. Kapag naka-off, hindi puwedeng hilingin sa iyo ng mga site na gumamit ng impormasyong na-save ng mga ito tungkol sa iyo.</translation>
 <translation id="5300589172476337783">Ipakita</translation>
 <translation id="5301954838959518834">OK, nakuha ko</translation>
@@ -285,6 +299,7 @@
 <translation id="5553374991681107062">Pinakabago</translation>
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="5591840828808741583">Naka-block ang <ph name="SITE_NAME" /></translation>
+<translation id="560980142378233747">Nangangahulugan itong dapat gumana ang mga feature ng site na gaya ng inaasahan, pero posibleng magkaroon ka ng mas mahinang proteksyon sa pag-browse. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Ipakita sa akin kung paano</translation>
 <translation id="5649053991847567735">Mga awtomatikong pag-download</translation>
 <translation id="5668404140385795438">I-override ang kahilingan ng isang website upang mapigilan ang pagzu-zoom in</translation>
@@ -320,6 +335,7 @@
 <translation id="6042308850641462728">Marami pang iba</translation>
 <translation id="6064125863973209585">Mga nakumpletong download</translation>
 <translation id="6071501408666570960">Posibleng ma-sign out ka sa site na ito</translation>
+<translation id="6085954183010297841">I-delete ang pahintulot sa pag-edit ng file? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kapag naka-on, puwedeng hilingin ng mga site na malaman kung kailan mo aktibong ginagamit ang iyong device. Kapag naka-off, hindi malalaman ng mga site kung kailan mo aktibong ginagamit ang iyong device.</translation>
 <translation id="6140839633433422817">Sigurado ka bang gusto mong i-reset ang mga pahintulot, at i-delete ang cookies at data ng site?</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
@@ -334,6 +350,7 @@
 <translation id="6205314730813004066">Privacy sa mga ad</translation>
 <translation id="6207207788774442484">I-delete ang data at i-reset ang mga pahintulot</translation>
 <translation id="6231752747840485235">I-uninstall ang '<ph name="APP_NAME" />'?</translation>
+<translation id="6234351944623978659">I-tap ang Browser app &gt; Chrome</translation>
 <translation id="6262191102408817757">Batay sa iyong huling tab</translation>
 <translation id="6262279340360821358">Naka-block ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Puwedeng humiling ang mga site na magpadala ng mga notification</translation>
@@ -352,6 +369,7 @@
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="652937045869844725">Subukang payagan ang third-party na cookies, na nangangahulugan na mas mahina ang proteksyon pero mas malamang na gumana ang mga feature ng site</translation>
 <translation id="6530703012083415527">Kapag naka-on, makakagamit ng mga pop-up at pag-redirect ang mga site. Kapag naka-off, hindi makakagamit ng mga pop-up at pag-redirect ang mga site .</translation>
+<translation id="6540488083026747005">Pinayagan mo ang third-party na cookies sa site na ito</translation>
 <translation id="6545864417968258051">Pag-scan ng Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="6554732001434021288">Huling binisita <ph name="NUM_DAYS" /> (na) araw ang nakalipas</translation>
@@ -376,8 +394,10 @@
 <translation id="6818926723028410516">Pumili ng mga item</translation>
 <translation id="6838525730752203626">Gamitin ang Chrome bilang default</translation>
 <translation id="6840760312327750441">Sa mga tab ng grupo, pindutin nang matagal ang isang tab. Pagkatapos, i-drag ito sa isa pang tab.</translation>
+<translation id="6851981911629679515">I-on ang karagdagang proteksyon sa JavaScript at WebAssembly engine ng Chrome</translation>
 <translation id="6864395892908308021">Hindi nababasa ng device na ito ang NFC</translation>
 <translation id="6870169401250095575">I-hide ang card na Pag-check sa Kaligtasan</translation>
+<translation id="6900883974539674431">Gumawa ng mga grupo ng tab na awtomatikong nagse-save at nag-a-update sa lahat ng iyong device</translation>
 <translation id="6912998170423641340">I-block ang mga site sa pag-read ng text at mga larawan mula sa clipboard</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6950072572526089586">Puwedeng mag-save ang site na binibisita mo ng impormasyon tungkol sa kung ano ang ginagawa mo para gumana ito na gaya ng inaasahan — halimbawa, para panatilihin kang naka-sign in sa isang site o para mag-save ng mga item sa iyong shopping cart. Kadalasang pansamantalang sine-save ng mga site ang impormasyong ito sa iyong device.</translation>
@@ -405,7 +425,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ang napili</translation>
 <translation id="7260727271532453612">Pinapayagan ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga virtual reality device. Kapag naka-off, hindi makakagamit ang mga site ng mga virtual reality device.</translation>
-<translation id="7284451015630589124">Na-block mo ang mga site sa paggamit ng mga third-party na cookies para ma-track ka habang nagba-browse ka. Tingnan ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Kadalasan mong bina-block ang mga notification. Para payagan, i-tap ang Mga Detalye.</translation>
 <translation id="7366415735885268578">Magdagdag ng site</translation>
 <translation id="7368695150573390554">Made-delete ang anumang offline data</translation>
@@ -415,9 +434,9 @@
 <translation id="7423098979219808738">Magtanong muna</translation>
 <translation id="7423538860840206698">Na-block sa pag-read ng clipboard</translation>
 <translation id="7425915948813553151">Madilim na tema para sa mga site</translation>
-<translation id="7474522811371247902">Nililimitahan ng Chrome ang karamihan ng mga site sa paggamit ng third-party na cookies. Pero pinapayagan ang third-party na cookies sa site na ito dahil umaasa ito sa mga ito para makapagbigay ng mga pangunahing serbisyo.\n\nBisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kapag naka-on, makakapagpakita ang mga site ng mga prompt sa pag-sign in. Kapag naka-off, hindi makakapagpakita ang mga site ng mga prompt sa pag-sign in.</translation>
+<translation id="7553211568594248088">Lumabas sa paghahanap sa hub</translation>
 <translation id="7554752735887601236">Gingamit ng isang site ang iyong mikropono</translation>
 <translation id="7561196759112975576">Palagi</translation>
 <translation id="757524316907819857">I-block ang mga site sa pag-play ng pinoprotektahang content</translation>
@@ -426,7 +445,6 @@
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
-<translation id="7684642910516280563">Huwag payagan ang isang site na gumamit ng third-party na cookies</translation>
 <translation id="7688240020069572972">Itago ang card ng mga tip sa Chrome</translation>
 <translation id="7719367874908701697">Pag-zoom ng page</translation>
 <translation id="7759147511335618829">Kontrol / reprogram: MIDI device</translation>
@@ -436,10 +454,10 @@
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7804248752222191302">Ginagamit ng isang site ang iyong camera</translation>
 <translation id="7807060072011926525">Ibinibigay ng Google</translation>
-<translation id="7822573154188733812">Bina-block ng Chrome ang mga site sa paggamit ng third-party na cookies para ma-track ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Nagpe-play ng media</translation>
 <translation id="783819812427904514">I-unmute ang video</translation>
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>
+<translation id="7881140103901777395">Nililimitahan ng Chrome ang karamihan sa mga site sa paggamit ng third-party na cookies. Pero pinapayagan ang third-party na cookies sa site na ito dahil umaasa ito sa mga ito para makapagbigay ng mga pangunahing serbisyo.\n\nBisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang access sa third-party na cookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Payagan ang tunog para sa isang partikular na site.</translation>
 <translation id="789180354981963912">I-block ang third-party na cookies sa Incognito:</translation>
 <translation id="7940722705963108451">Ipaalala sa akin</translation>
@@ -454,12 +472,14 @@
 <translation id="8077120325605624147">Puwedeng magpakita ng anumang ad sa iyo ang anumang site na bibisitahin mo</translation>
 <translation id="8087000398470557479">Ang content na ito ay mula sa <ph name="DOMAIN_NAME" />, na ipinadala ng Google.</translation>
 <translation id="8088603949666785339">Higit pang opsyon sa <ph name="BANNER_TITLE" /></translation>
+<translation id="8090579562279016251">Pinapahina ang performance pero ginagawang mas matatag ang V8 laban sa mga attack</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{Maglilimita ulit ang Chrome ng cookies bukas}one{# araw bago maglimita ulit ang Chrome ng cookies}other{# na araw bago maglimita ulit ang Chrome ng cookies}}</translation>
 <translation id="8116925261070264013">Naka-mute</translation>
 <translation id="8117244575099414087">Kapag naka-on, magagamit ng mga site ang mga sensor ng iyong device. Kapag naka-off, hindi makakagamit ang mga site ng mga sensor.</translation>
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8168435359814927499">Content</translation>
+<translation id="818487310457576362">Mag-drag mula sa gilid ng screen para lumabas sa full screen.</translation>
 <translation id="8186479265534291036">Hindi gumagana ang site? Naka-block ang third-party na cookies</translation>
 <translation id="8197286292360124385">Pinapayagan ang <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Resume</translation>
@@ -489,10 +509,10 @@
 <translation id="851751545965956758">I-block ang mga site sa pagkonekta sa mga device</translation>
 <translation id="8525306231823319788">Buong screen</translation>
 <translation id="8541410041357371550">Kinukuha ng site na ito ang iyong mga paksa ng ad mula sa Chrome para magpakita pa sa iyo ng mga may kaugnayang ad</translation>
+<translation id="8558480467877843976">Magagamit mo na ngayon ang Chrome sa tuwing magbo-browse o magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="857943718398505171">Pinapayagan (inirerekomenda)</translation>
 <translation id="8609465669617005112">Ilipat sa itaas</translation>
 <translation id="8617611086246832542">Kapag naka-on, ipinapakita ang desktop view ng mga website. Kapag naka-off, ipinapakita ang mobile view ng mga website.</translation>
-<translation id="8649036394979866943">Nililimitahan ng Chrome ang karamihan sa mga site sa paggamit ng mga third-party na cookies para ma-track ka habang nagba-browse ka. Tingnan ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang iyong mga proteksyon sa pag-track<ph name="END_LINK" /></translation>
 <translation id="8676316391139423634">Kapag naka-on, puwedeng magtanong ang mga site na i-track ang iyong mga kamay. Kapag naka-off, hindi mata-track ng mga site ang iyong mga kamay.</translation>
 <translation id="8676374126336081632">I-clear ang input</translation>
 <translation id="8681886425883659911">Bina-block ang mga ad sa mga site na kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad</translation>
@@ -503,9 +523,11 @@
 <translation id="8721719390026067591">Kapag naka-on, puwedeng hilingin ng mga site na maghanap ng mga Bluetooth device. Kapag naka-off, hindi makakapaghanap ng mga Bluetooth device ang mga site.</translation>
 <translation id="8725066075913043281">Subukan ulit</translation>
 <translation id="8730621377337864115">Tapos na</translation>
+<translation id="8737426583868847403">Lalabas dito ang mga site kung para saan ka nag-save ng custom na level ng pag-zoom</translation>
 <translation id="8751914237388039244">Pumili ng larawan</translation>
 <translation id="8800034312320686233">Hindi gumagana ang site?</translation>
 <translation id="8801436777607969138">I-block ang JavaScript para sa isang partikular na site.</translation>
+<translation id="8801657293260363985">V8 ang JavaScript at WebAssembly engine ng Chrome na ginagamit para pahusayin ang performance ng site</translation>
 <translation id="8803526663383843427">Kapag naka-on</translation>
 <translation id="8805385115381080995">Mas mabilis ang pag-browse dahil mas maliit ang posibilidad na hilingin sa iyo ng site na i-verify na totoong tao ka</translation>
 <translation id="8816026460808729765">I-block ang mga site sa pag-access sa mga sensor</translation>
@@ -515,6 +537,7 @@
 <translation id="8899807382908246773">Mga nakakasagabal na ad</translation>
 <translation id="8903921497873541725">Mag-zoom in</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
+<translation id="8926389886865778422">Huwag nang itanong ulit</translation>
 <translation id="8926666909099850184">Naka-off ang NFC para sa device na ito. I-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">I-block ang mga site sa pagtingin at pagbago ng impormasyon sa mga NFC device</translation>
 <translation id="8944485226638699751">Limitado</translation>

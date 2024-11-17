@@ -15,12 +15,15 @@ namespace segmentation_platform {
 class SegmentationPlatformService;
 }
 
+class AuthenticationService;
 @class ContentSuggestionsMetricsRecorder;
 enum class ContentSuggestionsModuleType;
 @protocol HomeStartDataSource;
 @class MagicStackModule;
 @protocol MagicStackRankingModelDelegate;
 class PrefService;
+class TemplateURLService;
+class TipsManagerIOS;
 
 // Manages the Magic Stack module ranking fetch and returns the
 @interface MagicStackRankingModel : NSObject
@@ -41,9 +44,12 @@ class PrefService;
     initWithSegmentationService:
         (segmentation_platform::SegmentationPlatformService*)segmentationService
                 shoppingService:(commerce::ShoppingService*)shoppingService
+                    authService:(AuthenticationService*)authenticationService
                     prefService:(PrefService*)prefService
                      localState:(PrefService*)localState
                 moduleMediators:(NSArray*)moduleMediators
+                    tipsManager:(TipsManagerIOS*)tipsManager
+             templateURLService:(TemplateURLService*)templateURLService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

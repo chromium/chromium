@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MERCHANT_PROMO_CODE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_MERCHANT_PROMO_CODE_MANAGER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/single_field_form_filler.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -23,8 +26,7 @@ class PersonalDataManager;
 // related functionality such as retrieving promo code offer data, managing
 // promo code suggestions, filling promo code fields, and handling form
 // submission data when there is a merchant promo code field present.
-class MerchantPromoCodeManager : public SingleFieldFormFiller,
-                                 public KeyedService {
+class MerchantPromoCodeManager : public KeyedService {
  public:
   MerchantPromoCodeManager();
 
@@ -33,20 +35,15 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
 
   ~MerchantPromoCodeManager() override;
 
-  // SingleFieldFormFiller overrides:
-  [[nodiscard]] bool OnGetSingleFieldSuggestions(
-      const FormStructure* form_structure,
+  // Returns true iff it consumes `on_suggestions_returned`.
+  [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
+      const FormStructure& form_structure,
       const FormFieldData& field,
-      const AutofillField* autofill_field,
+      const AutofillField& autofill_field,
       const AutofillClient& client,
-      OnSuggestionsReturnedCallback on_suggestions_returned) override;
-  void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
-                                  bool is_autocomplete_enabled) override;
-  void CancelPendingQueries() override {}
-  void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
-                                            const std::u16string& value,
-                                            SuggestionType type) override;
-  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) override;
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+          on_suggestions_returned);
+  virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
 
   // Initializes the instance with the given parameters. |personal_data_manager|
   // is a profile-scope data manager used to retrieve promo code offers from the
@@ -94,7 +91,8 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   void SendPromoCodeSuggestions(
       std::vector<const AutofillOfferData*> promo_code_offers,
       const FormFieldData& field,
-      OnSuggestionsReturnedCallback on_suggestions_returned);
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback
+          on_suggestions_returned);
 
   raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;
 

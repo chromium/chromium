@@ -55,11 +55,10 @@ const std::array<LocalClientConfig, 4> kLocalClientConfigs = {{
     {"input_autocorrect_phh", FederatedExampleTableId::INPUT_AUTOCORRECT,
      &features::kAutocorrectFederatedPhh},
     {"launcher_query_analytics_v1", FederatedExampleTableId::LAUNCHER_QUERY,
-     &features::kFederatedLauncherQueryAnalyticsTask},
+     nullptr},
     {"launcher_query_analytics_v2", FederatedExampleTableId::LAUNCHER_QUERY_V2,
      &features::kFederatedLauncherQueryAnalyticsVersion2Task},
-    {"timezone_code_phh", FederatedExampleTableId::TIMEZONE_CODE,
-     &features::kFederatedTimezoneCodePhh},
+    {"timezone_code_phh", FederatedExampleTableId::TIMEZONE_CODE, nullptr},
 }};
 
 // Converts a LocalClientConfig to mojom ClientScheduleConfigPtr that can be

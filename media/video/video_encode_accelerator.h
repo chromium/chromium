@@ -53,12 +53,6 @@ struct MEDIA_EXPORT H264Metadata final {
   bool layer_sync = false;
 };
 
-// Metadata for H265 bitstream buffer.
-//  |temporal_idx|  indicates the temporal index of this frame.
-struct MEDIA_EXPORT H265Metadata final {
-  uint8_t temporal_idx = 0;
-};
-
 //  Metadata for a VP8 bitstream buffer.
 //  |non_reference| is true iff this frame does not update any reference buffer,
 //                  meaning dropping this frame still results in a decodable
@@ -119,13 +113,24 @@ struct MEDIA_EXPORT Vp9Metadata final {
   std::vector<uint8_t> p_diffs;
 };
 
-// Metadata for an AV1 bitstream buffer.
-struct MEDIA_EXPORT Av1Metadata final {
-  Av1Metadata();
-  ~Av1Metadata();
-  Av1Metadata(const Av1Metadata&);
+// Metadata for filling webrtc::CodecSpecificInfo.generic_frame_info.
+struct MEDIA_EXPORT SVCGenericMetadata final {
+  // True iff the reference dependency follows any of the scalability modes
+  // defined in https://www.w3.org/TR/webrtc-svc/#dependencydiagrams*.
+  // Otherwise, set |follow_svc_spec| to false and fill the accurate
+  // |reference_flags| and |refresh_flags| for each encoded frame.
+  bool follow_svc_spec;
+
   // The temporal index for this frame.
   uint8_t temporal_idx = 0;
+  // The spatial index for this frame.
+  uint8_t spatial_idx = 0;
+
+  // Contains a bitmask that specifies which dpb slots are referenced
+  // by current frame, the least significant bit indicates slot 0.
+  std::optional<uint16_t> reference_flags;
+  // Similar to reference_flags, but for which slots are refreshed.
+  std::optional<uint16_t> refresh_flags;
 };
 
 //  Metadata associated with a bitstream buffer.
@@ -160,15 +165,18 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   bool dropped_frame() const;
   std::optional<uint8_t> spatial_idx() const;
 
-  // |drop|, |h264|, |vp8|, |vp9|, |av1| and |h265| may be set, but not multiple
-  // of them. Presumably, it's also possible for none of them to be set.
+  // |drop|, |h264|, |vp8| and |vp9| may be set, but not multiple of them.
+  // Presumably, it's also possible for none of them to be set.
   // |drop| is set if and only if the frame is dropped.
   std::optional<DropFrameMetadata> drop;
   std::optional<H264Metadata> h264;
   std::optional<Vp8Metadata> vp8;
   std::optional<Vp9Metadata> vp9;
-  std::optional<Av1Metadata> av1;
-  std::optional<H265Metadata> h265;
+
+  // Metadata for SVC encoding is expected to be set in |svc_generic|.
+  // TODO: Deprecate the above legacy codec specific medadata and replace them
+  // with |svc_generic|.
+  std::optional<SVCGenericMetadata> svc_generic;
 
   // Some platforms may adjust the encoding size to meet hardware requirements.
   // If not set, the encoded size is the same as configured.
@@ -505,13 +513,16 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // Do not delete directly; use Destroy() or own it with a unique_ptr, which
   // will Destroy() it properly by default.
   virtual ~VideoEncodeAccelerator();
+
+  static size_t EstimateBitstreamBufferSize(const Bitrate& bitrate,
+                                            uint32_t framerate,
+                                            const gfx::Size& coded_size);
 };
 
 MEDIA_EXPORT bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
                              const VideoEncodeAccelerator::SupportedProfile& r);
 MEDIA_EXPORT bool operator==(const Vp8Metadata& l, const Vp8Metadata& r);
 MEDIA_EXPORT bool operator==(const Vp9Metadata& l, const Vp9Metadata& r);
-MEDIA_EXPORT bool operator==(const Av1Metadata& l, const Av1Metadata& r);
 MEDIA_EXPORT bool operator==(const BitstreamBufferMetadata& l,
                              const BitstreamBufferMetadata& r);
 MEDIA_EXPORT bool operator==(

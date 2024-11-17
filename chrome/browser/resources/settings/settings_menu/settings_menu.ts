@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
 import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_vars.css.js';
 import '../icons.html.js';
@@ -22,6 +22,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import type {PageVisibility} from '../page_visibility.js';
 import type {Route, SettingsRoutes} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
@@ -54,16 +56,36 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
        */
       pageVisibility: Object,
 
+      enableAiSettingsPageRefresh_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+      },
+
       showAdvancedFeaturesMainControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
+      },
+
+      aiPageIcon_: {
+        type: String,
+        computed: 'computeAiPageIcon_(enableAiSettingsPageRefresh_)',
+      },
+
+      aiPageTitle_: {
+        type: String,
+        computed: 'computeAiPageTitle_(enableAiSettingsPageRefresh_)',
       },
     };
   }
 
   pageVisibility?: PageVisibility;
+  private enableAiSettingsPageRefresh_: boolean;
   private showAdvancedFeaturesMainControl_: boolean;
   private routes_: SettingsRoutes;
+  private aiPageIcon_: string;
+  private aiPageTitle_: string;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -73,6 +95,17 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private showExperimentalMenuItem_(): boolean {
     return this.showAdvancedFeaturesMainControl_ &&
         (!this.pageVisibility || this.pageVisibility.ai !== false);
+  }
+
+  private computeAiPageIcon_(): string {
+    return this.enableAiSettingsPageRefresh_ ? 'settings20:magic' :
+                                               'settings20:ai';
+  }
+
+  private computeAiPageTitle_(): string {
+    return loadTimeData.getString(
+        this.enableAiSettingsPageRefresh_ ? 'aiInnovationsPageTitle' :
+                                            'aiPageTitle');
   }
 
   override currentRouteChanged(newRoute: Route) {
@@ -131,6 +164,13 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private onExtensionsLinkClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SettingsMenu_ExtensionsLinkClicked');
+  }
+
+  private onAiPageClick_() {
+    if (this.enableAiSettingsPageRefresh_) {
+      this.metricsBrowserProxy_.recordAction(
+          'SettingsMenu_AiPageEntryPointClicked');
+    }
   }
 }
 

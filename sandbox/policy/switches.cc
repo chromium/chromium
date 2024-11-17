@@ -71,6 +71,10 @@ const char kLibassistantSandbox[] = "libassistant";
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+const char kOnDeviceTranslationSandbox[] = "on_device_translation";
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
 // Flags owned by the service manager sandbox.
 
 // Allows debugging of sandboxed processes (see zygote_main_linux.cc).

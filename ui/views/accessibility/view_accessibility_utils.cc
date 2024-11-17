@@ -85,6 +85,10 @@ void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
     destination.relative_bounds.bounds = source.relative_bounds.bounds;
   }
 
+  if (source.id != ui::kInvalidAXNodeID) {
+    destination.id = source.id;
+  }
+
   destination.state |= source.state;
 
   destination.actions |= source.actions;

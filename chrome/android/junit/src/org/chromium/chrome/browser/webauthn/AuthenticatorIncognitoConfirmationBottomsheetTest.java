@@ -25,7 +25,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -43,7 +42,6 @@ import java.lang.ref.WeakReference;
         })
 public class AuthenticatorIncognitoConfirmationBottomsheetTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private WebContents mWebContents;

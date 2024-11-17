@@ -11,9 +11,7 @@ namespace switches {
 
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
-GAMEPAD_FEATURES_EXPORT extern const char kEnableGamepadButtonAxisEvents[];
 GAMEPAD_FEATURES_EXPORT extern const char kGamepadPollingInterval[];
-GAMEPAD_FEATURES_EXPORT extern const char kRestrictGamepadAccess[];
 
 }  // namespace switches
 

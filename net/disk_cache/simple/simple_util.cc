@@ -32,7 +32,7 @@ const size_t kEntryHashKeyAsHexStringSize = 2 * sizeof(uint64_t);
 namespace disk_cache::simple_util {
 
 std::string ConvertEntryHashKeyToHexString(uint64_t hash_key) {
-  const std::string hash_key_str = base::StringPrintf("%016" PRIx64, hash_key);
+  std::string hash_key_str = base::StringPrintf("%016" PRIx64, hash_key);
   DCHECK_EQ(kEntryHashKeyAsHexStringSize, hash_key_str.size());
   return hash_key_str;
 }

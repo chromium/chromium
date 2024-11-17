@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_api.h"
-
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_base_test.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager.h"
+#include "chrome/browser/ash/extensions/speech/speech_recognition_private_manager_factory.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_recognizer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -24,7 +24,8 @@ class SpeechRecognitionPrivateApiTest
       const SpeechRecognitionPrivateApiTest&) = delete;
 
   void TearDownOnMainThread() override {
-    SpeechRecognitionPrivateManager::Get(profile())->recognition_data_.clear();
+    SpeechRecognitionPrivateManagerFactory::GetForBrowserContext(profile())
+        ->recognition_data_.clear();
     SpeechRecognitionPrivateBaseTest::TearDownOnMainThread();
   }
 };

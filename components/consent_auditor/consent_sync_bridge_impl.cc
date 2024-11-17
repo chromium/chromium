@@ -72,6 +72,11 @@ ConsentSyncBridgeImpl::~ConsentSyncBridgeImpl() {
   if (!deferred_consents_while_initializing_.empty()) {
     LOG(ERROR) << "Non-empty event queue at shutdown!";
   }
+  // TODO(crbug.com/362428820): Remove logging once investigation is complete.
+  if (store_) {
+    VLOG(1) << "UserConsents during destruction: "
+            << store_->in_memory_data().size();
+  }
 }
 
 std::unique_ptr<MetadataChangeList>

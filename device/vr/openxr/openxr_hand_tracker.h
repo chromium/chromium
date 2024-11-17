@@ -59,8 +59,6 @@ class OpenXrHandTracker {
 
   XrResult Update(XrSpace base_space, XrTime predicted_display_time);
 
-  bool CanSupplyHandTrackingData() const;
-
   // Must not be overridden by subclasses.
   mojom::XRHandTrackingDataPtr GetHandTrackingData() const;
 
@@ -81,13 +79,21 @@ class OpenXrHandTracker {
   std::optional<gfx::Transform> GetBaseFromPalmTransform() const;
 
  private:
+  enum class AnonymizationStrategy { kDefault, kRuntime, kFallback, kNone };
+
+  static AnonymizationStrategy GetAnonymizationStrategy();
+
   XrResult InitializeHandTracking();
+
+  bool UseRuntimeAnonymization() const;
+  bool NeedsFallbackAnonymization() const;
 
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   XrSession session_;
   OpenXrHandednessType type_;
   XrHandTrackerEXT hand_tracker_{XR_NULL_HANDLE};
   const bool mesh_scale_enabled_;
+  const AnonymizationStrategy anonymization_strategy_;
 
   XrHandJointLocationEXT joint_locations_buffer_[XR_HAND_JOINT_COUNT_EXT];
   XrHandJointLocationsEXT locations_{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};

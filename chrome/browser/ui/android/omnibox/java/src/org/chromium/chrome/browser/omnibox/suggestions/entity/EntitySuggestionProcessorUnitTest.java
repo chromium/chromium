@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -70,6 +71,7 @@ public class EntitySuggestionProcessorUnitTest {
     private @Mock Bitmap mBitmap;
     private @Mock BookmarkState mBookmarkState;
     private @Mock UrlBarEditingTextStateProvider mTextProvider;
+    private @Mock AutocompleteInput mInput;
 
     private EntitySuggestionProcessor mProcessor;
 
@@ -77,7 +79,7 @@ public class EntitySuggestionProcessorUnitTest {
      * Base Suggestion class that can be used for testing. Holds all mechanisms that are required to
      * processSuggestion and validate suggestions.
      */
-    class SuggestionTestHelper {
+    static class SuggestionTestHelper {
         // Stores created AutocompleteMatch
         protected final AutocompleteMatch mSuggestion;
         // Stores PropertyModel for the suggestion.
@@ -111,7 +113,7 @@ public class EntitySuggestionProcessorUnitTest {
 
     /** Populate model for associated suggestion. */
     void processSuggestion(SuggestionTestHelper helper) {
-        mProcessor.populateModel(helper.mSuggestion, helper.mModel, 0);
+        mProcessor.populateModel(mInput, helper.mSuggestion, helper.mModel, 0);
     }
 
     @Before

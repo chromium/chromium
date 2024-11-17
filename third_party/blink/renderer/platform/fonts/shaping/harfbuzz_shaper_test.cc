@@ -150,7 +150,7 @@ class HarfBuzzShaperTest : public FontTestBase {
   // Hardcoded font names created with `CreateNotoEmoji` and
   // `CreateNotoColorEmoji`.
   const char* kNotoEmojiFontName = "Noto Emoji";
-  const char* kNotoColorEmojiFontName = "Noto Color Emoji (Fontations)";
+  const char* kNotoColorEmojiFontName = "Noto Color Emoji";
 
 #if BUILDFLAG(IS_MAC)
   const char* kSystemColorEmojiFont = "Apple Color Emoji";
@@ -162,6 +162,7 @@ class HarfBuzzShaperTest : public FontTestBase {
 
 #if BUILDFLAG(IS_MAC)
   const char* kSystemMonoEmojiFont = "Apple Symbols";
+  const char* kSystemMonoTextDefaultEmojiFont = "Hiragino Mincho ProN";
 #elif BUILDFLAG(IS_ANDROID)
   const char* kSystemMonoEmojiFont = "Noto Sans Symbols";
 #elif BUILDFLAG(IS_WIN)
@@ -178,6 +179,15 @@ class HarfBuzzShaperTest : public FontTestBase {
     result->GetRunFontData(&run_font_data);
     EXPECT_EQ(run_font_data.size(), 1u);
     return run_font_data[0].font_data_->PlatformData().FontFamilyName();
+  }
+
+  StringView MaybeStripFontationsSuffix(const String& font_name) {
+    wtf_size_t found_index = font_name.ReverseFind(" (Fontations)");
+    if (found_index != WTF::kNotFound) {
+      return StringView(font_name, 0, found_index);
+    } else {
+      return font_name;
+    }
   }
 
   const ShapeResult* SplitRun(ShapeResult* shape_result, unsigned offset) {
@@ -345,7 +355,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsDevanagariCommon) {
   Font font(font_description);
 
   UChar devanagari_common_string[] = {0x915, 0x94d, 0x930, 0x28, 0x20, 0x29};
-  String devanagari_common_latin(devanagari_common_string, 6u);
+  String devanagari_common_latin{base::span(devanagari_common_string)};
   HarfBuzzShaper shaper(devanagari_common_latin);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
@@ -368,7 +378,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsDevanagariCommonLatinCommon) {
 
   UChar devanagari_common_latin_string[] = {0x915, 0x94d, 0x930, 0x20,
                                             0x61,  0x62,  0x2E};
-  HarfBuzzShaper shaper(String(devanagari_common_latin_string, 7u));
+  HarfBuzzShaper shaper{String(base::span(devanagari_common_latin_string))};
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
   // Ensure that there are only two scripts, Devanagari first, then Latin.
@@ -389,7 +399,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsArabicThaiHanLatin) {
   Font font(font_description);
 
   UChar mixed_string[] = {0x628, 0x64A, 0x629, 0xE20, 0x65E5, 0x62};
-  HarfBuzzShaper shaper(String(mixed_string, 6u));
+  HarfBuzzShaper shaper{String(base::span(mixed_string))};
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
   EXPECT_EQ(4u, TestInfo(result)->NumberOfRunsForTesting());
@@ -422,7 +432,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsArabicThaiHanLatinTwice) {
   Font font(font_description);
 
   UChar mixed_string[] = {0x628, 0x64A, 0x629, 0xE20, 0x65E5, 0x62};
-  HarfBuzzShaper shaper(String(mixed_string, 6u));
+  HarfBuzzShaper shaper{String(base::span(mixed_string))};
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
   EXPECT_EQ(4u, TestInfo(result)->NumberOfRunsForTesting());
 
@@ -436,7 +446,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsArabic) {
   Font font(font_description);
 
   UChar arabic_string[] = {0x628, 0x64A, 0x629};
-  HarfBuzzShaper shaper(String(arabic_string, 3u));
+  HarfBuzzShaper shaper{String(base::span(arabic_string))};
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kRtl);
 
   EXPECT_EQ(1u, TestInfo(result)->NumberOfRunsForTesting());
@@ -455,7 +465,7 @@ TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsArabic) {
 TEST_F(HarfBuzzShaperTest, ShapeLatinSegment) {
   Font font(font_description);
 
-  String string("Hello World!", 12u);
+  String string(base::span_from_cstring("Hello World!"));
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -514,7 +524,7 @@ TEST_F(HarfBuzzShaperTest, MAYBE_ShapeArabicWithContext) {
   Font font(font_description);
 
   UChar arabic_string[] = {0x647, 0x64A};
-  HarfBuzzShaper shaper(String(arabic_string, 2u));
+  HarfBuzzShaper shaper{String(base::span(arabic_string))};
 
   const ShapeResult* combined = shaper.Shape(&font, TextDirection::kRtl);
 
@@ -777,11 +787,10 @@ TEST_P(ShapeParameterTest, ZeroWidthSpace) {
                     0x0648,
                     kZeroWidthSpaceCharacter,
                     kZeroWidthSpaceCharacter};
-  const unsigned length = std::size(string);
-  HarfBuzzShaper shaper(String(string, length));
+  HarfBuzzShaper shaper{String(base::span(string))};
   const ShapeResult* result = ShapeWithParameter(&shaper);
   EXPECT_EQ(0u, result->StartIndex());
-  EXPECT_EQ(length, result->EndIndex());
+  EXPECT_EQ(std::size(string), result->EndIndex());
 #if DCHECK_IS_ON()
   result->CheckConsistency();
 #endif
@@ -816,10 +825,18 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
       u"\u2614"
       u"\ufe0e");
   for (String text : {text_default, emoji_default}) {
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
-              kNotoEmojiFontName);
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
-              kSystemMonoEmojiFont);
+    EXPECT_EQ(MaybeStripFontationsSuffix(
+                  GetShapedFontFamilyNameForEmojiVS(mono_font, text)),
+              String(kNotoEmojiFontName));
+    const char* system_mono_font_name = kSystemMonoEmojiFont;
+#if BUILDFLAG(IS_MAC)
+    if (text == text_default) {
+      system_mono_font_name = kSystemMonoTextDefaultEmojiFont;
+    }
+#endif
+    EXPECT_EQ(MaybeStripFontationsSuffix(
+                  GetShapedFontFamilyNameForEmojiVS(color_font, text)),
+              String(system_mono_font_name));
   }
 }
 
@@ -840,7 +857,8 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS16) {
   for (String text : {text_default, emoji_default}) {
     EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
               kSystemColorEmojiFont);
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
+    EXPECT_EQ(MaybeStripFontationsSuffix(
+                  GetShapedFontFamilyNameForEmojiVS(color_font, text)),
               kNotoColorEmojiFontName);
   }
 }
@@ -883,10 +901,18 @@ TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
     const char* expected_name_for_color_requested_font =
         is_emoji_presentation ? kNotoColorEmojiFontName : kSystemMonoEmojiFont;
 
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
-              expected_name_for_mono_requested_font);
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
-              expected_name_for_color_requested_font);
+#if BUILDFLAG(IS_MAC)
+    if (text == text_default && !is_emoji_presentation) {
+      expected_name_for_color_requested_font = kSystemMonoTextDefaultEmojiFont;
+    }
+#endif
+
+    EXPECT_EQ(MaybeStripFontationsSuffix(
+                  GetShapedFontFamilyNameForEmojiVS(mono_font, text)),
+              String(expected_name_for_mono_requested_font));
+    EXPECT_EQ(MaybeStripFontationsSuffix(
+                  GetShapedFontFamilyNameForEmojiVS(color_font, text)),
+              String(expected_name_for_color_requested_font));
   }
 }
 
@@ -912,6 +938,25 @@ TEST_F(HarfBuzzShaperTest, VSOverrideFontVariantEmoji) {
             kSystemMonoEmojiFont);
   EXPECT_EQ(run_font_data[2].font_data_->PlatformData().FontFamilyName(),
             kSystemColorEmojiFont);
+}
+
+TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
+  ScopedFontVariationSequencesForTest scoped_feature_vs(true);
+  ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(
+      true);
+  ScopedFontVariantEmojiForTest scoped_feature_variant_emoji(true);
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSVersion() < 13'00'00) {
+    GTEST_SKIP();
+  }
+  const char* mono_font_name = "STIX Two Math";
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+  const char* mono_font_name = kSystemMonoEmojiFont;
+#endif
+  String text(u"\u26CE");
+  Font color_font = CreateNotoColorEmoji(FontVariantEmoji::kTextVariantEmoji);
+  EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
+            mono_font_name);
 }
 
 #endif
@@ -1122,7 +1167,7 @@ TEST_F(HarfBuzzShaperTest, PositionForOffsetArabic) {
   UChar arabic_string[] = {0x628, 0x64A, 0x629};
   TextDirection direction = TextDirection::kRtl;
 
-  HarfBuzzShaper shaper(String(arabic_string, 3u));
+  HarfBuzzShaper shaper{String(base::span(arabic_string))};
   const ShapeResult* result = shaper.Shape(&font, direction);
 
   EXPECT_EQ(0.0f, result->PositionForOffset(3));
@@ -1136,8 +1181,7 @@ TEST_F(HarfBuzzShaperTest, EmojiZWJSequence) {
                                 0x270C, 0x200D, 0xD83C, 0xDFFC};
   TextDirection direction = TextDirection::kLtr;
 
-  HarfBuzzShaper shaper(
-      String(emoji_zwj_sequence, std::size(emoji_zwj_sequence)));
+  HarfBuzzShaper shaper{String(base::span(emoji_zwj_sequence))};
   shaper.Shape(&font, direction);
 }
 
@@ -1200,7 +1244,7 @@ TEST_P(IncludePartialGlyphsTest,
   Font font(font_description);
 
   UChar arabic_string[] = {0x628, 0x64A, 0x629};
-  String string(arabic_string, 3u);
+  String string{base::span(arabic_string)};
   TextDirection direction = TextDirection::kRtl;
 
   HarfBuzzShaper shaper(string);
@@ -1222,7 +1266,7 @@ TEST_P(IncludePartialGlyphsTest,
   Font font(font_description);
 
   UChar mixed_string[] = {0x628, 0x64A, 0x629, 0xE20, 0x65E5, 0x62};
-  String string(mixed_string, 6u);
+  String string{base::span(mixed_string)};
   HarfBuzzShaper shaper(string);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
@@ -1274,7 +1318,7 @@ TEST_F(HarfBuzzShaperTest, CachedOffsetPositionMappingArabic) {
   UChar arabic_string[] = {0x628, 0x64A, 0x629};
   TextDirection direction = TextDirection::kRtl;
 
-  HarfBuzzShaper shaper(String(arabic_string, 3u));
+  HarfBuzzShaper shaper{String(base::span(arabic_string))};
   const ShapeResult* sr = shaper.Shape(&font, direction);
   sr->EnsurePositionData();
 
@@ -1288,7 +1332,7 @@ TEST_F(HarfBuzzShaperTest, CachedOffsetPositionMappingMixed) {
   Font font(font_description);
 
   UChar mixed_string[] = {0x628, 0x64A, 0x629, 0xE20, 0x65E5, 0x62};
-  HarfBuzzShaper shaper(String(mixed_string, 6u));
+  HarfBuzzShaper shaper{String(base::span(mixed_string))};
   const ShapeResult* sr = shaper.Shape(&font, TextDirection::kLtr);
   sr->EnsurePositionData();
 
@@ -1498,7 +1542,7 @@ TEST_F(HarfBuzzShaperTest, ShapeResultCopyRangeIntoArabicThaiHanLatin) {
   UChar mixed_string[] = {0x628, 0x20, 0x64A, 0x629, 0x20, 0xE20, 0x65E5, 0x62};
   TextDirection direction = TextDirection::kLtr;
 
-  HarfBuzzShaper shaper(String(mixed_string, 8u));
+  HarfBuzzShaper shaper{String(base::span(mixed_string))};
   const ShapeResult* result = shaper.Shape(&font, direction);
 
   ShapeResult* composite_result =

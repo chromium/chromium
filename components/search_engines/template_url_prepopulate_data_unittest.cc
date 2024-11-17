@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/search_engines/template_url_prepopulate_data.h"
 
 #include <stddef.h>
@@ -555,9 +550,9 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
     // Custom with a country TLD and almost no query params:
     "http://www.google.ru/search?q={searchTerms}"
   };
-  for (size_t i = 0; i < std::size(kGoogleURLs); ++i) {
+  for (const char* google_url : kGoogleURLs) {
     EXPECT_EQ(TemplateURLPrepopulateData::google.type,
-              GetEngineType(kGoogleURLs[i]));
+              GetEngineType(google_url));
   }
 
   // Non-Google URLs.
@@ -568,8 +563,8 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
       // Aggressively match types by checking just TLD+1.
       "http://someothersite.yahoo.com/",
   };
-  for (size_t i = 0; i < std::size(kYahooURLs); ++i) {
-    EXPECT_EQ(SEARCH_ENGINE_YAHOO, GetEngineType(kYahooURLs[i]));
+  for (const char* yahoo_url : kYahooURLs) {
+    EXPECT_EQ(SEARCH_ENGINE_YAHOO, GetEngineType(yahoo_url));
   }
 
   // URLs for engines not present in country-specific lists.
@@ -595,7 +590,7 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
 
 TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeForAllPrepopulatedEngines) {
   using PrepopulatedEngine = TemplateURLPrepopulateData::PrepopulatedEngine;
-  const std::vector<const PrepopulatedEngine*> all_engines =
+  const auto all_engines =
       TemplateURLPrepopulateData::GetAllPrepopulatedEngines();
   for (const PrepopulatedEngine* engine : all_engines) {
     std::unique_ptr<TemplateURLData> data =
@@ -607,7 +602,7 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeForAllPrepopulatedEngines) {
 
 TEST_F(TemplateURLPrepopulateDataTest, CheckSearchURLDetection) {
   using PrepopulatedEngine = TemplateURLPrepopulateData::PrepopulatedEngine;
-  const std::vector<const PrepopulatedEngine*> all_engines =
+  const auto all_engines =
       TemplateURLPrepopulateData::GetAllPrepopulatedEngines();
   for (const PrepopulatedEngine* engine : all_engines) {
     std::unique_ptr<TemplateURLData> data =
@@ -631,7 +626,7 @@ TEST_F(TemplateURLPrepopulateDataTest, HttpsUrls) {
       62, 63, 64, 65, 66, 68, 70, 74, 75, 76, 77, 78, 79, 80, 81, 85, 90,
   };
   using PrepopulatedEngine = TemplateURLPrepopulateData::PrepopulatedEngine;
-  const std::vector<const PrepopulatedEngine*> all_engines =
+  const auto all_engines =
       TemplateURLPrepopulateData::GetAllPrepopulatedEngines();
   for (const PrepopulatedEngine* engine : all_engines) {
     std::unique_ptr<TemplateURLData> data =

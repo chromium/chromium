@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_single_restore_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -100,7 +101,7 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
   if (!ash::full_restore::ArcGhostWindowHandler::Get())
     return false;
   auto* arc_task_handler =
-      ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
+      ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
   if (!arc_task_handler) {
     base::UmaHistogramEnumeration(
         kWindowPredictorLaunchHistogram,
@@ -197,7 +198,7 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
 bool WindowPredictor::IsAppPendingLaunch(Profile* profile,
                                          const std::string& app_id) {
   auto* arc_task_handler =
-      ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
+      ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
 
   return arc_task_handler && arc_task_handler->IsAppPendingRestore(app_id);
 }

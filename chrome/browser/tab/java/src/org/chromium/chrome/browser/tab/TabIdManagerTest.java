@@ -4,15 +4,9 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.content.Context;
-
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -24,26 +18,14 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabIdManagerTest {
-    @Mock private Context mContext;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        TabIdManager.resetInstanceForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        TabIdManager.resetInstanceForTesting();
-    }
-
     /** Tests that IDs are stored and generated properly. */
     @Test
     public void testBasic() {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, 11684);
+        TabIdManager.resetInstanceForTesting();
 
-        TabIdManager manager = TabIdManager.getInstance(mContext);
+        TabIdManager manager = TabIdManager.getInstance();
         Assert.assertEquals(
                 "Wrong Tab ID was generated", 11684, manager.generateValidId(Tab.INVALID_TAB_ID));
 
@@ -58,8 +40,9 @@ public class TabIdManagerTest {
     public void testIncrementIdCounterTo() {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, 11684);
+        TabIdManager.resetInstanceForTesting();
 
-        TabIdManager manager = TabIdManager.getInstance(mContext);
+        TabIdManager manager = TabIdManager.getInstance();
         Assert.assertEquals(
                 "Wrong Tab ID was generated", 11684, manager.generateValidId(Tab.INVALID_TAB_ID));
 

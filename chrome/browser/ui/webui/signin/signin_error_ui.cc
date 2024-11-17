@@ -39,6 +39,12 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/text_elider.h"
 
+bool SigninErrorUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord() || profile->IsSystemProfile();
+}
+
 SigninErrorUI::SigninErrorUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui) {
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();

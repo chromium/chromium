@@ -13,7 +13,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"

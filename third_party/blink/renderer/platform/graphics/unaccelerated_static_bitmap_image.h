@@ -27,8 +27,6 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
       ImageOrientation orientation = ImageOrientationEnum::kDefault);
 
   bool CurrentFrameKnownToBeOpaque() override;
-  scoped_refptr<StaticBitmapImage> ConvertToColorSpace(sk_sp<SkColorSpace>,
-                                                       SkColorType) override;
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
@@ -39,8 +37,6 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
   PaintImage PaintImageForCurrentFrame() override;
 
   void Transfer() final;
-
-  bool CopyToResourceProvider(CanvasResourceProvider*) override;
 
   bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
                               const gfx::Rect& copy_rect) override;

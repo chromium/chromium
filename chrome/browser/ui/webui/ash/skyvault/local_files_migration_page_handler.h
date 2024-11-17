@@ -21,14 +21,8 @@ class Profile;
 
 namespace policy::local_user_files {
 
-// Actions a user can take in the migration dialog.
-enum class UserAction {
-  kDismiss,
-  kUploadNow,
-};
-
 // Callback invoked when the user interacts with the dialog.
-using UserActionCallback = base::OnceCallback<void(UserAction)>;
+using DialogActionCallback = base::OnceCallback<void(DialogAction)>;
 
 // Handles communication and logic for the Local Files Migration WebUI page.
 class LocalFilesMigrationPageHandler : public mojom::PageHandler {
@@ -38,7 +32,7 @@ class LocalFilesMigrationPageHandler : public mojom::PageHandler {
       Profile* profile,
       CloudProvider cloud_provider,
       base::Time migration_start_time,
-      UserActionCallback callback,
+      DialogActionCallback callback,
       mojo::PendingRemote<mojom::Page> page,
       mojo::PendingReceiver<mojom::PageHandler> receiver);
 
@@ -66,7 +60,7 @@ class LocalFilesMigrationPageHandler : public mojom::PageHandler {
   CloudProvider cloud_provider_;
   base::Time migration_start_time_;
   base::WallClockTimer ui_update_timer_;
-  UserActionCallback callback_;
+  DialogActionCallback callback_;
 
   // Mojo communication
   mojo::Receiver<PageHandler> receiver_;

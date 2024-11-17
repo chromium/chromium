@@ -228,7 +228,6 @@ RootCompositorFrameSinkImpl::Create(
   auto display = std::make_unique<Display>(
       frame_sink_manager->shared_bitmap_manager(),
       output_surface_provider->GetSharedImageManager(),
-      output_surface_provider->GetSyncPointManager(),
       output_surface_provider->GetGpuScheduler(), params->renderer_settings,
       debug_settings, params->frame_sink_id, std::move(display_controller),
       std::move(output_surface), std::move(overlay_processor),
@@ -577,10 +576,9 @@ void RootCompositorFrameSinkImpl::BindLayerContext(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void RootCompositorFrameSinkImpl::SetThreadIds(
-    const std::vector<int32_t>& thread_ids) {
-  support_->SetThreadIds(/*from_untrusted_client=*/false,
-                         base::MakeFlatSet<base::PlatformThreadId>(thread_ids));
+void RootCompositorFrameSinkImpl::SetThreads(
+    const std::vector<Thread>& threads) {
+  support_->SetThreads(/*from_untrusted_client=*/false, threads);
 }
 #endif
 
@@ -633,8 +631,10 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
 #endif
 
   if (external_begin_frame_source_) {
+    // Start with the maximum supported refresh rate by setting
+    // |display_frame_interval_| to the minimum frame interval.
     display_frame_interval_ =
-        external_begin_frame_source_->GetMaximumRefreshFrameInterval();
+        external_begin_frame_source_->GetMinimumFrameInterval();
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -783,7 +783,7 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
   if (display_client_)
     display_client_->OnDisplayReceivedCALayerParams(ca_layer_params);
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -800,7 +800,7 @@ void RootCompositorFrameSinkImpl::DisplayDidCompleteSwapWithSize(
   }
 #else  // !BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(IS_LINUX) &&
        // BUILDFLAG(IS_OZONE_X11))
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -811,7 +811,7 @@ void RootCompositorFrameSinkImpl::DisplayAddChildWindowToBrowser(
     display_client_->AddChildWindowToBrowser(child_window);
   }
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

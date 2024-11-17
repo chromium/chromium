@@ -81,6 +81,10 @@ struct TaskComparator {
 
 }  // namespace
 
+bool TaskId::IsValid() const {
+  return !pending && !id.empty() && !list_id.empty();
+}
+
 std::strong_ordering TaskId::operator<=>(const TaskId& other) const {
   if (pending && other.pending) {
     // Two pending ids are always equivalent.

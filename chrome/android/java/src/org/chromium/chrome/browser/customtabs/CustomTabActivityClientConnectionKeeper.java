@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.gsa.GSAUtils;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -44,35 +43,31 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
         int NUM_ENTRIES = 4;
     }
 
-    private final CustomTabsConnection mConnection;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
 
     private boolean mIsKeepingAlive;
 
     @Inject
-    public CustomTabActivityClientConnectionKeeper(
-            CustomTabsConnection connection,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            CustomTabActivityTabProvider tabProvider) {
-        mConnection = connection;
-        mIntentDataProvider = intentDataProvider;
-        mTabProvider = tabProvider;
-        lifecycleDispatcher.register(this);
+    public CustomTabActivityClientConnectionKeeper(BaseCustomTabActivity activity) {
+        mIntentDataProvider = activity.getIntentDataProvider();
+        mTabProvider = activity.getCustomTabActivityTabProvider();
+        activity.getLifecycleDispatcher().register(this);
     }
 
     @Override
     public void onStartWithNative() {
         mIsKeepingAlive =
-                mConnection.keepAliveForSession(
-                        mIntentDataProvider.getSession(),
-                        mIntentDataProvider.getKeepAliveServiceIntent());
+                CustomTabsConnection.getInstance()
+                        .keepAliveForSession(
+                                mIntentDataProvider.getSession(),
+                                mIntentDataProvider.getKeepAliveServiceIntent());
     }
 
     @Override
     public void onStopWithNative() {
-        mConnection.dontKeepAliveForSession(mIntentDataProvider.getSession());
+        CustomTabsConnection.getInstance()
+                .dontKeepAliveForSession(mIntentDataProvider.getSession());
         mIsKeepingAlive = false;
     }
 
@@ -84,7 +79,8 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
 
         CustomTabsSessionToken session = mIntentDataProvider.getSession();
         boolean isConnected =
-                packageName.equals(mConnection.getClientPackageNameForSession(session));
+                packageName.equals(
+                        CustomTabsConnection.getInstance().getClientPackageNameForSession(session));
         int status = -1;
         if (isConnected) {
             if (mIsKeepingAlive) {

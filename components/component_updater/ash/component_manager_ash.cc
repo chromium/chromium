@@ -4,13 +4,18 @@
 
 #include "components/component_updater/ash/component_manager_ash.h"
 
+#include <optional>
+
+#include "base/files/file_path.h"
+#include "base/version.h"
+
 namespace component_updater {
 
 CompatibleComponentInfo::CompatibleComponentInfo() = default;
 
 CompatibleComponentInfo::CompatibleComponentInfo(
     const base::FilePath& path_in,
-    const std::optional<base::Version>& version_in)
+    std::optional<base::Version> version_in)
     : path(path_in), version(version_in) {}
 
 CompatibleComponentInfo::CompatibleComponentInfo(

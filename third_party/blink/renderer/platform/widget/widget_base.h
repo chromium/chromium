@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/gfx/ca_layer_result.h"
 
 namespace cc {
@@ -112,8 +113,10 @@ class PLATFORM_EXPORT WidgetBase
   // be called before using the widget.
   void InitializeNonCompositing();
 
-  // Shutdown the compositor.
-  void Shutdown();
+  // Shutdown the compositor. When `delay_release` is true, this detaches
+  // `layer_tree_view_` but delays its actual deletion, so that calling this
+  // function won't block on doing the release in the compositor thread.
+  void Shutdown(bool delay_release);
 
   void DidFirstVisuallyNonEmptyPaint(base::TimeTicks&);
 
@@ -446,9 +449,14 @@ class PLATFORM_EXPORT WidgetBase
       LayerTreeFrameSinkCallback callback,
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
 
-  // Detaches the LayerTreeView from this widget and attaches it to
-  // `new_widget`, if provided.
-  void DisconnectLayerTreeView(WidgetBase* new_widget);
+  // This will do exactly one of these, depending on the params:
+  // - Detaches the LayerTreeView and attaches it to `new_widget`, if set
+  // - Detaches the LayerTreeView without releasing its resources (instead
+  //   this will be done asynchronously after a delay), if `delay_release` is
+  //   true
+  // - Disconnects and releases the LayerTreeView's resources synchronously,
+  //   if `delay_release` is false
+  void DisconnectLayerTreeView(WidgetBase* new_widget, bool delay_release);
 
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "pdf/flatten_pdf_result.h"
 #include "pdf/pdf_transform.h"
@@ -229,19 +230,6 @@ std::vector<uint8_t> ConvertDocToBuffer(ScopedFPDFDocument doc) {
   return output_file_write.TakeBuffer();
 }
 
-int GetBlockForJpeg(void* param,
-                    unsigned long pos,
-                    unsigned char* buf,
-                    unsigned long size) {
-  std::vector<uint8_t>* data_vector = static_cast<std::vector<uint8_t>*>(param);
-  if (pos + size < pos || pos + size > data_vector->size()) {
-    return 0;
-  }
-  auto data_span = base::make_span(*data_vector).subspan(pos, size);
-  memcpy(buf, data_span.data(), data_span.size());
-  return 1;
-}
-
 // On success returns the number of flattened pages.
 // On failure returns std::nullopt.
 std::optional<uint32_t> FlattenPrintData(FPDF_DOCUMENT doc) {
@@ -452,18 +440,30 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
       kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
   SkPixmap src(info, FPDFBitmap_GetBuffer(bitmap.get()),
                FPDFBitmap_GetStride(bitmap.get()));
-  std::vector<uint8_t> compressed_bitmap_data;
-  bool encoded = gfx::JPEGCodec::Encode(src, kQuality, &compressed_bitmap_data);
-
+  std::optional<std::vector<uint8_t>> compressed_bitmap_data =
+      gfx::JPEGCodec::Encode(src, kQuality);
   ScopedFPDFPage temp_page_holder(
       FPDFPage_New(temp_doc.get(), 0, source_page_width, source_page_height));
   FPDF_PAGE temp_page = temp_page_holder.get();
-  if (encoded) {
+  if (compressed_bitmap_data) {
+    base::span<const uint8_t> compressed_bitmap_span(
+        compressed_bitmap_data.value());
     FPDF_FILEACCESS file_access = {};
     file_access.m_FileLen =
-        static_cast<unsigned long>(compressed_bitmap_data.size());
-    file_access.m_GetBlock = &GetBlockForJpeg;
-    file_access.m_Param = &compressed_bitmap_data;
+        static_cast<unsigned long>(compressed_bitmap_span.size());
+    file_access.m_GetBlock = [](void* param, unsigned long pos,
+                                unsigned char* buf, unsigned long size) {
+      base::span<const uint8_t>& compressed_bitmap_span =
+          *static_cast<base::span<const uint8_t>*>(param);
+      if (pos + size < pos || pos + size > compressed_bitmap_span.size()) {
+        return 0;
+      }
+      // TODO(thestig): spanify arguments to remove the error.
+      base::span<uint8_t> UNSAFE_TODO(buf_span(buf, size));
+      buf_span.copy_from(compressed_bitmap_span.subspan(pos, size));
+      return 1;
+    };
+    file_access.m_Param = &compressed_bitmap_span;
 
     FPDFImageObj_LoadJpegFileInline(&temp_page, 1, temp_img.get(),
                                     &file_access);

@@ -150,8 +150,7 @@ ScriptInjection::InjectionResult ScriptInjection::TryToInject(
       return result;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return INJECTION_FINISHED;
+  NOTREACHED();
 }
 
 ScriptInjection::InjectionResult ScriptInjection::OnPermissionGranted(

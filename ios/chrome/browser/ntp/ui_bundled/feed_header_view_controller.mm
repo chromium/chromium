@@ -125,6 +125,14 @@ NSInteger kFeedSymbolPointSize = 17;
 
   [self.view addSubview:self.container];
   [self applyHeaderConstraints];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withTarget:self.view
+                           action:@selector(setNeedsLayout)];
+  }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -140,13 +148,19 @@ NSInteger kFeedSymbolPointSize = 17;
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     [self.view setNeedsLayout];
   }
 }
+#endif
 
 #pragma mark - Public
 

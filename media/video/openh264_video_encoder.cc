@@ -29,6 +29,8 @@ EProfileIdc ToOpenH264Profile(VideoCodecProfile profile) {
       return PRO_BASELINE;
     case media::H264PROFILE_MAIN:
       return PRO_MAIN;
+    case media::H264PROFILE_EXTENDED:
+      return PRO_EXTENDED;
     case media::H264PROFILE_HIGH:
       return PRO_HIGH;
     default:
@@ -87,9 +89,9 @@ void SetUpOpenH264Params(VideoCodecProfile profile,
         num_temporal_layers = 3;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported SVC: "
-            << GetScalabilityModeName(options.scalability_mode.value());
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(
+                            options.scalability_mode.value());
     }
   }
 

@@ -155,7 +155,6 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
             final FilterInstalledApps_Response callback) {
         GURL url = mRenderFrameHost.getLastCommittedURL();
         final GURL frameUrl = url == null ? GURL.emptyGURL() : url;
-        int delayMillis = 0;
         int numTasks = Math.min(relatedApps.length, MAX_ALLOWED_RELATED_APPS);
         ResultHolder resultHolder = new ResultHolder(numTasks, callback);
 
@@ -290,10 +289,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
                         });
     }
 
-    /**
-     * Sets the version information, if available, to |installedApp|.
-     * @param installedApp
-     */
+    /** Sets the version information, if available, to |installedApp|. */
     private void setVersionInfo(RelatedApplication installedApp) {
         assert installedApp.id != null;
         try {

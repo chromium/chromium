@@ -256,10 +256,6 @@ AvatarToolbarButton* WebAppFrameToolbarView::GetAvatarToolbarButton() {
   return right_container_ ? right_container_->avatar_button() : nullptr;
 }
 
-ManagementToolbarButton* WebAppFrameToolbarView::GetManagementToolbarButton() {
-  return nullptr;
-}
-
 ToolbarButton* WebAppFrameToolbarView::GetBackButton() {
   return left_container_ ? left_container_->back_button() : nullptr;
 }

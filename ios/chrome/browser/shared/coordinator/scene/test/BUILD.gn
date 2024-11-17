@@ -15,6 +15,7 @@ source_set("test") {
     "stub_browser_provider_interface.mm",
   ]
   deps = [
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile",

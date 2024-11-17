@@ -72,6 +72,7 @@ namespace device {
 
 namespace {
 
+using ABI::Windows::Devices::Bluetooth::BluetoothCacheMode;
 using ABI::Windows::Devices::Bluetooth::IBluetoothAdapter;
 using ABI::Windows::Devices::Bluetooth::IBluetoothAdapterStatics;
 using ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice;
@@ -295,87 +296,87 @@ std::optional<BluetoothUUID> BluetoothTestWin::GetTargetGattService(
 }
 
 void BluetoothTestWin::SimulateGattConnection(BluetoothDevice* device) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateStatusChangeToDisconnect(
     BluetoothDevice* device) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattServicesDiscovered(
     BluetoothDevice* device,
     const std::vector<std::string>& uuids,
     const std::vector<std::string>& blocked_uuids) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattServiceRemoved(
     BluetoothRemoteGattService* service) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristic(
     BluetoothRemoteGattService* service,
     const std::string& uuid,
     int properties) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicRemoved(
     BluetoothRemoteGattService* service,
     BluetoothRemoteGattCharacteristic* characteristic) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicRead(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicReadError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicWrite(
     BluetoothRemoteGattCharacteristic* characteristic) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicWriteError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::DeleteDevice(BluetoothDevice* device) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattDescriptor(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::string& uuid) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattNotifySessionStarted(
     BluetoothRemoteGattCharacteristic* characteristic) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattNotifySessionStartError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicChanged(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothTestWin::FinishPendingTasks() {
@@ -390,6 +391,11 @@ BluetoothTestWinrt::BluetoothTestWinrt() {
     enabled.push_back(kNewBLEGattSessionHandling);
   } else {
     disabled.push_back(kNewBLEGattSessionHandling);
+  }
+  if (GetParam().uncached_gatt_discovery_for_gatt_connection) {
+    enabled.push_back(features::kUncachedGattDiscoveryForGattConnection);
+  } else {
+    disabled.push_back(features::kUncachedGattDiscoveryForGattConnection);
   }
   // TODO(crbug.com/40847175): Remove once `kWebBluetoothConfirmPairingSupport`
   // is enabled by default.
@@ -406,6 +412,10 @@ BluetoothTestWinrt::~BluetoothTestWinrt() {
 bool BluetoothTestWinrt::UsesNewGattSessionHandling() const {
   return GetParam().new_gatt_session_handling_enabled &&
          base::win::GetVersion() >= base::win::Version::WIN10_RS3;
+}
+
+bool BluetoothTestWinrt::UncachedGattDiscoveryForGattConnection() const {
+  return GetParam().uncached_gatt_discovery_for_gatt_connection;
 }
 
 bool BluetoothTestWinrt::PlatformSupportsLowEnergy() {
@@ -839,6 +849,14 @@ void BluetoothTestWinrt::OnFakeBluetoothDeviceConnectGattAttempt() {
 
 void BluetoothTestWinrt::OnFakeBluetoothDeviceGattServiceDiscoveryAttempt() {
   ++gatt_discovery_attempts_;
+}
+
+void BluetoothTestWinrt::
+    OnFakeBluetoothDeviceGattServiceDiscoveryAttemptWithCacheMode(
+        BluetoothCacheMode cache_mode) {
+  // There shouldn't be any code path explicitly using cached mode.
+  CHECK_EQ(cache_mode, BluetoothCacheMode::BluetoothCacheMode_Uncached);
+  ++gatt_discovery_attempts_with_uncached_mode_;
 }
 
 void BluetoothTestWinrt::OnFakeBluetoothGattDisconnect() {

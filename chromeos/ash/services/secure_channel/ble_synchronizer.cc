@@ -140,8 +140,7 @@ void BleSynchronizer::ProcessQueue() {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

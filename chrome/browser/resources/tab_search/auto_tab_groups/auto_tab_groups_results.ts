@@ -18,7 +18,7 @@ import {getHtml} from './auto_tab_groups_results.html.js';
 import type {TabOrganization, TabOrganizationSession} from '../tab_search.mojom-webui.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
-const NON_SCROLLABLE_VERTICAL_SPACING: number = 212;
+const NON_SCROLLABLE_VERTICAL_SPACING: number = 198;
 
 export interface AutoTabGroupsResultsElement {
   $: {

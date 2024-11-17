@@ -23,6 +23,14 @@ static_library("lens") {
     "lens_metadata.h",
     "lens_metrics.cc",
     "lens_metrics.h",
+    "lens_overlay_dismissal_source.h",
+    "lens_overlay_first_interaction_type.h",
+    "lens_overlay_invocation_source.h",
+    "lens_overlay_metrics.cc",
+    "lens_overlay_metrics.h",
+    "lens_overlay_new_tab_source.h",
+    "lens_overlay_page_content_mime_type.h",
+    "lens_permission_user_action.h",
     "lens_rendering_environment.h",
     "lens_testing_utils.cc",
     "lens_testing_utils.h",
@@ -34,6 +42,8 @@ static_library("lens") {
     "//components/lens:lens_mojo",
     "//components/lens/proto/v1:lens_latencies_metadata_proto",
     "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//url",
   ]
   public_deps = [ ":features" ]

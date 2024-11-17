@@ -71,6 +71,10 @@ void ResourceCoordinatorTabHelper::PrimaryMainFrameRenderProcessGone(
   TabLoadTracker::Get()->RenderProcessGone(web_contents(), status);
 }
 
+void ResourceCoordinatorTabHelper::WasDiscarded() {
+  TabLoadTracker::Get()->WasDiscarded(web_contents());
+}
+
 void ResourceCoordinatorTabHelper::WebContentsDestroyed() {
   TabLoadTracker::Get()->StopTracking(web_contents());
 }

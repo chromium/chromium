@@ -72,16 +72,7 @@ bool IsUrlAllowed(const GURL& url, const InterestGroup& group) {
 // bidding signals URL.
 bool IsUrlAllowedForTrustedBiddingSignals(const GURL& url,
                                           const InterestGroup& group) {
-  if (!IsUrlAllowedForRenderUrls(url) || url.has_ref() || url.has_query()) {
-    return false;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
-    return true;
-  } else {
-    return url::Origin::Create(url) == group.owner;
-  }
+  return IsUrlAllowedForRenderUrls(url) && !url.has_ref() && !url.has_query();
 }
 
 size_t EstimateFlatMapSize(

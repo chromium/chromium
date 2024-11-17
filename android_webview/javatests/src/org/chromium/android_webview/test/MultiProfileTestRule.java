@@ -39,7 +39,7 @@ public class MultiProfileTestRule extends AwActivityTestRule {
     public void setBrowserContextSync(AwContents awContents, AwBrowserContext browserContext) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    awContents.setBrowserContext(browserContext);
+                    awContents.setBrowserContextForPublicApi(browserContext);
                     return null;
                 });
     }

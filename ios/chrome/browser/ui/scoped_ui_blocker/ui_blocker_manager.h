@@ -28,9 +28,9 @@
 
 // Call this when showing a new blocking UI in `target`.
 // It is an error to call this for target A when target B is already showing one
-// or more blocking UI.
-// This method can be called multiple time with the same target, before calling
-// `decrementBlockingUICounterForTarget:`.
+// or more blocking UI. This can be checked by ensuring that `A.isUIBlocked` is
+// false. This method can be called multiple time with the same target, before
+// calling `decrementBlockingUICounterForTarget:`.
 - (void)incrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target;
 // Call this after dismissing a blocking UI.
 // `target` has to be the same value when `incrementBlockingUICounterForTarget:`

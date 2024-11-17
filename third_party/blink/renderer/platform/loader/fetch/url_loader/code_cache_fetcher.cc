@@ -61,9 +61,17 @@ bool ShouldUseIsolatedCodeCache(
   } else if (!response_head.should_use_source_hash_for_js_code_cache) {
     // If the timestamps don't match or are null, the code cache data may be
     // for a different response. See https://crbug.com/1099587.
-    if (code_cache_response_time.is_null() ||
-        response_head.response_time.is_null() ||
-        code_cache_response_time != response_head.response_time) {
+
+    // When the cached resource is revalidated and an HTTP 304 ("Not Modified")
+    // response is received, the response time changes. However, the code cache
+    // is still valid. We use original_response_time (which doesn't change when
+    // a HTTP 304 is received) instead of response_time for validating the code
+    // cache.
+    base::Time response_time = response_head.original_response_time.is_null()
+                                   ? response_head.response_time
+                                   : response_head.original_response_time;
+    if (code_cache_response_time.is_null() || response_time.is_null() ||
+        code_cache_response_time != response_time) {
       return false;
     }
   }

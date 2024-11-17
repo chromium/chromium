@@ -38,9 +38,9 @@ class BookmarksApiWatcherFactory : public ProfileKeyedServiceFactory {
 
  private:
   // BrowserContextKeyedServiceFactory overrides
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override {
-    return new BookmarksApiWatcher();
+    return std::make_unique<BookmarksApiWatcher>();
   }
 };
 

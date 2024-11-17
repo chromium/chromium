@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
@@ -40,7 +39,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
@@ -52,7 +50,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -61,7 +58,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
-#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
@@ -126,8 +122,7 @@ String ExceptionCodeToString(ExceptionCode exception_code) {
     case ESErrorType::kTypeError:
       return "TypeError";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "UnknownError";
+      NOTREACHED();
   }
 }
 
@@ -203,32 +198,6 @@ MLContext* CreateContext(V8TestingScope& scope, MLContextOptions* options) {
       scope.GetIsolate(), tester.Value().V8Value(), scope.GetExceptionState());
 }
 
-std::pair<String, String> ComputeGraph(V8TestingScope& scope,
-                                       MLGraph* graph,
-                                       MLNamedArrayBufferViews& inputs,
-                                       MLNamedArrayBufferViews& outputs) {
-  ScriptPromiseTester tester(
-      scope.GetScriptState(),
-      graph->Compute(ScopedMLTrace("Compute"), inputs, outputs,
-                     scope.GetScriptState(), scope.GetExceptionState()));
-  if (scope.GetExceptionState().HadException()) {
-    return {ExceptionCodeToString(scope.GetExceptionState().Code()),
-            scope.GetExceptionState().Message()};
-  }
-  tester.WaitUntilSettled();
-  if (tester.IsFulfilled()) {
-    // For `MLGraph::Compute()`, the input and output ArrayBufferViews
-    // are transferred. The new ArrayBufferViews are returned via the
-    // MLComputeResult. Set the inputs and outputs to the returned ones.
-    auto* results = V8ToObject<MLComputeResult>(&scope, tester.Value());
-    inputs = results->inputs();
-    outputs = results->outputs();
-    return {};
-  } else {
-    return GetErrorNameAndMessage(&scope, tester.Value());
-  }
-}
-
 template <typename T>
 MLOperand* BuildConstant(ScriptState* script_state,
                          MLGraphBuilder* builder,
@@ -248,8 +217,8 @@ MLOperand* BuildConstant(ScriptState* script_state,
 MLOperand* BuildConv2d(
     V8TestingScope& scope,
     MLGraphBuilder* builder,
-    const MLOperand* input,
-    const MLOperand* filter,
+    MLOperand* input,
+    MLOperand* filter,
     const MLConv2dOptions* options = MLConv2dOptions::Create()) {
   auto* output =
       builder->conv2d(input, filter, options, scope.GetExceptionState());
@@ -265,8 +234,8 @@ MLOperand* BuildConv2d(
 
 MLOperand* BuildGemm(V8TestingScope& scope,
                      MLGraphBuilder* builder,
-                     const MLOperand* a,
-                     const MLOperand* b,
+                     MLOperand* a,
+                     MLOperand* b,
                      const MLGemmOptions* options = MLGemmOptions::Create()) {
   auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
@@ -282,8 +251,8 @@ MLOperand* BuildGemm(V8TestingScope& scope,
 MLOperand* BuildElementWiseBinaryOperator(
     MLGraphBuilder* builder,
     V8TestingScope& scope,
-    const MLOperand* a,
-    const MLOperand* b,
+    MLOperand* a,
+    MLOperand* b,
     webnn::mojom::blink::ElementWiseBinary::Kind kind,
     const MLOperatorOptions* options) {
   switch (kind) {
@@ -311,6 +280,12 @@ MLOperand* BuildElementWiseBinaryOperator(
       return builder->lesser(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
       return builder->lesserOrEqual(a, b, options, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
+      return builder->logicalAnd(a, b, options, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
+      return builder->logicalOr(a, b, options, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalXor:
+      return builder->logicalXor(a, b, options, scope.GetExceptionState());
   }
 }
 
@@ -318,8 +293,8 @@ MLOperand* BuildElementWiseBinary(
     V8TestingScope& scope,
     MLGraphBuilder* builder,
     webnn::mojom::blink::ElementWiseBinary::Kind kind,
-    const MLOperand* a,
-    const MLOperand* b,
+    MLOperand* a,
+    MLOperand* b,
     const MLOperatorOptions* options = MLOperatorOptions::Create()) {
   MLOperand* output =
       BuildElementWiseBinaryOperator(builder, scope, a, b, kind, options);
@@ -430,21 +405,6 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
   ~FakeWebNNGraph() override = default;
 
  private:
-  void Compute(HashMap<String, mojo_base::BigBuffer> inputs,
-               blink_mojom::WebNNGraph::ComputeCallback callback) override {
-    // Set the input array buffers for validation in the test.
-    helper_->SetInputArrayBuffers(std::move(inputs));
-
-    // Return the compute result with shared memory.
-    auto& compute_result = helper_->GetComputeResult();
-    HashMap<String, mojo_base::BigBuffer> mojo_outputs;
-    for (const auto& [name, output_data] : compute_result.output) {
-      mojo_outputs.insert(name, base::span(output_data));
-    }
-    std::move(callback).Run(
-        blink_mojom::ComputeResult::NewNamedOutputs(std::move(mojo_outputs)));
-  }
-
   // Just return for testing the validation of inputs and outputs.
   void Dispatch(
       const HashMap<WTF::String, blink::WebNNTensorToken>& named_inputs,
@@ -629,6 +589,9 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*greater_or_equal_input=*/webnn::SupportedDataTypes::All(),
          /*lesser_input=*/webnn::SupportedDataTypes::All(),
          /*lesser_or_equal_input=*/webnn::SupportedDataTypes::All(),
+         /*logical_and_input=*/webnn::SupportedDataTypes::All(),
+         /*logical_or_input=*/webnn::SupportedDataTypes::All(),
+         /*logical_xor_input=*/webnn::SupportedDataTypes::All(),
          /*logical_not_input=*/webnn::SupportedDataTypes::All(),
          /*logical_output=*/webnn::SupportedDataTypes::All(),
          /*abs_input=*/webnn::SupportedDataTypes::All(),
@@ -689,6 +652,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*relu_input=*/webnn::SupportedDataTypes::All(),
          /*resample2d_input=*/webnn::SupportedDataTypes::All(),
          /*reshape_input=*/webnn::SupportedDataTypes::All(),
+         /*scatter_elements_input=*/webnn::SupportedDataTypes::All(),
+         /*scatter_elements_indices=*/webnn::SupportedDataTypes::All(),
          /*scatter_nd_input=*/webnn::SupportedDataTypes::All(),
          /*scatter_nd_indices=*/webnn::SupportedDataTypes::All(),
          /*sigmoid_input=*/webnn::SupportedDataTypes::All(),
@@ -814,8 +779,8 @@ MLTensor* CreateMLTensorForOperand(V8TestingScope& scope,
   auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(operand->dataType());
   desc->setShape(operand->shape());
-  desc->setUsage(V8MLTensorUsage::Constant::kWrite |
-                 V8MLTensorUsage::Constant::kRead);
+  desc->setReadable(true);
+  desc->setWritable(true);
 
   ScriptPromiseTester tester(
       scope.GetScriptState(),
@@ -829,7 +794,7 @@ MLTensor* CreateMLTensorForOperand(V8TestingScope& scope,
   ml_context->writeTensor(
       scope.GetScriptState(), ml_tensor,
       MaybeShared<DOMArrayBufferView>(array_buffer_view.Get()),
-      /*src_element_offset=*/0, scope.GetExceptionState());
+      scope.GetExceptionState());
   return ml_tensor;
 }
 
@@ -1051,337 +1016,6 @@ TEST_F(MLGraphTest, BuildTest) {
   }
 }
 
-// Test that callers specifying `MLOperandDescriptor.dimensions` in place of
-// `MLOperandDescriptor.shape` will not break.
-//
-// TODO(crbug.com/365813262): Remove this test once
-// `MLOperandDescriptor.dimensions` is no longer supported.
-TEST_F(MLGraphTest, MLOperandDescriptorShapeTest) {
-  V8TestingScope scope;
-  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
-
-  MLContext* context = CreateContext(scope, MLContextOptions::Create());
-  DummyExceptionStateForTesting exception_state;
-  auto* builder =
-      MLGraphBuilder::Create(scope.GetScriptState(), context, exception_state);
-  ASSERT_THAT(builder, testing::NotNull());
-
-  {
-    // Use scalar shape if neither `dimensions` nor `shape` are specified.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    ASSERT_THAT(input, testing::NotNull());
-    EXPECT_THAT(input->Shape(), testing::IsEmpty());
-  }
-  {
-    // Allow passing `shape` without `dimensions`.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setShape({3, 4, 5});
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    ASSERT_THAT(input, testing::NotNull());
-    EXPECT_THAT(input->Shape(), testing::ElementsAre(3, 4, 5));
-  }
-  {
-    // Allow passing `dimensions` without `shape`.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setDimensions({3, 4, 5});
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    ASSERT_THAT(input, testing::NotNull());
-    EXPECT_THAT(input->Shape(), testing::ElementsAre(3, 4, 5));
-  }
-  {
-    // Allow passing the same non-empty value for `shape` and `dimensions`.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setDimensions({3, 4, 5});
-    desc->setShape({3, 4, 5});
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    ASSERT_THAT(input, testing::NotNull());
-    EXPECT_THAT(input->Shape(), testing::ElementsAre(3, 4, 5));
-  }
-  {
-    // Disallow passing different non-empty values for `shape` and `dimensions`.
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setDimensions({3, 4, 5});
-    desc->setShape({1, 2});
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-
-    auto* input = builder->input(scope.GetScriptState(), "name", desc,
-                                 scope.GetExceptionState());
-    EXPECT_THAT(input, testing::IsNull());
-  }
-}
-
-// Helper struct to create an ArrayBufferView for MLNamedArrayBufferViews test.
-struct ArrayBufferViewHelper {
-  size_t number_of_elements;
-  V8MLOperandDataType::Enum data_type;
-
-  NotShared<DOMArrayBufferView> ToArrayBufferView() {
-    return CreateDOMArrayBufferView(number_of_elements, data_type);
-  }
-};
-
-TEST_F(MLGraphTest, CreateNamedArrayBufferViewsTest) {
-  constexpr auto kOperandDataTypes =
-      base::MakeFixedFlatSet<V8MLOperandDataType::Enum>(
-          {V8MLOperandDataType::Enum::kFloat32,
-           V8MLOperandDataType::Enum::kFloat16,
-           V8MLOperandDataType::Enum::kInt32,
-           V8MLOperandDataType::Enum::kUint32,
-           V8MLOperandDataType::Enum::kInt64,
-           V8MLOperandDataType::Enum::kUint64, V8MLOperandDataType::Enum::kInt8,
-           V8MLOperandDataType::Enum::kUint8});
-  static_assert(kOperandDataTypes.size() == V8MLOperandDataType::kEnumSize,
-                "The number of operand data types declared here needs to match "
-                "all possible enumeration values defined in the IDL.");
-
-  V8TestingScope scope;
-  // Bind fake WebNN Context in the service for testing.
-  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
-
-  MLContext* context = CreateContext(scope, MLContextOptions::Create());
-  auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                         scope.GetExceptionState());
-  ASSERT_THAT(builder, testing::NotNull());
-
-  {
-    for (auto operand_data_type : kOperandDataTypes) {
-      SCOPED_TRACE(testing::Message()
-                   << "Testing for MLOperandDataType: "
-                   << V8MLOperandDataType(operand_data_type).AsString());
-      auto* input = BuildInput(scope.GetScriptState(), builder, "input", {3, 4},
-                               operand_data_type, scope.GetExceptionState());
-      MLNamedArrayBufferViews inputs;
-      inputs.emplace_back("input", CreateArrayBufferViewForOperand(input));
-      auto inputs_info = TransferNamedArrayBufferViews(
-          scope.GetIsolate(), inputs, scope.GetExceptionState());
-      ASSERT_THAT(inputs_info, testing::NotNull());
-      auto* input_views = CreateNamedArrayBufferViews(std::move(inputs_info));
-      ASSERT_THAT(input_views, testing::NotNull());
-      EXPECT_EQ((*input_views)[0].first, "input");
-      auto input_data_type = (*input_views)[0].second->GetType();
-      switch (operand_data_type) {
-        case V8MLOperandDataType::Enum::kFloat32:
-          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeFloat32);
-          break;
-        case V8MLOperandDataType::Enum::kFloat16:
-          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint16);
-          break;
-        case V8MLOperandDataType::Enum::kInt32:
-          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeInt32);
-          break;
-        case V8MLOperandDataType::Enum::kUint32:
-          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint32);
-          break;
-        case V8MLOperandDataType::Enum::kInt64:
-          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeBigInt64);
-          break;
-        case V8MLOperandDataType::Enum::kUint64:
-          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeBigUint64);
-          break;
-        case V8MLOperandDataType::Enum::kInt8:
-          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeInt8);
-          break;
-        case V8MLOperandDataType::Enum::kUint8:
-          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint8);
-          break;
-      }
-    }
-  }
-}
-
-TEST_F(MLGraphTest, ComputeTest) {
-  V8TestingScope scope;
-  // Bind fake WebNN Context in the service for testing.
-  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
-
-  MLContext* context = CreateContext(scope, MLContextOptions::Create());
-  auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                         scope.GetExceptionState());
-  ASSERT_THAT(builder, testing::NotNull());
-
-  // Build a fake graph represents computation 'c = a * b';
-  auto* a = BuildInput(scope.GetScriptState(), builder, "a", {3, 4},
-                       V8MLOperandDataType::Enum::kFloat32,
-                       scope.GetExceptionState());
-  auto* b = BuildInput(scope.GetScriptState(), builder, "b", {4, 3},
-                       V8MLOperandDataType::Enum::kFloat32,
-                       scope.GetExceptionState());
-  auto* c = BuildGemm(scope, builder, a, b);
-  auto [graph, error_name, error_message] =
-      BuildGraph(scope, builder, {{"c", c}});
-  ASSERT_THAT(graph, testing::NotNull());
-  {
-    // Test throwing exception if the inputs is empty.
-    MLNamedArrayBufferViews inputs;
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "Invalid inputs: The number (0) of the array buffer views "
-              "doesn't match the expectation (2).");
-  }
-  {
-    // Test throwing exception if the number of inputs doesn't match.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "Invalid inputs: The number (1) of the array buffer views "
-              "doesn't match the expectation (2).");
-  }
-  {
-    // Test throwing exception if the outputs is empty.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
-    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
-    MLNamedArrayBufferViews outputs;
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "Invalid outputs: The number (0) of the array buffer views "
-              "doesn't match the expectation (1).");
-  }
-  {
-    // Test throwing exception if the number of outputs doesn't match.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
-    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    outputs.emplace_back("d", CreateArrayBufferViewForOperand(c));
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "Invalid outputs: The number (2) of the array buffer views "
-              "doesn't match the expectation (1).");
-  }
-  {
-    // Test throwing exception if the input name is unknown.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
-    inputs.emplace_back("invalid-input-name",
-                        CreateArrayBufferViewForOperand(b));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "Invalid inputs: The name \"invalid-input-name\" isn't part of "
-              "the graph.");
-  }
-  {
-    // Test throwing exception if the output name is unknown.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
-    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back("invalid-output-name",
-                         CreateArrayBufferViewForOperand(c));
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "Invalid outputs: The name \"invalid-output-name\" isn't part of "
-              "the graph.");
-  }
-  {
-    // Test throwing exception if the input array buffer view type is wrong.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back(
-        "a",
-        ArrayBufferViewHelper{.number_of_elements = 12,
-                              .data_type = V8MLOperandDataType::Enum::kInt32}
-            .ToArrayBufferView());
-    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(
-        error_message,
-        "Invalid inputs: The type (Int32) of the array buffer view with "
-        "name \"a\" doesn't match the expected operand data type (float32).");
-  }
-  {
-    // Test throwing exception if the input array buffer view size is wrong.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back(
-        "a",
-        ArrayBufferViewHelper{.number_of_elements = 10,
-                              .data_type = V8MLOperandDataType::Enum::kFloat32}
-            .ToArrayBufferView());
-    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "Invalid inputs: The byte length (40) of the array buffer view "
-              "with name \"a\" doesn't match the expected byte length (48).");
-  }
-  {
-    // Test throwing exception if the output array buffer view type is wrong.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
-    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back(
-        "c",
-        ArrayBufferViewHelper{.number_of_elements = 9,
-                              .data_type = V8MLOperandDataType::Enum::kInt32}
-            .ToArrayBufferView());
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(
-        error_message,
-        "Invalid outputs: The type (Int32) of the array buffer view with "
-        "name \"c\" doesn't match the expected operand data type (float32).");
-  }
-  {
-    // Test throwing exception if the output array buffer view size is wrong.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
-    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back(
-        "c",
-        ArrayBufferViewHelper{.number_of_elements = 8,
-                              .data_type = V8MLOperandDataType::Enum::kFloat32}
-            .ToArrayBufferView());
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "Invalid outputs: The byte length (32) of the array buffer view "
-              "with name \"c\" doesn't match the expected byte length (36).");
-  }
-}
-
 TEST_F(MLGraphTest, CreateWebNNTensorTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
@@ -1404,56 +1038,10 @@ TEST_F(MLGraphTest, CreateWebNNTensorTest) {
   tensor_tester.WaitUntilSettled();
   EXPECT_TRUE(tensor_tester.IsFulfilled());
 
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-
   ASSERT_THAT(ml_tensor, testing::NotNull());
   EXPECT_EQ(ml_tensor->dataType(), desc->dataType());
   EXPECT_EQ(ml_tensor->shape(), desc->shape());
-}
-
-// Test that callers specifying `MLOperandDescriptor.dimensions` in place of
-// `MLOperandDescriptor.shape` will not break.
-//
-// TODO(crbug.com/365813262): Remove this test once
-// `MLOperandDescriptor.dimensions` is no longer supported.
-TEST_F(MLGraphTest, CreateWebNNTensorWithDimensionsTest) {
-  V8TestingScope scope;
-  // Bind fake WebNN Context in the service for testing.
-  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
-
-  auto* options = MLContextOptions::Create();
-  // Create WebNN Context with GPU device type.
-  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
-  auto* script_state = scope.GetScriptState();
-
-  MLContext* ml_context = CreateContext(scope, options);
-
-  auto* desc = MLTensorDescriptor::Create();
-  desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-  // Set `dimensions` rather than `shape`.
-  desc->setDimensions({2, 2});
-
-  ScriptPromiseTester tensor_tester(
-      script_state,
-      ml_context->createTensor(script_state, desc, scope.GetExceptionState()));
-  tensor_tester.WaitUntilSettled();
-  EXPECT_TRUE(tensor_tester.IsFulfilled());
-
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
-  MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-
-  ASSERT_THAT(ml_tensor, testing::NotNull());
-  EXPECT_EQ(ml_tensor->dataType(), desc->dataType());
-  EXPECT_THAT(ml_tensor->shape(), testing::ElementsAre(2, 2));
 }
 
 TEST_F(MLGraphTest, WriteWebNNTensorTest) {
@@ -1474,8 +1062,8 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setShape(kTensorShape);
-  desc->setUsage(V8MLTensorUsage::Constant::kWrite |
-                 V8MLTensorUsage::Constant::kRead);
+  desc->setReadable(true);
+  desc->setWritable(true);
 
   ScriptPromiseTester tensor_tester(
       script_state,
@@ -1483,73 +1071,30 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   tensor_tester.WaitUntilSettled();
   EXPECT_TRUE(tensor_tester.IsFulfilled());
 
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-
   ASSERT_THAT(ml_tensor, testing::NotNull());
 
-  const std::array<const uint8_t, kTensorSize> input_data = {0xAA, 0xAA, 0xAA,
-                                                             0xAA};
+  std::array<const uint8_t, kTensorSize> input_data = {0xAA, 0xAA, 0xAA, 0xAA};
   DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(input_data);
   ASSERT_THAT(array_buffer, testing::NotNull());
 
-  // Writing the full tensor.
+  // Write data to the tensor.
   ml_context->writeTensor(
       script_state, ml_tensor,
       CreateArrayBufferViewFromBytes(array_buffer, input_data),
-      /*src_element_offset=*/0, scope.GetExceptionState());
-  EXPECT_FALSE(scope.GetExceptionState().HadException());
-
-  ml_context->writeTensor(
-      script_state, ml_tensor,
-      MaybeShared<DOMArrayBufferView>(blink::DOMUint32Array::Create(
-          array_buffer, /*byte_offset=*/0,
-          /*length=*/array_buffer->ByteLength() / 4)),
-      /*src_element_offset=*/0, scope.GetExceptionState());
-  EXPECT_FALSE(scope.GetExceptionState().HadException());
-
+      scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(
       DownloadMLTensorAndCheck(scope, ml_context, ml_tensor, input_data));
 
-  // Writing to the remainder of the tensor from source offset.
+  // Write different data to the tensor.
+  std::array<const uint8_t, kTensorSize> new_data = {0xAA, 0xCC, 0xBB, 0xBB};
   ml_context->writeTensor(
       script_state, ml_tensor,
-      CreateArrayBufferViewFromBytes(
-          array_buffer,
-          std::array<const uint8_t, kTensorSize>{0xAA, 0xAA, 0xBB, 0xBB}),
-      /*src_element_offset=*/2, scope.GetExceptionState());
-  EXPECT_FALSE(scope.GetExceptionState().HadException());
-
-  // Writing zero bytes at the end of the tensor.
-  ml_context->writeTensor(
-      script_state, ml_tensor,
-      MaybeShared<DOMArrayBufferView>(blink::DOMUint32Array::Create(
-          array_buffer, /*byte_offset=*/0,
-          /*length=*/array_buffer->ByteLength() / 4)),
-      /*src_element_offset=*/1, scope.GetExceptionState());
-  EXPECT_FALSE(scope.GetExceptionState().HadException());
-
-  EXPECT_TRUE(DownloadMLTensorAndCheck(
-      scope, ml_context, ml_tensor,
-      std::array<const uint8_t, kTensorSize>{0xBB, 0xBB, 0xAA, 0xAA}));
-
-  // Writing with both a source offset and size.
-  ml_context->writeTensor(
-      script_state, ml_tensor,
-      CreateArrayBufferViewFromBytes(
-          array_buffer,
-          std::array<const uint8_t, kTensorSize>{0xCC, 0xCC, 0xCC, 0xCC}),
-      /*src_element_offset=*/2, /*src_element_count=*/1,
+      CreateArrayBufferViewFromBytes(array_buffer, new_data),
       scope.GetExceptionState());
-  EXPECT_FALSE(scope.GetExceptionState().HadException());
-
-  EXPECT_TRUE(DownloadMLTensorAndCheck(
-      scope, ml_context, ml_tensor,
-      std::array<const uint8_t, kTensorSize>{0xCC, 0xBB, 0xAA, 0xAA}));
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_TRUE(DownloadMLTensorAndCheck(scope, ml_context, ml_tensor, new_data));
 }
 
 // Writing data from an array buffer to a destroyed MLTensor should not crash.
@@ -1568,7 +1113,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
   auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setShape({2, 2});
-  desc->setUsage(V8MLTensorUsage::Constant::kWrite);
+  desc->setWritable(true);
 
   ScriptPromiseTester tensor_tester(
       script_state,
@@ -1576,13 +1121,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
   tensor_tester.WaitUntilSettled();
   EXPECT_TRUE(tensor_tester.IsFulfilled());
 
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-
   ASSERT_THAT(ml_tensor, testing::NotNull());
 
   ml_tensor->destroy();
@@ -1592,7 +1131,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
       CreateDOMArrayBufferView(ml_tensor->PackedByteLength(),
                                V8MLOperandDataType::Enum::kUint8)
           ->BufferBase(),
-      /*src_byte_offset=*/0, scope.GetExceptionState());
+      scope.GetExceptionState());
 }
 
 // Reading data from an array buffer to a destroyed MLTensor should not crash.
@@ -1611,7 +1150,7 @@ TEST_F(MLGraphTest, ReadWebNNTensorThenDestroyTest) {
   auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
   desc->setShape({2, 2});
-  desc->setUsage(V8MLTensorUsage::Constant::kRead);
+  desc->setReadable(true);
 
   ScriptPromiseTester create_tensor_tester(
       script_state,
@@ -1619,14 +1158,8 @@ TEST_F(MLGraphTest, ReadWebNNTensorThenDestroyTest) {
   create_tensor_tester.WaitUntilSettled();
   EXPECT_TRUE(create_tensor_tester.IsFulfilled());
 
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   MLTensor* ml_tensor =
       V8ToObject<MLTensor>(&scope, create_tensor_tester.Value());
-
   ASSERT_THAT(ml_tensor, testing::NotNull());
 
   ml_tensor->destroy();
@@ -1665,15 +1198,8 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
       BuildGraph(scope, builder, {{"output", output_operand}});
   ASSERT_THAT(graph, testing::NotNull());
 
-  // Check if MLTensor is supported.
   MLTensor* input_tensor =
       CreateMLTensorForOperand(scope, ml_context, lhs_operand);
-
-  if (scope.GetExceptionState().Code() ==
-      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
-    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
-  }
-
   ASSERT_THAT(input_tensor, testing::NotNull());
 
   MLNamedTensors inputs(
@@ -2134,112 +1660,6 @@ TEST_F(MLGraphTest, CastTester) {
                .expected_descriptor =
                    ToDescriptor(webnn::OperandDataType::kInt32, shape)}
         .Test(*this, scope, context);
-  }
-}
-
-TEST_F(MLGraphTest, WebNNGraphComputeTest) {
-  V8TestingScope scope;
-  // Bind fake WebNN Context in the service for testing.
-  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
-
-  auto* options = MLContextOptions::Create();
-  // Create WebNN Context with GPU device type.
-  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
-  MLContext* context = CreateContext(scope, options);
-  auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
-                                         scope.GetExceptionState());
-  ASSERT_THAT(builder, testing::NotNull());
-  const Vector<uint32_t> dimensions = {3, 5};
-  const wtf_size_t number_of_elements = 15;
-
-  // Build the graph.
-  auto* lhs_operand =
-      BuildInput(scope.GetScriptState(), builder, "lhs", dimensions,
-                 V8MLOperandDataType::Enum::kUint8, scope.GetExceptionState());
-  auto* rhs_operand =
-      BuildInput(scope.GetScriptState(), builder, "rhs", dimensions,
-                 V8MLOperandDataType::Enum::kUint8, scope.GetExceptionState());
-  auto* output_operand = BuildElementWiseBinary(
-      scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
-      lhs_operand, rhs_operand);
-  auto [graph, error_name, error_message] =
-      BuildGraph(scope, builder, {{"output", output_operand}});
-  ASSERT_THAT(graph, testing::NotNull());
-
-  MLNamedArrayBufferViews inputs(
-      {{"lhs", CreateArrayBufferViewForOperand(lhs_operand)},
-       {"rhs", CreateArrayBufferViewForOperand(rhs_operand)}});
-  MLNamedArrayBufferViews outputs(
-      {{"output", CreateArrayBufferViewForOperand(output_operand)}});
-
-  {
-    // Compute successfully.
-    SetComputeResult(ComputeResult{
-        .output = {{"output", Vector<uint8_t>(number_of_elements, 2)}}});
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_TRUE(error_name.IsNull());
-    auto results = GetArrayBufferViewValues<uint8_t>(outputs[0].second);
-    EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 2));
-
-    // Compute again successfully.
-    SetComputeResult(ComputeResult{
-        .output = {{"output", Vector<uint8_t>(number_of_elements, 7)}}});
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_TRUE(error_name.IsNull());
-    results = GetArrayBufferViewValues<uint8_t>(outputs[0].second);
-    EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 7));
-
-    // Validate the input array buffers.
-    auto& name_to_buffer_map = GetInputArrayBuffers();
-    auto lhs_input_iter = name_to_buffer_map.find("lhs");
-    EXPECT_NE(lhs_input_iter, name_to_buffer_map.end());
-    EXPECT_EQ(lhs_input_iter->value.size(), number_of_elements);
-    auto rhs_input_iter = name_to_buffer_map.find("rhs");
-    EXPECT_NE(rhs_input_iter, name_to_buffer_map.end());
-    EXPECT_EQ(rhs_input_iter->value.size(), number_of_elements);
-  }
-  {
-    // Unknown error.
-    SetComputeResult(ComputeResult{});
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "OperationError");
-    EXPECT_EQ(error_message,
-              "There is an unknown output tensor in the computation "
-              "result: output");
-  }
-  {
-    // Reset the inputs which are detached in above failed tests.
-    inputs[0].second = CreateArrayBufferViewForOperand(lhs_operand);
-    inputs[1].second = CreateArrayBufferViewForOperand(rhs_operand);
-    outputs[0].second = CreateArrayBufferViewForOperand(output_operand);
-    // Output name in computation result isn't expected.
-    SetComputeResult(
-        ComputeResult{.output = {{"a_different_out_name",
-                                  Vector<uint8_t>(number_of_elements)}}});
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "OperationError");
-    EXPECT_EQ(error_message,
-              "There is an unknown output tensor in the computation "
-              "result: output");
-  }
-  {
-    // Reset the inputs which are detached in above failed tests.
-    inputs[0].second = CreateArrayBufferViewForOperand(lhs_operand);
-    inputs[1].second = CreateArrayBufferViewForOperand(rhs_operand);
-    outputs[0].second = CreateArrayBufferViewForOperand(output_operand);
-    // The size of output in computation result isn't expected.
-    SetComputeResult(
-        ComputeResult{.output = {{"output", Vector<uint8_t>(20)}}});
-    std::tie(error_name, error_message) =
-        ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(error_name, "UnknownError");
-    EXPECT_EQ(error_message,
-              "The output tensor size does not match graph's expectation: "
-              "output");
   }
 }
 

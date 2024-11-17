@@ -30,7 +30,7 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
       delete;
   ~ReadableStreamBytesConsumer() override;
 
-  Result BeginRead(const char** buffer, size_t* available) override;
+  Result BeginRead(base::span<const char>& buffer) override;
   Result EndRead(size_t read_size) override;
   void SetClient(BytesConsumer::Client*) override;
   void ClearClient() override;

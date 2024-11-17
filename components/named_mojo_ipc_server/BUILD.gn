@@ -14,6 +14,7 @@ static_library("named_mojo_ipc_server") {
   sources = [
     "connection_info.cc",
     "connection_info.h",
+    "endpoint_options.cc",
     "endpoint_options.h",
     "ipc_server.h",
     "named_mojo_ipc_server.cc",

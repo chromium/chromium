@@ -33,8 +33,6 @@ static_library("trusted_vault") {
       "recovery_key_store_connection.h",
       "recovery_key_store_connection_impl.cc",
       "recovery_key_store_connection_impl.h",
-      "recovery_key_store_controller.cc",
-      "recovery_key_store_controller.h",
       "securebox.cc",
       "securebox.h",
       "standalone_trusted_vault_backend.cc",
@@ -74,21 +72,6 @@ static_library("trusted_vault") {
       "//third_party/boringssl",
     ]
   }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "recovery_key_provider_ash.cc",
-      "recovery_key_provider_ash.h",
-    ]
-
-    deps += [
-      "//chromeos/ash/components/cryptohome",
-      "//chromeos/ash/components/dbus/cryptohome",
-      "//chromeos/ash/components/dbus/userdataauth",
-      "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
-      "//components/account_id",
-    ]
-  }
 }
 
 if (!is_android) {
@@ -123,16 +106,6 @@ if (!is_android) {
       "//testing/gmock",
       "//testing/gtest",
     ]
-
-    if (is_chromeos_ash) {
-      sources += [ "recovery_key_store_controller_ash_unittest.cc" ]
-
-      deps += [
-        "//chromeos/ash/components/dbus/userdataauth",
-        "//chromeos/ash/components/dbus/userdataauth:test_support",
-        "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
-      ]
-    }
   }
 }
 

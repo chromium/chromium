@@ -69,7 +69,8 @@
           "builder": "gpu-fyi-try-mac-intel-exp",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac FYI Experimental Release (Intel)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

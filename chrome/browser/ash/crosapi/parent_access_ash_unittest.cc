@@ -110,13 +110,12 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApprovalParams) {
       test_child_display_name);
 
   // Encode the test bitmap.
-  std::vector<uint8_t> favicon_bitmap;
-  gfx::PNGCodec::FastEncodeBGRASkBitmap(*test_favicon.bitmap(), false,
-                                        &favicon_bitmap);
+  std::optional<std::vector<uint8_t>> favicon_bitmap =
+      gfx::PNGCodec::FastEncodeBGRASkBitmap(*test_favicon.bitmap(), false);
   // Make sure it's there.
   EXPECT_EQ(
       params->flow_type_params->get_web_approvals_params()->favicon_png_bytes,
-      favicon_bitmap);
+      favicon_bitmap.value());
 }
 
 TEST_F(ParentAccessAshTest, GetExtensionParentApprovalParams) {
@@ -139,13 +138,12 @@ TEST_F(ParentAccessAshTest, GetExtensionParentApprovalParams) {
   EXPECT_EQ(params->flow_type_params->get_extension_approvals_params()
                 ->extension_name,
             test_extension_name);
-  std::vector<uint8_t> icon_bitmap;
-  gfx::PNGCodec::FastEncodeBGRASkBitmap(
-      *extensions::util::GetDefaultExtensionIcon().bitmap(), false,
-      &icon_bitmap);
+  std::optional<std::vector<uint8_t>> icon_bitmap =
+      gfx::PNGCodec::FastEncodeBGRASkBitmap(
+          *extensions::util::GetDefaultExtensionIcon().bitmap(), false);
   EXPECT_EQ(params->flow_type_params->get_extension_approvals_params()
                 ->icon_png_bytes,
-            icon_bitmap);
+            icon_bitmap.value());
 }
 
 TEST_F(ParentAccessAshTest, GetExtensionApprovalParamsForExtensionDisabled) {

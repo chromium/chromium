@@ -34,7 +34,7 @@
 #endif  // defined(USE_AURA)
 
 // Currently, touch is only supported on ChromeOS Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define TOUCH_INPUT_SUPPORTED 1
 #else
 #define TOUCH_INPUT_SUPPORTED 0
@@ -107,7 +107,7 @@ class InteractionTestUtilMouse::DragEnder
     }
     // Only Ash actually supports observing the drag-drop client. Therefore, on
     // other platforms, only direct cancel is possible.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (auto* const client = GetClient()) {
       drag_client_observation_.Observe(client);
     }

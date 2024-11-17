@@ -1192,6 +1192,35 @@ TEST_P(SurfaceTest, SetAlpha) {
   }
 }
 
+// TODO(crbug.com/369003507): This unit test is checking
+// temporarily disable non YUV overlays on hatch devices
+TEST_P(SurfaceTest, DisableNonYUVOverlays) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDisableNonYUVOverlaysFromExo);
+
+  gfx::Size buffer_size(2, 2);
+  auto buffer_non_yuv = test::ExoTestHelper::CreateBuffer(
+      buffer_size, gfx::BufferFormat::RGBA_8888, /*is_overlay_candidate=*/true);
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  {
+    surface->Attach(buffer_non_yuv.get());
+    surface->Commit();
+    test::WaitForLastFrameAck(shell_surface.get());
+
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    EXPECT_EQ(1u, frame.render_pass_list.size());
+    EXPECT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
+    viz::DrawQuad* draw_quad = frame.render_pass_list.back()->quad_list.back();
+    EXPECT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
+    EXPECT_EQ(
+        viz::OverlayPriority::kLow,
+        viz::TextureDrawQuad::MaterialCast(draw_quad)->overlay_priority_hint);
+  }
+}
+
 TEST_P(SurfaceTest, ForceRgbxTest) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(

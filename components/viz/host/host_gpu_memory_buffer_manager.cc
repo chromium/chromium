@@ -19,6 +19,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -222,33 +223,18 @@ void HostGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
   }
 
   if (auto* gpu_service = GetGpuService()) {
-    gpu_service->CopyGpuMemoryBuffer(std::move(buffer_handle),
-                                     std::move(memory_region),
-                                     std::move(callback));
+    gpu_service->CopyGpuMemoryBuffer(
+        std::move(buffer_handle), std::move(memory_region),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                    /*success=*/false));
   } else {
     // GPU service failed to start. Run the callback with a null handle.
     std::move(callback).Run(false);
   }
 }
 
-bool HostGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion memory_region) {
-  base::WaitableEvent event;
-  bool mapping_result = false;
-
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
-  CopyGpuMemoryBufferAsync(
-      std::move(buffer_handle), std::move(memory_region),
-      base::BindOnce(
-          [](base::WaitableEvent* event, bool* result_ptr, bool result) {
-            *result_ptr = result;
-            event->Signal();
-          },
-          &event, &mapping_result));
-  event.Wait();
-
-  return mapping_result;
+bool HostGpuMemoryBufferManager::IsConnected() {
+  return GetGpuService() != nullptr;
 }
 
 bool HostGpuMemoryBufferManager::OnMemoryDump(

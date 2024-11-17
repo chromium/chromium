@@ -309,7 +309,7 @@ void ApplyTestState(
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1027,35 +1027,32 @@ void CheckOutput(
       }
       return;
     }
-    case (OutputKey::kIsLocalUnpartitionedDataAccessAllowed): {
-      SCOPED_TRACE("Check Output: IsLocalUnpartitionedDataAccessAllowed()");
+    case (OutputKey::kIsFencedStorageReadAllowed): {
+      SCOPED_TRACE("Check Output: IsFencedStorageReadAllowed()");
       auto top_frame_origin =
           GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
       auto accessing_origin =
           GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
       ASSERT_EQ(return_value,
-                privacy_sandbox_settings->IsLocalUnpartitionedDataAccessAllowed(
+                privacy_sandbox_settings->IsFencedStorageReadAllowed(
                     top_frame_origin, accessing_origin,
                     /*console_frame=*/nullptr));
       return;
     }
-    case (OutputKey::kIsLocalUnpartitionedDataAccessAllowedMetric): {
-      SCOPED_TRACE(
-          "Check Output: PrivacySandbox.IsLocalUnpartitionedDataAccessAllowed");
+    case (OutputKey::kIsFencedStorageReadAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsFencedStorageReadAllowed");
       base::HistogramTester histogram_tester;
       auto top_frame_origin =
           GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
       auto accessing_origin =
           GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
-      std::ignore =
-          privacy_sandbox_settings->IsLocalUnpartitionedDataAccessAllowed(
-              top_frame_origin, accessing_origin,
-              /*console_frame=*/nullptr);
+      std::ignore = privacy_sandbox_settings->IsFencedStorageReadAllowed(
+          top_frame_origin, accessing_origin,
+          /*console_frame=*/nullptr);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
-          "PrivacySandbox.IsLocalUnpartitionedDataAccessAllowed",
-          histogram_value, 1);
+          "PrivacySandbox.IsFencedStorageReadAllowed", histogram_value, 1);
       return;
     }
   }

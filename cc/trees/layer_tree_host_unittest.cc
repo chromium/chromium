@@ -25,13 +25,11 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
-#include "cc/base/features.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/heads_up_display_layer.h"
@@ -840,7 +838,7 @@ class LayerTreeHostTestSetNeedsCommit2 : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -992,8 +990,7 @@ class LayerTreeHostTestInvisibleLayersSkipRenderPass
     ++index_;
     switch (index_) {
       case kAllInvisible:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case kOneVisible:
         child1_->SetHideLayerAndSubtree(false);
         break;
@@ -2873,8 +2870,7 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     if (!frame_data->has_no_damage) {
@@ -2925,8 +2921,7 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
       case 6:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -2989,7 +2984,7 @@ class LayerTreeHostTestSetNeedsCommitWithForcedRedraw
         EXPECT_EQ(gfx::Rect(bounds_), root_damage_rect);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     return draw_result;
@@ -3085,7 +3080,7 @@ class LayerTreeHostTestUndrawnLayersDamageLater : public LayerTreeHostTest {
         EXPECT_EQ(gfx::Rect(child_layer_bounds_), root_damage_rect);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     return draw_result;
@@ -3109,7 +3104,7 @@ class LayerTreeHostTestUndrawnLayersDamageLater : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -3197,7 +3192,7 @@ class LayerTreeHostTestDamageWithScale : public LayerTreeHostTest {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     return draw_result;
@@ -3214,7 +3209,7 @@ class LayerTreeHostTestDamageWithScale : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -4300,7 +4295,7 @@ class LayerTreeHostTestSynchronousCompositorActivateWithoutDraw
     } else if (activate_count_ == 2) {
       EndTest();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -5959,7 +5954,7 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -6214,8 +6209,7 @@ class LayerTreeHostTestKeepSwapPromise : public LayerTreeHostTest {
       case 2:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -6296,7 +6290,7 @@ class LayerTreeHostTestKeepSwapPromiseMFBA : public LayerTreeHostTest {
     if (host_impl->sync_tree()->source_frame_number() == 0) {
       host_impl->BlockNotifyReadyToActivateForTesting(true);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -6330,8 +6324,7 @@ class LayerTreeHostTestKeepSwapPromiseMFBA : public LayerTreeHostTest {
       case 2:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -7564,9 +7557,7 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
         // try to draw once more.
         break;
       case 7:
-        NOTREACHED_IN_MIGRATION()
-            << "No draws should happen once we have a complete frame.";
-        break;
+        NOTREACHED() << "No draws should happen once we have a complete frame.";
     }
     return draw_result;
   }
@@ -7739,8 +7730,7 @@ class LayerTreeHostTestNoTasksBetweenWillAndDidCommit
     // The entire purpose of Non-Blocking Commit is to allow the main thread to
     // continue doing work while commit is running on the impl thread, making
     // this test obsolete.
-    if (base::FeatureList::IsEnabled(features::kNonBlockingCommit) &&
-        layer_tree_host()->IsThreaded()) {
+    if (layer_tree_host()->IsThreaded()) {
       DidCommit();
       EndTest();
     } else {
@@ -8469,7 +8459,7 @@ class LayerTreeHostTestImageAnimation : public LayerTreeHostTest {
         break;
       default:
         // Only 3 draws should happen for 3 frames of the animate image.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     if (draw_count_ == 3)
@@ -8765,7 +8755,7 @@ class LayerTreeHostTestNewLocalSurfaceIdForcesDraw : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 };
@@ -9668,7 +9658,7 @@ class LayerTreeHostTestIgnoreEventsMetricsForNoUpdate
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -9824,7 +9814,10 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
     layer_tree_host()->AddViewTransitionRequest(
         ViewTransitionRequest::CreateCapture(
             blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false, {},
-            base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
+            base::BindLambdaForTesting(
+                [this](const viz::ViewTransitionElementResourceRects&) {
+                  CommitLambdaCalled();
+                })));
   }
 
   void CommitLambdaCalled() { ++num_lambda_calls_; }
@@ -9833,7 +9826,7 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
       const viz::CompositorFrame& frame) override {
     ASSERT_EQ(1u, frame.metadata.transition_directives.size());
     const auto& save = frame.metadata.transition_directives[0];
-    submitted_sequence_ids_.push_back(save.sequence_id());
+    submitted_sequence_id_ = save.sequence_id();
 
     EXPECT_EQ(save.type(),
               viz::CompositorFrameTransitionDirective::Type::kSave);
@@ -9842,14 +9835,14 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& frame_timing_details) override {
-    layer_tree_host()->NotifyTransitionRequestsFinished(
-        submitted_sequence_ids_);
+    layer_tree_host()->NotifyTransitionRequestsFinished(submitted_sequence_id_,
+                                                        {});
     EndTest();
   }
 
   void AfterTest() override { EXPECT_EQ(1, num_lambda_calls_); }
 
-  std::vector<uint32_t> submitted_sequence_ids_;
+  uint32_t submitted_sequence_id_;
   int num_lambda_calls_ = 0;
 };
 
@@ -9956,7 +9949,7 @@ class LayerTreeHostTestHideLayerAndSubtree
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -10007,7 +10000,7 @@ class LayerTreeHostTestHideLayerAndSubtreeOnParent
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -10228,9 +10221,7 @@ class LayerTreeHostTestDelayRecreateTiling
         }
         break;
       case 3:
-        NOTREACHED_IN_MIGRATION()
-            << "We shouldn't see another commit in this test";
-        break;
+        NOTREACHED() << "We shouldn't see another commit in this test";
     }
   }
 
@@ -10938,8 +10929,6 @@ class LayerTreeHostTestBlockOnCommitAfterInputEvent : public LayerTreeHostTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kNonBlockingCommit};
   uint32_t main_frame_num_ = 0u;
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestBlockOnCommitAfterInputEvent);

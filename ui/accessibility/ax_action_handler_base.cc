@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_action_handler_base.h"
 
 #include "ui/accessibility/ax_action_handler_registry.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 namespace ui {
 
@@ -27,6 +28,12 @@ void AXActionHandlerBase::SetAXTreeID(AXTreeID new_ax_tree_id) {
   AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
   tree_id_ = new_ax_tree_id;
   AXActionHandlerRegistry::GetInstance()->SetAXTreeID(tree_id_, this);
+}
+
+void AXActionHandlerBase::RemoveAXTreeID() {
+  DCHECK_NE(tree_id_, ui::AXTreeIDUnknown());
+  AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
+  tree_id_ = AXTreeIDUnknown();
 }
 
 }  // namespace ui

@@ -39,6 +39,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/filter/source_stream.h"
@@ -76,6 +77,10 @@ class UploadDataStream;
 class URLRequestContext;
 class URLRequestJob;
 class X509Certificate;
+
+namespace device_bound_sessions {
+struct SessionKey;
+}
 
 //-----------------------------------------------------------------------------
 // A class  representing the asynchronous load of a data stream from an URL.
@@ -502,7 +507,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // that appear more than once in the response are coalesced, with values
   // separated by commas (per RFC 2616). This will not work with cookies since
   // comma can be used in cookie values.
-  void GetResponseHeaderByName(std::string_view name, std::string* value) const;
+  std::string GetResponseHeaderByName(std::string_view name) const;
 
   // The time when |this| was constructed.
   base::TimeTicks creation_time() const { return creation_time_; }
@@ -515,6 +520,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // responses, this is the last time the cache entry was validated.
   const base::Time& response_time() const {
     return response_info_.response_time;
+  }
+
+  // Like response_time, but ignoring revalidations.
+  const base::Time& original_response_time() const {
+    return response_info_.original_response_time;
   }
 
   // Indicate if this response was fetched from disk cache.
@@ -580,13 +590,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   const HttpResponseInfo& response_info() const { return response_info_; }
 
   // Access the LOAD_* flags modifying this request (see load_flags.h).
-  int load_flags() const {
-    if (cookie_setting_overrides().Has(
-            CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
-      return partial_load_flags_ | LOAD_BYPASS_CACHE;
-    }
-    return partial_load_flags_;
-  }
+  int load_flags() const { return partial_load_flags_ | per_hop_load_flags_; }
 
   bool is_created_from_network_anonymization_key() const {
     return is_created_from_network_anonymization_key_;
@@ -621,6 +625,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // before Start() is called, it must only set the flag, and if set,
   // the priority of this request must already be MAXIMUM_PRIORITY.
   void SetLoadFlags(int flags);
+
+  // Sets "temporary" load flags. They are cleared upon receiving a redirect.
+  void set_per_hop_load_flags(int flags) { per_hop_load_flags_ = flags; }
 
   // Controls the Secure DNS behavior to use when creating the socket for this
   // request.
@@ -805,6 +812,18 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback);
 
+  // Set a callback that will be invoked each time a device bound
+  // session is accessed as part of this URL request. Because device
+  // bound sessions can be accessed asynchronously after this request
+  // completes, this callback must be able to safely outlive `this`.
+  void SetDeviceBoundSessionAccessCallback(
+      base::RepeatingCallback<void(const device_bound_sessions::SessionKey&)>
+          callback);
+  base::RepeatingCallback<void(const device_bound_sessions::SessionKey&)>
+  device_bound_session_access_callback() {
+    return device_bound_session_access_callback_;
+  }
+
   // Sets socket tag to be applied to all sockets used to execute this request.
   // Must be set before Start() is called.  Only currently supported for HTTP
   // and HTTPS requests on Android; UID tagging requires
@@ -854,21 +873,29 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void SetSharedDictionaryGetter(
       SharedDictionaryGetter shared_dictionary_getter);
 
-  void set_storage_access_api_status(
-      StorageAccessApiStatus storage_access_api_status) {
-    DCHECK(!is_pending_);
-    DCHECK(!has_notified_completion_);
-    storage_access_api_status_ = storage_access_api_status;
-  }
-  StorageAccessApiStatus storage_access_api_status() const {
-    return storage_access_api_status_;
+  void set_storage_access_status(
+      std::optional<cookie_util::StorageAccessStatus> status) {
+    storage_access_status_ = status;
   }
 
-  // Returns true if the corresponding `URLResponseHead`'s
-  // `load_with_storage_access` field should be set.
-  bool ShouldSetLoadWithStorageAccess() const;
+  // Returns the StorageAccessStatus for this request.
+  // TODO(https://crbug.com/366284840): move this state out of //net (into
+  // network::URLLoader) to respect layering rules.
+  std::optional<cookie_util::StorageAccessStatus> storage_access_status()
+      const {
+    return storage_access_status_;
+  }
 
   static bool DefaultCanUseCookies();
+
+  // Calculates the StorageAccessStatus for this request, according to the
+  // NetworkDelegate. Also records metrics.
+  // TODO(https://crbug.com/366284840): Move this to URLLoader once the
+  // "Activate-Storage-Access: retry" header is handled in URLLoader.
+  std::optional<net::cookie_util::StorageAccessStatus>
+  CalculateStorageAccessStatus(
+      base::optional_ref<const RedirectInfo> redirect_info =
+          base::optional_ref<const RedirectInfo>(std::nullopt)) const;
 
   base::WeakPtr<URLRequest> GetWeakPtr();
 
@@ -897,9 +924,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Storage Access (if possible).
   void RetryWithStorageAccess();
 
-  // Called by URLRequestJob to allow interception when a redirect occurs.
-  void NotifyReceivedRedirect(const RedirectInfo& redirect_info,
-                              bool* defer_redirect);
+  // Called by URLRequestJob when a redirect occurs. Notifies delegates, and
+  // follows the redirect (possibly asynchronously), unless they block it.
+  void ReceivedRedirect(RedirectInfo redirect_info);
 
  private:
   friend class URLRequestJob;
@@ -1018,17 +1045,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Flags indicating the request type for the load. Expected values are LOAD_*
   // enums above.
   int partial_load_flags_ = LOAD_NORMAL;
+  // Load flags that only apply to a single hop in the redirect chain.
+  int per_hop_load_flags_ = LOAD_NORMAL;
+
   // Whether the request is allowed to send credentials in general. Set by
   // caller.
   bool allow_credentials_ = true;
-  // Whether the request is eligible for using a <request initiator's site,
-  // top-level site> storage access permission grant if one exists. Only set by
-  // caller when constructed and will not change during redirects.
-  //
-  // Note that this has no effect if the request initiator site and the request
-  // URL are not same-site to each other.
-  StorageAccessApiStatus storage_access_api_status_ =
-      StorageAccessApiStatus::kNone;
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
 
   CookieAccessResultList maybe_sent_cookies_;
@@ -1071,6 +1093,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // location.  It is true from the time the headers complete until a
   // new request begins.
   bool is_redirecting_ = false;
+
+  // Set when a redirect is deferred. Redirects are deferred after validity
+  // checks are performed, so this field must not be modified.
+  std::optional<RedirectInfo> deferred_redirect_info_;
 
   // Number of times we're willing to redirect.  Used to guard against
   // infinite redirects.
@@ -1148,6 +1174,13 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;
 
   SharedDictionaryGetter shared_dictionary_getter_;
+
+  // The storage access status for this request. If this is nullopt, this
+  // request will not include the Sec-Fetch-Storage-Access header.
+  std::optional<net::cookie_util::StorageAccessStatus> storage_access_status_;
+
+  base::RepeatingCallback<void(const device_bound_sessions::SessionKey&)>
+      device_bound_session_access_callback_;
 
   THREAD_CHECKER(thread_checker_);
 

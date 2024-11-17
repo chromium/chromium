@@ -660,8 +660,7 @@ class EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger
           kPhishingReuse:
         return safe_browsing::PHISHING_REUSE;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return safe_browsing::PASSWORD_PROTECTION_TRIGGER_MAX;
+        NOTREACHED();
     }
   }
 };
@@ -788,7 +787,7 @@ TEST_P(EnterpriseReportingPrivateGetContextOSFirewallLinuxTest, Test) {
                       "#ENABLED=yes\nLOGLEVEL=yes\nENABLED=yesno\n");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   enterprise_signals::ScopedUfwConfigPathForTesting scoped_path(
@@ -955,9 +954,7 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
         return extensions::api::enterprise_reporting_private::SettingValue::
             kEnabled;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return extensions::api::enterprise_reporting_private::SettingValue::
-            kUnknown;
+        NOTREACHED();
     }
   }
   Microsoft::WRL::ComPtr<INetFwPolicy2> firewall_policy_;

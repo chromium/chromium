@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -184,7 +185,12 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   result->Set("hostURL", url);
 
   std::string md5 = base::MD5String(HostString(host, test));
-  std::string coverage = base::StrCat({test, ".", md5, uuid_, ".cov.json"});
+  // Parameterized tests contain a "/" character which is not a valid file path.
+  // Replace these with "_" to enable a valid file path.
+  std::string file_name;
+  base::ReplaceChars(test, "/", "_", &file_name);
+  std::string coverage =
+      base::StrCat({file_name, ".", md5, uuid_, ".cov.json"});
   base::FilePath path = store.AppendASCII("tests").AppendASCII(coverage);
 
   result->Set("result", std::move(entries));

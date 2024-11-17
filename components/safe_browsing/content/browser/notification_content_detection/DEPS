@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/permissions",
+  "+third_party/blink/public/common/notifications",
+  "+third_party/blink/public/mojom/notifications",
+]

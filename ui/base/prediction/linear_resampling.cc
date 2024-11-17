@@ -43,9 +43,9 @@ inline gfx::PointF lerp(const InputPredictor::InputData& a,
 
 }  // namespace
 
-LinearResampling::LinearResampling() {}
+LinearResampling::LinearResampling() = default;
 
-LinearResampling::~LinearResampling() {}
+LinearResampling::~LinearResampling() = default;
 
 const char* LinearResampling::GetName() const {
   return features::kPredictorNameLinearResampling;

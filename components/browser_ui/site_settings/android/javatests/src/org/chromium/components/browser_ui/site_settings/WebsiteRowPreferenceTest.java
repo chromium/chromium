@@ -23,7 +23,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 
@@ -36,8 +35,6 @@ public class WebsiteRowPreferenceTest {
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
             new BlankUiTestActivitySettingsTestRule();
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private WebsitePreferenceBridge.Natives mBridgeMock;
 
@@ -57,7 +54,7 @@ public class WebsiteRowPreferenceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mBridgeMock);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mBridgeMock);
         mSettingsRule.launchPreference(PlaceholderSettingsForTest.class);
         mActivity = mSettingsRule.getActivity();
     }

@@ -4,20 +4,29 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import './activity_log_stream_item.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './activity_log_stream.html.js';
+import {FakeChromeEvent} from '../item.js';
+
+import {getCss} from './activity_log_stream.css.js';
+import {getHtml} from './activity_log_stream.html.js';
 import type {StreamItem} from './activity_log_stream_item.js';
 
 export interface ActivityLogEventDelegate {
   getOnExtensionActivity(): ChromeEvent<
       (activity: chrome.activityLogPrivate.ExtensionActivity) => void>;
+}
+
+class DummyActivityLogEventDelegate implements ActivityLogEventDelegate {
+  getOnExtensionActivity() {
+    return new FakeChromeEvent();
+  }
 }
 
 /**
@@ -57,59 +66,53 @@ function processActivityForStream(
                              }));
 }
 
-export class ActivityLogStreamElement extends PolymerElement {
+export class ActivityLogStreamElement extends CrLitElement {
   static get is() {
     return 'activity-log-stream';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      extensionId: String,
-      delegate: Object,
+      extensionId: {type: String},
+      delegate: {type: Object},
 
-      isStreamOn_: {
-        type: Boolean,
-        value: false,
-      },
+      isStreamOn_: {type: Boolean},
 
-      activityStream_: {
-        type: Array,
-        value: () => [],
-      },
+      activityStream_: {type: Array},
 
-      filteredActivityStream_: {
-        type: Array,
-        computed:
-            'computeFilteredActivityStream_(activityStream_.*, lastSearch_)',
-      },
+      filteredActivityStream_: {type: Array},
 
-      lastSearch_: {
-        type: String,
-        value: '',
-      },
+      lastSearch_: {type: String},
     };
   }
 
-  extensionId: string;
-  delegate: ActivityLogEventDelegate;
-  private isStreamOn_: boolean;
-  private activityStream_: StreamItem[];
-  private filteredActivityStream_: StreamItem[];
-  private lastSearch_: string;
+  extensionId: string = '';
+  delegate: ActivityLogEventDelegate = new DummyActivityLogEventDelegate();
+  protected isStreamOn_: boolean = false;
+  private activityStream_: StreamItem[] = [];
+  protected filteredActivityStream_: StreamItem[] = [];
+  private lastSearch_: string = '';
+  // Instance of |extensionActivityListener_| bound to |this|.
   private listenerInstance_:
-      (type: chrome.activityLogPrivate.ExtensionActivity) => void;
+      (type: chrome.activityLogPrivate.ExtensionActivity) => void = () => {};
 
-  constructor() {
-    super();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
-    /**
-     * Instance of |extensionActivityListener_| bound to |this|.
-     */
-    this.listenerInstance_ = () => {};
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('activityStream_') ||
+        changedPrivateProperties.has('lastSearch_')) {
+      this.filteredActivityStream_ = this.computeFilteredActivityStream_();
+    }
   }
 
   override connectedCallback() {
@@ -121,12 +124,8 @@ export class ActivityLogStreamElement extends PolymerElement {
     this.startStream();
   }
 
-  private onResizeStream_() {
-    this.shadowRoot!.querySelector('iron-list')!.notifyResize();
-  }
-
   clearStream() {
-    this.splice('activityStream_', 0, this.activityStream_.length);
+    this.activityStream_ = [];
   }
 
   startStream() {
@@ -148,7 +147,7 @@ export class ActivityLogStreamElement extends PolymerElement {
     this.isStreamOn_ = false;
   }
 
-  private onToggleButtonClick_() {
+  protected onToggleButtonClick_() {
     if (this.isStreamOn_) {
       this.pauseStream();
     } else {
@@ -156,15 +155,15 @@ export class ActivityLogStreamElement extends PolymerElement {
     }
   }
 
-  private isStreamEmpty_(): boolean {
+  protected isStreamEmpty_(): boolean {
     return this.activityStream_.length === 0;
   }
 
-  private isFilteredStreamEmpty_(): boolean {
+  protected isFilteredStreamEmpty_(): boolean {
     return this.filteredActivityStream_.length === 0;
   }
 
-  private shouldShowEmptySearchMessage_(): boolean {
+  protected shouldShowEmptySearchMessage_(): boolean {
     return !this.isStreamEmpty_() && this.isFilteredStreamEmpty_();
   }
 
@@ -174,15 +173,13 @@ export class ActivityLogStreamElement extends PolymerElement {
       return;
     }
 
-    this.splice(
-        'activityStream_', this.activityStream_.length, 0,
-        ...processActivityForStream(activity));
-
-    // Used to update the scrollbar.
-    this.shadowRoot!.querySelector('iron-list')!.notifyResize();
+    this.activityStream_ = [
+      ...this.activityStream_,
+      ...processActivityForStream(activity),
+    ];
   }
 
-  private onSearchChanged_(e: CustomEvent<string>) {
+  protected onSearchChanged_(e: CustomEvent<string>) {
     // Remove all whitespaces from the search term, as API call names and
     // URLs should not contain any whitespace. As of now, only single term
     // search queries are allowed.

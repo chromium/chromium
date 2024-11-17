@@ -6,6 +6,7 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/page_content_annotations/core",
+  "+components/performance_manager/public/resource_attribution",
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
   "+services/service_manager/public/cpp",

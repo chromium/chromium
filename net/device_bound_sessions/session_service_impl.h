@@ -6,6 +6,7 @@
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_SERVICE_IMPL_H_
 
 #include <map>
+#include <memory>
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,7 @@
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_service.h"
 
 namespace net {
@@ -27,13 +29,21 @@ class UnexportableKeyService;
 
 namespace net::device_bound_sessions {
 
+class SessionStore;
+
 class NET_EXPORT SessionServiceImpl : public SessionService {
  public:
   SessionServiceImpl(unexportable_keys::UnexportableKeyService& key_service,
-                     const URLRequestContext* request_context);
+                     const URLRequestContext* request_context,
+                     SessionStore* store);
   ~SessionServiceImpl() override;
 
-  void RegisterBoundSession(RegistrationFetcherParam registration_params,
+  // Loads saved session data from disk if a `SessionStore` object is provided
+  // during construction. Otherwise, it is a no-op.
+  void LoadSessionsAsync();
+
+  void RegisterBoundSession(OnAccessCallback on_access_callback,
+                            RegistrationFetcherParam registration_params,
                             const IsolationInfo& isolation_info) override;
 
   std::optional<Session::Id> GetAnySessionRequiringDeferral(
@@ -45,21 +55,57 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       RefreshCompleteCallback restart_callback,
       RefreshCompleteCallback continue_callback) override;
 
-  void SetChallengeForBoundSession(const GURL& request_url,
+  void SetChallengeForBoundSession(OnAccessCallback on_access_callback,
+                                   const GURL& request_url,
                                    const SessionChallengeParam& param) override;
 
-  const Session* GetSessionForTesting(const SchemefulSite& site,
-                                      const std::string& session_id) const;
+  void GetAllSessionsAsync(
+      base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
+      override;
+  void DeleteSession(const SchemefulSite& site, const Session::Id& id) override;
+
+  Session* GetSessionForTesting(const SchemefulSite& site,
+                                const std::string& session_id) const;
 
  private:
+  friend class SessionServiceImplWithStoreTest;
+
   // The key is the site (eTLD+1) of the session's origin.
   using SessionsMap = std::multimap<SchemefulSite, std::unique_ptr<Session>>;
 
+  void OnLoadSessionsComplete(SessionsMap sessions);
+
   void OnRegistrationComplete(
+      OnAccessCallback on_access_callback,
       std::optional<RegistrationFetcher::RegistrationCompleteParams> params);
+
+  void StartSessionRefresh(
+      const Session& session,
+      const IsolationInfo& isolation_info,
+      // TODO(crbug.com/353764893): Replace this callback placeholder.
+      OnAccessCallback on_access_callback);
+  void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
+
+  // Get all the unexpired sessions for a given site. This also removes
+  // expired sessions for the site and extends the TTL of used sessions.
+  std::pair<SessionsMap::iterator, SessionsMap::iterator> GetSessionsForSite(
+      const SchemefulSite& site);
+
+  // Remove a session from the session map. It also clears the session from
+  // `session_store_` and any BFCache entries.
+  // Return the iterator to the next session in the map.
+  [[nodiscard]] SessionsMap::iterator DeleteSessionInternal(
+      const SchemefulSite& site,
+      SessionsMap::iterator it);
+
+  // Whether we are waiting on the initial load of saved sessions to complete.
+  bool pending_initialization_ = false;
+  // Functions to call once initialization completes.
+  std::vector<base::OnceClosure> queued_operations_;
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   raw_ptr<const URLRequestContext> context_;
+  raw_ptr<SessionStore> session_store_ = nullptr;
 
   // Storage is similar to how CookieMonster stores its cookies.
   SessionsMap unpartitioned_sessions_;

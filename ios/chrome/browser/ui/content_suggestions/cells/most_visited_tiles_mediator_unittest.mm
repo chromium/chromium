@@ -4,15 +4,19 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
 
+#import "base/memory/raw_ptr.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
@@ -24,21 +28,21 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-// Testing Suite for MostVisitedTilesMediator
+// Testing Suite for MostVisitedTilesMediator.
 class MostVisitedTilesMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_cbs_builder).Build();
 
     favicon::LargeIconService* large_icon_service =
-        IOSChromeLargeIconServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
-    LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+        IOSChromeLargeIconServiceFactory::GetForProfile(profile_.get());
+    LargeIconCache* cache =
+        IOSChromeLargeIconCacheFactory::GetForProfile(profile_.get());
+    RegisterProfilePrefs(pref_service_.registry());
     std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites =
         std::make_unique<ntp_tiles::MostVisitedSites>(
             &pref_service_, /*identity_manager*/ nullptr,
@@ -46,7 +50,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
             /*popular_sites*/ nullptr,
             /*custom_links*/ nullptr, /*icon_cacher*/ nullptr, true);
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
@@ -75,9 +79,9 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
-  FakeUrlLoadingBrowserAgent* url_loader_;
+  raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   MostVisitedTilesMediator* mediator_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
 };
@@ -89,8 +93,8 @@ TEST_F(MostVisitedTilesMediatorTest, TestOpenMostVisited) {
       [[ContentSuggestionsMostVisitedItem alloc] init];
   item.URL = url;
   ContentSuggestionsMostVisitedTileView* view =
-      [[ContentSuggestionsMostVisitedTileView alloc]
-          initWithConfiguration:item];
+      [[ContentSuggestionsMostVisitedTileView alloc] initInMagicStack:YES
+                                                    withConfiguration:item];
   UIGestureRecognizer* recognizer = [[UIGestureRecognizer alloc] init];
   [view addGestureRecognizer:recognizer];
   OCMExpect([mediator_.NTPActionsDelegate mostVisitedTileOpened]);

@@ -53,7 +53,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
 
 class AutofillMetricsBaseTest {
  public:
-  explicit AutofillMetricsBaseTest(bool is_in_any_main_frame = true);
+  AutofillMetricsBaseTest();
   virtual ~AutofillMetricsBaseTest();
 
  protected:
@@ -67,18 +67,22 @@ class AutofillMetricsBaseTest {
   void RecreateProfile();
 
   // Removes all existing credit cards and then invokes CreateCreditCards to
-  // create the cards.
+  // create the cards. `include_cvc_in_cards` will set a CVC value on each card
+  // created for non-iOS platforms.
   // TODO(crbug.com/40770602): Migrate this to a params builder pattern or
   // something.
   void RecreateCreditCards(bool include_local_credit_card,
                            bool include_masked_server_credit_card,
-                           bool masked_card_is_enrolled_for_virtual_card);
+                           bool masked_card_is_enrolled_for_virtual_card,
+                           bool include_cvc_in_cards = true);
 
   // Creates a local, masked server, and/or virtual credit card, according to
-  // the parameters.
+  // the parameters. `include_cvc_in_cards` will set a CVC value on each card
+  // created for non-iOS platforms.
   void CreateCreditCards(bool include_local_credit_card,
                          bool include_masked_server_credit_card,
-                         bool masked_card_is_enrolled_for_virtual_card);
+                         bool masked_card_is_enrolled_for_virtual_card,
+                         bool include_cvc_in_cards = true);
 
   // Creates a local card and then a duplicate server card with the same
   // credentials/info.
@@ -165,8 +169,7 @@ class AutofillMetricsBaseTest {
 
   void SubmitForm(const FormData& form) {
     autofill_manager().OnFormSubmitted(
-        form, /*known_success=*/false,
-        mojom::SubmissionSource::FORM_SUBMISSION);
+        form, mojom::SubmissionSource::FORM_SUBMISSION);
   }
 
   // Mocks a credit card fetching was completed. This mock starts from the
@@ -194,8 +197,8 @@ class AutofillMetricsBaseTest {
       const FormData& form,
       size_t field_index = 0,
       SuggestionType suggestion_type = SuggestionType::kAddressEntry) {
-    autofill_manager().DidShowSuggestions({suggestion_type}, form,
-                                          form.fields()[field_index]);
+    autofill_manager().DidShowSuggestions(
+        {suggestion_type}, form, form.fields()[field_index].global_id());
   }
 
   void FillTestProfile(const FormData& form) {
@@ -205,7 +208,8 @@ class AutofillMetricsBaseTest {
   void FillProfileByGUID(const FormData& form,
                          const std::string& profile_guid) {
     autofill_manager().FillOrPreviewProfileForm(
-        mojom::ActionPersistence::kFill, form, form.fields().front(),
+        mojom::ActionPersistence::kFill, form,
+        form.fields().front().global_id(),
         *personal_data().address_data_manager().GetProfileByGUID(profile_guid),
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
@@ -255,7 +259,6 @@ class AutofillMetricsBaseTest {
         *autofill_client_->GetPaymentsAutofillClient());
   }
 
-  const bool is_in_any_main_frame_ = true;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;

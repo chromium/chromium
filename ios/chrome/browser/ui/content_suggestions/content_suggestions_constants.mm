@@ -65,6 +65,9 @@ bool IsSetUpListModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kShortcuts:
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
+    case ContentSuggestionsModuleType::kSendTabPromo:
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
       return false;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
@@ -73,5 +76,29 @@ bool IsSetUpListModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
       return true;
+  }
+}
+
+bool IsTipsModuleType(ContentSuggestionsModuleType type) {
+  switch (type) {
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
+      return true;
+    case ContentSuggestionsModuleType::kInvalid:
+    case ContentSuggestionsModuleType::kTabResumption:
+    case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kMostVisited:
+    case ContentSuggestionsModuleType::kShortcuts:
+    case ContentSuggestionsModuleType::kPlaceholder:
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+    case ContentSuggestionsModuleType::kSetUpListSync:
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+    case ContentSuggestionsModuleType::kSendTabPromo:
+    case ContentSuggestionsModuleType::kSetUpListAllSet:
+      return false;
   }
 }

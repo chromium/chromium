@@ -4,12 +4,12 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=chrome://intro/tangible_sync_style_shared_lit.css.js
+ * #import=chrome://intro/tangible_sync_style_shared.css.js
  * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
- * #include=cr-icons-lit cr-hidden-style-lit tangible-sync-style-shared-lit
+ * #include=cr-icons-lit cr-hidden-style-lit tangible-sync-style-shared
  * #css_wrapper_metadata_end */
 
 :host {

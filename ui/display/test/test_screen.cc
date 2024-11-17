@@ -86,9 +86,8 @@ void TestScreen::OverrideTabletStateForTesting(TabletState state) {
 
   state_ = state;
 
-  for (DisplayObserver& observer : *display_list().observers()) {
-    observer.OnDisplayTabletStateChanged(state);
-  }
+  display_list().observers()->Notify(
+      &DisplayObserver::OnDisplayTabletStateChanged, state);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

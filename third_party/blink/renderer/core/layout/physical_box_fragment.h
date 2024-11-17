@@ -539,12 +539,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
     // Remove existing children, and add those from new_fragment.
     void ReplaceChildren(const PhysicalBoxFragment& new_fragment) {
-      // TODO(layout-dev): This trick is only going to work if there are no
-      // inlines. If we do want to support inlines, there's more work to do. We
-      // could force the original fragment to create fragment items storage,
-      // whether it actually needs it or not, in case we end up with them once
-      // new_fragment has been built. Or, we could make sure that, if we end up
-      // with inlines, wrap everything inside an anonymous block.
+      // Replacing children that establish an inline formatting context is not
+      // supported. An anonymous wrapper block should have been created.
       DCHECK(!new_fragment.HasItems());
       DCHECK(!fragment_.HasItems());
 

@@ -163,6 +163,9 @@ gfx::Transform GetViewTransitionTransform(
     gfx::Rect view_transition_content_output) {
   gfx::Transform view_transition_transform;
 
+  view_transition_transform.Translate(shared_element_quad.x(),
+                                      shared_element_quad.y());
+
   view_transition_transform.Scale(
       shared_element_quad.width() /
           static_cast<SkScalar>(view_transition_content_output.width()),

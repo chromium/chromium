@@ -5,11 +5,21 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  files = [ "graduation_ui_test.ts" ]
+  files = [
+    "graduation_app_test.ts",
+    "graduation_takeout_ui_test.ts",
+    "graduation_welcome_test.ts",
+    "test_graduation_ui_handler.ts",
+  ]
 
-  ts_path_mappings = [ "chrome://graduation/*|" + rebase_path(
-                           "$root_gen_dir/ash/webui/graduation/resources/tsc/*",
-                           target_gen_dir) ]
+  ts_path_mappings = [
+    "chrome://graduation/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
+    "chrome://graduation/*|" +
+        rebase_path("$root_gen_dir/ash/webui/graduation/resources/tsc/*",
+                    target_gen_dir),
+  ]
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",

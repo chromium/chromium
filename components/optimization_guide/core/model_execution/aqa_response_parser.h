@@ -20,6 +20,8 @@ class AqaResponseParser final : public ResponseParser {
   void ParseAsync(const std::string& model_output,
                   ResultCallback result_callback) const override;
 
+  bool SuppressParsingIncompleteResponse() const override;
+
  private:
   proto::OnDeviceModelExecutionOutputConfig config_;
 };

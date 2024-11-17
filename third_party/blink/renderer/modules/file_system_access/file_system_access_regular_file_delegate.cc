@@ -64,7 +64,7 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(
 
 base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
     int64_t offset,
-    const base::span<uint8_t> data) {
+    base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_GE(offset, 0);
 
@@ -84,7 +84,7 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
   }
 
   int result = UNSAFE_TODO(backing_file_.Write(
-      offset, reinterpret_cast<char*>(data.data()), write_size));
+      offset, reinterpret_cast<const char*>(data.data()), write_size));
   // The file size may not have changed after the write operation. `CheckAdd()`
   // is not needed here since `result` is guaranteed to be no more than
   // `write_size`.

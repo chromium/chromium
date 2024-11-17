@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_tree.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -22,6 +23,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 
 namespace content {
@@ -43,22 +45,22 @@ bool AreFieldsValid(int remaining_aggregatable_attribution_budget,
                     base::Time expiry_time,
                     base::Time aggregatable_report_window_time,
                     std::optional<uint64_t> debug_key,
-                    bool debug_cookie_set) {
+                    bool cookie_based_debug_allowed) {
   static_assert(attribution_reporting::kMaxAggregatableValue <=
                 std::numeric_limits<int>::max() / 2);
 
-  return attribution_reporting::IsRemainingAggregatableBudgetInRange(
+  return attribution_reporting::IsAggregatableBudgetInRange(
              remaining_aggregatable_attribution_budget) &&
-         attribution_reporting::IsRemainingAggregatableBudgetInRange(
+         attribution_reporting::IsAggregatableBudgetInRange(
              remaining_aggregatable_debug_budget) &&
-         attribution_reporting::IsRemainingAggregatableBudgetInRange(
+         attribution_reporting::IsAggregatableBudgetInRange(
              remaining_aggregatable_attribution_budget +
              remaining_aggregatable_debug_budget) &&
          randomized_response_rate >= 0 && randomized_response_rate <= 1 &&
          IsExpiryOrReportWindowTimeValid(expiry_time, source_time) &&
          IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time,
                                          source_time) &&
-         (!debug_key.has_value() || debug_cookie_set);
+         (!debug_key.has_value() || cookie_based_debug_allowed);
 }
 
 }  // namespace
@@ -86,12 +88,13 @@ std::optional<StoredSource> StoredSource::Create(
     absl::uint128 aggregatable_debug_key_piece,
     int remaining_aggregatable_debug_budget,
     std::optional<attribution_reporting::AttributionScopesData>
-        attribution_scopes_data) {
+        attribution_scopes_data,
+    AggregatableNamedBudgets aggregatable_named_budgets) {
   if (!AreFieldsValid(remaining_aggregatable_attribution_budget,
                       remaining_aggregatable_debug_budget,
                       randomized_response_rate, source_time, expiry_time,
                       aggregatable_report_window_time, debug_key,
-                      common_info.debug_cookie_set())) {
+                      common_info.cookie_based_debug_allowed())) {
     return std::nullopt;
   }
 
@@ -103,7 +106,8 @@ std::optional<StoredSource> StoredSource::Create(
       source_id, remaining_aggregatable_attribution_budget,
       randomized_response_rate, trigger_data_matching, event_level_epsilon,
       aggregatable_debug_key_piece, remaining_aggregatable_debug_budget,
-      std::move(attribution_scopes_data));
+      std::move(attribution_scopes_data),
+      std::move(aggregatable_named_budgets));
 }
 
 StoredSource::StoredSource(
@@ -128,7 +132,8 @@ StoredSource::StoredSource(
     absl::uint128 aggregatable_debug_key_piece,
     int remaining_aggregatable_debug_budget,
     std::optional<attribution_reporting::AttributionScopesData>
-        attribution_scopes_data)
+        attribution_scopes_data,
+    AggregatableNamedBudgets aggregatable_named_budgets)
     : common_info_(std::move(common_info)),
       source_event_id_(source_event_id),
       destination_sites_(std::move(destination_sites)),
@@ -150,12 +155,13 @@ StoredSource::StoredSource(
       event_level_epsilon_(event_level_epsilon),
       aggregatable_debug_key_piece_(aggregatable_debug_key_piece),
       remaining_aggregatable_debug_budget_(remaining_aggregatable_debug_budget),
-      attribution_scopes_data_(std::move(attribution_scopes_data)) {
+      attribution_scopes_data_(std::move(attribution_scopes_data)),
+      aggregatable_named_budgets_(std::move(aggregatable_named_budgets)) {
   DCHECK(AreFieldsValid(remaining_aggregatable_attribution_budget_,
                         remaining_aggregatable_debug_budget_,
                         randomized_response_rate_, source_time_, expiry_time_,
                         aggregatable_report_window_time_, debug_key_,
-                        common_info_.debug_cookie_set()));
+                        common_info_.cookie_based_debug_allowed()));
 }
 
 StoredSource::~StoredSource() = default;

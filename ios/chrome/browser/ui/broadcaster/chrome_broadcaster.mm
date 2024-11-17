@@ -326,8 +326,7 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
     [invocation setArgument:&intValue atIndex:2];
   } else {
     // Add more clauses as needed.
-    NOTREACHED_IN_MIGRATION() << "Unknown argument type: " << type;
-    return nil;
+    NOTREACHED() << "Unknown argument type: " << type;
   }
 
   return invocation;

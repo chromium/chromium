@@ -14,10 +14,6 @@
 #include "third_party/metrics_proto/user_demographics.pb.h"
 #include "url/gurl.h"
 
-namespace base {
-class Time;
-}  // namespace base
-
 namespace synced_sessions {
 struct DistantSession;
 }  // namespace synced_sessions

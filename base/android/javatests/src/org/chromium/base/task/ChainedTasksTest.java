@@ -132,7 +132,7 @@ public class ChainedTasksTest {
                         secondTaskFinished.notifyCalled();
                         waitForHighPriorityTask.waitForOnly();
                     } catch (TimeoutException e) {
-                        Assert.fail();
+                        throw new RuntimeException(e);
                     }
                 });
         tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "Third"));

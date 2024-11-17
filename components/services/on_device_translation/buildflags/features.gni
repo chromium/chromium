@@ -1,0 +1,9 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # On Device Translation is still not supported on other platforms.
+  # TODO(crbug.com/364795294): Support other platforms.
+  enable_on_device_translation = is_mac || is_win || is_linux
+}

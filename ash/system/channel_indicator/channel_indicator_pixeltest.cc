@@ -78,7 +78,7 @@ TEST_P(ChannelIndicatorPixelTest, ChannelIndicatorArea) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateTestName(),
-      /*revision_number=*/0, GetPrimaryShelf()->GetStatusAreaWidget()));
+      /*revision_number=*/1, GetPrimaryShelf()->GetStatusAreaWidget()));
 }
 
 }  // namespace ash

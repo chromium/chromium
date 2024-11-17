@@ -26,6 +26,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -40,7 +41,6 @@
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_info_metrics.h"
 #include "ui/events/ash/keyboard_layout_util.h"
-#include "ui/events/ash/modifier_split_dogfood_controller.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -84,6 +84,8 @@ const int kHotrodRemoteProductId = 0x21cc;
 
 constexpr auto kRightAltBlocklist =
     base::MakeFixedFlatSet<std::string_view>({"eve", "nocturne", "atlas"});
+
+constexpr std::string_view kRevenBoardName = "reven";
 
 constexpr char kLayoutProperty[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kCustomTopRowLayoutAttribute[] = "function_row_physmap";
@@ -338,7 +340,6 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
                : KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
   }
 
-  if (has_chromeos_top_row) {
     if (has_null_top_row) {
       VLOG(1) << "External Null Top Row keyboard '" << keyboard_device.name
               << "' connected: id=" << keyboard_device.id;
@@ -346,12 +347,13 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
           kDeviceExternalNullTopRowChromeOsKeyboard;
     }
 
-    // If the device was tagged as having Chrome OS top row layout it must be a
-    // Chrome OS keyboard.
-    VLOG(1) << "External Chrome OS keyboard '" << keyboard_device.name
-            << "' connected: id=" << keyboard_device.id;
-    return KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard;
-  }
+    if (has_chromeos_top_row) {
+      // If the device was tagged as having Chrome OS top row layout it must be
+      // a Chrome OS keyboard.
+      VLOG(1) << "External Chrome OS keyboard '" << keyboard_device.name
+              << "' connected: id=" << keyboard_device.id;
+      return KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard;
+    }
 
   const std::vector<std::string> tokens =
       base::SplitString(keyboard_device.name, " .", base::KEEP_WHITESPACE,
@@ -398,12 +400,21 @@ IdentifyKeyboardInfo(const KeyboardDevice& keyboard) {
   KeyboardTopRowLayout layout;
   std::vector<uint32_t> top_row_scan_codes = GetTopRowScanCodeVector(keyboard);
   bool null_top_row = false;
+  // Top row scancode vectors which are all null should empty the array so it is
+  // not considered a custom top row keyboard.
   if (!top_row_scan_codes.empty()) {
-    layout = KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
     null_top_row =
         base::ranges::all_of(top_row_scan_codes, [](const uint32_t scancode) {
           return scancode == kCustomNullScanCode;
         });
+    if (base::FeatureList::IsEnabled(ash::features::kNullTopRowFix) &&
+        null_top_row) {
+      top_row_scan_codes.clear();
+    }
+  }
+
+  if (!top_row_scan_codes.empty()) {
+    layout = KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
   } else if (!GetTopRowLayoutProperty(keyboard, layout_string) ||
              !ParseKeyboardTopRowLayout(layout_string, layout)) {
     return {KeyboardCapability::DeviceType::kDeviceUnknown,
@@ -504,18 +515,14 @@ bool HasExternalKeyboardConnected() {
 KeyboardCapability::KeyboardCapability()
     : scan_code_to_evdev_key_converter_(
           base::BindRepeating(&ConvertScanCodeToEvdevKey)),
-      board_name_(base::ToLowerASCII(base::SysInfo::HardwareModelName())),
-      modifier_split_dogfood_controller_(
-          std::make_unique<ModifierSplitDogfoodController>()) {
+      board_name_(base::ToLowerASCII(base::SysInfo::HardwareModelName())) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
 KeyboardCapability::KeyboardCapability(
     ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter)
     : scan_code_to_evdev_key_converter_(
-          std::move(scan_code_to_evdev_key_converter)),
-      modifier_split_dogfood_controller_(
-          std::make_unique<ModifierSplitDogfoodController>()) {
+          std::move(scan_code_to_evdev_key_converter)) {
   DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
@@ -1005,12 +1012,14 @@ bool KeyboardCapability::HasCapsLockKey(const KeyboardDevice& keyboard) const {
 }
 
 bool KeyboardCapability::HasFunctionKey(const KeyboardDevice& keyboard) const {
-  if (!modifier_split_dogfood_controller_->IsEnabled()) {
-    return false;
-  }
-
   if (ash::features::IsSplitKeyboardRefactorEnabled()) {
     return true;
+  }
+
+  // ChromeOS flex devices may have an fn key in their HID report, but are not
+  // supported in the same way.
+  if (board_name_ == kRevenBoardName) {
+    return false;
   }
 
   return ash::features::IsModifierSplitEnabled() &&
@@ -1038,7 +1047,7 @@ bool KeyboardCapability::HasFunctionKeyOnAnyKeyboard() const {
 }
 
 bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
-  if (!modifier_split_dogfood_controller_->IsEnabled()) {
+  if (!ash::features::IsModifierSplitEnabled()) {
     return false;
   }
 
@@ -1047,6 +1056,10 @@ bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
   }
 
   if (kRightAltBlocklist.contains(board_name_)) {
+    return false;
+  }
+
+  if (board_name_ == kRevenBoardName) {
     return false;
   }
 
@@ -1065,7 +1078,7 @@ bool KeyboardCapability::HasRightAltKey(int device_id) const {
 
 bool KeyboardCapability::HasRightAltKeyForOobe(
     const KeyboardDevice& keyboard) const {
-  if (modifier_split_dogfood_controller_->IsEnabled()) {
+  if (ash::features::IsModifierSplitEnabled()) {
     return false;
   }
 
@@ -1184,7 +1197,7 @@ ui::mojom::MetaKey KeyboardCapability::GetMetaKeyToDisplay() const {
 
   // Override meta key icon for external keyboards to be the highest priority
   // icon.
-  if (modifier_split_dogfood_controller_->IsEnabled()) {
+  if (ash::features::IsModifierSplitEnabled()) {
     return mojom::MetaKey::kLauncherRefresh;
   } else {
     return mojom::MetaKey::kLauncher;
@@ -1315,15 +1328,6 @@ bool KeyboardCapability::IsChromeOSKeyboard(int device_id) const {
 
 void KeyboardCapability::SetBoardNameForTesting(const std::string& board_name) {
   board_name_ = board_name;
-}
-
-void KeyboardCapability::ForceEnableFeature() {
-  modifier_split_dogfood_controller_->ForceEnableFeature();
-}
-
-void KeyboardCapability::ResetModifierSplitDogfoodControllerForTesting() {
-  modifier_split_dogfood_controller_ =
-      std::make_unique<ModifierSplitDogfoodController>();  // IN-TEST
 }
 
 }  // namespace ui

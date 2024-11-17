@@ -247,8 +247,7 @@ void ReportQueueImpl::Flush(Priority priority, FlushCallback callback) {
 
 base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
 ReportQueueImpl::PrepareToAttachActualQueue() const {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 Destination ReportQueueImpl::GetDestination() const {

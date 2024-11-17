@@ -55,6 +55,8 @@ class ApplicationContextImpl : public ApplicationContext {
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
   void OnAppEnterBackground() override;
+  void OnAppStartedBackgroundProcessing() override;
+  void OnAppFinishedBackgroundProcessing() override;
   bool WasLastShutdownClean() override;
   PrefService* GetLocalState() override;
   net::URLRequestContextGetter* GetSystemURLRequestContext() override;
@@ -88,12 +90,20 @@ class ApplicationContextImpl : public ApplicationContext {
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  optimization_guide::OnDeviceModelServiceController*
+  GetOnDeviceModelServiceController(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          on_device_component_manager) override;
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
  private:
   // Represents the possible application states the app can be in.
   enum class AppState {
     kForeground,
-    kBackground,
+    kBackgroundFromActive,
+    kBackgroundProcessing,
+    kBackgroundIdle
   };
 
   // Helper method to implement the work required when transitioning between
@@ -120,7 +130,7 @@ class ApplicationContextImpl : public ApplicationContext {
   // Will be null if breadcrumbs feature is not enabled.
   std::unique_ptr<ApplicationBreadcrumbsLogger> application_breadcrumbs_logger_;
 
-  // Must be destroyed after `local_state_`. BrowserStatePolicyConnector isn't a
+  // Must be destroyed after `local_state_`. ProfilePolicyConnector isn't a
   // keyed service because the pref service, which isn't a keyed service, has a
   // hard dependency on the policy infrastructure. In order to outlive the pref
   // service, the policy connector must live outside the keyed services.
@@ -165,6 +175,11 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  scoped_refptr<optimization_guide::OnDeviceModelServiceController>
+      on_device_model_service_controller_;
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_MODEL_APPLICATION_CONTEXT_IMPL_H_

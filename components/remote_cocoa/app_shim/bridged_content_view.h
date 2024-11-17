@@ -71,7 +71,9 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Updates the tooltip on the ToolTipBaseView if the text needs to change.
 // |locationInContent| is the position from the top left of the window's
 // contentRect (also this NSView's frame), as given by a ui::LocatedEvent.
-- (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent;
+- (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent
+                           bridge:(remote_cocoa::NativeWidgetNSWindowBridge*)
+                                      bridge;
 
 // Notifies the associated FocusManager whether full keyboard access is enabled
 // or not.

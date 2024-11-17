@@ -6,7 +6,7 @@ module crosapi.mojom;
 
 import "url/mojom/url.mojom";
 
-[Stable, Extensible]
+[Extensible]
 enum WebKioskInstallState {
   [Default] kUnknown = 0,
   kInstalled = 1,
@@ -19,7 +19,6 @@ enum WebKioskInstallState {
 //
 // Next MinVersion: 1
 // Next ID: 2
-[Stable]
 interface WebKioskInstaller {
   // Returns the current install state of the kiosk app based on its `url`.
   // If `state` is `kInstalled`, also returns the App ID of the installed app.
@@ -37,7 +36,7 @@ interface WebKioskInstaller {
 //
 // Next MinVersion: 1
 // Next ID: 1
-[Stable, Uuid="c07537c5-e543-4a35-a60f-b3e475626a57"]
+[Uuid="c07537c5-e543-4a35-a60f-b3e475626a57"]
 interface WebKioskService{
   // Binds the WebKioskInstaller interface, which allows the
   // Kiosk startup process running in ash-chrome to trigger the installation of

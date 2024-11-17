@@ -93,3 +93,6 @@ DirectSocketsSettings:
   - DefaultDirectSocketsSetting
   - DirectSocketsAllowedForUrls
   - DirectSocketsBlockedForUrls
+  - DefaultDirectSocketsPrivateNetworkAccessSetting
+  - DirectSocketsPrivateNetworkAccessAllowedForUrls
+  - DirectSocketsPrivateNetworkAccessBlockedForUrls

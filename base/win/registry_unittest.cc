@@ -451,7 +451,7 @@ TEST_F(RegistryTest, WatcherNotSignaledOnInitiatingThreadExit) {
   // Expect that a notification is sent when a change is made. Exit the run loop
   // when this happens.
   base::RunLoop run_loop;
-  EXPECT_CALL(change_cb, Run).WillOnce([&run_loop]() { run_loop.Quit(); });
+  EXPECT_CALL(change_cb, Run).WillOnce([&run_loop] { run_loop.Quit(); });
 
   // Make some change.
   RegKey key2;

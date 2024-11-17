@@ -58,7 +58,7 @@ PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() {
       "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       request_throttle_action_);
   base::UmaHistogramTimes(
-      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime",
+      "Navigation.Throttles.PolicyBlocklist.DeferDurationTime2",
       defer_duration_);
 }
 
@@ -141,8 +141,8 @@ PolicyBlocklistNavigationThrottle::WillRedirectRequest() {
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillProcessResponse() {
   base::UmaHistogramTimes(
-      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime",
-      request_time_ - base::TimeTicks::Now());
+      "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2",
+      base::TimeTicks::Now() - request_time_);
   ThrottleCheckResult result =
       safe_sites_navigation_throttle_->WillProcessResponse();
   UpdateRequestThrottleAction(result.action());
@@ -156,7 +156,7 @@ const char* PolicyBlocklistNavigationThrottle::GetNameForLogging() {
 void PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult(
     bool proceed,
     std::optional<ThrottleCheckResult> result) {
-  defer_duration_ += defer_time_ - base::TimeTicks::Now();
+  defer_duration_ += base::TimeTicks::Now() - defer_time_;
   if (proceed) {
     Resume();
   } else {

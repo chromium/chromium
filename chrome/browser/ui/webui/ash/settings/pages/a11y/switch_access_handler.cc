@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/switch_access_handler.h"
 
+#include <array>
 #include <memory>
+#include <string_view>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -31,8 +33,8 @@ namespace ash::settings {
 namespace {
 
 struct AssignmentInfo {
-  std::string action_name_for_js;
-  std::string pref_name;
+  std::string_view action_name_for_js;
+  std::string_view pref_name;
 };
 
 std::string GetStringForKeyboardCode(ui::KeyboardCode key_code) {
@@ -208,21 +210,20 @@ void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneInactive(
 void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
   base::Value::Dict response;
 
-  static base::NoDestructor<std::vector<AssignmentInfo>> kAssignmentInfo({
+  static constexpr auto kAssignmentInfo = std::to_array<AssignmentInfo>({
       {"select", ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes},
       {"next", ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes},
       {"previous",
        ash::prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes},
   });
 
-  for (const AssignmentInfo& info : *kAssignmentInfo) {
+  for (const AssignmentInfo& info : kAssignmentInfo) {
     const auto& keycodes = prefs_->GetDict(info.pref_name);
     base::Value::List keys;
     for (const auto item : keycodes) {
       int key_code;
       if (!base::StringToInt(item.first, &key_code)) {
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       }
       for (const base::Value& device_type : item.second.GetList()) {
         base::Value::Dict key;

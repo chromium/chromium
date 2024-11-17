@@ -11,7 +11,7 @@ build_webui("build") {
   grd_prefix = "ash_boca_ui"
   static_files = [
     "index.html",
-    "app_icon_120.png",
+    "icon_256.png",
   ]
 
   # Files not holding a CustomElement element definition, or the CustomElement

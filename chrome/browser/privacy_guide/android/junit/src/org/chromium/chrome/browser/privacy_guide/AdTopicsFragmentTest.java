@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,7 +37,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** JUnit tests of the class {@link AdTopicsFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AdTopicsFragmentTest {
-    @Rule public JniMocker mocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -51,7 +49,7 @@ public class AdTopicsFragmentTest {
 
     @Before
     public void setUp() {
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
     }
 

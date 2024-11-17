@@ -47,7 +47,8 @@
           "builder": "mac-osxbeta-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-osxbeta-rel/targets"
     }
   },
   "$build/reclient": {

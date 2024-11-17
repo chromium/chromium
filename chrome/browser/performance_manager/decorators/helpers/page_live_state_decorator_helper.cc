@@ -121,11 +121,12 @@ class PageLiveStateDecoratorHelper::WebContentsObserver
   }
 
   // content::WebContentsObserver:
-  void OnDeviceConnectionTypesChanged(DeviceConnectionType connection_type,
-                                      bool used) override {
+  void OnCapabilityTypesChanged(
+      content::WebContents::CapabilityType capability_type,
+      bool used) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
-        web_contents(), connection_type, used);
+    PageLiveStateDecorator::OnCapabilityTypesChanged(web_contents(),
+                                                     capability_type, used);
   }
 
   void WebContentsDestroyed() override {

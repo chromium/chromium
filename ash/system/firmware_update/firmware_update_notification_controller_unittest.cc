@@ -42,14 +42,6 @@ class FirmwareUpdateNotificationControllerTest : public AshTestBase {
       const FirmwareUpdateNotificationControllerTest&) = delete;
   ~FirmwareUpdateNotificationControllerTest() override = default;
 
-  void SetUp() override {
-    AshTestBase::SetUp();
-    // Call NotifyFirstSessionReady to cause FirmwareUpdateManager to be
-    // initialized since it is only meant to be initialized after core startup
-    // tasks have been completed.
-    Shell::Get()->session_controller()->NotifyFirstSessionReady();
-  }
-
   FirmwareUpdateNotificationController* controller() {
     return Shell::Get()->firmware_update_notification_controller();
   }

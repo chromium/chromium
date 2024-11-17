@@ -11,7 +11,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -23,7 +22,6 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -38,20 +36,17 @@ import org.chromium.url.GURL;
 /**
  * Tests for showing the publisher URL for a trusted CDN.
  *
- * This class tests the interactions between:
- * - CustomTabTrustedCdnPublisherUrlVisibility
- * - TrustedCdn
- * - TrustedCdn.PublisherUrlVisibility
+ * <p>This class tests the interactions between: - CustomTabTrustedCdnPublisherUrlVisibility -
+ * TrustedCdn - TrustedCdn.PublisherUrlVisibility
  *
- * TrustedCdnPublisherUrlTest (the instrumentation test) is still used to test native functionality.
+ * <p>TrustedCdnPublisherUrlTest (the instrumentation test) is still used to test native
+ * functionality.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class TrustedCdnTest {
     private static final GURL PUBLISHER_URL = new GURL("https://www.publisher.com/");
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock TrustedCdn.Natives mTrustedCdnNatives;
     @Mock SecurityStateModel.Natives mSecurityStateModelNatives;
@@ -70,8 +65,8 @@ public class TrustedCdnTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mocker.mock(TrustedCdnJni.TEST_HOOKS, mTrustedCdnNatives);
-        mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateModelNatives);
+        TrustedCdnJni.setInstanceForTesting(mTrustedCdnNatives);
+        SecurityStateModelJni.setInstanceForTesting(mSecurityStateModelNatives);
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(eq(mWebContents)))
                 .thenAnswer((mock) -> mConnectionSecurityLevel);
 

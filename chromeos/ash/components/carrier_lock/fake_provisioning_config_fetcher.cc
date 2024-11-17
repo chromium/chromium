@@ -12,6 +12,7 @@ void FakeProvisioningConfigFetcher::RequestConfig(
     const std::string& manufacturer,
     const std::string& model,
     const std::string& fcm_token,
+    const std::string& attested_id,
     Callback callback) {
   std::move(callback).Run(result_);
 }

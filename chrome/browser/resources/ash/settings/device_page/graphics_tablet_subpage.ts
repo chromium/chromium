@@ -18,17 +18,19 @@ import './per_device_subsection_header.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast, castExists} from '../assert_extras.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {PrefsState} from '../common/types.js';
-import {Route, Router, routes} from '../router.js';
+import type {PrefsState} from '../common/types.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './graphics_tablet_subpage.html.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {CompanionAppInfo, CompanionAppState, GraphicsTablet, GraphicsTabletButtonConfig, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
+import type {CompanionAppInfo, GraphicsTablet, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
+import {CompanionAppState, GraphicsTabletButtonConfig} from './input_device_settings_types.js';
 import {getDeviceStateChangesToAnnounce} from './input_device_settings_utils.js';
 
 const SettingsGraphicsTabletSubpageElementBase =

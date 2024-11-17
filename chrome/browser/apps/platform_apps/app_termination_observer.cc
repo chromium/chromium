@@ -5,53 +5,10 @@
 #include "chrome/browser/apps/platform_apps/app_termination_observer.h"
 
 #include "apps/browser_context_keyed_service_factories.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace chrome_apps {
-
-namespace {
-
-class AppTerminationObserverFactory : public ProfileKeyedServiceFactory {
- public:
-  AppTerminationObserverFactory();
-  AppTerminationObserverFactory(const AppTerminationObserverFactory&) = delete;
-  AppTerminationObserverFactory& operator=(
-      const AppTerminationObserverFactory&) = delete;
-  ~AppTerminationObserverFactory() override = default;
-
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  bool ServiceIsCreatedWithBrowserContext() const override;
-};
-
-AppTerminationObserverFactory::AppTerminationObserverFactory()
-    : ProfileKeyedServiceFactory(
-          "AppTerminationObserver",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
-              .Build()) {}
-
-KeyedService* AppTerminationObserverFactory::BuildServiceInstanceFor(
-    content::BrowserContext* browser_context) const {
-  return new AppTerminationObserver(browser_context);
-}
-
-bool AppTerminationObserverFactory::ServiceIsCreatedWithBrowserContext() const {
-  return true;
-}
-
-}  // namespace
 
 AppTerminationObserver::AppTerminationObserver(
     content::BrowserContext* browser_context)
@@ -63,13 +20,6 @@ AppTerminationObserver::AppTerminationObserver(
 }
 
 AppTerminationObserver::~AppTerminationObserver() = default;
-
-// static
-BrowserContextKeyedServiceFactory*
-AppTerminationObserver::GetFactoryInstance() {
-  static base::NoDestructor<AppTerminationObserverFactory> factory;
-  return factory.get();
-}
 
 void AppTerminationObserver::Shutdown() {
   // The associated `browser_context_` is shutting down, so it's no longer safe

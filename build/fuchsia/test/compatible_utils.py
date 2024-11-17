@@ -74,35 +74,14 @@ def add_exec_to_file(file: str) -> None:
     os.chmod(file, file_stat.st_mode | stat.S_IXUSR)
 
 
-def parse_host_port(host_port_pair: str) -> Tuple[str, int]:
-    """Parses a host name or IP address and a port number from a string of
-    any of the following forms:
-    - hostname:port
-    - IPv4addy:port
-    - [IPv6addy]:port
-
-    Returns:
-        A tuple of the string host name/address and integer port number.
-
-    Raises:
-        ValueError if `host_port_pair` does not contain a colon or if the
-        substring following the last colon cannot be converted to an int.
-    """
-
-    host, port = host_port_pair.rsplit(':', 1)
-
-    # Strip the brackets if the host looks like an IPv6 address.
-    if len(host) >= 4 and host[0] == '[' and host[-1] == ']':
-        host = host[1:-1]
-    return (host, int(port))
-
-
-def get_ssh_prefix(host_port_pair: str) -> List[str]:
+def get_ssh_prefix(host_port_pair: Tuple[str, int]) -> List[str]:
     """Get the prefix of a barebone ssh command."""
-
-    ssh_addr, ssh_port = parse_host_port(host_port_pair)
-    sshconfig = os.path.join(os.path.dirname(__file__), 'sshconfig')
-    return ['ssh', '-F', sshconfig, ssh_addr, '-p', str(ssh_port)]
+    return [
+        'ssh', '-F',
+        os.path.join(os.path.dirname(__file__), 'sshconfig'),
+        host_port_pair[0], '-p',
+        str(host_port_pair[1])
+    ]
 
 
 def install_symbols(package_paths: Iterable[str],

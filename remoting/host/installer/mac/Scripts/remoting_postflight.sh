@@ -11,6 +11,7 @@ SERVICE_NAME=org.chromium.chromoting
 CONFIG_FILE="$HELPERTOOLS/$SERVICE_NAME.json"
 OLD_SCRIPT_FILE="$HELPERTOOLS/$SERVICE_NAME.me2me.sh"
 PLIST=/Library/LaunchAgents/org.chromium.chromoting.plist
+BROKER_PLIST=/Library/LaunchDaemons/org.chromium.chromoting.broker.plist
 PAM_CONFIG=/etc/pam.d/chrome-remote-desktop
 ENABLED_FILE="$HELPERTOOLS/$SERVICE_NAME.me2me_enabled"
 ENABLED_FILE_BACKUP="$ENABLED_FILE.backup"
@@ -121,10 +122,18 @@ fi
 rm -rf "$HELPERTOOLS/$HOST_LEGACY_BUNDLE_NAME"
 ln -s "$HELPERTOOLS/$HOST_BUNDLE_NAME" "$HELPERTOOLS/$HOST_LEGACY_BUNDLE_NAME"
 
-# Load the service for each user for whom the service was unloaded in the
+# Load the broker service. It must be loaded unconditionally, since the ME2ME
+# native messaging host won't load it. The service is on-demand and won't be
+# started until a host process connects to
+# chromoting.agent_process_broker_mojo_ipc.
+logger Loading broker service
+launchctl load -w $BROKER_PLIST
+
+# Load the host service for each user for whom the service was unloaded in the
 # preflight script (this includes the root user, in case only the login screen
 # is being remoted and this is a Keystone-triggered update).
-# Also, in case this is a fresh install, load the service for the user running
+# Also, in case this is a fresh install (where $USER is not "root", but the
+# script still has root privileges), load the host service for the user running
 # the installer, so they don't have to log out and back in again.
 if [[ -n "$USER" && "$USER" != "root" ]]; then
   id -u "$USER" >> "$USERS_TMP_FILE"
@@ -132,7 +141,7 @@ fi
 
 if [[ -r "$USERS_TMP_FILE" ]]; then
   for uid in $(sort "$USERS_TMP_FILE" | uniq); do
-    logger Starting service for user "$uid".
+    logger Starting host service for user "$uid".
 
     load="launchctl load -w -S Aqua $PLIST"
     start="launchctl start $SERVICE_NAME"

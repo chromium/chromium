@@ -41,7 +41,9 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -334,6 +336,17 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
     return views::TextfieldTestApi(omnibox_view());
   }
 
+  // Enables accessibiility for the test, while this is not necessary to set or
+  // retrieve most accessible attributes (most are cached no matter what), it is
+  // necessary to enable the behavior that is enabled by
+  // view::OnAccessibilityInitializing(). See more info for that in the View
+  // header file.
+  void EnableDeferredLoadingAccessibility() {
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(ui::AXMode::kNativeAPIs);
+  }
+
   // Sets |new_text| as the omnibox text, and emphasizes it appropriately.  If
   // |accept_input| is true, pretends that the user has accepted this input
   // (i.e. it's been navigated to).
@@ -384,6 +397,8 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   TestLocationBarModel location_bar_model_;
   TestLocationBar location_bar_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
+
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 
   std::unique_ptr<views::Widget> widget_;
 
@@ -987,6 +1002,8 @@ TEST_F(OmniboxViewViewsTest,
        AccessibleTextOffsetsUpdatesAfterElideBehaviorChange) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  EnableDeferredLoadingAccessibility();
+  CHECK(omnibox_view()->GetViewAccessibility().is_initialized());
 
   // Make the Omnibox very narrow (so it couldn't fit the whole string).
   int kOmniboxWidth = 60;

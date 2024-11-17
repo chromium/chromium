@@ -35,7 +35,7 @@ class SmallCapsIteratorTest : public testing::Test {
       text.Append(String::FromUTF8(run.text));
       expect.push_back(SmallCapsExpectedRun(text.length(), run.code));
     }
-    SmallCapsIterator small_caps_iterator(text.Characters16(), text.length());
+    SmallCapsIterator small_caps_iterator(text.Span16());
     VerifyRuns(&small_caps_iterator, expect);
   }
 
@@ -66,7 +66,7 @@ class SmallCapsIteratorTest : public testing::Test {
 
 TEST_F(SmallCapsIteratorTest, Empty) {
   String empty(g_empty_string16_bit);
-  SmallCapsIterator small_caps_iterator(empty.Characters16(), empty.length());
+  SmallCapsIterator small_caps_iterator(empty.Span16());
   unsigned limit = 0;
   SmallCapsIterator::SmallCapsBehavior small_caps_behavior =
       SmallCapsIterator::kSmallCapsInvalid;

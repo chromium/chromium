@@ -18,6 +18,11 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/377326291): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_H_
 
@@ -56,22 +61,14 @@ class WTF_EXPORT AtomicString {
 
   AtomicString() = default;
   explicit AtomicString(const LChar* chars)
-      : AtomicString(chars,
-                     chars ? strlen(reinterpret_cast<const char*>(chars)) : 0) {
-  }
-
-#if defined(ARCH_CPU_64_BITS)
-  // Only define a size_t constructor if size_t is 64 bit otherwise
-  // we'd have a duplicate define.
-  AtomicString(const LChar* chars, size_t length);
-#endif  // defined(ARCH_CPU_64_BITS)
+      : AtomicString(base::span<const LChar>{
+            chars, chars ? strlen(reinterpret_cast<const char*>(chars)) : 0}) {}
 
   explicit AtomicString(const char* chars)
       : AtomicString(reinterpret_cast<const LChar*>(chars)) {}
-  AtomicString(const LChar* chars, unsigned length);
-  AtomicString(
-      const UChar* chars,
-      unsigned length,
+  explicit AtomicString(base::span<const LChar> chars);
+  explicit AtomicString(
+      base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
   explicit AtomicString(const UChar* chars);
 
@@ -186,7 +183,7 @@ class WTF_EXPORT AtomicString {
   template <typename IntegerType>
   static AtomicString Number(IntegerType number) {
     IntegerToStringConverter<IntegerType> converter(number);
-    return AtomicString(converter.Characters8(), converter.length());
+    return AtomicString(converter.Span());
   }
 
   static AtomicString Number(double, unsigned precision = 6);

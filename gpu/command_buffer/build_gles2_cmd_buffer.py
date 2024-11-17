@@ -3994,18 +3994,6 @@ _FUNCTION_INFO = {
   # from RasterImplementationGLES to be used with Passthrough Command Decoder.
   # Also, they have similar implementations to corresponding functions for
   # Raster Decoder.
-  # TODO(hitawala): Remove these methods once OOP-C is launched and we prefer
-  # Raster Decoder over Passthrough Command Decoder everywhere.
-  'ConvertYUVAMailboxesToTextureINTERNAL': {
-    'decoder_func': 'DoConvertYUVAMailboxesToTextureINTERNAL',
-    'extension': 'CHROMIUM_shared_image',
-    'internal': False,
-    'type': 'PUT',
-    'count': 64, #GL_MAILBOX_SIZE_CHROMIUM x4
-    'impl_func': True,
-    'unit_test': False,
-    'trace_level': 2,
-  },
   'CopySharedImageINTERNAL': {
     'decoder_func': 'DoCopySharedImageINTERNAL',
     'extension': 'CHROMIUM_shared_image',

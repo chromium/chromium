@@ -170,7 +170,8 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       item->IsDangerous(),
       static_cast<int>(
           OfflineItemUtils::ConvertDownloadInterruptReasonToFailState(
-              item->GetLastReason())));
+              item->GetLastReason())),
+      item->IsTransient());
 }
 
 static jlong JNI_DownloadManagerService_Init(JNIEnv* env,
@@ -465,15 +466,9 @@ void DownloadManagerService::OnDownloadRemoved(
   if (java_ref_.is_null() || item->IsTransient())
     return;
 
-  const Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item));
-
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_DownloadManagerService_onDownloadItemRemoved(
-      env, java_ref_, item->GetGuid(),
-      profile->IsOffTheRecord()
-          ? profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env)
-          : nullptr);
+  Java_DownloadManagerService_onDownloadItemRemoved(env, java_ref_,
+                                                    item->GetGuid());
 }
 
 void DownloadManagerService::ResumeDownloadInternal(
@@ -545,8 +540,7 @@ void DownloadManagerService::EnqueueDownloadAction(
       iter->second = download_action;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -612,8 +606,7 @@ void DownloadManagerService::OnPendingDownloadsLoaded() {
         CancelDownloadInternal(download_guid, profile_key);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   pending_actions_.clear();

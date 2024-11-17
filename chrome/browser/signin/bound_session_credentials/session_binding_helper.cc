@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
@@ -24,6 +25,18 @@ constexpr std::string_view kSessionBindingNamespace = "CookieBinding";
 
 unexportable_keys::BackgroundTaskPriority kSessionBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kUserBlocking;
+
+bool ShouldTryToReloadKey(
+    const unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableKeyId>& key_id_or_error) {
+  if (key_id_or_error.has_value()) {
+    // The key was successfully loaded, no need to reload.
+    return false;
+  }
+  unexportable_keys::ServiceError error = key_id_or_error.error();
+  return error == unexportable_keys::ServiceError::kCryptoApiFailed ||
+         error == unexportable_keys::ServiceError::kKeyCollision;
+}
 
 base::expected<std::string, SessionBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
@@ -67,7 +80,7 @@ SessionBindingHelper::SessionBindingHelper(
 SessionBindingHelper::~SessionBindingHelper() = default;
 
 void SessionBindingHelper::MaybeLoadBindingKey() {
-  if (!key_loader_) {
+  if (!key_loader_ || ShouldTryToReloadKey(key_loader_->GetKeyIdOrError())) {
     key_loader_ =
         unexportable_keys::UnexportableKeyLoader::CreateFromWrappedKey(
             unexportable_key_service_.get(), wrapped_binding_key_,

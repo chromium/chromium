@@ -233,7 +233,8 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLogin(
 PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
     const base::Location& location,
     base::Time delete_begin,
-    base::Time delete_end) {
+    base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
   PasswordStoreChangeList changes;
@@ -247,6 +248,11 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
   // because sync codebase needs to update metadata atomically together with
   // the login data.
   CommitTransaction();
+
+  if (sync_completion) {
+    AddDeletionsHaveSyncedCallback(std::move(sync_completion));
+  }
+
   return success ? changes
                  : PasswordChangesOrError(PasswordStoreBackendError(
                        PasswordStoreBackendErrorType::kUncategorized));
@@ -284,24 +290,31 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
   CommitTransaction();
 
   if (sync_completion) {
-    deletions_have_synced_callbacks_.push_back(std::move(sync_completion));
-    // Start a timeout for sync, or restart it if it was already running.
-    deletions_have_synced_timeout_.Reset(
-        base::BindOnce(&LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       /*success=*/false));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, deletions_have_synced_timeout_.callback(), kSyncTaskTimeout);
-
-    // Do an immediate check for the case where there are already no unsynced
-    // deletions.
-    if (!GetMetadataStore()->HasUnsyncedPasswordDeletions()) {
-      NotifyDeletionsHaveSynced(/*success=*/true);
-    }
+    AddDeletionsHaveSyncedCallback(std::move(sync_completion));
   }
+
   return success ? changes
                  : PasswordChangesOrError(PasswordStoreBackendError(
                        PasswordStoreBackendErrorType::kUncategorized));
+}
+
+void LoginDatabaseAsyncHelper::AddDeletionsHaveSyncedCallback(
+    base::OnceCallback<void(bool)> sync_completion) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  deletions_have_synced_callbacks_.push_back(std::move(sync_completion));
+  // Start a timeout for sync, or restart it if it was already running.
+  deletions_have_synced_timeout_.Reset(
+      base::BindOnce(&LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*success=*/false));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, deletions_have_synced_timeout_.callback(), kSyncTaskTimeout);
+
+  // Do an immediate check for the case where there are already no unsynced
+  // deletions.
+  if (login_db_ && !GetMetadataStore()->HasUnsyncedPasswordDeletions()) {
+    NotifyDeletionsHaveSynced(/*success=*/true);
+  }
 }
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(

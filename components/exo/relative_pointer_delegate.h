@@ -26,7 +26,7 @@ class RelativePointerDelegate {
       const gfx::Vector2dF& ordinal_motion) = 0;
 
  protected:
-  virtual ~RelativePointerDelegate() {}
+  virtual ~RelativePointerDelegate() = default;
 };
 
 }  // namespace exo

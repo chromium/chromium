@@ -34,7 +34,7 @@ TaskQueue::TaskQueue(Delegate* delegate)
   DCHECK(delegate_);
 }
 
-TaskQueue::~TaskQueue() {}
+TaskQueue::~TaskQueue() = default;
 
 void TaskQueue::AddTask(std::unique_ptr<Task> task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -136,7 +136,7 @@ void TaskQueue::TaskCompleted(Task* task) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION() << "TaskCompleted: cannot find task";
+  NOTREACHED() << "TaskCompleted: cannot find task";
 }
 
 void TaskQueue::SuspendTask(Task* task) {
@@ -164,7 +164,7 @@ void TaskQueue::ResumeTask(Task* task, base::OnceClosure on_resume) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION() << "Trying to resume task that's not suspended";
+  NOTREACHED() << "Trying to resume task that's not suspended";
 }
 
 void TaskQueue::InformTaskQueueIsIdle() {

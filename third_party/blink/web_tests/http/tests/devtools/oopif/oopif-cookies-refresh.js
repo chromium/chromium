@@ -18,7 +18,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await TestRunner.showPanel('console');
   await TestRunner.showPanel('resources');
 
-  Application.ResourcesPanel.ResourcesPanel.instance().showCookies(SDK.TargetManager.TargetManager.TargetManager.instance().rootTarget(), 'http://127.0.0.1:8000');
+  Application.ResourcesPanel.ResourcesPanel.instance().showCookies(SDK.TargetManager.TargetManager.TargetManager.instance().primaryPageTarget(), 'http://127.0.0.1:8000');
   await ApplicationTestRunner.waitForCookies();
 
   await TestRunner.navigatePromise('resources/page-out.html');

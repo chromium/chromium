@@ -10,11 +10,13 @@
 #include "ui/base/l10n/l10n_util.h"
 
 PasskeySavedConfirmationController::PasskeySavedConfirmationController(
-    base::WeakPtr<PasswordsModelDelegate> delegate)
+    base::WeakPtr<PasswordsModelDelegate> delegate,
+    std::string passkey_rp_id)
     : PasswordBubbleControllerBase(
           std::move(delegate),
           /*display_disposition=*/password_manager::metrics_util::
-              AUTOMATIC_PASSKEY_SAVED_CONFIRMATION) {}
+              AUTOMATIC_PASSKEY_SAVED_CONFIRMATION),
+      passkey_rp_id_(std::move(passkey_rp_id)) {}
 
 PasskeySavedConfirmationController::~PasskeySavedConfirmationController() {
   OnBubbleClosing();
@@ -30,9 +32,9 @@ std::u16string PasskeySavedConfirmationController::GetTitle() const {
 void PasskeySavedConfirmationController::OnGooglePasswordManagerLinkClicked() {
   dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
   if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(
-        password_manager::ManagePasswordsReferrer::
-            kPasskeySavedConfirmationBubble);
+    delegate_->NavigateToPasswordDetailsPageInPasswordManager(
+        passkey_rp_id_, password_manager::ManagePasswordsReferrer::
+                            kPasskeySavedConfirmationBubble);
   }
 }
 

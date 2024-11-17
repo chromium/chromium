@@ -13,12 +13,11 @@ import android.view.ViewConfiguration;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
- * Handles the additional message view responsibilities needed for InfoBars.
- *   - Makes the full text view clickable if there is just a single link.
+ * Handles the additional message view responsibilities needed for InfoBars. - Makes the full text
+ * view clickable if there is just a single link.
  */
 public class InfoBarMessageView extends TextViewWithClickableSpans {
     private boolean mExternalOnClickListenerSet;
-    private long mMotionEventDownTime;
 
     public InfoBarMessageView(Context context) {
         super(context);

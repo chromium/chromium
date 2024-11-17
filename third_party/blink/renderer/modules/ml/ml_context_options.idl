@@ -28,12 +28,4 @@ dictionary MLContextOptions {
 
   // Preference as related to power consumption.
   MLPowerPreference powerPreference = "default";
-
-  // Number of thread to use.
-  // "0" means the backend can determine it automatically.
-  //
-  // TODO(crbug.com/338162119): Figure out why the TFLite XNNPACK delegate
-  // choosing its own thread count is not resulting in good performance, then
-  // remove this.
-  unsigned long numThreads = 0;
 };

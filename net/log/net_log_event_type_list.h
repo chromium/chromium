@@ -670,6 +670,13 @@ EVENT_TYPE(SSL_HANDSHAKE_MESSAGE_RECEIVED)
 EVENT_TYPE(SSL_HANDSHAKE_MESSAGE_SENT)
 EVENT_TYPE(SSL_ENCRYPTED_CLIENT_HELLO)
 
+// TLS 1.3 Early Data is accepted or rejected. This is logged when the handshake
+// fully completes. The following parameter is attached:
+//   {
+//     "early_data_reason": <The reason why Early Data is accepted or rejected>
+//   }
+EVENT_TYPE(SSL_HANDSHAKE_EARLY_DATA_REASON)
+
 // The specified number of bytes were sent on the socket.  Depending on the
 // source of the event, may be logged either once the data is sent, or when it
 // is queued to be sent.
@@ -1371,6 +1378,16 @@ EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_ALT_SVC_FOUND)
 // HttpStreamPool
 // ------------------------------------------------------------------------
 
+// Emitted when the HttpStreamPool checks stream counts consistency.
+// The event parameters are:
+//   {
+//      "pool_total_counts": <Total counts from the pool>,
+//      "group_total_counts": <Sum of total counts from each group>,
+//      "groups": <Per-group information>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_CONSISTENCY_CHECK_OK)
+EVENT_TYPE(HTTP_STREAM_POOL_CONSISTENCY_CHECK_FAIL)
+
 // Logged when the HttpStreamPool is closing a StreamSocket:
 //   {
 //      "reason": <Reason the socket was closed>,
@@ -1385,7 +1402,12 @@ EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 
-// Emitted when a group starts a stream. The event parameters are:
+// Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
+// reference to HttpStreamPool::Group's net log.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED)
+
+// Emitted when an HttpStreamPool::AttemptManager starts a stream. The event
+// parameters are:
 //   {
 //     "priority": <The priority of the erquest>,
 //     "allowed_bad_certs": <The list of allowed bad certs>,
@@ -1394,22 +1416,19 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 //     "quic_version": <The QUIC version to attempt>,
 //     "source_dependency": <The source identifier of the request>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_START_JOB)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB)
 
-// Emitted when a group is requested a preconnect. The event parameter is:
+// Records on the caller's NetLog to indicate that an
+// HttpStreamPool::AttemptManager starts a Job.
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND)
+
+// Emitted when an HttpStreamPool::AttemptManager is requested a preconnect. The
+// event parameter is:
 //   {
 //      "num_streams": <The number of streams requested>,
 //      "quic_version": <The QUIC version to attempt>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_PRECONNECT)
-
-// Records on the caller's NetLog to indicate that an HttpStreamPool::Group
-// starts a Job.
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_BOUND)
-
-// Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
-// reference to HttpStreamPool::Group's net log.
-EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_PRECONNECT)
 
 // Emitted when an HttpStreamPool::AttemptManager is destroyed. Used to add a
 // reference to HttpStreamPool::Group's net log.
@@ -1424,10 +1443,34 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED)
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 
 // Emitted when an HttpStreamPool::AttemptManager started a StreamAttempt.
+// The event parameters are:
+//   {
+//     "num_jobs": <The number of active jobs>,
+//     "num_notified_jobs": <The number of jobs that are notified results but
+//                           are still not destroyed yet>,
+//     "num_preconnects": <The number of preconnect requests>,
+//     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
+//     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
+//                           treated as slow>,
+//     "quic_task_alive": <True when a QuicTask is alive>,
+//     "quic_task_result": <The result of a QuicTask, if it is already finished>
+//   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
 
 // Emitted when an HttpStreamPool::AttemptManager received completion from a
 // StreamAttempt.
+// The event parameters are:
+//   {
+//     "num_jobs": <The number of active jobs>,
+//     "num_notified_jobs": <The number of jobs that are notified results but
+//                           are still not destroyed yet>,
+//     "num_preconnects": <The number of preconnect requests>,
+//     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
+//     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
+//                           treated as slow>,
+//     "quic_task_alive": <True when a QuicTask is alive>,
+//     "quic_task_result": <The result of a QuicTask, if it is already finished>
+//   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
 
 // Emitted when the stream attempt delay has passed on an
@@ -1440,6 +1483,21 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_STREAM_ATTEMPT_DELAY_PASSED)
 // Records on an HttpStreamPool::AttemptManager's NetLog to indicate that an
 // HttpStreamPool::QuicTask is bound to the AttemptManager.
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
+
+// Emitted when an HttpStreamPool::QuicTask is completed.
+// The event parameters are:
+//   {
+//     "num_jobs": <The number of active jobs>,
+//     "num_notified_jobs": <The number of jobs that are notified results but
+//                           are still not destroyed yet>,
+//     "num_preconnects": <The number of preconnect requests>,
+//     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
+//     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
+//                           treated as slow>,
+//     "quic_task_alive": <True when a QuicTask is alive>,
+//     "quic_task_result": <The result of a QuicTask, if it is already finished>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_COMPLETED)
 
 // Marks the start/end of a HttpStreamPool::QuicTask.
 // For the BEGIN event, the event parameters are:

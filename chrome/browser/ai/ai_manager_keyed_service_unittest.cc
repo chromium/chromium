@@ -8,8 +8,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ai/ai_assistant.h"
+#include "chrome/browser/ai/ai_language_model.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -18,12 +19,11 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
 using optimization_guide::MockSession;
-using optimization_guide::MockSessionWrapper;
 using testing::_;
 using testing::AtMost;
 using testing::Invoke;
@@ -36,7 +36,7 @@ class AIManagerKeyedServiceTest : public AITestUtils::AITestBase {
 
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
-            [&] { return std::make_unique<MockSessionWrapper>(&session_); });
+            [&] { return std::make_unique<NiceMock<MockSession>>(&session_); });
     ON_CALL(session_, GetTokenLimits())
         .WillByDefault(AITestUtils::GetFakeTokenLimits);
     ON_CALL(session_, GetOnDeviceFeatureMetadata())
@@ -68,7 +68,7 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
         return false;
       }));
 
-  base::MockCallback<blink::mojom::AIManager::CanCreateAssistantCallback>
+  base::MockCallback<blink::mojom::AIManager::CanCreateLanguageModelCallback>
       callback;
   EXPECT_CALL(callback, Run(_))
       .Times(AtMost(1))
@@ -81,7 +81,7 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
   AIManagerKeyedService* ai_manager =
       AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
           main_rfh()->GetBrowserContext());
-  ai_manager->CanCreateAssistant(callback.Get());
+  ai_manager->CanCreateLanguageModel(callback.Get());
 
   // The callback may still be pending, delete the WebContents and destroy the
   // associated RFH, which should not result in a UAF.
@@ -91,39 +91,67 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
 }
 
 // Tests the `AIUserDataSet`'s behavior of managing the lifetime of
-// `AIAssistant`s.
+// `AILanguageModel`s.
 TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
   SetupMockOptimizationGuideKeyedService();
 
-  base::MockCallback<blink::mojom::AIManager::CreateAssistantCallback> callback;
+  mojo::Remote<blink::mojom::AILanguageModel> mock_session;
+  AITestUtils::MockCreateLanguageModelClient mock_create_language_model_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(_))
-      .Times(AtMost(1))
-      .WillOnce(Invoke([&](blink::mojom::AIAssistantInfoPtr result) {
-        EXPECT_TRUE(result);
-        run_loop.Quit();
-      }));
+  EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
+      .WillOnce(testing::Invoke(
+          [&](mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
+              blink::mojom::AILanguageModelInfoPtr info) {
+            EXPECT_TRUE(language_model);
+            mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
+                std::move(language_model));
+            run_loop.Quit();
+          }));
 
   mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
-  mojo::Remote<blink::mojom::AIAssistant> mock_session;
-  // Initially the `AIUserDataSet` is empty.
+  // Initially the `AIContextBoundObjectSet` only contains the
+  // `AIManagerReceiverRemover`.
   base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
       AIContextBoundObjectSet::GetFromContext(mock_host())
           ->GetWeakPtrForTesting();
-  ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
-
-  // After creating one `AIAssistant`, the `AIUserDataSet` contains 1
-  // element.
-  mock_remote->CreateAssistant(mock_session.BindNewPipeAndPassReceiver(),
-                               /*sampling_params=*/nullptr,
-                               /*system_prompt=*/std::nullopt,
-                               /*initial_prompts=*/{}, callback.Get());
-  run_loop.Run();
   ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
 
-  // After resetting the session, the `AIUserDataSet` becomes empty again and
-  // should be removed from the context.
+  // After creating one `AILanguageModel`, the `AIContextBoundObjectSet`
+  // contains 2 elements.
+  mock_remote->CreateLanguageModel(
+      mock_create_language_model_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AILanguageModelCreateOptions::New(
+          /*sampling_params=*/nullptr,
+          /*system_prompt=*/std::nullopt,
+          /*initial_prompts=*/
+          std::vector<blink::mojom::AILanguageModelInitialPromptPtr>()));
+  run_loop.Run();
+  ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
+
+  // After resetting the session, the size of `AIContextBoundObjectSet` becomes
+  // 1 again and should be removed from the context.
   mock_session.reset();
-  task_environment()->RunUntilIdle();
-  ASSERT_FALSE(context_bound_objects);
+  ASSERT_TRUE(base::test::RunUntil([&context_bound_objects] {
+    return context_bound_objects->GetSizeForTesting() == 1u;
+  }));
+}
+
+// Tests that the receiver will be removed after the `ReceiverContext` is
+// destroyed.
+TEST_F(AIManagerKeyedServiceTest, ClearReceiverAfterResetHost) {
+  SetupMockOptimizationGuideKeyedService();
+
+  // Initially, the receiver set is empty.
+  ASSERT_EQ(0u, GetAIManagerReceiversSize());
+
+  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
+
+  // After getting the `AIManager`, the receiver set contains 1 element.
+  ASSERT_EQ(1u, GetAIManagerReceiversSize());
+
+  // After resetting the host, the corresponding receivers should be cleared
+  // from the set.
+  ResetMockHost();
+  ASSERT_TRUE(base::test::RunUntil(
+      [this] { return GetAIManagerReceiversSize() == 0u; }));
 }

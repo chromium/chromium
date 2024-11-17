@@ -9,11 +9,11 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/drive_upload_virtual_task.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/install_isolated_web_app_virtual_task.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/ms365_virtual_task.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
 namespace file_manager::file_tasks {

@@ -75,11 +75,12 @@ const int32_t kMaxFileSizeBytes = 150 * 1024;
 // optional string. The string will be present if the status is SUCCESS.
 base::expected<std::string, ImportResults::Status> ReadFileToString(
     const base::FilePath& path) {
-  int64_t file_size;
+  std::optional<int64_t> file_size = base::GetFileSize(path);
 
-  if (GetFileSize(path, &file_size)) {
-    base::UmaHistogramCounts1M("PasswordManager.ImportFileSize", file_size);
-    if (file_size > kMaxFileSizeBytes) {
+  if (file_size.has_value()) {
+    base::UmaHistogramCounts1M("PasswordManager.ImportFileSize",
+                               file_size.value());
+    if (file_size.value() > kMaxFileSizeBytes) {
       return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
     }
   }
@@ -102,9 +103,8 @@ ImportEntry::Status GetConflictType(
     case PasswordForm::Store::kNotSet:
       return ImportEntry::Status::UNKNOWN_ERROR;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ImportEntry::Status::UNKNOWN_ERROR;
 }
 
 ImportEntry CreateFailedImportEntry(const CredentialUIEntry& credential,

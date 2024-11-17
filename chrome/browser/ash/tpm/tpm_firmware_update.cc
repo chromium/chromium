@@ -142,12 +142,13 @@ class AvailabilityChecker {
   }
 
   static bool CheckAvailabilityStatus(Status* status) {
-    int64_t size;
-    if (!base::GetFileSize(GetUpdateLocationFilePath(), &size)) {
+    std::optional<int64_t> size =
+        base::GetFileSize(GetUpdateLocationFilePath());
+    if (!size.has_value()) {
       // File doesn't exist or error - can't determine availability status.
       return false;
     }
-    status->update_available = size > 0;
+    status->update_available = size.value() > 0;
     base::FilePath srk_vulnerable_roca_file;
     CHECK(base::PathService::Get(
         chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,

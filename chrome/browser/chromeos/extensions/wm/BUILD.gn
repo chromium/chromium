@@ -8,7 +8,7 @@ import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
-assert(is_chromeos_lacros || is_chromeos_ash)
+assert(is_chromeos_ash)
 
 source_set("wm") {
   sources = [
@@ -17,25 +17,14 @@ source_set("wm") {
     "wm_desks_private_events.cc",
     "wm_desks_private_events.h",
     "wm_desks_private_feature.h",
+    "wm_desks_private_feature_ash.cc",
+    "wm_desks_private_feature_ash.h",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "wm_desks_private_feature_lacros.cc",
-      "wm_desks_private_feature_lacros.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "wm_desks_private_feature_ash.cc",
-      "wm_desks_private_feature_ash.h",
-    ]
-  }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
@@ -44,12 +33,4 @@ source_set("wm") {
     "//content/public/browser",
     "//extensions/browser",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//ash" ]
-  }
 }

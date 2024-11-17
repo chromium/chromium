@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 
 #include <memory>
@@ -87,18 +82,17 @@ TEST(ReadableStreamBytesConsumerTest, EmptyStream) {
   EXPECT_CALL(*client, OnStateChange());
   EXPECT_CALL(checkpoint, Call(4));
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(3);
   test::RunPendingTasks();
   checkpoint.Call(4);
   EXPECT_EQ(PublicState::kClosed, consumer->GetPublicState());
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
 }
 
 TEST(ReadableStreamBytesConsumerTest, ErroredStream) {
@@ -126,18 +120,17 @@ TEST(ReadableStreamBytesConsumerTest, ErroredStream) {
   EXPECT_CALL(*client, OnStateChange());
   EXPECT_CALL(checkpoint, Call(4));
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(3);
   test::RunPendingTasks();
   checkpoint.Call(4);
   EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
-  EXPECT_EQ(Result::kError, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kError, consumer->BeginRead(buffer));
 }
 
 TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
@@ -151,16 +144,10 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
       script_state, underlying_source, 0);
   {
     auto* chunk1 = DOMUint8Array::Create(0);
-    auto* chunk2 = DOMUint8Array::Create(4);
-    chunk2->Data()[0] = 0x43;
-    chunk2->Data()[1] = 0x44;
-    chunk2->Data()[2] = 0x45;
-    chunk2->Data()[3] = 0x46;
-    auto* chunk3 = DOMUint8Array::Create(4);
-    chunk3->Data()[0] = 0x47;
-    chunk3->Data()[1] = 0x48;
-    chunk3->Data()[2] = 0x49;
-    chunk3->Data()[3] = 0x4a;
+    auto* chunk2 =
+        DOMUint8Array::Create(std::to_array<uint8_t>({0x43, 0x44, 0x45, 0x46}));
+    auto* chunk3 =
+        DOMUint8Array::Create(std::to_array<uint8_t>({0x47, 0x48, 0x49, 0x4a}));
     underlying_source->Enqueue(
         ScriptValue(script_state->GetIsolate(),
                     ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk1)));
@@ -195,61 +182,60 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
   EXPECT_CALL(*client, OnStateChange());
   EXPECT_CALL(checkpoint, Call(10));
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(3);
   test::RunPendingTasks();
   checkpoint.Call(4);
-  EXPECT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
-  ASSERT_EQ(0u, available);
+  EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
+  ASSERT_EQ(0u, buffer.size());
   EXPECT_EQ(Result::kOk, consumer->EndRead(0));
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(5);
   test::RunPendingTasks();
   checkpoint.Call(6);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
-  EXPECT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
-  ASSERT_EQ(4u, available);
+  EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
+  ASSERT_EQ(4u, buffer.size());
   EXPECT_EQ(0x43, buffer[0]);
   EXPECT_EQ(0x44, buffer[1]);
   EXPECT_EQ(0x45, buffer[2]);
   EXPECT_EQ(0x46, buffer[3]);
   EXPECT_EQ(Result::kOk, consumer->EndRead(0));
-  EXPECT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
-  ASSERT_EQ(4u, available);
+  EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
+  ASSERT_EQ(4u, buffer.size());
   EXPECT_EQ(0x43, buffer[0]);
   EXPECT_EQ(0x44, buffer[1]);
   EXPECT_EQ(0x45, buffer[2]);
   EXPECT_EQ(0x46, buffer[3]);
   EXPECT_EQ(Result::kOk, consumer->EndRead(1));
-  EXPECT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
-  ASSERT_EQ(3u, available);
+  EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
+  ASSERT_EQ(3u, buffer.size());
   EXPECT_EQ(0x44, buffer[0]);
   EXPECT_EQ(0x45, buffer[1]);
   EXPECT_EQ(0x46, buffer[2]);
   EXPECT_EQ(Result::kOk, consumer->EndRead(3));
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(7);
   test::RunPendingTasks();
   checkpoint.Call(8);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
-  EXPECT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
-  ASSERT_EQ(4u, available);
+  EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
+  ASSERT_EQ(4u, buffer.size());
   EXPECT_EQ(0x47, buffer[0]);
   EXPECT_EQ(0x48, buffer[1]);
   EXPECT_EQ(0x49, buffer[2]);
   EXPECT_EQ(0x4a, buffer[3]);
   EXPECT_EQ(Result::kOk, consumer->EndRead(4));
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(9);
   test::RunPendingTasks();
   checkpoint.Call(10);
   EXPECT_EQ(PublicState::kClosed, consumer->GetPublicState());
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
 }
 
 TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
@@ -262,11 +248,8 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, underlying_source, 0);
 
-  auto* chunk = DOMUint8Array::Create(4);
-  chunk->Data()[0] = 0x43;
-  chunk->Data()[1] = 0x44;
-  chunk->Data()[2] = 0x45;
-  chunk->Data()[3] = 0x46;
+  auto* chunk =
+      DOMUint8Array::Create(std::to_array<uint8_t>({0x43, 0x44, 0x45, 0x46}));
   underlying_source->Enqueue(
       ScriptValue(script_state->GetIsolate(),
                   ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk)));
@@ -285,17 +268,16 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
   EXPECT_CALL(*client, OnStateChange());
   EXPECT_CALL(checkpoint, Call(4));
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(3);
   test::RunPendingTasks();
   checkpoint.Call(4);
-  EXPECT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
-  ASSERT_EQ(4u, available);
+  EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
+  ASSERT_EQ(4u, buffer.size());
   EXPECT_EQ(0x43, buffer[0]);
   EXPECT_EQ(0x44, buffer[1]);
   EXPECT_EQ(0x45, buffer[2]);
@@ -315,11 +297,8 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, underlying_source, 0);
 
-  auto* chunk = DOMUint8Array::Create(4);
-  chunk->Data()[0] = 0x43;
-  chunk->Data()[1] = 0x44;
-  chunk->Data()[2] = 0x45;
-  chunk->Data()[3] = 0x46;
+  auto* chunk =
+      DOMUint8Array::Create(std::to_array<uint8_t>({0x43, 0x44, 0x45, 0x46}));
   underlying_source->Enqueue(
       ScriptValue(script_state->GetIsolate(),
                   ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk)));
@@ -338,24 +317,23 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
   EXPECT_CALL(*client, OnStateChange());
   EXPECT_CALL(checkpoint, Call(4));
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(3);
   test::RunPendingTasks();
   checkpoint.Call(4);
-  EXPECT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
-  ASSERT_EQ(4u, available);
+  EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
+  ASSERT_EQ(4u, buffer.size());
   EXPECT_EQ(0x43, buffer[0]);
   EXPECT_EQ(0x44, buffer[1]);
   EXPECT_EQ(0x45, buffer[2]);
   EXPECT_EQ(0x46, buffer[3]);
   EXPECT_EQ(Result::kOk, consumer->EndRead(1));
   chunk->DetachForTesting();
-  EXPECT_EQ(Result::kError, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kError, consumer->BeginRead(buffer));
   EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
 }
 
@@ -385,18 +363,17 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueUndefined) {
   EXPECT_CALL(*client, OnStateChange());
   EXPECT_CALL(checkpoint, Call(4));
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(3);
   test::RunPendingTasks();
   checkpoint.Call(4);
   EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
-  EXPECT_EQ(Result::kError, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kError, consumer->BeginRead(buffer));
 }
 
 TEST(ReadableStreamBytesConsumerTest, EnqueueNull) {
@@ -425,18 +402,17 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueNull) {
   EXPECT_CALL(*client, OnStateChange());
   EXPECT_CALL(checkpoint, Call(4));
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(3);
   test::RunPendingTasks();
   checkpoint.Call(4);
   EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
-  EXPECT_EQ(Result::kError, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kError, consumer->BeginRead(buffer));
 }
 
 TEST(ReadableStreamBytesConsumerTest, EnqueueString) {
@@ -466,18 +442,17 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueString) {
   EXPECT_CALL(*client, OnStateChange());
   EXPECT_CALL(checkpoint, Call(4));
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   checkpoint.Call(1);
   test::RunPendingTasks();
   checkpoint.Call(2);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
-  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   checkpoint.Call(3);
   test::RunPendingTasks();
   checkpoint.Call(4);
   EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
-  EXPECT_EQ(Result::kError, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(Result::kError, consumer->BeginRead(buffer));
 }
 
 TEST(ReadableStreamBytesConsumerTest, Cancel) {

@@ -15,6 +15,7 @@ use_allocator_shim_default = false
 enable_backup_ref_ptr_support_default = false
 enable_backup_ref_ptr_slow_checks_default = false
 enable_dangling_raw_ptr_checks_default = false
+enable_ios_corruption_hardening_default = false
 
 # This is the default build configuration for pointers/raw_ptr*.
 raw_ptr_zero_on_construct_default = true

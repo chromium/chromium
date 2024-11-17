@@ -34,7 +34,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.InMemorySharedPreferences;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -58,7 +57,6 @@ public class SurveyClientUnitTest {
     private TestSurveyUtils.TestSurveyController mSurveyController;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -71,7 +69,7 @@ public class SurveyClientUnitTest {
     @Before
     public void setup() {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
 
@@ -93,7 +91,7 @@ public class SurveyClientUnitTest {
                         task.run();
                     }
                 });
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
     }
 
     @Test

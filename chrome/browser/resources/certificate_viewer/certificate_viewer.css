@@ -80,6 +80,20 @@ div[slot='panel'] {
   width: 100%;
 }
 
+.horizontal-row {
+  color: #616161;
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  padding-top: 10px;
+  padding-inline-start: 20px;
+  padding-bottom: 10px;
+}
+
+.modifications-row-label {
+  width: 150px;
+}
+
 #hierarchy {
   /* Cert hierarchy tree should be 3 lines tall and does not grow. */
   flex: 0;

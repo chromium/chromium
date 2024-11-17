@@ -88,17 +88,16 @@ class PasswordsModelDelegate {
   // For PASSWORD_UPDATED_* return # compromised passwords in the store.
   virtual size_t GetTotalNumberCompromisedPasswords() const = 0;
 
-  // Users need to reauth to their account to opt-in using their password
-  // account storage. This method returns whether account auth attempt during
-  // the last password save process failed or not.
-  virtual bool DidAuthForAccountStoreOptInFail() const = 0;
-
   // Returns true iff the current bubble is the manual fallback for saving.
   virtual bool BubbleIsManualFallbackForSaving() const = 0;
 
   // Returns true if GPM pin was created during the most recent passkey creation
   // flow, applicable for PASSKEY_SAVED_CONFIRMATION_STATE only.
   virtual bool GpmPinCreatedDuringRecentPasskeyCreation() const = 0;
+
+  // Returns the passkey relying party during the most recent passkey flow, or
+  // the empty string if there isn't one.
+  virtual const std::string& PasskeyRpId() const = 0;
 
   // Called from the model when the bubble is displayed.
   virtual void OnBubbleShown() = 0;

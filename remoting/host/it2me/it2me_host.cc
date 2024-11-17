@@ -43,6 +43,7 @@
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/ice_config_fetcher_default.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/transport_context.h"
@@ -228,7 +229,7 @@ void It2MeHost::ConnectOnNetworkThread(
   auto connection_context = std::move(create_context).Run(host_context_.get());
   log_to_server_ = std::move(connection_context->log_to_server);
   signal_strategy_ = std::move(connection_context->signal_strategy);
-  oauth_token_getter_ = std::move(connection_context->oauth_token_getter);
+  api_token_getter_ = std::move(connection_context->api_token_getter);
   DCHECK(log_to_server_);
   DCHECK(signal_strategy_);
 
@@ -294,11 +295,12 @@ void It2MeHost::ConnectOnNetworkThread(
       base::BindOnce(&It2MeHost::OnReceivedSupportID,
                      weak_factory_.GetWeakPtr()));
 
+  auto ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherDefault>(
+      host_context_->url_loader_factory(), api_token_getter_.get());
   auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(),
-      host_context_->url_loader_factory(), oauth_token_getter_.get(),
-      protocol::TransportRole::SERVER);
+      std::move(ice_config_fetcher), protocol::TransportRole::SERVER);
   if (!ice_config.is_null()) {
     transport_context->set_turn_ice_config(ice_config);
   }
@@ -330,8 +332,6 @@ void It2MeHost::ConnectOnNetworkThread(
         !chrome_os_enterprise_params_->suppress_notifications);
     options.set_terminate_upon_input(
         chrome_os_enterprise_params_->terminate_upon_input);
-    options.set_enable_curtaining(
-        chrome_os_enterprise_params_->curtain_local_user_session);
   }
 #endif
 
@@ -340,6 +340,7 @@ void It2MeHost::ConnectOnNetworkThread(
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, host_context_->audio_task_runner(),
       host_context_->video_encode_task_runner(), options,
+      /* extra_session_policies_validator= */ base::NullCallback(),
       &local_session_policies_provider_);
   host_->status_monitor()->AddStatusObserver(this);
   host_status_logger_ = std::make_unique<HostStatusLogger>(
@@ -452,7 +453,7 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
     HOST_LOG << "Failed to read kRemoteAccessHostAllowRelayedConnection policy";
     relay_policy_value = relay_connections_allowed_;
   }
-  UpdateNatPolicies(nat_policy_value.value(), relay_policy_value.value());
+  UpdateNatPolicies(*nat_policy_value, *relay_policy_value);
 
   const base::Value::List* host_domain_list =
       policies.FindList(policy::key::kRemoteAccessHostDomainList);

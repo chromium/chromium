@@ -2840,26 +2840,6 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup) {
   EXPECT_EQ(group_0, observer_.status_only_new_group());
 }
 
-// Tests keeping the same index but adding to the group on the right.
-// TODO(crbug.com/328831758): Update to use MoveToGroup when it accepts a
-// `to_index`.
-TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup) {
-  WebStateListBuilderFromDescription builder(&web_state_list_);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [ 0 b ]"));
-  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
-
-  observer_.ResetStatistics();
-  auto lock = web_state_list_.LockForMutation();
-  web_state_list_.MoveWebStateWrapperAt(0, 0, false, group_0);
-
-  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(TabGroupRange(0, 2), group_0->range());
-  EXPECT_EQ(0, observer_.web_state_moved_count());
-  EXPECT_EQ(1, observer_.status_only_count());
-  EXPECT_EQ(nullptr, observer_.status_only_old_group());
-  EXPECT_EQ(group_0, observer_.status_only_new_group());
-}
-
 // Tests keeping the same index but moving from own group to the group on the
 // left (old group having no remaining tab in it).
 TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupEmpty) {
@@ -2882,30 +2862,6 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupEmpty) {
 }
 
 // Tests keeping the same index but moving from own group to the group on the
-// right (old group having no remaining tab in it).
-// TODO(crbug.com/328831758): Update to use MoveToGroup when it accepts a
-// `to_index`.
-TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup_OldGroupEmpty) {
-  WebStateListBuilderFromDescription builder(&web_state_list_);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ] [ 1 b ]"));
-  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
-  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
-
-  observer_.ResetStatistics();
-  auto lock = web_state_list_.LockForMutation();
-  web_state_list_.MoveWebStateWrapperAt(0, 0, false, group_1);
-
-  EXPECT_EQ("| [ 1 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(TabGroupRange(0, 2), group_1->range());
-  EXPECT_EQ(0, observer_.web_state_moved_count());
-  EXPECT_EQ(1, observer_.status_only_count());
-  EXPECT_EQ(group_0, observer_.status_only_old_group());
-  EXPECT_EQ(group_1, observer_.status_only_new_group());
-  EXPECT_EQ(1, observer_.group_deleted_count());
-  EXPECT_EQ(group_0, observer_.group_deleted_group());
-}
-
-// Tests keeping the same index but moving from own group to the group on the
 // left (old group still having remaining tab in it).
 TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupNonEmpty) {
   WebStateListBuilderFromDescription builder(&web_state_list_);
@@ -2924,51 +2880,6 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupNonEmpty) {
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(group_1, observer_.status_only_old_group());
   EXPECT_EQ(group_0, observer_.status_only_new_group());
-}
-
-// Tests keeping the same index but moving from own group to the group on the
-// right (old group still having remaining tabs in it).
-// TODO(crbug.com/328831758): Update to use MoveToGroup when it accepts a
-// `to_index`.
-TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup_OldGroupNonEmpty) {
-  WebStateListBuilderFromDescription builder(&web_state_list_);
-  ASSERT_TRUE(
-      builder.BuildWebStateListFromDescription("| [ 0 a b ] [ 1 c d ]"));
-  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
-  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
-
-  observer_.ResetStatistics();
-  auto lock = web_state_list_.LockForMutation();
-  web_state_list_.MoveWebStateWrapperAt(1, 1, false, group_1);
-
-  EXPECT_EQ("| [ 0 a ] [ 1 b c d ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(TabGroupRange(0, 1), group_0->range());
-  EXPECT_EQ(TabGroupRange(1, 3), group_1->range());
-  EXPECT_EQ(0, observer_.web_state_moved_count());
-  EXPECT_EQ(1, observer_.status_only_count());
-  EXPECT_EQ(group_0, observer_.status_only_old_group());
-  EXPECT_EQ(group_1, observer_.status_only_new_group());
-}
-
-// Tests moving a pinned tab to a group while keeping the same position.
-// TODO(crbug.com/328831758): Update to use MoveToGroup when it accepts a
-// `to_index`.
-TEST_F(WebStateListTest, MoveToGroup_NoMove_PinnedToGroup) {
-  WebStateListBuilderFromDescription builder(&web_state_list_);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription("a | [ 0 b ]"));
-  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
-
-  observer_.ResetStatistics();
-  auto lock = web_state_list_.LockForMutation();
-  web_state_list_.MoveWebStateWrapperAt(0, 0, false, group);
-
-  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription());
-  EXPECT_EQ(TabGroupRange(0, 2), group->range());
-  EXPECT_EQ(0, observer_.web_state_moved_count());
-  EXPECT_EQ(1, observer_.status_only_count());
-  EXPECT_EQ(1, observer_.pinned_state_changed());
-  EXPECT_EQ(nullptr, observer_.status_only_old_group());
-  EXPECT_EQ(group, observer_.status_only_new_group());
 }
 
 // Tests moving a pinned tab to a group with a change of index.

@@ -11,6 +11,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
@@ -73,6 +74,17 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   DumpAccessibilityScriptTest(const DumpAccessibilityScriptTest&) = delete;
   DumpAccessibilityScriptTest& operator=(const DumpAccessibilityScriptTest&) =
       delete;
+
+#if BUILDFLAG(IS_MAC)
+  template <const char* type>
+  void Migration_RunTypedTest(const base::FilePath::CharType* file_path) {
+    if (features::IsMacAccessibilityAPIMigrationEnabled()) {
+      RunTypedTest<type>(file_path);
+    } else {
+      GTEST_SKIP();
+    }
+  }
+#endif
 
  protected:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
@@ -569,11 +581,61 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityElement) {
   RunTypedTest<kMacMethods>("is-accessibility-element.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityExpanded) {
+  Migration_RunTypedTest<kMacMethods>("is-accessibility-expanded.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityFocused) {
+  Migration_RunTypedTest<kMacMethods>("is-accessibility-focused.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SetAccessibilityFocused) {
   RunTypedTest<kMacMethods>("set-accessibility-focused.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityDisclosed) {
+  Migration_RunTypedTest<kMacMethods>("is-accessibility-disclosed.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityDisclosedByRow) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-disclosed-by-row.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityDisclosedRows) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-disclosed-rows.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityDisclosureLevel) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-disclosure-level.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityColumnIndexRange) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-column-index-range.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityRowIndexRange) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-row-index-range.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilitySortDirection) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-sort-direction.html");
+}
+
 // Parameterized attributes
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityIndexTable) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-index-table.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityIndexTree) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-index-tree.html");
+}
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXAttributedStringForRange) {

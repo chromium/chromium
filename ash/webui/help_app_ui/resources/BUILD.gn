@@ -37,6 +37,7 @@ copy("copy_for_tsc") {
 }
 
 webui_ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   root_dir = ts_root_dir
   in_files = []
   foreach(o, get_target_outputs(":copy_for_tsc")) {
@@ -103,6 +104,7 @@ optimize_webui("receiver_rollup") {
 }
 
 ts_library("test_build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   root_dir = ts_root_dir
   testonly = true
   in_files = help_app_test_ts

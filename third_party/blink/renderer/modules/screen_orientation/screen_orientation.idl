@@ -25,7 +25,7 @@ enum OrientationType {
 [Exposed=Window]
 interface ScreenOrientation : EventTarget {
     [HighEntropy=Direct, MeasureAs=ScreenOrientationAngle] readonly attribute unsigned short angle;
-    [HighEntropy=Direct, MeasureAs=ScreenOrientationType] readonly attribute DOMString type;
+    [HighEntropy=Direct, MeasureAs=ScreenOrientationType] readonly attribute OrientationType type;
 
     [CallWith=ScriptState, MeasureAs=ScreenOrientationLock, RaisesException] Promise<undefined> lock(OrientationLockType orientation);
     [MeasureAs=ScreenOrientationUnlock] void unlock();

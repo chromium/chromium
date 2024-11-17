@@ -214,7 +214,7 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
   mandatory_reauth_opt_in_prompt_was_reshown_ = true;
 }
 
-MerchantPromoCodeManager*
+MockMerchantPromoCodeManager*
 TestPaymentsAutofillClient::GetMerchantPromoCodeManager() {
   return &mock_merchant_promo_code_manager_;
 }
@@ -225,7 +225,7 @@ AutofillOfferManager* TestPaymentsAutofillClient::GetAutofillOfferManager() {
 
 bool TestPaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard> cards_to_suggest,
+    base::span<const CreditCard> cards_to_suggest,
     base::span<const Suggestion> suggestions) {
   return false;
 }
@@ -263,11 +263,6 @@ void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
 void TestPaymentsAutofillClient::set_otp_authenticator(
     std::unique_ptr<CreditCardOtpAuthenticator> authenticator) {
   otp_authenticator_ = std::move(authenticator);
-}
-
-MockMerchantPromoCodeManager*
-TestPaymentsAutofillClient::GetMockMerchantPromoCodeManager() {
-  return &mock_merchant_promo_code_manager_;
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -49,6 +49,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model_utils.h"
@@ -213,6 +214,8 @@ PagedAppsGridView::PagedAppsGridView(
   pagination_controller_ = std::make_unique<PaginationController>(
       &pagination_model_, PaginationController::SCROLL_AXIS_VERTICAL,
       base::BindRepeating(&AppListRecordPageSwitcherSourceByEventType));
+
+  GetViewAccessibility().SetClipsChildren(true);
 }
 
 PagedAppsGridView::~PagedAppsGridView() {
@@ -303,11 +306,6 @@ void PagedAppsGridView::Layout(PassKey) {
     MaskContainerToBackgroundBounds();
   }
   views::ViewModelUtils::SetViewBoundsToIdealBounds(pulsing_blocks_model());
-}
-
-void PagedAppsGridView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  AppsGridView::GetAccessibleNodeData(node_data);
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren, true);
 }
 
 void PagedAppsGridView::OnThemeChanged() {

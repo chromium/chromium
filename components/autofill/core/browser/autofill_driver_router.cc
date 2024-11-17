@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -44,12 +45,51 @@ AutofillDriver* AutofillDriverRouter::DriverOfFrame(LocalFrameToken frame) {
 
 void AutofillDriverRouter::UnregisterDriver(AutofillDriver& driver,
                                             bool driver_is_dying) {
+  // TODO: crbug.com/365097975 - Remove the crash keys.
+  bool found_token = false;
+  bool found_token_has_driver = false;
+  bool found_token_has_right_driver = false;
+  bool found_driver = false;
+  bool found_driver_right_token = false;
+  bool found_driver_deleted = false;
+  if (auto it = form_forest_.frame_datas().find(driver.GetFrameToken());
+      it != form_forest_.frame_datas().end()) {
+    found_token = true;
+    found_token_has_driver = (*it)->driver != nullptr;
+    found_token_has_right_driver = (*it)->driver == &driver;
+  }
+  SCOPED_CRASH_KEY_NUMBER("Autofill", "num_frame_datas_before",
+                          form_forest_.frame_datas().size());
   for (const std::unique_ptr<internal::FormForest::FrameData>& frame :
        form_forest_.frame_datas()) {
     if (frame->driver == &driver) {
+      found_driver = true;
+      found_driver_right_token = frame->frame_token == driver.GetFrameToken();
       form_forest_.EraseFormsOfFrame(frame->frame_token,
                                      /*keep_frame=*/!driver_is_dying);
+      found_driver_deleted =
+          !form_forest_.frame_datas().contains(driver.GetFrameToken());
       break;
+    }
+  }
+  SCOPED_CRASH_KEY_NUMBER("Autofill", "num_frame_datas_after",
+                          form_forest_.frame_datas().size());
+  SCOPED_CRASH_KEY_BOOL("Autofill", "found_token", found_token);
+  SCOPED_CRASH_KEY_BOOL("Autofill", "found_token_has_driver",
+                        found_token_has_driver);
+  SCOPED_CRASH_KEY_BOOL("Autofill", "found_token_has_right_driver",
+                        found_token_has_right_driver);
+  SCOPED_CRASH_KEY_BOOL("Autofill", "found_driver", found_driver);
+  SCOPED_CRASH_KEY_BOOL("Autofill", "found_driver_right_token",
+                        found_driver_right_token);
+  SCOPED_CRASH_KEY_BOOL("Autofill", "found_driver_deleted",
+                        found_driver_deleted);
+  if (driver_is_dying) {
+    if (found_token_has_driver) {
+      CHECK(found_driver, base::NotFatalUntil::M135);
+      CHECK(found_driver_deleted, base::NotFatalUntil::M135);
+    } else {
+      CHECK(!found_driver, base::NotFatalUntil::M135);
     }
   }
 }
@@ -79,7 +119,7 @@ void AutofillDriverRouter::TriggerFormExtractionExcept(
         continue;
       }
       if (!driver->IsActive()) {
-        // The `form_forest_` main contain inactive frames because it retains
+        // The `form_forest_` may contain inactive frames because it retains
         // BFcached frames.
         continue;
       }
@@ -102,11 +142,8 @@ void AutofillDriverRouter::FormsSeen(
   base::flat_set<FormGlobalId> forms_with_removed_fields =
       form_forest_.EraseForms(removed_forms);
 
-  std::vector<FormGlobalId> renderer_form_ids;
-  renderer_form_ids.reserve(renderer_forms.size());
-  for (const FormData& renderer_form : renderer_forms) {
-    renderer_form_ids.push_back(renderer_form.global_id());
-  }
+  std::vector<FormGlobalId> renderer_form_ids =
+      base::ToVector(renderer_forms, &FormData::global_id);
 
   for (FormData& form : std::move(renderer_forms)) {
     form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
@@ -152,17 +189,16 @@ void AutofillDriverRouter::FormsSeen(
 }
 
 void AutofillDriverRouter::FormSubmitted(
-    RoutedCallback<const FormData&, bool, mojom::SubmissionSource> callback,
+    RoutedCallback<const FormData&, mojom::SubmissionSource> callback,
     AutofillDriver& source,
     FormData form,
-    bool known_success,
     mojom::SubmissionSource submission_source) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame());
-  callback(CHECK_DEREF(target), browser_form, known_success, submission_source);
+  callback(CHECK_DEREF(target), browser_form, submission_source);
 }
 
 void AutofillDriverRouter::CaretMovedInFormField(
@@ -381,7 +417,7 @@ void AutofillDriverRouter::DidEndTextFieldEditing(RoutedCallback<> callback,
   ForEachFrame(form_forest_, callback);
 }
 
-void AutofillDriverRouter::SelectOrSelectListFieldOptionsDidChange(
+void AutofillDriverRouter::SelectFieldOptionsDidChange(
     RoutedCallback<const FormData&> callback,
     AutofillDriver& source,
     FormData form) {

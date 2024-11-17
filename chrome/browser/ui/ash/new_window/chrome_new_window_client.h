@@ -52,7 +52,9 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void OpenFile(const base::FilePath& file_path) override;
 
   // arc::ControlCameraAppDelegate:
-  void LaunchCameraApp(const std::string& queries, int32_t task_id) override;
+  void LaunchCameraApp(const std::string& queries,
+                       bool launch_in_dialog,
+                       int32_t task_id) override;
   void CloseCameraApp() override;
   bool IsCameraAppEnabled() override;
 

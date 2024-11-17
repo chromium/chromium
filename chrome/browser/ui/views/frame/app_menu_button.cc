@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/observer_list.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -49,8 +50,7 @@ void AppMenuButton::CloseMenu() {
 
 void AppMenuButton::OnMenuClosed() {
   promo_handle_.Release();
-  for (AppMenuButtonObserver& observer : observer_list_)
-    observer.AppMenuClosed();
+  observer_list_.Notify(&AppMenuButtonObserver::AppMenuClosed);
 }
 
 bool AppMenuButton::IsMenuShowing() const {
@@ -65,7 +65,8 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   menu_.reset();
   menu_model_ = std::move(menu_model);
   if (BrowserWindow* browser_window = browser->window()) {
-    if (auto* controller = browser_window->GetFeaturePromoController()) {
+    if (auto* controller = browser_window->GetFeaturePromoController(
+            base::PassKey<AppMenuButton>())) {
       if (auto* promo_specification =
               controller->GetCurrentPromoSpecificationForAnchor(
                   GetProperty(views::kElementIdentifierKey))) {
@@ -86,8 +87,7 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   menu_ = std::make_unique<AppMenu>(browser, menu_model_.get(), run_flags);
   menu_->RunMenu(menu_button_controller_);
 
-  for (AppMenuButtonObserver& observer : observer_list_)
-    observer.AppMenuShown();
+  observer_list_.Notify(&AppMenuButtonObserver::AppMenuShown);
 }
 
 void AppMenuButton::SetMenuTimerForTesting(base::ElapsedTimer timer) {

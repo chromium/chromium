@@ -33,8 +33,7 @@ int IsCertErrorFatal(int cert_error) {
     case net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN:
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 

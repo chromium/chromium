@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -187,6 +188,101 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
     navigate(test_case.target, test_case.commit, test_case.expected);
+  }
+}
+
+// Tests that navigating a main frame via location.href works if and only if
+// the target resource is accessible to the main frame.
+// Regression test for https://crbug.com/374503948.
+IN_PROC_BROWSER_TEST_F(
+    WebAccessibleResourcesBrowserTest,
+    MainFrameLocationHrefUpdatesAreSubjectToAccessibleResources) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "version": "0.1",
+           "manifest_version": 3,
+           "web_accessible_resources": [
+             {
+               "resources": [ "accessible.html" ],
+               "matches": [ "http://trusted.example/*" ],
+               "use_dynamic_url": true
+             }
+           ]
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("accessible.html"), "accessible");
+  test_dir.WriteFile(FILE_PATH_LITERAL("inaccessible.html"), "inaccessible");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL dynamic_accessible_url =
+      Extension::GetResourceURL(extension->dynamic_url(), "accessible.html");
+  const GURL static_accessible_url =
+      extension->GetResourceURL("accessible.html");
+  const GURL dynamic_inaccessible_url =
+      Extension::GetResourceURL(extension->dynamic_url(), "inaccessible.html");
+  const GURL static_inaccessible_url =
+      extension->GetResourceURL("inaccessible.html");
+
+  const GURL trusted_site =
+      embedded_test_server()->GetURL("trusted.example", "/simple.html");
+  const GURL untrusted_site =
+      embedded_test_server()->GetURL("untrusted.example", "/simple.html");
+
+  const GURL invalid_extension_url(kExtensionInvalidRequestURL);
+
+  // Each test case will:
+  // * Navigate to an initial site.
+  // * Try to navigate that page to a target url with `location.replace();` this
+  //   is a renderer-initiated navigation, and should be limited to
+  //   web-accessible resource checks.
+  // * Verify where the navigation reached.
+  static struct {
+    // The url to navigate the browser tab to.
+    GURL site_url;
+    // The url to navigate to via `document.location.replace()` (an extension
+    // resource).
+    GURL target_url;
+    // The final url we expect; this should either be the static url of the
+    // extension resource or chrome-extension://invalid.
+    GURL final_url;
+    // If non-null, the `document.body.innerHTML` we expect for the final page.
+    const char* body_content;
+  } test_cases[] = {
+      {trusted_site, dynamic_accessible_url, static_accessible_url,
+       "accessible"},
+      {trusted_site, dynamic_inaccessible_url, invalid_extension_url, nullptr},
+      {trusted_site, static_accessible_url, invalid_extension_url, nullptr},
+      {trusted_site, static_inaccessible_url, invalid_extension_url, nullptr},
+      {untrusted_site, dynamic_accessible_url, invalid_extension_url, nullptr},
+      {untrusted_site, dynamic_inaccessible_url, invalid_extension_url,
+       nullptr},
+      {untrusted_site, static_accessible_url, invalid_extension_url, nullptr},
+      {untrusted_site, static_inaccessible_url, invalid_extension_url, nullptr},
+  };
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(testing::Message() << "Site URL: " << test_case.site_url
+                                    << "Target URL: " << test_case.target_url
+                                    << "Final URL: " << test_case.final_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_case.site_url));
+    EXPECT_EQ(test_case.site_url, web_contents->GetLastCommittedURL());
+
+    ASSERT_TRUE(content::ExecJs(
+        web_contents, base::StringPrintf("document.location.replace('%s')",
+                                         test_case.target_url.spec().c_str())));
+    content::WaitForLoadStop(web_contents);
+    EXPECT_EQ(test_case.final_url, web_contents->GetLastCommittedURL());
+    if (test_case.body_content) {
+      EXPECT_EQ(test_case.body_content,
+                content::EvalJs(web_contents, "document.body.innerText"));
+    }
   }
 }
 

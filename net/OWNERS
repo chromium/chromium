@@ -14,7 +14,6 @@ mattm@chromium.org
 mmenke@chromium.org
 morlovich@chromium.org
 nharper@chromium.org
-pauljensen@chromium.org
 rch@chromium.org
 
 per-file BUILD.gn=file://net/websockets/OWNERS

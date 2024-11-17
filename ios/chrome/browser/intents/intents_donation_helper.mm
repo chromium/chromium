@@ -167,8 +167,7 @@
       return interaction;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
     }
   }
 }

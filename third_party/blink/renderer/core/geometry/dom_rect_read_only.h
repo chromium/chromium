@@ -43,6 +43,10 @@ class CORE_EXPORT DOMRectReadOnly : public ScriptWrappable {
 
   ScriptValue toJSONForBinding(ScriptState*) const;
 
+  bool IsPointInside(double x, double y) const {
+    return x >= left() && x < right() && y >= top() && y < bottom();
+  }
+
  protected:
   double x_;
   double y_;

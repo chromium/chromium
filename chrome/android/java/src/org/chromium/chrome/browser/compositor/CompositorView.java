@@ -13,12 +13,15 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.AttachedSurfaceControl;
 import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.window.InputTransferToken;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -35,8 +38,11 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.content_public.browser.InputTransferHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.SurfaceInputTransferHandlerMap;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.InputUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
@@ -88,6 +94,8 @@ public class CompositorView extends FrameLayout
     private boolean mRenderHostNeedsDidSwapBuffersCallback;
 
     private boolean mHaveSwappedFramesSinceSurfaceCreated;
+
+    private Integer mSurfaceId;
 
     // On P and above, toggling the screen off gets us in a state where the Surface is destroyed but
     // it is never recreated when it is turned on again. This is the only workaround that seems to
@@ -339,15 +347,6 @@ public class CompositorView extends FrameLayout
         CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
     }
 
-    private void setWindowAndroid(WindowAndroid windowAndroid) {
-        assert mWindowAndroid != null;
-        mWindowAndroid.removeSelectionHandlesObserver(this);
-
-        mWindowAndroid = windowAndroid;
-        mWindowAndroid.addSelectionHandlesObserver(this);
-        onWindowVisibilityChangedInternal(getWindowVisibility());
-    }
-
     /**
      * Enables/disables overlay video mode. Affects alpha blending on this view.
      * @param enabled Whether to enter or leave overlay video mode.
@@ -473,16 +472,34 @@ public class CompositorView extends FrameLayout
         }
         if (mNativeCompositorView == 0) return;
 
-        CompositorViewJni.get()
-                .surfaceChanged(
-                        mNativeCompositorView,
-                        CompositorView.this,
-                        format,
-                        width,
-                        height,
-                        canUseSurfaceControl(),
-                        surface);
+        InputTransferToken browserInputToken = null;
+        if (InputUtils.isTransferInputToVizSupported()) {
+            AttachedSurfaceControl rootSurfaceControl =
+                    ((Activity) getContext()).getWindow().getRootSurfaceControl();
+            browserInputToken = rootSurfaceControl.getInputTransferToken();
+        }
+
+        Integer surfaceId =
+                CompositorViewJni.get()
+                        .surfaceChanged(
+                                mNativeCompositorView,
+                                CompositorView.this,
+                                format,
+                                width,
+                                height,
+                                canUseSurfaceControl(),
+                                surface,
+                                browserInputToken);
         mRenderHost.onSurfaceResized(width, height);
+
+        if (InputUtils.isTransferInputToVizSupported()
+                && surfaceId != null
+                && browserInputToken != null) {
+            InputTransferHandler handler = new InputTransferHandler(browserInputToken);
+            assert mSurfaceId == null;
+            mSurfaceId = surfaceId;
+            SurfaceInputTransferHandlerMap.getMap().put(mSurfaceId, handler);
+        }
     }
 
     @Override
@@ -514,6 +531,10 @@ public class CompositorView extends FrameLayout
 
         if (mScreenStateReceiver != null) {
             mScreenStateReceiver.maybeResetCompositorSurfaceManager();
+        }
+        if (InputUtils.isTransferInputToVizSupported() && mSurfaceId != null) {
+            SurfaceInputTransferHandlerMap.getMap().remove(mSurfaceId);
+            mSurfaceId = null;
         }
     }
 
@@ -785,14 +806,16 @@ public class CompositorView extends FrameLayout
 
         void surfaceDestroyed(long nativeCompositorView, CompositorView caller);
 
-        void surfaceChanged(
+        @JniType("std::optional<int>")
+        Integer surfaceChanged(
                 long nativeCompositorView,
                 CompositorView caller,
                 int format,
                 int width,
                 int height,
                 boolean backedBySurfaceTexture,
-                Surface surface);
+                Surface surface,
+                InputTransferToken browserInputToken);
 
         void onPhysicalBackingSizeChanged(
                 long nativeCompositorView,

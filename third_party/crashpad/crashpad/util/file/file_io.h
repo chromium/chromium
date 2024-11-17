@@ -17,6 +17,7 @@
 
 #include <sys/types.h>
 
+#include <functional>
 #include <string>
 
 #include "build/build_config.h"
@@ -162,30 +163,11 @@ constexpr char kNativeWriteFunctionName[] = "WriteFile";
 //! intended to be used more generally. Use ReadFileExactly(),
 //! LoggingReadFileExactly(), CheckedReadFileExactly(), or
 //! FileReaderInterface::ReadExactly() instead.
-class ReadExactlyInternal {
- public:
-  ReadExactlyInternal(const ReadExactlyInternal&) = delete;
-  ReadExactlyInternal& operator=(const ReadExactlyInternal&) = delete;
-
-  //! \brief Calls Read(), retrying following a short read, ensuring that
-  //!     exactly \a size bytes are read.
-  //!
-  //! \return `true` on success. `false` if the underlying Read() fails or if
-  //!     fewer than \a size bytes were read. When returning `false`, if \a
-  //!     can_log is `true`, logs a message.
-  bool ReadExactly(void* buffer, size_t size, bool can_log);
-
- protected:
-  ReadExactlyInternal() {}
-  ~ReadExactlyInternal() {}
-
- private:
-  //! \brief Wraps a read operation, such as ReadFile().
-  //!
-  //! \return The number of bytes read and placed into \a buffer, or `-1` on
-  //!     error. When returning `-1`, if \a can_log is `true`, logs a message.
-  virtual FileOperationResult Read(void* buffer, size_t size, bool can_log) = 0;
-};
+bool ReadExactly(
+    std::function<FileOperationResult(bool, void*, size_t)> read_function,
+    bool can_log,
+    void* buffer,
+    size_t size);
 
 //! \brief The internal implementation of WriteFile() and its wrappers.
 //!
@@ -252,7 +234,9 @@ FileOperationResult NativeWriteFile(FileHandle file,
 //!
 //! \sa WriteFile
 //! \sa ReadFileExactly
+//! \sa ReadFileUntil
 //! \sa LoggingReadFileExactly
+//! \sa LoggingReadFileUntil
 //! \sa CheckedReadFileExactly
 //! \sa CheckedReadFileAtEOF
 FileOperationResult ReadFile(FileHandle file, void* buffer, size_t size);
@@ -273,32 +257,61 @@ FileOperationResult ReadFile(FileHandle file, void* buffer, size_t size);
 bool WriteFile(FileHandle file, const void* buffer, size_t size);
 
 //! \brief Wraps ReadFile(), retrying following a short read, ensuring that
-//!     exactly \a size bytes are read.
+//!     exactly \a size bytes are read. Does not log on failure.
 //!
-//! \return `true` on success. If the underlying ReadFile() fails, or if fewer
-//!     than \a size bytes were read, this function logs a message and
-//!     returns `false`.
+//! \return `true` on success. Returns `false` if the underlying ReadFile()
+//!     fails or if fewer than \a size bytes were read.
 //!
 //! \sa LoggingWriteFile
 //! \sa ReadFile
+//! \sa ReadFileUntil
 //! \sa LoggingReadFileExactly
+//! \sa LoggingReadFileUntil
 //! \sa CheckedReadFileExactly
 //! \sa CheckedReadFileAtEOF
 bool ReadFileExactly(FileHandle file, void* buffer, size_t size);
 
-//! \brief Wraps ReadFile(), retrying following a short read, ensuring that
-//!     exactly \a size bytes are read.
+//! \brief Wraps ReadFile(), retrying following a short read. Does not log on
+//!     failure.
 //!
-//! \return `true` on success. If the underlying ReadFile() fails, or if fewer
-//!     than \a size bytes were read, this function logs a message and
-//!     returns `false`.
+//! \returns The number of bytes read or `-1` if the underlying ReadFile()
+//!     fails.
+//!
+//! \sa ReadFile
+//! \sa ReadFileExactly
+//! \sa LoggingReadFileExactly
+//! \sa LoggingReadFileUntil
+FileOperationResult ReadFileUntil(FileHandle file, void* buffer, size_t size);
+
+//! \brief Wraps ReadFile(), retrying following a short read, ensuring that
+//!     exactly \a size bytes are read. Logs an error on failure.
+//!
+//! \return `true` on success. Returns `false` if the underlying ReadFile()
+//!     fails or if fewer than \a size bytes were read.
 //!
 //! \sa LoggingWriteFile
 //! \sa ReadFile
 //! \sa ReadFileExactly
+//! \sa ReadFileUntil
+//! \sa LoggingReadFileUntil
 //! \sa CheckedReadFileExactly
 //! \sa CheckedReadFileAtEOF
 bool LoggingReadFileExactly(FileHandle file, void* buffer, size_t size);
+
+//! \brief Wraps ReadFile(), retrying following a short read. Logs an error on
+//!     failure.
+//!
+//! \returns The number of bytes read or `-1` if the underlying ReadFile()
+//!     fails.
+//!
+//! \sa ReadFileExactly
+//! \sa ReadFileUntil
+//! \sa LoggingReadFileExactly
+//! \sa CheckedReadFileExactly
+//! \sa CheckedReadFileAtEOF
+FileOperationResult LoggingReadFileUntil(FileHandle file,
+                                         void* buffer,
+                                         size_t size);
 
 //! \brief Wraps WriteFile(), ensuring that exactly \a size bytes are written.
 //!

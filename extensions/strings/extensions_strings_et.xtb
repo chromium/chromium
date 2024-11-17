@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Privaatvõtme sisendi väärtus peab olema kehtiv tee.</translation>
 <translation id="388442998277590542">Valikute lehte <ph name="OPTIONS_PAGE" /> ei õnnestunud laadida.</translation>
 <translation id="3984413272403535372">Laienduse allkirjastamisel ilmnes viga.</translation>
-<translation id="4115165561519362854">Seadme administraator nõuab, et kasutaksite laienduse <ph name="EXTENSION_NAME" /> puhul vähemalt versiooni <ph name="EXTENSION_VERSION" />. Laiendust ei saa lubada enne, kui see on värskendatud sellele versioonile (või uuemale versioonile).</translation>
 <translation id="4233778200880751280">Teabelehte „<ph name="ABOUT_PAGE" />” ei õnnestunud laadida.</translation>
 <translation id="471800408830181311">Privaatvõtit ei õnnestunud väljastada.</translation>
 <translation id="4811956658694082538">Paketti ei õnnestunud installida, sest utiliidiprotsess jooksis kokku. Taaskäivitage Chrome ja proovige uuesti.</translation>

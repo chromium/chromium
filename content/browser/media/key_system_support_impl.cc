@@ -19,8 +19,8 @@ namespace {
 bool IsValidKeySystemCapabilities(KeySystemCapabilities capabilities) {
   for (const auto& entry : capabilities) {
     auto& capability = entry.second;
-    if (!capability.sw_secure_capability.has_value() &&
-        !capability.hw_secure_capability.has_value()) {
+    if (!capability.sw_cdm_capability_or_status.has_value() &&
+        !capability.hw_cdm_capability_or_status.has_value()) {
       return false;
     }
   }
@@ -82,7 +82,10 @@ void KeySystemSupportImpl::InitializePermissions() {
   auto* web_contents = WebContentsImpl::FromRenderFrameHostImpl(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
   is_protected_content_allowed_ =
-      web_contents->GetRendererPrefs().enable_encrypted_media;
+      web_contents
+          ->GetRendererPrefs(static_cast<RenderViewHostImpl*>(
+              render_frame_host().GetRenderViewHost()))
+          .enable_encrypted_media;
 
 // Initialize permissions for platforms that supports
 // PROTECTED_MEDIA_IDENTIFIER.

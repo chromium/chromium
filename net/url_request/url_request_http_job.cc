@@ -25,6 +25,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -250,15 +251,6 @@ enum class ContentEncodingType {
   kMaxValue = kZstd,
 };
 
-bool IsSameSiteIgnoringWebSocketProtocol(const net::SchemefulSite& initiator,
-                                         const GURL& request_url) {
-  net::SchemefulSite request_site = net::SchemefulSite(
-      request_url.SchemeIsHTTPOrHTTPS()
-          ? request_url
-          : net::ChangeWebSocketSchemeToHttpScheme(request_url));
-  return initiator == request_site;
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class HttpRequestStsState {
@@ -335,18 +327,6 @@ void RecordSTSHistograms(net::SSLUpgradeDecision upgrade_decision,
   UMA_HISTOGRAM_ENUMERATION(
       "Net.HttpRequestSSLUpgradeDecision",
       GetMetricForSSLUpgradeDecision(upgrade_decision, is_secure));
-}
-
-char const* GetSecFetchStorageAccessHeaderValue(
-    net::cookie_util::StorageAccessStatus storage_access_status) {
-  switch (storage_access_status) {
-    case net::cookie_util::StorageAccessStatus::kInactive:
-      return "inactive";
-    case net::cookie_util::StorageAccessStatus::kActive:
-      return "active";
-    case net::cookie_util::StorageAccessStatus::kNone:
-      return "none";
-  }
 }
 
 }  // namespace
@@ -460,16 +440,6 @@ void URLRequestHttpJob::Start() {
   request_info_.reporting_upload_depth = request_->reporting_upload_depth();
 #endif
 
-  // Add/remove the Storage Access override enum based on whether the request's
-  // url and initiator are same-site, to prevent cross-site sibling iframes
-  // benefit from each other's storage access API grants.
-  request()->cookie_setting_overrides().PutOrRemove(
-      CookieSettingOverride::kStorageAccessGrantEligible,
-      request()->storage_access_api_status() ==
-              StorageAccessApiStatus::kAccessViaAPI &&
-          request_initiator_site().has_value() &&
-          IsSameSiteIgnoringWebSocketProtocol(request_initiator_site().value(),
-                                              request()->url()));
   CookieStore* cookie_store = request()->context()->cookie_store();
   const CookieAccessDelegate* delegate =
       cookie_store ? cookie_store->cookie_access_delegate() : nullptr;
@@ -498,28 +468,6 @@ bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
 }
 
 }  // namespace
-
-void URLRequestHttpJob::MaybeSetSecFetchStorageAccessHeader() {
-  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
-          base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
-          request_->url())) {
-    return;
-  }
-  // Avoid attaching the header in cases where the Cookie header is not included
-  // in the request.
-  if (!ShouldAddCookieHeader() ||
-      ShouldBlockAllCookies(request_info_.privacy_mode)) {
-    return;
-  }
-  std::optional<cookie_util::StorageAccessStatus> storage_access_status =
-      request_->network_delegate()->GetStorageAccessStatus(*request_);
-  if (storage_access_status) {
-    storage_access_status_ = storage_access_status.value();
-    request_info_.extra_headers.SetHeader(
-        HttpRequestHeaders::kSecFetchStorageAccess,
-        GetSecFetchStorageAccessHeaderValue(storage_access_status_));
-  }
-}
 
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(
     FirstPartySetMetadata first_party_set_metadata,
@@ -629,8 +577,7 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
     case NetworkDelegate::PrivacySetting::kStateDisallowed:
       return PRIVACY_MODE_ENABLED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PRIVACY_MODE_ENABLED;
+  NOTREACHED();
 }
 
 void URLRequestHttpJob::NotifyHeadersComplete() {
@@ -822,7 +769,6 @@ void URLRequestHttpJob::AddExtraHeaders() {
           accept_language);
     }
   }
-  MaybeSetSecFetchStorageAccessHeader();
 }
 
 void URLRequestHttpJob::AddCookieHeaderAndStart() {
@@ -983,6 +929,30 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
   request_->set_maybe_sent_cookies(std::move(maybe_sent_cookies));
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // Check if the right device bound cookies are set for the request, see
+  // https://wicg.github.io/dbsc/ for specification.
+  device_bound_sessions::SessionService* service =
+      request_->context()->device_bound_session_service();
+  if (service) {
+    std::optional<device_bound_sessions::Session::Id> id =
+        service->GetAnySessionRequiringDeferral(request_);
+    // If the request needs to be deferred while waiting for refresh,
+    // do not start the transaction at this time.
+    if (id) {
+      service->DeferRequestForRefresh(
+          request_, *id,
+          // restart with new cookies callback
+          base::BindOnce(&URLRequestHttpJob::RestartTransactionForRefresh,
+                         weak_factory_.GetWeakPtr()),
+          // continue callback
+          base::BindOnce(&URLRequestHttpJob::StartTransaction,
+                         weak_factory_.GetWeakPtr()));
+      return;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
   StartTransaction();
 }
 
@@ -1034,8 +1004,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   // If we're clearing the cookies as part of a clear-site-data header we must
   // not also write new ones in the same response.
   bool clear_site_data_prevents_cookies_from_being_stored = false;
-  std::string clear_site_data_header;
-  headers->GetNormalizedHeader(kClearSiteDataHeader, &clear_site_data_header);
+  std::string clear_site_data_header =
+      headers->GetNormalizedHeader(kClearSiteDataHeader)
+          .value_or(std::string());
   std::vector<std::string> clear_site_data_types =
       ClearSiteDataHeaderContents(clear_site_data_header);
   std::set<std::string> clear_site_data_set(clear_site_data_types.begin(),
@@ -1070,7 +1041,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.
   const std::string_view name("Set-Cookie");
-  std::string cookie_string;
+  std::optional<std::string_view> cookie_string_view;
   size_t iter = 0;
 
   // NotifyHeadersComplete needs to be called once and only once after the
@@ -1082,7 +1053,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   // still waiting when the loop ends, then NotifyHeadersComplete will be
   // called when it reaches 0 in the callback itself.
   num_cookie_lines_left_ = 1;
-  while (headers->EnumerateHeader(&iter, name, &cookie_string)) {
+  while ((cookie_string_view = headers->EnumerateHeader(&iter, name))) {
+    // Will need a copy of the string on all paths, so go ahead and make on now.
+    std::string cookie_string(*cookie_string_view);
     CookieInclusionStatus returned_status;
 
     num_cookie_lines_left_++;
@@ -1124,7 +1097,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
         std::move(cookie), request_->url(), options,
         base::BindOnce(&URLRequestHttpJob::OnSetCookieResult,
                        weak_factory_.GetWeakPtr(), options, cookie_to_return,
-                       cookie_string),
+                       std::move(cookie_string)),
         std::move(cookie_access_result));
   }
   // Removing the 1 that |num_cookie_lines_left| started with, signifing that
@@ -1178,14 +1151,18 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
       device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
           request_url, headers);
   for (auto& param : params) {
-    service->RegisterBoundSession(std::move(param), request_->isolation_info());
+    service->RegisterBoundSession(
+        request_->device_bound_session_access_callback(), std::move(param),
+        request_->isolation_info());
   }
 
   std::vector<device_bound_sessions::SessionChallengeParam> challenge_params =
       device_bound_sessions::SessionChallengeParam::CreateIfValid(request_url,
                                                                   headers);
   for (auto& param : challenge_params) {
-    service->SetChallengeForBoundSession(request_url, std::move(param));
+    service->SetChallengeForBoundSession(
+        request_->device_bound_session_access_callback(), request_url,
+        std::move(param));
   }
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -1207,15 +1184,23 @@ void URLRequestHttpJob::ProcessStrictTransportSecurityHeader() {
   if (request_info_.url.HostIsIPAddress())
     return;
 
+  // Don't accept HSTS headers for localhost. (crbug.com/41251622)
+  if (net::IsLocalHostname(request_info_.url.host()) &&
+      base::FeatureList::IsEnabled(features::kIgnoreHSTSForLocalhost)) {
+    return;
+  }
+
   // http://tools.ietf.org/html/draft-ietf-websec-strict-transport-sec:
   //
   //   If a UA receives more than one STS header field in a HTTP response
   //   message over secure transport, then the UA MUST process only the
   //   first such header field.
   HttpResponseHeaders* headers = GetResponseHeaders();
-  std::string value;
-  if (headers->EnumerateHeader(nullptr, "Strict-Transport-Security", &value))
-    security_state->AddHSTSHeader(request_info_.url.host(), value);
+  std::optional<std::string_view> value;
+  if ((value =
+           headers->EnumerateHeader(nullptr, "Strict-Transport-Security"))) {
+    security_state->AddHSTSHeader(request_info_.url.host(), *value);
+  }
 }
 
 void URLRequestHttpJob::OnStartCompleted(int result) {
@@ -1347,11 +1332,8 @@ void URLRequestHttpJob::OnReadCompleted(int result) {
   ReadRawDataComplete(result);
 }
 
-void URLRequestHttpJob::RestartTransactionWithAuth(
-    const AuthCredentials& credentials) {
+void URLRequestHttpJob::RestartTransaction() {
   DCHECK(!override_response_info_);
-
-  auth_credentials_ = credentials;
 
   // These will be reset in OnStartCompleted.
   response_info_ = nullptr;
@@ -1378,6 +1360,16 @@ void URLRequestHttpJob::RestartTransactionWithAuth(
   } else {
     StartTransaction();
   }
+}
+
+void URLRequestHttpJob::RestartTransactionForRefresh() {
+  RestartTransaction();
+}
+
+void URLRequestHttpJob::RestartTransactionWithAuth(
+    const AuthCredentials& credentials) {
+  auth_credentials_ = credentials;
+  RestartTransaction();
 }
 
 void URLRequestHttpJob::SetUpload(UploadDataStream* upload) {
@@ -1478,10 +1470,10 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
   HttpResponseHeaders* headers = GetResponseHeaders();
   std::vector<SourceStream::SourceType> types;
   size_t iter = 0;
-  for (std::string type;
-       headers->EnumerateHeader(&iter, "Content-Encoding", &type);) {
+  while (std::optional<std::string_view> type =
+             headers->EnumerateHeader(&iter, "Content-Encoding")) {
     SourceStream::SourceType source_type =
-        FilterSourceStream::ParseEncodingType(type);
+        FilterSourceStream::ParseEncodingType(*type);
     switch (source_type) {
       case SourceStream::TYPE_BROTLI:
       case SourceStream::TYPE_DEFLATE:
@@ -1528,8 +1520,7 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
         break;
       case SourceStream::TYPE_NONE:
       case SourceStream::TYPE_UNKNOWN:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
     if (downstream == nullptr)
       return nullptr;
@@ -1541,11 +1532,6 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
   UMA_HISTOGRAM_ENUMERATION("Net.ContentEncodingType", content_encoding_type);
 
   return upstream;
-}
-
-cookie_util::StorageAccessStatus URLRequestHttpJob::StorageAccessStatus()
-    const {
-  return storage_access_status_;
 }
 
 bool URLRequestHttpJob::CopyFragmentOnRedirect(const GURL& location) const {
@@ -1596,29 +1582,43 @@ bool URLRequestHttpJob::NeedsAuth() {
 }
 
 bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
-  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
-          base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
-          request_->url())) {
-    return false;
-  }
-  if (!ShouldAddCookieHeader() ||
-      storage_access_status_ != cookie_util::StorageAccessStatus::kInactive ||
-      request_->cookie_setting_overrides().Has(
-          CookieSettingOverride::kStorageAccessGrantEligible) ||
-      request_->cookie_setting_overrides().Has(
-          CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
-    // We're not allowed to read cookies for this request, or this request
-    // already had all the relevant settings overrides, so retrying it wouldn't
-    // change anything.
+  // We use the Origin header's value directly, rather than
+  // `request_.initiator()`, because the header may be "null" in some cases.
+  if (!request_->response_headers() ||
+      !request_->response_headers()->HasStorageAccessRetryHeader(
+          base::OptionalToPtr(request_info_.extra_headers.GetHeader(
+              HttpRequestHeaders::kOrigin)))) {
     return false;
   }
 
-  HttpResponseHeaders* headers = request_->response_headers();
-  // We use the Origin header's value directly, rather than
-  // `request_.initiator()`, because the header may be "null" in some cases.
-  return headers && headers->HasStorageAccessRetryHeader(base::OptionalToPtr(
-                        request_info_.extra_headers.GetHeader(
-                            HttpRequestHeaders::kOrigin)));
+  auto determine_storage_access_retry_outcome =
+      [&]() -> cookie_util::ActivateStorageAccessRetryOutcome {
+    using enum cookie_util::ActivateStorageAccessRetryOutcome;
+    if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
+            base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
+            request_->url())) {
+      return kFailureHeaderDisabled;
+    }
+    if (!ShouldAddCookieHeader() ||
+        request_->storage_access_status() !=
+            cookie_util::StorageAccessStatus::kInactive ||
+        request_->cookie_setting_overrides().Has(
+            CookieSettingOverride::kStorageAccessGrantEligible) ||
+        request_->cookie_setting_overrides().Has(
+            CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
+      // We're not allowed to read cookies for this request, or this request
+      // already had all the relevant settings overrides, so retrying it
+      // wouldn't change anything.
+      return kFailureIneffectiveRetry;
+    }
+    return kSuccess;
+  };
+
+  auto outcome = determine_storage_access_retry_outcome();
+
+  base::UmaHistogramEnumeration(
+      "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome", outcome);
+  return outcome == cookie_util::ActivateStorageAccessRetryOutcome::kSuccess;
 }
 
 void URLRequestHttpJob::SetSharedDictionaryGetter(
@@ -1833,15 +1833,14 @@ IPEndPoint URLRequestHttpJob::GetResponseRemoteEndpoint() const {
 
 void URLRequestHttpJob::RecordTimer() {
   if (request_creation_time_.is_null()) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "The same transaction shouldn't start twice without new timing.";
-    return;
   }
 
   base::TimeDelta to_start = base::Time::Now() - request_creation_time_;
   request_creation_time_ = base::Time();
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpTimeToFirstByte", to_start);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpTimeToFirstByte", to_start);
 
   // Record additional metrics for TLS 1.3 servers for Google hosts. Most
   // Google hosts are known to implement 0-RTT, so this gives more targeted
@@ -1862,8 +1861,7 @@ void URLRequestHttpJob::RecordTimer() {
 
 void URLRequestHttpJob::ResetTimer() {
   if (!request_creation_time_.is_null()) {
-    NOTREACHED_IN_MIGRATION() << "The timer was reset before it was recorded.";
-    return;
+    NOTREACHED() << "The timer was reset before it was recorded.";
   }
   request_creation_time_ = base::Time::Now();
 }
@@ -1992,12 +1990,23 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
             "Net.HttpJob.IpProtection.AllowListMatch.PrefilterBytesRead.Net",
             prefilter_bytes_read(), 1, 50000000, 50);
       }
-      if (response_info_->proxy_chain.is_for_ip_protection()) {
+
+      auto& proxy_chain = response_info_->proxy_chain;
+      bool direct_only = net::features::kIpPrivacyDirectOnly.Get();
+      // To enable measuring how much traffic would be proxied (for
+      // experimentation and planning purposes), treat use of the direct
+      // proxy chain as success only when `kIpPrivacyDirectOnly` is
+      // true. When it is false, we only care about traffic that actually went
+      // through the IP Protection proxies, so a direct chain must be a
+      // fallback.
+      bool protection_success = proxy_chain.is_for_ip_protection() &&
+                                (!proxy_chain.is_direct() || direct_only);
+      if (protection_success) {
         base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached",
                                 total_time);
         // Log specific times for non-zero chains. The zero chain is the
         // default and is still counted in the base `TotalTimeNotCached`.
-        int chain_id = response_info_->proxy_chain.ip_protection_chain_id();
+        int chain_id = proxy_chain.ip_protection_chain_id();
         if (chain_id != ProxyChain::kNotIpProtectionChainId) {
           UmaHistogramTimes(
               base::StrCat({"Net.HttpJob.IpProtection.TotalTimeNotCached.Chain",
@@ -2024,6 +2033,20 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
         base::UmaHistogramMediumTimes(
             "Net.HttpJob.TotalTimeNotCached.Secure.Quic", total_time);
       }
+
+      // Log the result of an IP-Protected request.
+      IpProtectionJobResult ipp_result;
+      if (proxy_chain.is_for_ip_protection()) {
+        if (protection_success) {
+          ipp_result = IpProtectionJobResult::kProtectionSuccess;
+        } else {
+          ipp_result = IpProtectionJobResult::kDirectFallback;
+        }
+      } else {
+        ipp_result = IpProtectionJobResult::kProtectionNotAttempted;
+      }
+      base::UmaHistogramEnumeration("Net.HttpJob.IpProtection.JobResult",
+                                    ipp_result);
     }
   }
 

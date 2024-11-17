@@ -79,9 +79,7 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
     case BLOCKLISTED_POTENTIALLY_UNWANTED:
       return BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
     case BLOCKLISTED_UNKNOWN:
-      NOTREACHED_IN_MIGRATION()
-          << "The unknown state should not be added into prefs.";
-      return BitMapBlocklistState::NOT_BLOCKLISTED;
+      NOTREACHED() << "The unknown state should not be added into prefs.";
   }
 }
 

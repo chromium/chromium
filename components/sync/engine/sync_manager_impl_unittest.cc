@@ -219,7 +219,7 @@ class SyncManagerImplTest : public testing::Test {
   SyncManagerImpl sync_manager_;
   CancelationSignal cancelation_signal_;
   StrictMock<SyncManagerObserverMock> manager_observer_;
-  // Owned by |sync_manager_|.
+  // Owned by `sync_manager_`.
   raw_ptr<StrictMock<SyncEncryptionHandlerObserverMock>> encryption_observer_ =
       nullptr;
   raw_ptr<MockSyncScheduler, DanglingUntriaged> scheduler_ = nullptr;

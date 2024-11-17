@@ -111,6 +111,16 @@ void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
   }
 }
 
+void SnapshotTabHelper::UpdateSnapshotStorageWithImage(UIImage* image) {
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    CHECK(snapshot_manager_);
+    [snapshot_manager_ updateSnapshotStorageWithImage:image];
+  } else {
+    CHECK(legacy_snapshot_manager_);
+    [legacy_snapshot_manager_ updateSnapshotStorageWithImage:image];
+  }
+}
+
 UIImage* SnapshotTabHelper::GenerateSnapshotWithoutOverlays() {
   if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
     CHECK(snapshot_manager_);

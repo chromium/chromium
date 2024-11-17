@@ -258,15 +258,15 @@ TEST_F(H264RateControllerTest, RunH264RateController2TemporalLayersTest) {
   constexpr RateControllerTestValues kExpectedValuesLayer02 = {
       false, 26666, 1387, 25279, 4166, 15.0f, 15.1f, 6344, 5};
   constexpr RateControllerTestValues kExpectedValuesLayer12 = {
-      false, 40000, 16633, 23367, 20801, 15.0f, 15.1f, 21928, 41};
+      false, 40000, 16633, 23367, 20801, 15.0f, 15.1f, 3214, 41};
   constexpr int kExpectedIntraFrameQP2 = 34;
   constexpr int kExpectedInterFrameQP2 = 29;
   constexpr RateControllerTestValues kExpectedValuesLayer03 = {
-      false, 26666, 0, 26666, 2000, 15.0f, 15.1f, 7569, 0};
+      false, 26666, 0, 26666, 2000, 15.0f, 15.1f, 8011, 0};
   constexpr RateControllerTestValues kExpectedValuesLayer13 = {
-      false, 40000, 522, 39478, 4690, 15.0f, 15.1f, 34775, 1};
+      false, 40000, 522, 39478, 4690, 15.0f, 15.1f, 4821, 1};
   constexpr int kExpectedIntraFrameQP3 = 34;
-  constexpr int kExpectedInterFrameQP3 = 43;
+  constexpr int kExpectedInterFrameQP3 = 44;
 
   rate_controller_settings_.num_temporal_layers = 2;
   rate_controller_settings_.layer_settings[0].avg_bitrate =

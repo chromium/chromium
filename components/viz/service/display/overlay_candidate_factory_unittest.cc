@@ -650,7 +650,9 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
                gfx::Vector2dF(1, 1), gfx::PointF(0, 0), gfx::RectF(), false,
                1.0);
 
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*> filter_map;
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
+      filter_map;
   // The actual filter operation doesn't matter in this case.
   cc::FilterOperations filter_op;
   filter_map.insert({render_pass_id, &filter_op});

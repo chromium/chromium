@@ -187,32 +187,31 @@ public final class Ui2Locators {
      * Locates the node(s) having a text string that contains a substring.
      *
      * @param subText Substring to search in the text field.
-     * @return        A locator that will find node(s) with text that contains the given string.
-     *
+     * @return A locator that will find node(s) with text that contains the given string.
      * @see <a
-     *         href="https://developer.android.com/reference/android/widget/TextView.html#getText()">getText</a>
+     *     href="https://developer.android.com/reference/android/widget/TextView.html#getText()">getText</a>
      */
     public static IUi2Locator withTextContaining(@NonNull String subText) {
-        return new BySelectorUi2Locator((By.textContains(subText)));
+        return new BySelectorUi2Locator(By.textContains(subText));
     }
 
     /**
      * Locates the node(s) having a class name that matches a regex.
      *
      * @param regex Regular expression for the class name.
-     * @return      A locator that will find node(s) with class name that matches
-     *              the given regular expression.
+     * @return A locator that will find node(s) with class name that matches the given regular
+     *     expression.
      */
     public static IUi2Locator withClassRegex(@NonNull String regex) {
-        return new BySelectorUi2Locator((By.clazz(Pattern.compile(regex))));
+        return new BySelectorUi2Locator(By.clazz(Pattern.compile(regex)));
     }
 
     /**
      * Locates the ith node(s) found by another locator.
      *
-     * @param index   The value of i.
+     * @param index The value of i.
      * @param locator First locator in the chain.
-     * @return        A locator that will find ith node in the results of locator.
+     * @return A locator that will find ith node in the results of locator.
      */
     public static IUi2Locator withIndex(int index, @NonNull IUi2Locator locator) {
         return new IndexUi2Locator(index, locator);
@@ -253,14 +252,14 @@ public final class Ui2Locators {
     }
 
     /**
-     * This converts the integer resource ids to string resource entry names so
-     * that UIAutomator can be used to located them.
+     * This converts the integer resource ids to string resource entry names so that UIAutomator can
+     * be used to located them.
      *
      * @param ids The layout resource id of the corresponding view node.
-     * @return    Array of string resource entry names for ids.
+     * @return Array of string resource entry names for ids.
      */
     private static String[] getResourceEntryNames(@IdRes int... ids) {
-        String[] names = new String[(ids.length)];
+        String[] names = new String[ids.length];
         for (int i = 0; i < ids.length; i++) {
             names[i] = getResourceEntryName(ids[i]);
         }

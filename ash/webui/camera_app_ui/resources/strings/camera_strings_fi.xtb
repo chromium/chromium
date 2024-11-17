@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR-koodi</translation>
 <translation id="2244252133441425811">Ota videon FPS-valitsin käyttöön</translation>
 <translation id="2271433936731426666">Ota käyttöön täysikokoinen videotilasto</translation>
-<translation id="2281736597583450397">Näet tarkempia yksityiskohtia parannetulla zoomauksella</translation>
 <translation id="2320741269052147773">Panoroi vasemmalle</translation>
 <translation id="2360840973209616515">Järjestelmänvalvoja ylläpitää kamerasovellusta.
         Pyydä lisätietoja järjestelmänvalvojalta.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Loitonna</translation>
 <translation id="5976160379964388480">Muut</translation>
 <translation id="6073451960410192870">Lopeta tallennus</translation>
-<translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6197807149213783179">Tallenna sisällönkuvaustiedot</translation>
 <translation id="6233780560267770709">3x3</translation>
 <translation id="6243827288366940320">Kultainen leikkaus</translation>
@@ -122,7 +120,6 @@
 Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai ‑video ja kuvaile ongelmaa (esim. kuva on liian tumma, tai sitä ei ole tarkennettu kohteeseen).</translation>
 <translation id="6519884562954018934">Liity: <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Jaa</translation>
-<translation id="6586509689874700895">Lähennä ensin painamalla <ph name="BUTTON_NAME" />. Kuvan ottamisen jälkeen näet parannetun tarkkuuden.</translation>
 <translation id="659539649712855529"><ph name="CONTENT" /> kopioitu</translation>
 <translation id="6617916774429601017">Näytä kaikki resoluutiot</translation>
 <translation id="6631515515009660915">Peili pois päältä</translation>
@@ -168,7 +165,6 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="8609951387004618906">Avaa <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonin mykistys päälle tai pois päältä. Mykistys on päällä</translation>
-<translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8732462232047530626">Esikatsele sisällönkuvaustiedot</translation>
 <translation id="874854738381978209">Wi-Fi-verkko havaittu.</translation>

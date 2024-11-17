@@ -7,8 +7,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -35,37 +37,6 @@ UIImage* GetEnterpriseIcon() {
   return SymbolWithPalette(
       CustomSymbolWithPointSize(kEnterpriseSymbol, kSymbolsPointSize),
       @[ color ]);
-}
-
-// Returns the text for `_emailView`.
-NSString* GetEmailLabelText(NSString* email, bool managed) {
-  if (!managed) {
-    // Not managed, just the email.
-    return email;
-  }
-  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-    // iPhone, show the label on a separate line.
-    return email;
-  }
-  // TODO(crbug.com/349071774): In Phase 2, display the domain name or
-  // admin-provided company name/icon (when available).
-  // iPad, show the label on the same line.
-  return l10n_util::GetNSStringF(
-      IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_WIDE_SCREEN,
-      base::SysNSStringToUTF16(email));
-}
-
-// Returns the text for `_managementView`, or nil if the view isn't needed
-// at all.
-NSString* GetManagementLabelText(bool managed) {
-  if (!managed) {
-    return nil;
-  }
-  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-    return l10n_util::GetNSString(
-        IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION);
-  }
-  return nil;
 }
 
 UILabel* CreateSingleLineLabel(NSString* text,
@@ -114,6 +85,8 @@ const CGFloat kTextOffset = 2.;
   UIStackView* _textViews;
   // The view containing the google symbol.
   UIImageView* _accountBadgeView;
+  // The data for the snackbar view.
+  IdentitySnackbarMessage* _snackbarMessage;
 }
 
 @end
@@ -121,14 +94,16 @@ const CGFloat kTextOffset = 2.;
 @implementation IdentitySnackbarMessageView
 
 - (instancetype)initWithMessage:(MDCSnackbarMessage*)message
-                 dismissHandler:(MDCSnackbarMessageDismissHandler)handler
+                 dismissHandler:(MDCSnackbarMessageDismissHandler)dismissHandler
                 snackbarManager:(MDCSnackbarManager*)manager {
   self = [super initWithMessage:message
-                 dismissHandler:handler
+                 dismissHandler:dismissHandler
                 snackbarManager:manager];
   if (self) {
     IdentitySnackbarMessage* snackbarMessage =
         (IdentitySnackbarMessage*)message;
+    _snackbarMessage = snackbarMessage;
+    BOOL managed = snackbarMessage.managed;
 
     // Avatar view.
     _avatarView = [[UIImageView alloc] init];
@@ -141,33 +116,30 @@ const CGFloat kTextOffset = 2.;
     [self addSubview:_avatarView];
 
     // Text views.
+    NSString* name = snackbarMessage.name;
+    NSString* signedInText =
+        (name)
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+                  base::SysNSStringToUTF16(name))
+            : l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE);
     _signedInAsView = CreateSingleLineLabel(
-        l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-                                base::SysNSStringToUTF16(snackbarMessage.name)),
-        UIFontTextStyleSubheadline, kInvertedTextPrimaryColor);
+        signedInText, UIFontTextStyleSubheadline, kInvertedTextPrimaryColor);
 
-    _emailView = CreateSingleLineLabel(
-        GetEmailLabelText(snackbarMessage.email, snackbarMessage.managed),
-        UIFontTextStyleFootnote, kInvertedTextSecondaryColor);
-
-    NSString* managementText = GetManagementLabelText(snackbarMessage.managed);
-    if (snackbarMessage.managed && !managementText) {
-      // Show the management message on the same line as the email. This could
-      // be fairly long, so allow the text to wrap once.
-      _emailView.numberOfLines = 2;
-    }
-
-    if (managementText) {
-      // Show the management message on a separate line.
-      _managementView = CreateSingleLineLabel(
-          managementText, UIFontTextStyleFootnote, kInvertedTextSecondaryColor);
+    // Show the management message on a separate line.
+    _managementView = CreateSingleLineLabel(nil, UIFontTextStyleFootnote,
+                                            kInvertedTextSecondaryColor);
+    _emailView = CreateSingleLineLabel(nil, UIFontTextStyleFootnote,
+                                       kInvertedTextSecondaryColor);
+    if (managed) {
+      [self updateManagedLabels];
+    } else {
+      _emailView.text = snackbarMessage.email;
     }
 
     _textViews = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _signedInAsView, _emailView ]];
-    if (_managementView) {
-      [_textViews addArrangedSubview:_managementView];
-    }
+    [_textViews addArrangedSubview:_managementView];
     _textViews.axis = UILayoutConstraintAxisVertical;
     _textViews.distribution = UIStackViewDistributionEqualSpacing;
     _textViews.alignment = UIStackViewAlignmentLeading;
@@ -177,10 +149,8 @@ const CGFloat kTextOffset = 2.;
                               LayoutSides::kLeading | LayoutSides::kTrailing);
     AddSameConstraintsToSides(_emailView, _textViews,
                               LayoutSides::kLeading | LayoutSides::kTrailing);
-    if (_managementView) {
-      AddSameConstraintsToSides(_emailView, _managementView,
-                                LayoutSides::kLeading | LayoutSides::kTrailing);
-    }
+    AddSameConstraintsToSides(_emailView, _managementView,
+                              LayoutSides::kLeading | LayoutSides::kTrailing);
 
     [self addSubview:_textViews];
 
@@ -194,7 +164,6 @@ const CGFloat kTextOffset = 2.;
     _accountBadgeView.isAccessibilityElement = NO;
     [self addSubview:_accountBadgeView];
 
-    UILabel* lastLabel = _managementView ? _managementView : _emailView;
     [NSLayoutConstraint activateConstraints:@[
       // Size constraints
 
@@ -209,7 +178,7 @@ const CGFloat kTextOffset = 2.;
           constraintEqualToConstant:[_signedInAsView intrinsicContentSize]
                                         .height],
 
-      // Vertical counstraints from top to bottom.
+      // Vertical constraints from top to bottom.
       [_avatarView.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.topAnchor
                                       constant:kVerticalPadding],
@@ -221,7 +190,8 @@ const CGFloat kTextOffset = 2.;
       [_signedInAsView.topAnchor constraintEqualToAnchor:_textViews.topAnchor],
       [_emailView.topAnchor constraintEqualToAnchor:_signedInAsView.bottomAnchor
                                            constant:kTextOffset],
-      [_textViews.bottomAnchor constraintEqualToAnchor:lastLabel.bottomAnchor],
+      [_textViews.bottomAnchor
+          constraintEqualToAnchor:_managementView.bottomAnchor],
       [self.bottomAnchor constraintEqualToAnchor:_textViews.bottomAnchor
                                         constant:kVerticalPadding],
       [self.bottomAnchor
@@ -230,7 +200,8 @@ const CGFloat kTextOffset = 2.;
       [self.bottomAnchor
           constraintGreaterThanOrEqualToAnchor:_accountBadgeView.bottomAnchor
                                       constant:kVerticalPadding],
-
+      [_managementView.topAnchor constraintEqualToAnchor:_emailView.bottomAnchor
+                                                constant:kTextOffset],
       // Horizontal constraints from left to right.
 
       [_avatarView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
@@ -247,14 +218,23 @@ const CGFloat kTextOffset = 2.;
           constraintEqualToAnchor:_accountBadgeView.trailingAnchor
                          constant:kHorizontalPadding],
     ]];
-    if (_managementView) {
-      [_managementView.topAnchor constraintEqualToAnchor:_emailView.bottomAnchor
-                                                constant:kTextOffset]
-          .active = YES;
-    }
 
     AddSameCenterYConstraint(self, _avatarView);
     AddSameCenterYConstraint(self, _accountBadgeView);
+
+    if (@available(iOS 17, *)) {
+      if (_snackbarMessage.managed) {
+        NSArray<UITrait>* traits =
+            TraitCollectionSetForTraits(@[ UITraitLayoutDirection.class ]);
+        __weak __typeof(self) weakSelf = self;
+        UITraitChangeHandler handler =
+            ^(id<UITraitEnvironment> traitEnvironment,
+              UITraitCollection* previousCollection) {
+              [weakSelf updateLabels];
+            };
+        [self registerForTraitChanges:traits withHandler:handler];
+      }
+    }
   }
   return self;
 }
@@ -272,6 +252,52 @@ const CGFloat kTextOffset = 2.;
     [self dismissWithAction:nil userInitiated:YES];
   }
   return r;
+}
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (self.traitCollection.horizontalSizeClass !=
+      previousTraitCollection.horizontalSizeClass) {
+    [self updateManagedLabels];
+  }
+}
+#endif
+
+#pragma mark - Private
+
+// Reset the 2nd and 3rd labels if the identity is managed. Do nothing if it is
+// not.
+- (void)updateLabels {
+  if (_snackbarMessage.managed) {
+    [self updateManagedLabels];
+  }
+}
+
+// Resets the 2nd and 3rd labels assuming the identity is managed.
+- (void)updateManagedLabels {
+  BOOL useShortLabels =
+      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone &&
+      UIDeviceOrientationIsPortrait(UIDevice.currentDevice.orientation);
+  NSString* email = _snackbarMessage.email;
+  _emailView.text = useShortLabels
+                        ? email
+                        : l10n_util::GetNSStringF(
+                              IDS_IOS_ENTERPRISE_SWITCH_TO_MANAGED_WIDE_SCREEN,
+                              base::SysNSStringToUTF16(email));
+
+  _managementView.text =
+      useShortLabels ? l10n_util::GetNSString(
+                           IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION)
+                     : nil;
+  // In case there is no third label, the second might be long. Let’s display it
+  // on two lines if needed.
+  _emailView.numberOfLines = useShortLabels ? 1 : 2;
+  _managementView.hidden = !useShortLabels;
 }
 
 @end

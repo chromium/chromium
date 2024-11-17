@@ -17,11 +17,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_background_blur.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_metadata.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
@@ -635,6 +638,34 @@ TEST_F(VideoFrameTest,
   // externally allocated memory  when close has not been called before.
   EXPECT_EQ(scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0),
             initial_external_memory);
+}
+
+TEST_F(VideoFrameTest, MetadataBackgroundBlurIsExposedCorrectly) {
+  V8TestingScope scope;
+
+  scoped_refptr<media::VideoFrame> media_frame =
+      CreateDefaultBlackMediaVideoFrame();
+  auto* blink_frame =
+      CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
+
+  // Background blur not populated when it isn't present on `media_frame`.
+  EXPECT_EQ(
+      blink_frame->metadata(scope.GetExceptionState())->hasBackgroundBlur(),
+      false);
+
+  // Background blur enabled is passed through.
+  media_frame->metadata().background_blur = media::EffectInfo{.enabled = true};
+  EXPECT_EQ(blink_frame->metadata(scope.GetExceptionState())
+                ->backgroundBlur()
+                ->enabled(),
+            true);
+
+  // Background blur disabled is passed through.
+  media_frame->metadata().background_blur = media::EffectInfo{.enabled = false};
+  EXPECT_EQ(blink_frame->metadata(scope.GetExceptionState())
+                ->backgroundBlur()
+                ->enabled(),
+            false);
 }
 
 }  // namespace

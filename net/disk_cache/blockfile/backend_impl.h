@@ -63,6 +63,7 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   // mask can be used to limit the usable size of the hash table, for testing.
   BackendImpl(const base::FilePath& path,
               uint32_t mask,
+              scoped_refptr<BackendCleanupTracker> cleanup_tracker,
               const scoped_refptr<base::SingleThreadTaskRunner>& cache_thread,
               net::CacheType cache_type,
               net::NetLog* net_log);

@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/sessions/session_id.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -145,7 +144,7 @@ api::sessions::Session CreateSessionModelHelper(
     // TODO(crbug.com/40757179): Implement group support.
     NOTIMPLEMENTED();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return session_struct;
 }
@@ -330,10 +329,10 @@ SessionsGetDevicesFunction::CreateWindowModel(
       type = api::windows::WindowType::kDevtools;
       break;
     case sessions::SessionWindow::TYPE_APP_POPUP:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case sessions::SessionWindow::TYPE_CUSTOM_TAB:
 #endif
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   api::windows::WindowState state = api::windows::WindowState::kNone;
@@ -611,7 +610,7 @@ ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
     return RespondNow(Error(kRestoreInIncognitoError));
 
   if (!ExtensionTabUtil::IsTabStripEditable())
-    return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
 
   if (!params->session_id)
     return RespondNow(RestoreMostRecentlyClosed(browser));

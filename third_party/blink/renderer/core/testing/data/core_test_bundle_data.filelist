@@ -323,7 +323,7 @@ testing/data/notifications/48x48.png
 testing/data/notifications/500x500.png
 testing/data/notifications/file.txt
 testing/data/orientation-frame-detach.html
-testing/data/origin-trial-dummy.html
+testing/data/origin-trial-enabled.html
 testing/data/overflow-hidden.html
 testing/data/overflow-scrolling.html
 testing/data/overscroll/div-overscroll.html

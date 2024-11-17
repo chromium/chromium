@@ -56,8 +56,8 @@ std::vector<T> MakeSingleItemVec(T item) {
 }
 
 fuchsia::net::interfaces::Properties DefaultInterfaceProperties(
-    fuchsia::hardware::network::DeviceClass device_class =
-        fuchsia::hardware::network::DeviceClass::ETHERNET) {
+    fuchsia::hardware::network::PortClass device_class =
+        fuchsia::hardware::network::PortClass::ETHERNET) {
   // For most tests a live interface with an IPv4 address and ethernet class is
   // sufficient.
   fuchsia::net::interfaces::Properties properties;
@@ -66,7 +66,7 @@ fuchsia::net::interfaces::Properties DefaultInterfaceProperties(
   properties.set_online(true);
   properties.set_has_default_ipv4_route(true);
   properties.set_has_default_ipv6_route(false);
-  properties.set_device_class(fuchsia::net::interfaces::DeviceClass::WithDevice(
+  properties.set_port_class(fuchsia::net::interfaces::PortClass::WithDevice(
       std::move(device_class)));
   properties.set_addresses(MakeSingleItemVec(
       InterfaceAddressFrom(kDefaultIPv4Address, kDefaultIPv4Prefix)));
@@ -119,8 +119,8 @@ TEST_F(NetworkInterfaceCacheTest, ChangeInterface) {
 
   fuchsia::net::interfaces::Properties properties;
   properties.set_id(kDefaultInterfaceId);
-  properties.set_device_class(
-      fuchsia::net::interfaces::DeviceClass::WithLoopback(
+  properties.set_port_class(
+      fuchsia::net::interfaces::PortClass::WithLoopback(
           fuchsia::net::interfaces::Empty()));
   properties.set_addresses({});
 

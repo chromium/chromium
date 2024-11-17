@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -269,11 +270,11 @@ void DeskButtonContainer::HandleLocaleChange() {
 void DeskButtonContainer::MaybeShowContextMenu(views::View* source,
                                                ui::LocatedEvent* event) {
   if (!desk_button_->is_activated()) {
-    ui::MenuSourceType source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
+    ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kMouse;
     if (event->type() == ui::EventType::kGestureLongPress) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_PRESS;
+      source_type = ui::mojom::MenuSourceType::kLongPress;
     } else if (event->type() == ui::EventType::kGestureLongTap) {
-      source_type = ui::MenuSourceType::MENU_SOURCE_LONG_TAP;
+      source_type = ui::mojom::MenuSourceType::kLongTap;
     }
     gfx::Point location_in_screen(event->location());
     View::ConvertPointToScreen(source, &location_in_screen);
@@ -282,6 +283,10 @@ void DeskButtonContainer::MaybeShowContextMenu(views::View* source,
 
   event->SetHandled();
   event->StopPropagation();
+}
+
+void DeskButtonContainer::InitializeAccessibleProperties() {
+  desk_button()->UpdateAccessiblePreviousAndNextFocus();
 }
 
 BEGIN_METADATA(DeskButtonContainer)

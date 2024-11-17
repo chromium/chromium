@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,7 +57,7 @@ bool BruschettaUninstallerView::Accept() {
   GetWidget()->UpdateWindowTitle();
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
 
-  bruschetta::BruschettaService::GetForProfile(profile_)->RemoveVm(
+  bruschetta::BruschettaServiceFactory::GetForProfile(profile_)->RemoveVm(
       guest_id_,
       base::BindOnce(&BruschettaUninstallerView::UninstallBruschettaFinished,
                      weak_ptr_factory_.GetWeakPtr()));

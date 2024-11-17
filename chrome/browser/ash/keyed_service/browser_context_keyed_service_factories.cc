@@ -39,14 +39,14 @@
 #include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
 #include "chrome/browser/ash/crosapi/persistent_forced_extension_keep_alive.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
-#include "chrome/browser/ash/crostini/crostini_export_import.h"
-#include "chrome/browser/ash/crostini/crostini_installer.h"
+#include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
+#include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/ash/crostini/crostini_metrics_service.h"
-#include "chrome/browser/ash/crostini/crostini_package_service.h"
-#include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
-#include "chrome/browser/ash/crostini/crostini_shared_devices.h"
-#include "chrome/browser/ash/crostini/crostini_upgrader.h"
-#include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
+#include "chrome/browser/ash/crostini/crostini_package_service_factory.h"
+#include "chrome/browser/ash/crostini/crostini_port_forwarder_factory.h"
+#include "chrome/browser/ash/crostini/crostini_shared_devices_factory.h"
+#include "chrome/browser/ash/crostini/crostini_upgrader_factory.h"
+#include "chrome/browser/ash/crostini/throttle/crostini_throttle_factory.h"
 #include "chrome/browser/ash/data_migration/data_migration_factory.h"
 #include "chrome/browser/ash/early_prefs/early_prefs_export_service_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
@@ -66,7 +66,6 @@
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/kcer/nssdb_migration/pkcs12_migrator.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_lifetime_manager_factory.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
@@ -113,15 +112,13 @@
 #include "chrome/browser/ash/sparky/sparky_manager_service_factory.h"
 #include "chrome/browser/ash/sync/sync_appsync_service_factory.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
-#include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/ash/tether/tether_service_factory.h"
-#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_factory_ash.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
-#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
@@ -170,14 +167,14 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   crosapi::PersistentForcedExtensionKeepAliveFactory::GetInstance();
   CrosSpeechRecognitionServiceFactory::EnsureFactoryBuilt();
   crostini::AnsibleManagementServiceFactory::GetInstance();
-  crostini::CrostiniExportImport::EnsureFactoryBuilt();
-  crostini::CrostiniInstaller::EnsureFactoryBuilt();
+  crostini::CrostiniExportImportFactory::GetInstance();
+  crostini::CrostiniInstallerFactory::GetInstance();
   crostini::CrostiniMetricsService::Factory::GetInstance();
-  crostini::CrostiniPackageService::EnsureFactoryBuilt();
-  crostini::CrostiniPortForwarder::EnsureFactoryBuilt();
-  crostini::CrostiniSharedDevices::EnsureFactoryBuilt();
-  crostini::CrostiniThrottle::EnsureFactoryBuilt();
-  crostini::CrostiniUpgrader::EnsureFactoryBuilt();
+  crostini::CrostiniPackageServiceFactory::GetInstance();
+  crostini::CrostiniPortForwarderFactory::GetInstance();
+  crostini::CrostiniSharedDevicesFactory::GetInstance();
+  crostini::CrostiniThrottleFactory::GetInstance();
+  crostini::CrostiniUpgraderFactory::GetInstance();
   CupsPrintersManagerFactory::GetInstance();
   CupsPrintJobManagerFactory::GetInstance();
 #if BUILDFLAG(USE_CUPS)
@@ -208,7 +205,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   kcer::Pkcs12MigratorFactory::GetInstance();
   KerberosCredentialsManagerFactory::GetInstance();
   KioskAppUpdateServiceFactory::GetInstance();
-  LockScreenAppsFactory::GetInstance();
   LockScreenReauthManagerFactory::GetInstance();
   LockedSessionWindowTrackerFactory::GetInstance();
   login::SecurityTokenSessionControllerFactory::GetInstance();
@@ -259,13 +255,11 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   SyncAppsyncServiceFactory::GetInstance();
   SyncedPrintersManagerFactory::GetInstance();
   SyncErrorNotifierFactory::GetInstance();
-  SyncMojoServiceFactoryAsh::GetInstance();
   SystemLiveCaptionServiceFactory::GetInstance();
   SystemWebAppManagerFactory::GetInstance();
   tether::TetherServiceFactory::GetInstance();
   TokenHandleFetcher::EnsureFactoryBuilt();
-  TrustedVaultBackendServiceFactoryAsh::GetInstance();
-  TtsEngineExtensionObserverChromeOS::EnsureFactoryBuilt();
+  TtsEngineExtensionObserverChromeOSFactory::GetInstance();
 }
 
 }  // namespace ash

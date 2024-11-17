@@ -1585,19 +1585,20 @@ TEST_F(DiskCacheEntryTest, MemoryOnlyEnumerationWithSparseEntries) {
 void VerifySparseIO(disk_cache::Entry* entry,
                     int64_t offset,
                     net::IOBuffer* buf_1,
-                    int size,
+                    size_t size,
                     net::IOBuffer* buf_2) {
   net::TestCompletionCallback cb;
 
   memset(buf_2->data(), 0, size);
-  int ret = entry->ReadSparseData(offset, buf_2, size, cb.callback());
+  const auto size_i = base::checked_cast<int>(size);
+  int ret = entry->ReadSparseData(offset, buf_2, size_i, cb.callback());
   EXPECT_EQ(0, cb.GetResult(ret));
 
-  ret = entry->WriteSparseData(offset, buf_1, size, cb.callback());
-  EXPECT_EQ(size, cb.GetResult(ret));
+  ret = entry->WriteSparseData(offset, buf_1, size_i, cb.callback());
+  EXPECT_EQ(size_i, cb.GetResult(ret));
 
-  ret = entry->ReadSparseData(offset, buf_2, size, cb.callback());
-  EXPECT_EQ(size, cb.GetResult(ret));
+  ret = entry->ReadSparseData(offset, buf_2, size_i, cb.callback());
+  EXPECT_EQ(size_i, cb.GetResult(ret));
 
   EXPECT_EQ(0, memcmp(buf_1->data(), buf_2->data(), size));
 }
@@ -1607,13 +1608,14 @@ void VerifySparseIO(disk_cache::Entry* entry,
 void VerifyContentSparseIO(disk_cache::Entry* entry,
                            int64_t offset,
                            char* buffer,
-                           int size) {
+                           size_t size) {
   net::TestCompletionCallback cb;
 
   auto buf_1 = base::MakeRefCounted<net::IOBufferWithSize>(size);
   memset(buf_1->data(), 0, size);
-  int ret = entry->ReadSparseData(offset, buf_1.get(), size, cb.callback());
-  EXPECT_EQ(size, cb.GetResult(ret));
+  const auto size_i = base::checked_cast<int>(size);
+  int ret = entry->ReadSparseData(offset, buf_1.get(), size_i, cb.callback());
+  EXPECT_EQ(size_i, cb.GetResult(ret));
   EXPECT_EQ(0, memcmp(buf_1->data(), buffer, size));
 }
 
@@ -1622,7 +1624,7 @@ void DiskCacheEntryTest::BasicSparseIO() {
   disk_cache::Entry* entry;
   ASSERT_THAT(CreateEntry(key, &entry), IsOk());
 
-  const int kSize = 2048;
+  static constexpr size_t kSize = 2048;
   auto buf_1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   auto buf_2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   CacheTestFillBuffer(buf_1->data(), kSize, false);
@@ -1634,7 +1636,7 @@ void DiskCacheEntryTest::BasicSparseIO() {
   VerifySparseIO(entry, 0x400000, buf_1.get(), kSize, buf_2.get());
 
   // Write at offset 0x800000000 (32 GB).
-  VerifySparseIO(entry, 0x800000000LL, buf_1.get(), kSize, buf_2.get());
+  VerifySparseIO(entry, 0x800000000ULL, buf_1.get(), kSize, buf_2.get());
 
   entry->Close();
 
@@ -1642,7 +1644,7 @@ void DiskCacheEntryTest::BasicSparseIO() {
   ASSERT_THAT(OpenEntry(key, &entry), IsOk());
   VerifyContentSparseIO(entry, 0, buf_1->data(), kSize);
   VerifyContentSparseIO(entry, 0x400000, buf_1->data(), kSize);
-  VerifyContentSparseIO(entry, 0x800000000LL, buf_1->data(), kSize);
+  VerifyContentSparseIO(entry, 0x800000000ULL, buf_1->data(), kSize);
   entry->Close();
 }
 
@@ -1663,7 +1665,7 @@ void DiskCacheEntryTest::HugeSparseIO() {
   ASSERT_THAT(CreateEntry(key, &entry), IsOk());
 
   // Write 1.2 MB so that we cover multiple entries.
-  const int kSize = 1200 * 1024;
+  static constexpr size_t kSize = 1200 * 1024;
   auto buf_1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   auto buf_2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   CacheTestFillBuffer(buf_1->data(), kSize, false);
@@ -2036,7 +2038,7 @@ TEST_F(DiskCacheEntryTest, MemoryOnlyMisalignedSparseIO) {
   SetMemoryOnlyMode();
   InitCache();
 
-  const int kSize = 8192;
+  static constexpr size_t kSize = 8192;
   auto buf_1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   auto buf_2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   CacheTestFillBuffer(buf_1->data(), kSize, false);
@@ -2046,7 +2048,7 @@ TEST_F(DiskCacheEntryTest, MemoryOnlyMisalignedSparseIO) {
   ASSERT_THAT(CreateEntry(key, &entry), IsOk());
 
   // This loop writes back to back starting from offset 0 and 9000.
-  for (int i = 0; i < kSize; i += 1024) {
+  for (size_t i = 0; i < kSize; i += 1024) {
     auto buf_3 =
         base::MakeRefCounted<net::WrappedIOBuffer>(buf_1->span().subspan(i));
     VerifySparseIO(entry, i, buf_3.get(), 1024, buf_2.get());

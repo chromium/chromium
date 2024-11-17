@@ -22,6 +22,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/views/view.h"
 
+class SidePanelEntryScope;
 class SidePanelEntryObserver;
 enum class SidePanelEntryHideReason;
 
@@ -29,6 +30,9 @@ enum class SidePanelEntryHideReason;
 // a SidePanelRegistry (either a per-tab or a per-window registry).
 class SidePanelEntry final : public ui::PropertyHandler {
  public:
+  using CreateContentCallback =
+      base::RepeatingCallback<std::unique_ptr<views::View>(
+          SidePanelEntryScope&)>;
   using Id = SidePanelEntryId;
   using Key = SidePanelEntryKey;
 
@@ -37,17 +41,14 @@ class SidePanelEntry final : public ui::PropertyHandler {
   // logged on button click.
   SidePanelEntry(
       Id id,
-      base::RepeatingCallback<std::unique_ptr<views::View>()>
-          create_content_callback,
+      CreateContentCallback create_content_callback,
       std::optional<base::RepeatingCallback<GURL()>>
           open_in_new_tab_url_callback = std::nullopt,
       std::optional<base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>>
           more_info_callback = std::nullopt);
   // Constructor used for extensions. Extensions don't have 'Open in New Tab'
   // functionality.
-  SidePanelEntry(Key key,
-                 base::RepeatingCallback<std::unique_ptr<views::View>()>
-                     create_content_callback);
+  SidePanelEntry(Key key, CreateContentCallback create_content_callback);
   SidePanelEntry(const SidePanelEntry&) = delete;
   SidePanelEntry& operator=(const SidePanelEntry&) = delete;
   ~SidePanelEntry() override;
@@ -91,6 +92,8 @@ class SidePanelEntry final : public ui::PropertyHandler {
   // incorrectly.
   void ResetLoadTimestamp();
 
+  void set_scope(SidePanelEntryScope* scope) { scope_ = scope; }
+
   base::WeakPtr<SidePanelEntry> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -99,8 +102,10 @@ class SidePanelEntry final : public ui::PropertyHandler {
   const Key key_;
   std::unique_ptr<views::View> content_view_;
 
-  base::RepeatingCallback<std::unique_ptr<views::View>()>
-      create_content_callback_;
+  // Scope of this entry, will outlive the entry and its content.
+  raw_ptr<SidePanelEntryScope> scope_ = nullptr;
+
+  CreateContentCallback create_content_callback_;
 
   // If this returns an empty GURL, the 'Open in New Tab' button is hidden.
   base::RepeatingCallback<GURL()> open_in_new_tab_url_callback_;

@@ -13,8 +13,6 @@ if (use_blink) {
       "fingerprinting_protection_observer.h",
       "fingerprinting_protection_page_activation_throttle.cc",
       "fingerprinting_protection_page_activation_throttle.h",
-      "fingerprinting_protection_profile_interaction_manager.cc",
-      "fingerprinting_protection_profile_interaction_manager.h",
       "fingerprinting_protection_ruleset_publisher.cc",
       "fingerprinting_protection_ruleset_publisher.h",
       "fingerprinting_protection_web_contents_helper.cc",
@@ -36,12 +34,15 @@ if (use_blink) {
       "//components/subresource_filter/core/browser",
       "//components/subresource_filter/core/mojom",
       "//content/public/browser",
+      "//mojo/public/cpp/bindings",
       "//services/metrics/public/cpp:ukm_builders",
     ]
     deps = [
       "//components/content_settings/browser",
+      "//components/fingerprinting_protection_filter/common:exceptions",
       "//components/subresource_filter/core/common",
       "//net",
+      "//services/metrics/public/cpp:metrics_cpp",
       "//url",
     ]
   }
@@ -68,7 +69,6 @@ if (use_blink) {
     sources = [
       "fingerprinting_protection_child_navigation_throttle_unittest.cc",
       "fingerprinting_protection_page_activation_throttle_unittest.cc",
-      "fingerprinting_protection_profile_interaction_manager_unittest.cc",
       "fingerprinting_protection_web_contents_helper_unittest.cc",
       "throttle_manager_unittest.cc",
     ]
@@ -87,6 +87,8 @@ if (use_blink) {
       "//components/url_pattern_index/proto:url_pattern_index",
       "//content/public/browser",
       "//content/test:test_support",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//testing/gmock",
       "//testing/gtest",
       "//url",
     ]

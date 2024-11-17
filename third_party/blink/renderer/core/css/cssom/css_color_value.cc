@@ -151,12 +151,10 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
     }
   }
 
-  DCHECK(parsed_value->IsIdentifierValue());
-
-  const char* value_name =
-      getValueName(To<CSSIdentifierValue>(parsed_value)->GetValueID());
-  if (const NamedColor* named_color =
-          FindColor(value_name, static_cast<wtf_size_t>(strlen(value_name)))) {
+  const CSSValueID value_id =
+      To<CSSIdentifierValue>(parsed_value)->GetValueID();
+  std::string_view value_name = GetCSSValueName(value_id);
+  if (const NamedColor* named_color = FindColor(value_name)) {
     Color color = Color::FromRGBA32(named_color->argb_value);
 
     return MakeGarbageCollected<V8UnionCSSColorValueOrCSSStyleValue>(
@@ -165,7 +163,7 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
   }
 
   return MakeGarbageCollected<V8UnionCSSColorValueOrCSSStyleValue>(
-      CSSKeywordValue::Create(css_text));
+      MakeGarbageCollected<CSSKeywordValue>(value_id));
 }
 
 }  // namespace blink

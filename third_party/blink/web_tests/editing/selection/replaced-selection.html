@@ -1,0 +1,79 @@
+<!doctype html>
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+body {
+  font: 20px/1 Ahem;
+  margin: 0;
+  inline-size: 400px;
+  block-size: 200px;
+  text-orientation: sideways-right;
+}
+
+.replaced1 {
+  inline-size: 20px;
+  block-size: 50px;
+  background: green;
+}
+
+.replaced2 {
+  inline-size: 20px;
+  block-size: 100px;
+  background: purple;
+}
+</style>
+<body>
+First line<br>
+<img class="replaced1"> Second line <img class="replaced2">.
+<script>
+function selectStuff(x1, y1, x2, y2) {
+    document.body.offsetLeft;
+    if (eventSender) {
+        eventSender.mouseMoveTo(x1, y1);
+        eventSender.mouseDown();
+        eventSender.mouseMoveTo(x1, y1);
+        eventSender.mouseMoveTo(x2, y2);
+        eventSender.mouseUp();
+    }
+}
+
+const body = document.body;
+
+test(() => {
+  body.style.writingMode = 'vertical-lr';
+  body.offsetHeight;
+  selectStuff(10, 15, 30, 15);
+  // (BODY, 4) is just after the first IMG.
+  assert_equals(getSelection().focusNode, body);
+  assert_equals(4, getSelection().focusOffset);
+}, 'Selection in vertical-lr');
+
+test(() => {
+  body.style.writingMode = 'sideways-lr';
+  body.offsetHeight;
+  selectStuff(10, 600 - 15, 30, 600 - 15);
+  // (BODY, 4) is just after the first IMG.
+  assert_equals(getSelection().focusNode, body);
+  assert_equals(4, getSelection().focusOffset);
+}, 'Selection in sideways-lr');
+
+test(() => {
+  body.style.writingMode = 'vertical-rl';
+  body.offsetHeight;
+  selectStuff(790, 15, 680, 15);
+  // (BODY, 4) is just after the first IMG.
+  assert_equals(getSelection().focusNode, body);
+  assert_equals(4, getSelection().focusOffset);
+}, 'Selection in vertical-rl');
+
+test(() => {
+  body.style.writingMode = 'sideways-rl';
+  body.offsetHeight;
+  selectStuff(790, 15, 680, 15);
+  // (BODY, 4) is just after the first IMG.
+  assert_equals(getSelection().focusNode, body);
+  assert_equals(4, getSelection().focusOffset);
+}, 'Selection in sideways-rl');
+</script>
+</body>

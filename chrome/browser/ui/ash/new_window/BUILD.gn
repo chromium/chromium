@@ -10,8 +10,6 @@ static_library("new_window") {
   sources = [
     "chrome_new_window_client.cc",
     "chrome_new_window_client.h",
-    "chrome_new_window_delegate_provider.cc",
-    "chrome_new_window_delegate_provider.h",
   ]
 
   public_deps = [
@@ -30,6 +28,7 @@ static_library("new_window") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps",
@@ -38,6 +37,7 @@ static_library("new_window") {
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/chromeos/network",
     "//chrome/browser/extensions",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf",
@@ -45,6 +45,7 @@ static_library("new_window") {
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/file_manager:constants",
     "//components/services/app_service",
     "//components/sessions",
     "//components/url_formatter",
@@ -74,6 +75,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",

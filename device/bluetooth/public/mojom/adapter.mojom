@@ -14,8 +14,10 @@ import "device/bluetooth/public/mojom/gatt_service_error_code.mojom";
 // connection request.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync
-// with the NearbyConnectionsConnectResult enum in
-// src/tools/metrics/histograms/metadata/nearby/enums.xml.
+// with the NearbyConnectionsConnectResult UMA enum defined in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyConnectionsConnectResult)
 enum ConnectResult {
   SUCCESS,
   AUTH_CANCELED,
@@ -41,6 +43,7 @@ enum ConnectResult {
   UNEXPECTED_STATE,
   SOCKET,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyConnectionsConnectResult)
 
 union LocalCharacteristicReadResult {
   GattServiceErrorCode error_code;

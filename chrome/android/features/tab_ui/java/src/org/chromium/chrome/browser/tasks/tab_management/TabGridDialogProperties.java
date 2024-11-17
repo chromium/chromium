@@ -34,6 +34,8 @@ class TabGridDialogProperties {
             new PropertyModel.WritableObjectPropertyKey<>(true);
     public static final PropertyModel.WritableIntPropertyKey CONTENT_TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey APP_HEADER_HEIGHT =
+            new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey PRIMARY_COLOR =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey DIALOG_BACKGROUND_COLOR =
@@ -46,6 +48,8 @@ class TabGridDialogProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey SHOW_SHARE_BUTTON =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey SHARE_BUTTON_STRING_RES =
+            new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey SHOW_IMAGE_TILES =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<TabGridDialogView.VisibilityListener>
@@ -105,6 +109,8 @@ class TabGridDialogProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey FORCE_ANIMATION_TO_FINISH =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_CONTENT_SENSITIVE =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BINDING_TOKEN,
@@ -136,8 +142,10 @@ class TabGridDialogProperties {
                 IS_DIALOG_VISIBLE,
                 IS_SHARE_SHEET_VISIBLE,
                 SHOW_SHARE_BUTTON,
+                SHARE_BUTTON_STRING_RES,
                 SHOW_IMAGE_TILES,
                 CONTENT_TOP_MARGIN,
+                APP_HEADER_HEIGHT,
                 IS_MAIN_CONTENT_VISIBLE,
                 INITIAL_SCROLL_INDEX,
                 TAB_GROUP_COLOR_ID,
@@ -147,5 +155,6 @@ class TabGridDialogProperties {
                 HAIRLINE_COLOR,
                 HAIRLINE_VISIBILITY,
                 FORCE_ANIMATION_TO_FINISH,
+                IS_CONTENT_SENSITIVE,
             };
 }

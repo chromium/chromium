@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/profiler/process_type.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
@@ -21,6 +20,7 @@
 #include "chrome/utility/services.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
@@ -90,7 +90,7 @@ void ChromeContentUtilityClient::PostIOThreadCreated(
   io_thread_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
-                     base::ProfilerThreadType::kIo));
+                     sampling_profiler::ProfilerThreadType::kIo));
 }
 
 void ChromeContentUtilityClient::RegisterIOThreadServices(

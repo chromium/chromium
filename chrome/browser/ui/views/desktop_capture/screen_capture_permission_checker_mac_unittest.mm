@@ -15,7 +15,9 @@ using ::testing::Return;
 class ScreenCapturePermissionCheckerMacTest : public ::testing::Test {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kDesktopCapturePermissionChecker);
+    // Default-enabled for 14.4+. Manually enabled for 14.3- for coverage.
+    scoped_feature_list_.InitAndEnableFeature(
+        kDesktopCapturePermissionCheckerPreMacos14_4);
   }
 
   // `permission_checker_` needs to be initialized after `EXPECT_CALL`

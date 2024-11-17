@@ -4,6 +4,8 @@
 
 // Subpages
 import './ai_page/ai_tab_organization_subpage.js';
+import './ai_page/history_search_page.js';
+import './ai_page/offer_writing_help_page.js';
 import './appearance_page/appearance_fonts_page.js';
 import './autofill_page/autofill_section.js';
 import './autofill_page/autofill_prediction_improvements_section.js';
@@ -14,7 +16,6 @@ import './autofill_page/payments_section.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './search_engines_page/search_engines_page.js';
 import './simple_confirmation_dialog.js';
-import './people_page/history_search_page.js';
 import './privacy_page/anti_abuse_page.js';
 import './privacy_page/privacy_guide/privacy_guide_description_item.js';
 import './privacy_page/privacy_guide/privacy_guide_dialog.js';
@@ -110,8 +111,11 @@ export {SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';
 export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.js';
 // </if>
 
+export {SettingsAiCompareSubpageElement} from './ai_page/ai_compare_subpage.js';
 export {SettingsAiTabOrganizationSubpageElement} from './ai_page/ai_tab_organization_subpage.js';
-export {FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
+export {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
+export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
+export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
 export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';
@@ -199,6 +203,7 @@ export {CredentialManagementDialogPage, SettingsSecurityKeysCredentialManagement
 export {SecurityKeysPhonesSubpageElement} from './privacy_page/security_keys_phones_subpage.js';
 export {ResetDialogPage, SettingsSecurityKeysResetDialogElement} from './privacy_page/security_keys_reset_dialog.js';
 export {SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from './privacy_page/security_keys_set_pin_dialog.js';
+export {SecurityKeysSubpageElement} from './privacy_page/security_keys_subpage.js';
 export {HttpsFirstModeSetting, SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
 export {SettingsPrivacySandboxAdMeasurementSubpageElement} from './privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_sandbox/privacy_sandbox_fledge_subpage.js';
@@ -243,7 +248,9 @@ export {SiteDetailsPermissionDeviceEntryElement} from './site_settings/site_deta
 export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
-export {ChooserException, DefaultContentSetting, DefaultSettingSource, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, StorageAccessEmbeddingException, StorageAccessSiteException, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
+export {ChooserException, DefaultContentSetting, DefaultSettingSource, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, SmartCardReaderGrants, StorageAccessEmbeddingException, StorageAccessSiteException, ThirdPartyCookieBlockingSetting, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
+export {SmartCardReaderOriginEntryElement} from './site_settings/smart_card_reader_origin_entry.js';
+export {SettingsSmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
 export {StorageAccessSiteListElement} from './site_settings/storage_access_site_list.js';
 export {StorageAccessSiteListEntryElement} from './site_settings/storage_access_site_list_entry.js';
 export {StorageAccessStaticSiteListEntry, StorageAccessStaticSiteListEntryElement} from './site_settings/storage_access_static_site_list_entry.js';

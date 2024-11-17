@@ -121,7 +121,7 @@ public class IphDialogView extends LinearLayout {
     }
 
     /** Stops the IPH animation. This is called when the IPH dialog hides. */
-    public void stopIPHAnimation() {
+    public void stopIphAnimation() {
         AnimatedVectorDrawableCompat.unregisterAnimationCallback(mIphDrawable, mAnimationCallback);
         mIphAnimation.stop();
     }
@@ -130,7 +130,7 @@ public class IphDialogView extends LinearLayout {
      * Update the IPH view layout and start playing IPH animation. This is called when the IPH
      * dialog shows.
      */
-    public void startIPHAnimation() {
+    public void startIphAnimation() {
         updateLayout();
         AnimatedVectorDrawableCompat.registerAnimationCallback(mIphDrawable, mAnimationCallback);
         mIphAnimation.start();

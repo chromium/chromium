@@ -188,9 +188,6 @@ class TabletModeWindowManagerTest : public AshTestBase {
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
 };
 
 // Test that creating the object and destroying it without any windows should
@@ -1873,8 +1870,7 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
   // Exit tablet mode and verify the windows are still at 2/3, with allowance
   // for the divider width since it is only there in tablet mode.
   DestroyTabletModeWindowManager();
-  if (IsSnapGroupEnabledInClamshellMode()) {
-    // TODO(b/5626469): Revisit the snapped bounds.
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     EXPECT_NEAR(
         std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
         window1->bounds().width(), divider_delta);

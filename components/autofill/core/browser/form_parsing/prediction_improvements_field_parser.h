@@ -12,7 +12,6 @@
 
 namespace autofill {
 
-class AutofillField;
 class AutofillScanner;
 
 // Parser to find fields that are eligible for prediction improvements.
@@ -20,7 +19,7 @@ class PredictionImprovementsFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
-  explicit PredictionImprovementsFieldParser(const AutofillField* field);
+  explicit PredictionImprovementsFieldParser(FieldAndMatchInfo match);
 
   PredictionImprovementsFieldParser(const PredictionImprovementsFieldParser&) =
       delete;
@@ -31,11 +30,7 @@ class PredictionImprovementsFieldParser : public FormFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PredictionImprovementsFieldParser, ParseSearchTerm);
-  FRIEND_TEST_ALL_PREFIXES(PredictionImprovementsFieldParser,
-                           ParseNonSearchTerm);
-
-  raw_ptr<const AutofillField> field_;
+  FieldAndMatchInfo match_;
 };
 
 }  // namespace autofill

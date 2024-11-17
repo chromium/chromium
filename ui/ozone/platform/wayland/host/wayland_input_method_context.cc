@@ -415,9 +415,7 @@ void WaylandInputMethodContext::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& text_range,
     const gfx::Range& composition_range,
-    const gfx::Range& selection_range,
-    const std::optional<GrammarFragment>& fragment,
-    const std::optional<AutocorrectInfo>& autocorrect) {
+    const gfx::Range& selection_range) {
   DVLOG(1) << __func__ << " text=" << text << " text_range=" << text_range
            << " composition_range=" << composition_range
            << " selection_range=" << selection_range;
@@ -445,15 +443,6 @@ void WaylandInputMethodContext::SetSurroundingText(
   std::vector<size_t> offsets_for_adjustment = {
       selection_range.start() - utf16_offset,
       selection_range.end() - utf16_offset};
-  if (fragment.has_value()) {
-    offsets_for_adjustment.push_back(fragment->range.start() - utf16_offset);
-    offsets_for_adjustment.push_back(fragment->range.end() - utf16_offset);
-  }
-  if (autocorrect.has_value()) {
-    offsets_for_adjustment.push_back(autocorrect->range.start() - utf16_offset);
-    offsets_for_adjustment.push_back(autocorrect->range.end() - utf16_offset);
-  }
-
   std::string text_utf8 =
       base::UTF16ToUTF8AndAdjustOffsets(text, &offsets_for_adjustment);
   if (offsets_for_adjustment[0] == std::u16string::npos ||
@@ -476,46 +465,11 @@ void WaylandInputMethodContext::SetSurroundingText(
     return;
   }
 
-  size_t extra_offset_utf16 =
+  const size_t extra_offset_utf16 =
       base::UTF8ToUTF16(std::string_view(text_utf8).substr(0, trimmed->offset))
           .length();
   text_utf8 = std::move(trimmed->text);
   surrounding_text_offset_ = trimmed->offset;
-
-  if (fragment.has_value()) {
-    // SetGrammarFragmentAtCursor must happen before SetSurroundingText to make
-    // sure it is properly updated before IME needs it.
-    DCHECK_GE(offsets_for_adjustment.size(), 4u);
-    text_input_->SetGrammarFragmentAtCursor(GrammarFragment(
-        gfx::Range(static_cast<uint32_t>(offsets_for_adjustment[2] -
-                                         surrounding_text_offset_),
-                   static_cast<uint32_t>(offsets_for_adjustment[3] -
-                                         surrounding_text_offset_)),
-        fragment->suggestion));
-  } else {
-    // Invalidate the grammar fragment.
-    text_input_->SetGrammarFragmentAtCursor(GrammarFragment(gfx::Range(), ""));
-  }
-
-  if (autocorrect.has_value()) {
-    size_t index = fragment.has_value() ? 4u : 2u;
-    // Send the updated autocorrect information before surrounding text,
-    // as surrounding text changes may trigger the IME to ask for the
-    // autocorrect information.
-    gfx::Range autocorrect_range = autocorrect->range;
-    if (text_input_->HasAdvancedSurroundingTextSupport()) {
-      // The old implementation sent the original UTF-16 range as is, and
-      // the compositor also assumed it.
-      autocorrect_range =
-          gfx::Range(static_cast<uint32_t>(offsets_for_adjustment[index] -
-                                           surrounding_text_offset_),
-                     static_cast<uint32_t>(offsets_for_adjustment[index + 1] -
-                                           surrounding_text_offset_));
-    }
-
-    text_input_->SetAutocorrectInfo(autocorrect_range, autocorrect->bounds);
-  }
-
   text_input_->SetSurroundingTextOffsetUtf16(utf16_offset + extra_offset_utf16);
 
   gfx::Range relocated_preedit_range;
@@ -897,49 +851,22 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
 
 void WaylandInputMethodContext::OnClearGrammarFragments(
     const gfx::Range& range) {
-  const auto& [surrounding_text, utf16_offset, selection, composition] =
-      surrounding_text_tracker_.predicted_state();
-
-  std::vector<size_t> offsets = {range.start() + surrounding_text_offset_,
-                                 range.end() + surrounding_text_offset_};
-  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
-                                    &offsets);
-  ime_delegate_->OnClearGrammarFragments(
-      gfx::Range(static_cast<uint32_t>(offsets[0]) + utf16_offset,
-                 static_cast<uint32_t>(offsets[1]) + utf16_offset));
+  // TODO(crbug.com/374244479): remove these when cleaning Wayland code from
+  // Lacros. Grammar and autocorrect are features of CrOS.
+  NOTREACHED();
 }
 
 void WaylandInputMethodContext::OnAddGrammarFragment(
     const GrammarFragment& fragment) {
-  const auto& [surrounding_text, utf16_offset, selection, composition] =
-      surrounding_text_tracker_.predicted_state();
-
-  std::vector<size_t> offsets = {
-      fragment.range.start() + surrounding_text_offset_,
-      fragment.range.end() + surrounding_text_offset_};
-  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
-                                    &offsets);
-  ime_delegate_->OnAddGrammarFragment({GrammarFragment(
-      gfx::Range(static_cast<uint32_t>(offsets[0]) + utf16_offset,
-                 static_cast<uint32_t>(offsets[1]) + utf16_offset),
-      fragment.suggestion)});
+  // TODO(crbug.com/374244479): remove these when cleaning Wayland code from
+  // Lacros. Grammar and autocorrect are features of CrOS.
+  NOTREACHED();
 }
 
 void WaylandInputMethodContext::OnSetAutocorrectRange(const gfx::Range& range) {
-  if (range.is_empty()) {
-    ime_delegate_->OnSetAutocorrectRange(range);
-    return;
-  }
-
-  const auto& [surrounding_text, utf16_offset, selection, composition] =
-      surrounding_text_tracker_.predicted_state();
-  std::vector<size_t> offsets = {range.start() + surrounding_text_offset_,
-                                 range.end() + surrounding_text_offset_};
-  base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
-                                    &offsets);
-  ime_delegate_->OnSetAutocorrectRange(
-      gfx::Range(static_cast<uint32_t>(offsets[0]) + utf16_offset,
-                 static_cast<uint32_t>(offsets[1]) + utf16_offset));
+  // TODO(crbug.com/374244479): remove these when cleaning Wayland code from
+  // Lacros. Grammar and autocorrect are features of CrOS.
+  NOTREACHED();
 }
 
 void WaylandInputMethodContext::OnSetVirtualKeyboardOccludedBounds(

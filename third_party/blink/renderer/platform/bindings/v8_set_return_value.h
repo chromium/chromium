@@ -154,7 +154,7 @@ PLATFORM_EXPORT inline void V8SetReturnValue(
       info.GetReturnValue().Set(value == NamedPropertyDeleterResult::kDeleted);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // nullptr
@@ -485,8 +485,7 @@ void V8SetReturnValue(const CallbackInfo& info,
                       const bindings::EnumerationBase& value,
                       v8::Isolate* isolate,
                       ExtraArgs... extra_args) {
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), value.AsString().Impl());
+  info.GetReturnValue().Set(V8AtomicString(isolate, value.AsCStr()));
 }
 
 // Nullable types

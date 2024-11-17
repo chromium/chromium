@@ -24,11 +24,12 @@ import java.util.concurrent.TimeUnit;
  * whether expected reports were actually received.
  */
 class ReportingCollector {
-    private List<JSONObject> mReceivedReports = new ArrayList<JSONObject>();
-    private Semaphore mReceivedReportsSemaphore = new Semaphore(0);
+    private final List<JSONObject> mReceivedReports = new ArrayList<JSONObject>();
+    private final Semaphore mReceivedReportsSemaphore = new Semaphore(0);
 
     /**
      * Stores a batch of uploaded reports.
+     *
      * @param payload the POST payload from the upload
      * @return whether the payload was parsed successfully
      */
@@ -112,4 +113,3 @@ class ReportingCollector {
         return true;
     }
 }
-;

@@ -31,6 +31,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/url_loader_throttles.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -330,8 +331,7 @@ void WorkerScriptFetcher::CreateAndStart(
           static_cast<int>(blink::mojom::ResourceType::kSharedWorker);
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << static_cast<int>(request_destination);
-      break;
+      NOTREACHED() << static_cast<int>(request_destination);
   }
 
   // Upgrade the request to an a priori authenticated URL, if appropriate.
@@ -481,10 +481,28 @@ void WorkerScriptFetcher::CreateScriptLoader(
   // frame tree node ID has the same issue.
   base::RepeatingCallback<WebContents*()> wc_getter =
       base::BindRepeating([]() -> WebContents* { return nullptr; });
+  FrameTreeNodeId frame_tree_node_id = FrameTreeNodeId();
+#if BUILDFLAG(IS_FUCHSIA)
+  // To make `WebEngineContentBrowserClient::CreateURLLoaderThrottles()`
+  // returns throttles, valid `frame_tree_node_id` and `wc_getter` should
+  // be passed. See crbug.com/40244093#comment17.
+  // Upon `UrlRequestRewriteDoesNotAddHeadersForSharedWorkers`, SharedWorkers
+  // are not expected to return throttles and excluded.
+  //
+  // In case of the corner case a shared worker creates a dedicated worker after
+  // the closest ancestor's frame is gone, `wc_getter` will returns nullptr,
+  // and `WebEngineContentBrowserClient::CreateURLLoaderThrottles()` also
+  // returns {}.
+  if (absl::holds_alternative<blink::DedicatedWorkerToken>(worker_token)) {
+    frame_tree_node_id = ancestor_render_frame_host.GetFrameTreeNodeId();
+    wc_getter = base::BindRepeating(&WebContents::FromFrameTreeNodeId,
+                                    frame_tree_node_id);
+  }
+#endif
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(
           *resource_request, browser_context, wc_getter,
-          nullptr /* navigation_ui_data */, FrameTreeNodeId(),
+          nullptr /* navigation_ui_data */, frame_tree_node_id,
           /*navigation_id=*/std::nullopt);
 
   // Create a BrowserContext getter using |service_worker_context|.
@@ -695,13 +713,13 @@ void WorkerScriptFetcher::OnReceiveRedirect(
 void WorkerScriptFetcher::OnUploadProgress(int64_t current_position,
                                            int64_t total_size,
                                            OnUploadProgressCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WorkerScriptFetcher::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   network::RecordOnTransferSizeUpdatedUMA(
       network::OnTransferSizeUpdatedFrom::kWorkerScriptFetcher);
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WorkerScriptFetcher::OnComplete(

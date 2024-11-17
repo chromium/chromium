@@ -34,12 +34,12 @@ class FaviconDriverObserver {
     TOUCH_LARGEST
   };
 
-  FaviconDriverObserver() {}
+  FaviconDriverObserver() = default;
 
   FaviconDriverObserver(const FaviconDriverObserver&) = delete;
   FaviconDriverObserver& operator=(const FaviconDriverObserver&) = delete;
 
-  virtual ~FaviconDriverObserver() {}
+  virtual ~FaviconDriverObserver() = default;
 
   // Called when either:
   // 1) Chrome determines the best icon for the page for

@@ -5,16 +5,19 @@
 #ifndef NET_SOCKET_NEXT_PROTO_H_
 #define NET_SOCKET_NEXT_PROTO_H_
 
+#include <stdint.h>
+
 #include <string_view>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "net/base/net_export.h"
 
 namespace net {
 
 // This enum is used in Net.SSLNegotiatedAlpnProtocol histogram.
 // Do not change or re-use values.
-enum NextProto {
+enum NextProto : uint8_t {
   kProtoUnknown = 0,
   kProtoHTTP11 = 1,
   kProtoHTTP2 = 2,
@@ -24,6 +27,9 @@ enum NextProto {
 
 // List of protocols to use for ALPN, used for configuring HttpNetworkSessions.
 typedef std::vector<NextProto> NextProtoVector;
+
+using NextProtoSet =
+    base::EnumSet<NextProto, NextProto::kProtoUnknown, NextProto::kProtoLast>;
 
 NET_EXPORT_PRIVATE NextProto NextProtoFromString(std::string_view proto_string);
 

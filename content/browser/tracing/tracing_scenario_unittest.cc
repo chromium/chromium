@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/tracing/tracing_scenario.h"
+
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -10,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_proto_loader.h"
+#include "base/token.h"
 #include "base/trace_event/named_trigger.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -75,6 +77,7 @@ class TestTracingScenarioDelegate : public TracingScenario::Delegate {
 
   MOCK_METHOD(bool, OnScenarioActive, (TracingScenario * scenario), (override));
   MOCK_METHOD(bool, OnScenarioIdle, (TracingScenario * scenario), (override));
+  MOCK_METHOD(bool, OnScenarioCloned, (TracingScenario * scenario), (override));
   MOCK_METHOD(void,
               OnScenarioRecording,
               (TracingScenario * scenario),
@@ -111,6 +114,8 @@ class TestNestedTracingScenarioDelegate
 // Fake perfetto::TracingSession.
 class TestTracingSession : public perfetto::TracingSession {
  public:
+  static constexpr base::Token kClonedSessionId = base::Token(0xAB, 0xCD);
+
   TestTracingSession() = default;
   ~TestTracingSession() override = default;
 
@@ -184,6 +189,21 @@ class TestTracingSession : public perfetto::TracingSession {
             on_stop_callback_));
   }
 
+  void CloneTrace(CloneTraceArgs args,
+                  CloneTraceCallback on_session_cloned) override {
+    // perfetto::TracingSession runs callbacks from its own background thread.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(
+            [](CloneTraceCallback on_session_cloned) {  // nocheck
+              on_session_cloned(
+                  {true, "", kClonedSessionId.low(), kClonedSessionId.high()});
+            },
+            on_session_cloned));
+  }
+
   void StopBlocking() override { NOTIMPLEMENTED(); }
 
   void SetOnStopCallback(std::function<void()> on_stop) override {  // nocheck
@@ -226,6 +246,7 @@ class TracingScenarioForTesting : public TracingScenario {
       : TracingScenario(config,
                         delegate,
                         /*enable_privacy_filter=*/false,
+                        /*is_local_scenario=*/true,
                         /*request_startup_tracing=*/true) {
     EXPECT_TRUE(Initialize(config, false));
   }
@@ -646,19 +667,31 @@ TEST_F(TracingScenarioTest, NestedUpload) {
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
   EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
 
-  base::Token trace_uuid = tracing_scenario.GetSessionID();
-  base::RunLoop run_loop;
-  EXPECT_CALL(delegate, SaveTrace(&tracing_scenario, trace_uuid, _,
-                                  std::string("this is a trace")))
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
-      .WillOnce(testing::Return(true));
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate, OnScenarioCloned(&tracing_scenario))
+        .WillOnce(testing::Return(true));
+    EXPECT_CALL(delegate, SaveTrace(&tracing_scenario,
+                                    TestTracingSession::kClonedSessionId, _,
+                                    std::string("this is a trace")))
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_upload_trigger"));
+    run_loop.Run();
+  }
 
-  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_upload_trigger"));
+  {
+    base::RunLoop run_loop;
+    EXPECT_EQ(TracingScenario::State::kRecording,
+              tracing_scenario.current_state());
 
-  run_loop.Run();
-  EXPECT_EQ(TracingScenario::State::kDisabled,
-            tracing_scenario.current_state());
+    EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
+        .WillOnce([&run_loop]() {
+          run_loop.Quit();
+          return true;
+        });
+    EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
+    run_loop.Run();
+  }
 }
 
 TEST_F(NestedTracingScenarioTest, Disabled) {

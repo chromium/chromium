@@ -31,7 +31,7 @@ CookieHelper::CookieHelper(content::StoragePartition* storage_partition,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-CookieHelper::~CookieHelper() {}
+CookieHelper::~CookieHelper() = default;
 
 void CookieHelper::StartFetching(FetchCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

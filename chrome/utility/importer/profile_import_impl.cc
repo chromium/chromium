@@ -49,8 +49,7 @@ void ProfileImportImpl::StartImport(
   import_thread_->init_com_with_mta(false);
 #endif
   if (!import_thread_->Start()) {
-    NOTREACHED_IN_MIGRATION();
-    ImporterCleanup();
+    NOTREACHED();
   }
   bridge_ = new ExternalProcessImporterBridge(
       localized_strings,

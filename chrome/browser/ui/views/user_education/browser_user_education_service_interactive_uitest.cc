@@ -5,12 +5,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -67,22 +66,15 @@ class BrowserUserEducationServiceUiTest : public InteractiveFeaturePromoTest {
                           }),
                  EnsureFocus(kToolbarAppMenuButtonElementId, true));
   }
-
-  auto ShowHelpBubble() {
-    return CheckResult(
-        [this]() {
-          return browser()->window()->MaybeShowFeaturePromo(
-              feature_engagement::kIPHWebUiHelpBubbleTestFeature);
-        },
-        user_education::FeaturePromoResult::Success(), "ShowHelpBubble()");
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceUiTest,
                        WebUIHelpBubbleTakesFocus) {
-  RunTestSequence(DoSetup(), FocusAppMenuButton(),
-                  EnsureFocus(kContentsPaneName, false), ShowHelpBubble(),
-                  EnsureFocus(kContentsPaneName, true),
-                  CheckJsResult(kMainContentsElementId, kGetActiveElementJs,
-                                "action-button-1"));
+  RunTestSequence(
+      DoSetup(), FocusAppMenuButton(), EnsureFocus(kContentsPaneName, false),
+      MaybeShowPromo(feature_engagement::kIPHWebUiHelpBubbleTestFeature,
+                     WebUiHelpBubbleShown()),
+      EnsureFocus(kContentsPaneName, true),
+      CheckJsResult(kMainContentsElementId, kGetActiveElementJs,
+                    "action-button-1"));
 }

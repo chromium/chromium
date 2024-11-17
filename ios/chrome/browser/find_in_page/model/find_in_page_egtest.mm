@@ -308,7 +308,6 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 // Tests that FIP exit fullscreen when done.
 - (void)testWhenFullscreenIsDisable {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
-  config.features_enabled.push_back(kDisableFullscreenScrolling);
   // Relaunch the app to take the configuration into account.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

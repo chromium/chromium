@@ -208,7 +208,7 @@ void Pkcs12Migrator::MigrateCertsWithKcerCerts(
     return RecordUmaEvent(KcerPkcs12MigrationEvent::kFailedToGetKcerCerts);
   }
 
-  kcer::internal::CertCache kcer_cert_cache(std::move(kcer_certs));
+  kcer::internal::CertCache kcer_cert_cache(kcer_certs);
   net::ScopedCERTCertificateList nss_certs_to_migrate;
 
   for (net::ScopedCERTCertificate& nss_cert : nss_certs) {

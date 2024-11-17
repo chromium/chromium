@@ -18,6 +18,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD})
 @Retention(RetentionPolicy.CLASS)
+@UsedReflectively
 public @interface CalledByNativeForTesting {
     /*
      *  If present, tells which inner class the method belongs to.

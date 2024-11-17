@@ -7,11 +7,13 @@
 #include <optional>
 
 #include "base/debug/alias.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base {
@@ -232,6 +234,17 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
 
   while (!tasks_.empty()) {
     const auto& pending_task = tasks_.front();
+#if DCHECK_IS_ON()
+    // Checking if a task is cancelled can trip DCHECK/CHECK failures out of the
+    // control of the SequenceManager code, so provide a task trace for easier
+    // diagnosis. See crbug.com/374409662 for context.
+    absl::Cleanup resetter = [original_task =
+                                  TaskAnnotator::CurrentTaskForThread()] {
+      TaskAnnotator::SetCurrentTaskForThread({}, original_task);
+    };
+    TaskAnnotator::SetCurrentTaskForThread(base::PassKey<WorkQueue>(),
+                                           &pending_task);
+#endif
     if (pending_task.task && !pending_task.IsCanceled())
       break;
     tasks_to_delete.push_back(std::move(tasks_.front()));

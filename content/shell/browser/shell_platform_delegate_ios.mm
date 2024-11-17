@@ -634,8 +634,7 @@ void ShellPlatformDelegate::EnableUIControl(Shell* shell,
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown UI control";
-      return;
+      NOTREACHED() << "Unknown UI control";
   }
   [button setEnabled:is_enabled];
 }

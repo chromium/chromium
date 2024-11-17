@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
+import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 import './side_panel_ghost_loader.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -32,7 +34,8 @@ export interface LensSidePanelAppElement {
   };
 }
 
-export class LensSidePanelAppElement extends PolymerElement {
+const LensSidePanelAppElementBase = HelpBubbleMixin(PolymerElement);
+export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   static get is() {
     return 'lens-side-panel-app';
   }
@@ -63,6 +66,11 @@ export class LensSidePanelAppElement extends PolymerElement {
         value: true,
         reflectToAttribute: true,
       },
+      isContextualSearchbox: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
       loadingImageUrl: {
         type: String,
         value: loadTimeData.getString('resultsLoadingUrl'),
@@ -72,6 +80,26 @@ export class LensSidePanelAppElement extends PolymerElement {
         type: Boolean,
         value: () => loadTimeData.getBoolean('darkMode'),
         reflectToAttribute: true,
+      },
+      isSearchboxFocused: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+      suppressGhostLoader: {
+        type: Boolean,
+        value: true,
+      },
+      showGhostLoader: {
+        type: Boolean,
+        computed: `computeShowGhostLoader(isSearchboxFocused,
+              suppressGhostLoader, isContextualSearchbox)`,
+        reflectToAttribute: true,
+      },
+      showErrorState: {
+        type: Boolean,
+        value: false,
+        notify: true,
       },
     };
   }
@@ -83,6 +111,10 @@ export class LensSidePanelAppElement extends PolymerElement {
   // browser because the iframe is cross-origin. Default true since the side
   // panel can open before a navigation has started.
   private isLoadingResults: boolean;
+  private isSearchboxFocused: boolean;
+  private isContextualSearchbox: boolean;
+  private suppressGhostLoader: boolean;
+  private showErrorState: boolean;
   // The URL for the loading image shown when results frame is loading a new
   // page.
   private readonly loadingImageUrl: string;
@@ -96,6 +128,13 @@ export class LensSidePanelAppElement extends PolymerElement {
 
   constructor() {
     super();
+    // Need to get the page classification through a mojom call since the
+    // WebUI controller doesn't have access to the lens overlay controller
+    // in time to set this as a loadTimeData.
+    this.browserProxy.handler.getIsContextualSearchbox().then(
+        ({isContextualSearchbox}) => {
+          this.isContextualSearchbox = isContextualSearchbox;
+        });
     this.pageHandler = SidePanelBrowserProxyImpl.getInstance().handler;
     ColorChangeUpdater.forDocument().start();
   }
@@ -103,10 +142,13 @@ export class LensSidePanelAppElement extends PolymerElement {
   override ready() {
     super.ready();
 
-    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
-        ?.addEventListener('focusin', () => this.onSearchboxFocusIn_());
-    this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox')
-        ?.addEventListener('focusout', () => this.onSearchboxFocusOut_());
+    const searchbox =
+        this.shadowRoot!.querySelector<HTMLElement>('cr-searchbox');
+    if (searchbox) {
+      searchbox.addEventListener('focusin', () => this.onSearchboxFocusIn_());
+      searchbox.addEventListener('focusout', () => this.onSearchboxFocusOut_());
+      this.registerHelpBubble('kLensSidePanelSearchBoxElementId', searchbox);
+    }
   }
 
   override connectedCallback() {
@@ -121,6 +163,8 @@ export class LensSidePanelAppElement extends PolymerElement {
           this.setBackArrowVisible.bind(this)),
       this.browserProxy.callbackRouter.setShowErrorPage.addListener(
           this.setShowErrorPage.bind(this)),
+      this.browserProxy.callbackRouter.updateGhostLoaderState.addListener(
+          this.updateGhostLoaderState.bind(this)),
     ];
   }
 
@@ -174,10 +218,36 @@ export class LensSidePanelAppElement extends PolymerElement {
 
   private onSearchboxFocusIn_() {
     this.isBackArrowVisible = false;
+    this.isSearchboxFocused = true;
+    this.notifyHelpBubbleAnchorCustomEvent(
+        'kLensSidePanelSearchBoxElementId',
+        'kLensSidePanelSearchBoxFocusedEventId');
   }
 
   private onSearchboxFocusOut_() {
     this.isBackArrowVisible = this.wasBackArrowAvailable;
+    this.isSearchboxFocused = false;
+  }
+
+  private computeShowGhostLoader(): boolean {
+    return this.isSearchboxFocused && !this.suppressGhostLoader &&
+        this.isContextualSearchbox;
+  }
+
+  private updateGhostLoaderState(
+      suppressGhostLoader: boolean, resetLoadingState: boolean) {
+    // If page bytes weren't successfully uploaded, ghost loader shouldn't be
+    // visible.
+    this.suppressGhostLoader = suppressGhostLoader;
+    if (resetLoadingState) {
+      this.showErrorState = false;
+    }
+  }
+
+  makeGhostLoaderVisibleForTesting() {
+    this.isContextualSearchbox = true;
+    this.suppressGhostLoader = false;
+    this.isSearchboxFocused = true;
   }
 }
 

@@ -18,12 +18,12 @@ namespace favicon {
 // e.g. Chrome.
 class FaviconClient {
  public:
-  FaviconClient() {}
+  FaviconClient() = default;
 
   FaviconClient(const FaviconClient&) = delete;
   FaviconClient& operator=(const FaviconClient&) = delete;
 
-  virtual ~FaviconClient() {}
+  virtual ~FaviconClient() = default;
 
   // Returns true if the specified URL is a native application page URL.
   // If this returns true the favicon for the page must be fetched using

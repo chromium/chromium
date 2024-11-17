@@ -54,8 +54,7 @@ DedicatedWorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
       blink::DedicatedWorkerToken(devtools_worker_token()));
 }
 
-bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                                     bool acquire_wake_lock) {
+bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
@@ -77,6 +76,23 @@ DedicatedWorkerDevToolsAgentHost::cross_origin_embedder_policy(
   DedicatedWorkerHost* const host = GetDedicatedWorkerHost();
   return host ? std::make_optional(host->cross_origin_embedder_policy())
               : std::nullopt;
+}
+
+void DedicatedWorkerDevToolsAgentHost::DisconnectIfNotCreated() {
+  // If the child worker was actually created, we rely on mojo connection
+  // disconnect that is set up in ChildWorkerCreated.
+  if (!child_worker_created_) {
+    Disconnected();
+  }
+}
+
+void DedicatedWorkerDevToolsAgentHost::ChildWorkerCreated(
+    const GURL& url,
+    const std::string& name,
+    base::OnceCallback<void(DevToolsAgentHostImpl*)> callback) {
+  WorkerOrWorkletDevToolsAgentHost::ChildWorkerCreated(url, name,
+                                                       std::move(callback));
+  child_worker_created_ = true;
 }
 
 }  // namespace content

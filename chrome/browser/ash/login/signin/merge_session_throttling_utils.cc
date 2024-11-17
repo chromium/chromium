@@ -165,8 +165,7 @@ bool ShouldDelayRequestForProfile(Profile* profile) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ShouldDelayRequestForWebContents(content::WebContents* web_contents) {

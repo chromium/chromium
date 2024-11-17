@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/autofill/address_bubbles_icon_view.h"
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
+#include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -47,8 +49,16 @@ void AddressBubblesIconView::UpdateImpl() {
   AddressBubblesIconController* controller = GetController();
   const bool command_enabled =
       SetCommandEnabled(controller && controller->IsBubbleActive());
-  const bool should_show =
+  bool should_show =
       command_enabled && !delegate()->ShouldHidePageActionIcon(this);
+
+  // TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING buildflag.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Show the icon if the Desktop to iOS address promo is currently being shown.
+  should_show =
+      should_show || IOSPromoBubble::IsPromoTypeVisible(IOSPromoType::kAddress);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   SetVisible(should_show);
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
 }

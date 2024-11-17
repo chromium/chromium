@@ -118,8 +118,7 @@ bool AmplitudePeakDetector::AreFramesLoud(const void* data,
     case 4:
       return LoudDetector<int32_t>(data, frames);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   };
 }
 

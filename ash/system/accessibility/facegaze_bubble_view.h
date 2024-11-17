@@ -14,6 +14,11 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+namespace views {
+class ImageView;
+class Label;
+}  // namespace views
+
 namespace ash {
 
 // The FaceGaze bubble view. This is a UI that appears at the top of the screen,
@@ -30,17 +35,21 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
   ~FaceGazeBubbleView() override;
 
   // Updates text content of this view.
-  void Update(const std::u16string& text);
+  void Update(const std::u16string& text, bool is_warning);
 
   // views::BubbleDialogDelegateView:
-  void Init() override;
-  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
-                                views::Widget* widget) const override;
+  void OnThemeChanged() override;
 
   const std::u16string& GetTextForTesting() const;
 
  private:
   friend class FaceGazeBubbleControllerTest;
+
+  // Updates color of this view.
+  void UpdateColor(bool is_warning);
+
+  // An image that displays the FaceGaze logo.
+  raw_ptr<views::ImageView> image_ = nullptr;
 
   // A label that displays the most recently recognized gesture and
   // corresponding action.

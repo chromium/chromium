@@ -25,17 +25,8 @@ BASE_FEATURE(kAboutThisSiteAsyncFetching,
              "AboutThisSiteAsyncFetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID)
-bool IsPersistentSidePanelEntryFeatureEnabled() {
-  return IsAboutThisSiteFeatureEnabled() &&
-         base::FeatureList::IsEnabled(
-             page_info::kAboutThisSitePersistentSidePanelEntry);
-}
-
-BASE_FEATURE(kAboutThisSitePersistentSidePanelEntry,
-             "AboutThisSitePersistentSidePanelEntry",
+BASE_FEATURE(kMerchantTrust,
+             "MerchantTrust",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#endif
 
 }  // namespace page_info

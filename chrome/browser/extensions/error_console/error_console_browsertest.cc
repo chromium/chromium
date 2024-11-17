@@ -262,7 +262,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
       case ACTION_NONE:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     observer.WaitForErrors();
@@ -320,13 +320,10 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, ReportManifestErrors) {
   ASSERT_TRUE(unknown_key_error);
 
   const char kFakePermission[] = "not_a_real_permission";
-  CheckManifestError(permissions_error,
-                     extension->id(),
+  CheckManifestError(permissions_error, extension->id(),
                      ErrorUtils::FormatErrorMessage(
-                         manifest_errors::kPermissionUnknownOrMalformed,
-                         kFakePermission),
-                     manifest_keys::kPermissions,
-                     kFakePermission);
+                         manifest_errors::kPermissionUnknown, kFakePermission),
+                     manifest_keys::kPermissions, kFakePermission);
 
   CheckManifestError(unknown_key_error,
                      extension->id(),

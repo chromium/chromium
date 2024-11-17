@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/confidence_level.mojom-blink.h"
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -264,7 +265,9 @@ class LocalFrameMojoHandler
       const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info)
       override;
   void Discard() final;
-
+  void FinalizeNavigationConfidence(
+      double randomized_trigger_rate,
+      mojom::blink::ConfidenceLevel confidence) final;
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
 
   // mojom::FullscreenVideoElementHandler implementation:

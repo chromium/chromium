@@ -77,7 +77,7 @@ public class WebKitHitTestTest extends AwParameterizedTest {
 
     private String setServerResponseAndLoad(String response) throws Throwable {
         // Use a different path each time to avoid flakes due to caching.
-        String path = "/hittest" + (mServerResponseCount++) + ".html";
+        String path = "/hittest" + mServerResponseCount++ + ".html";
         String url = mWebServer.setResponse(path, response, null);
         OnPageCommitVisibleHelper commitHelper = mContentsClient.getOnPageCommitVisibleHelper();
         int currentCallCount = commitHelper.getCallCount();

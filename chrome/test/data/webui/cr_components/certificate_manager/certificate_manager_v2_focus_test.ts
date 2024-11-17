@@ -189,6 +189,8 @@ suite('CertificateManagerV2FocusTest', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -214,5 +216,45 @@ suite('CertificateManagerV2FocusTest', () => {
     assertTrue(!!newElementInFocus);
     const linkRow = (newElementInFocus.getRootNode() as ShadowRoot).host;
     assertEquals('viewOsImportedCerts', linkRow.id);
+  });
+
+  test('Check Focus when going in and out of user certs subpage', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 5,
+      // <if expr="not is_chromeos">
+      isIncludeSystemTrustStoreManaged: true,
+      // </if>
+      numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: true,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+    await microtasksFinished();
+    const rowToClick =
+        certManager.$.localCertSection.shadowRoot!.querySelector<HTMLElement>(
+            '#userCertsInstalledLinkRow');
+    assertTrue(!!rowToClick);
+    rowToClick.click();
+    await microtasksFinished();
+
+    // Check focus is on back button in user certs section.
+    assertTrue(certManager.$.userCertsSection.classList.contains('selected'));
+    const elementInFocus = getDeepActiveElement();
+    assertTrue(!!elementInFocus);
+    assertEquals('backButton', elementInFocus.id);
+    const subsection = (elementInFocus.getRootNode() as ShadowRoot).host;
+    assertEquals('userCertsSection', subsection.id);
+
+    (elementInFocus as HTMLElement).click();
+    await microtasksFinished();
+
+    // Check focus is on link row going to user certs section.
+    assertTrue(certManager.$.localCertSection.classList.contains('selected'));
+    const newElementInFocus = getDeepActiveElement();
+    assertTrue(!!newElementInFocus);
+    const linkRow = (newElementInFocus.getRootNode() as ShadowRoot).host;
+    assertEquals('userCertsInstalledLinkRow', linkRow.id);
   });
 });

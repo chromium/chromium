@@ -43,6 +43,11 @@
 // when the effect of the tap is on the browser side (e.g. showing a popup).
 + (id<GREYAction>)tapWebElementUnverified:(ElementSelector*)selector;
 
+// Action to long press on the center of an element. This is mostly to be used
+// when the element is occulted by something and so the grey_longPress action
+// would fail.
++ (id<GREYAction>)longPressOnHiddenElement;
+
 // Action to scroll to top of a collection.
 // On iOS 13 the settings menu appears as a card that can be dismissed with a
 // downward swipe, for this reason we need to swipe up programatically to

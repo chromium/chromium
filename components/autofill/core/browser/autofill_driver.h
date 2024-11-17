@@ -280,7 +280,7 @@ class AutofillDriver {
   // method is a no-op if the renderer is not available or the appropriate
   // command-line flag is not set.
   virtual void SendTypePredictionsToRenderer(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) = 0;
+      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) = 0;
 
   // Tells the renderer to accept data list suggestions for |value|.
   virtual void RendererShouldAcceptDataListSuggestion(

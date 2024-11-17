@@ -253,6 +253,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="SUCCESS"/>
   <int value="1" label="GET_TOAST_HISTORY_FAILED"/>
   <int value="2" label="REMOVING_TOAST_FAILED"/>
+  <int value="3" label="EMPTY_APP_USER_MODEL_ID"/>
+  <int value="4" label="NOTIFICATION_NOT_FOUND"/>
 </enum>
 
 <enum name="WindowsNotificationDisplayStatus">

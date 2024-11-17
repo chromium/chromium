@@ -168,5 +168,5 @@ void LocalCredentialManagementWin::Edit(
     std::string new_username,
     base::OnceCallback<void(bool)> callback) {
   // Editing passkeys should not be an option in Windows.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

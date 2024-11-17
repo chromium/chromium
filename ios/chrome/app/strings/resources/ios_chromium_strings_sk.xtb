@@ -12,8 +12,10 @@
 <translation id="1260702988262336471">Otvorte Ponuku prehliadača Chromium</translation>
 <translation id="12739128458173458">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v oboch zariadeniach do prehliadača Chromium.</translation>
 <translation id="1361748954329991663">Prehliadač Chromium je zastaraný. Ak v <ph name="BEGIN_LINK" />obchode s aplikáciami<ph name="END_LINK" /> nie je dostupná aktualizácia, je možné, že vaše zariadenie už nepodporuje nové verzie prehliadača Chromium.</translation>
+<translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1423007117030725713">Začnite vyhľadávanie na novej karte prehliadača Chromium.</translation>
 <translation id="1431818719585918472">Umožnite prehliadaču Chromium uzamknúť vaše karty inkognito.</translation>
+<translation id="1451665391191990528">Skrývajte otvorené karty inkognito pri zatváraní prehliadača Chromium</translation>
 <translation id="146407871188825689">Používajte Chromium v iPade predvolene</translation>
 <translation id="1471084500615228555">Odstrániť dáta prehliadania v prehliadači Chromium</translation>
 <translation id="1472013873724362412">Váš účet nefunguje v prehliadači Chromium. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
@@ -49,6 +51,7 @@
 <translation id="2195025571279539885">Chcete, aby prehliadač Chromium nabudúce ponúkol možnosť prekladu stránok v jazyku <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="22313767259766852">Táto adresa je momentálne uložená v prehliadači Chromium. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Znamená to, že Chromium bude zakaždým žiadať o verziu webu pre počítače.</translation>
+<translation id="2270466829363945454">Nákupy</translation>
 <translation id="2313870531055795960">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v prehliadači Chromium. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chromium môže tiež odoslať webové adresy vrátane častí obsahu stránky Bezpečnému prehliadaniu.</translation>
 <translation id="231828342043114302">Ak chcete dostávať prispôsobený obsah na základe záujmov, prihláste sa do prehliadača Chromium.</translation>
 <translation id="2326738825692478496">Niektoré údaje prehliadača Chromium zatiaľ neboli vo vašom účte Google uložené.
@@ -107,6 +110,7 @@ Pred prepnutím účtov skúste počkať niekoľko minút. Ak ich prepnete teraz
 <translation id="377649297473651452">Rozbalené zobrazenie automatického dopĺňania v prehliadači Chromium</translation>
 <translation id="3780779443901618967">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z prehliadača Chromium môžete preskočiť.</translation>
 <translation id="3805899903892079518">Chromium nemá prístup k vašim fotkám ani videám. Prístup povoľte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
+<translation id="3816686541346279443">Chromium vám ponúkne uloženie hesla.</translation>
 <translation id="3827545470516145620">V tomto zariadení máte štandardnú bezpečnostnú ochranu</translation>
 <translation id="3833326979834193417">Prehliadač Chromium každý deň automaticky spúšťa kontrolu bezpečnosti, aby vás chránil pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami. Viac o kontrole bezpečnosti sa dozviete v Nastaveniach.</translation>
 <translation id="3855938650519180865">Novinky v prehliadači Chromium</translation>
@@ -129,6 +133,7 @@ Pred prepnutím účtov skúste počkať niekoľko minút. Ak ich prepnete teraz
 <translation id="4432744876818348753">Prihláste sa, aby ste mohli Chromium využívať naplno.</translation>
 <translation id="4445228361214254027">Vaša organizácia vypla možnosť používať a ukladať údaje prehliadača Chromium vo vašom účte Google. Nové záložky, heslá a ďalšie položky sa budú ukladať iba do tohto zariadenia.</translation>
 <translation id="4498832288620833153">Pridá vložené webové adresy do vášho čitateľského zoznamu v prehliadači Chromium.</translation>
+<translation id="4508268628669724828">Tu nájdete ďalšie užitočné tipy, ako využívať Chromium naplno.</translation>
 <translation id="452436063477828504">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť údaje prehliadača Chromium</translation>
 <translation id="4527452566931097835">Chcete nastaviť Chromium ako predvolený prehliadač?</translation>
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -177,6 +182,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="5571094606370987472">Otvorí nedávne karty v prehliadači Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Otvorenie najnovšej karty v prehliadači Chromium</translation>
+<translation id="5671188105328420281">Tipy pre Chromium</translation>
 <translation id="5688047395118852662">Na tejto karte sa vám zobrazujú návrhy, ako využívať Chromium naplno.</translation>
 <translation id="5700709190537129682">Chromium nemôže skontrolovať heslá</translation>
 <translation id="584550191241316896">Prihlásili ste sa do prehliadača Chromium</translation>
@@ -218,6 +224,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="6752854822223394465">Vaša organizácia nastavuje Chromium…</translation>
 <translation id="6794054469102824109">Otvorí hru Chromium Dino.</translation>
 <translation id="6820823224820483452">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
+<translation id="6831043979455480757">Preložiť</translation>
 <translation id="6852419005633611413">Získajte prístup k prehliadaču Chromium rýchlejšie z Docku na ploche</translation>
 <translation id="6852799557929001644">Majte prístup k heslám a ďalším údajom prehliadača Chromium v iných aplikáciách v tomto zariadení.</translation>
 <translation id="6887138405044152640">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v ňom do prehliadača Chromium.</translation>

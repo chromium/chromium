@@ -112,6 +112,9 @@ bool Descriptors::HasCADescriptor(int* system_id,
   RCHECK(reader.SkipBits(3));
   RCHECK(reader.ReadBits(13, pid));
   size_t extra_bits = reader.bits_available();
+  if (extra_bits == 0) {
+    return true;
+  }
   RCHECK(extra_bits % 8 == 0);
   RCHECK(reader.ReadString(extra_bits, private_data));
   return true;

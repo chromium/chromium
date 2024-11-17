@@ -158,6 +158,9 @@ pub struct CrateConfig {
     /// `extra_src_roots`. Nothing is searched if this is empty.
     #[serde(default)]
     pub native_libs_roots: Vec<std::path::PathBuf>,
+    /// Whether the crate is permitted to have no license files.
+    #[serde(default)]
+    pub no_license_file_tracked_in_crbug_369075726: bool,
 }
 
 #[cfg(test)]

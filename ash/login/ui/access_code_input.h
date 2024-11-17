@@ -142,7 +142,6 @@ class AccessibleInputField : public SystemTextfield {
   bool IsGroupFocusTraversable() const override;
   View* GetSelectedViewForGroup(int group) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 // Digital access code input view for variable length of input codes.
@@ -224,8 +223,6 @@ class FixedLengthCodeInput : public AccessCodeInput {
 
   // Returns current selected text range of |text_value_for_a11y_|.
   gfx::Range GetSelectedRangeOfTextValueForA11y();
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,

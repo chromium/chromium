@@ -128,7 +128,7 @@ class UpdaterState {
   static base::Time GetUpdaterLastChecked(bool is_machine);
   static int GetUpdatePolicy();
 
-  static std::string NormalizeTimeDelta(const base::TimeDelta& delta);
+  static std::string NormalizeTimeDelta(base::TimeDelta delta);
 
   // True if the updater is installed per-machine.
   bool is_machine_ = false;

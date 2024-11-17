@@ -14,7 +14,7 @@ import "ui/display/mojom/display.mojom";
 // sepcified.
 
 // SetDisplayLayoutInfo or SetDisplayProperties result.
-[Stable, Extensible]
+[Extensible]
 enum DisplayConfigResult {
   // CrosDisplayConfigController method call was successful.
   [Default] kSuccess = 0,
@@ -54,7 +54,7 @@ enum DisplayConfigResult {
 };
 
 // Describes how the displays are laid out.
-[Stable, Extensible]
+[Extensible]
 enum DisplayLayoutMode {
   // In normal mode displays are laid out as described by
   // DisplayLayoutInfo.layouts.
@@ -70,7 +70,7 @@ enum DisplayLayoutMode {
 };
 
 // Describes a display edge.
-[Stable, Extensible]
+[Extensible]
 enum DisplayLayoutPosition {
   [Default] kTop = 0,
   kRight,
@@ -79,7 +79,7 @@ enum DisplayLayoutPosition {
 };
 
 // Describes an overscan or touch calibration operation.
-[Stable, Extensible]
+[Extensible]
 enum DisplayConfigOperation {
   // Start a calibration procedure.
   [Default] kStart = 0,
@@ -98,7 +98,7 @@ enum DisplayConfigOperation {
 };
 
 // Describes who initiated configuration change.
-[Stable, Extensible]
+[Extensible]
 enum DisplayConfigSource {
   // Display configuration change was requested by the user.
   [Default] kUser = 0,
@@ -109,7 +109,7 @@ enum DisplayConfigSource {
 
 // Describes the options the DisplayConfigProperties.rotation and
 // DisplayUnitInfo.rotation_options can be set to.
-[Stable, Extensible]
+[Extensible]
 enum DisplayRotationOptions {
   // In physical tablet state, enables auto-rotation and clears the user
   // rotation lock. Otherwise, it behaves the same as kZeroDegrees.
@@ -129,7 +129,6 @@ enum DisplayRotationOptions {
 };
 
 // Defines a pair of display + touch points used for touch calibration.
-[Stable]
 struct TouchCalibrationPair {
   // The coordinates of the display point.
   gfx.mojom.Point display_point@0;
@@ -138,7 +137,6 @@ struct TouchCalibrationPair {
 };
 
 // Defines the data required for touch calibration.
-[Stable]
 struct TouchCalibration {
   // Must contain exactly four pairs of touch calibration points.
   array<TouchCalibrationPair> pairs@0;
@@ -148,7 +146,6 @@ struct TouchCalibration {
 };
 
 // Defines the layout of a single display.
-[Stable]
 struct DisplayLayout {
   // The unique identifier of the display.
   string id@0;
@@ -163,7 +160,6 @@ struct DisplayLayout {
 };
 
 // Defines the layout mode and details.
-[Stable]
 struct DisplayLayoutInfo {
   // The layout mode to use, see DisplayLayoutMode for details.
   DisplayLayoutMode layout_mode@0;
@@ -186,7 +182,6 @@ struct DisplayLayoutInfo {
 // EXTENDED DISPLAY IDENTIFICATION DATA STANDARD (Defines EDID Structure
 // Version 1, Revision 4)" Release A, Revision 2 September 25, 2006.
 // https://www.vesa.org/vesa-standards
-[Stable]
 struct Edid {
   // Three character manufacturer code, Sec. 3.4.1 page 21.
   string manufacturer_id@0;
@@ -197,13 +192,11 @@ struct Edid {
 };
 
 // Struct wrapper so that the property can be optional.
-[Stable]
 struct DisplayRotation {
   DisplayRotationOptions rotation@0;
 };
 
 // Defines the properties for a display mode, i.e. a valid size and scale.
-[Stable]
 struct DisplayMode {
   // The display mode size in device independent (user visible) pixels.
   gfx.mojom.Size size@0;
@@ -221,7 +214,6 @@ struct DisplayMode {
 
 // Defines the properties of an individual display, returned by
 // GetDisplayLayoutInfo.
-[Stable]
 struct DisplayUnitInfo {
   // The unique identifier of the display.
   string id@0;
@@ -270,7 +262,6 @@ struct DisplayUnitInfo {
 
 // Properties for configuring an individual display, used in
 // SetDisplayProperties.
-[Stable]
 struct DisplayConfigProperties {
   // If true, makes the display primary. No-op if set to false.
   bool set_primary@0;
@@ -301,7 +292,7 @@ struct DisplayConfigProperties {
 // Interface for configuring displays in Chrome OS. Currently this is
 // implemented in Ash through classes owned by ash::Shell, but the interface
 // should not have any Ash specific dependencies.
-[Stable, Uuid="a172cdb1-c97f-4a53-9ac9-6b96c18da099"]
+[Uuid="a172cdb1-c97f-4a53-9ac9-6b96c18da099"]
 interface CrosDisplayConfigController {
   // Observers are notified when the display layout or any display properties
   // change.
@@ -366,7 +357,7 @@ interface CrosDisplayConfigController {
 
 // Interface for clients needing to be informed when the display configuration
 // changes.
-[Stable, Uuid="61eda0c8-63dc-49eb-ad43-02acfd48d4f5"]
+[Uuid="61eda0c8-63dc-49eb-ad43-02acfd48d4f5"]
 interface CrosDisplayConfigObserver {
   // Called any time the display configuration changes.
   OnDisplayConfigChanged@0();

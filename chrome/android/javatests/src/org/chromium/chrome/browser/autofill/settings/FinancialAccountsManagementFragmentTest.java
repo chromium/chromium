@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -23,10 +26,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
@@ -34,6 +43,7 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -67,6 +77,11 @@ public class FinancialAccountsManagementFragmentTest {
     public final SettingsActivityTestRule<FinancialAccountsManagementFragment>
             mSettingsActivityTestRule =
                     new SettingsActivityTestRule<>(FinancialAccountsManagementFragment.class);
+
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+
+    @Mock private Callback<String> mFinancialAccountManageLinkOpenerCallback;
 
     private static final GURL PIX_BANK_ACCOUNT_DISPLAY_ICON_URL = new GURL("http://example.com");
     private static final BankAccount PIX_BANK_ACCOUNT =
@@ -403,6 +418,51 @@ public class FinancialAccountsManagementFragmentTest {
                 });
 
         pixToggleDisabledHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testPixAccountPrefClicked_triggersOpeningManagePaymentMethodPage()
+            throws Exception {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsActivityTestRule
+                .getFragment()
+                .setFinancialAccountManageLinkOpenerCallbackForTesting(
+                        mFinancialAccountManageLinkOpenerCallback);
+        Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
+
+        ThreadUtils.runOnUiThreadBlocking(bankAccountPref::performClick);
+
+        verify(mFinancialAccountManageLinkOpenerCallback)
+                .onResult(
+                        eq(
+                                "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
+                                        + PIX_BANK_ACCOUNT.getInstrumentId()));
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT})
+    public void testSandboxPixAccountPrefClicked_triggersOpeningManagePaymentMethodPage()
+            throws Exception {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsActivityTestRule
+                .getFragment()
+                .setFinancialAccountManageLinkOpenerCallbackForTesting(
+                        mFinancialAccountManageLinkOpenerCallback);
+        Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
+
+        ThreadUtils.runOnUiThreadBlocking(bankAccountPref::performClick);
+
+        verify(mFinancialAccountManageLinkOpenerCallback)
+                .onResult(
+                        eq(
+                                "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
+                                        + PIX_BANK_ACCOUNT.getInstrumentId()));
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {

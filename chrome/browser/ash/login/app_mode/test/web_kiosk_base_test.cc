@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 
 #include <memory>
-#include <string>
 #include <string_view>
 #include <vector>
 
@@ -13,8 +12,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
-#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_session_initialized_waiter.h"
+#include "chrome/browser/ash/app_mode/test/scoped_device_settings.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"  // IWYU pragma: keep
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -66,9 +65,7 @@ void WebKioskBaseTest::TearDownOnMainThread() {
 }
 
 void WebKioskBaseTest::SetOnline(bool online) {
-  network_portal_detector_.SimulateDefaultNetworkState(
-      online ? NetworkPortalDetectorMixin::NetworkStatus::kOnline
-             : NetworkPortalDetectorMixin::NetworkStatus::kOffline);
+  online ? network_mixin_.SimulateOnline() : network_mixin_.SimulateOffline();
 }
 
 void WebKioskBaseTest::PrepareAppLaunch() {
@@ -90,8 +87,10 @@ bool WebKioskBaseTest::LaunchApp() {
   return LoginScreenTestApi::LaunchApp(account_id());
 }
 
-void WebKioskBaseTest::InitializeRegularOnlineKiosk() {
-  SetOnline(true);
+void WebKioskBaseTest::InitializeRegularOnlineKiosk(bool simulate_online) {
+  if (simulate_online) {
+    SetOnline(true);
+  }
   PrepareAppLaunch();
   LaunchApp();
   KioskSessionInitializedWaiter().Wait();

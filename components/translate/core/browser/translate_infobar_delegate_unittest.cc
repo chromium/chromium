@@ -46,14 +46,14 @@ class TestInfoBarManager : public infobars::InfoBarManager {
  public:
   TestInfoBarManager() = default;
   // infobars::InfoBarManager:
-  ~TestInfoBarManager() override {}
+  ~TestInfoBarManager() override = default;
 
   // infobars::InfoBarManager:
   int GetActiveEntryID() override { return 0; }
 
   // infobars::InfoBarManager:
   void OpenURL(const GURL& url, WindowOpenDisposition disposition) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 };
 

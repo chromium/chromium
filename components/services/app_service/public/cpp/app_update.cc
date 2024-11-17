@@ -270,6 +270,9 @@ AppUpdate::AppUpdate(const App* state,
   }
 }
 
+AppUpdate::AppUpdate(const AppUpdate&) = default;
+AppUpdate& AppUpdate::operator=(const AppUpdate&) = default;
+
 bool AppUpdate::StateIsNull() const {
   return state_ == nullptr;
 }

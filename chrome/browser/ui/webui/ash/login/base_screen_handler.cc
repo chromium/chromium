@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -60,16 +61,19 @@ bool BaseScreenHandler::HandleUserActionImpl(const base::Value::List& args) {
   }
 
   WizardController* wizard_controller = host->GetWizardController();
-  BaseScreen* screen = nullptr;
 
-  if (wizard_controller) {
-    screen = wizard_controller->GetScreen(oobe_screen_);
-  } else if (WizardController::IsErrorScreen(oobe_screen_)) {
-    // This case happens during auto-launch kiosk, as currently we do not create
-    // a `WizardController` in this flow. See b/267741004 for more details.
-    screen = host->GetOobeUI()->GetErrorScreen();
+  // TODO(b/345711957): Upgrade to `CHECK()` and remove the handling of the case
+  // when `wizard_controller` is null.
+  DUMP_WILL_BE_CHECK(wizard_controller);
+  if (!wizard_controller) {
+    return false;
   }
 
+  BaseScreen* screen = wizard_controller->GetScreen(oobe_screen_);
+
+  // TODO(b/345711957): Upgrade to `CHECK()` and remove the handling of the case
+  // when `screen` is null.
+  DUMP_WILL_BE_CHECK(screen);
   if (!screen) {
     return false;
   }

@@ -201,8 +201,7 @@ const char* NetLog::SourceTypeToString(NetLogSourceType source) {
 #include "net/log/net_log_source_type_list.h"
 #undef SOURCE_TYPE
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -225,8 +224,7 @@ const char* NetLog::EventPhaseToString(NetLogEventPhase phase) {
     case NetLogEventPhase::NONE:
       return "PHASE_NONE";
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void NetLog::InitializeSourceIdPartition() {

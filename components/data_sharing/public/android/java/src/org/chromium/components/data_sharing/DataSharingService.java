@@ -75,7 +75,7 @@ public interface DataSharingService {
     }
 
     /** Result that contains a groupToken and an status of the action that was requested. */
-    public static class ParseURLResult {
+    public static class ParseUrlResult {
         /**
          * The group data requested.
          *
@@ -84,9 +84,9 @@ public interface DataSharingService {
         public final GroupToken groupToken;
 
         /** Result of the action */
-        public final @ParseURLStatus int status;
+        public final @ParseUrlStatus int status;
 
-        public ParseURLResult(GroupToken groupToken, int status) {
+        public ParseUrlResult(GroupToken groupToken, int status) {
             this.groupToken = groupToken;
             this.status = status;
         }
@@ -214,20 +214,20 @@ public interface DataSharingService {
      * @param groupData The group information needed to create the URL.
      * @return Associated data sharing GURL if successful, else returns null.
      */
-    GURL getDataSharingURL(GroupData groupData);
+    GURL getDataSharingUrl(GroupData groupData);
 
     /**
      * Parse and validate a data sharing URL.
      *
      * @param url The url to be parsed.
-     * @return The parsing result as ParseURLResult.
+     * @return The parsing result as ParseUrlResult.
      */
-    ParseURLResult parseDataSharingURL(GURL url);
+    ParseUrlResult parseDataSharingUrl(GURL url);
 
     /**
      * Ensure that an existing group is visible for new user to join.
      *
-     * @param groupName The name of the group to be created.
+     * @param groupId The name of the group to be created.
      * @param callback Return a created group data on success.
      */
     void ensureGroupVisibility(String groupId, Callback<GroupDataOrFailureOutcome> callback);
@@ -241,13 +241,6 @@ public interface DataSharingService {
     void getSharedEntitiesPreview(
             GroupToken groupToken, Callback<SharedDataPreviewOrFailureOutcome> callback);
 
-    /**
-     * @return The current instance of {@link DataSharingUIDelegate}.
-     */
-    DataSharingUIDelegate getUIDelegate();
-
-    /**
-     * @return The current {@link ServiceStatus} of the service.
-     */
-    ServiceStatus getServiceStatus();
+    /** Returns The current instance of {@link DataSharingUIDelegate}. */
+    DataSharingUIDelegate getUiDelegate();
 }

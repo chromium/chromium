@@ -4,24 +4,22 @@ desc: |-
   The Direct Sockets API allows communication with arbitrary endpoints using TCP and UDP.
   Please see https://github.com/WICG/direct-sockets for details.
 
-  Setting the policy to 1 allows qualifying origins to use Direct Sockets.
-  These include Chrome Apps, Isolated Web Apps and Web Kiosks; the API is never available on the open web.
+  Setting the policy to 1 or leaving it unset allows Isolated Web App origins to use Direct Sockets.
 
-  Setting the policy to 2 blocks origins from using Direct Sockets.
-
-  Leaving it unset allows Direct Sockets.
+  Setting the policy to 2 blocks Isolated Web App origins from using Direct Sockets.
 example_value: 1
 features:
   dynamic_refresh: true
   per_profile: true
+supported_on:
+- chrome_os:131-
 future_on:
 - chrome.*
-- chrome_os
 items:
-- caption: Allow qualifying origins to use Direct Sockets
+- caption: Allow Isolated Web App origins to use Direct Sockets
   name: AllowDirectSockets
   value: 1
-- caption: Do not allow origins to use Direct Sockets
+- caption: Do not allow Isolated Web App origins to use Direct Sockets
   name: BlockDirectSockets
   value: 2
 owners:

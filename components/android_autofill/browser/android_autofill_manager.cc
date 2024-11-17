@@ -16,6 +16,7 @@
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -43,13 +44,12 @@ bool AndroidAutofillManager::ShouldClearPreviewedForm() {
 
 void AndroidAutofillManager::OnFormSubmittedImpl(
     const FormData& form,
-    bool known_success,
     mojom::SubmissionSource source) {
   address_logger_->OnWillSubmitForm();
   payments_logger_->OnWillSubmitForm();
   password_logger_->OnWillSubmitForm();
   if (auto* provider = GetAutofillProvider())
-    provider->OnFormSubmitted(this, form, known_success, source);
+    provider->OnFormSubmitted(this, form, source);
 }
 
 void AndroidAutofillManager::OnTextFieldDidChangeImpl(
@@ -71,7 +71,7 @@ void AndroidAutofillManager::OnTextFieldDidChangeImpl(
 
   provider->OnTextFieldDidChange(this, form, *field, timestamp);
 
-  if (auto* logger = GetEventFormLogger(form, *field)) {
+  if (auto* logger = GetEventFormLogger(form.global_id(), field_id)) {
     if (cached_is_autofilled) {
       logger->OnEditedAutofilledField();
     } else {
@@ -105,7 +105,7 @@ void AndroidAutofillManager::OnAskForValuesToFillImpl(
 
   provider->OnAskForValuesToFill(this, form, *field, trigger_source);
 
-  if (auto* logger = GetEventFormLogger(form, *field)) {
+  if (auto* logger = GetEventFormLogger(form.global_id(), field_id)) {
     logger->OnDidInteractWithAutofillableForm();
   }
 }
@@ -206,11 +206,12 @@ AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
 }
 
 FieldTypeGroup AndroidAutofillManager::ComputeFieldTypeGroupForField(
-    const FormData& form,
-    const FormFieldData& field) {
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  return GetCachedFormAndField(form, field, &form_structure, &autofill_field)
+  return GetCachedFormAndField(form_id, field_id, &form_structure,
+                               &autofill_field)
              ? autofill_field->Type().group()
              : FieldTypeGroup::kNoGroup;
 }
@@ -245,9 +246,9 @@ void AndroidAutofillManager::StartNewLoggingSession() {
 }
 
 AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
-    const FormData& form,
-    const FormFieldData& field) {
-  return GetEventFormLogger(ComputeFieldTypeGroupForField(form, field));
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) {
+  return GetEventFormLogger(ComputeFieldTypeGroupForField(form_id, field_id));
 }
 
 AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
@@ -268,8 +269,7 @@ AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
     case FormType::kUnknownFormType:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace autofill

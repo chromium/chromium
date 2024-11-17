@@ -72,7 +72,7 @@ std::unique_ptr<WebUIIOSController> NewWebUIIOS<commerce::CommerceInternalsUI>(
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
   return std::make_unique<commerce::CommerceInternalsUI>(
       web_ui, commerce::kChromeUICommerceInternalsHost,
-      commerce::ShoppingServiceFactory::GetForBrowserState(profile));
+      commerce::ShoppingServiceFactory::GetForProfile(profile));
 }
 
 // Returns a function that can be used to create the right type of WebUIIOS for

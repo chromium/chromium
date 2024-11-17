@@ -5,11 +5,16 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.text.format.DateUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -17,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,6 +33,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -40,11 +51,10 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
@@ -55,6 +65,8 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -64,8 +76,13 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.TestActivity;
@@ -83,6 +100,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private ActivityTabProvider mTabProvider;
@@ -111,13 +130,12 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private Supplier<SnackbarManager> mSnackbarManagerSupplier;
-    @Mock private ObservableSupplierImpl<EdgeToEdgeController> mWdgeToEdgeControllerSupplier;
+    @Mock private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     @Mock private Supplier<Boolean> mIsInOverviewModeSupplier;
     @Mock private AppMenuDelegate mAppMenuDelegate;
     @Mock private StatusBarColorProvider mStatusBarColorProvider;
     @Mock private IntentRequestTracker mIntentRequestTracker;
     @Mock private Supplier<CustomTabToolbarCoordinator> mCustomTabToolbarCoordinator;
-    @Mock private Supplier<CustomTabActivityNavigationController> mCustomTabNavigationController;
     @Mock private Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
     @Mock private BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
     @Mock private BackPressManager mBackPressManager;
@@ -128,6 +146,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
     @Mock private ShoppingService mShoppingService;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
+    @Mock private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
 
     private AppCompatActivity mActivity;
     private BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
@@ -138,8 +161,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         MockitoAnnotations.initMocks(this);
 
         // Setup the shopping service.
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
-        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
+
+        ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
+        doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
 
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
@@ -147,6 +173,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         when(mBrowserControlsManager.getBrowserVisibilityDelegate())
                 .thenReturn(mBrowserStateBrowserControlsVisibilityDelegate);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
 
         mBaseCustomTabRootUiCoordinator =
                 new BaseCustomTabRootUiCoordinator(
@@ -173,20 +201,20 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mCompositorViewHolderSupplier,
                         mTabContentManagerSupplier,
                         mSnackbarManagerSupplier,
-                        mWdgeToEdgeControllerSupplier,
+                        mEdgeToEdgeControllerSupplier,
                         ActivityType.CUSTOM_TAB,
                         mIsInOverviewModeSupplier,
                         mAppMenuDelegate,
                         mStatusBarColorProvider,
                         mIntentRequestTracker,
                         mCustomTabToolbarCoordinator,
-                        mCustomTabNavigationController,
                         mIntentDataProvider,
                         mBackPressManager,
                         mTabController,
                         mMinimizeDelegateSupplier,
                         mFeatureOverridesManagerSupplier,
-                        mBaseChromeLayout) {
+                        mBaseChromeLayout,
+                        mEdgeToEdgeStateProvider) {
 
                     @Nullable
                     @Override
@@ -194,6 +222,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         return mGoogleBottomBarCoordinator;
                     }
                 };
+    }
+
+    @After
+    public void tearDown() {
+        mFakeTimeTestRule.resetTimes();
     }
 
     @Test
@@ -237,5 +270,100 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         mBaseCustomTabRootUiCoordinator.initProfileDependentFeatures(mProfile);
 
         verify(mGoogleBottomBarCoordinator).initDefaultSearchEngine(mProfile);
+    }
+
+    @Test
+    @Config(sdk = 30)
+    @EnableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgeForMediaViewer() {
+        doReturn(true)
+                .when(mBrowserServicesIntentDataProvider)
+                .shouldEnableEmbeddedMediaExperience();
+        assertTrue(mBaseCustomTabRootUiCoordinator.supportsEdgeToEdge());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    @DisableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgeForMediaViewer_DisabledFeatures() {
+        doReturn(true)
+                .when(mBrowserServicesIntentDataProvider)
+                .shouldEnableEmbeddedMediaExperience();
+        assertFalse(
+                "Not drawing E2E when feature disabled.",
+                mBaseCustomTabRootUiCoordinator.supportsEdgeToEdge());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    @EnableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testEdgeToEdgeForMediaViewer_NotMediaViewer() {
+        doReturn(false)
+                .when(mBrowserServicesIntentDataProvider)
+                .shouldEnableEmbeddedMediaExperience();
+        assertFalse(
+                "Not drawing E2E when not in media viewer.",
+                mBaseCustomTabRootUiCoordinator.supportsEdgeToEdge());
+    }
+
+    @Test
+    @EnableFeatures({SigninFeatures.CCT_SIGN_IN_PROMPT})
+    public void testCreateMismatchNotificationChecker() {
+        FeatureList.setDisableNativeForTesting(true);
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(SigninFeatures.CCT_SIGN_IN_PROMPT, true);
+        FeatureList.setTestValues(testValues);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);
+        when(mProfileSupplier.get()).thenReturn(mProfile);
+
+        assertNotNull(
+                "Should create a checker",
+                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
+
+        // Not the right app
+        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(false);
+        assertNull(
+                "Should NOT create a checker for a wrong app",
+                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
+        when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);
+
+        // Nulled-out app ID
+        assertNull(
+                "Should NOT create checker for no app ID",
+                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker(null));
+
+        SigninPreferencesManager.getInstance()
+                .setCctMismatchNoticeSuppressionPeriodStart(TimeUtils.currentTimeMillis());
+        assertNull(
+                "Should NOT create checker when the FRE was recently completed",
+                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
+
+        // Advance the clock so that the suppression period start is no longer recent.
+        mFakeTimeTestRule.advanceMillis(DateUtils.WEEK_IN_MILLIS * 10);
+        assertNotNull(
+                "Should create a checker",
+                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
+        Assert.assertEquals(
+                "The pref saving the FRE completion time should have been cleared",
+                0L,
+                SigninPreferencesManager.getInstance()
+                        .getCctMismatchNoticeSuppressionPeriodStart());
+
+        // No profile
+        when(mProfileSupplier.get()).thenReturn(null);
+        assertNull(
+                "Should NOT create checker for no profile",
+                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
     }
 }

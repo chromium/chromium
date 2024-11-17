@@ -72,6 +72,10 @@ public class SafetyHubModuleProperties {
             SAFE_STATE_BUTTON_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableIntPropertyKey COMPROMISED_PASSWORDS_COUNT =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey WEAK_PASSWORDS_COUNT =
+            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey REUSED_PASSWORDS_COUNT =
+            new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey TOTAL_PASSWORDS_COUNT =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<UpdateStatusProvider.UpdateStatus>
@@ -96,10 +100,20 @@ public class SafetyHubModuleProperties {
         SAFE_STATE_BUTTON_LISTENER
     };
 
+    /**
+     * If `COMMON_SAFETY_HUB_MODULE_KEYS.IS_SIGNED_IN` is false, then
+     * `PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS.COMPROMISED_PASSWORDS_COUNT` must be populated to the
+     * invalid value, -1.
+     */
     public static final PropertyKey[] PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS =
             PropertyModel.concatKeys(
                     COMMON_SAFETY_HUB_MODULE_KEYS,
-                    new PropertyKey[] {COMPROMISED_PASSWORDS_COUNT, TOTAL_PASSWORDS_COUNT});
+                    new PropertyKey[] {
+                        COMPROMISED_PASSWORDS_COUNT,
+                        WEAK_PASSWORDS_COUNT,
+                        REUSED_PASSWORDS_COUNT,
+                        TOTAL_PASSWORDS_COUNT
+                    });
 
     public static final PropertyKey[] UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS =
             PropertyModel.concatKeys(
@@ -120,7 +134,10 @@ public class SafetyHubModuleProperties {
                     COMMON_SAFETY_HUB_MODULE_KEYS, new PropertyKey[] {SAFE_BROWSING_STATE});
 
     public static final PropertyKey[] BROWSER_STATE_MODULE_KEYS = {
+        IS_SIGNED_IN,
         COMPROMISED_PASSWORDS_COUNT,
+        WEAK_PASSWORDS_COUNT,
+        REUSED_PASSWORDS_COUNT,
         TOTAL_PASSWORDS_COUNT,
         UPDATE_STATUS,
         SITES_WITH_UNUSED_PERMISSIONS_COUNT,

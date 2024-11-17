@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
@@ -21,24 +20,12 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace privacy_sandbox {
-
-namespace {
-
-class MockAttestationsObserver
-    : public content::PrivacySandboxAttestationsObserver {
- public:
-  MOCK_METHOD(void, OnAttestationsLoaded, (), (override));
-};
-
-}  // namespace
 
 class PrivacySandboxAttestationsTestBase : public testing::Test {
  public:
@@ -142,6 +129,8 @@ class PrivacySandboxAttestationsFeatureEnabledTest
 
   // Return the final expected status of `IsSiteAttested` given the `status`
   // which represents the actual status of the attestation.
+  // Note that this is the expected status when default behavior is not
+  // specified by the call site.
   Status GetExpectedStatus(Status status) {
     // If the attestations map is absent and feature
     // `kDefaultAllowPrivacySandboxAttestations` is on, the expected status is
@@ -338,14 +327,6 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 }
 
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
-  MockAttestationsObserver observer;
-  base::ScopedObservation<PrivacySandboxAttestations,
-                          content::PrivacySandboxAttestationsObserver>
-      observation(&observer);
-  observation.Observe(PrivacySandboxAttestations::GetInstance());
-
-  EXPECT_CALL(observer, OnAttestationsLoaded).Times(2);
-
   PrivacySandboxAttestationsProto proto;
   ASSERT_TRUE(proto.site_attestations_size() == 0);
 
@@ -661,14 +642,6 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 // in `base/files/file_path_unittest.cc`.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        CombiningCharacterFilePath) {
-  MockAttestationsObserver observer;
-  base::ScopedObservation<PrivacySandboxAttestations,
-                          content::PrivacySandboxAttestationsObserver>
-      observation(&observer);
-  observation.Observe(PrivacySandboxAttestations::GetInstance());
-
-  EXPECT_CALL(observer, OnAttestationsLoaded).Times(1);
-
   PrivacySandboxAttestationsProto proto;
   ASSERT_TRUE(proto.site_attestations_size() == 0);
 
@@ -738,6 +711,36 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 3);
   histogram_tester().ExpectBucketCount(kAttestationStatusUMA,
                                        Status::kAttestationFailed, 1);
+}
+
+TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
+       AttestationsDefaultBehaviorAllowWithMapBeingAbsent) {
+  net::SchemefulSite site(GURL("https://example.com"));
+
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kAttributionReporting,
+          AttestationsDefaultBehavior::kAllow);
+  EXPECT_EQ(attestation_status, Status::kAllowed);
+  histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(
+      kAttestationStatusUMA, Status::kAttestationsFileNotYetChecked, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
+}
+
+TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
+       AttestationsDefaultBehaviorDenyWithMapBeingAbsent) {
+  net::SchemefulSite site(GURL("https://example.com"));
+
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kAttributionReporting,
+          AttestationsDefaultBehavior::kDeny);
+  EXPECT_EQ(attestation_status, Status::kAttestationsFileNotYetChecked);
+  histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(
+      kAttestationStatusUMA, Status::kAttestationsFileNotYetChecked, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

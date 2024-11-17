@@ -47,12 +47,6 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
 }  // namespace
 
 // static
-bookmarks::BookmarkModel* BookmarkModelFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 bookmarks::BookmarkModel* BookmarkModelFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<bookmarks::BookmarkModel*>(

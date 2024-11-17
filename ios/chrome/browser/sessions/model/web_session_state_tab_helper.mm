@@ -79,13 +79,13 @@ WebSessionStateTabHelper::WebSessionStateTabHelper(web::WebState* web_state)
 
 WebSessionStateTabHelper::~WebSessionStateTabHelper() = default;
 
-ChromeBrowserState* WebSessionStateTabHelper::GetBrowserState() {
-  return ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+ProfileIOS* WebSessionStateTabHelper::GetProfile() {
+  return ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
 }
 
 NSData* WebSessionStateTabHelper::FetchSessionFromCache() {
   WebSessionStateCache* cache =
-      WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
+      WebSessionStateCacheFactory::GetForProfile(GetProfile());
   NSData* data =
       [cache sessionStateDataForWebStateID:web_state_->GetUniqueIdentifier()];
   return data.length ? data : nil;
@@ -104,15 +104,14 @@ void WebSessionStateTabHelper::SaveSessionState() {
   if (data) {
     int64_t size_kb = data.length / 1024;
     WebSessionStateCache* cache =
-        WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
+        WebSessionStateCacheFactory::GetForProfile(GetProfile());
     // To prevent very large session states from using too much space, don't
     // persist any `data` larger than 5MB.  If this happens, remove the now
     // stale session state data.
     if (size_kb > kMaxSessionState) {
       [cache
           removeSessionStateDataForWebStateID:web_state_->GetUniqueIdentifier()
-                                    incognito:GetBrowserState()
-                                                  ->IsOffTheRecord()];
+                                    incognito:GetProfile()->IsOffTheRecord()];
       return;
     }
 

@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -46,6 +47,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_iwa_installer_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -70,20 +73,19 @@
 namespace web_app {
 
 namespace {
+const web_package::test::Ed25519KeyPair kPublicKeyPair1 =
+    web_package::test::Ed25519KeyPair::CreateRandom();
+const web_package::test::Ed25519KeyPair kPublicKeyPair2 =
+    web_package::test::Ed25519KeyPair::CreateRandom();
+const web_package::SignedWebBundleId kWebBundleId1 =
+    web_package::SignedWebBundleId::CreateForPublicKey(
+        kPublicKeyPair1.public_key);
+const web_package::SignedWebBundleId kWebBundleId2 =
+    web_package::SignedWebBundleId::CreateForPublicKey(
+        kPublicKeyPair2.public_key);
 
-constexpr char kUpdateManifestFileName1[] = "update_manifest_1.json";
-constexpr char kUpdateManifestFileName2[] = "update_manifest_2.json";
-constexpr char kIwaBundleFileName1[] = "iwa_bundle_1.swbn";
-constexpr char kIwaBundleFileName2[] = "iwa_bundle_2.swbn";
-constexpr char kUpdateManifestTemplate1[] = R"(
-    {"versions":[
-      {"version": "1.0.0", "src": "https://example.com/not-used.swbn"},
-      {"version": "7.0.6", "src": "$1"}]
-    })";
-constexpr char kUpdateManifestTemplate2[] = R"(
-    {"versions":[
-      {"version": "2.0.0", "src": "$1"}]
-    })";
+const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
+const base::Version kPinnedVersion = base::Version("1.0.0");
 
 constexpr char kUserMail[] = "dla@example.com";
 constexpr char kDisplayName[] = "display name";
@@ -91,7 +93,6 @@ constexpr char kDisplayName[] = "display name";
 constexpr char kOrphanedBundleDirectory[] = "6zsr4hjoudsu6ihf";
 
 using policy::DeveloperToolsPolicyHandler;
-
 }  // namespace
 
 class IsolatedWebAppPolicyManagerAshBrowserTestBase
@@ -115,9 +116,38 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
     }
     scoped_feature_list_.InitWithFeatures(enabled_features,
                                           /*disabled_features=*/{});
+    AddInitialBundles();
   }
 
   ~IsolatedWebAppPolicyManagerAshBrowserTestBase() override = default;
+
+  const webapps::AppId kAppId1 =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(kWebBundleId1)
+          .app_id();
+  const webapps::AppId kAppId2 =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(kWebBundleId2)
+          .app_id();
+
+  void AddInitialBundles() {
+    update_server_mixin_.AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+            .BuildBundle(kPublicKeyPair1));
+    update_server_mixin_.AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("7.0.6"))
+            .BuildBundle(kPublicKeyPair1));
+    update_server_mixin_.AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("9.0.0"))
+            .BuildBundle(kPublicKeyPair1),
+        std::vector<UpdateChannel>{kBetaChannel});
+
+    update_server_mixin_.AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.0.0"))
+            .BuildBundle(kPublicKeyPair2));
+    update_server_mixin_.AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.2.0"))
+            .BuildBundle(kPublicKeyPair2),
+        std::vector<UpdateChannel>{kBetaChannel});
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ash::LoginManagerTest::SetUpCommandLine(command_line);
@@ -160,8 +190,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
       // No user needs to be created: for user sessions the user was already
       // added in the constructor (technical constraint).
       if (set_iwa_policy_on_login) {
-        SetIWAForceInstallPolicy(
-            {{iwa_bundle_1_.id, kUpdateManifestFileName1}});
+        SetPolicyWithOneApp();
       }
     } else {
       AddManagedGuestSessionToDevicePolicy();
@@ -182,47 +211,66 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
 
   // This policy is active at the moment of login.
   void AddDeviceLocalAccountIwaPolicy() {
-    PolicyGenerator policy_generator;
-    policy_generator.AddForceInstalledIwa(
-        iwa_bundle_1_.id,
-        iwa_server_.GetURL(base::StrCat({"/", kUpdateManifestFileName1})));
-
     em::StringPolicyProto* const isolated_web_apps_proto =
         device_local_account_policy_.payload()
             .mutable_isolatedwebappinstallforcelist();
+
     isolated_web_apps_proto->set_value(
-        WriteJson(policy_generator.Generate()).value());
+        WriteJson(base::Value::List().Append(
+                      update_server_mixin_.CreateForceInstallPolicyEntry(
+                          kWebBundleId1)))
+            .value());
   }
 
-  void SetIWAForceInstallPolicy(
-      const std::vector<std::pair<web_package::SignedWebBundleId, std::string>>&
-          update_manifest_entries) {
-    PolicyGenerator policy_generator;
-    for (const auto& [bundle_id, manifest_entry] : update_manifest_entries) {
-      policy_generator.AddForceInstalledIwa(
-          bundle_id, iwa_server_.GetURL(base::StrCat({"/", manifest_entry})));
-    }
-
+  void SetIWAForceInstallPolicy(base::Value::List update_manifest_entries) {
     if (is_user_session_) {
       policy::PolicyMap policies;
       policies.Set(policy::key::kIsolatedWebAppInstallForceList,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                   policy::POLICY_SOURCE_CLOUD, policy_generator.Generate(),
-                   nullptr);
+                   policy::POLICY_SOURCE_CLOUD,
+                   base::Value(update_manifest_entries.Clone()), nullptr);
       policy_provider_.UpdateChromePolicy(policies);
     } else {
-      GetProfileForTest()->GetPrefs()->Set(
-          prefs::kIsolatedWebAppInstallForceList, policy_generator.Generate());
+      GetProfileForTest()->GetPrefs()->SetList(
+          prefs::kIsolatedWebAppInstallForceList,
+          std::move(update_manifest_entries));
     }
   }
 
   void SetPolicyWithOneApp() {
-    SetIWAForceInstallPolicy({{iwa_bundle_1_.id, kUpdateManifestFileName1}});
+    SetIWAForceInstallPolicy(base::Value::List().Append(
+        update_server_mixin_.CreateForceInstallPolicyEntry(kWebBundleId1)));
   }
 
   void SetPolicyWithTwoApps() {
-    SetIWAForceInstallPolicy({{iwa_bundle_1_.id, kUpdateManifestFileName1},
-                              {iwa_bundle_2_.id, kUpdateManifestFileName2}});
+    SetIWAForceInstallPolicy(
+        base::Value::List()
+            .Append(update_server_mixin_.CreateForceInstallPolicyEntry(
+                kWebBundleId1))
+            .Append(update_server_mixin_.CreateForceInstallPolicyEntry(
+                kWebBundleId2)));
+  }
+
+  void SetPolicyWithOneAppWithPinnedVersion(
+      base::Version pinned_version = kPinnedVersion) {
+    SetIWAForceInstallPolicy(base::Value::List().Append(
+        update_server_mixin_.CreateForceInstallPolicyEntry(
+            kWebBundleId1, /*update_channels=*/std::nullopt, pinned_version)));
+  }
+
+  void SetPolicyWithBetaChannelApp(
+      const web_package::SignedWebBundleId& web_bundle_id) {
+    SetIWAForceInstallPolicy(base::Value::List().Append(
+        update_server_mixin_.CreateForceInstallPolicyEntry(web_bundle_id,
+                                                           {kBetaChannel})));
+  }
+
+  base::Version GetIsolatedWebAppVersion(const webapps::AppId& app_id) {
+    return WebAppProvider::GetForTest(GetProfileForTest())
+        ->registrar_unsafe()
+        .GetAppById(app_id)
+        ->isolation_data()
+        ->version();
   }
 
   // Returns a profile which can be used for testing.
@@ -268,45 +316,6 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
     ash::test::WaitForPrimaryUserSessionStart();
   }
 
-  void WriteFile(const base::FilePath::StringType& filename,
-                 std::string_view contents) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(
-        base::WriteFile(temp_dir_.GetPath().Append(filename), contents));
-  }
-
-  void SetupServer() {
-    // Set up server that will serve update manifest and the Web Bundle
-    // of the IWA.
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    iwa_server_.ServeFilesFromDirectory(temp_dir_.GetPath());
-    ASSERT_TRUE(iwa_server_.Start());
-    {
-      const std::vector<std::string> replacements1 = {
-          iwa_server_.GetURL(std::string("/") + kIwaBundleFileName1).spec(),
-          iwa_bundle_1_.id.id()};
-      const std::string update_manifest_value = base::ReplaceStringPlaceholders(
-          kUpdateManifestTemplate1, replacements1, nullptr);
-
-      WriteFile(kUpdateManifestFileName1, update_manifest_value);
-      WriteFile(kIwaBundleFileName1, std::string(iwa_bundle_1_.data.begin(),
-                                                 iwa_bundle_1_.data.end()));
-    }
-
-    {
-      const std::vector<std::string> replacements2 = {
-          iwa_server_.GetURL(std::string("/") + kIwaBundleFileName2).spec(),
-          iwa_bundle_2_.id.id()};
-      const std::string update_manifest_value_app2 =
-          base::ReplaceStringPlaceholders(kUpdateManifestTemplate2,
-                                          replacements2, nullptr);
-      WriteFile(kUpdateManifestFileName2, update_manifest_value_app2);
-      WriteFile(kIwaBundleFileName2, std::string(iwa_bundle_2_.data.begin(),
-                                                 iwa_bundle_2_.data.end()));
-    }
-  }
-
   void RefreshDevicePolicy() { policy_helper_.RefreshDevicePolicy(); }
 
   policy::DevicePolicyBuilder* device_policy() {
@@ -322,25 +331,15 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
           kUserMail,
           policy::DeviceLocalAccountType::kPublicSession));
   policy::UserPolicyBuilder device_local_account_policy_;
-  const web_app::TestSignedWebBundle iwa_bundle_1_ =
-      web_app::TestSignedWebBundleBuilder::BuildDefault(
-          TestSignedWebBundleBuilder::BuildOptions()
-              .SetVersion(base::Version("7.0.6"))
-              .AddKeyPair(web_package::test::Ed25519KeyPair::CreateRandom()));
-  const web_app::TestSignedWebBundle iwa_bundle_2_ =
-      web_app::TestSignedWebBundleBuilder::BuildDefault(
-          TestSignedWebBundleBuilder::BuildOptions().SetVersion(
-              base::Version("2.0.0")));
   const bool is_user_session_;
 
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ash::LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  base::ScopedTempDir temp_dir_;
-  net::EmbeddedTestServer iwa_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
@@ -360,8 +359,6 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        InstallIsolatedWebAppOnLogin) {
-  SetupServer();
-
   AddUser(/*set_iwa_policy_on_login=*/true);
 
   // Log in in the managed guest session.
@@ -372,18 +369,16 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
 
   // Wait for the IWA to be installed.
   WebAppTestInstallObserver observer(profile);
-  const webapps::AppId id = observer.BeginListeningAndWait();
-  EXPECT_EQ(id,
-            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
-                .app_id());
-  const WebAppProvider* provider = WebAppProvider::GetForTest(profile);
-  EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
+  observer.BeginListeningAndWait({kAppId1});
+
+  ASSERT_TRUE(
+      WebAppProvider::GetForTest(profile)->registrar_unsafe().IsInstallState(
+          kAppId1, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1).GetString(), "7.0.6");
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        PolicyUpdate) {
-  SetupServer();
-
   AddUser();
 
   SetPolicyWithOneApp();
@@ -393,30 +388,84 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
 
+  Profile* profile = GetProfileForTest();
+  const WebAppProvider* provider = WebAppProvider::GetForTest(profile);
+
   // Set the policy with 1 IWA and wait for the IWA to be installed.
-  WebAppTestInstallObserver observer(GetProfileForTest());
-  SetPolicyWithOneApp();
-  const webapps::AppId id = observer.BeginListeningAndWait();
-  ASSERT_EQ(id,
-            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
-                .app_id());
-  const WebAppProvider* provider =
-      WebAppProvider::GetForTest(GetProfileForTest());
-  EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
+  {
+    SetPolicyWithOneApp();
+
+    WebAppTestInstallObserver observer(profile);
+    observer.BeginListeningAndWait({kAppId1});
+
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+        kAppId1, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  }
 
   // Set the policy with 2 IWAs and wait for the IWA to be installed.
-  WebAppTestInstallObserver observer2(GetProfileForTest());
-  SetPolicyWithTwoApps();
-  const webapps::AppId id2 = observer2.BeginListeningAndWait();
-  EXPECT_EQ(id2,
-            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_2_.id)
-                .app_id());
+  {
+    SetPolicyWithTwoApps();
+
+    WebAppTestInstallObserver observer2(profile);
+    observer2.BeginListeningAndWait({kAppId2});
+
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+        kAppId2, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  }
+}
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
+                       InstallUpdateChannelVersion) {
+  AddUser();
+
+  ASSERT_NO_FATAL_FAILURE(StartLogin());
+  WaitForSessionStart();
+
+  Profile* profile = GetProfileForTest();
+
+  // Update channel with higher version than on the "default" channel
+  {
+    SetPolicyWithBetaChannelApp(kWebBundleId1);
+
+    WebAppTestInstallObserver install_observer(profile);
+    install_observer.BeginListeningAndWait({kAppId1});
+
+    EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1).GetString(), "9.0.0");
+  }
+
+  // Update channel with lower version than on the "default" channel
+  {
+    SetPolicyWithBetaChannelApp(kWebBundleId2);
+
+    WebAppTestInstallObserver install_observer(profile);
+    install_observer.BeginListeningAndWait({kAppId2});
+
+    EXPECT_EQ(GetIsolatedWebAppVersion(kAppId2).GetString(), "1.2.0");
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
+                       InstallIsolatedWebAppAtPinnedVersion) {
+  AddUser();
+
+  ASSERT_NO_FATAL_FAILURE(StartLogin());
+  WaitForSessionStart();
+
+  Profile* profile = GetProfileForTest();
+
+  // Set the policy with pinned IWA and wait for the IWA to be installed.
+  SetPolicyWithOneAppWithPinnedVersion();
+
+  WebAppTestInstallObserver observer(profile);
+  observer.BeginListeningAndWait({kAppId1});
+
+  ASSERT_TRUE(
+      WebAppProvider::GetForTest(profile)->registrar_unsafe().IsInstallState(
+          kAppId1, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1), kPinnedVersion);
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        PolicyDeleteAndReinstall) {
-  SetupServer();
-
   AddUser();
 
   // Log in to the managed guest session. There is no IWA policy set at the
@@ -424,26 +473,21 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
 
-  const webapps::AppId id1 =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
-          .app_id();
-  const webapps::AppId id2 =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_2_.id)
-          .app_id();
-
   const WebAppProvider* provider =
       WebAppProvider::GetForTest(GetProfileForTest());
 
   // Set the policy with 2 IWAs and wait for the IWAs to be installed.
   {
     WebAppTestInstallObserver install_observer(GetProfileForTest());
-    install_observer.BeginListening({id1, id2});
+    install_observer.BeginListening({kAppId1, kAppId2});
 
     SetPolicyWithTwoApps();
     install_observer.Wait();
 
-    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
-    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id2));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+        kAppId1, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+        kAppId2, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   }
 
   // Set the policy with 1 IWA and wait for the unnecessary IWA to be
@@ -461,26 +505,30 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
         }));
 
     WebAppTestUninstallObserver uninstall_observer(GetProfileForTest());
-    uninstall_observer.BeginListening({id2});
+    uninstall_observer.BeginListening({kAppId2});
     SetPolicyWithOneApp();
 
     EXPECT_TRUE(uninstall_browsing_data_future.Wait());
-    EXPECT_EQ(uninstall_observer.Wait(), id2);
+    EXPECT_EQ(uninstall_observer.Wait(), kAppId2);
 
-    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
-    EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(id2));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+        kAppId1, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+    EXPECT_FALSE(provider->registrar_unsafe().IsInstallState(
+        kAppId2, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   }
 
   // Set the policy with 2 IWAs and wait for the second IWA to be re-installed.
   {
     WebAppTestInstallObserver install_observer(GetProfileForTest());
-    install_observer.BeginListening({id2});
+    install_observer.BeginListening({kAppId2});
 
     SetPolicyWithTwoApps();
     install_observer.Wait();
 
-    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
-    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id2));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+        kAppId1, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
+        kAppId2, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   }
 }
 
@@ -514,8 +562,6 @@ class IsolatedWebAppDevToolsTestWithPolicy
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTestWithPolicy,
                        DisabledForForceInstalledIwas) {
-  SetupServer();
-
   AddUser();
 
   // Log in to the managed guest session. There is no IWA policy set at the
@@ -523,24 +569,24 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTestWithPolicy,
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
 
-  const webapps::AppId id1 =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
-          .app_id();
   {
     WebAppTestInstallObserver install_observer(GetProfileForTest());
-    install_observer.BeginListening({id1});
+    install_observer.BeginListening({kAppId1});
 
     SetPolicyWithOneApp();
     install_observer.Wait();
 
-    EXPECT_TRUE(WebAppProvider::GetForTest(GetProfileForTest())
-                    ->registrar_unsafe()
-                    .IsInstalled(id1));
+    EXPECT_TRUE(
+        WebAppProvider::GetForTest(GetProfileForTest())
+            ->registrar_unsafe()
+            .IsInstallState(
+                kAppId1, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   }
 
   SetDevToolsAvailability();
 
-  auto* browser = web_app::LaunchWebAppBrowserAndWait(GetProfileForTest(), id1);
+  auto* browser =
+      web_app::LaunchWebAppBrowserAndWait(GetProfileForTest(), kAppId1);
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(!!DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents,
@@ -620,8 +666,6 @@ class CleanupOrphanedBundlesTest
 
 IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
                        CleanUpSuccessfulOnSessionStart) {
-  SetupServer();
-
   AddUser(/*set_iwa_policy_on_login=*/false);
 
   // Login to the session.
@@ -641,8 +685,6 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
 
 IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
                        CleanUpSuccessfulOnFailedInstall) {
-  SetupServer();
-
   base::test::TestFuture<void> future;
   iwa_installer_factory_.SetInstallCompletedClosure(
       future.GetRepeatingCallback());
@@ -664,15 +706,14 @@ IN_PROC_BROWSER_TEST_P(CleanupOrphanedBundlesTest,
   // Try to install an isolated web app, which should fail. This should trigger
   // a cleanup.
   iwa_installer_factory_.SetCommandBehavior(
-      iwa_bundle_1_.id.id(), /*execution_mode=*/
+      kWebBundleId1.id(), /*execution_mode=*/
       MockIsolatedWebAppInstallCommandWrapper::ExecutionMode::kSimulateFailure,
       /*execute_immediately=*/true);
   SetPolicyWithOneApp();
   ASSERT_TRUE(future.Wait());
-  webapps::AppId id =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
-          .app_id();
-  EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(id));
+
+  EXPECT_FALSE(provider->registrar_unsafe().IsInstallState(
+      kAppId1, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
   // Wait until the cleanup is done.
   command_manager.AwaitAllCommandsCompleteForTesting();

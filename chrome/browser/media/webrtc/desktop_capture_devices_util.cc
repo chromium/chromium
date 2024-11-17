@@ -172,6 +172,8 @@ DesktopMediaIDToDisplayMediaInformation(
       zoom_level);
 }
 
+// Showing notifications about capture is handled at the OS level in Android.
+#if !BUILDFLAG(IS_ANDROID)
 std::u16string GetNotificationText(const std::u16string& application_title,
                                    bool capture_audio,
                                    content::DesktopMediaID::Type capture_type) {
@@ -187,7 +189,7 @@ std::u16string GetNotificationText(const std::u16string& application_title,
             application_title);
       case content::DesktopMediaID::TYPE_NONE:
       case content::DesktopMediaID::TYPE_WINDOW:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else {
     switch (capture_type) {
@@ -201,11 +203,12 @@ std::u16string GetNotificationText(const std::u16string& application_title,
         return l10n_util::GetStringFUTF16(
             IDS_MEDIA_TAB_CAPTURE_NOTIFICATION_TEXT, application_title);
       case content::DesktopMediaID::TYPE_NONE:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return std::u16string();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::string DeviceNamePrefix(
     content::WebContents* web_contents,
@@ -312,6 +315,11 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
             media_id);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  return MediaCaptureDevicesDispatcher::GetInstance()
+      ->GetMediaStreamCaptureIndicator()
+      ->RegisterMediaStream(web_contents, out_devices);
+#else  // !BUILDFLAG(IS_ANDROID)
   // If required, register to display the notification for stream capture.
   std::unique_ptr<MediaStreamUI> notification_ui;
   if (display_notification) {
@@ -340,4 +348,5 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
       ->GetMediaStreamCaptureIndicator()
       ->RegisterMediaStream(web_contents, out_devices,
                             std::move(notification_ui), application_title);
+#endif
 }

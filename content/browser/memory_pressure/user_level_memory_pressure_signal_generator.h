@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_ANDROID)
 #include <optional>
 #include <utility>
 
@@ -66,7 +65,5 @@ class UserLevelMemoryPressureSignalGenerator {
 };
 
 }  // namespace memory_pressure
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // CONTENT_BROWSER_MEMORY_PRESSURE_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_

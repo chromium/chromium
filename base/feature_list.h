@@ -26,17 +26,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 
 class FieldTrial;
 class FieldTrialList;
 class PersistentMemoryAllocator;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class FeatureVisitor;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Specifies whether a given feature is enabled or disabled by default.
 // NOTE: The actual runtime state may be different, due to a field trial or a
@@ -579,15 +575,15 @@ class BASE_EXPORT FeatureList {
   // only be called on a FeatureList that was set with SetEarlyAccessInstance().
   void AddEarlyAllowedFeatureForTesting(std::string feature_name);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Allows a visitor to record override state, parameters, and field trial
-  // associated with each feature.
+  // associated with each feature. Optionally, provide a prefix which filters
+  // the visited features.
   //
   // NOTE: This is intended only for the special case of needing to get all
-  // overrides. This use case is specific to CrOS-Ash. Most users should call
-  // IsEnabled() to query a feature's state.
-  static void VisitFeaturesAndParams(FeatureVisitor& visitor);
-#endif  // BULDFLAG(IS_CHROMEOS_ASH)
+  // overrides. This use case is specific to CrOS-Ash and V8. Most users should
+  // call IsEnabled() to query a feature's state.
+  static void VisitFeaturesAndParams(FeatureVisitor& visitor,
+                                     std::string_view filter_prefix = "");
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FeatureListTest, CheckFeatureIdentity);

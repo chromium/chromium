@@ -9,6 +9,9 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
+
+static_assert(BUILDFLAG(IS_MAC));
 
 namespace device {
 

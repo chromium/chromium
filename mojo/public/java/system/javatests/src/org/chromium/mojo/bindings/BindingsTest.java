@@ -126,12 +126,7 @@ public class BindingsTest {
         checkConstantField(Shape.class.getField("TRIANGLE"), int.class, 3);
     }
 
-    /**
-     * Testing default values on structs.
-     *
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     */
+    /** Testing default values on structs. */
     @Test
     @SmallTest
     public void testStructDefaults()
@@ -173,11 +168,7 @@ public class BindingsTest {
         checkField(DefaultsTest.class.getField("a25"), long.class, test, -0x123456789L);
     }
 
-    /**
-     * Testing generation of the Foo class.
-     *
-     * @throws IllegalAccessException
-     */
+    /** Testing generation of the Foo class. */
     @Test
     @SmallTest
     public void testFooGeneration()

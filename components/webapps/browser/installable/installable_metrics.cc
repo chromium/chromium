@@ -90,6 +90,8 @@ std::ostream& operator<<(std::ostream& os, WebappInstallSource source) {
       return os << "webapk restore";
     case WebappInstallSource::OOBE_APP_RECOMMENDATIONS:
       return os << "oobe app recommendations";
+    case WebappInstallSource::WEB_INSTALL:
+      return os << "web install";
     case WebappInstallSource::COUNT:
       return os << "count";
   }
@@ -217,6 +219,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::ALMANAC_INSTALL_APP_URI:
     case WebappInstallSource::WEBAPK_RESTORE:
     case WebappInstallSource::OOBE_APP_RECOMMENDATIONS:
+    case WebappInstallSource::WEB_INSTALL:
       return true;
     case WebappInstallSource::IWA_GRAPHICAL_INSTALLER:
     case WebappInstallSource::IWA_DEV_UI:
@@ -228,8 +231,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::SYNC:
       return false;
     case WebappInstallSource::COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

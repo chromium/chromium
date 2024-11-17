@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_error_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_recording_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
@@ -59,38 +60,35 @@ const int kSmallestPossibleVpxBitRate = 75000;
 const int kDefaultVideoBitRate = 2500e3;  // 2.5Mbps
 const int kDefaultAudioBitRate = 128e3;   // 128kbps
 
-String StateToString(MediaRecorder::State state) {
+V8RecordingState::Enum StateToV8Enum(MediaRecorder::State state) {
   switch (state) {
     case MediaRecorder::State::kInactive:
-      return "inactive";
+      return V8RecordingState::Enum::kInactive;
     case MediaRecorder::State::kRecording:
-      return "recording";
+      return V8RecordingState::Enum::kRecording;
     case MediaRecorder::State::kPaused:
-      return "paused";
+      return V8RecordingState::Enum::kPaused;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
-String BitrateModeToString(AudioTrackRecorder::BitrateMode bitrateMode) {
+V8BitrateMode::Enum BitrateModeToV8Enum(
+    AudioTrackRecorder::BitrateMode bitrateMode) {
   switch (bitrateMode) {
     case AudioTrackRecorder::BitrateMode::kConstant:
-      return "constant";
+      return V8BitrateMode::Enum::kConstant;
     case AudioTrackRecorder::BitrateMode::kVariable:
-      return "variable";
+      return V8BitrateMode::Enum::kVariable;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 AudioTrackRecorder::BitrateMode GetBitrateModeFromOptions(
     const MediaRecorderOptions* const options) {
   if (options->hasAudioBitrateMode()) {
-    if (!WTF::CodeUnitCompareIgnoringASCIICase(options->audioBitrateMode(),
-                                               "constant"))
+    if (options->audioBitrateMode() == V8BitrateMode::Enum::kConstant) {
       return AudioTrackRecorder::BitrateMode::kConstant;
+    }
   }
 
   return AudioTrackRecorder::BitrateMode::kVariable;
@@ -246,17 +244,18 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
 
 MediaRecorder::~MediaRecorder() = default;
 
-String MediaRecorder::state() const {
-  return StateToString(state_);
+V8RecordingState MediaRecorder::state() const {
+  return V8RecordingState(StateToV8Enum(state_));
 }
 
-String MediaRecorder::audioBitrateMode() const {
+V8BitrateMode MediaRecorder::audioBitrateMode() const {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     // Return a valid enum value; variable is the default.
-    return BitrateModeToString(AudioTrackRecorder::BitrateMode::kVariable);
+    return V8BitrateMode(V8BitrateMode::Enum::kVariable);
   }
   DCHECK(recorder_handler_);
-  return BitrateModeToString(recorder_handler_->AudioBitrateMode());
+  return V8BitrateMode(
+      BitrateModeToV8Enum(recorder_handler_->AudioBitrateMode()));
 }
 
 void MediaRecorder::start(ExceptionState& exception_state) {
@@ -272,7 +271,7 @@ void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
   if (state_ != State::kInactive) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + StateToString(state_) + "'.");
+        "The MediaRecorder's state is '" + state().AsString() + "'.");
     return;
   }
 
@@ -334,7 +333,7 @@ void MediaRecorder::pause(ExceptionState& exception_state) {
   if (state_ == State::kInactive) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + StateToString(state_) + "'.");
+        "The MediaRecorder's state is 'inactive'.");
     return;
   }
   if (state_ == State::kPaused)
@@ -356,7 +355,7 @@ void MediaRecorder::resume(ExceptionState& exception_state) {
   if (state_ == State::kInactive) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + StateToString(state_) + "'.");
+        "The MediaRecorder's state is 'inactive'.");
     return;
   }
   if (state_ == State::kRecording)
@@ -377,12 +376,11 @@ void MediaRecorder::requestData(ExceptionState& exception_state) {
   if (state_ == State::kInactive) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + StateToString(state_) + "'.");
+        "The MediaRecorder's state is 'inactive'.");
     return;
   }
-  WriteData({}, /*last_in_slice=*/true,
-            base::Time::Now().InMillisecondsFSinceUnixEpoch(),
-            /*error_event=*/nullptr);
+
+  WriteData(/*data=*/{}, /*last_in_slice=*/true, /*error_event=*/nullptr);
 }
 
 bool MediaRecorder::isTypeSupported(ExecutionContext* context,
@@ -427,9 +425,8 @@ void MediaRecorder::ContextDestroyed() {
   if (blob_data_) {
     // Cache |blob_data_->length()| because of std::move in argument list.
     const uint64_t blob_data_length = blob_data_->length();
-    CreateBlobEvent(MakeGarbageCollected<Blob>(BlobDataHandle::Create(
-                        std::move(blob_data_), blob_data_length)),
-                    base::Time::Now().InMillisecondsFSinceUnixEpoch());
+    CreateBlobEvent(MakeGarbageCollected<Blob>(
+        BlobDataHandle::Create(std::move(blob_data_), blob_data_length)));
   }
 
   state_ = State::kInactive;
@@ -442,7 +439,6 @@ void MediaRecorder::ContextDestroyed() {
 
 void MediaRecorder::WriteData(base::span<const uint8_t> data,
                               bool last_in_slice,
-                              double timecode,
                               ErrorEvent* error_event) {
   if (!first_write_received_) {
     mime_type_ = recorder_handler_->ActualMimeType();
@@ -461,14 +457,14 @@ void MediaRecorder::WriteData(base::span<const uint8_t> data,
   if (!data.empty()) {
     blob_data_->AppendBytes(data);
   }
+
   if (!last_in_slice)
     return;
 
   // Cache |blob_data_->length()| because of std::move in argument list.
   const uint64_t blob_data_length = blob_data_->length();
-  CreateBlobEvent(MakeGarbageCollected<Blob>(BlobDataHandle::Create(
-                      std::move(blob_data_), blob_data_length)),
-                  timecode);
+  CreateBlobEvent(MakeGarbageCollected<Blob>(
+      BlobDataHandle::Create(std::move(blob_data_), blob_data_length)));
 }
 
 void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
@@ -498,7 +494,16 @@ void MediaRecorder::OnStreamChanged(const String& message) {
   }
 }
 
-void MediaRecorder::CreateBlobEvent(Blob* blob, double timecode) {
+void MediaRecorder::CreateBlobEvent(Blob* blob) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  double timecode = 0;
+  if (!blob_event_first_chunk_timecode_.has_value()) {
+    blob_event_first_chunk_timecode_ = now;
+  } else {
+    timecode =
+        (now - blob_event_first_chunk_timecode_.value()).InMillisecondsF();
+  }
+
   ScheduleDispatchEvent(MakeGarbageCollected<BlobEvent>(
       event_type_names::kDataavailable, blob, timecode));
 }
@@ -519,8 +524,7 @@ void MediaRecorder::StopRecording(ErrorEvent* error_event) {
   state_ = State::kInactive;
 
   recorder_handler_->Stop();
-  WriteData({}, /*last_in_slice=*/true,
-            base::Time::Now().InMillisecondsFSinceUnixEpoch(), error_event);
+  WriteData(/*data=*/{}, /*last_in_slice=*/true, error_event);
   ScheduleDispatchEvent(Event::Create(event_type_names::kStop));
   first_write_received_ = false;
 }

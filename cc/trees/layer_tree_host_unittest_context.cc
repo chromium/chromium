@@ -796,7 +796,7 @@ class LayerTreeHostContextTestLayersNotified : public LayerTreeHostContextTest {
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -888,12 +888,12 @@ class LayerTreeHostContextTestDontUseLostResources
         gfx::Size(4, 4), 0x80, 0x80, 0x80, base::TimeDelta());
     ASSERT_TRUE(color_video_frame_);
     hw_video_frame_ = VideoFrame::WrapSharedImage(
-        media::PIXEL_FORMAT_ARGB, shared_image, sync_token, GL_TEXTURE_2D,
+        media::PIXEL_FORMAT_ARGB, shared_image, sync_token,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 4, 4), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(hw_video_frame_);
     scaled_hw_video_frame_ = VideoFrame::WrapSharedImage(
-        media::PIXEL_FORMAT_ARGB, shared_image, sync_token, GL_TEXTURE_2D,
+        media::PIXEL_FORMAT_ARGB, shared_image, sync_token,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 3, 2), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(scaled_hw_video_frame_);
@@ -1049,7 +1049,7 @@ class ScrollbarLayerLostContext : public LayerTreeHostContextTest {
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -1133,8 +1133,7 @@ class UIResourceLostAfterCommit : public UIResourceLostTestSimple {
         EndTest();
         break;
       case 5:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1227,8 +1226,7 @@ class UIResourceLostBeforeCommit : public UIResourceLostTestSimple {
         EndTest();
         break;
       case 6:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1302,7 +1300,7 @@ class UIResourceLostBeforeActivateTree : public UIResourceLostTest {
         break;
       case 6:
         // Make sure no extra commits happened.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -1404,7 +1402,7 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
         EndTest();
         break;
       case 4:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

@@ -39,7 +39,9 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
       content::WebContents* web_contents,
       const GURL& url,
       base::OnceClosure initialized_callback,
-      PageInfoClosingCallback closing_callback);
+      PageInfoClosingCallback closing_callback,
+      bool allow_about_this_site,
+      std::optional<ContentSettingsType> type = std::nullopt);
 
   // PageInfoNavigationHandler:
   void OpenMainPage(base::OnceClosure initialized_callback) override;
@@ -61,7 +63,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
                      content::WebContents* web_contents,
                      const GURL& url,
                      base::OnceClosure initialized_callback,
-                     PageInfoClosingCallback closing_callback);
+                     PageInfoClosingCallback closing_callback,
+                     bool allow_about_this_site);
 
   // PageInfoBubbleViewBase:
   gfx::Size CalculatePreferredSize(

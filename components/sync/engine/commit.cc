@@ -44,8 +44,7 @@ std::string RandASCIIString(size_t length) {
 SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
   switch (syncer_error.type()) {
     case SyncerError::Type::kSuccess:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case SyncerError::Type::kNetworkError:
       return SyncCommitError::kNetworkError;
     case SyncerError::Type::kHttpError:

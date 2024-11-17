@@ -328,8 +328,8 @@ class CrosDisksClientImpl : public CrosDisksClient {
   void OnMount(chromeos::VoidDBusMethodCallback callback,
                base::Time start_time,
                dbus::Response* response) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("CrosDisksClient.MountTime",
-                               base::Time::Now() - start_time);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("CrosDisksClient.MountTime",
+                                          base::Time::Now() - start_time);
     std::move(callback).Run(response);
   }
 
@@ -337,8 +337,8 @@ class CrosDisksClientImpl : public CrosDisksClient {
   void OnUnmount(UnmountCallback callback,
                  base::Time start_time,
                  dbus::Response* response) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("CrosDisksClient.UnmountTime",
-                               base::Time::Now() - start_time);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("CrosDisksClient.UnmountTime",
+                                          base::Time::Now() - start_time);
 
     const char kUnmountHistogramName[] = "CrosDisksClient.UnmountError";
     if (!response) {
@@ -611,8 +611,8 @@ MountPoint::MountPoint(MountPoint&&) = default;
 MountPoint& MountPoint::operator=(MountPoint&&) = default;
 
 MountPoint::MountPoint() = default;
-MountPoint::MountPoint(const std::string_view source_path,
-                       const std::string_view mount_path,
+MountPoint::MountPoint(std::string_view source_path,
+                       std::string_view mount_path,
                        const MountType mount_type,
                        const MountError mount_error,
                        const int progress_percent,
@@ -877,7 +877,7 @@ base::FilePath CrosDisksClient::GetRemovableDiskMountPoint() {
 // static
 std::vector<std::string> CrosDisksClient::ComposeMountOptions(
     std::vector<std::string> options,
-    const std::string_view mount_label,
+    std::string_view mount_label,
     const MountAccessMode access_mode,
     const RemountOption remount) {
   options.push_back(access_mode == MountAccessMode::kReadWrite ? "rw" : "ro");

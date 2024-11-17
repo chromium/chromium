@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,7 +32,7 @@ constexpr char kTestExtensionUrl[] =
 class FakeExtensionWebRequestReporter
     : public mojom::ExtensionWebRequestReporter {
  public:
-  FakeExtensionWebRequestReporter() {}
+  FakeExtensionWebRequestReporter() = default;
 
   void SendWebRequestData(
       const std::string& origin_extension_id,
@@ -113,7 +112,6 @@ TEST_F(WebSocketSBExtensionsHandshakeThrottleTest, Construction) {}
 
 TEST_F(WebSocketSBExtensionsHandshakeThrottleTest,
        SendExtensionWebRequestData) {
-  base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl),
       blink::WebSecurityOrigin::CreateFromString(kTestExtensionUrl),
@@ -130,16 +128,10 @@ TEST_F(WebSocketSBExtensionsHandshakeThrottleTest,
             mojom::WebRequestProtocolType::kWebSocket);
   EXPECT_EQ(extension_web_request_reporter_.contact_initiator_type_,
             mojom::WebRequestContactInitiatorType::kExtension);
-
-  // A log of "false" represents the data being sent.
-  histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
-      false, 1);
 }
 
 TEST_F(WebSocketSBExtensionsHandshakeThrottleTest,
        SendExtensionWebRequestData_ContentScript) {
-  base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl), blink::WebSecurityOrigin(),
       blink::WebSecurityOrigin::CreateFromString(kTestExtensionUrl),
@@ -155,11 +147,6 @@ TEST_F(WebSocketSBExtensionsHandshakeThrottleTest,
             mojom::WebRequestProtocolType::kWebSocket);
   EXPECT_EQ(extension_web_request_reporter_.contact_initiator_type_,
             mojom::WebRequestContactInitiatorType::kContentScript);
-
-  // A log of "false" represents the data being sent.
-  histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
-      false, 1);
 }
 
 }  // namespace

@@ -14,10 +14,7 @@
     "contexts": [
       "privileged_extension"
     ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
+    "platforms": ["chromeos"],
     "channel": "stable"
   },
   "os.events": {
@@ -27,10 +24,7 @@
     "contexts": [
       "privileged_extension"
     ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
+    "platforms": ["chromeos"],
     "channel": "stable"
   },
   "os.management": {
@@ -41,10 +35,7 @@
     "contexts": [
       "privileged_extension"
     ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
+    "platforms": ["chromeos"],
     "channel": "stable"
   },
   "os.management.setAudioGain": {
@@ -64,10 +55,7 @@
     "contexts": [
       "privileged_extension"
     ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
+    "platforms": ["chromeos"],
     "channel": "stable"
   }
 }

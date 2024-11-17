@@ -91,6 +91,10 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
   void EnableFrameSinkManagerTestApi(
       mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) override {
   }
+  void SetupRenderInputRouterDelegateConnection(
+      uint32_t grouping_id,
+      mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+          rir_delegate_client_remote) override {}
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;

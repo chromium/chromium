@@ -856,26 +856,209 @@ TEST_F(AllocatorShimTest, OptimizeAllocatorDispatchTable) {
 #if PA_BUILDFLAG( \
     ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
 
-void MockFreeWithAdvancedChecks(void* address, void* context);
-void* MockReallocWithAdvancedChecks(void* address, size_t size, void* context);
+void* MockAllocWithAdvancedChecks(size_t, void*);
+
+void* MockAllocUncheckedWithAdvancedChecks(size_t, void*);
+
+void* MockAllocZeroInitializedWithAdvancedChecks(size_t n, size_t, void*);
+
+void* MockAllocAlignedWithAdvancedChecks(size_t, size_t, void*);
+
+void* MockReallocWithAdvancedChecks(void*, size_t, void*);
+
+void* MockReallocUncheckedWithAdvancedChecks(void*, size_t, void*);
+
+void MockFreeWithAdvancedChecks(void*, void*);
+
+size_t MockGetSizeEstimateWithAdvancedChecks(void*, void*);
+
+size_t MockGoodSizeWithAdvancedChecks(size_t, void*);
+
+bool MockClaimedAddressWithAdvancedChecks(void*, void*);
+
+unsigned MockBatchMallocWithAdvancedChecks(size_t, void**, unsigned, void*);
+
+void MockBatchFreeWithAdvancedChecks(void**, unsigned, void*);
+
+void MockFreeDefiniteSizeWithAdvancedChecks(void*, size_t, void*);
+
+void MockTryFreeDefaultWithAdvancedChecks(void*, void*);
+
+void* MockAlignedMallocWithAdvancedChecks(size_t, size_t, void*);
+
+void* MockAlignedMallocUncheckedWithAdvancedChecks(size_t, size_t, void*);
+
+void* MockAlignedReallocWithAdvancedChecks(void*, size_t, size_t, void*);
+
+void* MockAlignedReallocUncheckedWithAdvancedChecks(void*,
+                                                    size_t,
+                                                    size_t,
+                                                    void*);
+
+void MockAlignedFreeWithAdvancedChecks(void*, void*);
 
 std::atomic_size_t g_mock_free_with_advanced_checks_count;
 
 AllocatorDispatch g_mock_dispatch_for_advanced_checks = {
+    .alloc_function = &MockAllocWithAdvancedChecks,
+    .alloc_unchecked_function = &MockAllocUncheckedWithAdvancedChecks,
+    .alloc_zero_initialized_function =
+        &MockAllocZeroInitializedWithAdvancedChecks,
+    .alloc_aligned_function = &MockAllocAlignedWithAdvancedChecks,
     .realloc_function = &MockReallocWithAdvancedChecks,
+    .realloc_unchecked_function = &MockReallocUncheckedWithAdvancedChecks,
     .free_function = &MockFreeWithAdvancedChecks,
+    .get_size_estimate_function = &MockGetSizeEstimateWithAdvancedChecks,
+    .good_size_function = &MockGoodSizeWithAdvancedChecks,
+    .claimed_address_function = &MockClaimedAddressWithAdvancedChecks,
+    .batch_malloc_function = &MockBatchMallocWithAdvancedChecks,
+    .batch_free_function = &MockBatchFreeWithAdvancedChecks,
+    .free_definite_size_function = &MockFreeDefiniteSizeWithAdvancedChecks,
+    .try_free_default_function = &MockTryFreeDefaultWithAdvancedChecks,
+    .aligned_malloc_function = &MockAlignedMallocWithAdvancedChecks,
+    .aligned_malloc_unchecked_function =
+        &MockAlignedMallocUncheckedWithAdvancedChecks,
+    .aligned_realloc_function = &MockAlignedReallocWithAdvancedChecks,
+    .aligned_realloc_unchecked_function =
+        &MockAlignedReallocUncheckedWithAdvancedChecks,
+    .aligned_free_function = &MockAlignedFreeWithAdvancedChecks,
     .next = nullptr,
 };
 
-void MockFreeWithAdvancedChecks(void* address, void* context) {
-  g_mock_free_with_advanced_checks_count++;
-  g_mock_dispatch_for_advanced_checks.next->free_function(address, context);
+void* MockAllocWithAdvancedChecks(size_t size, void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->alloc_function(size,
+                                                                  context);
+}
+
+void* MockAllocUncheckedWithAdvancedChecks(size_t size, void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->alloc_unchecked_function(
+      size, context);
+}
+
+void* MockAllocZeroInitializedWithAdvancedChecks(size_t n,
+                                                 size_t size,
+                                                 void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next
+      ->alloc_zero_initialized_function(n, size, context);
+}
+
+void* MockAllocAlignedWithAdvancedChecks(size_t alignment,
+                                         size_t size,
+                                         void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->alloc_aligned_function(
+      alignment, size, context);
 }
 
 void* MockReallocWithAdvancedChecks(void* address, size_t size, void* context) {
   // no-op.
   return g_mock_dispatch_for_advanced_checks.next->realloc_function(
       address, size, context);
+}
+
+void* MockReallocUncheckedWithAdvancedChecks(void* address,
+                                             size_t size,
+                                             void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->realloc_unchecked_function(
+      address, size, context);
+}
+
+void MockFreeWithAdvancedChecks(void* address, void* context) {
+  g_mock_free_with_advanced_checks_count++;
+  g_mock_dispatch_for_advanced_checks.next->free_function(address, context);
+}
+
+size_t MockGetSizeEstimateWithAdvancedChecks(void* address, void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->get_size_estimate_function(
+      address, context);
+}
+
+size_t MockGoodSizeWithAdvancedChecks(size_t size, void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->good_size_function(size,
+                                                                      context);
+}
+
+bool MockClaimedAddressWithAdvancedChecks(void* address, void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->claimed_address_function(
+      address, context);
+}
+
+unsigned MockBatchMallocWithAdvancedChecks(size_t size,
+                                           void** results,
+                                           unsigned num_requested,
+                                           void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->batch_malloc_function(
+      size, results, num_requested, context);
+}
+
+void MockBatchFreeWithAdvancedChecks(void** to_be_freed,
+                                     unsigned num_to_be_freed,
+                                     void* context) {
+  // no-op.
+  g_mock_dispatch_for_advanced_checks.next->batch_free_function(
+      to_be_freed, num_to_be_freed, context);
+}
+
+void MockFreeDefiniteSizeWithAdvancedChecks(void* address,
+                                            size_t size,
+                                            void* context) {
+  g_mock_free_with_advanced_checks_count++;
+  g_mock_dispatch_for_advanced_checks.next->free_definite_size_function(
+      address, size, context);
+}
+
+void MockTryFreeDefaultWithAdvancedChecks(void* address, void* context) {
+  // no-op.
+  g_mock_dispatch_for_advanced_checks.next->try_free_default_function(address,
+                                                                      context);
+}
+
+void* MockAlignedMallocWithAdvancedChecks(size_t size,
+                                          size_t alignment,
+                                          void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->aligned_malloc_function(
+      size, alignment, context);
+}
+
+void* MockAlignedMallocUncheckedWithAdvancedChecks(size_t size,
+                                                   size_t alignment,
+                                                   void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next
+      ->aligned_malloc_unchecked_function(size, alignment, context);
+}
+
+void* MockAlignedReallocWithAdvancedChecks(void* address,
+                                           size_t size,
+                                           size_t alignment,
+                                           void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->aligned_realloc_function(
+      address, size, alignment, context);
+}
+
+void* MockAlignedReallocUncheckedWithAdvancedChecks(void* address,
+                                                    size_t size,
+                                                    size_t alignment,
+                                                    void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next
+      ->aligned_realloc_unchecked_function(address, size, alignment, context);
+}
+
+void MockAlignedFreeWithAdvancedChecks(void* address, void* context) {
+  // no-op.
+  g_mock_dispatch_for_advanced_checks.next->aligned_free_function(address,
+                                                                  context);
 }
 
 TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
@@ -898,8 +1081,7 @@ TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
   EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
   EXPECT_EQ(g_mock_free_with_advanced_checks_count, 0u);
 
-  InstallDispatchToPartitionAllocWithAdvancedChecks(
-      &g_mock_dispatch_for_advanced_checks);
+  InstallCustomDispatchForTesting(&g_mock_dispatch_for_advanced_checks);
 
   alloc_ptr = new int;
   delete alloc_ptr;
@@ -908,7 +1090,7 @@ TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
   EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
   EXPECT_GE(g_mock_free_with_advanced_checks_count, 1u);
 
-  UninstallDispatchToPartitionAllocWithAdvancedChecks();
+  UninstallCustomDispatch();
   g_mock_free_with_advanced_checks_count = 0u;
 
   alloc_ptr = new int;

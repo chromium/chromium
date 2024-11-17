@@ -95,7 +95,6 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestDefaultImpl) {
   EXPECT_TRUE(config->GetDownloadPreference().empty());
 
   EXPECT_TRUE(config->EnabledCupSigning());
-  EXPECT_TRUE(config->EnabledDeltas());
   EXPECT_FALSE(config->EnabledBackgroundDownloader());
 }
 

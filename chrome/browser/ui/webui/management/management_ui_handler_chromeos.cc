@@ -59,12 +59,6 @@
 #include "ui/chromeos/devicetype_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/strings/escape.h"
-#include "chrome/browser/ui/managed_ui.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 const char kAccountManagedInfo[] = "accountManagedInfo";
@@ -165,8 +159,7 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
     case DeviceReportingType::kFileEvents:
       return "file events";
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown device reporting type";
-      return "device";
+      NOTREACHED() << "Unknown device reporting type";
   }
 }
 
@@ -436,19 +429,6 @@ bool IsCloudDestination(policy::local_user_files::FileSaveDestination dest) {
 
 ManagementUIHandlerChromeOS::ManagementUIHandlerChromeOS(Profile* profile)
     : ManagementUIHandler(profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  // Get device report sources.
-  if (service->IsAvailable<crosapi::mojom::DeviceSettingsService>() &&
-      service->GetInterfaceVersion<crosapi::mojom::DeviceSettingsService>() >=
-          static_cast<int>(crosapi::mojom::DeviceSettingsService::
-                               kGetDeviceReportSourcesMinVersion)) {
-    service->GetRemote<crosapi::mojom::DeviceSettingsService>()
-        ->GetDeviceReportSources(base::BindOnce(
-            &ManagementUIHandlerChromeOS::OnGotDeviceReportSources,
-            weak_factory_.GetWeakPtr()));
-  }
-#endif
   // profile is unset during unittest, in which case, we can initial device
   // managed state in ctor either. Hence skip the process.
   if (!profile) {
@@ -667,16 +647,6 @@ base::Value::Dict ManagementUIHandlerChromeOS::GetContextualManagedData(
   AddMonitoredNetworkPrivacyDisclosure(&response);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  response.Set("pageSubtitle", chrome::GetManagementPageSubtitle(profile));
-  response.Set("browserManagementNotice",
-               l10n_util::GetStringFUTF16(
-                   managed() ? IDS_MANAGEMENT_BROWSER_NOTICE
-                             : IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
-                   chrome::kManagedUiLearnMoreUrl,
-                   base::EscapeForHTML(l10n_util::GetStringUTF16(
-                       IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
-#endif
   if (enterprise_manager.empty()) {
     response.Set(
         "extensionReportingSubtitle",
@@ -792,15 +762,6 @@ void ManagementUIHandlerChromeOS::NotifyPluginVmDataCollectionUpdated() {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ManagementUIHandlerChromeOS::OnGotDeviceReportSources(
-    base::Value::List report_sources,
-    bool plugin_vm_data_collection_enabled) {
-  report_sources_ = std::move(report_sources);
-  plugin_vm_data_collection_enabled_ = plugin_vm_data_collection_enabled;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ManagementUIHandlerChromeOS::GetManagementStatus(
     Profile* profile,

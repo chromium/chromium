@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_window_attribution.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
@@ -17,6 +18,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class V8ScriptInvokerType;
 
 class PerformanceScriptTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
@@ -40,8 +43,8 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   WTF::String sourceURL() const;
   WTF::String sourceFunctionName() const;
   int32_t sourceCharPosition() const;
-  const AtomicString& windowAttribution() const;
-  AtomicString invokerType() const;
+  V8ScriptWindowAttribution windowAttribution() const;
+  V8ScriptInvokerType invokerType() const;
   AtomicString invoker() const;
   void Trace(Visitor*) const override;
 
@@ -51,7 +54,7 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   base::TimeTicks time_origin_;
   bool cross_origin_isolated_capability_;
   Member<ScriptTimingInfo> info_;
-  AtomicString window_attribution_;
+  V8ScriptWindowAttribution::Enum window_attribution_;
 };
 
 }  // namespace blink

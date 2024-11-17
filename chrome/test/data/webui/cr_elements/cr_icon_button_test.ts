@@ -4,7 +4,7 @@
 
 // clang-format off
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';

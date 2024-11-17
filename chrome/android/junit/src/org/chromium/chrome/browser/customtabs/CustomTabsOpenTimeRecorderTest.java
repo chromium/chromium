@@ -17,7 +17,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,7 +26,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsOpenTimeRecorder.CloseCause;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
@@ -48,14 +46,12 @@ public class CustomTabsOpenTimeRecorderTest {
     @Mock private BrowserServicesIntentDataProvider mIntent;
 
     private CustomTabsOpenTimeRecorder mRecorder;
-
-    @Rule public JniMocker jniMocker = new JniMocker();
     @Mock private CustomTabsOpenTimeRecorder.Natives mNativeMock;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        jniMocker.mock(CustomTabsOpenTimeRecorderJni.TEST_HOOKS, mNativeMock);
+        CustomTabsOpenTimeRecorderJni.setInstanceForTesting(mNativeMock);
         ContextUtils.initApplicationContextForTests(mAppContext);
     }
 

@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/attribution_reporting/features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
@@ -17,7 +18,7 @@
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -127,8 +128,7 @@ std::ostream& operator<<(std::ostream& stream, OriginTrialTokenStatus status) {
     case OriginTrialTokenStatus::kUnknownTrial:
       return stream << "kUnknownTrial";
   }
-  NOTREACHED_IN_MIGRATION();
-  return stream;
+  NOTREACHED();
 #else
   return stream << (static_cast<int>(status));
 #endif  // ifndef NDEBUG
@@ -529,8 +529,7 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   }
 
   if (trial_name == "FoldableAPIs") {
-    return base::FeatureList::IsEnabled(features::kViewportSegments) &&
-           base::FeatureList::IsEnabled(features::kDevicePosture);
+    return base::FeatureList::IsEnabled(features::kViewportSegments);
   }
 
   if (trial_name == "PermissionElement") {
@@ -546,22 +545,33 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kLanguageDetectionAPI);
   }
 
+  if (trial_name == "AIPromptAPIForExtension") {
+    return base::FeatureList::IsEnabled(
+        features::kEnableAIPromptAPIForExtension);
+  }
+
+  if (trial_name == "TranslationAPI") {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    return base::FeatureList::IsEnabled(features::kEnableTranslationAPI);
+#else
+    return false;
+#endif
+  }
+
   return true;
 }
 
 OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
     const String& trial_name,
     base::Time expiry_time) {
-  Vector<mojom::blink::OriginTrialFeature> origin_trial_features =
-      Vector<mojom::blink::OriginTrialFeature>();
   if (!CanEnableTrialFromName(trial_name)) {
     DVLOG(1) << "EnableTrialFromName: cannot enable trial " << trial_name;
-    OriginTrialFeaturesEnabled result = {OriginTrialStatus::kTrialNotAllowed,
-                                         origin_trial_features};
-    return result;
+    return {OriginTrialStatus::kTrialNotAllowed,
+            Vector<mojom::blink::OriginTrialFeature>()};
   }
 
   bool did_enable_feature = false;
+  Vector<mojom::blink::OriginTrialFeature> origin_trial_features;
   for (mojom::blink::OriginTrialFeature feature :
        origin_trials::FeaturesForTrial(trial_name.Utf8())) {
     if (!origin_trials::FeatureEnabledForOS(feature)) {
@@ -589,11 +599,10 @@ OriginTrialFeaturesEnabled OriginTrialContext::EnableTrialFromName(
         feature_expiry_times_.Set(implied_feature, expiry_time);
     }
   }
-  OriginTrialFeaturesEnabled result = {
-      (did_enable_feature ? OriginTrialStatus::kEnabled
-                          : OriginTrialStatus::kOSNotSupported),
-      origin_trial_features};
-  return result;
+  OriginTrialStatus status = did_enable_feature
+                                 ? OriginTrialStatus::kEnabled
+                                 : OriginTrialStatus::kOSNotSupported;
+  return {status, std::move(origin_trial_features)};
 }
 
 bool OriginTrialContext::EnableTrialFromToken(const String& token,

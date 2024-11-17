@@ -15,10 +15,10 @@ public interface AccountInfoService {
         void onAccountInfoUpdated(AccountInfo accountInfo);
     }
 
-    /**
-     * Gets the {@link AccountInfo} of the given account email. TODO(crbug.com/40284908): Replace
-     * all calls to this method by calls to IdentityManager.findExtendedAccountInfoByEmailAddress().
-     */
+    /** Gets the {@link AccountInfo} of the given account email. */
+    // TODO(crbug.com/341948846): Replace all calls to this method by calls to
+    // IdentityManager.findExtendedAccountInfoByEmailAddress().
+    @Deprecated(since = "Use IdentityManager.findExtendedAccountInfoByEmailAddress() instead")
     Promise<AccountInfo> getAccountInfoByEmail(String email);
 
     /** Adds an observer which will be invoked when an {@link AccountInfo} is updated. */

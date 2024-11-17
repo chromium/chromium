@@ -188,7 +188,7 @@ PoissonAllocationSampler::PoissonAllocationSampler() {
 
 // static
 void PoissonAllocationSampler::Init() {
-  [[maybe_unused]] static bool init_once = []() {
+  [[maybe_unused]] static bool init_once = [] {
     // Touch thread local data on initialization to enforce proper setup of
     // underlying storage system.
     GetThreadLocalData();

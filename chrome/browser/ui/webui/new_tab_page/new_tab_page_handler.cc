@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
@@ -37,6 +38,8 @@
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/promos/promos_pref_names.h"
+#include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -56,6 +59,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -66,10 +70,16 @@
 #include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/qr_code_generator/bitmap_generator.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_provider_logos/logo_service.h"
 #include "components/search_provider_logos/switches.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -79,8 +89,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
@@ -418,6 +430,27 @@ base::Value::Dict MakeModuleInteractionTriggerIdDictionary() {
   return std::move(*value_with_error).TakeDict();
 }
 
+std::string MakeMobilePromoQRCode() {
+  std::string qr_code_url = ntp_features::GetMobilePromoTargetURL();
+  auto generated_code = qr_code_generator::GenerateImage(
+      base::as_byte_span(qr_code_url), qr_code_generator::ModuleStyle::kCircles,
+      qr_code_generator::LocatorStyle::kRounded,
+      qr_code_generator::CenterImage::kDino,
+      qr_code_generator::QuietZone::kIncluded);
+
+  if (!generated_code.has_value()) {
+    return "";
+  }
+
+  SkBitmap bitmap = generated_code.value().GetRepresentation(1.0f).GetBitmap();
+  std::optional<std::vector<uint8_t>> encoded_bitmap =
+      gfx::WebpCodec::Encode(bitmap, /*quality=*/100);
+  if (!encoded_bitmap) {
+    return "";
+  }
+  return base::Base64Encode(encoded_bitmap.value());
+}
+
 }  // namespace
 
 // static
@@ -434,6 +467,9 @@ NewTabPageHandler::NewTabPageHandler(
     NtpCustomBackgroundService* ntp_custom_background_service,
     ThemeService* theme_service,
     search_provider_logos::LogoService* logo_service,
+    syncer::SyncService* sync_service,
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service,
     content::WebContents* web_contents,
     std::unique_ptr<NewTabPageFeaturePromoHelper>
         customize_chrome_feature_promo_helper,
@@ -449,6 +485,8 @@ NewTabPageHandler::NewTabPageHandler(
       logo_service_(logo_service),
       theme_provider_(webui::GetThemeProviderDeprecated(web_contents)),
       theme_service_(theme_service),
+      sync_service_(sync_service),
+      segmentation_platform_service_(segmentation_platform_service),
       profile_(profile),
       web_contents_(web_contents),
       feature_promo_helper_(std::move(customize_chrome_feature_promo_helper)),
@@ -540,6 +578,8 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kNtpModulesInteractedCountDict);
   registry->RegisterDictionaryPref(prefs::kNtpModulesLoadedCountDict);
   registry->RegisterIntegerPref(prefs::kNtpWallpaperSearchButtonShownCount, 0);
+  registry->RegisterBooleanPref(prefs::kNtpOutlookModuleVisible, false);
+  registry->RegisterBooleanPref(prefs::kNtpSharepointModuleVisible, false);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
@@ -786,11 +826,9 @@ void NewTabPageHandler::OnModulesLoadedWithData(
 
 void NewTabPageHandler::OnModuleUsed(const std::string& module_id) {
   auto* tab = web_contents_.get();
-  feature_promo_helper_->RecordPromoFeatureUsage(
-      feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature, tab);
   // Close the associated IPH promo if open, as interaction with a module
   // indicates the user is aware of how to interact with modules.
-  feature_promo_helper_->CloseFeaturePromo(
+  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
       feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature, tab);
 
   IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict, module_id);
@@ -876,13 +914,9 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
 
   // Record usage for customize chrome promo.
   auto* tab = web_contents_.get();
-  feature_promo_helper_->RecordPromoFeatureUsage(
+  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
       feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, tab);
-  feature_promo_helper_->RecordPromoFeatureUsage(
-      feature_engagement::kIPHDesktopCustomizeChromeFeature, tab);
-  feature_promo_helper_->CloseFeaturePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, tab);
-  feature_promo_helper_->CloseFeaturePromo(
+  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
       feature_engagement::kIPHDesktopCustomizeChromeFeature, tab);
 }
 
@@ -922,7 +956,7 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
           web_contents_.get());
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1003,7 +1037,7 @@ void NewTabPageHandler::OnCustomizeDialogAction(
       event = NTP_CUSTOMIZE_SHORTCUT_VISIBILITY_TOGGLE_CLICKED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   LogEvent(event);
 }
@@ -1023,8 +1057,7 @@ void NewTabPageHandler::OnDoodleImageClicked(
       event = NTP_STATIC_LOGO_CLICKED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   LogEvent(event);
 
@@ -1072,8 +1105,7 @@ void NewTabPageHandler::OnDoodleShared(
       channel_id = 6;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   std::string query =
       base::StringPrintf("gen_204?atype=i&ct=doodle&ntp=2&cad=sh,%d,ct:%s",
@@ -1114,15 +1146,15 @@ void NewTabPageHandler::OnCollectionInfoAvailable() {
 
   base::TimeDelta duration =
       base::TimeTicks::Now() - background_collections_request_start_time_;
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "NewTabPage.BackgroundService.Collections.RequestLatency", duration);
   // Any response where no collections are returned is considered a failure.
   if (ntp_background_service_->collection_info().empty()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Collections.RequestLatency.Failure",
         duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Collections.RequestLatency.Success",
         duration);
   }
@@ -1145,14 +1177,14 @@ void NewTabPageHandler::OnCollectionImagesAvailable() {
 
   base::TimeDelta duration =
       base::TimeTicks::Now() - background_images_request_start_time_;
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "NewTabPage.BackgroundService.Images.RequestLatency", duration);
   // Any response where no images are returned is considered a failure.
   if (ntp_background_service_->collection_images().empty()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Images.RequestLatency.Failure", duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Images.RequestLatency.Success", duration);
   }
 
@@ -1188,23 +1220,24 @@ void NewTabPageHandler::OnNtpBackgroundServiceShuttingDown() {
 void NewTabPageHandler::OnPromoDataUpdated() {
   if (promo_load_start_time_.has_value()) {
     base::TimeDelta duration = base::TimeTicks::Now() - *promo_load_start_time_;
-    UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2", duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2",
+                                          duration);
     if (promo_service_->promo_status() == PromoService::Status::OK_WITH_PROMO) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
           "NewTabPage.Promos.RequestLatency2.SuccessWithPromo", duration);
     } else if (promo_service_->promo_status() ==
                PromoService::Status::OK_BUT_BLOCKED) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
           "NewTabPage.Promos.RequestLatency2.SuccessButBlocked", duration);
     } else if (promo_service_->promo_status() ==
                PromoService::Status::OK_WITHOUT_PROMO) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
           "NewTabPage.Promos.RequestLatency2.SuccessWithoutPromo", duration);
     } else {
       DCHECK(promo_service_->promo_status() !=
              PromoService::Status::NOT_UPDATED);
-      UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
-                                 duration);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "NewTabPage.Promos.RequestLatency2.Failure", duration);
     }
     promo_load_start_time_ = std::nullopt;
   }
@@ -1462,4 +1495,136 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
   }
 
   return kNoTriggerId;
+}
+
+void NewTabPageHandler::GetMobilePromoQrCode(
+    GetMobilePromoQrCodeCallback callback) {
+  CheckIfUserEligibleForMobilePromo(std::move(callback));
+}
+
+void NewTabPageHandler::CheckIfUserEligibleForMobilePromo(
+    GetMobilePromoQrCodeCallback callback) {
+  // Skip eligibility checks if the promo is forced.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceNtpMobilePromo)) {
+    std::move(callback).Run(MakeMobilePromoQRCode());
+    return;
+  }
+  // Verify that the user is currently syncing their preferences before
+  // bothering to query segmentation.
+  // TODO(crbug.com/369871205): Also check other restrictions (e.g. user hasn't
+  // seen other mobile promos recently, user hasn't seen this module too many
+  // times, user hasn't dismissed this promo).
+  if (promos_utils::ShouldShowIOSDesktopNtpPromo(profile_, sync_service_)) {
+    auto input_context =
+        base::MakeRefCounted<segmentation_platform::InputContext>();
+    input_context->metadata_args.emplace(
+        "active_days_limit", promos_utils::kiOSPasswordPromoLookbackWindow);
+    input_context->metadata_args.emplace(
+        "wait_for_device_info_in_seconds",
+        segmentation_platform::processing::ProcessedValue(0));
+
+    segmentation_platform::PredictionOptions options;
+    options.on_demand_execution = true;
+
+    // Query segmentation platform for detailed data.
+    segmentation_platform_service_->GetClassificationResult(
+        segmentation_platform::kDeviceSwitcherKey, options, input_context,
+        base::BindOnce(
+            &NewTabPageHandler::HandleMobilePromoSegmentationResponse,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            base::Time::Now()));
+    return;
+  }
+
+  std::move(callback).Run("");
+}
+
+void NewTabPageHandler::HandleMobilePromoSegmentationResponse(
+    GetMobilePromoQrCodeCallback callback,
+    base::Time request_start_time,
+    const segmentation_platform::ClassificationResult& result) {
+  base::TimeDelta request_duration = base::Time::Now() - request_start_time;
+  switch (result.status) {
+    case segmentation_platform::PredictionStatus::kNotReady:
+      base::UmaHistogramTimes(
+          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.NotReady."
+          "Duration",
+          request_duration);
+      break;
+    case segmentation_platform::PredictionStatus::kFailed:
+      base::UmaHistogramTimes(
+          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Failed."
+          "Duration",
+          request_duration);
+      break;
+    case segmentation_platform::PredictionStatus::kSucceeded:
+      base::UmaHistogramTimes(
+          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Succeeded."
+          "Duration",
+          request_duration);
+      break;
+    default:
+      base::UmaHistogramTimes(
+          "NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.Unknown."
+          "Duration",
+          request_duration);
+      break;
+  }
+  if (promos_utils::UserNotClassifiedAsMobileDeviceSwitcher(result)) {
+    std::move(callback).Run(MakeMobilePromoQRCode());
+    return;
+  }
+
+  std::move(callback).Run("");
+}
+
+void NewTabPageHandler::OnMobilePromoShown() {
+  // Don't change prefs if promo is forced.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceNtpMobilePromo)) {
+    return;
+  }
+
+  promos_utils::IOSDesktopNtpPromoShown(profile_->GetPrefs());
+  int appearance_count =
+      profile_->GetPrefs()
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .size();
+  base::UmaHistogramCounts100("NewTabPage.Promos.MobilePromo.Displayed",
+                              appearance_count);
+}
+
+void NewTabPageHandler::OnDismissMobilePromo() {
+  // Don't change prefs if promo is forced.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceNtpMobilePromo)) {
+    return;
+  }
+
+  int appearance_count =
+      profile_->GetPrefs()
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .size();
+  base::UmaHistogramCounts100("NewTabPage.Promos.MobilePromo.Dismiss",
+                              appearance_count);
+  profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
+                                   true);
+}
+
+void NewTabPageHandler::OnUndoDismissMobilePromo() {
+  // Don't change prefs if promo is forced.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceNtpMobilePromo)) {
+    return;
+  }
+
+  int appearance_count =
+      profile_->GetPrefs()
+          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
+          .size();
+  base::UmaHistogramCounts100("NewTabPage.Promos.MobilePromo.DismissUndone",
+                              appearance_count);
+  profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
+                                   false);
 }

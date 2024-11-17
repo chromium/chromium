@@ -92,7 +92,7 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:[self familyManagementURL]];
-  [handler closeSettingsUIAndOpenURL:command];
+  [handler closePresentedViewsAndOpenURL:command];
   [self.delegate familyPromoCoordinatorWasDismissed:self];
 }
 

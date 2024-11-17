@@ -11,9 +11,19 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ui/base/page_transition_types.h"
 
+class AutocompleteController;
+class FaviconCache;
 class GURL;
+
+namespace bookmarks {
+
+class BookmarkModel;
+
+}  // namespace bookmarks
 
 namespace app_list {
 
@@ -66,6 +76,33 @@ bool IsDriveUrl(const GURL& url);
 // sorted in descending order of priority.
 void RemoveDuplicateResults(
     std::vector<std::unique_ptr<OmniboxResult>>& results);
+
+// Returns the UI page transition that corresponds to the given crosapi page
+// transition.
+ui::PageTransition PageTransitionToUiPageTransition(
+    crosapi::mojom::SearchResult::PageTransition transition);
+
+// Creates an Omnibox answer card result from the AutocompleteMatch. Match must
+// either have its answer field populated or be a calculator result.
+crosapi::mojom::SearchResultPtr CreateAnswerResult(
+    const AutocompleteMatch& match,
+    AutocompleteController* controller,
+    std::u16string_view query,
+    const AutocompleteInput& input);
+
+// Creates an Omnibox search result from the AutocompleteMatch. Match must not
+// have its answer field populated or be a calculator result.
+crosapi::mojom::SearchResultPtr CreateResult(
+    const AutocompleteMatch& match,
+    AutocompleteController* controller,
+    FaviconCache* favicon_cache,
+    bookmarks::BookmarkModel* bookmark_model,
+    const AutocompleteInput& input);
+
+// Convenience function to compare crosapi bools.
+inline bool OptionalBoolIsTrue(crosapi::mojom::SearchResult::OptionalBool b) {
+  return b == crosapi::mojom::SearchResult::OptionalBool::kTrue;
+}
 
 }  // namespace app_list
 

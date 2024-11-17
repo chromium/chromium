@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/media_log.h"
@@ -13,18 +14,19 @@
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
+#include "ui/gfx/buffer_types.h"
 
 namespace media {
 
 namespace {
 
-BASE_FEATURE(kVaapiVideoDecodeLinuxZeroCopyGL,
-             "VaapiVideoDecodeLinuxZeroCopyGL",
+BASE_FEATURE(kAcceleratedVideoDecodeLinuxZeroCopyGL,
+             "AcceleratedVideoDecodeLinuxZeroCopyGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 VideoDecoderType GetPreferredLinuxDecoderImplementation() {
   // VaapiVideoDecoder flag is required for VaapiVideoDecoder.
-  if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux)) {
+  if (!base::FeatureList::IsEnabled(kAcceleratedVideoDecodeLinux)) {
     return VideoDecoderType::kUnknown;
   }
 
@@ -47,7 +49,8 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
 }
 
 std::vector<Fourcc> GetPreferredRenderableFourccs(
-    const gpu::GpuPreferences& gpu_preferences) {
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuFeatureInfo& gpu_feature_info) {
   std::vector<Fourcc> renderable_fourccs;
 #if BUILDFLAG(ENABLE_VULKAN)
   // Support for zero-copy NV12/P010 textures preferentially.
@@ -56,13 +59,29 @@ std::vector<Fourcc> GetPreferredRenderableFourccs(
     renderable_fourccs.emplace_back(Fourcc::P010);
   } else
 #endif  // BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(IS_OZONE)
     // Allow zero-copy formats with GL for testing or in controlled
     // environments.
     if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL &&
-        base::FeatureList::IsEnabled(kVaapiVideoDecodeLinuxZeroCopyGL)) {
-      renderable_fourccs.emplace_back(Fourcc::NV12);
-      renderable_fourccs.emplace_back(Fourcc::P010);
+        base::FeatureList::IsEnabled(kAcceleratedVideoDecodeLinuxZeroCopyGL)) {
+      // Importing NV12 and P010 buffers requires EGL_EXT_image_dma_buf_import.
+      // GLX can only import native pixmap of format AR24. Ozone expose this
+      // capability through gpu_feature_info so we can selectively allow hw
+      // accelerated formats.
+      if (base::Contains(
+              gpu_feature_info
+                  .supported_buffer_formats_for_gl_native_pixmap_import,
+              gfx::BufferFormat::YUV_420_BIPLANAR)) {
+        renderable_fourccs.emplace_back(Fourcc::NV12);
+      }
+      if (base::Contains(
+              gpu_feature_info
+                  .supported_buffer_formats_for_gl_native_pixmap_import,
+              gfx::BufferFormat::P010)) {
+        renderable_fourccs.emplace_back(Fourcc::P010);
+      }
     }
+#endif  // BUILDFLAG(IS_OZONE)
 
   // Support 1-copy argb textures.
   //
@@ -79,18 +98,25 @@ std::vector<Fourcc> GetPreferredRenderableFourccs(
 VideoDecoderType GetActualPlatformDecoderImplementation(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
-  // On linux, Vaapi has GL restrictions.
+  // On linux, Vaapi and V4L2 have GL restrictions.
   switch (GetPreferredLinuxDecoderImplementation()) {
     case VideoDecoderType::kUnknown:
       return VideoDecoderType::kUnknown;
     case VideoDecoderType::kOutOfProcess:
       return VideoDecoderType::kOutOfProcess;
     case VideoDecoderType::kV4L2:
+      if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL) {
+        if (base::FeatureList::IsEnabled(kAcceleratedVideoDecodeLinuxGL)) {
+          return VideoDecoderType::kV4L2;
+        } else {
+          return VideoDecoderType::kUnknown;
+        }
+      }
       return VideoDecoderType::kV4L2;
     case VideoDecoderType::kVaapi: {
       // Allow VaapiVideoDecoder on GL.
       if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL) {
-        if (base::FeatureList::IsEnabled(kVaapiVideoDecodeLinuxGL)) {
+        if (base::FeatureList::IsEnabled(kAcceleratedVideoDecodeLinuxGL)) {
           return VideoDecoderType::kVaapi;
         } else {
           return VideoDecoderType::kUnknown;
@@ -170,7 +196,7 @@ class GpuMojoMediaClientLinux final : public GpuMojoMediaClient {
         return VideoDecoderPipeline::Create(
             gpu_workarounds_, traits.task_runner, std::move(frame_pool),
             std::move(frame_converter),
-            GetPreferredRenderableFourccs(gpu_preferences_),
+            GetPreferredRenderableFourccs(gpu_preferences_, gpu_feature_info_),
             traits.media_log->Clone(), std::move(traits.oop_video_decoder),
             /*in_video_decoder_process=*/false);
       }
@@ -182,7 +208,7 @@ class GpuMojoMediaClientLinux final : public GpuMojoMediaClient {
         return VideoDecoderPipeline::Create(
             gpu_workarounds_, traits.task_runner, std::move(frame_pool),
             std::move(frame_converter),
-            GetPreferredRenderableFourccs(gpu_preferences_),
+            GetPreferredRenderableFourccs(gpu_preferences_, gpu_feature_info_),
             traits.media_log->Clone(), /*oop_video_decoder=*/{},
             /*in_video_decoder_process=*/false);
       }

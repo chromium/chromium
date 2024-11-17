@@ -27,20 +27,23 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
-#include "components/optimization_guide/core/model_execution/test/fake_on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/model_info.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
@@ -50,28 +53,41 @@
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
 
-using ::testing::ElementsAre;
-using ::testing::ElementsAreArray;
+namespace {
 
-using on_device_model::mojom::LoadModelResult;
+using ::on_device_model::mojom::LoadModelResult;
 using ExecuteModelResult = SessionImpl::ExecuteModelResult;
 
-namespace {
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
+using ::testing::IsEmpty;
+using ::testing::ResultOf;
+
+const std::string& GetCheckText(
+    const proto::InternalOnDeviceModelExecutionInfo& log) {
+  return log.request().text_safety_model_request().text();
+}
 
 void FailRemote(ModelBasedCapabilityKey key,
                 const google::protobuf::MessageLite& req,
+                std::optional<base::TimeDelta> timeout,
                 std::unique_ptr<proto::LogAiDataRequest> log,
                 OptimizationGuideModelExecutionResultCallback callback) {
   EXPECT_TRUE(false) << "Unexpected use of remote fallback";
   std::move(callback).Run(
-      base::unexpected(OptimizationGuideModelExecutionError::FromHttpStatusCode(
-          net::HTTP_BAD_REQUEST)),
+      OptimizationGuideModelExecutionResult(
+          base::unexpected(
+              OptimizationGuideModelExecutionError::FromHttpStatusCode(
+                  net::HTTP_BAD_REQUEST)),
+          nullptr),
       nullptr);
 }
 
@@ -112,6 +128,53 @@ std::vector<std::string> ConcatResponses(
 
 constexpr auto kFeature = ModelBasedCapabilityKey::kCompose;
 
+class ExpectedRemoteFallback final {
+ public:
+  struct FallbackArgs {
+    ModelBasedCapabilityKey feature;
+    std::unique_ptr<google::protobuf::MessageLite> request;
+    std::optional<base::TimeDelta> timeout;
+    std::unique_ptr<proto::LogAiDataRequest> log;
+    OptimizationGuideModelExecutionResultCallback callback;
+
+    const auto& logged_executions() {
+      return log->model_execution_info()
+          .on_device_model_execution_info()
+          .execution_infos();
+    }
+  };
+
+  ExecuteRemoteFn CreateExecuteRemoteFn() {
+    return base::BindLambdaForTesting(
+        [&](ModelBasedCapabilityKey feature,
+            const google::protobuf::MessageLite& m,
+            std::optional<base::TimeDelta> t,
+            std::unique_ptr<proto::LogAiDataRequest> l,
+            OptimizationGuideModelExecutionResultCallback c) {
+          auto request = base::WrapUnique(m.New());
+          request->CheckTypeAndMergeFrom(m);
+          future_.GetCallback().Run(FallbackArgs{
+              feature,
+              std::move(request),
+              t,
+              std::move(l),
+              std::move(c),
+          });
+        });
+  }
+
+  proto::Any ComposeResponse(const std::string& output) {
+    proto::ComposeResponse response;
+    response.set_output(output);
+    return AnyWrapProto(response);
+  }
+
+  FallbackArgs Take() { return future_.Take(); }
+
+ private:
+  base::test::TestFuture<FallbackArgs> future_;
+};
+
 class OnDeviceModelServiceControllerTest : public testing::Test {
  public:
   void SetUp() override {
@@ -122,17 +185,21 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
            {"on_device_model_max_tokens_for_context", "22"},
            {"on_device_model_context_token_chunk_size", "4"},
            {"on_device_model_topk", "1"},
-           {"on_device_model_temperature", "0"}}},
+           {"on_device_model_temperature", "0"},
+           {"on_device_model_disable_crash_count", "3"},
+           {"on_device_model_crash_backoff_base_time", "1m"},
+           {"on_device_model_max_crash_backoff_time", "1h"}}},
          {features::kTextSafetyClassifier, {}},
          {features::kOnDeviceModelValidation,
           {{"on_device_model_validation_delay", "0"}}}},
         {features::internal::kModelAdaptationCompose});
+    model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
     model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
 
     // Fake the requirements to install the model.
     pref_service_.SetInteger(
         model_execution::prefs::localstate::kOnDevicePerformanceClass,
-        base::to_underlying(OnDeviceModelPerformanceClass::kLow));
+        base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
     pref_service_.SetTime(
         model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
             ModelBasedCapabilityKey::kCompose),
@@ -184,6 +251,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     return base::BindLambdaForTesting(
         [=, this](ModelBasedCapabilityKey feature,
                   const google::protobuf::MessageLite& m,
+                  std::optional<base::TimeDelta> t,
                   std::unique_ptr<proto::LogAiDataRequest> l,
                   OptimizationGuideModelExecutionResultCallback c) {
           remote_execute_called_ = true;
@@ -201,12 +269,16 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     access_controller_ = nullptr;
     test_controller_ = nullptr;
 
+    // Turn down the service, to simulate restart.
+    fake_launcher_.CrashService();
+
     auto access_controller =
         std::make_unique<OnDeviceModelAccessController>(pref_service_);
     access_controller_ = access_controller.get();
-    test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-        &fake_settings_, std::move(access_controller),
-        on_device_component_state_manager_.get()->GetWeakPtr());
+    test_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+        std::move(access_controller),
+        on_device_component_state_manager_.get()->GetWeakPtr(),
+        fake_launcher_.LaunchFn());
 
     test_controller_->Init();
   }
@@ -216,6 +288,21 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     return test_controller_->model_adaptation_controllers_;
   }
 
+  std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession() {
+    return test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                           logger_.GetWeakPtr(), nullptr,
+                                           /*config_params=*/std::nullopt);
+  }
+
+  void ExpectFailedSession(OnDeviceModelEligibilityReason reason) {
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(CreateSession());
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
+        "Compose",
+        reason, 1);
+  }
+
  protected:
   FakeBaseModelAsset base_model_asset_;
   FakeLanguageModelAsset language_asset_;
@@ -223,10 +310,11 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
+  on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
   TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
       &pref_service_};
-  scoped_refptr<FakeOnDeviceModelServiceController> test_controller_;
-  // Owned by FakeOnDeviceModelServiceController.
+  scoped_refptr<OnDeviceModelServiceController> test_controller_;
+  // Owned by OnDeviceModelServiceController.
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
   ResponseHolder response_;
   base::test::ScopedFeatureList feature_list_;
@@ -242,9 +330,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ScoreNullBeforeContext) {
   Initialize();
 
   base::HistogramTester histogram_tester;
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
   base::test::TestFuture<std::optional<float>> score_future;
   session->Score("token", score_future.GetCallback());
@@ -255,9 +341,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
   Initialize();
 
   base::HistogramTester histogram_tester;
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   session->AddContext(UserInputRequest("foo"));
@@ -271,13 +355,12 @@ TEST_F(OnDeviceModelServiceControllerTest, ScoreNullAfterExecute) {
   Initialize();
 
   base::HistogramTester histogram_tester;
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   session->AddContext(UserInputRequest("foo"));
-  session->ExecuteModel(PageUrlRequest("bar"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("bar"),
+                        response_.GetStreamingCallback());
 
   base::test::TestFuture<std::optional<float>> score_future;
   session->Score("token", score_future.GetCallback());
@@ -288,11 +371,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   Initialize();
 
   base::HistogramTester histogram_tester;
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   const std::string expected_response = "Input: execute:foo\n";
@@ -300,14 +382,31 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   EXPECT_TRUE(*response_.provided_by_on_device());
   EXPECT_THAT(response_.streamed(), ElementsAre(expected_response));
   EXPECT_TRUE(response_.log_entry());
-  const auto logged_on_device_model_execution_info =
+  auto logged_on_device_model_execution_info =
       response_.log_entry()
           ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
-  const auto& model_version =
-      logged_on_device_model_execution_info.model_versions()
-          .on_device_model_service_version();
+  auto model_version = logged_on_device_model_execution_info.model_versions()
+                           .on_device_model_service_version();
+  EXPECT_EQ(model_version.component_version(), "0.0.1");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
+            "Test");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
+            "0.0.1");
+  EXPECT_FALSE(model_version.model_adaptation_version());
+  EXPECT_GT(logged_on_device_model_execution_info.execution_infos_size(), 0);
+  EXPECT_EQ(logged_on_device_model_execution_info.execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
+
+  EXPECT_TRUE(response_.model_execution_info());
+  logged_on_device_model_execution_info =
+      response_.model_execution_info()->on_device_model_execution_info();
+  model_version = logged_on_device_model_execution_info.model_versions()
+                      .on_device_model_service_version();
   EXPECT_EQ(model_version.component_version(), "0.0.1");
   EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
             "Test");
@@ -384,27 +483,40 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   EXPECT_EQ(2u, GetModelAdaptationControllers().size());
 
-  session_compose->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session_compose->ExecuteModel(PageUrlRequest("foo"),
+                                response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   EXPECT_EQ(*response_.value(), "Adaptation model: 1015\nInput: execute:foo\n");
   EXPECT_TRUE(*response_.provided_by_on_device());
 
-  session_test->ExecuteModel(PageUrlRequest("bar"), response_.callback());
+  session_test->ExecuteModel(PageUrlRequest("bar"),
+                             response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   EXPECT_EQ(*response_.value(), "Adaptation model: 2024\nInput: execute:bar\n");
   EXPECT_TRUE(*response_.provided_by_on_device());
 
   EXPECT_TRUE(response_.log_entry());
-  const auto logged_on_device_model_execution_info =
+  auto logged_on_device_model_execution_info =
       response_.log_entry()
           ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
-  const auto& model_version =
-      logged_on_device_model_execution_info.model_versions()
-          .on_device_model_service_version();
+  auto model_version = logged_on_device_model_execution_info.model_versions()
+                           .on_device_model_service_version();
+  EXPECT_EQ(model_version.component_version(), "0.0.1");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
+            "Test");
+  EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_version(),
+            "0.0.1");
+  EXPECT_EQ(model_version.model_adaptation_version(), compose_asset.version());
+
+  EXPECT_TRUE(response_.model_execution_info());
+  logged_on_device_model_execution_info =
+      response_.model_execution_info()->on_device_model_execution_info();
+  model_version = logged_on_device_model_execution_info.model_versions()
+                      .on_device_model_service_version();
   EXPECT_EQ(model_version.component_version(), "0.0.1");
   EXPECT_EQ(model_version.on_device_base_model_metadata().base_model_name(),
             "Test");
@@ -419,9 +531,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   // adaptations and the base model should be reset.
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
-  EXPECT_TRUE(GetModelAdaptationControllers().empty());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+  EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
@@ -466,13 +577,15 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
 
   EXPECT_EQ(1u, GetModelAdaptationControllers().size());
 
-  session_compose->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session_compose->ExecuteModel(PageUrlRequest("foo"),
+                                response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   EXPECT_EQ(*response_.value(), "Adaptation model: 1015\nInput: execute:foo\n");
   EXPECT_TRUE(*response_.provided_by_on_device());
 
-  session_test->ExecuteModel(PageUrlRequest("bar"), response_.callback());
+  session_test->ExecuteModel(PageUrlRequest("bar"),
+                             response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   EXPECT_EQ(*response_.value(), "Input: execute:bar\n");
@@ -481,20 +594,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   session_compose.reset();
   session_test.reset();
 
-  // Fast forward by the amount of time that triggers an idle disconnect. The
-  // base model will still be connected since it needs to wait for 2 idle
-  // timeouts (one for the adaptation and one for it's own timeout).
-  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+  // If we wait long enough, everything should idle out and the service should
+  // get terminated. This requires 2 idle timeout intervals (one for the
+  // adaptation and one for the base model).
+  task_environment_.FastForwardBy(2 * features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
-  EXPECT_TRUE(GetModelAdaptationControllers().empty());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
-  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
-
-  // Fast forward by another idle timeout. The base model remote will be reset.
-  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
-                                  base::Seconds(1));
-  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+  EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -530,7 +636,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   EXPECT_TRUE(GetModelAdaptationControllers().empty());
 
-  session_compose->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session_compose->ExecuteModel(PageUrlRequest("foo"),
+                                response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   EXPECT_EQ(*response_.value(), "Input: execute:foo\n");
@@ -566,9 +673,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
   Initialize();
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
   {
     base::HistogramTester histogram_tester;
@@ -580,7 +685,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
   task_environment_.RunUntilIdle();
 
   session->AddContext(UserInputRequest("bar"));
-  session->ExecuteModel(PageUrlRequest("baz"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("baz"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   const std::vector<std::string> expected_responses = ConcatResponses({
@@ -594,15 +700,14 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsSingleContextChunk) {
   Initialize();
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   session->AddContext(UserInputRequest("context"));
   task_environment_.RunUntilIdle();
 
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   std::vector<std::string> expected_responses = ConcatResponses({
@@ -617,15 +722,14 @@ TEST_F(OnDeviceModelServiceControllerTest,
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsLongContextInChunks) {
   Initialize();
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   session->AddContext(UserInputRequest("this is long context"));
   task_environment_.RunUntilIdle();
 
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   std::vector<std::string> expected_responses = ConcatResponses({
@@ -643,14 +747,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionCancelsOptionalContext) {
   Initialize();
   fake_settings_.set_execute_delay(base::Seconds(10));
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   session->AddContext(UserInputRequest("this is long context"));
   // ExecuteModel() directly after AddContext() should only load first chunk.
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
 
   // Give time to make sure we don't process the optional context.
   task_environment_.RunUntilIdle();
@@ -670,9 +773,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionModelToBeInstalled) {
   Initialize({.model_component_ready = false});
 
   base::HistogramTester histogram_tester;
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_FALSE(session);
 
   histogram_tester.ExpectUniqueSample(
@@ -685,9 +786,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAvailableAfterInit) {
 
   // Model not yet available.
   base::HistogramTester histogram_tester;
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_FALSE(session);
 
   on_device_component_state_manager_.get()->OnStartup();
@@ -696,9 +795,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAvailableAfterInit) {
   task_environment_.RunUntilIdle();
 
   // Model now available.
-  session = test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                            logger_.GetWeakPtr(), nullptr,
-                                            /*config_params=*/std::nullopt);
+  session = CreateSession();
   EXPECT_TRUE(session);
 }
 
@@ -707,9 +804,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAvailableAfterInit) {
 TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   Initialize();
 
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
 
   // Simulate a model update.
   base_model_asset_.Write({});
@@ -717,7 +812,8 @@ TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   task_environment_.RunUntilIdle();
 
   // Verify the existing session still works.
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(response_.value());
@@ -729,25 +825,21 @@ TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
 TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
   Initialize();
 
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   session->AddContext(UserInputRequest("context"));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
+  EXPECT_EQ(1ull, fake_launcher_.on_device_model_receiver_count());
 
   // Simulates a model update. This should close the model remote.
   // Write a new empty execution config to check that the config is reloaded.
   base_model_asset_.Write({});
   on_device_component_state_manager_.SetReady(base_model_asset_.path());
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(0ull, test_controller_->on_device_model_receiver_count());
+  EXPECT_EQ(0ull, fake_launcher_.on_device_model_receiver_count());
 
   // Create a new session and verify it fails due to the configuration.
   base::HistogramTester histogram_tester;
-  session = test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                            logger_.GetWeakPtr(), nullptr,
-                                            /*config_params=*/std::nullopt);
+  session = CreateSession();
   ASSERT_FALSE(session);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
@@ -817,14 +909,10 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
     base::HistogramTester histogram_tester;
 
     proto::TextSafetyModelMetadata model_metadata;
-    proto::Any any;
-    any.set_type_url(
-        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-    model_metadata.SerializeToString(any.mutable_value());
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         TestModelInfoBuilder()
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
-            .SetModelMetadata(any)
+            .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
     test_controller_->MaybeUpdateSafetyModel(*model_info);
 
@@ -841,14 +929,10 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
     proto::TextSafetyModelMetadata model_metadata;
     model_metadata.add_feature_text_safety_configurations()->set_feature(
         ToModelExecutionFeatureProto(kFeature));
-    proto::Any any;
-    any.set_type_url(
-        "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-    model_metadata.SerializeToString(any.mutable_value());
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         TestModelInfoBuilder()
             .SetAdditionalFiles(fake_safety_asset.AdditionalFiles())
-            .SetModelMetadata(any)
+            .SetModelMetadata(AnyWrapProto(model_metadata))
             .Build();
     test_controller_->MaybeUpdateSafetyModel(*model_info);
 
@@ -896,7 +980,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   // Executing with test_session should force model to be loaded.
   ResponseHolder test_response;
   test_session->ExecuteModel(PageUrlRequest("unsafe"),
-                             test_response.callback());
+                             test_response.GetStreamingCallback());
   EXPECT_TRUE(test_response.GetFinalStatus());
 
   // Compose capability should be available after safety model loads.
@@ -916,7 +1000,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
 
   ResponseHolder compose_response;
   compose_session->ExecuteModel(PageUrlRequest("unsafe"),
-                                compose_response.callback());
+                                compose_response.GetStreamingCallback());
 
   // Compose should run and be rejected as unsafe.
   EXPECT_FALSE(compose_response.GetFinalStatus());
@@ -934,9 +1018,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   {
     base::HistogramTester histogram_tester;
 
-    EXPECT_FALSE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -955,9 +1037,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
       return safety_config;
     }());
     test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-    EXPECT_FALSE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
@@ -975,9 +1055,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
 
     FakeSafetyModelAsset safety_asset(ComposeSafetyConfig());
     test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-    EXPECT_TRUE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_TRUE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
@@ -995,9 +1073,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     base::HistogramTester histogram_tester;
 
     test_controller_->MaybeUpdateSafetyModel(std::nullopt);
-    EXPECT_FALSE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -1016,9 +1092,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
 
     std::unique_ptr<ModelInfo> model_info = TestModelInfoBuilder().Build();
     test_controller_->MaybeUpdateSafetyModel(*model_info);
-    EXPECT_FALSE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -1043,9 +1117,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     }());
     test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
-    EXPECT_FALSE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
@@ -1070,9 +1142,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
     test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
 
-    EXPECT_TRUE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_TRUE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution."
@@ -1091,9 +1161,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
     base::HistogramTester histogram_tester;
 
     test_controller_->MaybeUpdateSafetyModel(std::nullopt);
-    EXPECT_TRUE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_TRUE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -1102,31 +1170,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   }
 }
 
-TEST(SafetyConfigTest, MissingScoreIsUnsafe) {
-  auto safety_config = ComposeSafetyConfig();
-  auto* threshold = safety_config.add_safety_category_thresholds();
-  threshold->set_output_index(1);
-  threshold->set_threshold(0.5);
-  SafetyConfig cfg(safety_config);
-
-  auto safety_info = on_device_model::mojom::SafetyInfo::New();
-  safety_info->class_scores = {0.1};  // Only 1 score, but expects 2.
-  EXPECT_TRUE(cfg.IsUnsafeText(safety_info));
-}
-
-TEST(SafetyConfigTest, SafeWithRequiredScores) {
-  auto safety_config = ComposeSafetyConfig();
-  auto* threshold = safety_config.add_safety_category_thresholds();
-  threshold->set_output_index(1);
-  threshold->set_threshold(0.5);
-  SafetyConfig cfg(safety_config);
-
-  auto safety_info = on_device_model::mojom::SafetyInfo::New();
-  safety_info->class_scores = {0.1, 0.1};  // Has score with index = 1.
-  EXPECT_FALSE(cfg.IsUnsafeText(safety_info));
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyPasses) {
+TEST_F(OnDeviceModelServiceControllerTest, SucceedsWithPassingSafetyChecks) {
   auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
@@ -1138,47 +1182,110 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyPasses) {
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    {
+      auto* check = safety_config.add_request_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("request_check: %s", PageUrlField()));
+    }
+    {
+      auto* check = safety_config.mutable_raw_output_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("raw_output_check: %s", StringValueField()));
+    }
     return safety_config;
   }());
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
   auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
+  ASSERT_TRUE(session);
 
-  // Should fail the default raw output check.
-  fake_settings_.set_execute_result({"unsafe_output"});
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_.value());
-  ASSERT_TRUE(response_.error());
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("safe_url"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: safe_url"),
+                          ResultOf("check text", &GetCheckText,
+                                   "raw_output_check: safe_output")));
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: safe_url"),
+                          ResultOf("check text", &GetCheckText,
+                                   "raw_output_check: safe_output")));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       FailsWithFailingRequestSafetyChecks) {
+  auto config = SimpleComposeConfig();
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    {
+      auto* check = safety_config.add_request_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("request_check: %s", PageUrlField()));
+    }
+    {
+      auto* check = safety_config.mutable_raw_output_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("raw_output_check: %s", StringValueField()));
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("unsafe_url"),
+                        response_.GetStreamingCallback());
+  ASSERT_FALSE(response_.GetFinalStatus());
   EXPECT_EQ(
       *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
-  // Make sure T&S logged.
   ASSERT_TRUE(response_.log_entry());
-  const auto logged_on_device_model_execution_info =
-      response_.log_entry()
-          ->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info();
-  const auto num_execution_infos =
-      logged_on_device_model_execution_info.execution_infos_size();
-  EXPECT_GE(num_execution_infos, 2);
-  auto ts_log = logged_on_device_model_execution_info.execution_infos(
-      num_execution_infos - 1);
-  EXPECT_EQ(ts_log.request().text_safety_model_request().text(),
-            "unsafe_output");
-  EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
-              ElementsAre(0.8, 0.8));
-  EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
+  EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: unsafe_url")
+                          // Raw output check not done.
+                          ));
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: unsafe_url")
+                          // Raw output check not done.
+                          ));
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyFails) {
+TEST_F(OnDeviceModelServiceControllerTest,
+       FallbackWithInvalidRequestSafetyChecks) {
   auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
@@ -1190,42 +1297,330 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyFails) {
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    {
+      auto* check = safety_config.add_request_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("request_check: %s", ProtoField({9999})));
+    }
+    {
+      auto* check = safety_config.mutable_raw_output_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("raw_output_check: %s", StringValueField()));
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  ExpectedRemoteFallback fallback;
+  auto session = test_controller_->CreateSession(
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("safe_url"),
+                        response_.GetStreamingCallback());
+
+  auto fallback_call = fallback.Take();
+  EXPECT_THAT(
+      fallback_call.logged_executions(),
+      ElementsAre(testing::_  // Base Model Execution
+                              // Request check failed to run, not logged.
+                  ));
+  EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
+  std::move(fallback_call.callback)
+      .Run(OptimizationGuideModelExecutionResult(
+               base::ok(fallback.ComposeResponse("remote response")), nullptr),
+           nullptr);
+
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(), "remote response");
+  EXPECT_FALSE(response_.log_entry());
+  ASSERT_FALSE(response_.model_execution_info());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       FailsWithFailingRawOutputSafetyChecks) {
+  auto config = SimpleComposeConfig();
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    {
+      auto* check = safety_config.add_request_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("request_check: %s", PageUrlField()));
+    }
+    {
+      auto* check = safety_config.mutable_raw_output_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("raw_output_check: %s", StringValueField()));
+    }
     return safety_config;
   }());
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
   auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
+  ASSERT_TRUE(session);
 
-  fake_settings_.set_execute_result({"reasonable_output"});
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  // Make sure T&S logged.
+  fake_settings_.set_execute_result({"unsafe_output"});
+  session->ExecuteModel(PageUrlRequest("safe_url"),
+                        response_.GetStreamingCallback());
+  ASSERT_FALSE(response_.GetFinalStatus());
+  EXPECT_EQ(
+      *response_.error(),
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
   ASSERT_TRUE(response_.log_entry());
-  const auto logged_on_device_model_execution_info =
-      response_.log_entry()
-          ->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info();
-  const auto num_execution_infos =
-      logged_on_device_model_execution_info.execution_infos_size();
-  EXPECT_GE(num_execution_infos, 2);
-  auto ts_log = logged_on_device_model_execution_info.execution_infos(
-      num_execution_infos - 1);
-  EXPECT_EQ(ts_log.request().text_safety_model_request().text(),
-            "reasonable_output");
-  EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
-              ElementsAre(0.2, 0.2));
-  EXPECT_FALSE(ts_log.response().text_safety_model_response().is_unsafe());
+  EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: safe_url"),
+                          ResultOf("check text", &GetCheckText,
+                                   "raw_output_check: unsafe_output")));
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: safe_url"),
+                          ResultOf("check text", &GetCheckText,
+                                   "raw_output_check: unsafe_output")));
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
+TEST_F(OnDeviceModelServiceControllerTest, FallbackWithInvalidRawOutputChecks) {
+  auto config = SimpleComposeConfig();
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    {
+      auto* check = safety_config.add_request_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("request_check: %s", PageUrlField()));
+    }
+    {
+      auto* check = safety_config.mutable_raw_output_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("raw_output_check: %s", ProtoField({9999})));
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  ExpectedRemoteFallback fallback;
+  auto session = test_controller_->CreateSession(
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("safe_url"),
+                        response_.GetStreamingCallback());
+
+  auto fallback_call = fallback.Take();
+  EXPECT_THAT(fallback_call.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: safe_url")
+                          // Raw output failed to run, not logged.
+                          ));
+  EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
+  std::move(fallback_call.callback)
+      .Run(OptimizationGuideModelExecutionResult(
+               base::ok(fallback.ComposeResponse("remote response")), nullptr),
+           nullptr);
+
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(), "remote response");
+  EXPECT_FALSE(response_.log_entry());
+  EXPECT_FALSE(response_.model_execution_info());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       SucceedsWithPassingResponseSafetyCheck) {
+  auto config = SimpleComposeConfig();
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check: %s", PageUrlField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->set_ignore_language_result(true);
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("url_very_"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "response_check: url_very_safe_output")));
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "response_check: url_very_safe_output")));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       FailsWithFailingResponseSafetyCheck) {
+  auto config = SimpleComposeConfig();
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check: %s", PageUrlField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->set_ignore_language_result(true);
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("url_un"),
+                        response_.GetStreamingCallback());
+  ASSERT_FALSE(response_.GetFinalStatus());
+  EXPECT_EQ(
+      *response_.error(),
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "response_check: url_unsafe_output")));
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "response_check: url_unsafe_output")));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       FallbackWithInvalidResponseSafetyCheck) {
+  auto config = SimpleComposeConfig();
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_UNSPECIFIED);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check: %s", PageUrlField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->set_ignore_language_result(true);
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  ExpectedRemoteFallback fallback;
+  auto session = test_controller_->CreateSession(
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("url_very_"),
+                        response_.GetStreamingCallback());
+
+  auto fallback_call = fallback.Take();
+  EXPECT_THAT(
+      fallback_call.logged_executions(),
+      ElementsAre(testing::_  // Base Model Execution
+                              // response check failed to run, not logged.
+                  ));
+  EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
+  std::move(fallback_call.callback)
+      .Run(OptimizationGuideModelExecutionResult(
+               base::ok(fallback.ComposeResponse("remote response")), nullptr),
+           nullptr);
+
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(), "remote response");
+  EXPECT_FALSE(response_.log_entry());
+  EXPECT_FALSE(response_.model_execution_info());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
+  // Tests the behavior of "on_device_retract_unsafe_content = false" flag.
   auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
@@ -1237,718 +1632,46 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
 
   FakeSafetyModelAsset safety_asset([]() {
     auto safety_config = ComposeSafetyConfig();
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
     safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    {
+      auto* check = safety_config.add_request_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("request_check: %s", PageUrlField()));
+    }
+    {
+      auto* check = safety_config.mutable_raw_output_check();
+      check->mutable_input_template()->Add(
+          FieldSubstitution("raw_output_check: %s", StringValueField()));
+    }
     return safety_config;
   }());
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   // Should fail the configured checks, but not not be retracted.
   fake_settings_.set_execute_result({"unsafe_output"});
-
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_FALSE(response_.error());
-
+  session->ExecuteModel(PageUrlRequest("unsafe_url"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
   // Make sure T&S logged.
   ASSERT_TRUE(response_.log_entry());
-  const auto logged_on_device_model_execution_info =
-      response_.log_entry()
-          ->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info();
-  EXPECT_GE(logged_on_device_model_execution_info.execution_infos_size(), 2);
-  auto ts_log = logged_on_device_model_execution_info.execution_infos(
-      logged_on_device_model_execution_info.execution_infos_size() - 1);
-  EXPECT_EQ(ts_log.request().text_safety_model_request().text(),
-            "unsafe_output");
-  EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
-              ElementsAre(0.8, 0.8));
-  EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    // Configure a request safety check on the PageUrl.
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(PageUrlSubstitution());
-    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-
-  // This should pass the default raw output safety check
-  fake_settings_.set_execute_result(
-      {"reasonable but unsafe output in esperanto"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("safe_url"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_FALSE(response_.error());
-
-  // Make sure check was logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto& logged_execution_infos = response_.log_entry()
-                                           ->log_ai_data_request()
-                                           ->model_execution_info()
-                                           .on_device_model_execution_info()
-                                           .execution_infos();
-  ASSERT_GE(logged_execution_infos.size(), 2);
-  const auto& check_log = logged_execution_infos[1];
-  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "url: safe_url");
-  const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.8));
-  EXPECT_FALSE(response_log.is_unsafe());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(PageUrlSubstitution());
-    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
-
-  // This should pass the default raw output safety check
-  fake_settings_.set_execute_result(
-      {"reasonable but unsafe output in esperanto"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("unsafe_url"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_.value());
-  EXPECT_TRUE(response_.error());
-
-  // Make sure check was logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto& logged_execution_infos = response_.log_entry()
-                                           ->log_ai_data_request()
-                                           ->model_execution_info()
-                                           .on_device_model_execution_info()
-                                           .execution_infos();
-  ASSERT_EQ(logged_execution_infos.size(), 2);
-  const auto& check_log = logged_execution_infos[1];
-  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "url: unsafe_url");
-  const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.8, 0.8));
-  EXPECT_TRUE(response_log.is_unsafe());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, RequestCheckIgnoredInDarkMode) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "false"}});
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(PageUrlSubstitution());
-    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-
-  // This should pass the default raw output safety check
-  fake_settings_.set_execute_result(
-      {"reasonable but unsafe output in esperanto"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("unsafe_url"), response_.callback());
-  task_environment_.RunUntilIdle();
-  // Should still succeed, because on_device_retract_unsafe_content is false.
-  EXPECT_TRUE(response_.value());
-  EXPECT_FALSE(response_.error());
-
-  // Make sure check was logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto& logged_execution_infos = response_.log_entry()
-                                           ->log_ai_data_request()
-                                           ->model_execution_info()
-                                           .on_device_model_execution_info()
-                                           .execution_infos();
-  ASSERT_GE(logged_execution_infos.size(), 2);
-  const auto& check_log = logged_execution_infos[1];
-  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "url: unsafe_url");
-  const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.8, 0.8));
-  EXPECT_TRUE(response_log.is_unsafe());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       RequestCheckFailsWithSafeUrlWithFallbackThreshold) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(PageUrlSubstitution());
-    // Omitted check thresholds, should fallback to default.
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
-
-  // This should pass the default raw output safety check
-  fake_settings_.set_execute_result(
-      {"reasonable but unsafe output in esperanto"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("safe_url"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_.value());
-  EXPECT_TRUE(response_.error());
-
-  // Make sure check was logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto& logged_execution_infos = response_.log_entry()
-                                           ->log_ai_data_request()
-                                           ->model_execution_info()
-                                           .on_device_model_execution_info()
-                                           .execution_infos();
-  ASSERT_EQ(logged_execution_infos.size(), 2);
-  const auto& check_log = logged_execution_infos[1];
-  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "url: safe_url");
-  const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.8));
-  EXPECT_TRUE(response_log.is_unsafe());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       RequestCheckFailsWithUnmetRequiredLanguage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    // Configure a request safety check on the PageUrl.
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.add_allowed_languages("eo");
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(PageUrlSubstitution());
-    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
-
-  // This should pass the default raw output safety check
-  fake_settings_.set_execute_result(
-      {"reasonable but unsafe output in esperanto"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("safe_url"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_.value());
-  EXPECT_TRUE(response_.error());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       RequestCheckFailsWithUnmetRequiredLanguageButIgnored) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  Initialize();
-
-  FakeSafetyModelAsset safety_asset([]() {
-    // Configure a request safety check on the PageUrl.
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.add_allowed_languages("eo");
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.add_request_check();
-    check->set_ignore_language_result(true);
-    check->mutable_input_template()->Add(PageUrlSubstitution());
-    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
-
-  // This should pass the default raw output safety check
-  fake_settings_.set_execute_result(
-      {"reasonable but unsafe output in esperanto"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("safe_url"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_FALSE(response_.error());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       RequestCheckPassesWithMetRequiredLanguage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  Initialize();
-
-  FakeSafetyModelAsset safety_asset([]() {
-    // Configure a request safety check on the PageUrl.
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.add_allowed_languages("eo");
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(PageUrlSubstitution());
-    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-
-  // This should pass the default raw output safety check
-  fake_settings_.set_execute_result(
-      {"reasonable but unsafe output in esperanto"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("safe_url in esperanto"),
-                        response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_FALSE(response_.error());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       RequestCheckPassesWithLanguageOnlyFilter) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  Initialize();
-
-  FakeSafetyModelAsset safety_asset([]() {
-    // Configure a request safety check on the PageUrl.
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.add_allowed_languages("eo");
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(PageUrlSubstitution());
-    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    check->set_check_language_only(true);
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-
-  // This should pass the default raw output safety check
-  fake_settings_.set_execute_result(
-      {"reasonable but unsafe output in esperanto"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("unsafe_url in esperanto"),
-                        response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_FALSE(response_.error());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       RequestCheckFailsWithLanguageOnlyFilter) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    // Configure a request safety check on the PageUrl.
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.add_allowed_languages("eo");
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(PageUrlSubstitution());
-    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    check->set_check_language_only(true);
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
-
-  // This should pass the default raw output safety check
-  fake_settings_.set_execute_result(
-      {"reasonable but unsafe output in esperanto"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("safe_url in english"),
-                        response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_.value());
-  EXPECT_TRUE(response_.error());
-
-  // Make sure check was logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto& logged_execution_infos = response_.log_entry()
-                                           ->log_ai_data_request()
-                                           ->model_execution_info()
-                                           .on_device_model_execution_info()
-                                           .execution_infos();
-  ASSERT_EQ(logged_execution_infos.size(), 2);
-  const auto& check_log = logged_execution_infos[1];
-  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "url: safe_url in english");
-  const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_FALSE(response_log.is_unsafe());
-  EXPECT_EQ(response_log.language_code(), "");
-  EXPECT_EQ(response_log.language_confidence(), 0.0);
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       RawOutputCheckPassesWithMetRequiredLanguage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    // Configure a request safety check on the PageUrl.
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.add_allowed_languages("eo");
-    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.mutable_raw_output_check();
-    check->mutable_input_template()->Add(
-        FieldSubstitution("safe_text in esperanto: %s", StringValueField()));
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
-
-  // This should be used in the raw output check.
-  fake_settings_.set_execute_result({"reasonable_output"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("some_url"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_FALSE(response_.error());
-
-  // Make sure check was logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto& logged_execution_infos = response_.log_entry()
-                                           ->log_ai_data_request()
-                                           ->model_execution_info()
-                                           .on_device_model_execution_info()
-                                           .execution_infos();
-  ASSERT_EQ(logged_execution_infos.size(), 2);
-  const auto& check_log = logged_execution_infos[1];
-  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "safe_text in esperanto: reasonable_output");
-  const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.2));
-  EXPECT_FALSE(response_log.is_unsafe());
-  EXPECT_EQ(response_log.language_code(), "eo");
-  EXPECT_EQ(response_log.language_confidence(), 1.0);
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, RawOutputCheckFailsWithUnsafeText) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    // Configure a request safety check on the PageUrl.
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.add_allowed_languages("eo");
-    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    auto* check = safety_config.mutable_raw_output_check();
-    check->mutable_input_template()->Add(
-        FieldSubstitution("unsafe_text in esperanto: %s", StringValueField()));
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
-
-  // This should be used in the raw output check.
-  fake_settings_.set_execute_result({"reasonable_output"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("some_url"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_.value());
-  EXPECT_TRUE(response_.error());
-
-  // Make sure check was logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto& logged_execution_infos = response_.log_entry()
-                                           ->log_ai_data_request()
-                                           ->model_execution_info()
-                                           .on_device_model_execution_info()
-                                           .execution_infos();
-  ASSERT_EQ(logged_execution_infos.size(), 2);
-  const auto& check_log = logged_execution_infos[1];
-  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "unsafe_text in esperanto: reasonable_output");
-  const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.8, 0.2));
-  EXPECT_TRUE(response_log.is_unsafe());
-  EXPECT_EQ(response_log.language_code(), "eo");
-  EXPECT_EQ(response_log.language_confidence(), 1.0);
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       RawOutputCheckFailsWithSafeTextInUndeterminedLanguage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "true"}});
-
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    // Configure a request safety check on the PageUrl.
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.add_allowed_languages("eo");
-    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    auto* check = safety_config.mutable_raw_output_check();
-    check->mutable_input_template()->Add(FieldSubstitution(
-        "safe_text in unknown language: %s", StringValueField()));
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
-
-  // This should be used in the raw output check.
-  fake_settings_.set_execute_result({"reasonable_output"});
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  session->ExecuteModel(PageUrlRequest("some_url"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_.value());
-  EXPECT_TRUE(response_.error());
-
-  // Make sure check was logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto& logged_execution_infos = response_.log_entry()
-                                           ->log_ai_data_request()
-                                           ->model_execution_info()
-                                           .on_device_model_execution_info()
-                                           .execution_infos();
-  ASSERT_EQ(logged_execution_infos.size(), 2);
-  const auto& check_log = logged_execution_infos[1];
-  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
-            "safe_text in unknown language: reasonable_output");
-  const auto& response_log = check_log.response().text_safety_model_response();
-  EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.2));
-  EXPECT_FALSE(response_log.is_unsafe());
-  EXPECT_EQ(response_log.language_code(), "");
-  EXPECT_EQ(response_log.language_confidence(), 0.0);
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(false);
-  Initialize({.config = config});
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "false"}});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  test_controller_->SetLanguageDetectionModel(language_asset_.model_info());
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  // Should fail raw output, but not retract.
-  fake_settings_.set_execute_result({"unsafe_output"});
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_FALSE(response_.error());
-
-  // Make sure T&S logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto logged_on_device_model_execution_info =
-      response_.log_entry()
-          ->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info();
-  EXPECT_GE(logged_on_device_model_execution_info.execution_infos_size(), 2);
-  auto ts_log = logged_on_device_model_execution_info.execution_infos(
-      logged_on_device_model_execution_info.execution_infos_size() - 1);
-  EXPECT_EQ(ts_log.request().text_safety_model_request().text(),
-            "unsafe_output");
-  EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
-              ElementsAre(0.8, 0.8));
-  EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkModeNoFeatureConfig) {
-  auto config = SimpleComposeConfig();
-  config.set_can_skip_text_safety(true);
-  Initialize({.config = config});
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_retract_unsafe_content", "false"}});
-
-  FakeSafetyModelAsset safety_asset([]() {
-    proto::FeatureTextSafetyConfiguration safety_config;
-    safety_config.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
-    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    safety_config.mutable_safety_category_thresholds()->Add(
-        RequireReasonable());
-    return safety_config;
-  }());
-  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
-
-  // Would fail other feature's raw output check, but it shouldn't run.
-  fake_settings_.set_execute_result({"unsafe_output"});
-
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  EXPECT_FALSE(response_.error());
-
-  // T&S should not be passed through or logged.
-  ASSERT_TRUE(response_.log_entry());
-  const auto logged_on_device_model_execution_info =
-      response_.log_entry()
-          ->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info();
-  for (const auto& execution_info :
-       logged_on_device_model_execution_info.execution_infos()) {
-    EXPECT_FALSE(execution_info.request().has_text_safety_model_request());
-  }
+  EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: unsafe_url"),
+                          ResultOf("check text", &GetCheckText,
+                                   "raw_output_check: unsafe_output")));
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_THAT(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "request_check: unsafe_url"),
+                          ResultOf("check text", &GetCheckText,
+                                   "raw_output_check: unsafe_output")));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
@@ -1962,15 +1685,14 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
        {"on_device_model_topk", "1"},
        {"on_device_model_temperature", "0"}});
 
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   session->AddContext(UserInputRequest("context"));
   task_environment_.RunUntilIdle();
 
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   std::vector<std::string> expected_responses = ConcatResponses({
@@ -1989,14 +1711,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
       {{"on_device_fallback_to_server_on_disconnect", "false"}});
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
-  test_controller_->CrashService();
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  fake_launcher_.CrashService();
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
@@ -2011,13 +1732,12 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
   Initialize();
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   base::HistogramTester histogram_tester;
   session->AddContext(UserInputRequest("bar"));
   histogram_tester.ExpectUniqueSample(
@@ -2030,6 +1750,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
       *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
   ASSERT_FALSE(response_.log_entry());
+  ASSERT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
@@ -2041,8 +1762,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
 
   ResponseHolder resp1;
   ResponseHolder resp2;
-  session->ExecuteModel(PageUrlRequest("foo"), resp1.callback());
-  session->ExecuteModel(PageUrlRequest("bar"), resp2.callback());
+  session->ExecuteModel(PageUrlRequest("foo"), resp1.GetStreamingCallback());
+  session->ExecuteModel(PageUrlRequest("bar"), resp2.GetStreamingCallback());
 
   EXPECT_FALSE(resp1.GetFinalStatus());
   EXPECT_TRUE(resp2.GetFinalStatus());
@@ -2055,10 +1776,9 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
   Initialize();
   // Start a session.
-  fake_settings_.set_load_model_result(LoadModelResult::kGpuBlocked);
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  fake_settings_.service_disconnect_reason =
+      on_device_model::ServiceDisconnectReason::kGpuBlocked;
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   // Wait for the service to launch, and be shut down.
@@ -2068,9 +1788,7 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
     base::HistogramTester histogram_tester;
 
     // Because the model returned kGpuBlocked, no more sessions should start.
-    EXPECT_FALSE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -2081,19 +1799,18 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
 
 TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
   Initialize();
-  fake_settings_.set_load_model_result(LoadModelResult::kGpuBlocked);
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  fake_settings_.service_disconnect_reason =
+      on_device_model::ServiceDisconnectReason::kGpuBlocked;
+  auto session = CreateSession();
   ASSERT_TRUE(session);
 
   // Wait for the service to launch, and be shut down.
   task_environment_.RunUntilIdle();
-  test_controller_->clear_did_launch_service();
+  fake_launcher_.clear_did_launch_service();
 
   // Adding context should not trigger launching the service again.
   session->AddContext(UserInputRequest("baz"));
-  EXPECT_FALSE(test_controller_->did_launch_service());
+  EXPECT_FALSE(fake_launcher_.did_launch_service());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
@@ -2102,25 +1819,76 @@ TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
   fake_settings_.set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
-    auto session = test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt);
-    EXPECT_TRUE(session) << i;
+    EXPECT_TRUE(CreateSession()) << i;
     task_environment_.RunUntilIdle();
   }
 
-  {
-    base::HistogramTester histogram_tester;
-    auto session = test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt);
-    EXPECT_FALSE(session);
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentCrashes);
+}
 
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
-        "Compose",
-        OnDeviceModelEligibilityReason::kTooManyRecentCrashes, 1);
+TEST_F(OnDeviceModelServiceControllerTest, AllowsConnectingAfterBackoffPeriod) {
+  Initialize();
+  fake_settings_.set_drop_connection_request(true);
+
+  for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
+       ++i) {
+    EXPECT_TRUE(CreateSession()) << i;
+    task_environment_.RunUntilIdle();
   }
+
+  // Immediately starting a session should fail.
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentCrashes);
+
+  // Fast forward by backoff time and starting a session should succeed.
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelCrashBackoffBaseTime() + base::Milliseconds(1));
+  EXPECT_TRUE(CreateSession());
+  task_environment_.RunUntilIdle();
+
+  // Starting another session after another crash should fail.
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentCrashes);
+
+  // Fast forward base time should not work.
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelCrashBackoffBaseTime() + base::Milliseconds(1));
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentCrashes);
+
+  // Fast forward again should allow retrying (now 2 * base time).
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelCrashBackoffBaseTime() + base::Milliseconds(1));
+  EXPECT_TRUE(CreateSession());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       ClearsCrashDataOnSuccessAfterBackoff) {
+  Initialize();
+  fake_settings_.set_drop_connection_request(true);
+
+  for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
+       ++i) {
+    EXPECT_TRUE(CreateSession()) << i;
+    task_environment_.RunUntilIdle();
+  }
+
+  // Immediately starting a session should fail.
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentCrashes);
+
+  // Fast forward by backoff time and starting a session should succeed.
+  fake_settings_.set_drop_connection_request(false);
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelCrashBackoffBaseTime() + base::Milliseconds(1));
+  EXPECT_TRUE(CreateSession());
+  task_environment_.RunUntilIdle();
+
+  // Second session should succeed.
+  EXPECT_TRUE(CreateSession());
+
+  // Single crash should not disable sessions.
+  fake_settings_.set_drop_connection_request(true);
+  EXPECT_TRUE(CreateSession());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(CreateSession());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
@@ -2128,10 +1896,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
   // Start a session.
   for (int i = 0; i < 10; ++i) {
     fake_settings_.set_drop_connection_request(i % 2 == 1);
-    auto session = test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt);
-    EXPECT_TRUE(session) << i;
+    EXPECT_TRUE(CreateSession()) << i;
     task_environment_.RunUntilIdle();
   }
 }
@@ -2143,15 +1908,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   fake_settings_.set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
-    auto session = test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt);
-    EXPECT_TRUE(session) << i;
+    EXPECT_TRUE(CreateSession()) << i;
     task_environment_.RunUntilIdle();
   }
-  EXPECT_FALSE(test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                               logger_.GetWeakPtr(), nullptr,
-                                               /*config_params=*/std::nullopt));
+  EXPECT_FALSE(CreateSession());
 
   // Change the pref to a different value and recreate the service.
   access_controller_ = nullptr;
@@ -2164,27 +1924,23 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.RunUntilIdle();
 
   // A new session should be started because the version changed.
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
-  EXPECT_TRUE(session);
+  EXPECT_TRUE(CreateSession());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
   Initialize();
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
   session->AddContext(UserInputRequest("foo"));
   task_environment_.RunUntilIdle();
 
   // Launch the service again, which triggers disconnect.
-  test_controller_->CrashService();
+  fake_launcher_.CrashService();
   task_environment_.RunUntilIdle();
 
   // Send some text, ensuring the context is received.
-  session->ExecuteModel(PageUrlRequest("baz"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("baz"),
+                        response_.GetStreamingCallback());
   base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
@@ -2214,39 +1970,35 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   Initialize();
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
   session->AddContext(UserInputRequest("foo"));
   task_environment_.RunUntilIdle();
   // Send the text, this won't make it because the service is immediately
   // killed.
-  session->ExecuteModel(PageUrlRequest("bar"), response_.callback());
-  test_controller_->CrashService();
+  session->ExecuteModel(PageUrlRequest("bar"),
+                        response_.GetStreamingCallback());
+  fake_launcher_.CrashService();
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(response_.value());
   ASSERT_FALSE(response_.log_entry());
+  ASSERT_FALSE(response_.model_execution_info());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
   Initialize();
-  auto session1 = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session1 = CreateSession();
   EXPECT_TRUE(session1);
   session1->AddContext(UserInputRequest("foo"));
   task_environment_.RunUntilIdle();
 
   // Start another session.
-  auto session2 = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session2 = CreateSession();
   EXPECT_TRUE(session2);
   session2->AddContext(UserInputRequest("bar"));
   task_environment_.RunUntilIdle();
 
-  session2->ExecuteModel(PageUrlRequest("2"), response_.callback());
+  session2->ExecuteModel(PageUrlRequest("2"), response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(response_.value());
   const std::vector<std::string> expected_responses1 = {
@@ -2270,7 +2022,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
             "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n");
 
   ResponseHolder response2;
-  session1->ExecuteModel(PageUrlRequest("1"), response2.callback());
+  session1->ExecuteModel(PageUrlRequest("1"), response2.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(response2.value());
   const std::vector<std::string> expected_responses2 = {
@@ -2296,7 +2048,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   Initialize();
-  fake_settings_.set_load_model_result(LoadModelResult::kGpuBlocked);
+  fake_settings_.service_disconnect_reason =
+      on_device_model::ServiceDisconnectReason::kGpuBlocked;
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
@@ -2304,7 +2057,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
 
   // Wait for the service to launch, and be shut down.
   task_environment_.RunUntilIdle();
-  test_controller_->clear_did_launch_service();
+  fake_launcher_.clear_did_launch_service();
 
   // Adding context should not trigger launching the service again.
   {
@@ -2314,9 +2067,9 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
         "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Compose",
         SessionImpl::AddContextResult::kUsingServer, 1);
   }
-  session->ExecuteModel(PageUrlRequest("2"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("2"), response_.GetStreamingCallback());
   EXPECT_TRUE(remote_execute_called_);
-  EXPECT_FALSE(test_controller_->did_launch_service());
+  EXPECT_FALSE(fake_launcher_.did_launch_service());
   // Did not start with on-device, so there should not have been a log entry
   // passed.
   ASSERT_FALSE(log_ai_data_request_passed_to_remote_);
@@ -2342,7 +2095,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   task_environment_.RunUntilIdle();
   {
     base::HistogramTester histogram_tester;
-    session->ExecuteModel(PageUrlRequest("2"), response_.callback());
+    session->ExecuteModel(PageUrlRequest("2"),
+                          response_.GetStreamingCallback());
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
         ExecuteModelResult::kOnDeviceNotUsed, 1);
@@ -2364,7 +2118,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   base::HistogramTester histogram_tester;
-  session->ExecuteModel(PageUrlRequest("2"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("2"), response_.GetStreamingCallback());
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kFailedConstructingMessage, 1);
@@ -2383,7 +2137,7 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  session->ExecuteModel(PageUrlRequest("2z"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("2z"), response_.GetStreamingCallback());
   base::HistogramTester histogram_tester;
   task_environment_.FastForwardBy(
       features::GetOnDeviceModelTimeForInitialResponse() +
@@ -2417,8 +2171,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
-  test_controller_->CrashService();
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  fake_launcher_.CrashService();
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
@@ -2437,11 +2192,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
 TEST_F(OnDeviceModelServiceControllerTest,
        DestroySessionWhileWaitingForResponse) {
   Initialize();
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   ASSERT_TRUE(session);
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   base::HistogramTester histogram_tester;
   const auto total_time = base::Seconds(11);
   task_environment_.AdvanceClock(total_time);
@@ -2462,11 +2216,10 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
       features::kOptimizationGuideOnDeviceModel,
       {{"on_device_model_service_idle_timeout", "10s"}});
   Initialize();
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   ASSERT_TRUE(session);
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   session.reset();
   EXPECT_TRUE(test_controller_->IsConnectedForTesting());
 
@@ -2485,15 +2238,25 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
 TEST_F(OnDeviceModelServiceControllerTest,
        ShutsDownServiceAfterPerformanceCheck) {
   Initialize();
-  base::test::TestFuture<
-      std::optional<on_device_model::mojom::PerformanceClass>>
-      result_future;
-  test_controller_->GetEstimatedPerformanceClass(result_future.GetCallback());
-  EXPECT_EQ(on_device_model::mojom::PerformanceClass::kVeryHigh,
-            *result_future.Get());
+  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      test_controller_, result_future.GetCallback());
+  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
   task_environment_.RunUntilIdle();
-
   EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       PerformanceCheckKeepsControllerAlive) {
+  Initialize();
+  auto weak_controller = test_controller_->GetWeakPtr();
+  access_controller_ = nullptr;  // Avoid dangling pointer
+  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      std::move(test_controller_), result_future.GetCallback());
+  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
+  // Verify there wasn't something else keeping the controller alive.
+  EXPECT_FALSE(weak_controller);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
@@ -2508,7 +2271,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
         kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
         /*config_params=*/std::nullopt);
     ASSERT_TRUE(session);
-    session->ExecuteModel(PageUrlRequest("2z"), response_.callback());
+    session->ExecuteModel(PageUrlRequest("2z"),
+                          response_.GetStreamingCallback());
     task_environment_.FastForwardBy(
         features::GetOnDeviceModelTimeForInitialResponse() +
         base::Milliseconds(1));
@@ -2520,10 +2284,62 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
 
   // As we reached GetOnDeviceModelTimeoutCountBeforeDisable() timeouts, the
   // next session should use the server.
-  EXPECT_EQ(nullptr,
-            test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                            logger_.GetWeakPtr(), nullptr,
-                                            /*config_params=*/std::nullopt));
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       AllowsConnectingAfterTimeoutAfterBackoffPeriod) {
+  Initialize();
+  fake_settings_.set_execute_delay(
+      features::GetOnDeviceModelTimeForInitialResponse() * 2);
+
+  auto create_session_and_timeout = [&] {
+    auto session = test_controller_->CreateSession(
+        kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+        /*config_params=*/std::nullopt);
+    ASSERT_TRUE(session);
+    session->ExecuteModel(PageUrlRequest("2z"),
+                          response_.GetStreamingCallback());
+    task_environment_.FastForwardBy(
+        features::GetOnDeviceModelTimeForInitialResponse() +
+        base::Milliseconds(1));
+    EXPECT_TRUE(response_.streamed().empty());
+    EXPECT_FALSE(response_.value());
+    EXPECT_TRUE(remote_execute_called_);
+    remote_execute_called_ = false;
+  };
+
+  // Create a bunch of sessions that all timeout.
+  for (int i = 0; i < features::GetOnDeviceModelTimeoutCountBeforeDisable();
+       ++i) {
+    create_session_and_timeout();
+  }
+
+  // As we reached GetOnDeviceModelTimeoutCountBeforeDisable() timeouts, the
+  // next session will be blocked.
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
+
+  // Fast forward by backoff time and starting a session should succeed.
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelTimeoutBackoffBaseTime() +
+      base::Milliseconds(1));
+  create_session_and_timeout();
+  task_environment_.RunUntilIdle();
+
+  // Starting another session after another timeout should fail.
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
+
+  // Fast forward base time should not work.
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelTimeoutBackoffBaseTime() +
+      base::Milliseconds(1));
+  ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentTimeouts);
+
+  // Fast forward again should allow retrying (now 2 * base time).
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelTimeoutBackoffBaseTime() +
+      base::Milliseconds(1));
+  EXPECT_TRUE(CreateSession());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
@@ -2534,23 +2350,21 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   Initialize({.config = config});
 
   // `foo` doesn't match the redaction, so should be returned.
-  auto session1 = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session1 = CreateSession();
   ASSERT_TRUE(session1);
-  session1->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session1->ExecuteModel(UserInputRequest("foo"),
+                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::string expected_response1 = "Input: execute:foo\n";
   EXPECT_EQ(*response_.value(), expected_response1);
   EXPECT_THAT(response_.streamed(), ElementsAre(expected_response1));
 
   // Input and output contain text matching redact, so should not be redacted.
-  auto session2 = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session2 = CreateSession();
   ASSERT_TRUE(session2);
   ResponseHolder response2;
-  session2->ExecuteModel(UserInputRequest("abarx"), response2.callback());
+  session2->ExecuteModel(UserInputRequest("abarx"),
+                         response2.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::string expected_response2 = "Input: execute:abarx\n";
   EXPECT_EQ(*response2.value(), expected_response2);
@@ -2558,12 +2372,11 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
 
   // Output contains redacted text (and  input doesn't), so redact.
   fake_settings_.set_execute_result({"Input: abarx\n"});
-  auto session3 = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session3 = CreateSession();
   ASSERT_TRUE(session3);
   ResponseHolder response3;
-  session3->ExecuteModel(UserInputRequest("foo"), response3.callback());
+  session3->ExecuteModel(UserInputRequest("foo"),
+                         response3.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::string expected_response3 = "Input: a[###]x\n";
   EXPECT_EQ(*response3.value(), expected_response3);
@@ -2577,11 +2390,10 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
       SimpleRedactRule("bar", proto::RedactBehavior::REJECT);
   Initialize({.config = config});
 
-  auto session1 = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session1 = CreateSession();
   ASSERT_TRUE(session1);
-  session1->ExecuteModel(UserInputRequest("bar"), response_.callback());
+  session1->ExecuteModel(UserInputRequest("bar"),
+                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(response_.value());
   ASSERT_TRUE(response_.error());
@@ -2606,6 +2418,19 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
                 .on_device_model_service_response()
                 .status(),
             proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_EQ(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
@@ -2622,12 +2447,11 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
   // Force 'bar' to be returned from model.
   fake_settings_.set_execute_result({"Input: bar\n"});
 
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   ASSERT_TRUE(session);
 
-  session->ExecuteModel(RewriteRequest("bar"), response_.callback());
+  session->ExecuteModel(RewriteRequest("bar"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   // `bar` shouldn't be rewritten as it's in the input.
   const std::string expected_response = "Input: bar\n";
@@ -2644,11 +2468,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
 
   // Output contains redacted text (and  input doesn't), so redact.
   fake_settings_.set_execute_result({"Input: abarx\n"});
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::string expected_response = "Input: a[redacted]x\n";
   EXPECT_EQ(*response_.value(), expected_response);
@@ -2671,11 +2494,10 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
       " some more repeating text",
       " more stuff",
   });
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -2696,6 +2518,18 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
                   ->log_ai_data_request()
                   ->model_execution_info()
                   .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(response_.model_execution_info()
+                  ->on_device_model_execution_info()
                   .execution_infos(0)
                   .response()
                   .on_device_model_service_response()
@@ -2721,11 +2555,10 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
       " some more repeating text",
       " more stuff",
   });
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(response_.value());
@@ -2745,6 +2578,18 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
                   ->log_ai_data_request()
                   ->model_execution_info()
                   .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(response_.model_execution_info()
+                  ->on_device_model_execution_info()
                   .execution_infos(0)
                   .response()
                   .on_device_model_service_response()
@@ -2772,11 +2617,10 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
       "repeating text",
       " more stuff",
   });
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -2804,6 +2648,18 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
                   .on_device_model_service_response()
                   .has_repeats());
 
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(response_.model_execution_info()
+                  ->on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Compose",
       true, 1);
@@ -2825,11 +2681,10 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
       " some more non repeating text",
       " more stuff",
   });
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -2851,6 +2706,18 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
                    ->log_ai_data_request()
                    ->model_execution_info()
                    .on_device_model_execution_info()
+                   .execution_infos(0)
+                   .response()
+                   .on_device_model_service_response()
+                   .has_repeats());
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_FALSE(response_.model_execution_info()
+                   ->on_device_model_execution_info()
                    .execution_infos(0)
                    .response()
                    .on_device_model_service_response()
@@ -2880,7 +2747,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(response_.streamed().empty());
@@ -2914,7 +2782,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -2934,14 +2803,16 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
 
   // Invoke T&S callback.
   proto::Any ts_any;
-  auto remote_log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
-  remote_log_ai_data_request->mutable_model_execution_info()->set_execution_id(
+  proto::LogAiDataRequest remote_log_ai_data_request;
+  remote_log_ai_data_request.mutable_model_execution_info()->set_execution_id(
       "serverexecid");
   auto remote_log_entry = std::make_unique<ModelQualityLogEntry>(
-      std::move(remote_log_ai_data_request),
       /*model_quality_uploader_service=*/nullptr);
+  remote_log_entry->log_ai_data_request()->MergeFrom(
+      remote_log_ai_data_request);
   std::move(last_remote_ts_callback_)
-      .Run(base::ok(ts_any), std::move(remote_log_entry));
+      .Run(OptimizationGuideModelExecutionResult(base::ok(ts_any), nullptr),
+           std::move(remote_log_entry));
 
   EXPECT_TRUE(response_.streamed().empty());
   EXPECT_EQ(*response_.value(), expected_responses.back());
@@ -2958,15 +2829,32 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             2);
-  auto& ts_exec_info = response_.log_entry()
-                           ->log_ai_data_request()
-                           ->model_execution_info()
-                           .on_device_model_execution_info()
-                           .execution_infos(1);
-  auto& ts_req_log = ts_exec_info.request().text_safety_model_request();
+  auto ts_exec_info = response_.log_entry()
+                          ->log_ai_data_request()
+                          ->model_execution_info()
+                          .on_device_model_execution_info()
+                          .execution_infos(1);
+  auto ts_req_log = ts_exec_info.request().text_safety_model_request();
   EXPECT_EQ(expected_responses.back(), ts_req_log.text());
   EXPECT_EQ("foo", ts_req_log.url());
-  auto& ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  auto ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
+  EXPECT_FALSE(ts_resp_log.is_unsafe());
+
+  // Verify model execution info.
+  ASSERT_TRUE(response_.model_execution_info());
+  // Should have 2 infos: one for text generation, one for safety fallback.
+  EXPECT_EQ(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            2);
+  ts_exec_info = response_.model_execution_info()
+                     ->on_device_model_execution_info()
+                     .execution_infos(1);
+  ts_req_log = ts_exec_info.request().text_safety_model_request();
+  EXPECT_EQ(expected_responses.back(), ts_req_log.text());
+  EXPECT_EQ("foo", ts_req_log.url());
+  ts_resp_log = ts_exec_info.response().text_safety_model_response();
   EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
   EXPECT_FALSE(ts_resp_log.is_unsafe());
 }
@@ -2994,7 +2882,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -3012,18 +2901,22 @@ TEST_F(OnDeviceModelServiceControllerTest,
   ASSERT_TRUE(last_remote_ts_callback_);
 
   // Invoke T&S callback.
-  auto remote_log_ai_data_request = std::make_unique<proto::LogAiDataRequest>();
-  remote_log_ai_data_request->mutable_model_execution_info()->set_execution_id(
-      "serverexecid");
+  auto model_execution_info = std::make_unique<proto::ModelExecutionInfo>();
+  model_execution_info->set_execution_id("serverexecid");
   auto remote_log_entry = std::make_unique<ModelQualityLogEntry>(
-      std::move(remote_log_ai_data_request),
       /*model_quality_uploader_service=*/nullptr);
+  remote_log_entry->log_ai_data_request()
+      ->mutable_model_execution_info()
+      ->set_execution_id("serverexecid");
   std::move(last_remote_ts_callback_)
-      .Run(base::unexpected(
-               OptimizationGuideModelExecutionError::FromModelExecutionError(
-                   OptimizationGuideModelExecutionError::ModelExecutionError::
-                       kFiltered)),
-           std::move(remote_log_entry));
+      .Run(
+          OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  OptimizationGuideModelExecutionError::FromModelExecutionError(
+                      OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kFiltered)),
+              std::move(model_execution_info)),
+          std::move(remote_log_entry));
 
   EXPECT_TRUE(response_.streamed().empty());
   EXPECT_FALSE(response_.value());
@@ -3040,14 +2933,29 @@ TEST_F(OnDeviceModelServiceControllerTest,
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             2);
-  auto& ts_exec_info = response_.log_entry()
-                           ->log_ai_data_request()
-                           ->model_execution_info()
-                           .on_device_model_execution_info()
-                           .execution_infos(1);
-  auto& ts_req_log = ts_exec_info.request().text_safety_model_request();
+  auto ts_exec_info = response_.log_entry()
+                          ->log_ai_data_request()
+                          ->model_execution_info()
+                          .on_device_model_execution_info()
+                          .execution_infos(1);
+  auto ts_req_log = ts_exec_info.request().text_safety_model_request();
   EXPECT_EQ(expected_responses.back(), ts_req_log.text());
-  auto& ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  auto ts_resp_log = ts_exec_info.response().text_safety_model_response();
+  EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
+  EXPECT_TRUE(ts_resp_log.is_unsafe());
+
+  // Verify model execution info.
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_EQ(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            2);
+  ts_exec_info = response_.model_execution_info()
+                     ->on_device_model_execution_info()
+                     .execution_infos(1);
+  ts_req_log = ts_exec_info.request().text_safety_model_request();
+  EXPECT_EQ(expected_responses.back(), ts_req_log.text());
+  ts_resp_log = ts_exec_info.response().text_safety_model_response();
   EXPECT_EQ("serverexecid", ts_resp_log.server_execution_id());
   EXPECT_TRUE(ts_resp_log.is_unsafe());
 }
@@ -3075,7 +2983,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -3094,11 +3003,14 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   // Invoke T&S callback.
   std::move(last_remote_ts_callback_)
-      .Run(base::unexpected(
-               OptimizationGuideModelExecutionError::FromModelExecutionError(
-                   OptimizationGuideModelExecutionError::ModelExecutionError::
-                       kRequestThrottled)),
-           nullptr);
+      .Run(
+          OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  OptimizationGuideModelExecutionError::FromModelExecutionError(
+                      OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kRequestThrottled)),
+              nullptr),
+          nullptr);
 
   ASSERT_TRUE(response_.error());
   EXPECT_EQ(*response_.error(), OptimizationGuideModelExecutionError::
@@ -3130,7 +3042,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -3150,7 +3063,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   {
     base::HistogramTester histogram_tester;
 
-    session->ExecuteModel(UserInputRequest("newquery"), response_.callback());
+    session->ExecuteModel(UserInputRequest("newquery"),
+                          response_.GetStreamingCallback());
 
     ASSERT_TRUE(response_.error());
     EXPECT_EQ(
@@ -3165,10 +3079,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
     base::HistogramTester histogram_tester;
     // Invoke T&S callback and make sure nothing crashes.
     std::move(last_remote_ts_callback_)
-        .Run(base::unexpected(
-                 OptimizationGuideModelExecutionError::FromModelExecutionError(
-                     OptimizationGuideModelExecutionError::ModelExecutionError::
-                         kRequestThrottled)),
+        .Run(OptimizationGuideModelExecutionResult(
+                 base::unexpected(
+                     OptimizationGuideModelExecutionError::
+                         FromModelExecutionError(
+                             OptimizationGuideModelExecutionError::
+                                 ModelExecutionError::kRequestThrottled)),
+                 nullptr),
              nullptr);
     // Request should have been cancelled and we shouldn't receive anything
     // back.
@@ -3186,9 +3103,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   auto access_controller =
       std::make_unique<OnDeviceModelAccessController>(pref_service_);
   access_controller_ = access_controller.get();
-  test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-      &fake_settings_, std::move(access_controller),
-      on_device_component_state_manager_.get()->GetWeakPtr());
+  test_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+      std::move(access_controller),
+      on_device_component_state_manager_.get()->GetWeakPtr(),
+      fake_launcher_.LaunchFn());
 
   on_device_component_state_manager_.Reset();
   // Init should not crash.
@@ -3206,7 +3124,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
                                                  logger_.GetWeakPtr(), nullptr,
                                                  SessionConfigParams{});
   EXPECT_TRUE(session);
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   const std::string expected_response =
@@ -3230,7 +3149,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
                               .temperature = 2,
                           }});
   EXPECT_TRUE(session);
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   const std::string expected_response =
@@ -3260,14 +3180,13 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
     return safety_config;
   }());
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   fake_settings_.set_execute_result(
       {"token1", " token2", " token3", " token4"});
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
   const std::vector<std::string> expected_responses = {
@@ -3294,14 +3213,13 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval1) {
     return safety_config;
   }());
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   fake_settings_.set_execute_result(
       {"token1", " token2", " token3", " token4"});
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
   const std::vector<std::string> expected_responses = {
@@ -3335,14 +3253,13 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
     return safety_config;
   }());
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   fake_settings_.set_execute_result({"token1", " token2", " token3", " token4",
                                      " token5", " token6", " token7"});
-  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
   const std::vector<std::string> expected_responses = {
@@ -3427,9 +3344,7 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
   }());
   test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
 
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-      /*config_params=*/std::nullopt);
+  auto session = CreateSession();
   EXPECT_TRUE(session);
 
   fake_settings_.set_execute_result({
@@ -3438,7 +3353,8 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
       " some more repeating text",
       " unsafe stuff not processed",
   });
-  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(response_.value());
@@ -3456,6 +3372,18 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
                   ->log_ai_data_request()
                   ->model_execution_info()
                   .on_device_model_execution_info()
+                  .execution_infos(0)
+                  .response()
+                  .on_device_model_service_response()
+                  .has_repeats());
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_TRUE(response_.model_execution_info()
+                  ->on_device_model_execution_info()
                   .execution_infos(0)
                   .response()
                   .on_device_model_service_response()
@@ -3495,9 +3423,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize({.validation_config = validation_config});
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                              logger_.GetWeakPtr(), nullptr,
-                                              /*config_params=*/std::nullopt));
+  EXPECT_TRUE(CreateSession());
 
   // Full validation did not need to run.
   histogram_tester.ExpectTotalCount(
@@ -3516,9 +3442,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationBlocksSession) {
     Initialize({.validation_config = WillFailValidationConfig()});
     task_environment_.RunUntilIdle();
 
-    EXPECT_FALSE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
@@ -3540,9 +3464,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationBlocksSession) {
         OnDeviceModelValidationResult::kSuccess, 1);
   }
 
-  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                              logger_.GetWeakPtr(), nullptr,
-                                              /*config_params=*/std::nullopt));
+  EXPECT_TRUE(CreateSession());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -3558,9 +3480,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
     Initialize({.validation_config = WillPassValidationConfig()});
     task_environment_.RunUntilIdle();
 
-    EXPECT_FALSE(test_controller_->CreateSession(
-        kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
-        /*config_params=*/std::nullopt));
+    EXPECT_FALSE(CreateSession());
 
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
@@ -3579,9 +3499,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
         OnDeviceModelValidationResult::kSuccess, 1);
   }
 
-  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                              logger_.GetWeakPtr(), nullptr,
-                                              /*config_params=*/std::nullopt));
+  EXPECT_TRUE(CreateSession());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
@@ -3602,15 +3520,12 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
         OnDeviceModelValidationResult::kSuccess, 1);
   }
 
-  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                              logger_.GetWeakPtr(), nullptr,
-                                              /*config_params=*/std::nullopt));
-  // Kill the service since we are simulating a startup.
-  test_controller_->CrashService();
+  EXPECT_TRUE(CreateSession());
 
-  fake_settings_.set_execute_result({"goodbye"});
   {
     base::HistogramTester histogram_tester;
+    fake_settings_.set_execute_result({"goodbye"});
+    RecreateServiceController();  // Simulate a restart.
 
     on_device_component_state_manager_.get()->OnStartup();
     task_environment_.RunUntilIdle();
@@ -3623,9 +3538,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
         OnDeviceModelValidationResult::kNonMatchingOutput, 1);
   }
 
-  EXPECT_FALSE(test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                               logger_.GetWeakPtr(), nullptr,
-                                               /*config_params=*/std::nullopt));
+  EXPECT_FALSE(CreateSession());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -3661,9 +3574,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       "OnDeviceModelValidationResultOnValidationStarted",
       OnDeviceModelValidationResult::kUnknown, 1);
 
-  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                              logger_.GetWeakPtr(), nullptr,
-                                              /*config_params=*/std::nullopt));
+  EXPECT_TRUE(CreateSession());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDoesNotRepeat) {
@@ -3830,9 +3741,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationInterrupted) {
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
 
-  EXPECT_TRUE(test_controller_->CreateSession(kFeature, base::DoNothing(),
-                                              logger_.GetWeakPtr(), nullptr,
-                                              /*config_params=*/std::nullopt));
+  EXPECT_TRUE(CreateSession());
 
   task_environment_.RunUntilIdle();
 
@@ -3866,7 +3775,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFailsOnCrash) {
   Initialize({.validation_config = WillPassValidationConfig()});
   task_environment_.RunUntilIdle();
 
-  test_controller_->CrashService();
+  fake_launcher_.CrashService();
   task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
 
@@ -3883,12 +3792,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize({.validation_config = WillPassValidationConfig()});
   task_environment_.RunUntilIdle();
 
-  base::test::TestFuture<
-      std::optional<on_device_model::mojom::PerformanceClass>>
-      result_future;
-  test_controller_->GetEstimatedPerformanceClass(result_future.GetCallback());
-  EXPECT_EQ(on_device_model::mojom::PerformanceClass::kVeryHigh,
-            *result_future.Get());
+  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      test_controller_, result_future.GetCallback());
+  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
   task_environment_.RunUntilIdle();
 
   // Performance check sh;ould not shut down service.
@@ -3914,10 +3821,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize({.validation_config = WillPassValidationConfig()});
   task_environment_.RunUntilIdle();
 
-  base::test::TestFuture<
-      std::optional<on_device_model::mojom::PerformanceClass>>
-      result_future;
-  test_controller_->GetEstimatedPerformanceClass(result_future.GetCallback());
+  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      test_controller_, result_future.GetCallback());
 
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
@@ -3929,10 +3835,45 @@ TEST_F(OnDeviceModelServiceControllerTest,
       OnDeviceModelValidationResult::kSuccess, 1);
 
   EXPECT_FALSE(result_future.IsReady());
-  EXPECT_EQ(on_device_model::mojom::PerformanceClass::kVeryHigh,
-            *result_future.Get());
+  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, LoggingModeDefault) {
+  TestModelQualityLogsUploaderService test_uploader(&pref_service_);
+  Initialize();
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(),
+      test_uploader.GetWeakPtr(),
+      SessionConfigParams{.logging_mode =
+                              SessionConfigParams::LoggingMode::kDefault});
+  ASSERT_TRUE(session);
+  ResponseHolder response_holder;
+  session->ExecuteModel(UserInputRequest("input"),
+                        response_holder.GetStreamingCallback());
+  EXPECT_TRUE(response_holder.GetFinalStatus());
+  EXPECT_TRUE(response_holder.log_entry());
+  EXPECT_TRUE(response_holder.model_execution_info());
+  response_holder.ClearLogEntry();
+  EXPECT_EQ(1u, test_uploader.uploaded_logs().size());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, LoggingModeAlwaysDisable) {
+  TestModelQualityLogsUploaderService test_uploader(&pref_service_);
+  Initialize();
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(),
+      test_uploader.GetWeakPtr(),
+      SessionConfigParams{
+          .logging_mode = SessionConfigParams::LoggingMode::kAlwaysDisable});
+  ASSERT_TRUE(session);
+  ResponseHolder response_holder;
+  session->ExecuteModel(UserInputRequest("input"),
+                        response_holder.GetStreamingCallback());
+  EXPECT_TRUE(response_holder.GetFinalStatus());
+  response_holder.ClearLogEntry();
+  EXPECT_EQ(0u, test_uploader.uploaded_logs().size());
 }
 
 }  // namespace optimization_guide

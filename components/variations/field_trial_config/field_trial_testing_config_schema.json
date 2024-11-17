@@ -5,7 +5,7 @@
 {
   "type_name": "FieldTrialTestingConfig",
   "system-headers": [ "optional" ] ,
-  "headers": [ "components/variations/proto/study.pb.h" ],
+  "headers": [ "base/containers/span.h", "components/variations/proto/study.pb.h" ],
   "schema": [{
     "field": "studies",
     "type": "array",

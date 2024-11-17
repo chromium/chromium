@@ -599,8 +599,7 @@ int BlockingNetworkDelegate::MaybeBlockStage(
                                     weak_factory_.GetWeakPtr()));
       return ERR_IO_PENDING;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // OCSPErrorTestDelegate caches the SSLInfo passed to OnSSLCertificateError.
@@ -1524,55 +1523,6 @@ TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesWsSchemeUpgrade) {
   // Observe that the scheme has been upgraded to wss.
   EXPECT_TRUE(req->url().SchemeIsCryptographic());
   EXPECT_TRUE(req->url().SchemeIs(url::kWssScheme));
-}
-
-// Test that same-site requests with "wss" scheme retain the
-// `kStorageAccessGrantEligible` override, even if the initiator origin uses the
-// HTTPS version of the site.
-TEST_F(URLRequestTest, WssRequestsAreEligibleForStorageAccess) {
-  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
-  RegisterDefaultHandlers(&https_server);
-  ASSERT_TRUE(https_server.Start());
-
-  const GURL https_url = https_server.GetURL("a.test", "/defaultresponse");
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr(url::kWssScheme);
-
-  auto context_builder = CreateTestURLRequestContextBuilder();
-  auto& network_delegate = *context_builder->set_network_delegate(
-      std::make_unique<TestNetworkDelegate>());
-  auto context = context_builder->Build();
-
-  TestDelegate d;
-  std::unique_ptr<URLRequest> req(
-      context->CreateRequest(https_url.ReplaceComponents(replacements),
-                             DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
-                             /*is_for_websockets=*/true));
-
-  req->SetExtraRequestHeaders(WebSocketCommonTestHeaders());
-
-  auto websocket_stream_create_helper =
-      std::make_unique<TestWebSocketHandshakeStreamCreateHelper>();
-  req->SetUserData(kWebSocketHandshakeUserDataKey,
-                   std::move(websocket_stream_create_helper));
-
-  req->set_storage_access_api_status(StorageAccessApiStatus::kAccessViaAPI);
-  req->set_initiator(url::Origin::Create(https_url));
-
-  req->Start();
-  d.RunUntilComplete();
-
-  // Expect failure because test server is not set up to provide websocket
-  // responses.
-  ASSERT_EQ(network_delegate.error_count(), 1);
-  ASSERT_EQ(network_delegate.last_error(), ERR_INVALID_RESPONSE);
-
-  CookieSettingOverrides expected_overides;
-  expected_overides.Put(CookieSettingOverride::kStorageAccessGrantEligible);
-
-  EXPECT_THAT(network_delegate.cookie_setting_overrides_records(),
-              testing::ElementsAre(expected_overides, expected_overides));
 }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
@@ -3961,8 +3911,7 @@ class URLRequestTestHTTP : public URLRequestTest {
 
     std::unique_ptr<URLRequestJob> CreateJob(
         URLRequest* request) const override {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
 
     bool IsSafeRedirectTarget(const GURL& location) const override {
@@ -4306,7 +4255,7 @@ void NetworkDelegateCancelRequest(BlockingNetworkDelegate::BlockMode block_mode,
     } else if (stage == BlockingNetworkDelegate::ON_HEADERS_RECEIVED) {
       EXPECT_TRUE(r->proxy_chain().is_direct());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     EXPECT_EQ(ERR_BLOCKED_BY_CLIENT, d.request_status());
     EXPECT_EQ(1, network_delegate.created_requests());
@@ -5987,10 +5936,10 @@ TEST_F(URLRequestTestHTTP, PostFileTest) {
 
     d.RunUntilComplete();
 
-    int64_t size64 = 0;
-    ASSERT_EQ(true, base::GetFileSize(path, &size64));
-    ASSERT_LE(size64, std::numeric_limits<int>::max());
-    int size = static_cast<int>(size64);
+    std::optional<int64_t> size64 = base::GetFileSize(path);
+    ASSERT_TRUE(size64.has_value());
+    ASSERT_LE(size64.value(), std::numeric_limits<int>::max());
+    int size = static_cast<int>(size64.value());
     auto buf = std::make_unique<char[]>(size);
 
     ASSERT_EQ(size, base::ReadFile(path, buf.get(), size));
@@ -6042,7 +5991,7 @@ namespace {
 // Adds a standard set of data to an upload for chunked upload integration
 // tests.
 void AddDataToUpload(ChunkedUploadDataStream::Writer* writer) {
-  const auto append = [writer](const std::string_view str, bool is_done) {
+  const auto append = [writer](std::string_view str, bool is_done) {
     writer->AppendData(base::as_byte_span(str), is_done);
   };
   append("a", false);
@@ -6160,19 +6109,14 @@ TEST_F(URLRequestTestHTTP, ResponseHeadersTest) {
   // Simple sanity check that response_info() accesses the same data.
   EXPECT_EQ(headers, req->response_info().headers.get());
 
-  std::string header;
-  EXPECT_TRUE(headers->GetNormalizedHeader("cache-control", &header));
-  EXPECT_EQ("private", header);
+  EXPECT_EQ(headers->GetNormalizedHeader("cache-control"), "private");
 
-  header.clear();
-  EXPECT_TRUE(headers->GetNormalizedHeader("content-type", &header));
-  EXPECT_EQ("text/html; charset=ISO-8859-1", header);
+  EXPECT_EQ(headers->GetNormalizedHeader("content-type"),
+            "text/html; charset=ISO-8859-1");
 
   // The response has two "X-Multiple-Entries" headers.
-  // This verfies our output has them concatenated together.
-  header.clear();
-  EXPECT_TRUE(headers->GetNormalizedHeader("x-multiple-entries", &header));
-  EXPECT_EQ("a, b", header);
+  // This verifies our output has them concatenated together.
+  EXPECT_EQ(headers->GetNormalizedHeader("x-multiple-entries"), "a, b");
 }
 
 // TODO(svaldez): iOS tests are flaky with EmbeddedTestServer and transport
@@ -6180,22 +6124,26 @@ TEST_F(URLRequestTestHTTP, ResponseHeadersTest) {
 #if !BUILDFLAG(IS_IOS)
 TEST_F(URLRequestTestHTTP, ProcessSTS) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  std::string test_server_hostname = "a.test";
+  https_test_server.SetCertHostnames({test_server_hostname});
   https_test_server.ServeFilesFromSourceDirectory(
       base::FilePath(kTestFilePath));
   ASSERT_TRUE(https_test_server.Start());
 
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  host_resolver->rules()->AddRule(test_server_hostname,
+                                  https_test_server.GetIPLiteralString());
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(std::move(host_resolver));
+  auto context = context_builder->Build();
   TestDelegate d;
-  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
-      https_test_server.GetURL("/hsts-headers.html"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      https_test_server.GetURL(test_server_hostname, "/hsts-headers.html"),
+      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   d.RunUntilComplete();
 
-  TransportSecurityState* security_state =
-      default_context().transport_security_state();
+  TransportSecurityState* security_state = context->transport_security_state();
   TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
   EXPECT_TRUE(
@@ -6234,6 +6182,58 @@ TEST_F(URLRequestTestHTTP, STSNotProcessedOnIP) {
   TransportSecurityState::STSState sts_state;
   EXPECT_FALSE(
       security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
+}
+
+TEST_F(URLRequestTestHTTP, STSNotProcessedOnLocalhost) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kIgnoreHSTSForLocalhost);
+  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  https_test_server.ServeFilesFromSourceDirectory(
+      base::FilePath(kTestFilePath));
+  ASSERT_TRUE(https_test_server.Start());
+  // Make sure this test fails if the test server is changed to not
+  // use `localhost` as the hostname for CERT_COMMON_NAME_IS_DOMAIN.
+  ASSERT_TRUE(net::IsLocalHostname(https_test_server.GetURL("/").host()));
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
+      https_test_server.GetURL("/hsts-headers.html"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->Start();
+  d.RunUntilComplete();
+  TransportSecurityState* security_state =
+      default_context().transport_security_state();
+  TransportSecurityState::STSState sts_state;
+  EXPECT_FALSE(security_state->GetDynamicSTSState("localhost", &sts_state));
+}
+
+TEST_F(URLRequestTestHTTP, STSProcessedOnLocalhostWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndDisableFeature(
+      net::features::kIgnoreHSTSForLocalhost);
+  EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  https_test_server.ServeFilesFromSourceDirectory(
+      base::FilePath(kTestFilePath));
+  ASSERT_TRUE(https_test_server.Start());
+  // Make sure this test fails if the test server is changed to not
+  // use `localhost` as the hostname for CERT_COMMON_NAME_IS_DOMAIN.
+  ASSERT_TRUE(net::IsLocalHostname(https_test_server.GetURL("/").host()));
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
+      https_test_server.GetURL("/hsts-headers.html"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->Start();
+  d.RunUntilComplete();
+  TransportSecurityState* security_state =
+      default_context().transport_security_state();
+  TransportSecurityState::STSState sts_state;
+  EXPECT_TRUE(security_state->GetDynamicSTSState("localhost", &sts_state));
 }
 
 TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
@@ -6291,24 +6291,29 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
 
 TEST_F(URLRequestTestHTTP, ProcessSTSOnce) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  std::string test_server_hostname = "a.test";
+  https_test_server.SetCertHostnames({test_server_hostname});
   https_test_server.ServeFilesFromSourceDirectory(
       base::FilePath(kTestFilePath));
   ASSERT_TRUE(https_test_server.Start());
 
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  host_resolver->rules()->AddRule(test_server_hostname,
+                                  https_test_server.GetIPLiteralString());
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_host_resolver(std::move(host_resolver));
+  auto context = context_builder->Build();
 
   TestDelegate d;
-  std::unique_ptr<URLRequest> request(default_context().CreateRequest(
-      https_test_server.GetURL("/hsts-multiple-headers.html"), DEFAULT_PRIORITY,
-      &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      https_test_server.GetURL(test_server_hostname,
+                               "/hsts-multiple-headers.html"),
+      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
   d.RunUntilComplete();
 
   // We should have set parameters from the first header, not the second.
-  TransportSecurityState* security_state =
-      default_context().transport_security_state();
+  TransportSecurityState* security_state = context->transport_security_state();
   TransportSecurityState::STSState sts_state;
   EXPECT_TRUE(
       security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
@@ -13384,12 +13389,8 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
 class PatternedExpectBypassCacheNetworkDelegate : public TestNetworkDelegate {
  public:
   explicit PatternedExpectBypassCacheNetworkDelegate(
-      std::vector<bool> expectations,
-      std::optional<cookie_util::StorageAccessStatus> storage_access_status)
-      : expectations_(std::move(expectations)) {
-    set_storage_access_status(storage_access_status);
-    set_is_storage_access_header_enabled(true);
-  }
+      std::vector<bool> expectations)
+      : expectations_(std::move(expectations)) {}
 
   ~PatternedExpectBypassCacheNetworkDelegate() override {
     EXPECT_TRUE(expectations_.empty());
@@ -13410,6 +13411,69 @@ class PatternedExpectBypassCacheNetworkDelegate : public TestNetworkDelegate {
  private:
   std::vector<bool> expectations_;
 };
+
+TEST_F(URLRequestTest, RedirectClearsPerHopLoadFlags) {
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_network_delegate(
+      std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
+          std::vector({true, false})));
+  auto context = context_builder->Build();
+  TestDelegate d;
+
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      https_server.GetURL(
+          "a.test",
+          base::StrCat({"/server-redirect?",
+                        https_server.GetURL("a.test", "/echo").spec()})),
+      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_per_hop_load_flags(LOAD_BYPASS_CACHE);
+
+  EXPECT_TRUE(req->load_flags() & LOAD_BYPASS_CACHE);
+  req->Start();
+  d.RunUntilRedirect();
+  EXPECT_FALSE(req->load_flags() & LOAD_BYPASS_CACHE);
+  req->FollowDeferredRedirect(/*removed_headers=*/{}, /*modified_headers=*/{});
+  d.RunUntilComplete();
+
+  EXPECT_EQ(req->url().path(), "/echo");
+}
+
+TEST_F(URLRequestTest, DelegateCanSetPerHopLoadFlagsDuringRedirect) {
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_network_delegate(
+      std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
+          std::vector({false, true})));
+  auto context = context_builder->Build();
+  TestDelegate d;
+
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      https_server.GetURL(
+          "a.test",
+          base::StrCat({"/server-redirect?",
+                        https_server.GetURL("a.test", "/echo").spec()})),
+      DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  EXPECT_FALSE(req->load_flags() & LOAD_BYPASS_CACHE);
+  req->Start();
+  d.RunUntilRedirect();
+  EXPECT_FALSE(req->load_flags() & LOAD_BYPASS_CACHE);
+  req->set_per_hop_load_flags(LOAD_BYPASS_CACHE);
+  EXPECT_TRUE(req->load_flags() & LOAD_BYPASS_CACHE);
+  req->FollowDeferredRedirect(/*removed_headers=*/{}, /*modified_headers=*/{});
+  d.RunUntilComplete();
+
+  EXPECT_EQ(req->url().path(), "/echo");
+}
 
 class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
  public:
@@ -13559,10 +13623,18 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, StorageAccessHeaderRetry) {
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
-      std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          pattern, cookie_util::StorageAccessStatus::kInactive));
+      std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(pattern));
+  network_delegate.set_is_storage_access_header_enabled(true);
+  if (test.expect_retry) {
+    // The network delegate is only consulted for the Storage Access status
+    // during a retry; it should claim that storage access is active at that
+    // point.
+    network_delegate.set_storage_access_status(
+        cookie_util::StorageAccessStatus::kActive);
+  }
   auto context = context_builder->Build();
   TestDelegate d;
+  base::HistogramTester histogram_tester;
 
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
@@ -13572,6 +13644,7 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, StorageAccessHeaderRetry) {
                                      test.origin_header->Serialize(),
                                      /*overwrite=*/true);
   }
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilComplete();
@@ -13589,6 +13662,20 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, StorageAccessHeaderRetry) {
             CookieSettingOverrides(
                 {CookieSettingOverride::
                      kStorageAccessGrantEligibleViaHeader})));
+    histogram_tester.ExpectBucketCount(
+        "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome",
+        /*sample=*/
+        net::cookie_util::ActivateStorageAccessRetryOutcome::kSuccess,
+        /*expected_count=*/1);
+    // We expect this record since the retried response still includes the
+    // header, but it doesn't result in a successful retry the second time
+    // around.
+    histogram_tester.ExpectBucketCount(
+        "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome",
+        /*sample=*/
+        net::cookie_util::ActivateStorageAccessRetryOutcome::
+            kFailureIneffectiveRetry,
+        /*expected_count=*/1);
   } else {
     // Expect 2 records for 1 request, since the request is not retried.
     EXPECT_THAT(
@@ -13624,15 +13711,15 @@ const StorageAccessHeaderRetryData storage_access_header_retry_tests[] = {
     // Origin header, non-wildcard (non-matching).
     {url::Origin::Create(GURL("https://example.test:123")),
      "retry; allowed-origin=\"https://example.test\"", false},
-    // Origin header, multiple items, first matches.
+    // Origin header, list, first matches.
     {url::Origin::Create(GURL("https://example.test")),
-     "retry; allowed-origin=\"https://example.test\", foo, bar", true},
-    // Origin header, multiple items, non-first non-last matches.
+     "retry; allowed-origin=\"https://example.test\", foo, bar", false},
+    // Origin header, list, non-first non-last matches.
     {url::Origin::Create(GURL("https://example.test")),
-     "foo, retry; allowed-origin=\"https://example.test\", bar", true},
-    // Origin header, multiple items, last matches.
+     "foo, retry; allowed-origin=\"https://example.test\", bar", false},
+    // Origin header, list, last matches.
     {url::Origin::Create(GURL("https://example.test")),
-     "foo, bar, retry; allowed-origin=\"https://example.test\"", true},
+     "foo, bar, retry; allowed-origin=\"https://example.test\"", false},
     // Origin header, multiple params, first matches.
     {url::Origin::Create(GURL("https://example.test")),
      "retry; allowed-origin=\"https://example.test\"; foo; bar", true},
@@ -13679,19 +13766,23 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false, true, false}),
-          cookie_util::StorageAccessStatus::kInactive));
+          std::vector({false, true, false})));
+  network_delegate.set_is_storage_access_header_enabled(true);
+  network_delegate.set_storage_access_status(
+      cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
   TestDelegate d;
 
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilRedirect();
 
   EXPECT_EQ(req->url().path(), kStorageAccessRetryPath);
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kActive);
   req->FollowDeferredRedirect(/*removed_headers=*/{}, /*modified_headers=*/{});
 
   d.RunUntilComplete();
@@ -13708,9 +13799,12 @@ TEST_F(StorageAccessHeaderURLRequestTest,
               {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader}),
           CookieSettingOverrides(
               {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader}),
-          // The second response was a (same-origin) redirect, and no
-          // longer carries the override.
-          CookieSettingOverrides(), CookieSettingOverrides()));
+          // The second response was a (same-origin) redirect, and still carries
+          // the override.
+          CookieSettingOverrides(
+              {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader}),
+          CookieSettingOverrides(
+              {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader})));
   EXPECT_EQ(req->url().path(), "/echo");
 }
 
@@ -13723,8 +13817,10 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false, true}),
-          cookie_util::StorageAccessStatus::kInactive));
+          std::vector({false, true})));
+  network_delegate.set_is_storage_access_header_enabled(true);
+  network_delegate.set_storage_access_status(
+      cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
   TestDelegate d;
   d.set_credentials(AuthCredentials(kUser, kSecret));
@@ -13732,6 +13828,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilComplete();
@@ -13764,8 +13861,10 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false, true}),
-          cookie_util::StorageAccessStatus::kInactive));
+          std::vector({false, true})));
+  network_delegate.set_is_storage_access_header_enabled(true);
+  network_delegate.set_storage_access_status(
+      cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
   TestDelegate d;
   d.set_credentials(AuthCredentials(kUser, kSecret));
@@ -13773,6 +13872,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilComplete();
@@ -13800,8 +13900,10 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false, true}),
-          cookie_util::StorageAccessStatus::kInactive));
+          std::vector({false, true})));
+  network_delegate.set_is_storage_access_header_enabled(true);
+  network_delegate.set_storage_access_status(
+      cookie_util::StorageAccessStatus::kActive);
   auto context = context_builder->Build();
   TestDelegate d;
   d.set_credentials(AuthCredentials(kUser, kSecret));
@@ -13809,6 +13911,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilComplete();
@@ -13831,6 +13934,38 @@ TEST_F(StorageAccessHeaderURLRequestTest,
           CookieSettingOverrides(
               {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader})));
   EXPECT_TRUE(d.auth_required_called());
+}
+
+TEST_F(StorageAccessHeaderURLRequestTest,
+       StorageAccessHeaderRetry_NoRetryWhenDisabled) {
+  set_response_sequence({ResponseKind::kOk});
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  auto& network_delegate = *context_builder->set_network_delegate(
+      std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
+          std::vector({false})));
+  network_delegate.set_is_storage_access_header_enabled(false);
+  auto context = context_builder->Build();
+  TestDelegate d;
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  req->Start();
+  d.RunUntilComplete();
+
+  // This expects 2 records for 1 request, since it should not have been
+  // retried.
+  EXPECT_THAT(network_delegate.cookie_setting_overrides_records(),
+              ElementsAre(CookieSettingOverrides(), CookieSettingOverrides()));
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome",
+      /*sample=*/
+      net::cookie_util::ActivateStorageAccessRetryOutcome::
+          kFailureHeaderDisabled,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace net

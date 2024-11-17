@@ -10,6 +10,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -83,6 +84,10 @@ BASE_FEATURE(kExoPerSurfaceOcclusion,
              "ExoPerSurfaceOcclusion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDisableNonYUVOverlaysFromExo,
+             "DisableNonYUVOverlaysFromExo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 bool IsExoOcclusionEnabled() {
@@ -116,6 +121,28 @@ bool FormatHasAlpha(gfx::BufferFormat format) {
   return gfx::AlphaBitsForBufferFormat(format) != 0;
 }
 
+// TODO(crbug.com/369003507): Remove this check once we found the root
+// cause of crash on specific hatch platform.
+bool ShouldDisableOverlay(gfx::BufferFormat format) {
+  static bool is_enabled =
+      base::FeatureList::IsEnabled(kDisableNonYUVOverlaysFromExo);
+  if (!is_enabled) {
+    return false;
+  }
+  switch (format) {
+    case gfx::BufferFormat::YVU_420:
+      return false;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      return false;
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      return false;
+    case gfx::BufferFormat::P010:
+      return false;
+    default:
+      return true;
+  }
+}
+
 Transform InvertY(Transform transform) {
   switch (transform) {
     case Transform::NORMAL:
@@ -135,7 +162,7 @@ Transform InvertY(Transform transform) {
     case Transform::FLIPPED_ROTATE_270:
       return Transform::ROTATE_90;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Returns a gfx::Transform that can transform a (0,0 1x1) rect to the same
@@ -161,7 +188,7 @@ gfx::Transform ToBufferTransformMatrix(Transform transform, bool invert_y) {
     case Transform::FLIPPED_ROTATE_270:
       return gfx::Transform::Affine(0, -1, -1, 0, 1, 1);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Helper function that returns |size| after adjusting for |transform|.
@@ -179,7 +206,7 @@ gfx::Size ToTransformedSize(const gfx::Size& size, Transform transform) {
       return gfx::Size(size.height(), size.width());
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool IsDeskContainer(aura::Window* container) {
@@ -193,7 +220,7 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   CustomWindowDelegate(const CustomWindowDelegate&) = delete;
   CustomWindowDelegate& operator=(const CustomWindowDelegate&) = delete;
 
-  ~CustomWindowDelegate() override {}
+  ~CustomWindowDelegate() override = default;
 
   // Overridden from aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
@@ -259,12 +286,12 @@ class CustomWindowDelegate : public aura::WindowDelegate {
 
 class CustomWindowTargeter : public aura::WindowTargeter {
  public:
-  CustomWindowTargeter() {}
+  CustomWindowTargeter() = default;
 
   CustomWindowTargeter(const CustomWindowTargeter&) = delete;
   CustomWindowTargeter& operator=(const CustomWindowTargeter&) = delete;
 
-  ~CustomWindowTargeter() override {}
+  ~CustomWindowTargeter() override = default;
 
   // Overridden from aura::WindowTargeter:
   bool EventLocationInsideBounds(aura::Window* window,
@@ -1437,7 +1464,7 @@ void Surface::SetSurfaceHierarchyContentBoundsForTest(
 ////////////////////////////////////////////////////////////////////////////////
 // Buffer, private:
 
-Surface::State::State() {}
+Surface::State::State() = default;
 
 Surface::State::~State() = default;
 
@@ -1863,6 +1890,11 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
             break;
         }
 
+        if (state_.buffer.has_value() && state_.buffer->buffer() &&
+            ShouldDisableOverlay(state_.buffer->buffer()->GetFormat())) {
+          texture_quad->overlay_priority_hint = viz::OverlayPriority::kLow;
+        }
+
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
         if (state_.basic_state.only_visible_on_secure_output &&
             state_.buffer.has_value() && state_.buffer->buffer() &&
@@ -2109,8 +2141,7 @@ std::string Surface::DumpDebugInfo() const {
       case SkBlendMode::kSrcOver:
         return " kSrcOver";
       default:
-        NOTREACHED_IN_MIGRATION();
-        return " InvalidBlendMode";
+        NOTREACHED();
     }
   };
 

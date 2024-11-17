@@ -230,7 +230,7 @@ CommandLine::~CommandLine() = default;
 // static
 void CommandLine::set_slash_is_not_a_switch() {
   // The last switch prefix should be slash, so adjust the size to skip it.
-  static_assert(base::make_span(kSwitchPrefixes).back() == L"/",
+  static_assert(base::span(kSwitchPrefixes).back() == L"/",
                 "Error: Last switch prefix is not a slash.");
   switch_prefix_count = std::size(kSwitchPrefixes) - 1;
 }
@@ -316,7 +316,7 @@ void CommandLine::InitFromArgv(const StringVector& argv) {
   begin_args_ = 1;
   SetProgram(argv.empty() ? FilePath() : FilePath(argv[0]));
   if (!argv.empty()) {
-    AppendSwitchesAndArguments(make_span(argv).subspan(1));
+    AppendSwitchesAndArguments(span(argv).subspan<1>());
   }
 }
 
@@ -508,7 +508,7 @@ void CommandLine::AppendArguments(const CommandLine& other,
   if (include_program)
     SetProgram(other.GetProgram());
   if (!other.argv().empty()) {
-    AppendSwitchesAndArguments(make_span(other.argv()).subspan(1));
+    AppendSwitchesAndArguments(span(other.argv()).subspan<1>());
   }
 }
 

@@ -54,8 +54,7 @@ abstract class ElidedLogcatProvider {
             Log.i(TAG, "elideLogcat took " + elapsedMillis + " ms");
         } catch (IOException e) {
             Log.e(TAG, "Can't read logs", e);
-        } finally {
-            return builder.toString();
         }
+        return builder.toString();
     }
 }

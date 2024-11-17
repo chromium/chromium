@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -29,19 +30,15 @@ namespace {
 // static
 SkBitmap DeserializeImage(const std::string& image_data) {
   base::AssertLongCPUWorkAllowed();
-  SkBitmap image;
-  gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(image_data.data()),
-      image_data.length(), &image);
-  return image;
+  return gfx::PNGCodec::Decode(base::as_byte_span(image_data));
 }
 
 // static
 std::vector<unsigned char> SerializeImage(const SkBitmap& image) {
   base::AssertLongCPUWorkAllowed();
-  std::vector<unsigned char> image_data;
-  gfx::PNGCodec::EncodeBGRASkBitmap(image, false, &image_data);
-  return image_data;
+  std::optional<std::vector<uint8_t>> image_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(image, /*discard_transparency=*/false);
+  return image_data.value_or(std::vector<uint8_t>());
 }
 
 }  // namespace
@@ -158,7 +155,7 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
         action->type = blink::mojom::NotificationActionType::TEXT;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     action->action = payload_action.action();
@@ -249,7 +246,7 @@ bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
             NotificationDatabaseDataProto::NotificationAction::TEXT);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Unknown action type: " << action->type;
+        NOTREACHED() << "Unknown action type: " << action->type;
     }
 
     payload_action->set_action(action->action);

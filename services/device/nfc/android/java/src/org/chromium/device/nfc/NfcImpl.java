@@ -39,12 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Android implementation of the NFC mojo service defined in
- * services/device/public/mojom/nfc.mojom.
+ * Android implementation of the NFC mojo service defined in services/device/public/mojom/nfc.mojom.
  */
 public class NfcImpl implements Nfc {
     private static final String TAG = "NfcImpl";
-    private static final String ANY_PATH = "/*";
     private static final long MIN_TIME_BETWEEN_VIBRATIONS_MS = 1000;
     private static final long DELAY_TO_DISABLE_READER_MODE_MS = 500;
 
@@ -181,11 +179,11 @@ public class NfcImpl implements Nfc {
     }
 
     /**
-     * Sets NfcClient. NfcClient interface is used to notify mojo NFC service client when NFC
-     * device is in proximity and has NdefMessage.
-     * @see Nfc#watch(int id, Watch_Response callback)
+     * Sets NfcClient. NfcClient interface is used to notify mojo NFC service client when NFC device
+     * is in proximity and has NdefMessage.
      *
-     * @param client @see NfcClient
+     * @see Nfc#watch(int id, Watch_Response callback)
+     * @see NfcClient
      */
     @Override
     public void setClient(NfcClient client) {

@@ -33,6 +33,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_font_face_load_status.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/core/css/binary_data_font_face_source.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
@@ -135,19 +136,18 @@ FontFace* FontFace::Create(
 
   switch (source->GetContentType()) {
     case V8UnionArrayBufferOrArrayBufferViewOrString::ContentType::kArrayBuffer:
-      return Create(execution_context, family, source->GetAsArrayBuffer(),
-                    descriptors);
+      return Create(execution_context, family,
+                    source->GetAsArrayBuffer()->ByteSpan(), descriptors);
     case V8UnionArrayBufferOrArrayBufferViewOrString::ContentType::
         kArrayBufferView:
       return Create(execution_context, family,
-                    source->GetAsArrayBufferView().Get(), descriptors);
+                    source->GetAsArrayBufferView()->ByteSpan(), descriptors);
     case V8UnionArrayBufferOrArrayBufferViewOrString::ContentType::kString:
       return Create(execution_context, family, source->GetAsString(),
                     descriptors);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 FontFace* FontFace::Create(ExecutionContext* context,
@@ -171,25 +171,11 @@ FontFace* FontFace::Create(ExecutionContext* context,
 
 FontFace* FontFace::Create(ExecutionContext* context,
                            const AtomicString& family,
-                           DOMArrayBuffer* source,
+                           base::span<const uint8_t> data,
                            const FontFaceDescriptors* descriptors) {
   FontFace* font_face =
       MakeGarbageCollected<FontFace>(context, family, descriptors);
-  font_face->InitCSSFontFace(context,
-                             static_cast<const unsigned char*>(source->Data()),
-                             source->ByteLength());
-  return font_face;
-}
-
-FontFace* FontFace::Create(ExecutionContext* context,
-                           const AtomicString& family,
-                           DOMArrayBufferView* source,
-                           const FontFaceDescriptors* descriptors) {
-  FontFace* font_face =
-      MakeGarbageCollected<FontFace>(context, family, descriptors);
-  font_face->InitCSSFontFace(
-      context, static_cast<const unsigned char*>(source->BaseAddress()),
-      source->byteLength());
+  font_face->InitCSSFontFace(context, data);
   return font_face;
 }
 
@@ -472,8 +458,7 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
       size_adjust_ = ConvertSizeAdjustValue(value);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   return true;
 }
@@ -482,20 +467,18 @@ void FontFace::SetFamilyValue(const CSSFontFamilyValue& family_value) {
   family_ = family_value.Value();
 }
 
-String FontFace::status() const {
+V8FontFaceLoadStatus FontFace::status() const {
   switch (status_) {
     case kUnloaded:
-      return "unloaded";
+      return V8FontFaceLoadStatus(V8FontFaceLoadStatus::Enum::kUnloaded);
     case kLoading:
-      return "loading";
+      return V8FontFaceLoadStatus(V8FontFaceLoadStatus::Enum::kLoading);
     case kLoaded:
-      return "loaded";
+      return V8FontFaceLoadStatus(V8FontFaceLoadStatus::Enum::kLoaded);
     case kError:
-      return "error";
-    default:
-      NOTREACHED_IN_MIGRATION();
+      return V8FontFaceLoadStatus(V8FontFaceLoadStatus::Enum::kError);
   }
-  return g_empty_string;
+  NOTREACHED();
 }
 
 void FontFace::SetLoadStatus(LoadStatusType status) {
@@ -697,8 +680,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                             FontSelectionValue(stretch_value),
                             FontSelectionRange::RangeType::kSetExplicitly};
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return normal_capabilities;
+      NOTREACHED();
     }
   }
 
@@ -782,8 +764,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
         }
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return normal_capabilities;
+      NOTREACHED();
     }
   }
 
@@ -803,8 +784,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                                  FontSelectionRange::RangeType::kSetFromAuto};
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } else if (const auto* weight_list =
                    DynamicTo<CSSValueList>(weight_.Get())) {
@@ -855,8 +835,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                              FontSelectionValue(weight_value),
                              FontSelectionRange::RangeType::kSetExplicitly};
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return normal_capabilities;
+      NOTREACHED();
     }
   }
 
@@ -906,7 +885,7 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
     } else if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
       font_selector = scope->GetFontSelector();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     if (!item.IsLocal()) {
       if (ContextAllowsDownload(context) && item.IsSupportedFormat()) {
@@ -926,17 +905,15 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
 }
 
 void FontFace::InitCSSFontFace(ExecutionContext* context,
-                               const unsigned char* data,
-                               size_t size) {
+                               base::span<const uint8_t> data) {
   css_font_face_ = CreateCSSFontFace(this, unicode_range_.Get());
   if (error_) {
     return;
   }
 
-  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(data, size);
-  BinaryDataFontFaceSource* source =
-      MakeGarbageCollected<BinaryDataFontFaceSource>(
-          css_font_face_, buffer.get(), ots_parse_message_);
+  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(data);
+  auto* source = MakeGarbageCollected<BinaryDataFontFaceSource>(
+      css_font_face_, buffer.get(), ots_parse_message_);
   if (source->IsValid()) {
     SetLoadStatus(kLoaded);
   } else {

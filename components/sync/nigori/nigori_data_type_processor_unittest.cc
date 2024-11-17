@@ -41,7 +41,7 @@ const char kNigoriNonUniqueName[] = "nigori";
 const char kNigoriServerId[] = "nigori_server_id";
 const char kCacheGuid[] = "generated_id";
 
-// |*arg| must be of type std::optional<EntityData>.
+// `*arg` must be of type std::optional<EntityData>.
 MATCHER_P(OptionalEntityDataHasDecryptorTokenKeyName, expected_key_name, "") {
   return arg->specifics.nigori().keystore_decryptor_token().key_name() ==
          expected_key_name;
@@ -469,7 +469,7 @@ TEST_F(NigoriDataTypeProcessorTest, ShouldInvokeSyncStartCallback) {
   ASSERT_THAT(captured_response, NotNull());
   EXPECT_EQ(kCacheGuid, captured_response->data_type_state.cache_guid());
 
-  // Test that the |processor()| has been set in the activation response.
+  // Test that the `processor()` has been set in the activation response.
   ASSERT_FALSE(processor()->IsConnectedForTest());
   captured_response->type_processor->ConnectSync(
       std::make_unique<testing::NiceMock<MockCommitQueue>>());

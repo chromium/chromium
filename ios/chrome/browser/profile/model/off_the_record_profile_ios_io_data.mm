@@ -64,15 +64,14 @@ void OffTheRecordProfileIOSIOData::Handle::DoomIncognitoCache() {
       }));
 }
 
-OffTheRecordProfileIOSIOData::Handle::Handle(
-    ChromeBrowserState* browser_state)
+OffTheRecordProfileIOSIOData::Handle::Handle(ProfileIOS* profile)
     : io_data_(new OffTheRecordProfileIOSIOData()),
-      browser_state_(browser_state),
+      profile_(profile),
       initialized_(false) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  DCHECK(browser_state);
+  DCHECK(profile);
   io_data_->cookie_path_ =
-      browser_state->GetStatePath().Append(kIOSChromeCookieFilename);
+      profile->GetStatePath().Append(kIOSChromeCookieFilename);
 }
 
 OffTheRecordProfileIOSIOData::Handle::~Handle() {
@@ -109,7 +108,7 @@ void OffTheRecordProfileIOSIOData::Handle::LazyInitialize() const {
   // Set initialized_ to true at the beginning in case any of the objects
   // below try to get the ResourceContext pointer.
   initialized_ = true;
-  io_data_->InitializeOnUIThread(browser_state_);
+  io_data_->InitializeOnUIThread(profile_);
 
   // Once initialized, listen to memory warnings.
   CFNotificationCenterAddObserver(
@@ -132,8 +131,7 @@ OffTheRecordProfileIOSIOData::Handle::GetAllContextGetters() {
 }
 
 OffTheRecordProfileIOSIOData::OffTheRecordProfileIOSIOData()
-    : ProfileIOSIOData(
-          ChromeBrowserStateType::INCOGNITO_BROWSER_STATE) {}
+    : ProfileIOSIOData(ProfileIOSType::INCOGNITO_PROFILE) {}
 
 OffTheRecordProfileIOSIOData::~OffTheRecordProfileIOSIOData() {}
 

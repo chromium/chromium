@@ -141,8 +141,7 @@ bool ConvertDirectionFromApi(const Direction& input,
       *output = UsbTransferDirection::OUTBOUND;
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -162,8 +161,7 @@ bool ConvertRequestTypeFromApi(const RequestType& input,
       *output = UsbControlTransferType::RESERVED;
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -183,8 +181,7 @@ bool ConvertRecipientFromApi(const Recipient& input,
       *output = UsbControlTransferRecipient::OTHER;
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -244,8 +241,7 @@ TransferType ConvertTransferTypeToApi(const UsbTransferType& input) {
     case UsbTransferType::BULK:
       return usb::TransferType::kBulk;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return usb::TransferType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -256,8 +252,7 @@ Direction ConvertDirectionToApi(const UsbTransferDirection& input) {
     case UsbTransferDirection::OUTBOUND:
       return usb::Direction::kOut;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return usb::Direction::kNone;
+      NOTREACHED();
   }
 }
 
@@ -273,8 +268,7 @@ SynchronizationType ConvertSynchronizationTypeToApi(
     case UsbSynchronizationType::SYNCHRONOUS:
       return usb::SynchronizationType::kSynchronous;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return usb::SynchronizationType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -293,8 +287,7 @@ usb::UsageType ConvertUsageTypeToApi(const UsbUsageType& input) {
     case UsbUsageType::RESERVED:
       return usb::UsageType::kNone;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return usb::UsageType::kNone;
+      NOTREACHED();
   }
 }
 

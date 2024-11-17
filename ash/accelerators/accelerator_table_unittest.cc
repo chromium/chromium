@@ -21,10 +21,10 @@ namespace ash {
 namespace {
 
 // The number of non-Search-based accelerators.
-constexpr int kNonSearchAcceleratorsNum = 112;
+constexpr int kNonSearchAcceleratorsNum = 113;
 // The hash of non-Search-based accelerators. See HashAcceleratorData().
 constexpr char kNonSearchAcceleratorsHash[] =
-    "b6b832050cc5c1b6f5e0701f47343815";
+    "d8d437fd800f34f648c5bc4bb47926b0";
 
 struct Cmp {
   bool operator()(const AcceleratorData& lhs,
@@ -46,12 +46,12 @@ std::string AcceleratorDataToString(const AcceleratorData& accelerator) {
 }
 
 std::string HashAcceleratorData(
-    const std::vector<AcceleratorData> accelerators) {
+    const std::vector<AcceleratorData>& accelerators) {
   base::MD5Context context;
   base::MD5Init(&context);
-  for (const AcceleratorData& accelerator : accelerators)
+  for (const AcceleratorData& accelerator : accelerators) {
     base::MD5Update(&context, AcceleratorDataToString(accelerator));
-
+  }
   base::MD5Digest digest;
   base::MD5Final(&digest, &context);
   return MD5DigestToBase16(digest);

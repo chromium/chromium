@@ -4,14 +4,15 @@
 
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 
-#include "components/autofill/ios/form_util/test_form_activity_observer.h"
+#import "components/autofill/core/common/form_data.h"
+#import "components/autofill/ios/form_util/test_form_activity_observer.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 @interface FakeFormActivityObserver : NSObject<FormActivityObserver>
 // Arguments passed to
-// |webState:didSubmitDocumentWithFormNamed:withData:userInitiated:inFrame:|.
+// |webState:didSubmitDocumentWithFormData:userInitiated:inFrame:|.
 @property(nonatomic, readonly)
     autofill::TestSubmitDocumentInfo* submitDocumentInfo;
 // Arguments passed to
@@ -45,14 +46,12 @@
 }
 
 - (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormNamed:(const std::string&)formName
-                          withData:(const std::string&)formData
-                    hasUserGesture:(BOOL)hasUserGesture
-                           inFrame:(web::WebFrame*)frame {
+    didSubmitDocumentWithFormData:(const autofill::FormData&)formData
+                   hasUserGesture:(BOOL)hasUserGesture
+                          inFrame:(web::WebFrame*)frame {
   _submitDocumentInfo = std::make_unique<autofill::TestSubmitDocumentInfo>();
   _submitDocumentInfo->web_state = webState;
   _submitDocumentInfo->sender_frame = frame;
-  _submitDocumentInfo->form_name = formName;
   _submitDocumentInfo->form_data = formData;
   _submitDocumentInfo->has_user_gesture = hasUserGesture;
 }
@@ -93,17 +92,14 @@ class FormActivityObserverBridgeTest : public PlatformTest {
 // Tests |webState:didRegisterFormActivityWithParams:inFrame:| forwarding.
 TEST_F(FormActivityObserverBridgeTest, DocumentSubmitted) {
   ASSERT_FALSE([observer_ submitDocumentInfo]);
-  std::string kTestFormName("form-name");
-  std::string kTestFormData("[]");
+  autofill::FormData kTestFormData;
   bool has_user_gesture = true;
   auto sender_frame = web::FakeWebFrame::Create("sender_frame", true, GURL());
   observer_bridge_.DocumentSubmitted(&fake_web_state_, sender_frame.get(),
-                                     kTestFormName, kTestFormData,
-                                     has_user_gesture);
+                                     kTestFormData, has_user_gesture);
   ASSERT_TRUE([observer_ submitDocumentInfo]);
   EXPECT_EQ(&fake_web_state_, [observer_ submitDocumentInfo]->web_state);
   EXPECT_EQ(sender_frame.get(), [observer_ submitDocumentInfo]->sender_frame);
-  EXPECT_EQ(kTestFormName, [observer_ submitDocumentInfo]->form_name);
   EXPECT_EQ(kTestFormData, [observer_ submitDocumentInfo]->form_data);
   EXPECT_EQ(has_user_gesture, [observer_ submitDocumentInfo]->has_user_gesture);
 }

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -86,10 +87,13 @@ void ExtensionUninstallDialogViews::Show() {
       .AddOkButton(
           base::BindOnce(&ExtensionUninstallDialogViews::DialogAccepted,
                          weak_ptr_factory_.GetWeakPtr()),
-          ui::DialogModel::Button::Params().SetLabel(
-              l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON)))
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON))
+              .SetId(kOkButtonElementId))
       .AddCancelButton(
-          base::DoNothing() /* Cancel is covered by WindowClosingCallback */);
+          base::DoNothing() /* Cancel is covered by WindowClosingCallback */,
+          ui::DialogModel::Button::Params().SetId(kCancelButtonElementId));
 
   if (triggering_extension()) {
     dialog_builder.AddParagraph(
@@ -146,6 +150,11 @@ void ExtensionUninstallDialogViews::DialogClosing() {
 }
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(extensions::ExtensionUninstallDialog,
+                                      kCancelButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(extensions::ExtensionUninstallDialog,
+                                      kOkButtonElementId);
 
 // static
 std::unique_ptr<extensions::ExtensionUninstallDialog>

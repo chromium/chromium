@@ -465,8 +465,7 @@ bool FocusgroupController::AdvanceInGrid(Element* initial_element,
         current = helper->NextCellInColumn(current);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     // 2. If no next cell was found, attempt to wrap/flow.
@@ -586,8 +585,7 @@ Element* FocusgroupController::WrapOrFlowInGrid(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return nullptr;

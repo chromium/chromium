@@ -41,7 +41,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -103,6 +103,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -592,14 +593,25 @@ std::optional<ash::KioskAppId> GetAppId(const base::CommandLine& command_line,
                                         Profile* profile) {
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && user->GetType() == user_manager::UserType::kKioskApp) {
-    return ash::KioskAppId::ForChromeApp(
-        command_line.GetSwitchValueASCII(::switches::kAppId),
-        user->GetAccountId());
-  } else if (user && user->GetType() == user_manager::UserType::kWebKioskApp) {
-    return ash::KioskAppId::ForWebApp(user->GetAccountId());
-  } else {
+
+  if (!user) {
     return std::nullopt;
+  }
+
+  switch (user->GetType()) {
+    case user_manager::UserType::kKioskApp:
+      return ash::KioskAppId::ForChromeApp(
+          command_line.GetSwitchValueASCII(::switches::kAppId),
+          user->GetAccountId());
+    case user_manager::UserType::kWebKioskApp:
+      return ash::KioskAppId::ForWebApp(user->GetAccountId());
+    case user_manager::UserType::kKioskIWA:
+      return ash::KioskAppId::ForIsolatedWebApp(user->GetAccountId());
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+      return std::nullopt;
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -750,14 +762,14 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 
   if (profile_info.mode == StartupProfileMode::kProfilePicker) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #else
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         process_startup == chrome::startup::IsProcessStartup::kYes
             ? ProfilePicker::EntryPoint::kOnStartup
             : ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   // `last_opened_profiles` will be empty in the following circumstances:
@@ -777,7 +789,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (process_startup == chrome::startup::IsProcessStartup::kYes) {
         if (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
-          ash::FloatingWorkspaceService::GetForProfile(profile_to_open);
+          ash::FloatingWorkspaceServiceFactory::GetForProfile(profile_to_open);
         }
         // If floating workspace is enabled and safe mode is off, floating
         // workspace will handle the app restore from user's workspace copy.
@@ -790,7 +802,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
         // restore feature is enabled and the profile is a regular user
         // profile), defer the browser launching to FullRestoreService code.
         auto* full_restore_service =
-            ash::full_restore::FullRestoreService::GetForProfile(
+            ash::full_restore::FullRestoreServiceFactory::GetForProfile(
                 profile_to_open);
         if (full_restore_service) {
           full_restore_service->LaunchBrowserWhenReady();
@@ -805,15 +817,15 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 
     // Show ProfilePicker if `profile` can't be auto opened.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #else
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         process_startup == chrome::startup::IsProcessStartup::kYes
             ? ProfilePicker::EntryPoint::kOnStartupNoProfile
             : ProfilePicker::EntryPoint::
                   kNewSessionOnExistingProcessNoProfile));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   ProcessLastOpenedProfiles(command_line, cur_dir, process_startup,
                             is_first_run, profile, last_opened_profiles);
@@ -942,13 +954,6 @@ bool StartupBrowserCreator::ShouldLoadProfileWithoutWindow(
   if (command_line.HasSwitch(switches::kNoStartupWindow))
     return true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If Lacros is enabled, do not open an Ash browser window.
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    return true;
-  }
-#endif
-
   return false;
 }
 
@@ -1037,24 +1042,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     silent_launch = true;
 
     if (auto app_id = GetAppId(command_line, profile); app_id.has_value()) {
-      if (ash::BrowserDataMigratorImpl::IsFirstLaunchAfterMigration(
-              g_browser_process->local_state())) {
-        // After a lacros migration the kiosk app should not go through the
-        // crash recovery flow but instead use the full launch process, since
-        // the crash recovery flow does not wait for the force installed
-        // extensions to be installed.
-        // Force the full launch by going back to the login screen and remember
-        // the app to be launched in the local state.
-        LOG(INFO) << "Forcing the kiosk user to log out since it's the first "
-                     "launch after a migration";
-        ash::SetOneTimeAutoLaunchKioskAppId(*g_browser_process->local_state(),
-                                            app_id.value());
-        chrome::AttemptUserExit();
-        return false;
-      } else {
-        ash::KioskController::Get().StartSessionAfterCrash(app_id.value(),
-                                                           profile);
-      }
+      ash::KioskController::Get().StartSessionAfterCrash(app_id.value(),
+                                                         profile);
     } else {
       // If we are here, the user is invalid.
       // We should terminate the session in such cases.
@@ -1105,10 +1094,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     if (profile_info.mode == StartupProfileMode::kProfilePicker) {
       // TODO(http://crbug.com/1293024): Refactor command line processing logic
       // to validate the flag sets and reliably determine the startup mode.
-      LOG(ERROR)
+      NOTREACHED()
           << "Failed to launch a native message host: couldn't pick a profile";
-      NOTREACHED_IN_MIGRATION();
-      base::debug::DumpWithoutCrashing();
     } else {
       extensions::LaunchNativeMessageHostFromNativeApp(
           command_line.GetSwitchValueASCII(

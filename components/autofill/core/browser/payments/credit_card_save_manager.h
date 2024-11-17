@@ -22,7 +22,7 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
@@ -103,7 +103,7 @@ class CreditCardSaveManager {
   };
 
   // `client` must outlive the CreditCardSaveManager.
-  CreditCardSaveManager(AutofillClient* client, const std::string& app_locale);
+  explicit CreditCardSaveManager(AutofillClient* client);
 
   CreditCardSaveManager(const CreditCardSaveManager&) = delete;
   CreditCardSaveManager& operator=(const CreditCardSaveManager&) = delete;
@@ -154,9 +154,6 @@ class CreditCardSaveManager {
   // are satisfied.
   virtual bool IsCreditCardUploadEnabled();
 
-  // For testing.
-  void SetAppLocale(std::string app_locale) { app_locale_ = app_locale; }
-
   // Set Autofill address profiles that are only preliminarily imported.
   // A preliminary import may happen when the address is found in the same
   // form as a credit card that is currently processed by the manager.
@@ -177,8 +174,7 @@ class CreditCardSaveManager {
   // for the card on the server. Exposed for testing.
   virtual void OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
-          upload_card_response_details);
+      const payments::UploadCardResponseDetails& upload_card_response_details);
 
  private:
   friend class CreditCardSaveManagerTest;
@@ -200,8 +196,7 @@ class CreditCardSaveManager {
   // prompt before showing virtual card enrollment prompt.
   void InitVirtualCardEnroll(
       const CreditCard& credit_card,
-      std::optional<payments::PaymentsNetworkInterface::
-                        GetDetailsForEnrollmentResponseDetails>
+      std::optional<payments::GetDetailsForEnrollmentResponseDetails>
           get_details_for_enrollment_response_details);
 
   // Returns the CreditCardSaveStrikeDatabase for |client_|.
@@ -243,8 +238,7 @@ class CreditCardSaveManager {
   // contain countries.
   void SetProfilesForCreditCardUpload(
       const CreditCard& card,
-      payments::PaymentsNetworkInterface::UploadCardRequestDetails*
-          upload_request);
+      payments::UploadCardRequestDetails* upload_request);
 
   // Analyzes the decisions made while importing address profile and credit card
   // data in preparation for upload credit card save, in order to determine what
@@ -363,14 +357,12 @@ class CreditCardSaveManager {
 
   const raw_ref<AutofillClient> client_;
 
-  std::string app_locale_;
-
   // The credit card to be saved if local credit card or local or server CVC
   // save is accepted.
   CreditCard card_save_candidate_;
 
   // Collected information about a pending upload request.
-  payments::PaymentsNetworkInterface::UploadCardRequestDetails upload_request_;
+  payments::UploadCardRequestDetails upload_request_;
 
   // A bitmask of |AutofillMetrics::CardUploadDecisionMetric| representing the
   // decisions made when determining if credit card upload save should be

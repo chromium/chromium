@@ -27,16 +27,13 @@ class PLATFORM_EXPORT EnumerationBase {
   // https://webidl.spec.whatwg.org/#dfn-enumeration-value
   const char* AsCStr() const { return string_literal_; }
   String AsString() const { return string_literal_; }
+  AtomicString AsAtomicString() const { return AtomicString(string_literal_); }
 
   // Returns the string representation to be used by CHECK_OP family.
   // This member function is meant only for CHECK_EQ, etc.
   String ToString() const {
     return String::Format("IDL enum value \"%s\"", string_literal_);
   }
-
-  // Migration adapter
-  operator AtomicString() const { return AtomicString(string_literal_); }
-  operator String() const { return string_literal_; }
 
   // Returns true if the value is invalid.  The instance in this state must be
   // created only when an exception is thrown.

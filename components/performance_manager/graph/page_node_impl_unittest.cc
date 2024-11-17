@@ -243,8 +243,8 @@ namespace {
 
 class LenientMockObserver : public PageNodeImpl::Observer {
  public:
-  LenientMockObserver() {}
-  ~LenientMockObserver() override {}
+  LenientMockObserver() = default;
+  ~LenientMockObserver() override = default;
 
   MOCK_METHOD(void, OnPageNodeAdded, (const PageNode*), (override));
   MOCK_METHOD(void, OnBeforePageNodeRemoved, (const PageNode*), (override));

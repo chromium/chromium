@@ -7005,4 +7005,36 @@ TEST_F(StyleEngineTest, ForcedColorsLightDark) {
             reference.VisitedDependentColor(GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, UseCountMediaQueryRangeSyntax) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
+
+  ClearUseCounter(WebFeature::kMediaQueryRangeSyntax);
+  SetBodyInnerHTML("<style>@media (width: 1px){}</style>");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
+
+  ClearUseCounter(WebFeature::kMediaQueryRangeSyntax);
+  SetBodyInnerHTML("<style>@media (width = 1px){}</style>");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
+
+  ClearUseCounter(WebFeature::kMediaQueryRangeSyntax);
+  SetBodyInnerHTML("<style>@media ((width: 1px) and (height: 1px)){}</style>");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
+
+  ClearUseCounter(WebFeature::kMediaQueryRangeSyntax);
+  SetBodyInnerHTML("<style>@media (width){}</style>");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
+
+  ClearUseCounter(WebFeature::kMediaQueryRangeSyntax);
+  SetBodyInnerHTML("<style>@media (width < 1px){}</style>");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
+
+  ClearUseCounter(WebFeature::kMediaQueryRangeSyntax);
+  SetBodyInnerHTML("<style>@media (1px < width){}</style>");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
+
+  ClearUseCounter(WebFeature::kMediaQueryRangeSyntax);
+  SetBodyInnerHTML("<style>@media (1px < width < 2px){}</style>");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
+}
+
 }  // namespace blink

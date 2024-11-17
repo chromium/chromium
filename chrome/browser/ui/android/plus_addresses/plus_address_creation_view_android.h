@@ -14,6 +14,8 @@ class TabModel;
 
 namespace plus_addresses {
 
+class PlusAddressCreationController;
+
 // Possible error types during the plus address creation flow.
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.plus_addresses
@@ -37,7 +39,28 @@ enum class PlusAddressCreationBottomSheetErrorType {
   kCreateGeneric = 6,
 };
 
-class PlusAddressCreationController;
+struct PlusAddressCreationErrorStateInfo {
+  PlusAddressCreationBottomSheetErrorType error_type;
+  std::u16string title;
+  std::u16string description;
+  std::u16string ok_text;
+  std::u16string cancel_text;
+
+  PlusAddressCreationErrorStateInfo(
+      PlusAddressCreationBottomSheetErrorType error_type,
+      std::u16string title,
+      std::u16string description,
+      std::u16string ok_text,
+      std::u16string cancel_text);
+  ~PlusAddressCreationErrorStateInfo();
+
+  PlusAddressCreationErrorStateInfo(const PlusAddressCreationErrorStateInfo&);
+  PlusAddressCreationErrorStateInfo(PlusAddressCreationErrorStateInfo&&);
+  PlusAddressCreationErrorStateInfo& operator=(
+      const PlusAddressCreationErrorStateInfo&);
+  PlusAddressCreationErrorStateInfo& operator=(
+      PlusAddressCreationErrorStateInfo&&);
+};
 
 // A class intended as a thin wrapper around a Java object, which calls out to
 // the `PlusAddressCreationControllerAndroid`. This shields the controller from
@@ -69,10 +92,11 @@ class PlusAddressCreationViewAndroid {
 
   // Updates the bottomsheet to either show an error message or show the
   // plus address in the bottomsheet and enable the OK button.
-  void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile);
+  void ShowReservedProfile(const PlusProfile& reserved_profile);
   // Either shows an error message on the bottomsheet or closes the bottomsheet.
-  void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile,
-                         const PlusProfile& reserved_plus_profile);
+  void FinishConfirm();
+  // Shows the error state ui to the user.
+  void ShowError(PlusAddressCreationErrorStateInfo error_info);
   // Hides the refresh icon in case no more plus address refreshes are available
   // to the user.
   void HideRefreshButton();

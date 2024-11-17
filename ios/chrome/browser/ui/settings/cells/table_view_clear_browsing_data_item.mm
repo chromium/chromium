@@ -186,6 +186,17 @@ const CGFloat kImageHeight = 30;
     [self updateConstraintsForCategoryAccessibility:
               UIContentSizeCategoryIsAccessibilityCategory(
                   self.traitCollection.preferredContentSizeCategory)];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.class ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateConstraintsOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -248,18 +259,16 @@ const CGFloat kImageHeight = 30;
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  BOOL isPreferredCategoryAccessibility =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (isPreferredCategoryAccessibility !=
-      UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory)) {
-    [self updateConstraintsForCategoryAccessibility:
-              isPreferredCategoryAccessibility];
+  if (@available(iOS 17, *)) {
+    return;
   }
+
+  [self updateConstraintsOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - Private
 
@@ -273,6 +282,21 @@ const CGFloat kImageHeight = 30;
   } else {
     [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
     [NSLayoutConstraint activateConstraints:_standardConstraints];
+  }
+}
+
+// Updates the layout constraints when it is identified that the
+// UITraitPreferredContentSize is modified.
+- (void)updateConstraintsOnTraitChange:
+    (UITraitCollection*)previousTraitCollection {
+  BOOL isPreferredCategoryAccessibility =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (isPreferredCategoryAccessibility !=
+      UIContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory)) {
+    [self updateConstraintsForCategoryAccessibility:
+              isPreferredCategoryAccessibility];
   }
 }
 

@@ -34,6 +34,14 @@ BASE_FEATURE(kAndroidBrowserControlsInViz,
              "AndroidBrowserControlsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidBcivBottomControls,
+             "AndroidBcivBottomControls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidBcivWithSimpleScheduler,
+             "AndroidBcivWithSimpleScheduler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidBcivWithSuppression,
              "AndroidBcivWithSuppression",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -63,7 +71,7 @@ BASE_FEATURE(kUseFrameIntervalDecider,
 
 BASE_FEATURE(kTemporalSkipOverlaysWithRootCopyOutputRequests,
              "TemporalSkipOverlaysWithRootCopyOutputRequests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseMultipleOverlays,
              "UseMultipleOverlays",
@@ -77,14 +85,8 @@ const char kMaxOverlaysParam[] = "max_overlays";
 
 BASE_FEATURE(kDelegatedCompositing,
              "DelegatedCompositing",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kDrawQuadSplit[] = "num_of_splits";
 
 // If enabled, overrides the maximum number (exclusive) of quads one draw quad
@@ -92,7 +94,6 @@ const char kDrawQuadSplit[] = "num_of_splits";
 BASE_FEATURE(kDrawQuadSplitLimit,
              "DrawQuadSplitLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr base::FeatureParam<DelegatedCompositingMode>::Option
     kDelegatedCompositingModeOption[] = {
@@ -125,14 +126,10 @@ BASE_FEATURE(kDCompSurfacesForDelegatedInk,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Note: This feature is actively being finched (Oct, 2024).
 BASE_FEATURE(kRenderPassDrawnRect,
              "RenderPassDrawnRect",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // When wide color gamut content from the web is encountered, promote our
@@ -219,12 +216,6 @@ const base::FeatureParam<int> kCALayerNewLimitManyVideos{&kCALayerNewLimit,
                                                          "many-videos", -1};
 #endif
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
-BASE_FEATURE(kCanSkipRenderPassOverlay,
-             "CanSkipRenderPassOverlay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_MAC)
 // Use the system CVDisplayLink callbacks for the BeginFrame source, so
 // BeginFrame is aligned with HW VSync.
@@ -250,7 +241,7 @@ const base::FeatureParam<int> kNumPendingFrames{&kVSyncAlignedPresent,
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              "AllowUndamagedNonrootRenderPassToSkip",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -271,12 +262,7 @@ BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
 // OnBeginFrame we will send the Ack immediately, rather than batching it.
 BASE_FEATURE(kOnBeginFrameAcks,
              "OnBeginFrameAcks",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // if enabled, Any CompositorFrameSink of type video that defines a preferred
 // framerate that is below the display framerate will throttle OnBeginFrame
@@ -290,9 +276,20 @@ BASE_FEATURE(kOnBeginFrameThrottleVideo,
 #endif
              );
 
-BASE_FEATURE(kSharedBitmapToSharedImage,
-             "SharedBitmapToSharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// If enabled, Chrome uses ADPF(Android Dynamic Performance Framework) if the
+// device's SOC manufacturer satisifes the allowlist and blocklist rules.
+// If disabled, Chrome never uses ADPF.
+// The allowlist takes precedence - i.e. if the allowlist is non-empty, the
+// soc must be in the allowlist for Chrome to use ADPF, and the blocklist is
+// ignored. If there's no allowlist, the soc must be absent from the blocklist.
+BASE_FEATURE(kAdpf, "Adpf", base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kADPFSocManufacturerAllowlist{
+    &kAdpf, "soc_manufacturer_allowlist", "Google"};
+
+const base::FeatureParam<std::string> kADPFSocManufacturerBlocklist{
+    &kAdpf, "soc_manufacturer_blocklist", ""};
+
 // Used to enable the HintSession::Mode::BOOST mode. BOOST mode try to force
 // the ADPF(Android Dynamic Performance Framework) to give Chrome more CPU
 // resources during a scroll.
@@ -311,11 +308,40 @@ BASE_FEATURE(kEnableADPFRendererMain,
              "EnableADPFRendererMain",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, Chrome includes only main frame's Renderer Main thread(s) into
+// the ADPF(Android Dynamic Performance Framework) hint session.
+BASE_FEATURE(kEnableMainFrameOnlyADPFRendererMain,
+             "EnableMainFrameOnlyADPFRendererMain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, Chrome's ADPF(Android Dynamic Performance Framework) hint
+// session includes Renderer threads only if:
+// - The Renderer is handling an interacton
+// - The Renderer is the main frame's Renderer, and there no Renderers handling
+//   an interaction.
+BASE_FEATURE(kEnableInteractiveOnlyADPFRenderer,
+             "EnableInteractiveOnlyADPFRenderer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Chrome includes the Compositor GPU Thread into the
 // ADPF(Android Dynamic Performance Framework) hint session, instead
 // of the GPU Main Thread.
 BASE_FEATURE(kEnableADPFGpuCompositorThread,
              "EnableADPFGpuCompositorThread",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, Chrome puts Renderer Main threads into a separate
+// ADPF(Android Dynamic Performance Framework) hint session, and does not
+// report any timing hints from this session.
+BASE_FEATURE(kEnableADPFSeparateRendererMainSession,
+             "EnableADPFSeparateRendererMainSession",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, Chrome uses SetThreads instead of recreating an
+// ADPF(Android Dynamic Performance Framework) hint session when the set of
+// threads in the session changes.
+BASE_FEATURE(kEnableADPFSetThreads,
+             "EnableADPFSetThreads",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, surface activation and draw do not block on dependencies.
@@ -343,13 +369,6 @@ const base::FeatureParam<int>
 // as the HDR metadata NDWL nits.
 BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits,
              "UseDisplaySDRMaxLuminanceNits",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Invalidate the `viz::LocalSurfaceId` on the browser side when the page is
-// navigated away. This flag serves as the kill-switch for the uncaught edge
-// cases in production.
-BASE_FEATURE(kInvalidateLocalSurfaceIdPreCommit,
-             "InvalidateLocalSurfaceIdPreCommit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // On mac, when the RenderWidgetHostViewMac is hidden, also hide the
@@ -445,12 +464,18 @@ BASE_FEATURE(kVizNullHypothesis,
              "VizNullHypothesis",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Treat frame rates of 72hz as if they were 90Hz for buffer sizing purposes.
+BASE_FEATURE(kUse90HzSwapChainCountFor72fps,
+             "Use90HzSwapChainCountFor72fps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Allows the display to seamlessly adjust the refresh rate in order to match
 // content preferences. ChromeOS only.
 BASE_FEATURE(kCrosContentAdjustedRefreshRate,
              "CrosContentAdjustedRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 int DrawQuadSplitLimit() {
   constexpr int kDefaultDrawQuadSplitLimit = 5;
@@ -462,7 +487,6 @@ int DrawQuadSplitLimit() {
   return std::clamp(split_limit, kMinDrawQuadSplitLimit,
                     kMaxDrawQuadSplitLimit);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
@@ -543,6 +567,10 @@ bool ShouldDrawImmediatelyWhenInteractive() {
 bool ShouldAckOnSurfaceActivationWhenInteractive() {
   return base::FeatureList::IsEnabled(
       features::kAckOnSurfaceActivationWhenInteractive);
+}
+
+bool Use90HzSwapChainCountFor72fps() {
+  return base::FeatureList::IsEnabled(kUse90HzSwapChainCountFor72fps);
 }
 
 std::optional<uint64_t>
@@ -628,4 +656,11 @@ bool ShouldUseDCompSurfacesForDelegatedInk() {
   return base::FeatureList::IsEnabled(kDCompSurfacesForDelegatedInk);
 }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+bool IsBrowserControlsInVizEnabled() {
+  return base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features

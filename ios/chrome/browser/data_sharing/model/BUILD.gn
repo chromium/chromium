@@ -4,14 +4,10 @@
 
 source_set("model") {
   sources = [
-    "data_sharing_sdk_delegate_ios.h",
-    "data_sharing_sdk_delegate_ios.mm",
     "data_sharing_service_factory.h",
     "data_sharing_service_factory.mm",
     "data_sharing_tab_helper.h",
     "data_sharing_tab_helper.mm",
-    "data_sharing_ui_delegate_ios.h",
-    "data_sharing_ui_delegate_ios.mm",
   ]
   public_deps = [
     "//base",
@@ -19,12 +15,15 @@ source_set("model") {
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
+    ":context",
     "//components/data_sharing/internal",
     "//components/data_sharing/public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/common",
@@ -32,6 +31,44 @@ source_set("model") {
     "//services/network/public/cpp",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("sdk_delegate") {
+  sources = [
+    "data_sharing_sdk_delegate_ios.h",
+    "data_sharing_sdk_delegate_ios.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//components/data_sharing/public",
+    "//ios/chrome/browser/share_kit/model",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("ui_delegate") {
+  sources = [
+    "data_sharing_ui_delegate_ios.h",
+    "data_sharing_ui_delegate_ios.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    ":context",
+    "//components/data_sharing/public",
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//url",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("context") {
+  sources = [
+    "ios_share_url_interception_context.cc",
+    "ios_share_url_interception_context.h",
+  ]
+  deps = [ "//components/data_sharing/public" ]
 }
 
 source_set("unit_tests") {

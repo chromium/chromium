@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/profiler/process_type.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
 #include "build/build_config.h"
@@ -21,6 +20,7 @@
 #include "chrome/gpu/browser_exposed_gpu_interfaces.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
@@ -119,7 +119,7 @@ void ChromeContentGpuClient::PostIOThreadCreated(
   io_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
-                     base::ProfilerThreadType::kIo));
+                     sampling_profiler::ProfilerThreadType::kIo));
 }
 
 void ChromeContentGpuClient::PostCompositorThreadCreated(
@@ -127,7 +127,7 @@ void ChromeContentGpuClient::PostCompositorThreadCreated(
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&sampling_profiler::ThreadProfiler::StartOnChildThread,
-                     base::ProfilerThreadType::kCompositor));
+                     sampling_profiler::ProfilerThreadType::kCompositor));
   // Enable stack sampling for tracing.
   // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
   // layer while TracingSamplerProfiler is outside of chrome/.

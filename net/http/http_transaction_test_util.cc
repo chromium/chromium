@@ -323,7 +323,7 @@ void TestTransactionConsumer::OnIOComplete(int result) {
       DidRead(result);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -639,8 +639,10 @@ int MockNetworkTransaction::DoSendRequest() {
   }
 
   response_.response_time = transaction_factory_->Now();
-  if (!t->response_time.is_null())
+  if (!t->response_time.is_null()) {
     response_.response_time = t->response_time;
+    response_.original_response_time = t->response_time;
+  }
 
   response_.headers = base::MakeRefCounted<HttpResponseHeaders>(header_data);
   response_.ssl_info.cert = t->cert;
@@ -728,9 +730,7 @@ int MockNetworkTransaction::DoLoop(int result) {
         rv = DoReadHeadersComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != State::NONE);
 

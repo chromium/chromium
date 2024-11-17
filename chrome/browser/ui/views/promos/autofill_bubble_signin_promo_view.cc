@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/metrics/user_metrics.h"
-#include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"

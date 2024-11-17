@@ -20,7 +20,6 @@
 
 namespace autofill {
 
-class AutofillField;
 class AutofillScanner;
 
 class AddressFieldParser : public FormFieldParser {
@@ -38,6 +37,8 @@ class AddressFieldParser : public FormFieldParser {
   static std::unique_ptr<FormFieldParser> ParseStandaloneZip(
       ParsingContext& context,
       AutofillScanner* scanner);
+
+  ~AddressFieldParser() override;
 
   AddressFieldParser(const AddressFieldParser&) = delete;
   AddressFieldParser& operator=(const AddressFieldParser&) = delete;
@@ -91,7 +92,7 @@ class AddressFieldParser : public FormFieldParser {
       ParsingContext& context,
       AutofillScanner* scanner,
       base::span<const MatchPatternRef> patterns,
-      raw_ptr<AutofillField>* match,
+      std::optional<FieldAndMatchInfo>* match,
       const char* regex_name);
 
   // Run matches on the name and label separately. If the return result is
@@ -142,35 +143,39 @@ class AddressFieldParser : public FormFieldParser {
   ParseNameLabelResult ParseNameAndLabelForState(ParsingContext& context,
                                                  AutofillScanner* scanner);
 
+  bool SetFieldAndAdvanceCursor(
+      AutofillScanner* scanner,
+      ParseNameLabelResult parse_result,
+      std::optional<FormFieldParser::FieldAndMatchInfo>* match);
+
   // Return true if the form being parsed shows an indication of being a
   // structured address form.
   bool PossiblyAStructuredAddressForm() const;
 
-  raw_ptr<AutofillField> company_ = nullptr;
-  raw_ptr<AutofillField> street_location_ = nullptr;
-  raw_ptr<AutofillField> street_name_ = nullptr;
-  raw_ptr<AutofillField> house_number_ = nullptr;
-  raw_ptr<AutofillField> address1_ = nullptr;
-  raw_ptr<AutofillField> address2_ = nullptr;
-  raw_ptr<AutofillField> address3_ = nullptr;
-  raw_ptr<AutofillField> street_address_ = nullptr;
-  raw_ptr<AutofillField> apartment_number_ = nullptr;
-  raw_ptr<AutofillField> dependent_locality_ = nullptr;
-  raw_ptr<AutofillField> city_ = nullptr;
-  raw_ptr<AutofillField> state_ = nullptr;
-  raw_ptr<AutofillField> zip_ = nullptr;
-  raw_ptr<AutofillField> zip4_ =
-      nullptr;  // optional ZIP+4; we don't fill this yet.
-  raw_ptr<AutofillField> country_ = nullptr;
-  raw_ptr<AutofillField> landmark_ = nullptr;
-  raw_ptr<AutofillField> between_streets_ = nullptr;
-  raw_ptr<AutofillField> between_streets_line_1_ = nullptr;
-  raw_ptr<AutofillField> between_streets_line_2_ = nullptr;
-  raw_ptr<AutofillField> admin_level2_ = nullptr;
-  raw_ptr<AutofillField> between_streets_or_landmark_ = nullptr;
-  raw_ptr<AutofillField> overflow_and_landmark_ = nullptr;
-  raw_ptr<AutofillField> overflow_ = nullptr;
-  raw_ptr<AutofillField> house_number_and_apt_ = nullptr;
+  std::optional<FieldAndMatchInfo> company_;
+  std::optional<FieldAndMatchInfo> street_location_;
+  std::optional<FieldAndMatchInfo> street_name_;
+  std::optional<FieldAndMatchInfo> house_number_;
+  std::optional<FieldAndMatchInfo> address1_;
+  std::optional<FieldAndMatchInfo> address2_;
+  std::optional<FieldAndMatchInfo> address3_;
+  std::optional<FieldAndMatchInfo> street_address_;
+  std::optional<FieldAndMatchInfo> apartment_number_;
+  std::optional<FieldAndMatchInfo> dependent_locality_;
+  std::optional<FieldAndMatchInfo> city_;
+  std::optional<FieldAndMatchInfo> state_;
+  std::optional<FieldAndMatchInfo> zip_;
+  std::optional<FieldAndMatchInfo> zip4_;  // Classified but not filled
+  std::optional<FieldAndMatchInfo> country_;
+  std::optional<FieldAndMatchInfo> landmark_;
+  std::optional<FieldAndMatchInfo> between_streets_;
+  std::optional<FieldAndMatchInfo> between_streets_line_1_;
+  std::optional<FieldAndMatchInfo> between_streets_line_2_;
+  std::optional<FieldAndMatchInfo> admin_level2_;
+  std::optional<FieldAndMatchInfo> between_streets_or_landmark_;
+  std::optional<FieldAndMatchInfo> overflow_and_landmark_;
+  std::optional<FieldAndMatchInfo> overflow_;
+  std::optional<FieldAndMatchInfo> house_number_and_apt_;
 };
 
 }  // namespace autofill

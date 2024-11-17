@@ -24,6 +24,10 @@
 #include "sandbox/win/src/sandbox_policy.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace content {
 class CONTENT_EXPORT UtilitySandboxedProcessLauncherDelegate
     : public SandboxedProcessLauncherDelegate {
@@ -62,6 +66,10 @@ class CONTENT_EXPORT UtilitySandboxedProcessLauncherDelegate
 #if BUILDFLAG(USE_ZYGOTE)
   void SetZygote(ZygoteCommunication* handle);
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+
+#if BUILDFLAG(IS_MAC)
+  std::optional<base::mac::ProcessRequirement> GetProcessRequirement() override;
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
 #if BUILDFLAG(IS_POSIX)

@@ -35,8 +35,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -224,7 +223,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     FindMyDeviceController* find_my_device_controller,
     MultideviceFeatureAccessManager* multidevice_feature_access_manager,
     ScreenLockManager* screen_lock_manager,
-    NotificationProcessor* notification_processor_,
+    NotificationProcessor* notification_processor,
     MultiDeviceSetupClient* multidevice_setup_client,
     MutablePhoneModel* phone_model,
     RecentAppsInteractionHandler* recent_apps_interaction_handler,
@@ -240,7 +239,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
       find_my_device_controller_(find_my_device_controller),
       multidevice_feature_access_manager_(multidevice_feature_access_manager),
       screen_lock_manager_(screen_lock_manager),
-      notification_processor_(notification_processor_),
+      notification_processor_(notification_processor),
       multidevice_setup_client_(multidevice_setup_client),
       phone_model_(phone_model),
       recent_apps_interaction_handler_(recent_apps_interaction_handler),
@@ -379,9 +378,7 @@ void PhoneStatusProcessor::SetEcheFeatureStatusReceivedFromPhoneHub(
     eche_support_received_from_phone_hub =
         ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    eche_support_received_from_phone_hub =
-        ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
+    NOTREACHED();
   }
 
   pref_service_->SetInteger(
@@ -574,5 +571,4 @@ void PhoneStatusProcessor::IconsDecoded(
   }
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

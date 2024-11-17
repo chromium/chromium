@@ -17,6 +17,7 @@ static_library("power") {
   public_deps = [
     "//ash",
     "//base",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/dbus/power",
   ]
 

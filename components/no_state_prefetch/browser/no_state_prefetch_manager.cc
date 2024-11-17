@@ -37,10 +37,10 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_field_trial.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_histograms.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_history.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
-#include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -169,7 +169,7 @@ NoStatePrefetchManager::NoStatePrefetchManager(
           NoStatePrefetchContents::CreateFactory()),
       prefetch_history_(
           std::make_unique<NoStatePrefetchHistory>(kHistoryLength)),
-      histograms_(std::make_unique<PrerenderHistograms>()),
+      histograms_(std::make_unique<NoStatePrefetchHistograms>()),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -948,7 +948,7 @@ void NoStatePrefetchManager::ScheduleDeleteOldWebContents(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NoStatePrefetchManager::AddToHistory(NoStatePrefetchContents* contents) {

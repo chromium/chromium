@@ -15,16 +15,19 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
 
 namespace optimization_guide {
 namespace {
@@ -50,7 +53,7 @@ base::WeakPtr<OnDeviceModelComponentStateManager>& GetInstance() {
 
 bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
   for (const ModelBasedCapabilityKey key : kAllModelBasedCapabilityKeys) {
-    if (!features::internal::IsOnDeviceModelEnabled(key)) {
+    if (!features::internal::GetOptimizationTargetForCapability(key)) {
       continue;
     }
     if (WasOnDeviceEligibleFeatureRecentlyUsed(key, local_state)) {
@@ -61,14 +64,9 @@ bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
 }
 
 bool IsDeviceCapable(const PrefService& local_state) {
-  int value = local_state.GetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass);
-  if (value < 0 ||
-      value > static_cast<int>(OnDeviceModelPerformanceClass::kMaxValue)) {
-    return false;
-  }
-  return features::IsPerformanceClassCompatibleWithOnDeviceModel(
-      static_cast<OnDeviceModelPerformanceClass>(value));
+  return IsPerformanceClassCompatible(
+      features::kPerformanceClassListForOnDeviceModel.Get(),
+      PerformanceClassFromPref(local_state));
 }
 
 void LogInstallCriteria(std::string_view event_name,
@@ -168,6 +166,15 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
     ModelBasedCapabilityKey feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!WasOnDeviceEligibleFeatureRecentlyUsed(feature, *local_state_)) {
+    // This is the first time usage of the feature.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&OnDeviceModelComponentStateManager::
+                                      NotifyOnDeviceEligibleFeatureFirstUsed,
+                                  GetWeakPtr(), feature));
+  }
+
   local_state_->SetTime(
       model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature),
       base::Time::Now());
@@ -186,11 +193,20 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
 void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
     OnDeviceModelPerformanceClass performance_class) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->SetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass,
-      base::to_underlying(performance_class));
-
+  UpdatePerformanceClassPref(local_state_, performance_class);
+  local_state_->SetString(
+      model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
+      version_info::GetVersionNumber());
   BeginUpdateRegistration();
+}
+
+bool OnDeviceModelComponentStateManager::NeedsPerformanceClassUpdate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::FeatureList::IsEnabled(
+             features::kOnDeviceModelFetchPerformanceClassEveryStartup) ||
+         local_state_->GetString(model_execution::prefs::localstate::
+                                     kOnDevicePerformanceClassVersion) !=
+             version_info::GetVersionNumber();
 }
 
 void OnDeviceModelComponentStateManager::OnStartup() {
@@ -215,6 +231,11 @@ void OnDeviceModelComponentStateManager::InstallerRegistered() {
       "OptimizationGuide.ModelExecution."
       "OnDeviceModelInstalledAtRegistrationTime",
       state_ != nullptr);
+}
+
+bool OnDeviceModelComponentStateManager::IsInstallerRegistered() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return state_ != nullptr;
 }
 
 void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
@@ -260,7 +281,7 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     delegate_->Uninstall(this);
   } else if (criteria.should_install() || criteria.is_already_installing) {
     component_installer_registered_ = true;
-    delegate_->RegisterInstaller(this);
+    delegate_->RegisterInstaller(this, criteria.is_already_installing);
   }
 
   // Log metrics only for first registration attempt.
@@ -389,6 +410,14 @@ void OnDeviceModelComponentStateManager::NotifyStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& o : observers_) {
     o.StateChanged(GetState());
+  }
+}
+
+void OnDeviceModelComponentStateManager::NotifyOnDeviceEligibleFeatureFirstUsed(
+    ModelBasedCapabilityKey feature) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& o : observers_) {
+    o.OnDeviceEligibleFeatureFirstUsed(feature);
   }
 }
 

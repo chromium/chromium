@@ -19,7 +19,7 @@ class ReadAnythingSidePanelWebView
   METADATA_HEADER(ReadAnythingSidePanelWebView,
                   SidePanelWebUIViewT_ReadAnythingUntrustedUI)
  public:
-  explicit ReadAnythingSidePanelWebView(Profile* profile);
+  ReadAnythingSidePanelWebView(Profile* profile, SidePanelEntryScope& scope);
   ReadAnythingSidePanelWebView(const ReadAnythingSidePanelWebView&) = delete;
   ReadAnythingSidePanelWebView& operator=(const ReadAnythingSidePanelWebView&) =
       delete;

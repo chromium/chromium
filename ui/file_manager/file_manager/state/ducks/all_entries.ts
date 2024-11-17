@@ -14,18 +14,18 @@ import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
-import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
+import {debug, iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
 import {COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_PATH, shouldProvideIcons, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, ICON_TYPES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from '../../foreground/js/constants.js';
 import type {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {isDebugStoreEnabled, Slice} from '../../lib/base_store.js';
 import {keepLatest, keyedKeepLatest} from '../../lib/concurrency_models.js';
-import {type CurrentDirectory, EntryType, type FileData, type MaterializedView, type State, type Volume, type VolumeMap} from '../../state/state.js';
+import {type CurrentDirectory, EntryType, type FileData, type MaterializedView, PropStatus, type State, type Volume, type VolumeMap} from '../../state/state.js';
 import type {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore, getVolume} from '../store.js';
 
-import {hasDlpDisabledFiles} from './current_directory.js';
+import {changeDirectory, hasDlpDisabledFiles} from './current_directory.js';
 import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey} from './volumes.js';
 
 /**
@@ -121,7 +121,7 @@ function clearCachedEntriesReducer(state: State): State {
 
     delete entries[key];
     if (isDebugStore) {
-      console.log(`Clear entry: ${key}`);
+      console.info(`Clear entry: ${key}`);
     }
   }
 
@@ -590,6 +590,16 @@ export function getMyFiles(state: State):
     state.uiEntries = [...state.uiEntries, myFilesEntryList.toURL()];
   }
 
+  // It can happen that the fake entry was added before we got the policy
+  // update.
+  // TODO(376837858): The fake entry should be removed on policy change.
+  if (isSkyvaultV2Enabled() && !localFilesAllowed && !myFilesVolume) {
+    return {
+      myFilesEntry: null,
+      myFilesVolume,
+    };
+  }
+
   return {
     myFilesEntry: myFilesVolumeEntry || myFilesEntryList!,
     myFilesVolume,
@@ -643,7 +653,7 @@ export async function*
   let state = getStore().getState();
   let fileData = getFileData(state, fileKey);
   if (!fileData) {
-    console.debug(`failed to find FileData for ${fileKey}`);
+    debug(`failed to find FileData for ${fileKey}`);
     console.warn(`readSubDirectoriesInternal: failed to find FileData`);
     return;
   }
@@ -668,7 +678,18 @@ export async function*
     for await (const action of readSubDirectoriesForDriveRootEntryList(entry)) {
       yield action;
       if (action) {
-        childEntriesToReadDeeper.push(...action.payload.entries);
+        const childEntries = action.payload.entries;
+        childEntriesToReadDeeper.push(...childEntries);
+        // After populating the children of Google Drive, if Google Drive is the
+        // current directory, we need to navigate to its first child - My Drive.
+        const state = getStore().getState();
+        if (action.payload.entries.length > 0 &&
+            state.currentDirectory?.key === entry.toURL()) {
+          yield changeDirectory({
+            toKey: childEntries[0]!.toURL(),
+            status: PropStatus.STARTED,
+          });
+        }
       }
     }
   } else if (entry && isEntryScannable(entry)) {

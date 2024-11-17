@@ -43,6 +43,8 @@ class LoadingModalDialogMediator
     private boolean mSkipDelay;
     private boolean mDisableTimeout;
 
+    private Runnable mShowingTask = this::onShowDelayPassed;
+
     /** ModalDialogProperties.Controller implementation */
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
@@ -117,7 +119,7 @@ class LoadingModalDialogMediator
         mDialogManager = dialogManager;
         mModel = model;
         mState = LoadingModalDialogCoordinator.State.PENDING;
-        postDelayed(this::onShowDelayPassed, SHOW_DELAY_TIME_MS);
+        postDelayed(mShowingTask, SHOW_DELAY_TIME_MS);
     }
 
     /**
@@ -128,7 +130,7 @@ class LoadingModalDialogMediator
      */
     void dismiss() {
         if (mState == LoadingModalDialogCoordinator.State.PENDING) {
-            mHandler.removeCallbacks(this::onShowDelayPassed);
+            mHandler.removeCallbacks(mShowingTask);
         }
 
         mState = LoadingModalDialogCoordinator.State.FINISHED;

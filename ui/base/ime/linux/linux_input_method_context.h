@@ -7,13 +7,10 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "ui/base/ime/autocorrect_info.h"
-#include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -59,13 +56,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
   virtual void SetCursorLocation(const gfx::Rect& rect) = 0;
 
   // Tells the system IME the surrounding text around the cursor location.
-  virtual void SetSurroundingText(
-      const std::u16string& text,
-      const gfx::Range& text_range,
-      const gfx::Range& composition_range,
-      const gfx::Range& selection_range,
-      const std::optional<ui::GrammarFragment>& fragment,
-      const std::optional<AutocorrectInfo>& autocorrect) = 0;
+  virtual void SetSurroundingText(const std::u16string& text,
+                                  const gfx::Range& text_range,
+                                  const gfx::Range& composition_range,
+                                  const gfx::Range& selection_range) = 0;
 
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again
   // before calling DispatchKeyEvent().
@@ -116,19 +110,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
   // |range| is in UTF-16 code range.
   virtual void OnSetPreeditRegion(const gfx::Range& range,
                                   const std::vector<ImeTextSpan>& spans) = 0;
-
-  // Clears all the grammar fragments in |range|. All indices are measured in
-  // UTF-16 code point.
-  virtual void OnClearGrammarFragments(const gfx::Range& range) = 0;
-
-  // Adds a new grammar marker according to |fragments|. Clients should show
-  // some visual indications such as underlining. All indices are measured in
-  // UTF-16 code point.
-  virtual void OnAddGrammarFragment(const ui::GrammarFragment& fragment) = 0;
-
-  // Sets the autocorrect range in the text input client.
-  // |range| is in UTF-16 code range.
-  virtual void OnSetAutocorrectRange(const gfx::Range& range) = 0;
 
   // Sets the virtual keyboard's occluded bounds in screen DIP.
   virtual void OnSetVirtualKeyboardOccludedBounds(

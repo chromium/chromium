@@ -121,8 +121,7 @@ constexpr NotificationHandler::Type JavaToNotificationType(
   if (notification_type >= kMinValue && notification_type <= kMaxValue)
     return static_cast<NotificationHandler::Type>(notification_type);
 
-  NOTREACHED_IN_MIGRATION();
-  return NotificationHandler::Type::WEB_PERSISTENT;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -189,10 +188,14 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
 
   profile_manager->LoadProfile(
       GetProfileBaseNameFromProfileId(profile_id), incognito,
-      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                     NotificationOperation::kClick, notification_type, origin,
-                     notification_id, std::move(action_index), std::move(reply),
-                     std::nullopt /* by_user */));
+      base::BindOnce(
+          &NotificationDisplayServiceImpl::ProfileLoadedCallback,
+          NotificationOperation::kClick, notification_type, origin,
+          notification_id, std::move(action_index), std::move(reply),
+          std::nullopt /* by_user */,
+          base::BindOnce(
+              &NotificationPlatformBridgeAndroid::OnNotificationProcessed,
+              weak_factory_.GetWeakPtr(), notification_id)));
 }
 
 void NotificationPlatformBridgeAndroid::
@@ -230,11 +233,14 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
 
   profile_manager->LoadProfile(
       GetProfileBaseNameFromProfileId(profile_id), incognito,
-      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                     NotificationOperation::kClose, notification_type,
-                     GURL(origin), notification_id,
-                     std::nullopt /* action index */, std::nullopt /* reply */,
-                     by_user));
+      base::BindOnce(
+          &NotificationDisplayServiceImpl::ProfileLoadedCallback,
+          NotificationOperation::kClose, notification_type, GURL(origin),
+          notification_id, std::nullopt /* action index */,
+          std::nullopt /* reply */, by_user,
+          base::BindOnce(
+              &NotificationPlatformBridgeAndroid::OnNotificationProcessed,
+              weak_factory_.GetWeakPtr(), notification_id)));
 }
 
 void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
@@ -257,7 +263,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
                      NotificationOperation::kDisablePermission,
                      notification_type, GURL(origin), notification_id,
                      std::nullopt /* action index */, std::nullopt /* reply */,
-                     std::nullopt /* by_user */));
+                     std::nullopt /* by_user */, base::DoNothing()));
 }
 
 void NotificationPlatformBridgeAndroid::Display(
@@ -371,6 +377,16 @@ void NotificationPlatformBridgeAndroid::GetDisplayedForOrigin(
 void NotificationPlatformBridgeAndroid::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
   std::move(callback).Run(true);
+}
+
+void NotificationPlatformBridgeAndroid::OnNotificationProcessed(
+    const std::string& notification_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> j_notification_id =
+      ConvertUTF8ToJavaString(env, notification_id);
+  Java_NotificationPlatformBridge_onNotificationProcessed(env, java_object_,
+                                                          j_notification_id);
 }
 
 // static

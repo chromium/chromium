@@ -9,7 +9,9 @@
 
 #include <string>
 
+#include "ash/public/cpp/login_screen_model.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
@@ -132,6 +134,12 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
 // through the policies.
 bool IsFullManagementDisclosureNeeded(
     policy::DeviceLocalAccountPolicyBroker* broker);
+
+// Sets the available auth factors for the user on the login & lock screen.
+void SetAuthFactorsForUser(const AccountId& user,
+                           const SessionAuthFactors& auth_factors,
+                           bool is_pin_disabled_by_policy,
+                           LoginScreenModel* login_screen);
 
 }  // namespace login
 }  // namespace ash

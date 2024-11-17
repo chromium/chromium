@@ -98,7 +98,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   provider_->Start(input, false);
 
-  // Clobber state should never generate a verbatim match.
+  // Given user text in omnibox, never generate a verbatim match.
   EXPECT_TRUE(provider_->matches().empty());
 }
 
@@ -114,7 +114,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
   provider_->Start(input, false);
 
-  // Clobber state should never generate a verbatim match.
+  // Given user text in omnibox, never generate a verbatim match.
   EXPECT_TRUE(provider_->matches().empty());
 }
 
@@ -182,13 +182,14 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   // test. As a result, the test would validate what the mocks fill in.
 }
 
-TEST_P(ZeroSuggestVerbatimMatchProviderTest, OffersVerbatimMatchOnClobber) {
+TEST_P(ZeroSuggestVerbatimMatchProviderTest,
+       OffersVerbatimMatchOnFocusAndEmpty) {
   std::string url("https://www.wired.com/");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
   input.set_current_title(u"title");
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
   ASSERT_EQ(IsVerbatimMatchEligible(), provider_->matches().size() > 0);
   // Note: we intentionally do not validate the match content here.
@@ -198,13 +199,13 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest, OffersVerbatimMatchOnClobber) {
 }
 
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
-       OffersVerbatimMatchOnClobberInIncognito) {
+       OffersVerbatimMatchOnFocusAndEmptyInIncognito) {
   std::string url("https://www.wired.com/");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
   input.set_current_title(u"title");
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
   provider_->Start(input, false);
   ASSERT_EQ(IsVerbatimMatchEligible(), provider_->matches().size() > 0);
@@ -226,7 +227,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
                           GetParam(), TestSchemeClassifier());
   input.set_current_title(u"title");
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
   if (IsVerbatimMatchEligible()) {
     ASSERT_FALSE(provider_->matches().empty());
@@ -245,7 +246,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
                           GetParam(), TestSchemeClassifier());
   input.set_current_title(u"title");
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
   if (IsVerbatimMatchEligible()) {
     ASSERT_FALSE(provider_->matches().empty());
@@ -270,7 +271,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
                           GetParam(), TestSchemeClassifier());
   input.set_current_title(u"title");
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
   if (IsVerbatimMatchEligible()) {
     ASSERT_FALSE(provider_->matches().empty());
@@ -301,7 +302,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
                           GetParam(), TestSchemeClassifier());
   input.set_current_title(u"title");
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
   if (IsVerbatimMatchEligible()) {
     ASSERT_FALSE(provider_->matches().empty());
@@ -325,7 +326,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   // Note: no page title.
   input.set_current_title(u"");
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
 
   if (IsVerbatimMatchEligible()) {
@@ -348,7 +349,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   // Note: no page title.
   input.set_current_title(u"");
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   if (!IsVerbatimMatchEligible()) {
     return;
@@ -400,7 +401,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   input.set_current_title(u"");
   input.set_omit_asynchronous_matches(true);
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   if (!IsVerbatimMatchEligible()) {
     return;
@@ -429,7 +430,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   // Note: no page title.
   input.set_current_title(u"");
   input.set_current_url(GURL(url));
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   if (!IsVerbatimMatchEligible()) {
     return;

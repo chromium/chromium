@@ -16,10 +16,9 @@
 namespace {
 
 plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   return static_cast<plus_addresses::FakePlusAddressService*>(
-      PlusAddressServiceFactory::GetForProfile(browserState));
+      PlusAddressServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -45,6 +44,40 @@ plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
 + (void)addPlusAddressProfile {
   GetFakePlusAddressService()->add_plus_profile(
       plus_addresses::test::CreatePlusProfile());
+}
+
++ (void)setShouldFailToReserve:(BOOL)shouldFailToReserve {
+  GetFakePlusAddressService()->set_should_fail_to_reserve(shouldFailToReserve);
+}
+
++ (void)setShouldFailToConfirm:(BOOL)shouldFailToConfirm {
+  GetFakePlusAddressService()->set_should_fail_to_confirm(shouldFailToConfirm);
+}
+
++ (void)setShouldReturnAffiliatedPlusProfileOnConfirm:
+    (BOOL)shouldReturnAffiliatedPlusProfileOnConfirm {
+  GetFakePlusAddressService()
+      ->set_should_return_affiliated_plus_profile_on_confirm(
+          shouldReturnAffiliatedPlusProfileOnConfirm);
+}
+
++ (void)setShouldReturnQuotaError:(BOOL)shouldReturnQuotaError {
+  GetFakePlusAddressService()->set_should_return_quota_error(
+      shouldReturnQuotaError);
+}
+
++ (void)setShouldReturnTimeoutError:(BOOL)shouldReturnTimeoutError {
+  GetFakePlusAddressService()->set_should_return_timeout_error(
+      shouldReturnTimeoutError);
+}
+
++ (void)clearState {
+  GetFakePlusAddressService()->ClearState();
+}
+
++ (NSString*)primaryEmail {
+  return base::SysUTF8ToNSString(
+      *(GetFakePlusAddressService()->GetPrimaryEmail()));
 }
 
 @end

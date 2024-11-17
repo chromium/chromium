@@ -81,6 +81,16 @@ chrome_internal_verifier(
 ### Optional builders ###
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-arm32-pgo",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-arm64-pgo",
+)
+
+chrome_internal_verifier(
     builder = "android-internal-binary-size",
 )
 
@@ -90,6 +100,10 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "android-internal-rel",
+)
+
+chrome_internal_verifier(
+    builder = "android-internal-unpublished-dbg",
 )
 
 chrome_internal_verifier(
@@ -115,7 +129,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "chromeos-brya-chrome-skylab",
+    builder = "chromeos-brya-chrome",
 )
 
 chrome_internal_verifier(
@@ -203,6 +217,18 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-webgl-astro",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-webgl-nelson",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-webgl-sherlock",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.IOS_BRANCHES,
     builder = "ios-rel-ready",
 )
@@ -213,36 +239,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "iphone-device",
-)
-
-chrome_internal_verifier(
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builder = "lacros-amd64-generic-chrome",
-)
-
-chrome_internal_verifier(
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builder = "lacros-arm-generic-chrome",
-)
-
-chrome_internal_verifier(
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builder = "lacros-arm32-rel-ready",
-)
-
-chrome_internal_verifier(
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builder = "lacros-arm64-generic-chrome",
-)
-
-chrome_internal_verifier(
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builder = "lacros-arm64-rel-ready",
-)
-
-chrome_internal_verifier(
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builder = "lacros64-rel-ready",
 )
 
 chrome_internal_verifier(
@@ -260,10 +256,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "linux-chromeos-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "linux-lacros-chrome",
 )
 
 chrome_internal_verifier(
@@ -306,6 +298,14 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-rel-ready",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-ios-device",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-ios-simulator",
 )
 
 chrome_internal_verifier(

@@ -21,7 +21,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
 
-import org.chromium.base.Callback;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -72,7 +73,7 @@ public class TabGroupRowView extends LinearLayout {
     void setTitleData(Pair<String, Integer> titleData) {
         String title = titleData.first;
         if (TextUtils.isEmpty(title)) {
-            title = TabGroupTitleEditor.getDefaultTitle(getContext(), titleData.second);
+            title = TabGroupTitleUtils.getDefaultTitle(getContext(), titleData.second);
         }
         mTitleTextView.setText(title);
         Resources resources = getResources();
@@ -106,8 +107,12 @@ public class TabGroupRowView extends LinearLayout {
         mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable, leaveRunnable));
     }
 
-    void setGetImageTileContainerCallback(Callback<FrameLayout> getImageTileContainerCallback) {
-        getImageTileContainerCallback.onResult(mImageTilesContainer);
+    void setSharedImageTilesView(@Nullable SharedImageTilesView sharedImageTilesView) {
+        mImageTilesContainer.removeAllViews();
+        if (sharedImageTilesView != null) {
+            TabUiUtils.attachSharedImageTilesViewToFrameLayout(
+                    sharedImageTilesView, mImageTilesContainer);
+        }
     }
 
     private ListMenu getListMenu(

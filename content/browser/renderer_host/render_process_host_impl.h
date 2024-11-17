@@ -537,8 +537,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static void NotifySpareManagerAboutRecentlyUsedSiteInstance(
       SiteInstance* site_instance);
 
-  // This enum backs a histogram, so do not change the order of entries or
-  // remove entries and update enums.xml if adding new entries.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SpareProcessMaybeTakeAction)
   enum class SpareProcessMaybeTakeAction {
     kNoSparePresent = 0,
     kMismatchedBrowserContext = 1,
@@ -549,6 +551,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kRefusedForPdfContent = 6,
     kMaxValue = kRefusedForPdfContent
   };
+  // LINT.ThenChange(tools/metrics/histograms/metadata/browser/histograms.xml:SpareProcessMaybeTakeAction)
 
   // Please keep in sync with "RenderProcessHostDelayShutdownReason" in
   // tools/metrics/histograms/metadata/browser/enums.xml. These values should
@@ -612,11 +615,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Sets this RenderProcessHost to be guest only. For Testing only.
   void SetForGuestsOnlyForTesting();
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-  // Launch the zygote early in the browser startup.
-  static void EarlyZygoteLaunch();
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-
   // Called when a video capture stream or an audio stream is added or removed
   // and used to determine if the process should be backgrounded or not.
   void OnMediaStreamAdded() override;
@@ -660,10 +658,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       BrowserContext* browser_context,
       RenderProcessHost* render_process_host,
       const SiteInfo& site_info);
-
-  // Discards the spare RenderProcessHost.  After this call,
-  // GetSpareRenderProcessHostForTesting will return nullptr.
-  static void DiscardSpareRenderProcessHostForTesting();
 
   // Returns true if a spare RenderProcessHost should be kept at all times.
   static bool IsSpareProcessKeptAtAllTimes();

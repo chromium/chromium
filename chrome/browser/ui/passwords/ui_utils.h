@@ -41,10 +41,6 @@ class Profile;
 // The desired width and height in pixels for an account avatar.
 constexpr int kAvatarImageSize = 32;
 
-// The desired width and height for the 'i' icon used for the PSL matches in the
-// account chooser.
-constexpr int kInfoIconSize = 16;
-
 // Crops and scales |image_skia| to the desired size for an account avatar.
 gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia image_skia);
 
@@ -101,11 +97,6 @@ std::u16string GetDisplayPassword(const password_manager::PasswordForm& form);
 // syncs the PRIORITY_PREFERENCE). The view appearance might depend on it.
 bool IsSyncingAutosignSetting(Profile* profile);
 
-// Constructs a URL to the Google Password Manager with the specified
-// |referrer|.
-GURL GetGooglePasswordManagerURL(
-    password_manager::ManagePasswordsReferrer referrer);
-
 // Returns a string URL to the Google Password Manager's passwords subpage
 std::string GetGooglePasswordManagerSubPageURLStr();
 
@@ -126,7 +117,6 @@ void NavigateToPasswordDetailsPage(
 // toggle.
 void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser);
 
-void NavigateToPasswordCheckupPage(Profile* profile);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(

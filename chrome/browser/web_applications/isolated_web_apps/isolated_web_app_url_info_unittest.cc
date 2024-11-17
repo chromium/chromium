@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -153,21 +154,16 @@ class IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest
 
 TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
        GetIsolatedWebAppUrlInfoWhenBundleSucceeds) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath path =
-      temp_dir.GetPath().Append(base::FilePath::FromASCII("test-0.swbn"));
-  TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault();
-  ASSERT_TRUE(base::WriteFile(path, bundle.data));
+  auto bundle = IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
 
-  IwaSource source{IwaSourceBundle(path)};
+  IwaSource source{IwaSourceBundle(bundle->path())};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
       source, test_future.GetCallback());
-  EXPECT_THAT(
-      test_future.Get(),
-      ValueIs(Property(&IsolatedWebAppUrlInfo::web_bundle_id, bundle.id)));
+  EXPECT_THAT(test_future.Get(),
+              ValueIs(Property(&IsolatedWebAppUrlInfo::web_bundle_id,
+                               bundle->web_bundle_id())));
 }
 
 TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,

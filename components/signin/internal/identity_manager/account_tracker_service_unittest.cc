@@ -210,7 +210,7 @@ class AccountTrackerServiceTest : public testing::Test {
     ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
   }
 
-  ~AccountTrackerServiceTest() override {}
+  ~AccountTrackerServiceTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();

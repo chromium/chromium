@@ -20,7 +20,6 @@ public class AwMetricsServiceClient {
      * Set user consent settings.
      *
      * @param userConsent user consent via Android Usage & diagnostics settings.
-     * @return whether metrics reporting is enabled or not.
      */
     public static void setConsentSetting(boolean userConsent) {
         ThreadUtils.assertOnUiThread();

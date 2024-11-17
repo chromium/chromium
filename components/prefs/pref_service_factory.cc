@@ -19,7 +19,7 @@
 PrefServiceFactory::PrefServiceFactory()
     : read_error_callback_(base::DoNothing()), async_(false) {}
 
-PrefServiceFactory::~PrefServiceFactory() {}
+PrefServiceFactory::~PrefServiceFactory() = default;
 
 void PrefServiceFactory::SetUserPrefsFile(
     const base::FilePath& prefs_file,

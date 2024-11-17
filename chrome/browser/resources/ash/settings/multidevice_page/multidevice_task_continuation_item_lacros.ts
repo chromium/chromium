@@ -25,8 +25,8 @@ import '../settings_shared.css.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MultiDevicePageContentData} from './multidevice_constants.js';
-import {SettingsMultideviceFeatureItemElement} from './multidevice_feature_item.js';
+import type {MultiDevicePageContentData} from './multidevice_constants.js';
+import type {SettingsMultideviceFeatureItemElement} from './multidevice_feature_item.js';
 import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_task_continuation_item_lacros.html.js';
 

@@ -181,8 +181,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
     // can only catch the exceptions initiated here.
     [[item target] performSelector:[item action] withObject:item];
   } @catch (NSException* exception) {
-    NOTREACHED_IN_MIGRATION() << exception.debugDescription;
-    return NO;
+    NOTREACHED() << exception.debugDescription;
   }
 #pragma clang diagnostic pop
   return YES;

@@ -8,10 +8,24 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 #include "sql/statement.h"
 
 namespace app_list {
+
+namespace {
+// When extra indexing source is added, also update the `CHECK` within the
+// `source` of InvertedIndex table.
+int ConvertIndexingSourceToInt(IndexingSource indexing_source) {
+  switch (indexing_source) {
+    case IndexingSource::kOcr:
+      return 0;
+    case IndexingSource::kIca:
+      return 1;
+  }
+}
+}  // namespace
 
 // static
 bool InvertedIndexTable::Create(SqlDatabase* db) {
@@ -20,9 +34,14 @@ bool InvertedIndexTable::Create(SqlDatabase* db) {
       "CREATE TABLE inverted_index("
           "term_id INTEGER NOT NULL,"
           "document_id INTEGER NOT NULL,"
+          "source INTEGER NOT NULL CHECK (source IN (0, 1)),"
+          "score REAL,"
+          "x REAL,"
+          "y REAL,"
+          "area REAL,"
           "FOREIGN KEY(term_id) REFERENCES annotations(term_id),"
           "FOREIGN KEY(document_id) REFERENCES documents(document_id),"
-          "PRIMARY KEY(term_id, document_id))";
+          "PRIMARY KEY(term_id, document_id, source)) STRICT";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -72,11 +91,17 @@ bool InvertedIndexTable::Drop(SqlDatabase* db) {
 // static
 bool InvertedIndexTable::Insert(SqlDatabase* db,
                                 int64_t term_id,
-                                int64_t document_id) {
+                                int64_t document_id,
+                                IndexingSource indexing_source,
+                                std::optional<float> score,
+                                std::optional<float> x,
+                                std::optional<float> y,
+                                std::optional<float> area) {
   static constexpr char kQuery[] =
       // clang-format off
-      "INSERT INTO inverted_index(term_id, document_id) "
-          "VALUES(?,?)";
+      "INSERT INTO inverted_index(term_id, document_id, "
+          "source, score, x, y, area) "
+          "VALUES(?,?,?,?,?,?,?)";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -88,6 +113,28 @@ bool InvertedIndexTable::Insert(SqlDatabase* db,
 
   statement->BindInt64(0, term_id);
   statement->BindInt64(1, document_id);
+  statement->BindInt(2, ConvertIndexingSourceToInt(indexing_source));
+  if (score.has_value()) {
+    statement->BindDouble(3, score.value());
+  } else {
+    statement->BindNull(3);
+  }
+  if (x.has_value()) {
+    statement->BindDouble(4, x.value());
+  } else {
+    statement->BindNull(4);
+  }
+  if (y.has_value()) {
+    statement->BindDouble(5, y.value());
+  } else {
+    statement->BindNull(5);
+  }
+  if (area.has_value()) {
+    statement->BindDouble(6, area.value());
+  } else {
+    statement->BindNull(6);
+  }
+
   if (!statement->Run()) {
     LOG(ERROR) << "Couldn't execute the statement";
     return false;

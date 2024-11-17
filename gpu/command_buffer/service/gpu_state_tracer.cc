@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/gpu_state_tracer.h"
 
 #include <string_view>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
@@ -82,20 +83,14 @@ bool Snapshot::SaveScreenshot(const gfx::Size& size) {
 void Snapshot::AppendAsTraceFormat(std::string* out) const {
   *out += "{";
   if (screenshot_pixels_.size()) {
-    std::vector<unsigned char> png_data;
-    int bytes_per_row = screenshot_size_.width() * kBytesPerPixel;
-    bool png_ok = gfx::PNGCodec::Encode(&screenshot_pixels_[0],
-                                        gfx::PNGCodec::FORMAT_RGBA,
-                                        screenshot_size_,
-                                        bytes_per_row,
-                                        false,
-                                        std::vector<gfx::PNGCodec::Comment>(),
-                                        &png_data);
-    DCHECK(png_ok);
+    std::optional<std::vector<uint8_t>> png_data = gfx::PNGCodec::Encode(
+        screenshot_pixels_.data(), gfx::PNGCodec::FORMAT_RGBA, screenshot_size_,
+        /*row_byte_width=*/screenshot_size_.width() * kBytesPerPixel,
+        /*discard_transparency=*/false, std::vector<gfx::PNGCodec::Comment>());
 
-    std::string_view base64_input(reinterpret_cast<const char*>(&png_data[0]),
-                                  png_data.size());
-    std::string base64_output = base::Base64Encode(base64_input);
+    DCHECK(png_data);
+    std::string base64_output =
+        base::Base64Encode(png_data.value_or(std::vector<uint8_t>()));
 
     *out += "\"screenshot\":\"" + base64_output + "\"";
   }

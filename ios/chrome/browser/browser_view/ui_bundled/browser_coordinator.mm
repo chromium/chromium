@@ -10,6 +10,7 @@
 #import <optional>
 
 #import "base/check_deref.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -27,6 +28,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
@@ -124,6 +126,7 @@
 #import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/print/coordinator/print_coordinator.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
@@ -202,6 +205,8 @@
 #import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
@@ -217,7 +222,6 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
-#import "ios/chrome/browser/ui/print/print_coordinator.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator_delegate.h"
@@ -598,6 +602,12 @@ enum class ToolbarKind {
   ContextualSheetCoordinator* _contextualSheetCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   SafeAreaProvider* _safeAreaProvider;
+  // Number of time `showActivityOverlay` was called and its callback not
+  // called.
+  int _numberOfActivityOverly;
+  // Callback to remove the activity overlay started by the browser coordinator
+  // itself.
+  base::ScopedClosureRunner _activityOverlayCallback;
 
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
@@ -670,6 +680,7 @@ enum class ToolbarKind {
   [self destroyViewController];
   [self destroyViewControllerDependencies];
   _webUsageEnablerObserver.reset();
+  _activityOverlayCallback.RunAndReset();
 }
 
 - (void)dealloc {
@@ -692,9 +703,9 @@ enum class ToolbarKind {
   // If not active, display an activity indicator overlay over the view to
   // prevent interaction with the web page.
   if (active) {
-    [self hideActivityOverlay];
-  } else if (!self.activityOverlayCoordinator) {
-    [self showActivityOverlay];
+    _activityOverlayCallback.RunAndReset();
+  } else if (!_activityOverlayCallback) {
+    _activityOverlayCallback = [self showActivityOverlay];
   }
 
   ProfileIOS* profile = self.browser->GetProfile();
@@ -802,6 +813,8 @@ enum class ToolbarKind {
 
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
+
+  [self dismissAccountMenu];
 }
 
 #pragma mark - Private
@@ -853,6 +866,13 @@ enum class ToolbarKind {
   self.passwordSettingsCoordinator = nil;
 }
 
+// Dismisses the account menu.
+- (void)dismissAccountMenu {
+  if (!_NTPCoordinator) {
+    return;
+  }
+}
+
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
   if (!self.browser->GetProfile() || !self.started) {
     return;
@@ -862,17 +882,26 @@ enum class ToolbarKind {
 }
 
 // Displays activity overlay.
-- (void)showActivityOverlay {
+- (base::ScopedClosureRunner)showActivityOverlay {
+  _numberOfActivityOverly++;
   self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   [self.activityOverlayCoordinator start];
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](BrowserCoordinator* strongSelf) {
+        [strongSelf decreaseActivityOverlay];
+      },
+      self));
 }
 
-// Hides activity overlay.
-- (void)hideActivityOverlay {
-  [self.activityOverlayCoordinator stop];
-  self.activityOverlayCoordinator = nil;
+// Hides activity overlay number. Remove it if the number becomes 0..
+- (void)decreaseActivityOverlay {
+  _numberOfActivityOverly--;
+  if (_numberOfActivityOverly == 0) {
+    [self.activityOverlayCoordinator stop];
+    self.activityOverlayCoordinator = nil;
+  }
 }
 
 // Instantiates a BrowserViewController.
@@ -899,6 +928,7 @@ enum class ToolbarKind {
 - (void)destroyViewController {
   self.viewController.active = NO;
   self.viewController.webUsageEnabled = NO;
+  self.viewController.browserViewVisibilityConsumer = nil;
 
   [self.contextMenuProvider stop];
   self.contextMenuProvider = nil;
@@ -1987,6 +2017,15 @@ enum class ToolbarKind {
     translateManager->ShowTranslateUI(/*auto_translate=*/true,
                                       /*triggered_from_menu=*/true);
   }
+
+  // Records the usage of Google Translate. This notifies the Tips Manager,
+  // which may trigger tips or guidance related to translation features.
+  if (IsSegmentationTipsManagerEnabled()) {
+    TipsManagerIOS* tipsManager = TipsManagerIOSFactory::GetForProfile(profile);
+
+    tipsManager->NotifySignal(
+        segmentation_platform::tips_manager::signals::kUsedGoogleTranslation);
+  }
 }
 
 - (void)showHelpPage {
@@ -2149,9 +2188,15 @@ enum class ToolbarKind {
   [_enhancedSafeBrowsingPromoCoordinator stop];
   _enhancedSafeBrowsingPromoCoordinator = nil;
 }
+
 #pragma mark - BrowserViewVisibilityConsumer
 
 - (void)browserViewDidChangeVisibility {
+  // TODO(crbug.com/377763682): This is a temporary fix to avoid a crash.
+  if (!self.browser) {
+    NOTREACHED(base::NotFatalUntil::M133);
+    return;
+  }
   raw_ptr<TabBasedIPHBrowserAgent> tabBasedIPHBrowserAgent =
       TabBasedIPHBrowserAgent::FromBrowser(self.browser);
   if (!tabBasedIPHBrowserAgent) {
@@ -2874,7 +2919,7 @@ enum class ToolbarKind {
 
 - (void)showTrackingForParcels:(NSArray<CustomTextCheckingResult*>*)parcels {
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(
+      commerce::ShoppingServiceFactory::GetForProfile(
           self.browser->GetProfile());
   if (!shoppingService) {
     return;
@@ -2889,7 +2934,7 @@ enum class ToolbarKind {
 - (void)showTrackingForFilteredParcels:
     (NSArray<CustomTextCheckingResult*>*)parcels {
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(
+      commerce::ShoppingServiceFactory::GetForProfile(
           self.browser->GetProfile());
   if (!shoppingService) {
     return;
@@ -2910,7 +2955,7 @@ enum class ToolbarKind {
     return;
   }
   ProfileIOS* profile = self.browser->GetProfile();
-  if (!commerce::ShoppingServiceFactory::GetForBrowserState(profile)
+  if (!commerce::ShoppingServiceFactory::GetForProfile(profile)
            ->IsParcelTrackingEligible()) {
     return;
   }
@@ -2953,7 +2998,7 @@ enum class ToolbarKind {
         return;
       }
       commerce::ShoppingService* shoppingService =
-          commerce::ShoppingServiceFactory::GetForBrowserState(
+          commerce::ShoppingServiceFactory::GetForProfile(
               ProfileIOS::FromBrowserState(activeWebState->GetBrowserState()));
       // Track parcels and display infobar if successful.
       TrackParcels(
@@ -3019,6 +3064,7 @@ enum class ToolbarKind {
 - (void)showPasswordSuggestion:(NSString*)passwordSuggestion
                      proactive:(BOOL)proactive
                       webState:(web::WebState*)webState
+                         frame:(base::WeakPtr<web::WebFrame>)frame
                decisionHandler:(void (^)(BOOL accept))decisionHandler {
   // Do not present the bottom sheet if the calling web state does not match the
   // active web state in order to stop the bottom sheet from showing in a tab
@@ -3036,6 +3082,7 @@ enum class ToolbarKind {
       initWithBaseViewController:self.viewController
                          browser:self.browser
               passwordSuggestion:passwordSuggestion
+                           frame:frame
                  decisionHandler:decisionHandler
                        proactive:proactive];
   self.passwordSuggestionCoordinator.delegate = self;
@@ -3421,9 +3468,9 @@ enum class ToolbarKind {
   LensOverlayTabHelper* lensOverlayTabHelper =
       LensOverlayTabHelper::FromWebState(webState);
 
-  BOOL webStateHasLensOverlay = IsLensOverlayAvailable() &&
-                                lensOverlayTabHelper &&
-                                lensOverlayTabHelper->IsLensOverlayShown();
+  BOOL webStateHasLensOverlay =
+      IsLensOverlayAvailable() && lensOverlayTabHelper &&
+      lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
 
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
 
@@ -3865,9 +3912,9 @@ enum class ToolbarKind {
 
   SceneState* sceneState = self.browser->GetSceneState();
   _quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
-          initWithBaseViewController:
-              top_view_controller::TopPresentedViewControllerFrom(
-                  sceneState.window.rootViewController)
+          initWithBaseViewController:top_view_controller::
+                                         TopPresentedViewControllerFrom(
+                                             sceneState.rootViewController)
                              browser:self.browser
       canPerformTabsClosureAnimation:canPerformTabsClosureAnimation];
   [_quickDeleteCoordinator start];
@@ -3877,6 +3924,42 @@ enum class ToolbarKind {
   CHECK(IsIosQuickDeleteEnabled());
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
+}
+
+- (void)stopQuickDeleteForAnimationWithCompletion:(ProceduralBlock)completion {
+  CHECK(IsIosQuickDeleteEnabled());
+
+  // TODO(crbug.com/335387869): Remove NotFatalUntil and the if below when we're
+  // sure this code path is infeasible. The BrowserViewController should always
+  // have at least the QuickDeleteViewController on top of it.
+  CHECK(self.viewController.presentedViewController, base::NotFatalUntil::M133);
+
+  // If BrowserViewController has not presented any view controller, then
+  // trigger `completion` immediately.
+  if (!self.viewController.presentedViewController) {
+    completion();
+    [self stopQuickDelete];
+    return;
+  }
+
+  // If BrowserViewController has presented a view controller, then dismiss
+  // every VC on top of it.
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(self.dispatcher, ApplicationCommands);
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock dismissalCompletion = ^{
+    if (completion) {
+      completion();
+    }
+
+    // Properly shutdown all coordinators started either by this coordinator or
+    // by the scene controller. This should include Quick Delete, History and
+    // the Privacy Settings.
+    [weakSelf clearPresentedStateWithCompletion:nil dismissOmnibox:YES];
+    [applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
+  };
+  [self.viewController dismissViewControllerAnimated:YES
+                                          completion:dismissalCompletion];
 }
 
 #pragma mark - WhatsNewCommands

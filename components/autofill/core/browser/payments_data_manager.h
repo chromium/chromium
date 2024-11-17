@@ -42,11 +42,16 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+namespace sync_pb {
+class PaymentInstrument;
+}  // namespace sync_pb
+
 namespace autofill {
 
 class AutofillOptimizationGuide;
 class BankAccount;
 struct CreditCardArtImage;
+class Ewallet;
 class PaymentsDatabaseHelper;
 
 // Contains all payments-related logic of the `PersonalDataManager`. See comment
@@ -118,6 +123,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Reloads all payments data from the database.
   void Refresh();
 
+  // Add a server IBAN to the cached list of IBANs in PaymentsDataManager.
+  void AddServerIbanForTest(std::unique_ptr<Iban> iban);
+
   // Returns the IBAN with the specified `guid`, or nullptr if there is no IBAN
   // with the specified `guid`.
   const Iban* GetIbanByGUID(const std::string& guid) const;
@@ -132,15 +140,15 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Returns the credit card with the specified `number`, or nullptr if there is
   // no credit card with the specified `number`.
-  CreditCard* GetCreditCardByNumber(const std::string& number);
+  const CreditCard* GetCreditCardByNumber(const std::string& number) const;
 
   // Returns the credit card with the specified |instrument_id|, or nullptr if
   // there is no credit card with the specified |instrument_id|.
-  CreditCard* GetCreditCardByInstrumentId(int64_t instrument_id);
+  const CreditCard* GetCreditCardByInstrumentId(int64_t instrument_id) const;
 
   // Returns the credit card with the given server id, or nullptr if there is no
   // match.
-  CreditCard* GetCreditCardByServerId(const std::string& server_id);
+  const CreditCard* GetCreditCardByServerId(const std::string& server_id) const;
 
   // Return the first valid flat rate benefit linked with the card with the
   // specific `instrument_id`.
@@ -196,6 +204,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   bool HasMaskedBankAccounts() const;
   // Returns the masked bank accounts that can be suggested to the user.
   base::span<const BankAccount> GetMaskedBankAccounts() const;
+
+  // Returns true if the user has at least 1 eWallet account.
+  bool HasEwalletAccounts() const;
+  // Returns the eWallet accounts that can be suggested to the user.
+  base::span<const Ewallet> GetEwalletAccounts() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
@@ -464,6 +477,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // PaymentsDataManager.
   void AddMaskedBankAccountForTest(const BankAccount& bank_account);
 
+  // Add an eWallet account to the cached list of eWallet accounts in
+  // PaymentsDataManager.
+  void AddEwalletForTest(const Ewallet& ewallet);
+
   // Sets a server credit card for test.
   //
   // TODO(crbug.com/330865438): This method currently sets `server_cards_`
@@ -496,6 +513,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Loads the masked bank accounts from the web database.
   void LoadMaskedBankAccounts();
+
+  // Loads the generic payment instruments from the web database.
+  void LoadPaymentInstruments();
 
   // Loads the payments customer data from the web database.
   void LoadPaymentsCustomerData();
@@ -547,6 +567,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Cached versions of the masked bank accounts.
   std::vector<BankAccount> masked_bank_accounts_;
 
+  // Cached versions of the eWallet accounts.
+  std::vector<Ewallet> ewallet_accounts_;
+
   // Cached version of the CreditCardCloudTokenData obtained from the database.
   std::vector<std::unique_ptr<CreditCardCloudTokenData>>
       server_credit_card_cloud_token_data_;
@@ -577,6 +600,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   WebDataServiceBase::Handle pending_local_ibans_query_ = 0;
   WebDataServiceBase::Handle pending_server_ibans_query_ = 0;
   WebDataServiceBase::Handle pending_masked_bank_accounts_query_ = 0;
+  WebDataServiceBase::Handle pending_payment_instruments_query_ = 0;
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;
   WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;
@@ -615,6 +639,12 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Whether MaskedBankAccounts are supported for the platform OS.
   bool AreBankAccountsSupported() const;
 
+  // Whether eWallet accounts are supported for the platform OS.
+  bool AreEwalletAccountsSupported() const;
+
+  // Whether generic payment instruments are supported.
+  bool ArePaymentInsrumentsSupported() const;
+
   // Monitors the `kAutofillPaymentCardBenefits` preference for changes and
   // controls the clearing/loading of credit card benefits into
   // `credit_card_benefits_` accordingly.
@@ -632,6 +662,17 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // the masked bank accounts are loaded for the first time as well as for any
   // subsequent updates via ChromeSync invalidations.
   void OnMaskedBankAccountsRefreshed();
+
+  // Invoked when the eWallet accounts cache is refreshed. This happens when the
+  // eWallet accounts are loaded for the first time as well as for any
+  // subsequent updates via ChromeSync invalidations.
+  void OnPaymentInstrumentsRefreshed(
+      const std::vector<sync_pb::PaymentInstrument>& payment_instruments);
+
+  // Checks whether a payment instrument contains eWallet details. If yes,
+  // caches relevant information in `ewallet_accounts_`.
+  void CacheIfEwalletPaymentInstrument(
+      sync_pb::PaymentInstrument& payment_instrument);
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;

@@ -6,11 +6,14 @@ import './cursor_tooltip.js';
 import './initial_gradient.js';
 import './selection_overlay.js';
 import './translate_button.js';
+import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 
+import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -20,6 +23,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loader.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
@@ -31,7 +35,10 @@ import type {OverlayTheme} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
+import {PerformanceTracker} from './performance_tracker.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
+import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
+import type {TranslateButtonElement} from './translate_button.js';
 
 export let INVOCATION_SOURCE: string = 'Unknown';
 
@@ -43,12 +50,17 @@ export interface LensOverlayAppElement {
     initialGradient: InitialGradientElement,
     moreOptionsButton: CrIconButtonElement,
     moreOptionsMenu: HTMLElement,
+    searchbox: SearchboxElement,
+    searchboxContainer: HTMLElement,
+    searchboxGhostLoader: SearchboxGhostLoaderElement,
     selectionOverlay: SelectionOverlayElement,
     toast: CrToastElement,
+    translateButton: TranslateButtonElement,
+    translateButtonContainer: HTMLDivElement,
   };
 }
 
-const LensOverlayAppElementBase = I18nMixin(PolymerElement);
+const LensOverlayAppElementBase = HelpBubbleMixin(I18nMixin(PolymerElement));
 
 export class LensOverlayAppElement extends LensOverlayAppElementBase {
   static get is() {
@@ -69,12 +81,14 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
-      closeButtonHidden: {
+      sidePanelOpened: {
         type: Boolean,
         reflectToAttribute: true,
       },
       searchBoxHidden: {
         type: Boolean,
+        computed:
+            'computeShouldHideSearchBox(isTranslateModeActive, sidePanelOpened, forceHideSearchBox)',
         reflectToAttribute: true,
       },
       isClosing: {
@@ -85,22 +99,28 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
-      isTranslateButtonVisible: {
+      isTranslateButtonEnabled: {
         type: Boolean,
-        value: loadTimeData.getBoolean('enableOverlayTranslateButton'),
+        value: () => loadTimeData.getBoolean('enableOverlayTranslateButton'),
         readOnly: true,
+        reflectToAttribute: true,
       },
       shouldFadeOutButtons: {
         type: Boolean,
         computed: 'computeShouldFadeOutButtons(isTranslateModeActive, ' +
-            'isTextLayerHighlightingText, isPointerDown)',
+            'isPointerDown)',
         reflectToAttribute: true,
       },
       isLensOverlayContextualSearchboxEnabled: {
         type: Boolean,
-        value: loadTimeData.getBoolean('enableOverlayContextualSearchbox'),
         reflectToAttribute: true,
         readOnly: true,
+        value: () =>
+            loadTimeData.getBoolean('enableOverlayContextualSearchbox'),
+      },
+      isLensOverlayContextualSearchboxVisible: {
+        type: Boolean,
+        reflectToAttribute: true,
       },
       theme: {
         type: Object,
@@ -111,19 +131,28 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         value: () => loadTimeData.getBoolean('darkMode'),
         reflectToAttribute: true,
       },
+      isSearchboxFocused: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+      areLanguagePickersOpen: Boolean,
       toastMessage: String,
-      isSearchboxFocused: Boolean,
     };
   }
 
+  // Whether the translate button is enabled.
+  private isTranslateButtonEnabled: boolean;
   // Whether the image has finished rendering.
   private isImageRendered: boolean = false;
   // Whether the initial flash animation has ended on the selection overlay.
   private initialFlashAnimationHasEnded: boolean = false;
-  // Whether the close button should be hidden.
-  private closeButtonHidden: boolean = false;
+  // Whether the side panel has been opened.
+  private sidePanelOpened: boolean = false;
   // Whether the search box should be hidden.
   private searchBoxHidden: boolean = false;
+  // Whether the search box should be forced to hide. Used to prevent the search
+  // box from showing when we know the side panel will be opened.
+  private forceHideSearchBox: boolean = false;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
   // Whether more options menu should be shown.
@@ -131,9 +160,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // Whether the translate mode on the lens overlay has been activated. Updated
   // in response to events dispatched from the translate button.
   private isTranslateModeActive: boolean = false;
-  // Whether the text layer is highlighting text. Updated in response to events
-  // dispatched from the text layer.
-  private isTextLayerHighlightingText: boolean = false;
   // Whether the user is pressing down on the selection overlay. Updated in
   // response to events dispatched from the selection overlay.
   private isPointerDown: boolean = false;
@@ -141,15 +167,27 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private shouldFadeOutButtons: boolean = false;
   // The overlay theme.
   private theme: OverlayTheme;
+  // Whether the contextual searchbox feature is enabled.
+  private isLensOverlayContextualSearchboxEnabled: boolean;
+  // Whether the contextual searchbox is visible to the user.
+  private isLensOverlayContextualSearchboxVisible: boolean = false;
   private toastMessage: string = '';
   // Whether the user is current focused into the searchbox.
   private isSearchboxFocused: boolean = false;
+  // Whether the translate language pickers are open.
+  private areLanguagePickersOpen: boolean = false;
+
+  // The performance tracker used to log performance metrics for the overlay.
+  private performanceTracker: PerformanceTracker = new PerformanceTracker();
 
   private eventTracker_: EventTracker = new EventTracker();
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
   private invocationTime: number = loadTimeData.getValue('invocationTime');
+
+  private searchboxBoundingClientRectObserver: ResizeObserver =
+      new ResizeObserver(this.focusShimmerOnSearchbox.bind(this));
 
   // The ID returned by requestAnimationFrame for the updateCursorPosition
   // function.
@@ -170,10 +208,13 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     const callbackRouter = this.browserProxy.callbackRouter;
     this.listenerIds = [
       callbackRouter.themeReceived.addListener(this.themeReceived.bind(this)),
+      callbackRouter.shouldShowContextualSearchBox.addListener(
+          this.shouldShowContextualSearchBox.bind(this)),
       callbackRouter.notifyResultsPanelOpened.addListener(
           this.onNotifyResultsPanelOpened.bind(this)),
       callbackRouter.notifyOverlayClosing.addListener(() => {
         this.isClosing = true;
+        this.performanceTracker.endSession();
       }),
     ];
     this.eventTracker_.add(
@@ -184,16 +225,29 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         document, 'translate-mode-state-changed', (e: CustomEvent) => {
           this.isTranslateModeActive = e.detail.translateModeEnabled;
         });
-    this.eventTracker_.add(
-        document, 'text-selection-state-changed', (e: CustomEvent) => {
-          this.isTextLayerHighlightingText = e.detail.highlightingText;
-        });
     this.eventTracker_.add(document, 'text-copied', () => {
       this.showToast(this.i18n('copyToastMessage'));
     });
     this.eventTracker_.add(document, 'copied-as-image', () => {
       this.showToast(this.i18n('copyAsImageToastMessage'));
     });
+    this.eventTracker_.add(
+        this.$.translateButtonContainer, 'transitionend', () => {
+          this.registerHelpBubble(
+              'kLensOverlayTranslateButtonElementId',
+              this.$.translateButton.getTranslateEnableButton());
+          this.browserProxy.handler.maybeShowTranslateFeaturePromo();
+          this.eventTracker_.remove(
+              this.$.translateButtonContainer, 'transitionend');
+        });
+    this.eventTracker_.add(document, 'language-picker-closed', () => {
+      this.handleLanguagePickerClosed();
+    });
+    this.eventTracker_.add(document, 'language-picker-opened', () => {
+      this.handleLanguagePickersOpened();
+    });
+
+    this.performanceTracker.startSession();
   }
 
   override disconnectedCallback() {
@@ -237,10 +291,68 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private handleSearchboxFocused() {
     this.isSearchboxFocused = true;
+    this.$.translateButtonContainer.classList.remove('searchbox-unfocused');
+
+    this.focusShimmerOnSearchbox();
+
+    // Setup a listener on the suggestions container to change the shimmer when
+    // the searchbox changes sizes or the selection overlay changes size.
+    this.searchboxBoundingClientRectObserver.observe(
+        this.$.searchbox.getSuggestionsElement());
+    this.searchboxBoundingClientRectObserver.observe(this.$.selectionOverlay);
+  }
+
+  private focusShimmerOnSearchbox() {
+    const suggestionsContainer = this.$.searchbox.getSuggestionsElement();
+    const areSuggestionsShowing =
+        suggestionsContainer.offsetWidth * suggestionsContainer.offsetHeight >
+        0;
+    // If no suggestions are showing, default to the ghost loader size. If ghost
+    // loader is not showing, default to the searchbox bounds.
+    const newSearchboxWidth = areSuggestionsShowing ?
+        suggestionsContainer.offsetWidth :
+        (this.$.searchboxGhostLoader.offsetWidth > 0 ?
+             this.$.searchboxGhostLoader.offsetWidth :
+             this.$.searchbox.offsetWidth);
+    const newSearchboxHeight = areSuggestionsShowing ?
+        suggestionsContainer.offsetHeight :
+        (this.$.searchboxGhostLoader.offsetHeight > 0 ?
+             this.$.searchboxGhostLoader.offsetHeight :
+             this.$.searchbox.offsetHeight);
+
+    // Get the top and left position of the searchbox relative to the selection
+    // overlay.
+    const selectionOverlayRect = this.$.selectionOverlay.getBoundingRect();
+    const newTop =
+        this.$.searchboxContainer.offsetTop - selectionOverlayRect.top;
+    const newLeft =
+        this.$.searchboxContainer.offsetLeft - selectionOverlayRect.left;
+
+    focusShimmerOnRegion(
+        this, newTop / selectionOverlayRect.height,
+        newLeft / selectionOverlayRect.width,
+        newSearchboxWidth / selectionOverlayRect.width,
+        newSearchboxHeight / selectionOverlayRect.height,
+        ShimmerControlRequester.SEARCHBOX);
   }
 
   private handleSearchboxBlurred() {
     this.isSearchboxFocused = false;
+    this.$.translateButtonContainer.classList.add('searchbox-unfocused');
+
+    // Unfocus the shimmer.
+    unfocusShimmer(this, ShimmerControlRequester.SEARCHBOX);
+
+    // Disconnect the ResizeObserver.
+    this.searchboxBoundingClientRectObserver.disconnect();
+  }
+
+  private handleLanguagePickersOpened() {
+    this.areLanguagePickersOpen = true;
+  }
+
+  private handleLanguagePickerClosed() {
+    this.areLanguagePickersOpen = false;
   }
 
   private onBackgroundScrimClicked() {
@@ -278,6 +390,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private onMoreOptionsButtonClick() {
+    if (this.isTranslateButtonEnabled) {
+      // Try to close the translate feature promo if it is currently active.
+      // No-op if it is not active.
+      this.browserProxy.handler.maybeCloseTranslateFeaturePromo(
+          /*featureEngaged=*/ false);
+    }
     this.moreOptionsMenuVisible = !this.moreOptionsMenuVisible;
   }
 
@@ -298,18 +416,23 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private onNotifyResultsPanelOpened() {
-    this.closeButtonHidden = true;
+    this.sidePanelOpened = true;
   }
 
   private themeReceived(theme: OverlayTheme) {
     this.theme = theme;
   }
 
+  private shouldShowContextualSearchBox(shouldShow: boolean) {
+    this.isLensOverlayContextualSearchboxVisible =
+        this.isLensOverlayContextualSearchboxEnabled && shouldShow;
+  }
+
   // The user started making a selection on the selection overlay.
   private handleSelectionStarted() {
     this.$.cursorTooltip.setPauseTooltipChanges(true);
     this.isPointerDown = true;
-    this.searchBoxHidden = true;
+    this.forceHideSearchBox = true;
   }
 
   // The user finished making their selection on the selection overlay.
@@ -329,8 +452,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private computeShouldFadeOutButtons(): boolean {
-    return !this.isTranslateModeActive &&
-        (this.isTextLayerHighlightingText || this.isPointerDown);
+    return !this.isTranslateModeActive && this.isPointerDown;
+  }
+
+  private computeShouldHideSearchBox(): boolean {
+    return this.isTranslateModeActive || this.sidePanelOpened ||
+        this.forceHideSearchBox;
   }
 
   private async showToast(message: string) {
@@ -351,8 +478,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private onHideToastClick() {
     this.$.toast.hide();
   }
-
-
 
   private updateCursorPosition(event: PointerEvent) {
     // Cancel the previous animation frame to prevent the code from running more

@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "cc/paint/paint_image.h"
@@ -97,9 +98,9 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   bool DecodeToYUV(SegmentReader*,
                    wtf_size_t index,
                    SkColorType color_type,
-                   const SkISize component_sizes[cc::kNumYUVPlanes],
-                   void* planes[cc::kNumYUVPlanes],
-                   const wtf_size_t row_bytes[cc::kNumYUVPlanes],
+                   base::span<const SkISize, cc::kNumYUVPlanes> component_sizes,
+                   base::span<void*, cc::kNumYUVPlanes> planes,
+                   base::span<const wtf_size_t, cc::kNumYUVPlanes> row_bytes,
                    cc::PaintImage::GeneratorClientId);
 
   const SkISize& GetFullSize() const { return full_size_; }

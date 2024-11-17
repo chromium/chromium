@@ -22,7 +22,7 @@ namespace ash {
 // Its lifetime is bound to the Mojo connection and inherently the PDF file
 // opened in the media app, i.e. it gets destructed when the media app window
 // opens a new file, or the media app window closes.
-class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedPageHandler,
+class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedService,
                            public aura::client::FocusChangeObserver,
                            public aura::WindowObserver {
  public:
@@ -37,10 +37,11 @@ class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedPageHandler,
   MahiMediaAppClient& operator=(const MahiMediaAppClient&) = delete;
   ~MahiMediaAppClient() override;
 
-  // media_app_ui::mojom::MahiUntrustedPageHandler:
+  // media_app_ui::mojom::MahiUntrustedService:
   void OnPdfLoaded() override;
   void OnPdfFileNameUpdated(const std::string& new_name) override;
-  void OnPdfContextMenuShow(const ::gfx::RectF& anchor) override;
+  void OnPdfContextMenuShow(const ::gfx::RectF& anchor,
+                            const std::string& selected_text) override;
   void OnPdfContextMenuHide() override;
 
   // Exposes media_app_ui::mojom::MahiUntrustedPage interfaces:

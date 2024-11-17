@@ -118,7 +118,7 @@ TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_RunTask) {
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
           subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
-          BindLambdaForTesting([&task_ran]() { task_ran = true; }), Seconds(1));
+          BindLambdaForTesting([&task_ran] { task_ran = true; }), Seconds(1));
   EXPECT_TRUE(delayed_task_handle.IsValid());
   EXPECT_TRUE(task_runner->HasPendingTask());
 
@@ -137,7 +137,7 @@ TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_CancelTask) {
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
           subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
-          BindLambdaForTesting([&task_ran]() { task_ran = true; }), Seconds(1));
+          BindLambdaForTesting([&task_ran] { task_ran = true; }), Seconds(1));
   EXPECT_TRUE(delayed_task_handle.IsValid());
   EXPECT_TRUE(task_runner->HasPendingTask());
 
@@ -156,7 +156,7 @@ TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_DestroyTask) {
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
           subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
-          BindLambdaForTesting([&task_ran]() { task_ran = true; }), Seconds(1));
+          BindLambdaForTesting([&task_ran] { task_ran = true; }), Seconds(1));
   EXPECT_TRUE(delayed_task_handle.IsValid());
   EXPECT_TRUE(task_runner->HasPendingTask());
 
@@ -177,7 +177,7 @@ TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_PostTaskFailed) {
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
           subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
-          BindLambdaForTesting([&task_ran]() { task_ran = true; }), Seconds(1));
+          BindLambdaForTesting([&task_ran] { task_ran = true; }), Seconds(1));
   EXPECT_FALSE(delayed_task_handle.IsValid());
   EXPECT_FALSE(task_ran);
 }
@@ -232,7 +232,7 @@ TEST_F(SequencedTaskRunnerCurrentDefaultHandleTest,
 TEST_F(SequencedTaskRunnerCurrentDefaultHandleTest,
        NoHandleFromUnsequencedTask) {
   base::ThreadPool::PostTask(base::BindOnce(
-      []() { EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault()); }));
+      [] { EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault()); }));
   task_environment_.RunUntilIdle();
 }
 

@@ -213,6 +213,16 @@ MicTestButtonContainer::MicTestButtonContainer(PressedCallback callback)
       IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP));
 }
 
+void MicTestButtonContainer::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  auto color_id = VideoConferenceTrayController::Get()->GetSidetoneEnabled()
+                      ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                      : cros_tokens::kCrosSysOnSurface;
+  sidetone_icon_->SetImage(
+      ui::ImageModel::FromVectorIcon(kVideoConferenceSidetoneIcon, color_id));
+}
+
 MicTestButtonContainer::~MicTestButtonContainer() = default;
 
 BEGIN_METADATA(MicTestButtonContainer)

@@ -351,8 +351,7 @@ Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
     case CSSValueID::kAlternateReverse:
       return Timing::PlaybackDirection::ALTERNATE_REVERSE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Timing::PlaybackDirection::NORMAL;
+      NOTREACHED();
   }
 }
 
@@ -378,8 +377,7 @@ Timing::FillMode CSSToStyleMap::MapAnimationFillMode(StyleResolverState& state,
     case CSSValueID::kBoth:
       return Timing::FillMode::BOTH;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Timing::FillMode::NONE;
+      NOTREACHED();
   }
 }
 
@@ -570,8 +568,7 @@ scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
         return StepsTimingFunction::Preset(
             StepsTimingFunction::StepPosition::END);
       default:
-        NOTREACHED_IN_MIGRATION();
-        return CSSTimingData::InitialTimingFunction();
+        NOTREACHED();
     }
   }
 

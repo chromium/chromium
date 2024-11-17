@@ -17,6 +17,7 @@ sb_files = [
   "renderer.sb",
   "screen_ai.sb",
   "speech_recognition.sb",
+  "on_device_translation.sb",
   "utility.sb",
 ]
 

@@ -52,6 +52,10 @@ class TranslateKitLanguagePackComponentInstallerPolicy
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
+  // Requests to update a given language pack component.
+  static void UpdateComponentOnDemand(
+      on_device_translation::LanguagePackKey language_pack_key);
+
  private:
   const on_device_translation::LanguagePackComponentConfig& GetConfig() const;
 
@@ -64,6 +68,15 @@ void RegisterTranslateKitLanguagePackComponent(
     PrefService* pref_service,
     on_device_translation::LanguagePackKey language_pack_key,
     base::OnceClosure registered_callback);
+
+void RegisterTranslateKitLanguagePackComponentsForUpdate(
+    ComponentUpdateService* cus,
+    PrefService* pref_service);
+
+void UninstallTranslateKitLanguagePackComponent(
+    ComponentUpdateService* cus,
+    PrefService* pref_service,
+    on_device_translation::LanguagePackKey language_pack_key);
 
 }  // namespace component_updater
 

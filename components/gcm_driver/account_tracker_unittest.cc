@@ -83,8 +83,8 @@ namespace gcm {
 
 class AccountTrackerObserver : public AccountTracker::Observer {
  public:
-  AccountTrackerObserver() {}
-  virtual ~AccountTrackerObserver() {}
+  AccountTrackerObserver() = default;
+  virtual ~AccountTrackerObserver() = default;
 
   testing::AssertionResult CheckEvents();
   testing::AssertionResult CheckEvents(const TrackingEvent& e1);
@@ -229,9 +229,9 @@ testing::AssertionResult AccountTrackerObserver::CheckEvents(
 
 class AccountTrackerTest : public testing::Test {
  public:
-  AccountTrackerTest() {}
+  AccountTrackerTest() = default;
 
-  ~AccountTrackerTest() override {}
+  ~AccountTrackerTest() override = default;
 
   void SetUp() override {
     account_tracker_ =

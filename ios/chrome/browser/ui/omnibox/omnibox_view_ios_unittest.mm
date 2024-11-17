@@ -39,9 +39,10 @@ class OmniboxViewIOSTest : public PlatformTest {
         [OCMockObject mockForProtocol:@protocol(OmniboxViewConsumer)];
 
     view_ = std::make_unique<OmniboxViewIOS>(
-        textfield_, std::move(omnibox_client), /*browser_state=*/nullptr,
+        textfield_, std::move(omnibox_client), /*profile=*/nullptr,
         /*omnibox_focuser=*/nil, /*focus_delegate=*/nil,
-        /*toolbar_commands_handler=*/nil, mock_consumer_);
+        /*toolbar_commands_handler=*/nil, mock_consumer_,
+        /*is_lens_overlay=*/false);
     view_->controller()->SetEditModelForTesting(
         std::make_unique<TestOmniboxEditModel>(view_->controller(), view_.get(),
                                                /*pref_service=*/nullptr));

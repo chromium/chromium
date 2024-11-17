@@ -117,8 +117,7 @@ class EventReportingAttestationBrowserClient : public TestContentBrowserClient {
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api,
-      bool post_impression_reporting) override {
+      content::PrivacySandboxInvokingAPI invoking_api) override {
     return true;
   }
 };
@@ -418,17 +417,15 @@ class InterestGroupAuctionReporterTest
   // classes don't make network requests, but a real AuctionWorkletManager is
   // used, which expects most of these methods to return non-null objects.
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   void PreconnectSocket(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   RenderFrameHostImpl* GetFrame() override {
     return static_cast<RenderFrameHostImpl*>(main_rfh());
@@ -441,6 +438,13 @@ class InterestGroupAuctionReporterTest
   }
   std::optional<std::string> GetCookieDeprecationLabel() override {
     return std::nullopt;
+  }
+  void GetBiddingAndAuctionServerKey(
+      const std::optional<url::Origin>& coordinator,
+      base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                             std::string>)> callback) override {
+    // Not implemented because this method is not called in this test.
+    NOTREACHED();
   }
 
   void WaitForCompletion() { WaitForCompletionExpectingErrors({}); }

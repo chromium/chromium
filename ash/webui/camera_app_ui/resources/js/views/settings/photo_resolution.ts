@@ -31,7 +31,7 @@ export class PhotoResolutionSettings extends BaseSettings {
     super(ViewName.PHOTO_RESOLUTION_SETTINGS);
 
     this.menu = dom.getFrom(this.root, 'div.menu', HTMLDivElement);
-    cameraManager.registerCameraUI({
+    cameraManager.registerCameraUi({
       onCameraUnavailable: () => {
         for (const input of dom.getAllFrom(
                  this.menu, 'input', HTMLInputElement)) {

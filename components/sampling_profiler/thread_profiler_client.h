@@ -7,10 +7,10 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/profiler/call_stack_profile_params.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
+#include "components/sampling_profiler/call_stack_profile_params.h"
+#include "components/sampling_profiler/process_type.h"
 
 namespace metrics {
 class WorkIdRecorder;
@@ -41,7 +41,7 @@ class ThreadProfilerClient {
   // Creates a `base::ProfileBuilder` instance to record profiles for a new
   // SamplingProfiler instance.
   virtual std::unique_ptr<base::ProfileBuilder> CreateProfileBuilder(
-      base::CallStackProfileParams profile_params,
+      CallStackProfileParams profile_params,
       metrics::WorkIdRecorder* work_id_recorder,
       base::OnceClosure builder_completed_callback) = 0;
 
@@ -54,11 +54,11 @@ class ThreadProfilerClient {
   // and thread. The embedder may enable (or disable) profiling based on
   // platform, subset of executions, application version, etc.
   virtual bool IsProfilerEnabledForCurrentProcessAndThread(
-      base::ProfilerThreadType thread) = 0;
+      ProfilerThreadType thread) = 0;
 
   // Determines the process type of the current process, primarily based on the
   // command line switches.
-  virtual base::ProfilerProcessType GetProcessType(
+  virtual ProfilerProcessType GetProcessType(
       const base::CommandLine& command_line) = 0;
 
   // Determines if the embedder is running in single process mode, primarily

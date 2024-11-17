@@ -17,14 +17,15 @@ import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
@@ -33,9 +34,11 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {ParentalControlsBrowserProxyImpl} from '../parental_controls_page/parental_controls_browser_proxy.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
+import type {Account, AccountManagerBrowserProxy} from './account_manager_browser_proxy.js';
+import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 import {getTemplate} from './account_manager_subpage.html.js';
 
 const SettingsAccountManagerSubpageElementBase = RouteObserverMixin(
@@ -378,37 +381,6 @@ export class SettingsAccountManagerSubpageElement extends
     return this.actionMenuAccount_.isAvailableInArc ?
         this.i18n('accountStopUsingInArcButtonLabel') :
         this.i18n('accountUseInArcButtonLabel');
-  }
-
-  /**
-   * Change ARC availability for |this.actionMenuAccount_|.
-   * Closes the 'More actions' menu and focuses the 'More actions' button for
-   * |this.actionMenuAccount_|.
-   */
-  private onChangeArcAvailability_(): void {
-    assertExists(this.actionMenuAccount_);
-    this.shadowRoot!.querySelector('cr-action-menu')!.close();
-    const newArcAvailability = !this.actionMenuAccount_.isAvailableInArc;
-    this.browserProxy_.changeArcAvailability(
-        this.actionMenuAccount_, newArcAvailability);
-
-    const actionMenuAccountIndex =
-        this.shadowRoot!.querySelector<DomRepeat>('#account-list')!.items!
-            .indexOf(this.actionMenuAccount_);
-    if (actionMenuAccountIndex >= 0) {
-      // Focus 'More actions' button for the current account.
-      this.shadowRoot!
-          .querySelectorAll<HTMLElement>(
-              '.icon-more-vert')[actionMenuAccountIndex]
-          .focus();
-    } else {
-      console.error(
-          'Couldn\'t find active account in the list: ',
-          this.actionMenuAccount_);
-      this.shadowRoot!.querySelector<CrButtonElement>(
-                          '#add-account-button')!.focus();
-    }
-    this.actionMenuAccount_ = null;
   }
 }
 

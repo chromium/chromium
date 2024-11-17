@@ -12,11 +12,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
-
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,6 +33,7 @@ import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
+import org.chromium.ui.base.TestActivity;
 
 import java.util.Arrays;
 
@@ -46,22 +46,22 @@ public class SharedImageTilesCoordinatorUnitTest {
     private static final String EMAIL = "test@test.com";
 
     @Mock private DataSharingService mDataSharingService;
-    @Mock private DataSharingUIDelegate mDataSharingUIDelegate;
+    @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
 
-    private Context mContext;
+    private Activity mActivity;
     private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private SharedImageTilesView mView;
     private TextView mCountTileView;
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         initialize(SharedImageTilesType.DEFAULT, SharedImageTilesColor.DEFAULT);
     }
 
     private void initialize(@SharedImageTilesType int type, @SharedImageTilesColor int color) {
         mSharedImageTilesCoordinator =
-                new SharedImageTilesCoordinator(mContext, type, color, mDataSharingService);
+                new SharedImageTilesCoordinator(mActivity, type, color, mDataSharingService);
         mView = mSharedImageTilesCoordinator.getView();
         mCountTileView = mView.findViewById(R.id.tiles_count);
     }
@@ -87,16 +87,16 @@ public class SharedImageTilesCoordinatorUnitTest {
         // etc
         verifyViews(View.GONE, /* iconViewCount= */ 0);
 
-        mSharedImageTilesCoordinator.updateTilesCount(1);
+        mSharedImageTilesCoordinator.updateMembersCount(1);
         verifyViews(View.GONE, /* iconViewCount= */ 1);
 
-        mSharedImageTilesCoordinator.updateTilesCount(2);
+        mSharedImageTilesCoordinator.updateMembersCount(2);
         verifyViews(View.GONE, /* iconViewCount= */ 2);
 
-        mSharedImageTilesCoordinator.updateTilesCount(3);
+        mSharedImageTilesCoordinator.updateMembersCount(3);
         verifyViews(View.GONE, /* iconViewCount= */ 3);
 
-        mSharedImageTilesCoordinator.updateTilesCount(4);
+        mSharedImageTilesCoordinator.updateMembersCount(4);
         verifyViews(View.VISIBLE, /* iconViewCount= */ 2);
     }
 
@@ -108,21 +108,24 @@ public class SharedImageTilesCoordinatorUnitTest {
                         /* displayName= */ null,
                         EMAIL,
                         /* role= */ 0,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupMember memberInvalid1 =
                 new GroupMember(
                         /* gaiaId= */ null,
                         /* displayName= */ null,
                         /* email= */ null,
                         /* role= */ 0,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupMember memberInvalid2 =
                 new GroupMember(
                         /* gaiaId= */ null,
                         /* displayName= */ null,
                         /* email= */ "",
                         /* role= */ 0,
-                        /* avatarUrl= */ null);
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupDataOrFailureOutcome outcome =
                 new GroupDataOrFailureOutcome(
                         new GroupData(
@@ -141,11 +144,11 @@ public class SharedImageTilesCoordinatorUnitTest {
                         })
                 .when(mDataSharingService)
                 .readGroup(eq(COLLABORATION_ID), any(Callback.class));
-        doReturn(mDataSharingUIDelegate).when(mDataSharingService).getUIDelegate();
+        doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUiDelegate();
 
         mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID);
 
-        verify(mDataSharingUIDelegate)
+        verify(mDataSharingUiDelegate)
                 .showAvatars(any(), any(), eq(Arrays.asList(memberValid.email)), any(), any());
     }
 }

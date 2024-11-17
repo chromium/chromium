@@ -4,11 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import './icons.html.js';
-import './strings.m.js';
+import '/icons.html.js';
+import '/strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -18,10 +17,26 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './sync_confirmation_app.css.js';
 import {getHtml} from './sync_confirmation_app.html.js';
-import {ScreenMode} from './sync_confirmation_browser_proxy.js';
 import type {SyncBenefit, SyncConfirmationBrowserProxy} from './sync_confirmation_browser_proxy.js';
 import {SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
 
+
+// LINT.IfChange(screen_mode)
+/**
+ * In PENDING mode, the screen should not show consent buttons and indicate that
+ * some loading is pending. In RESTRICTED mode, the button must not be weighted,
+ * and in UNRESTRICTED mode they can be.
+ *
+ * In UNSUPPORTED mode, the client take any behavior.
+ */
+export enum ScreenMode {
+  UNSUPPORTED = 0,
+  PENDING = 1,
+  RESTRICTED = 2,
+  UNRESTRICTED = 3,
+  DEADLINED = 4,
+}
+// LINT.ThenChange(//chrome/browser/ui/webui/signin/sync_confirmation_handler.h:screen_mode)
 
 interface AccountInfo {
   src: string;
@@ -90,21 +105,19 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     this.anyButtonClicked_ = true;
     this.syncConfirmationBrowserProxy_.confirm(
         this.getConsentDescription_(),
-        this.getConsentConfirmation_(e.composedPath() as HTMLElement[]),
-        this.screenMode_);
+        this.getConsentConfirmation_(e.composedPath() as HTMLElement[]));
   }
 
   protected onUndo_() {
     this.anyButtonClicked_ = true;
-    this.syncConfirmationBrowserProxy_.undo(this.screenMode_);
+    this.syncConfirmationBrowserProxy_.undo();
   }
 
   protected onGoToSettings_(e: Event) {
     this.anyButtonClicked_ = true;
     this.syncConfirmationBrowserProxy_.goToSettings(
         this.getConsentDescription_(),
-        this.getConsentConfirmation_(e.composedPath() as HTMLElement[]),
-        this.screenMode_);
+        this.getConsentConfirmation_(e.composedPath() as HTMLElement[]));
   }
 
   /**

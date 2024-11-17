@@ -24,7 +24,6 @@ namespace http://www.w3.org/1999/xhtml
     property PROCESSING_INSTRUCTION_NODE
     property TEXT_NODE
     property accessKey
-    property accessibleNode
     property addEventListener
     property after
     property anchorElement
@@ -332,6 +331,7 @@ namespace http://www.w3.org/1999/xhtml
     property setAttributeNS
     property setAttributeNode
     property setAttributeNodeNS
+    property setHTML
     property setHTMLUnsafe
     property setPointerCapture
     property shadowRoot
@@ -571,7 +571,9 @@ html element details
 html element dfn
 html element dialog
     property close
+    property closedBy
     property open
+    property requestClose
     property returnValue
     property show
     property showModal
@@ -757,8 +759,6 @@ html element input
     property autocomplete
     property checkValidity
     property checked
-    property command
-    property commandForElement
     property defaultChecked
     property defaultValue
     property dirName
@@ -850,7 +850,6 @@ html element link
     property sizes
     property target
     property type
-html element listbox
 html element listing
     property width
 html element main
@@ -960,11 +959,13 @@ html element param
     property value
     property valueType
 html element permission
+    property initialPermissionStatus
     property invalidReason
     property isValid
     property ondismiss
     property onresolve
     property onvalidationstatuschange
+    property permissionStatus
     property type
 html element picture
 html element plaintext
@@ -1017,8 +1018,8 @@ html element select
     property options
     property reportValidity
     property required
+    property selectedContentElement
     property selectedIndex
-    property selectedOptionElement
     property selectedOptions
     property setCustomValidity
     property showPicker
@@ -1028,23 +1029,7 @@ html element select
     property validity
     property value
     property willValidate
-html element selectedoption
-html element selectlist
-    property checkValidity
-    property disabled
-    property form
-    property labels
-    property name
-    property open
-    property reportValidity
-    property required
-    property selectedOption
-    property setCustomValidity
-    property type
-    property validationMessage
-    property validity
-    property value
-    property willValidate
+html element selectedcontent
 html element slot
     property assign
     property assignedElements
@@ -1290,13 +1275,7 @@ html element video
     property volume
     property webkitAudioDecodedByteCount
     property webkitDecodedFrameCount
-    property webkitDisplayingFullscreen
     property webkitDroppedFrameCount
-    property webkitEnterFullScreen
-    property webkitEnterFullscreen
-    property webkitExitFullScreen
-    property webkitExitFullscreen
-    property webkitSupportsFullscreen
     property webkitVideoDecodedByteCount
     property width
 html element wbr
@@ -1323,7 +1302,6 @@ namespace http://www.w3.org/2000/svg
     property NOTATION_NODE
     property PROCESSING_INSTRUCTION_NODE
     property TEXT_NODE
-    property accessibleNode
     property addEventListener
     property after
     property anchorElement
@@ -1610,6 +1588,7 @@ namespace http://www.w3.org/2000/svg
     property setAttributeNS
     property setAttributeNode
     property setAttributeNodeNS
+    property setHTML
     property setHTMLUnsafe
     property setPointerCapture
     property shadowRoot

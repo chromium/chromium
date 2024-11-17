@@ -95,6 +95,7 @@ public final class MediaPosition {
 
     /**
      * Create a new {@link MediaPosition} from the C++ code.
+     *
      * @param duration The duration of the media in ms.
      * @param position The position of the media in ms.
      * @param playbackRate The playback rate of the media as a coefficient.
@@ -105,7 +106,6 @@ public final class MediaPosition {
             long duration, long position, float playbackRate, long lastUpdatedTime) {
         long currentTime = System.currentTimeMillis();
         long elapsedRealtime = SystemClock.elapsedRealtime();
-        long bootTime = currentTime - elapsedRealtime;
         lastUpdatedTime -= (currentTime - elapsedRealtime);
 
         return new MediaPosition(duration, position, playbackRate, lastUpdatedTime);

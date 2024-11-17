@@ -13,6 +13,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -80,18 +81,17 @@ base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper);
 // Receives shared storage mojom messages.
 class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
  public:
-  enum RequestType {
-    kSet,
-    kAppend,
-    kDelete,
-    kClear,
-  };
-
   struct Request {
-    RequestType type;
-    std::u16string key;
-    std::u16string value;
-    bool ignore_if_present;
+    Request(network::mojom::SharedStorageModifierMethodPtr method,
+            mojom::AuctionWorkletFunction source_auction_worklet_function);
+    ~Request();
+
+    Request(const Request& other);
+    Request& operator=(const Request& other);
+    Request(Request&& other);
+    Request& operator=(Request&& other);
+
+    network::mojom::SharedStorageModifierMethodPtr method;
     mojom::AuctionWorkletFunction source_auction_worklet_function;
 
     bool operator==(const Request& rhs) const;
@@ -102,23 +102,10 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
   ~TestAuctionSharedStorageHost() override;
 
   // mojom::AuctionSharedStorageHost:
-  void Set(
-      const std::u16string& key,
-      const std::u16string& value,
-      bool ignore_if_present,
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
-
-  void Append(
-      const std::u16string& key,
-      const std::u16string& value,
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
-
-  void Delete(
-      const std::u16string& key,
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
-
-  void Clear(
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
+  void SharedStorageUpdate(
+      network::mojom::SharedStorageModifierMethodPtr method,
+      auction_worklet::mojom::AuctionWorkletFunction
+          source_auction_worklet_function) override;
 
   const std::vector<Request>& observed_requests() const {
     return observed_requests_;

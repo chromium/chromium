@@ -45,7 +45,13 @@
 #endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(ENABLE_PDF)
+#include <tuple>
+#include <variant>
+
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/pdf/common/constants.h"
+#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
@@ -61,6 +67,16 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
+
+#if BUILDFLAG(ENABLE_PDF)
+struct PluginInfoHostImplBidiTestWithCr23OverridePassToString {
+  std::string operator()(
+      const ::testing::TestParamInfo<std::tuple<bool, bool>>& i) const {
+    return std::string(std::get<1>(i.param) ? "CR23_" : "") +
+           std::string(std::get<0>(i.param) ? "RTL" : "LTR");
+  }
+};
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 
@@ -110,16 +126,12 @@ class PluginInfoHostImplTest : public InProcessBrowserTest {
 };
 
 #if BUILDFLAG(ENABLE_PDF)
-// Variation that tests under left-to-right and right-to-left directions. The
-// direction affects the PDF viewer extension, as the plugin name is derived
-// from the extension name, and the extension name may be adjusted to include
-// Unicode bidirectional control characters in RTL mode. These extra control
-// characters can break string comparisons (see crbug.com/1404260).
-class PluginInfoHostImplBidiTest : public PluginInfoHostImplTest,
-                                   public testing::WithParamInterface<bool> {
+class PluginInfoHostImplBidiTestBase : public PluginInfoHostImplTest {
  public:
+  virtual bool rtl() const { return false; }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam()) {
+    if (rtl()) {
       // Pass "--force-ui-direction=rtl" instead of setting an RTL locale, as
       // setting a locale requires extra code on GLib platforms. Setting the UI
       // direction has the same effect on the extension name, which is all
@@ -128,6 +140,37 @@ class PluginInfoHostImplBidiTest : public PluginInfoHostImplTest,
                                       switches::kForceDirectionRTL);
     }
   }
+};
+
+// Variation that tests under left-to-right and right-to-left directions. The
+// direction affects the PDF viewer extension, as the plugin name is derived
+// from the extension name, and the extension name may be adjusted to include
+// Unicode bidirectional control characters in RTL mode. These extra control
+// characters can break string comparisons (see crbug.com/1404260).
+class PluginInfoHostImplBidiTest : public PluginInfoHostImplBidiTestBase,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  bool rtl() const override { return GetParam(); }
+};
+
+class PluginInfoHostImplBidiTestWithCr23Override
+    : public PluginInfoHostImplBidiTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  PluginInfoHostImplBidiTestWithCr23Override() {
+    if (cr23()) {
+      feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfCr23);
+    } else {
+      feature_list_.InitAndDisableFeature(chrome_pdf::features::kPdfCr23);
+    }
+  }
+
+  bool rtl() const override { return std::get<0>(GetParam()); }
+
+  bool cr23() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -285,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, GetPluginInfoForPnacl) {
 #endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(ENABLE_PDF)
-IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
+IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTestWithCr23Override,
                        GetPluginInfoForPdfViewerExtension) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const std::u16string kPluginName = u"Chrome PDF Viewer";
@@ -308,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
 
   // `WebPluginInfo` fields.
   std::u16string expected_plugin_name = kPluginName;
-  if (GetParam()) {
+  if (rtl()) {
     // Extra characters are added by `extensions::Extension::LoadName()`.
     ASSERT_TRUE(
         base::i18n::AdjustStringForLocaleDirection(&expected_plugin_name));
@@ -323,8 +366,10 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
             plugin_info->plugin.type);
   EXPECT_EQ(0, plugin_info->plugin.pepper_permissions);
 
-  // Background color hard-coded in `MimeTypesHandler::GetBackgroundColor()`.
-  EXPECT_EQ(SkColorSetRGB(82, 86, 89), plugin_info->plugin.background_color);
+  // Background color hard-coded in `GetPdfBackgroundColor()`.
+  const SkColor kExpectedColor =
+      cr23() ? SkColorSetRGB(40, 40, 40) : SkColorSetRGB(82, 86, 89);
+  EXPECT_EQ(kExpectedColor, plugin_info->plugin.background_color);
 
   // Has PDF MIME type.
   ASSERT_THAT(plugin_info->plugin.mime_types, SizeIs(1));
@@ -406,4 +451,12 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PluginInfoHostImplBidiTest, testing::Bool());
+
+// TODO(crbug.com/360265881): Stop testing both modes after CR23 PDF viewer
+// launches.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PluginInfoHostImplBidiTestWithCr23Override,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    PluginInfoHostImplBidiTestWithCr23OverridePassToString());
 #endif  // BUILDFLAG(ENABLE_PDF)

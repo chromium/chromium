@@ -426,6 +426,8 @@ network::mojom::URLResponseHeadPtr CreateResponseInfoFromServiceWorker() {
   head->response_type = network::mojom::FetchResponseType::kDefault;
   head->cache_storage_cache_name = std::string();
   head->did_service_worker_navigation_preload = false;
+  head->initial_service_worker_status =
+      network::mojom::ServiceWorkerStatus::kRunning;
   return head;
 }
 
@@ -531,7 +533,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     loader_ = std::make_unique<ServiceWorkerMainResourceLoader>(
         base::BindOnce(&ServiceWorkerMainResourceLoaderTest::Fallback,
                        base::Unretained(this)),
-        service_worker_client()->AsWeakPtr(), FrameTreeNodeId(),
+        /*fetch_event_client_id=*/"", service_worker_client()->AsWeakPtr(),
+        FrameTreeNodeId(),
         /*find_registration_start_time=*/base::TimeTicks::Now());
 
     // Load |request.url|.
@@ -584,6 +587,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
               info.cache_storage_cache_name);
     EXPECT_EQ(expected_info.did_service_worker_navigation_preload,
               info.did_service_worker_navigation_preload);
+    EXPECT_EQ(expected_info.initial_service_worker_status,
+              info.initial_service_worker_status);
     // TODO(crbug.com/40944544): Write tests about Static Routing API, in
     // particular, checking the correctness of `service_worker_router_info`.
   }

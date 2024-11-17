@@ -21,7 +21,8 @@ namespace cc {
 SingleThreadTaskGraphRunner::SingleThreadTaskGraphRunner()
     : lock_(),
       has_ready_to_run_tasks_cv_(&lock_),
-      has_namespaces_with_finished_running_tasks_cv_(&lock_) {
+      has_namespaces_with_finished_running_tasks_cv_(&lock_),
+      is_idle_cv_(&lock_) {
   has_ready_to_run_tasks_cv_.declare_only_used_while_idle();
 }
 
@@ -77,6 +78,15 @@ void SingleThreadTaskGraphRunner::ScheduleTasks(NamespaceToken token,
   }
 }
 
+void SingleThreadTaskGraphRunner::ExternalDependencyCompletedForTask(
+    NamespaceToken token,
+    scoped_refptr<Task> task) {
+  base::AutoLock lock(lock_);
+  if (work_queue_.ExternalDependencyCompletedForTask(token, std::move(task))) {
+    has_ready_to_run_tasks_cv_.Signal();
+  }
+}
+
 void SingleThreadTaskGraphRunner::WaitForTasksToFinishRunning(
     NamespaceToken token) {
   TRACE_EVENT0("cc",
@@ -114,11 +124,22 @@ void SingleThreadTaskGraphRunner::CollectCompletedTasks(
   }
 }
 
+void SingleThreadTaskGraphRunner::RunTasksUntilIdleForTest() {
+  base::AutoLock lock(lock_);
+
+  while (work_queue_.HasReadyToRunTasks() ||
+         work_queue_.NumRunningTasks() > 0) {
+    is_idle_cv_.Wait();
+  }
+}
+
 void SingleThreadTaskGraphRunner::Run() {
   base::AutoLock lock(lock_);
 
   while (true) {
     if (!RunTaskWithLockAcquired()) {
+      is_idle_cv_.Signal();
+
       // Exit when shutdown is set and no more tasks are pending.
       if (shutdown_)
         break;

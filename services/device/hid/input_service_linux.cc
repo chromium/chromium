@@ -150,7 +150,7 @@ InputServiceLinuxImpl::InputServiceLinuxImpl() {
 
 InputServiceLinuxImpl::~InputServiceLinuxImpl() {
   // Never destroyed.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InputServiceLinuxImpl::BlockingTaskRunnerHelper::OnDeviceAdded(

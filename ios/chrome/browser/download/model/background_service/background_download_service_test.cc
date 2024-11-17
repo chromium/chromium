@@ -96,26 +96,25 @@ class BackgroundDownloadServiceTest
 
   void SetUp() override {
     download::test::BackgroundDownloadTestBase::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         BackgroundDownloadServiceFactory::GetInstance(),
         base::BindRepeating(
             &BackgroundDownloadServiceTest::MakeBackgroundDowloadService,
             base::Unretained(this)));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    // Create a random file in root dir and an unknown file in downoad dir.
-    ASSERT_TRUE(base::CreateTemporaryFileInDir(browser_state_->GetStatePath(),
+    // Create a random file in root dir and an unknown file in download dir.
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(profile_->GetStatePath(),
                                                &temp_file_path_));
-    auto download_dir = browser_state_->GetStatePath()
+    auto download_dir = profile_->GetStatePath()
                             .Append(kDownloadServiceStorageDir)
                             .Append(kFilesStorageDir);
     base::CreateDirectoryAndGetError(download_dir, nullptr);
     ASSERT_TRUE(base::CreateTemporaryFileInDir(download_dir,
                                                &temp_file_path_to_delete_));
 
-    service_ = BackgroundDownloadServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    service_ = BackgroundDownloadServiceFactory::GetForProfile(profile_.get());
     ASSERT_TRUE(fake_client_);
   }
 
@@ -155,7 +154,7 @@ class BackgroundDownloadServiceTest
   }
 
  private:
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   raw_ptr<download::BackgroundDownloadService> service_;
   raw_ptr<FakeClient> fake_client_ = nullptr;
   base::FilePath temp_file_path_;

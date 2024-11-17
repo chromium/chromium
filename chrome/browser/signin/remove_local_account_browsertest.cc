@@ -103,18 +103,18 @@ IN_PROC_BROWSER_TEST_F(RemoveLocalAccountTest, ShouldNotifyObservers) {
   signin::SetFreshnessOfAccountsInGaiaCookie(identity_manager(),
                                              /*accounts_are_fresh=*/false);
 
-  ASSERT_FALSE(identity_manager()->GetAccountsInCookieJar().accounts_are_fresh);
+  ASSERT_FALSE(identity_manager()->GetAccountsInCookieJar().AreAccountsFresh());
   const signin::AccountsInCookieJarInfo
       cookie_jar_info_in_initial_notification =
           WaitUntilAccountsInCookieUpdated();
-  ASSERT_TRUE(cookie_jar_info_in_initial_notification.accounts_are_fresh);
-  ASSERT_THAT(cookie_jar_info_in_initial_notification.signed_out_accounts,
+  ASSERT_TRUE(cookie_jar_info_in_initial_notification.AreAccountsFresh());
+  ASSERT_THAT(cookie_jar_info_in_initial_notification.GetSignedOutAccounts(),
               Contains(ListedAccountMatchesGaiaId(kTestGaiaId)));
 
   const signin::AccountsInCookieJarInfo initial_cookie_jar_info =
       identity_manager()->GetAccountsInCookieJar();
-  ASSERT_TRUE(initial_cookie_jar_info.accounts_are_fresh);
-  ASSERT_THAT(initial_cookie_jar_info.signed_out_accounts,
+  ASSERT_TRUE(initial_cookie_jar_info.AreAccountsFresh());
+  ASSERT_THAT(initial_cookie_jar_info.GetSignedOutAccounts(),
               Contains(ListedAccountMatchesGaiaId(kTestGaiaId)));
 
   // Open a FakeGaia page that issues the desired HTTP response header with
@@ -129,14 +129,14 @@ IN_PROC_BROWSER_TEST_F(RemoveLocalAccountTest, ShouldNotifyObservers) {
       cookie_jar_info_in_updated_notification =
           WaitUntilAccountsInCookieUpdated();
 
-  EXPECT_TRUE(cookie_jar_info_in_updated_notification.accounts_are_fresh);
-  EXPECT_THAT(cookie_jar_info_in_updated_notification.signed_out_accounts,
+  EXPECT_TRUE(cookie_jar_info_in_updated_notification.AreAccountsFresh());
+  EXPECT_THAT(cookie_jar_info_in_updated_notification.GetSignedOutAccounts(),
               Not(Contains(ListedAccountMatchesGaiaId(kTestGaiaId))));
 
   const signin::AccountsInCookieJarInfo updated_cookie_jar_info =
       identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(updated_cookie_jar_info.accounts_are_fresh);
-  EXPECT_THAT(updated_cookie_jar_info.signed_out_accounts,
+  EXPECT_TRUE(updated_cookie_jar_info.AreAccountsFresh());
+  EXPECT_THAT(updated_cookie_jar_info.GetSignedOutAccounts(),
               Not(Contains(ListedAccountMatchesGaiaId(kTestGaiaId))));
 }
 

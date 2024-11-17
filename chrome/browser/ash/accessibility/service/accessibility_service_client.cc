@@ -43,7 +43,7 @@ base::File LoadFile(base::FilePath path) {
                                                 base::BlockingType::MAY_BLOCK);
   base::FilePath resources_path;
   if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   base::FilePath accessibility_file_path =

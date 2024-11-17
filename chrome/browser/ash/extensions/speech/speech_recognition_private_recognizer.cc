@@ -128,7 +128,6 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
         GetWeakPtr(),
         profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcessIOThread(),
-        profile->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
         locale_);
   }
 }

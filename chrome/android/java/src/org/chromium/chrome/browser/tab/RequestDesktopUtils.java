@@ -96,14 +96,13 @@ public class RequestDesktopUtils {
 
         if (tab == null || tab.isOffTheRecord() || tab.getWebContents() == null) return;
 
-        new UkmRecorder.Bridge()
-                .recordEventWithIntegerMetric(
-                        tab.getWebContents(),
-                        "Android.UserRequestedUserAgentChange",
+        new UkmRecorder(tab.getWebContents(), "Android.UserRequestedUserAgentChange")
+                .addMetric(
                         "UserAgentType",
                         isDesktop
                                 ? UserAgentRequestType.REQUEST_DESKTOP
-                                : UserAgentRequestType.REQUEST_MOBILE);
+                                : UserAgentRequestType.REQUEST_MOBILE)
+                .record();
     }
 
     /**
@@ -115,12 +114,11 @@ public class RequestDesktopUtils {
     public static void recordScreenOrientationChangedUkm(boolean isLandscape, @Nullable Tab tab) {
         if (tab == null || tab.isOffTheRecord() || tab.getWebContents() == null) return;
 
-        new UkmRecorder.Bridge()
-                .recordEventWithIntegerMetric(
-                        tab.getWebContents(),
-                        "Android.ScreenRotation",
+        new UkmRecorder(tab.getWebContents(), "Android.ScreenRotation")
+                .addMetric(
                         "TargetDeviceOrientation",
-                        isLandscape ? DeviceOrientation2.LANDSCAPE : DeviceOrientation2.PORTRAIT);
+                        isLandscape ? DeviceOrientation2.LANDSCAPE : DeviceOrientation2.PORTRAIT)
+                .record();
     }
 
     /**
@@ -331,7 +329,7 @@ public class RequestDesktopUtils {
         }
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        if (!tracker.shouldTriggerHelpUI(
+        if (!tracker.shouldTriggerHelpUi(
                 FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE)) {
             return false;
         }

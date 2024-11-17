@@ -28,14 +28,17 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 using testing::_;
 using testing::Return;
@@ -264,18 +267,10 @@ class WebUIContentsPreloadManagerPageLoadMetricsTest
   std::unique_ptr<content::ScopedWebUIConfigRegistration> config_registration_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// The page load metrics test is flaky on LaCrOS because sometimes viz::Display
-// reports a negative frame latency that causes page load metrics to stop
-// propagation.
-#define MAYBE_RequestToFCP DISABLED_RequestToFCP
-#else
-#define MAYBE_RequestToFCP RequestToFCP
-#endif
 // Tests that the time from the WebUI is requested to when First Contentful
 // Paint (FCP) is recorded.
 IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerPageLoadMetricsTest,
-                       MAYBE_RequestToFCP) {
+                       RequestToFCPAndLCP) {
   // Serves the test origin with files from the test data folder.
   auto url_loader_interceptor =
       content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
@@ -283,13 +278,15 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerPageLoadMetricsTest,
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToFCPHistogramName, 0);
+  histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToLCPHistogramName, 0);
 
   test_api().MaybePreloadForBrowserContext(browser()->profile());
   navigation_waiter()->Wait();
   ASSERT_TRUE(test_api().GetPreloadedURL().has_value());
 
-  // FCP is not recorded because the WebUI is not yet shown.
+  // FCP and LCP are not recorded because the WebUI is not yet shown.
   histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToFCPHistogramName, 0);
+  histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToLCPHistogramName, 0);
 
   WebUIContentsPreloadManager::RequestResult request_result =
       preload_manager()->Request(*test_api().GetPreloadedURL(),
@@ -314,6 +311,12 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerPageLoadMetricsTest,
 
   WaitForHistogram(kNonTabWebUIRequestToFCPHistogramName);
   histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToFCPHistogramName, 1);
+  // LCP is not recorded until WebContents close or navigation.
+  histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToLCPHistogramName, 0);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
+  WaitForHistogram(kNonTabWebUIRequestToLCPHistogramName);
+  histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToLCPHistogramName, 1);
 
   widget->CloseNow();
 }

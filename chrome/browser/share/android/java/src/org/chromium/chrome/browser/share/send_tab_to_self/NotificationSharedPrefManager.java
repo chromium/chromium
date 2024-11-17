@@ -100,13 +100,7 @@ class NotificationSharedPrefManager {
     /** @return Serialized version of the fields in version_notificationId_guid string format */
     @VisibleForTesting
     static String serializeNotification(ActiveNotification notification) {
-        return new StringBuilder()
-                .append(notification.version)
-                .append("_")
-                .append(notification.notificationId)
-                .append("_")
-                .append(notification.guid)
-                .toString();
+        return notification.version + "_" + notification.notificationId + "_" + notification.guid;
     }
 
     /**
@@ -194,7 +188,7 @@ class NotificationSharedPrefManager {
 
         for (String serialized : activeNotifications) {
             ActiveNotification activeNotification = deserializeNotification(serialized);
-            if ((activeNotification != null) && (guid.equals(activeNotification.guid))) {
+            if ((activeNotification != null) && guid.equals(activeNotification.guid)) {
                 return activeNotification;
             }
         }

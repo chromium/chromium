@@ -173,10 +173,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // in cases where a const reference would suffice.
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
-  bool HasHtmlAttribute(const char* attribute) const;
   const base::StringPairs& GetHtmlAttributes() const;
-  bool GetHtmlAttribute(const char* attribute, std::string* value) const;
-  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
   AXTextAttributes GetTextAttributes() const;
   bool HasState(ax::mojom::State state) const;
   ax::mojom::State GetState() const;

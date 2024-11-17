@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
@@ -229,7 +230,7 @@ std::string GetDisplayName(Profile* profile, guest_os::GuestId guest) {
 }
 
 bool IsBruschettaRunning(Profile* profile) {
-  auto* service = bruschetta::BruschettaService::GetForProfile(profile);
+  auto* service = bruschetta::BruschettaServiceFactory::GetForProfile(profile);
   return service && service->IsVmRunning(kBruschettaVmName);
 }
 

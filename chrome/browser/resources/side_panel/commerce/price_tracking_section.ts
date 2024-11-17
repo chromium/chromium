@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
 import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {PriceInsightsInfo_PriceBucket} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -58,7 +58,8 @@ export class PriceTrackingSection extends PolymerElement {
   private showSaveLocationText_: boolean;
   private folderName_: string;
 
-  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

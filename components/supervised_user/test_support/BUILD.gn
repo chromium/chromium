@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -18,8 +20,10 @@ source_set("test_support") {
     "testutil_proto_fetcher.cc",
     "testutil_proto_fetcher.h",
   ]
+
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/safe_search_api",
@@ -35,4 +39,41 @@ source_set("test_support") {
     "//services/network/public/cpp",
     "//url",
   ]
+}
+
+# Repository of test accounts is only supported for platforms that utilize end-to-end tests
+if (is_win || is_ios || is_linux) {
+  source_set("account_repository") {
+    testonly = true
+    sources = [
+      "account_repository.cc",
+      "account_repository.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/supervised_user/core/browser/proto",
+    ]
+  }
+  source_set("account_repository_unit_tests") {
+    testonly = true
+
+    sources = [ "account_repository_unittest.cc" ]
+
+    deps = [
+      ":account_repository",
+      "//base",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+
+    if (is_chrome_branded) {
+      sources += [ "account_repository_internal_unittest.cc" ]
+      data = [
+        "//chrome/browser/internal/resources/supervised_user/ios_test_accounts.json",
+        "//chrome/browser/internal/resources/supervised_user/linux_test_accounts.json",
+        "//chrome/browser/internal/resources/supervised_user/win_test_accounts.json",
+      ]
+    }
+  }
 }

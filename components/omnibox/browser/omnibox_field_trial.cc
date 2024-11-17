@@ -172,6 +172,12 @@ bool IsKoreanLocale(const std::string& locale) {
   return locale == "ko" || locale == "ko-KR";
 }
 
+#if !BUILDFLAG(IS_IOS)
+bool IsEnglishLocale(const std::string& locale) {
+  return base::StartsWith(locale, "en", base::CompareCase::SENSITIVE);
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 HUPScoringParams::ScoreBuckets::ScoreBuckets()
@@ -180,7 +186,7 @@ HUPScoringParams::ScoreBuckets::ScoreBuckets()
 HUPScoringParams::ScoreBuckets::ScoreBuckets(const ScoreBuckets& other) =
     default;
 
-HUPScoringParams::ScoreBuckets::~ScoreBuckets() {}
+HUPScoringParams::ScoreBuckets::~ScoreBuckets() = default;
 
 size_t HUPScoringParams::ScoreBuckets::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(buckets_);
@@ -565,10 +571,24 @@ bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode() {
          IsOnDeviceHeadSuggestEnabledForNonIncognito();
 }
 
-bool OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled() {
+bool OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(
+    const std::string& locale) {
   // Tail model will only be enabled when head provider is also enabled.
-  return base::FeatureList::IsEnabled(omnibox::kOnDeviceTailModel) &&
-         IsOnDeviceHeadSuggestEnabledForAnyMode();
+  if (!IsOnDeviceHeadSuggestEnabledForAnyMode()) {
+    return false;
+  }
+
+  // Currently only launch for English locales. Remove this flag once i18n is
+  // also launched.
+  // Do not launch for iOS since the feature is not supported in iOS yet.
+#if !BUILDFLAG(IS_IOS)
+  if (IsEnglishLocale(locale)) {
+    return !base::FeatureList::IsEnabled(
+        omnibox::kDisableOnDeviceTailEnglishModel);
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
+  return base::FeatureList::IsEnabled(omnibox::kOnDeviceTailModel);
 }
 
 bool OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest() {
@@ -581,11 +601,11 @@ bool OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix() {
   return base::GetFieldTrialParamByFeatureAsBool(
              omnibox::kOnDeviceHeadProviderNonIncognito,
              OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
-             /*default_value=*/false) ||
+             /*default_value=*/true) ||
          base::GetFieldTrialParamByFeatureAsBool(
              omnibox::kOnDeviceHeadProviderIncognito,
              OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
-             /*default_value=*/false);
+             /*default_value=*/true);
 }
 
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForLocale(
@@ -609,70 +629,6 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
   }
   return constraint;
 }
-
-// Omnibox UI simplification - Uniform Suggestion Row Heights
-const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconAnswers(
-    &omnibox::kSquareSuggestIcons,
-    "OmniboxSquareSuggestIconAnswers",
-    true);
-const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconIcons(
-    &omnibox::kSquareSuggestIcons,
-    "OmniboxSquareSuggestIconIcons",
-    false);
-const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconEntities(
-    &omnibox::kSquareSuggestIcons,
-    "OmniboxSquareSuggestIconEntities",
-    false);
-const base::FeatureParam<double>
-    OmniboxFieldTrial::kSquareSuggestIconEntitiesScale(
-        &omnibox::kSquareSuggestIcons,
-        "OmniboxSquareSuggestIconEntitiesScale",
-        0.8722);
-const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconWeather(
-    &omnibox::kSquareSuggestIcons,
-    "OmniboxSquareSuggestIconWeather",
-    true);
-
-bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);
-}
-
-const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
-    &omnibox::kUniformRowHeight,
-    "OmniboxRichSuggestionVerticalMargin",
-    6);
-
-bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
-}
-
-// In order to control the value of this "font size" param via Finch, the
-// `kOmniboxSteadyStateTextStyle` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextStyle` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextStyle` are
-// enabled, then this "font size" param will have zero effect on Chrome UI.
-const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeTouchUI(
-    &omnibox::kOmniboxSteadyStateTextStyle,
-    "OmniboxFontSizeTouchUI",
-    15);
-
-// In order to control the value of this "font size" param via Finch, the
-// `kOmniboxSteadyStateTextStyle` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextStyle` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextStyle` are
-// enabled, then this "font size" param will have zero effect on Chrome UI.
-const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeNonTouchUI(
-    &omnibox::kOmniboxSteadyStateTextStyle,
-    "OmniboxFontSizeNonTouchUI",
-    13);
 
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
@@ -1169,7 +1125,8 @@ const base::FeatureParam<int>
 const base::FeatureParam<std::string> kGeminiUrlOverride(
     &omnibox::kStarterPackExpansion,
     "StarterPackGeminiUrlOverride",
-    "https://gemini.google.com/prompt");
+    "https://gemini.google.com/prompt?"
+    "utm_source=chrome_omnibox&utm_medium=owned&utm_campaign=gemini_shortcut");
 
 bool IsStarterPackExpansionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion);
@@ -1179,13 +1136,6 @@ bool IsStarterPackIPHEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackIPH);
 }
 // <- Site Search Starter Pack
-// ---------------------------------------------------------
-// Featured Enterprise Site Search ->
-bool IsFeaturedEnterpriseSearchIPHEnabled() {
-  return base::FeatureList::IsEnabled(
-      omnibox::kShowFeaturedEnterpriseSiteSearchIPH);
-}
-
 }  // namespace OmniboxFieldTrial
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(

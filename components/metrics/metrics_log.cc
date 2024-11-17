@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/374320451): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/metrics/metrics_log.h"
 
 #include <stddef.h>
@@ -166,8 +171,7 @@ metrics::SystemProfileProto::OS::XdgSessionType ToProtoSessionType(
       return metrics::SystemProfileProto::OS::MIR;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return metrics::SystemProfileProto::OS::UNSET;
+  NOTREACHED();
 }
 
 metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
@@ -198,8 +202,7 @@ metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
       return metrics::SystemProfileProto::OS::LXQT;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return metrics::SystemProfileProto::OS::OTHER;
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

@@ -1,0 +1,664 @@
+{
+  "android-fieldtrial-rel": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--disable-field-trial-config",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "android_browsertests_no_fieldtrial"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "android_browsertests_no_fieldtrial",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "test": "android_browsertests",
+        "test_id_prefix": "ninja://chrome/test:android_browsertests/"
+      },
+      {
+        "args": [
+          "--webview-command-line-arg=--disable-field-trial-config",
+          "--webview-command-line-arg=--webview-verbose-logging",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "system_webview_shell_layout_test_apk Disable Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "system_webview_shell_layout_test_apk Disable Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "system_webview_shell_layout_test_apk",
+        "test_id_prefix": "ninja://android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk/",
+        "variant_id": "Disable Field Trial Config"
+      },
+      {
+        "args": [
+          "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+          "--webview-command-line-arg=--accept-empty-variations-seed-signature",
+          "--webview-command-line-arg=--webview-verbose-logging",
+          "--webview-command-line-arg=--disable-field-trial-config",
+          "--webview-command-line-arg=--fake-variations-channel=stable",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "system_webview_shell_layout_test_apk Single Group Per Study Prefer Existing Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "system_webview_shell_layout_test_apk Single Group Per Study Prefer Existing Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "system_webview_shell_layout_test_apk",
+        "test_id_prefix": "ninja://android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk/",
+        "variant_id": "Single Group Per Study Prefer Existing Behavior Field Trial Config"
+      },
+      {
+        "args": [
+          "--webview-variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+          "--webview-command-line-arg=--accept-empty-variations-seed-signature",
+          "--webview-command-line-arg=--webview-verbose-logging",
+          "--webview-command-line-arg=--disable-field-trial-config",
+          "--webview-command-line-arg=--fake-variations-channel=stable",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "system_webview_shell_layout_test_apk Single Group Per Study Prefer New Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "system_webview_shell_layout_test_apk Single Group Per Study Prefer New Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "system_webview_shell_layout_test_apk",
+        "test_id_prefix": "ninja://android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk/",
+        "variant_id": "Single Group Per Study Prefer New Behavior Field Trial Config"
+      },
+      {
+        "args": [
+          "--use-apk-under-test-flags-file",
+          "--disable-field-trial-config",
+          "--webview-verbose-logging",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk Disable Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk Disable Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/",
+        "variant_id": "Disable Field Trial Config"
+      },
+      {
+        "args": [
+          "--use-apk-under-test-flags-file",
+          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+          "--accept-empty-variations-seed-signature",
+          "--webview-verbose-logging",
+          "--disable-field-trial-config",
+          "--fake-variations-channel=stable",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk Single Group Per Study Prefer Existing Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk Single Group Per Study Prefer Existing Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/",
+        "variant_id": "Single Group Per Study Prefer Existing Behavior Field Trial Config"
+      },
+      {
+        "args": [
+          "--use-apk-under-test-flags-file",
+          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+          "--accept-empty-variations-seed-signature",
+          "--webview-verbose-logging",
+          "--disable-field-trial-config",
+          "--fake-variations-channel=stable",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk Single Group Per Study Prefer New Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk Single Group Per Study Prefer New Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/",
+        "variant_id": "Single Group Per Study Prefer New Behavior Field Trial Config"
+      },
+      {
+        "args": [
+          "--store-data-dependencies-in-temp",
+          "--store-tombstones",
+          "--disable-field-trial-config",
+          "--webview-verbose-logging",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_trichrome_64_cts_tests Disable Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_trichrome_64_cts_tests Disable Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive/cipd",
+              "revision": "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "webview_trichrome_64_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_64_cts_tests/",
+        "variant_id": "Disable Field Trial Config"
+      },
+      {
+        "args": [
+          "--store-data-dependencies-in-temp",
+          "--store-tombstones",
+          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+          "--accept-empty-variations-seed-signature",
+          "--webview-verbose-logging",
+          "--disable-field-trial-config",
+          "--fake-variations-channel=stable",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_trichrome_64_cts_tests Single Group Per Study Prefer Existing Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_trichrome_64_cts_tests Single Group Per Study Prefer Existing Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive/cipd",
+              "revision": "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "webview_trichrome_64_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_64_cts_tests/",
+        "variant_id": "Single Group Per Study Prefer Existing Behavior Field Trial Config"
+      },
+      {
+        "args": [
+          "--store-data-dependencies-in-temp",
+          "--store-tombstones",
+          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+          "--accept-empty-variations-seed-signature",
+          "--webview-verbose-logging",
+          "--disable-field-trial-config",
+          "--fake-variations-channel=stable",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_trichrome_64_cts_tests Single Group Per Study Prefer New Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_trichrome_64_cts_tests Single Group Per Study Prefer New Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive/cipd",
+              "revision": "UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "webview_trichrome_64_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_64_cts_tests/",
+        "variant_id": "Single Group Per Study Prefer New Behavior Field Trial Config"
+      },
+      {
+        "args": [
+          "--disable-field-trial-config",
+          "--webview-verbose-logging",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_ui_test_app_test_apk Disable Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_ui_test_app_test_apk Disable Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "webview_ui_test_app_test_apk",
+        "test_id_prefix": "ninja://android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
+        "variant_id": "Disable Field Trial Config"
+      },
+      {
+        "args": [
+          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+          "--accept-empty-variations-seed-signature",
+          "--webview-verbose-logging",
+          "--disable-field-trial-config",
+          "--fake-variations-channel=stable",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_ui_test_app_test_apk Single Group Per Study Prefer Existing Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_ui_test_app_test_apk Single Group Per Study Prefer Existing Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "webview_ui_test_app_test_apk",
+        "test_id_prefix": "ninja://android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
+        "variant_id": "Single Group Per Study Prefer Existing Behavior Field Trial Config"
+      },
+      {
+        "args": [
+          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+          "--accept-empty-variations-seed-signature",
+          "--webview-verbose-logging",
+          "--disable-field-trial-config",
+          "--fake-variations-channel=stable",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_31_google_apis_x64",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_ui_test_app_test_apk Single Group Per Study Prefer New Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_ui_test_app_test_apk Single Group Per Study Prefer New Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_31_google_apis_x64",
+              "path": ".android_emulator/android_31_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_31_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "webview_ui_test_app_test_apk",
+        "test_id_prefix": "ninja://android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
+        "variant_id": "Single Group Per Study Prefer New Behavior Field Trial Config"
+      }
+    ]
+  }
+}

@@ -26,8 +26,8 @@ const ClientId kClientId2("async", "5678");
 
 class RemoveRequestsTaskTest : public RequestQueueTaskTestBase {
  public:
-  RemoveRequestsTaskTest() {}
-  ~RemoveRequestsTaskTest() override {}
+  RemoveRequestsTaskTest() = default;
+  ~RemoveRequestsTaskTest() override = default;
 
   void PumpLoop();
 

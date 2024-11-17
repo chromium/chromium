@@ -7,11 +7,6 @@ found in the LICENSE file.
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <org.chromium.chrome.browser.accessibility.settings.TextScalePreference
-        android:key="text_scale"
-        android:title="@string/font_size"
-        android:selectable="false" />
-
     <org.chromium.components.browser_ui.accessibility.PageZoomPreference
         android:key="page_zoom_default_zoom"
         android:selectable="false" />
@@ -39,6 +34,11 @@ found in the LICENSE file.
         android:key="reader_for_accessibility"
         android:summary="@string/reader_for_accessibility_summary"
         android:title="@string/reader_for_accessibility_title" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="jump_start_omnibox"
+        android:summary="@string/jump_start_omnibox_summary"
+        android:title="@string/jump_start_omnibox_title" />
 
     <Preference
         android:key="captions"

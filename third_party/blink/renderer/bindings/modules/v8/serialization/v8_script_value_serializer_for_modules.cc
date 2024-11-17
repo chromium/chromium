@@ -426,8 +426,7 @@ uint32_t AlgorithmIdForWireFormat(WebCryptoAlgorithmId id) {
     case kWebCryptoAlgorithmIdX25519:
       return kX25519Tag;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown algorithm ID " << id;
-  return 0;
+  NOTREACHED() << "Unknown algorithm ID " << id;
 }
 
 uint32_t AsymmetricKeyTypeForWireFormat(WebCryptoKeyType key_type) {
@@ -439,8 +438,7 @@ uint32_t AsymmetricKeyTypeForWireFormat(WebCryptoKeyType key_type) {
     case kWebCryptoKeyTypeSecret:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown asymmetric key type " << key_type;
-  return 0;
+  NOTREACHED() << "Unknown asymmetric key type " << key_type;
 }
 
 uint32_t NamedCurveForWireFormat(WebCryptoNamedCurve named_curve) {
@@ -452,8 +450,7 @@ uint32_t NamedCurveForWireFormat(WebCryptoNamedCurve named_curve) {
     case kWebCryptoNamedCurveP521:
       return kP521Tag;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown named curve " << named_curve;
-  return 0;
+  NOTREACHED() << "Unknown named curve " << named_curve;
 }
 
 uint32_t KeyUsagesForWireFormat(WebCryptoKeyUsageMask usages,
@@ -699,13 +696,9 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
       break;
     case SerializedTrackImplSubtype::kTrackImplSubtypeCanvasCapture:
     case SerializedTrackImplSubtype::kTrackImplSubtypeGenerator:
-      NOTREACHED_IN_MIGRATION()
-          << "device type is " << device->type << " but track impl subtype is "
-          << static_cast<uint32_t>(track_impl_subtype);
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataCloneError,
-          "MediaStreamTrack could not be serialized.");
-      return false;
+      NOTREACHED() << "device type is " << device->type
+                   << " but track impl subtype is "
+                   << static_cast<uint32_t>(track_impl_subtype);
     case SerializedTrackImplSubtype::kTrackImplSubtypeBrowserCapture:
       MediaStreamSource* const source = track->Component()->Source();
       DCHECK(source);

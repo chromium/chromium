@@ -184,11 +184,6 @@ struct ContextMenuData {
   // See `autofill::FormRendererId` for the semantics of renderer IDs.
   uint64_t form_renderer_id = 0;
 
-  // True iff a field's type is plain text but heuristics (e.g. the name
-  // attribute contains 'password' as a substring) recognize it as a password
-  // field.
-  bool is_password_type_by_heuristics = false;
-
   ContextMenuData()
       : media_type(blink::mojom::ContextMenuDataMediaType::kNone),
         has_image_contents(false),

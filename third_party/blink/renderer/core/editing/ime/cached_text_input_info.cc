@@ -48,8 +48,7 @@ LayoutObject* FindLayoutObject(const ContainerNode& container) {
   }
   // Because |LayoutView| is derived from |LayoutBlockFlow|, |layout_object_|
   // should not be null.
-  NOTREACHED_IN_MIGRATION() << container;
-  return nullptr;
+  NOTREACHED() << container;
 }
 
 }  // namespace
@@ -90,6 +89,13 @@ void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
   if (!layout_object_) {
     return;
   }
+
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/375143253): To investigate flaky failures.
+  if (layout_object_->is_destroyed_) [[unlikely]] {
+    DCHECK(false) << layout_object_;
+  }
+#endif  // DCHECK_IS_ON()
 
   if (layout_object_->IsDescendantOf(&layout_object)) {
     // `<span contenteditable>...</span>` reaches here.

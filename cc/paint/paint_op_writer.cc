@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/heap_array.h"
 #include "base/notreached.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/draw_image.h"
@@ -76,6 +77,7 @@ size_t PaintOpWriter::SerializedSize(const PaintImage& image) {
   if (image) {
     auto info = SkImageInfo::Make(image.width(), image.height(),
                                   kN32_SkColorType, kPremul_SkAlphaType);
+    image_size += SerializedSizeSimple<bool>();
     image_size += SerializedSize(info.colorType());
     image_size += SerializedSize(info.width());
     image_size += SerializedSize(info.height());
@@ -357,7 +359,7 @@ void PaintOpWriter::Write(const DrawImage& draw_image,
 
   *scale_adjustment = decoded_draw_image.scale_adjustment();
 
-  WriteImage(decoded_draw_image);
+  WriteImage(decoded_draw_image, paint_image.GetReinterpretAsSRGB());
 }
 
 void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
@@ -385,9 +387,10 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
   DidWrite(bytes_written);
 }
 
-void PaintOpWriter::WriteImage(const DecodedDrawImage& decoded_draw_image) {
+void PaintOpWriter::WriteImage(const DecodedDrawImage& decoded_draw_image,
+                               bool reinterpret_as_srgb) {
   if (!decoded_draw_image.mailbox().IsZero()) {
-    WriteImage(decoded_draw_image.mailbox());
+    WriteImage(decoded_draw_image.mailbox(), reinterpret_as_srgb);
     return;
   }
 
@@ -410,7 +413,8 @@ void PaintOpWriter::WriteImage(uint32_t transfer_cache_entry_id,
   Write(needs_mips);
 }
 
-void PaintOpWriter::WriteImage(const gpu::Mailbox& mailbox) {
+void PaintOpWriter::WriteImage(const gpu::Mailbox& mailbox,
+                               bool reinterpret_as_srgb) {
   DCHECK(!mailbox.IsZero());
 
   Write(static_cast<uint8_t>(PaintOp::SerializedImageType::kMailbox));
@@ -422,6 +426,7 @@ void PaintOpWriter::WriteImage(const gpu::Mailbox& mailbox) {
 
   memcpy(memory_, mailbox.name, sizeof(mailbox.name));
   DidWrite(sizeof(mailbox.name));
+  Write(reinterpret_as_srgb);
 }
 
 void PaintOpWriter::Write(const SkHighContrastConfig& config) {
@@ -638,7 +643,7 @@ void PaintOpWriter::Write(const PaintShader* shader,
     DCHECK_EQ(scale_adjustment.height(), 1.f);
   } else {
     if (!mailbox.IsZero()) {
-      WriteImage(mailbox);
+      WriteImage(mailbox, shader->image_.GetReinterpretAsSRGB());
     } else {
       WriteImage(paint_image_transfer_cache_id, paint_image_needs_mips);
     }
@@ -760,8 +765,7 @@ void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
   AssertFieldAlignment();
   switch (filter->type()) {
     case PaintFilter::Type::kNullFilter:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case PaintFilter::Type::kColorFilter:
       Write(static_cast<const ColorFilterPaintFilter&>(*filter), current_ctm);
       break;
@@ -1115,12 +1119,12 @@ void PaintOpWriter::Write(const PaintRecord& record,
 
 void PaintOpWriter::Write(const SkRegion& region) {
   size_t bytes_required = region.writeToMemory(nullptr);
-  std::unique_ptr<char[]> data(new char[bytes_required]);
-  size_t bytes_written = region.writeToMemory(data.get());
+  auto data = base::HeapArray<char>::Uninit(bytes_required);
+  size_t bytes_written = region.writeToMemory(data.data());
   DCHECK_EQ(bytes_required, bytes_written);
 
   WriteSize(bytes_written);
-  WriteData(bytes_written, data.get());
+  WriteData(bytes_written, data.data());
 }
 
 }  // namespace cc

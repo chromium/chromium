@@ -4,12 +4,14 @@
 
 #include "content/browser/indexed_db/instance/connection.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "base/stl_util.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
@@ -113,24 +115,34 @@ void Connection::DisallowInactiveClient(
     return;
   }
 
-  if (reason ==
-      storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent) {
-    // It's only necessary to keep the client active under this scenario.
-    mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
-        client_keep_active_remote;
-    client_state_checker_->DisallowInactiveClient(
-        reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
-        std::move(callback));
-    client_keep_active_remotes_.Add(std::move(client_keep_active_remote));
-  } else {
-    client_state_checker_->DisallowInactiveClient(reason, mojo::NullReceiver(),
-                                                  std::move(callback));
-  }
+  mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
+      client_keep_active_remote;
+  client_state_checker_->DisallowInactiveClient(
+      reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
+      std::move(callback));
+  client_keep_active_remotes_.Add(std::move(client_keep_active_remote));
 }
 
 void Connection::RemoveTransaction(int64_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  transactions_.erase(id);
+
+  size_t removed = transactions_.erase(id);
+  if (!removed) {
+    return;
+  }
+
+  // If this client is still blocking other clients, leave the keep-actives
+  // alive.
+  for (const auto& [_, transaction] : transactions_) {
+    if (transaction->state() == Transaction::State::STARTED &&
+        transaction->IsTransactionBlockingOtherClients(
+            /*consider_priority=*/true)) {
+      return;
+    }
+  }
+
+  // Safe to make this client inactive.
+  client_keep_active_remotes_.Clear();
 }
 
 void Connection::AbortTransactionAndTearDownOnError(
@@ -139,7 +151,7 @@ void Connection::AbortTransactionAndTearDownOnError(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "txn.id",
                transaction->id());
-  leveldb::Status status = transaction->Abort(error);
+  Status status = transaction->Abort(error);
   if (!status.ok()) {
     bucket_context_handle_->OnDatabaseError(status, {});
   }
@@ -295,8 +307,9 @@ void Connection::GetAll(int64_t transaction_id,
                         int64_t object_store_id,
                         int64_t index_id,
                         const IndexedDBKeyRange& key_range,
-                        bool key_only,
+                        blink::mojom::IDBGetAllResultType result_type,
                         int64_t max_count,
+                        blink::mojom::IDBCursorDirection direction,
                         blink::mojom::IDBDatabase::GetAllCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -337,9 +350,7 @@ void Connection::GetAll(int64_t transaction_id,
 
   transaction->ScheduleTask(database_->CreateGetAllOperation(
       object_store_id, index_id, std::make_unique<IndexedDBKeyRange>(key_range),
-      key_only ? indexed_db::CursorType::kKeyOnly
-               : indexed_db::CursorType::kKeyAndValue,
-      max_count, std::move(callback), transaction));
+      result_type, max_count, direction, std::move(callback), transaction));
 }
 
 void Connection::SetIndexKeys(
@@ -749,6 +760,11 @@ void Connection::UpdatePriority(int new_priority) {
     transaction->OnSchedulingPriorityUpdated(new_priority);
   }
 
+  // Null after `AbortTransactionsAndClose()`.
+  if (bucket_context()) {
+    bucket_context()->OnConnectionPriorityUpdated();
+  }
+
   // TODO(crbug.com/359623664): consider reordering transactions already in the
   // queue. For now the priority change will only impact where new transactions
   // are placed (whether they skip past the existing ones).
@@ -785,7 +801,7 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   // Finish up any transaction, in case there were any running.
   DatabaseError error(blink::mojom::IDBException::kUnknownError,
                       "Connection is closing.");
-  leveldb::Status status;
+  Status status;
   switch (error_handling) {
     case CloseErrorHandling::kReturnOnFirstError:
       status = AbortAllTransactions(error);
@@ -807,16 +823,16 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   return callbacks;
 }
 
-leveldb::Status Connection::AbortAllTransactionsAndIgnoreErrors(
+Status Connection::AbortAllTransactionsAndIgnoreErrors(
     const DatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  leveldb::Status last_error;
+  Status last_error;
   for (const auto& pair : transactions_) {
     auto& transaction = pair.second;
     if (transaction->state() != Transaction::FINISHED) {
       TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "transaction.id",
                    transaction->id());
-      leveldb::Status status = transaction->Abort(error);
+      Status status = transaction->Abort(error);
       if (!status.ok()) {
         last_error = status;
       }
@@ -825,20 +841,20 @@ leveldb::Status Connection::AbortAllTransactionsAndIgnoreErrors(
   return last_error;
 }
 
-leveldb::Status Connection::AbortAllTransactions(const DatabaseError& error) {
+Status Connection::AbortAllTransactions(const DatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& pair : transactions_) {
     auto& transaction = pair.second;
     if (transaction->state() != Transaction::FINISHED) {
       TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "transaction.id",
                    transaction->id());
-      leveldb::Status status = transaction->Abort(error);
+      Status status = transaction->Abort(error);
       if (!status.ok()) {
         return status;
       }
     }
   }
-  return leveldb::Status::OK();
+  return Status::OK();
 }
 
 // static
@@ -868,6 +884,18 @@ bool Connection::HasHigherPriorityThan(const PartitionedLockHolder* this_one,
 
   return this_lock_request_data->scheduling_priority <
          other_lock_request_data->scheduling_priority;
+}
+
+bool Connection::IsHoldingLocks(
+    const std::vector<PartitionedLockId>& lock_ids) const {
+  return std::ranges::any_of(
+      transactions_,
+      [&](const std::pair<const int64_t, std::unique_ptr<Transaction>>&
+              existing_transaction) {
+        return !base::STLSetIntersection<std::vector<PartitionedLockId>>(
+                    lock_ids, existing_transaction.second->lock_ids())
+                    .empty();
+      });
 }
 
 }  // namespace content::indexed_db

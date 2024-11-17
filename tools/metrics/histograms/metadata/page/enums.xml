@@ -31,6 +31,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Received activation"/>
 </enum>
 
+<!-- LINT.IfChange(ConnectionReuseStatus) -->
+
+<enum name="ConnectionReuseStatus">
+  <int value="0" label="kNonReuse"/>
+  <int value="1" label="kDNSReused"/>
+  <int value="2" label="kReused"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/gws_page_load_metrics_observer.h:ConnectionReuseStatus) -->
+
 <enum name="CookieReadStatus">
   <int value="0" label="kNone"/>
   <int value="1" label="kNotOnboardedAllowed"/>
@@ -220,6 +230,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kFromNewTabPage"/>
   <int value="2" label="kStartedInBackground"/>
   <int value="3" label="kStartedInBackgroundFromNewTabPage"/>
+  <int value="4" label="kFromGWSPage"/>
+  <int value="5" label="kStartedInBackgroundFromGWSPage"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/gws_page_load_metrics_observer.h:NavigationSourceType) -->
@@ -268,7 +280,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="SMS Remote Fetcher"/>
   <int value="20" label="Translate"/>
   <int value="21" label="Virtual Card Enroll"/>
-  <int value="22" label="Virtual Card Manual Fallback"/>
+  <int value="22" label="Filled card information"/>
   <int value="23" label="Zoom"/>
   <int value="24" label="Save IBAN"/>
   <int value="25" label="Mandatory Reauth"/>

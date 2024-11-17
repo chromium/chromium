@@ -8,25 +8,24 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/common/channel_info.h"
+#include "components/collaboration/internal/collaboration_finder_impl.h"
 #include "components/data_sharing/public/features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/saved_tab_groups/empty_tab_group_sync_delegate.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/saved_tab_group_model.h"
-#include "components/saved_tab_groups/sync_data_type_configuration.h"
-#include "components/saved_tab_groups/tab_group_sync_coordinator_impl.h"
-#include "components/saved_tab_groups/tab_group_sync_delegate.h"
-#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
-#include "components/saved_tab_groups/tab_group_sync_service_impl.h"
+#include "components/saved_tab_groups/delegate/empty_tab_group_sync_delegate.h"
+#include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service_factory_helper.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -40,32 +39,6 @@
         // BUILDFLAG(IS_WIN)
 
 namespace tab_groups {
-namespace {
-std::unique_ptr<SyncDataTypeConfiguration>
-CreateSavedTabGroupDataTypeConfiguration(Profile* profile) {
-  return std::make_unique<SyncDataTypeConfiguration>(
-      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-          syncer::SAVED_TAB_GROUP,
-          base::BindRepeating(&syncer::ReportUnrecoverableError,
-                              chrome::GetChannel())),
-      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
-}
-
-std::unique_ptr<SyncDataTypeConfiguration>
-MaybeCreateSharedTabGroupDataTypeConfiguration(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
-    return nullptr;
-  }
-
-  return std::make_unique<SyncDataTypeConfiguration>(
-      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-          syncer::SHARED_TAB_GROUP_DATA,
-          base::BindRepeating(&syncer::ReportUnrecoverableError,
-                              chrome::GetChannel())),
-      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
-}
-}  // namespace
 
 // static
 TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
@@ -90,6 +63,10 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  // The dependency on IdentityManager is only for the purpose of recording "on
+  // signin" metrics.
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
@@ -105,19 +82,17 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  syncer::DeviceInfoTracker* device_info_tracker =
+  auto collaboration_finder =
+      std::make_unique<collaboration::CollaborationFinderImpl>(
+          data_sharing::DataSharingServiceFactory::GetForProfile(profile));
+  auto service = CreateTabGroupSyncService(
+      chrome::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(profile),
+      pref_service,
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
-          ->GetDeviceInfoTracker();
-  auto metrics_logger =
-      std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker);
-  auto model = std::make_unique<SavedTabGroupModel>();
-  auto saved_config = CreateSavedTabGroupDataTypeConfiguration(profile);
-  auto shared_config = MaybeCreateSharedTabGroupDataTypeConfiguration(profile);
-
-  auto service = std::make_unique<TabGroupSyncServiceImpl>(
-      std::move(model), std::move(saved_config), std::move(shared_config),
-      pref_service, std::move(metrics_logger),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+          ->GetDeviceInfoTracker(),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile),
+      std::move(collaboration_finder));
 
   std::unique_ptr<TabGroupSyncDelegate> delegate;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
@@ -133,10 +108,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
-  auto coordinator = std::make_unique<TabGroupSyncCoordinatorImpl>(
-      std::move(delegate), service.get());
-  service->SetCoordinator(std::move(coordinator));
-
+  service->SetTabGroupSyncDelegate(std::move(delegate));
   return std::move(service);
 }
 

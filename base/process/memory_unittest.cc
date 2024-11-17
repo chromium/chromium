@@ -721,7 +721,7 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
 // comment in UncheckedMalloc() in memory_mac.mm.
 //
 // The "test" passes if the binary doesn't crash.
-size_t need_a_static_initializer = []() {
+size_t need_a_static_initializer = [] {
   void* ptr;
   constexpr size_t kRequestedSize = 1000u;
   bool ok = base::UncheckedMalloc(kRequestedSize, &ptr);

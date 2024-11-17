@@ -9,17 +9,17 @@
 #include <optional>
 #include <string>
 
+#include "ash/components/arc/app/arc_app_constants.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/webui/mall/app_id.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
@@ -39,52 +39,52 @@ AppCollectionMap GetAppCollectionsMap() {
       {arc::kPlayStoreAppId, ash::AppCollection::kEssentials},
       {extension_misc::kFilesManagerAppId, ash::AppCollection::kEssentials},
       {file_manager::kFileManagerSwaAppId, ash::AppCollection::kEssentials},
-      {web_app::kCameraAppId, ash::AppCollection::kEssentials},
+      {ash::kCameraAppId, ash::AppCollection::kEssentials},
       {ash::kInternalAppIdSettings, ash::AppCollection::kEssentials},
-      {web_app::kSettingsAppId, ash::AppCollection::kEssentials},
-      {web_app::kOsSettingsAppId, ash::AppCollection::kEssentials},
+      {ash::kSettingsAppId, ash::AppCollection::kEssentials},
+      {ash::kOsSettingsAppId, ash::AppCollection::kEssentials},
 
       // Productivity.
       {arc::kGmailAppId, ash::AppCollection::kProductivity},
       {extension_misc::kGmailAppId, ash::AppCollection::kProductivity},
-      {web_app::kGmailAppId, ash::AppCollection::kProductivity},
-      {web_app::kGoogleMeetAppId, ash::AppCollection::kProductivity},
-      {web_app::kGoogleChatAppId, ash::AppCollection::kProductivity},
+      {ash::kGmailAppId, ash::AppCollection::kProductivity},
+      {ash::kGoogleMeetAppId, ash::AppCollection::kProductivity},
+      {ash::kGoogleChatAppId, ash::AppCollection::kProductivity},
       {extension_misc::kGoogleDocsAppId, ash::AppCollection::kProductivity},
-      {web_app::kGoogleDocsAppId, ash::AppCollection::kProductivity},
+      {ash::kGoogleDocsAppId, ash::AppCollection::kProductivity},
       {extension_misc::kGoogleSlidesAppId, ash::AppCollection::kProductivity},
-      {web_app::kGoogleSlidesAppId, ash::AppCollection::kProductivity},
+      {ash::kGoogleSlidesAppId, ash::AppCollection::kProductivity},
       {extension_misc::kGoogleSheetsAppId, ash::AppCollection::kProductivity},
-      {web_app::kGoogleSheetsAppId, ash::AppCollection::kProductivity},
+      {ash::kGoogleSheetsAppId, ash::AppCollection::kProductivity},
       {extension_misc::kGoogleDriveAppId, ash::AppCollection::kProductivity},
-      {web_app::kGoogleDriveAppId, ash::AppCollection::kProductivity},
+      {ash::kGoogleDriveAppId, ash::AppCollection::kProductivity},
       {extension_misc::kGoogleKeepAppId, ash::AppCollection::kProductivity},
-      {web_app::kGoogleKeepAppId, ash::AppCollection::kProductivity},
+      {ash::kGoogleKeepAppId, ash::AppCollection::kProductivity},
       {arc::kGoogleCalendarAppId, ash::AppCollection::kProductivity},
       {extension_misc::kCalendarAppId, ash::AppCollection::kProductivity},
-      {web_app::kGoogleCalendarAppId, ash::AppCollection::kProductivity},
-      {web_app::kMessagesAppId, ash::AppCollection::kProductivity},
+      {ash::kGoogleCalendarAppId, ash::AppCollection::kProductivity},
+      {ash::kMessagesAppId, ash::AppCollection::kProductivity},
       {extension_misc::kGooglePlusAppId, ash::AppCollection::kProductivity},
 
       // Creativity.
       {arc::kGooglePhotosAppId, ash::AppCollection::kCreativity},
       {extension_misc::kGooglePhotosAppId, ash::AppCollection::kCreativity},
-      {web_app::kMediaAppId, ash::AppCollection::kCreativity},
-      {web_app::kCursiveAppId, ash::AppCollection::kCreativity},
-      {web_app::kCanvasAppId, ash::AppCollection::kCreativity},
+      {ash::kMediaAppId, ash::AppCollection::kCreativity},
+      {ash::kCursiveAppId, ash::AppCollection::kCreativity},
+      {ash::kCanvasAppId, ash::AppCollection::kCreativity},
       {ash::kChromeUIUntrustedProjectorSwaAppId,
        ash::AppCollection::kCreativity},
-      {web_app::kAdobeExpressAppId, ash::AppCollection::kCreativity},
+      {ash::kAdobeExpressAppId, ash::AppCollection::kCreativity},
       {arc::kLightRoomAppId, ash::AppCollection::kCreativity},
       {arc::kInfinitePainterAppId, ash::AppCollection::kCreativity},
-      {web_app::kShowtimeAppId, ash::AppCollection::kCreativity},
+      {ash::kShowtimeAppId, ash::AppCollection::kCreativity},
 
       // Entertainment.
       {arc::kYoutubeAppId, ash::AppCollection::kEntertainment},
       {extension_misc::kYoutubeAppId, ash::AppCollection::kEntertainment},
-      {web_app::kYoutubeAppId, ash::AppCollection::kEntertainment},
+      {ash::kYoutubeAppId, ash::AppCollection::kEntertainment},
       {arc::kYoutubeMusicAppId, ash::AppCollection::kEntertainment},
-      {web_app::kYoutubeMusicAppId, ash::AppCollection::kEntertainment},
+      {ash::kYoutubeMusicAppId, ash::AppCollection::kEntertainment},
       {arc::kYoutubeMusicWebApkAppId, ash::AppCollection::kEntertainment},
       {arc::kPlayMoviesAppId, ash::AppCollection::kEntertainment},
       {extension_misc::kGooglePlayMoviesAppId,
@@ -96,23 +96,22 @@ AppCollectionMap GetAppCollectionsMap() {
       {arc::kPlayBooksAppId, ash::AppCollection::kEntertainment},
       {extension_misc::kGooglePlayBooksAppId,
        ash::AppCollection::kEntertainment},
-      {web_app::kPlayBooksAppId, ash::AppCollection::kEntertainment},
-      {web_app::kYoutubeTVAppId, ash::AppCollection::kEntertainment},
+      {ash::kPlayBooksAppId, ash::AppCollection::kEntertainment},
+      {ash::kYoutubeTVAppId, ash::AppCollection::kEntertainment},
 
       // Utilities.
       {arc::kGoogleMapsAppId, ash::AppCollection::kUtilities},
-      {web_app::kGoogleMapsAppId, ash::AppCollection::kUtilities},
-      {web_app::kHelpAppId, ash::AppCollection::kUtilities},
-      {web_app::kMallAppId, ash::AppCollection::kUtilities},
+      {ash::kGoogleMapsAppId, ash::AppCollection::kUtilities},
+      {ash::kHelpAppId, ash::AppCollection::kUtilities},
       {ash::kMallSystemAppId, ash::AppCollection::kUtilities},
-      {web_app::kCalculatorAppId, ash::AppCollection::kUtilities},
+      {ash::kCalculatorAppId, ash::AppCollection::kUtilities},
       {extension_misc::kCalculatorAppId, ash::AppCollection::kUtilities},
       {extension_misc::kTextEditorAppId, ash::AppCollection::kUtilities},
-      {web_app::kPrintManagementAppId, ash::AppCollection::kUtilities},
-      {web_app::kScanningAppId, ash::AppCollection::kUtilities},
-      {web_app::kShortcutCustomizationAppId, ash::AppCollection::kUtilities},
+      {ash::kPrintManagementAppId, ash::AppCollection::kUtilities},
+      {ash::kScanningAppId, ash::AppCollection::kUtilities},
+      {ash::kShortcutCustomizationAppId, ash::AppCollection::kUtilities},
       {guest_os::kTerminalSystemAppId, ash::AppCollection::kUtilities},
-      {web_app::kGoogleNewsAppId, ash::AppCollection::kUtilities},
+      {ash::kGoogleNewsAppId, ash::AppCollection::kUtilities},
       {extensions::kWebStoreAppId, ash::AppCollection::kUtilities},
   };
 }
@@ -131,64 +130,64 @@ void GetSecondaryDefaultOrder(std::vector<std::string>* app_ids) {
   });
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (chromeos::features::IsContainerAppPreinstallEnabled()) {
-      app_ids->push_back(web_app::kContainerAppId);
+  if (chromeos::features::IsGeminiAppPreinstallEnabled()) {
+      app_ids->push_back(ash::kGeminiAppId);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   app_ids->insert(app_ids->end(), {
-    web_app::kCameraAppId,
+    ash::kCameraAppId,
 
     ash::kInternalAppIdSettings,
-    web_app::kSettingsAppId,
-    web_app::kOsSettingsAppId,
+    ash::kSettingsAppId,
+    ash::kOsSettingsAppId,
 
     arc::kGmailAppId,
     extension_misc::kGmailAppId,
-    web_app::kGmailAppId,
+    ash::kGmailAppId,
 
-    web_app::kGoogleMeetAppId,
+    ash::kGoogleMeetAppId,
 
-    web_app::kGoogleChatAppId,
+    ash::kGoogleChatAppId,
 
     extension_misc::kGoogleDocsAppId,
-    web_app::kGoogleDocsAppId,
+    ash::kGoogleDocsAppId,
 
     extension_misc::kGoogleSlidesAppId,
-    web_app::kGoogleSlidesAppId,
+    ash::kGoogleSlidesAppId,
 
     extension_misc::kGoogleSheetsAppId,
-    web_app::kGoogleSheetsAppId,
+    ash::kGoogleSheetsAppId,
 
     extension_misc::kGoogleDriveAppId,
-    web_app::kGoogleDriveAppId,
+    ash::kGoogleDriveAppId,
 
     extension_misc::kGoogleKeepAppId,
-    web_app::kGoogleKeepAppId,
+    ash::kGoogleKeepAppId,
 
     arc::kGoogleCalendarAppId,
     extension_misc::kCalendarAppId,
-    web_app::kGoogleCalendarAppId,
+    ash::kGoogleCalendarAppId,
 
-    web_app::kMessagesAppId,
+    ash::kMessagesAppId,
 
     arc::kGooglePhotosAppId,
     extension_misc::kGooglePhotosAppId,
 
-    web_app::kMediaAppId,
-    web_app::kCanvasAppId,
+    ash::kMediaAppId,
+    ash::kCanvasAppId,
 
-    web_app::kAdobeExpressAppId,
+    ash::kAdobeExpressAppId,
 
     ash::kChromeUIUntrustedProjectorSwaAppId,
-    web_app::kCursiveAppId,
+    ash::kCursiveAppId,
 
     arc::kYoutubeAppId,
     extension_misc::kYoutubeAppId,
-    web_app::kYoutubeAppId,
+    ash::kYoutubeAppId,
 
     arc::kYoutubeMusicAppId,
-    web_app::kYoutubeMusicAppId,
+    ash::kYoutubeMusicAppId,
     arc::kYoutubeMusicWebApkAppId,
 
     arc::kPlayMoviesAppId,
@@ -200,37 +199,36 @@ void GetSecondaryDefaultOrder(std::vector<std::string>* app_ids) {
 
     arc::kPlayBooksAppId,
     extension_misc::kGooglePlayBooksAppId,
-    web_app::kPlayBooksAppId,
+    ash::kPlayBooksAppId,
 
     arc::kGoogleMapsAppId,
-    web_app::kGoogleMapsAppId,
+    ash::kGoogleMapsAppId,
 
-    web_app::kHelpAppId,
+    ash::kHelpAppId,
 
-    web_app::kMallAppId,
     ash::kMallSystemAppId,
 
-    web_app::kCalculatorAppId,
+    ash::kCalculatorAppId,
     extension_misc::kCalculatorAppId,
     extension_misc::kTextEditorAppId,
-    web_app::kPrintManagementAppId,
-    web_app::kScanningAppId,
-    web_app::kShortcutCustomizationAppId,
+    ash::kPrintManagementAppId,
+    ash::kScanningAppId,
+    ash::kShortcutCustomizationAppId,
     guest_os::kTerminalSystemAppId,
 
-    web_app::kYoutubeTVAppId,
-    web_app::kGoogleNewsAppId,
+    ash::kYoutubeTVAppId,
+    ash::kGoogleNewsAppId,
     extensions::kWebStoreAppId,
 
     arc::kLightRoomAppId,
     arc::kInfinitePainterAppId,
-    web_app::kShowtimeAppId,
+    ash::kShowtimeAppId,
     extension_misc::kGooglePlusAppId,
   });
   // clang-format on
 
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    app_ids->push_back(web_app::kNvidiaGeForceNowAppId);
+    app_ids->push_back(ash::kNvidiaGeForceNowAppId);
   }
 }
 

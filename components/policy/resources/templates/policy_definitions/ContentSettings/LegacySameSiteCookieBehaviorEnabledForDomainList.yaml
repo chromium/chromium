@@ -24,8 +24,9 @@ schema:
     type: string
   type: array
 supported_on:
-- chrome.*:79-
-- chrome_os:79-
-- android:79-
+# TODO(crbug.com/376084059): Clean up policy and supporting code
+- chrome.*:79-131
+- chrome_os:79-131
+- android:79-131
 tags: []
 type: list

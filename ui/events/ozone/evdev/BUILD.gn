@@ -145,10 +145,12 @@ component("evdev") {
     "//ui/ozone:ozone_base",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "fake_keyboard_heuristic_metrics.cc",
       "fake_keyboard_heuristic_metrics.h",
+      "microphone_mute_key_metrics.cc",
+      "microphone_mute_key_metrics.h",
       "numberpad_metrics.cc",
       "numberpad_metrics.h",
     ]
@@ -252,6 +254,7 @@ source_set("event_device_info") {
   deps = [
     ":keyboard_mouse_combo_metrics",
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/events/devices",
     "//ui/events/ozone",
   ]
@@ -336,7 +339,7 @@ source_set("unittests") {
     "//ui/gfx/geometry",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "input_device_factory_evdev_unittest.cc",
       "mouse_button_map_evdev_unittest.cc",

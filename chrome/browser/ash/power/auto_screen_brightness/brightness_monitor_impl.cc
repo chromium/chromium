@@ -151,9 +151,7 @@ void BrightnessMonitorImpl::StartBrightnessSampleTimer() {
 
 void BrightnessMonitorImpl::NotifyUserBrightnessChanged() {
   if (!user_brightness_percent_) {
-    NOTREACHED_IN_MIGRATION()
-        << "User brightness adjustment missing on sample timeout";
-    return;
+    NOTREACHED() << "User brightness adjustment missing on sample timeout";
   }
 
   for (auto& observer : observers_) {

@@ -17,6 +17,12 @@ FrameResource::ID GetNextID() {
 
 FrameResource::FrameResource() : unique_id_(GetNextID()) {}
 
+const base::UnguessableToken& FrameResource::tracking_token() const {
+  CHECK(metadata().tracking_token.has_value());
+  CHECK(!metadata().tracking_token->is_empty());
+  return *metadata().tracking_token;
+}
+
 VideoFrameResource* FrameResource::AsVideoFrameResource() {
   return nullptr;
 }

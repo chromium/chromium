@@ -121,7 +121,7 @@
     box-sizing: border-box;
     grid-area: body;
     display: grid;
-    grid-template-areas: "textarea" "bodyContent";
+    grid-template-areas: "textarea" "inputModes" "bodyContent";
     grid-auto-columns: 100%;
     max-height: 220px;
     padding: 0 20px;
@@ -129,7 +129,7 @@
 
   :host(:not([submitted_])) #body {
     /* Non-submitted dialog has no bodyContent. */
-    grid-template-areas: "textarea";
+    grid-template-areas: "textarea" "inputModes";
   }
 
   /* Set scroll-related styles for the result text container. */
@@ -162,6 +162,13 @@
     /* There is no footer in the loading screen. */
     grid-template-areas: "body";
     height: var(--compose-loading-body-and-footer-height);
+  }
+
+  #inputModesContainer {
+    grid-area: inputModes;
+    display: flex;
+    margin-top: 14px;
+    gap: 8px;
   }
 
   #textarea {
@@ -444,7 +451,8 @@
   .md-select[hidden],
   .icon-buttons-row cr-icon-button[hidden],
   #loading[hidden],
-  #editContainer[hidden] {
+  #editContainer[hidden],
+  #inputModesContainer[hidden] {
     display: none;
   }
 </style>
@@ -514,7 +522,20 @@
         readonly="[[submitted_]]" allow-exiting-readonly-mode="[[!loading_]]"
         on-edit-click="onEditClick_" input-params="[[inputParams_]]">
       </compose-textarea>
-
+      <div id="inputModesContainer" hidden$="[[!showInputModes_]]">
+        <cr-chip id="polishChip" selected on-click="onPolishChipClick_">
+          <cr-icon icon="[[polishChipIcon_]]"></cr-icon>
+          $i18n{inputModeChipPolish}
+        </cr-chip>
+        <cr-chip id="elaborateChip" on-click="onElaborateChipClick_">
+          <cr-icon icon="[[elaborateChipIcon_]]"></cr-icon>
+          $i18n{inputModeChipElaborate}
+        </cr-chip>
+        <cr-chip id="formalizeChip" on-click="onFormalizeChipClick_">
+          <cr-icon icon="[[formalizeChipIcon_]]"></cr-icon>
+          $i18n{inputModeChipFormalize}
+        </cr-chip>
+      </div>
       <div id="loading"
           hidden="[[!loadingIndicatorShown_]]">
         <cr-loading-gradient>
@@ -602,13 +623,6 @@
               hidden$="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{onDeviceUsedFooter}
           </b>
-          <!-- <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
-              >$i18nRaw{dogfoodFooter}</span>
-          <span hidden="[[!showDefaultResultFooter_(response_, enableUiRefinements)]]"
-              >$i18nRaw{resultFooter}</span>
-          <span
-            hidden="[[!showRefinementsResultFooter_(response_, enableUiRefinements)]]"
-            >$i18nRaw{refinementsResultFooter}</span> -->
           <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{dogfoodFooter}</span>
           <span hidden="[[showOnDeviceDogfoodFooter_(response_)]]"

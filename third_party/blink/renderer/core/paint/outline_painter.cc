@@ -151,7 +151,7 @@ void IterateRightAnglePath(const SkPath& path, const Action& contour_action) {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -506,7 +506,7 @@ class ComplexOutlinePainter {
                                   outline_style_ == EBorderStyle::kInset);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     if (use_alpha_layer)

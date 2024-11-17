@@ -314,6 +314,13 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery element);
 
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and not to have a display
+  // style of `none`, indicating that the element is visible.
+  InteractiveTestApi::MultiStep WaitForElementDisplayNotNone(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery element);
+
   // Waits for a toggle element identified by `query` to both exist in the DOM
   // of an instrumented WebUI identified by `element_id` and to be toggled .
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForToggleState(

@@ -23,7 +23,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -45,7 +45,7 @@ public class DownloadNotificationServiceTest {
     private MockDownloadNotificationService mDownloadNotificationService;
     private DownloadForegroundServiceManagerTest.MockDownloadForegroundServiceManager
             mDownloadForegroundServiceManager;
-    private OTRProfileID mPrimaryOTRProfileID = OTRProfileID.getPrimaryOTRProfileID();
+    private OtrProfileId mPrimaryOtrProfileId = OtrProfileId.getPrimaryOtrProfileId();
 
     @Before
     public void setUp() {
@@ -79,7 +79,7 @@ public class DownloadNotificationServiceTest {
                 100L,
                 1L,
                 1L,
-                mPrimaryOTRProfileID,
+                mPrimaryOtrProfileId,
                 true,
                 false,
                 null,
@@ -99,7 +99,7 @@ public class DownloadNotificationServiceTest {
                 "test",
                 /* isResumable= */ true,
                 /* isAutoResumable= */ false,
-                mPrimaryOTRProfileID,
+                mPrimaryOtrProfileId,
                 false,
                 null,
                 null,
@@ -121,7 +121,7 @@ public class DownloadNotificationServiceTest {
                 100L,
                 1L,
                 1L,
-                mPrimaryOTRProfileID,
+                mPrimaryOtrProfileId,
                 true,
                 false,
                 null,
@@ -140,7 +140,7 @@ public class DownloadNotificationServiceTest {
                 "",
                 "test",
                 1L,
-                mPrimaryOTRProfileID,
+                mPrimaryOtrProfileId,
                 true,
                 true,
                 null,
@@ -167,7 +167,7 @@ public class DownloadNotificationServiceTest {
                 100L,
                 1L,
                 1L,
-                mPrimaryOTRProfileID,
+                mPrimaryOtrProfileId,
                 true,
                 false,
                 null,
@@ -187,7 +187,7 @@ public class DownloadNotificationServiceTest {
                 "test",
                 /* isResumable= */ true,
                 /* isAutoResumable= */ true,
-                mPrimaryOTRProfileID,
+                mPrimaryOtrProfileId,
                 false,
                 null,
                 null,
@@ -222,7 +222,7 @@ public class DownloadNotificationServiceTest {
                 100L,
                 1L,
                 1L,
-                mPrimaryOTRProfileID,
+                mPrimaryOtrProfileId,
                 true,
                 false,
                 null,
@@ -242,7 +242,7 @@ public class DownloadNotificationServiceTest {
                 "test",
                 /* isResumable= */ false,
                 /* isAutoResumable= */ true,
-                mPrimaryOTRProfileID,
+                mPrimaryOtrProfileId,
                 false,
                 null,
                 null,

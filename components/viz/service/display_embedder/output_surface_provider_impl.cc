@@ -125,8 +125,7 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
 #endif  // BUILDFLAG(IS_ANDROID)
 
     if (!output_surface) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS) || \
-    BUILDFLAG(IS_CAST_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
       // GPU compositing is expected to always work on Chrome OS and Cast
       // devices, so we should never encounter fatal context error. This could
       // be an unrecoverable hardware error or a bug.
@@ -154,8 +153,7 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
   return std::make_unique<SoftwareOutputDeviceMac>(task_runner_);
 #elif BUILDFLAG(IS_ANDROID)
   // Android does not do software compositing, so we can't get here.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #elif BUILDFLAG(IS_OZONE)
   ui::SurfaceFactoryOzone* factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
@@ -167,27 +165,20 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
   return std::make_unique<SoftwareOutputDeviceOzone>(
       std::move(platform_window_surface), std::move(surface_ozone));
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
 gpu::SharedImageManager* OutputSurfaceProviderImpl::GetSharedImageManager() {
-  static const bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  return use_shared_image ? gpu_service_impl_->shared_image_manager() : nullptr;
+  return gpu_service_impl_->shared_image_manager();
 }
 
 gpu::SyncPointManager* OutputSurfaceProviderImpl::GetSyncPointManager() {
-  static const bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  return use_shared_image ? gpu_service_impl_->sync_point_manager() : nullptr;
+  return gpu_service_impl_->sync_point_manager();
 }
 
 gpu::Scheduler* OutputSurfaceProviderImpl::GetGpuScheduler() {
-  static const bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  return use_shared_image ? gpu_service_impl_->gpu_scheduler() : nullptr;
+  return gpu_service_impl_->gpu_scheduler();
 }
 
 }  // namespace viz

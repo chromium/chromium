@@ -6,6 +6,8 @@
 
 #include <stdlib.h>
 
+#include <string_view>
+
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "net/http/http_request_headers.h"
@@ -34,15 +36,16 @@ bool HttpVaryData::Init(const HttpRequestInfo& request_info,
   // us handle this case. See section 4.1 of RFC 7234.
   //
   size_t iter = 0;
-  std::string name = "vary", request_header;
-  while (response_headers.EnumerateHeader(&iter, name, &request_header)) {
-    if (request_header == "*") {
+  constexpr std::string_view name = "vary";
+  std::optional<std::string_view> request_header;
+  while ((request_header = response_headers.EnumerateHeader(&iter, name))) {
+    if (*request_header == "*") {
       // What's in request_digest_ will never be looked at, but make it
       // deterministic so we don't serialize out uninitialized memory content.
       memset(&request_digest_, 0, sizeof(request_digest_));
       return is_valid_ = true;
     }
-    AddField(request_info, request_header, &ctx);
+    AddField(request_info, *request_header, &ctx);
     processed_header = true;
   }
 
@@ -86,22 +89,12 @@ bool HttpVaryData::MatchesRequest(
 }
 
 // static
-std::string HttpVaryData::GetRequestValue(
-    const HttpRequestInfo& request_info,
-    const std::string& request_header) {
-  // Unfortunately, we do not have access to all of the request headers at this
-  // point.  Most notably, we do not have access to an Authorization header if
-  // one will be added to the request.
-
-  return request_info.extra_headers.GetHeader(request_header)
-      .value_or(std::string());
-}
-
-// static
 void HttpVaryData::AddField(const HttpRequestInfo& request_info,
-                            const std::string& request_header,
+                            std::string_view request_header,
                             base::MD5Context* ctx) {
-  std::string request_value = GetRequestValue(request_info, request_header);
+  std::string request_value =
+      request_info.extra_headers.GetHeader(request_header)
+          .value_or(std::string());
 
   // Append a character that cannot appear in the request header line so that we
   // protect against case where the concatenation of two request headers could

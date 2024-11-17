@@ -12,10 +12,12 @@
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
+#include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -90,7 +92,10 @@ class RecorderAppUI
 
   mojo::Remote<MachineLearningService>& GetMlService();
 
-  void UpdateSodaState(ModelState state);
+  bool CanUseGenerativeAi();
+
+  void UpdateSodaState(const speech::LanguageCode& language_code,
+                       ModelState state);
 
   void GetPlatformModelStateCallback(
       const base::Uuid& model_id,
@@ -102,7 +107,14 @@ class RecorderAppUI
       GetMicrophoneInfoCallback callback,
       const std::optional<std::string>& device_id);
 
+  bool IsSodaAvailable(const speech::LanguageCode& language_code);
+
+  ModelState GetSodaState(const speech::LanguageCode& language_code);
+
   // recorder_app::mojom::PageHandler:
+  void GetModelInfo(on_device_model::mojom::FormatFeature feature,
+                    GetModelInfoCallback callback) override;
+
   void LoadModel(
       const base::Uuid& model_id,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
@@ -124,15 +136,20 @@ class RecorderAppUI
       ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
       AddModelMonitorCallback callback) override;
 
-  void LoadSpeechRecognizer(SodaClientMojoRemote soda_client,
+  void LoadSpeechRecognizer(const std::string& language,
+                            SodaClientMojoRemote soda_client,
                             SodaRecognizerMojoReceiver soda_recognizer,
                             LoadSpeechRecognizerCallback callback) override;
 
-  void InstallSoda(InstallSodaCallback callback) override;
+  void InstallSoda(const std::string& language,
+                   InstallSodaCallback callback) override;
 
   void AddSodaMonitor(
+      const std::string& language,
       ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
       AddSodaMonitorCallback callback) override;
+
+  void GetAvailableLangPacks(GetAvailableLangPacksCallback callback) override;
 
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 
@@ -145,8 +162,7 @@ class RecorderAppUI
 
   void SetQuietMode(bool quiet_mode) override;
 
-  void CanUseSpeakerLabelForCurrentProfile(
-      CanUseSpeakerLabelForCurrentProfileCallback callback) override;
+  void CanUseSpeakerLabel(CanUseSpeakerLabelCallback callback) override;
 
   void RecordSpeakerLabelConsent(
       bool consent_given,
@@ -177,9 +193,17 @@ class RecorderAppUI
 
   mojo::ReceiverSet<recorder_app::mojom::PageHandler> page_receivers_;
 
-  mojo::RemoteSet<recorder_app::mojom::ModelStateMonitor> soda_monitors_;
+  std::map<speech::LanguageCode,
+           mojo::RemoteSet<recorder_app::mojom::ModelStateMonitor>>
+      soda_monitors_;
 
-  ModelState soda_state_;
+  base::flat_map<speech::LanguageCode, ModelState> soda_states_;
+
+  base::flat_set<speech::LanguageCode> transcription_supported_languages_;
+
+  base::flat_set<speech::LanguageCode> gen_ai_supported_languages_;
+
+  base::flat_set<speech::LanguageCode> speaker_label_supported_languages_;
 
   std::map<base::Uuid, mojo::RemoteSet<recorder_app::mojom::ModelStateMonitor>>
       model_monitors_;

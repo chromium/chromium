@@ -12,13 +12,14 @@
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "components/user_education/common/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+class Browser;
 class ContentSettingImageModel;
 
 namespace content {
@@ -65,6 +66,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   ContentSettingImageView(std::unique_ptr<ContentSettingImageModel> image_model,
                           IconLabelBubbleView::Delegate* parent_delegate,
                           Delegate* delegate,
+                          Browser* browser,
                           const gfx::FontList& font_list);
   ContentSettingImageView(const ContentSettingImageView&) = delete;
   ContentSettingImageView& operator=(const ContentSettingImageView&) = delete;
@@ -104,9 +106,6 @@ class ContentSettingImageView : public IconLabelBubbleView,
   void reset_animation_for_testing() {
     IconLabelBubbleView::ResetSlideAnimation(true);
   }
-  user_education::HelpBubble* critical_promo_bubble_for_testing() {
-    return critical_promo_bubble_.get();
-  }
 
   const gfx::VectorIcon* get_icon_for_testing() const {
     return content_setting_image_model_->icon();
@@ -127,20 +126,18 @@ class ContentSettingImageView : public IconLabelBubbleView,
   // Updates the image and tooltip to match the current model state.
   void UpdateImage();
 
+  void UpdateElementIdentifier();
+
   raw_ptr<Delegate> delegate_ = nullptr;  // Weak.
   std::unique_ptr<ContentSettingImageModel> content_setting_image_model_;
   raw_ptr<views::BubbleDialogDelegateView> bubble_view_ = nullptr;
   std::optional<SkColor> icon_color_;
+  raw_ptr<Browser> browser_;
 
   // Observes destruction of bubble's Widgets spawned by this ImageView.
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
   bool can_animate_ = true;
-
-  // Has a value that is not is_zero() if a promo is showing, or has an
-  // is_zero() value if the promo was considered but it was decided not to show
-  // it.
-  std::unique_ptr<user_education::HelpBubble> critical_promo_bubble_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_

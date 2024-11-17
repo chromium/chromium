@@ -113,7 +113,7 @@ class ProfileKeyedServiceFactoryIOSTest : public testing::TestWithParam<Param> {
   ProfileIOS* GetRegularProfile() { return test_profile_.get(); }
 
   ProfileIOS* GetOffTheRecordProfile() {
-    return test_profile_->GetOffTheRecordChromeBrowserState();
+    return test_profile_->GetOffTheRecordProfile();
   }
 
  private:

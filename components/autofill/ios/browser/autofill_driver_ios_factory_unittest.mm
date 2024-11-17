@@ -107,8 +107,7 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
     web_state_.SetBrowserState(GetBrowserState());
     web_frames_manager().AddObserver(&pre_factory_);
     ASSERT_FALSE(AutofillDriverIOSFactory::FromWebState(&web_state_));
-    AutofillDriverIOSFactory::CreateForWebState(&web_state_, &client_, nil,
-                                                "en-US");
+    AutofillDriverIOSFactory::CreateForWebState(&web_state_, &client_, nil);
     factory().AddObserver(&factory_observer_);
     web_frames_manager().AddObserver(&post_factory_);
   }

@@ -62,6 +62,7 @@ class CanvasRenderingContext2D;
 class Element;
 class FontSelector;
 enum class FontInvalidationReason;
+class V8ImageSmoothingQuality;
 
 enum ShadowMode {
   kDrawShadowAndForeground,
@@ -295,8 +296,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 
   void SetImageSmoothingEnabled(bool);
   bool ImageSmoothingEnabled() const;
-  void SetImageSmoothingQuality(const String&);
-  String ImageSmoothingQuality() const;
+  void SetImageSmoothingQuality(const V8ImageSmoothingQuality&);
+  V8ImageSmoothingQuality ImageSmoothingQuality() const;
 
   bool IsUnparsedStrokeColor(v8::Local<v8::String> string) const {
     return unparsed_stroke_color_ == string;

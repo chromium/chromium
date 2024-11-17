@@ -22,18 +22,6 @@
 
 namespace optimization_guide {
 
-namespace {
-
-// The ":" character is reserved in Windows as part of an absolute file path,
-// e.g.: C:\model.tflite, so we use a different separtor.
-#if BUILDFLAG(IS_WIN)
-const char kModelOverrideSeparator[] = "|";
-#else
-const char kModelOverrideSeparator[] = ":";
-#endif
-
-}  // namespace
-
 // These names are persisted to histograms, so don't change them.
 std::string GetStringNameForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target) {
@@ -141,12 +129,18 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationMetricsClustering";
     case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SUMMARIZE:
       return "ModelExecutionFeatureSummarize";
+    case proto::OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION:
+      return "PasswordManagerFormClassification";
+    case proto::OPTIMIZATION_TARGET_NOTIFICATION_CONTENT_DETECTION:
+      return "NotificationContentDetection";
+    case proto::
+        OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT:
+      return "ModelExecutionFeatureHistoryQueryIntent";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::optional<base::FilePath> StringToFilePath(const std::string& str_path) {
@@ -175,74 +169,6 @@ base::FilePath GetBaseFileNameForModels() {
 
 base::FilePath GetBaseFileNameForModelInfo() {
   return base::FilePath(FILE_PATH_LITERAL("model-info.pb"));
-}
-
-std::string ModelOverrideSeparator() {
-  return kModelOverrideSeparator;
-}
-
-std::optional<
-    std::pair<std::string, std::optional<optimization_guide::proto::Any>>>
-GetModelOverrideForOptimizationTarget(
-    optimization_guide::proto::OptimizationTarget optimization_target) {
-  auto model_override_switch_value = switches::GetModelOverride();
-  if (!model_override_switch_value) {
-    return std::nullopt;
-  }
-
-  std::vector<std::string> model_overrides =
-      base::SplitString(*model_override_switch_value, ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& model_override : model_overrides) {
-    std::vector<std::string> override_parts =
-        base::SplitString(model_override, kModelOverrideSeparator,
-                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (override_parts.size() != 2 && override_parts.size() != 3) {
-      // Input is malformed.
-      DLOG(ERROR) << "Invalid string format provided to the Model Override";
-      return std::nullopt;
-    }
-
-    optimization_guide::proto::OptimizationTarget recv_optimization_target;
-    if (!optimization_guide::proto::OptimizationTarget_Parse(
-            override_parts[0], &recv_optimization_target)) {
-      // Optimization target is invalid.
-      DLOG(ERROR)
-          << "Invalid optimization target provided to the Model Override";
-      return std::nullopt;
-    }
-    if (optimization_target != recv_optimization_target) {
-      continue;
-    }
-
-    std::string file_name = override_parts[1];
-    base::FilePath file_path = *StringToFilePath(file_name);
-    if (!file_path.IsAbsolute()) {
-      DLOG(ERROR) << "Provided model file path must be absolute " << file_name;
-      return std::nullopt;
-    }
-
-    if (override_parts.size() == 2) {
-      std::pair<std::string, std::optional<optimization_guide::proto::Any>>
-          file_path_and_metadata = std::make_pair(file_name, std::nullopt);
-      return file_path_and_metadata;
-    }
-
-    std::string binary_pb;
-    if (!base::Base64Decode(override_parts[2], &binary_pb)) {
-      DLOG(ERROR) << "Invalid base64 encoding of the Model Override";
-      return std::nullopt;
-    }
-    optimization_guide::proto::Any model_metadata;
-    if (!model_metadata.ParseFromString(binary_pb)) {
-      DLOG(ERROR) << "Invalid model metadata provided to the Model Override";
-      return std::nullopt;
-    }
-    std::pair<std::string, std::optional<optimization_guide::proto::Any>>
-        file_path_and_metadata = std::make_pair(file_name, model_metadata);
-    return file_path_and_metadata;
-  }
-  return std::nullopt;
 }
 
 bool CheckAllPathsExist(

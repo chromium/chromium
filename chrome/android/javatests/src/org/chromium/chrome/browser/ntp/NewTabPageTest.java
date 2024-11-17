@@ -60,7 +60,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
@@ -146,7 +145,6 @@ public class NewTabPageTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_NEW_TAB_PAGE)
                     .build();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock OmniboxStub mOmniboxStub;
     @Mock VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock FeedReliabilityLogger mFeedReliabilityLogger;
@@ -883,7 +881,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage"})
     public void testRecordHistogramLogoClick_Ntp() {
-        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
+        LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
         NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
         LogoCoordinator logoCoordinator = ntpLayout.getLogoCoordinatorForTesting();
         logoCoordinator.setLogoBridgeForTesting(mLogoBridge);
@@ -951,7 +949,7 @@ public class NewTabPageTest {
                 ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).rightMargin);
         Assert.assertEquals(
                 "The width of the most visited tiles container is wrong.",
-                expectedMvtLateralMargin * 2,
+                expectedMvtLateralMargin * 2L,
                 ntpLayout.getWidth() - mvTilesContainer.getWidth());
 
         int expectedMvtTopMargin = res.getDimensionPixelSize(R.dimen.mvt_container_top_margin);

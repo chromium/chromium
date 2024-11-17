@@ -64,8 +64,7 @@ const char* StringForAllocatorType(uint32_t type) {
     case AllocatorType::kPartitionAlloc:
       return "partition_alloc";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "unknown";
+      NOTREACHED();
   }
 }
 

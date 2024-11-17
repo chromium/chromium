@@ -148,7 +148,7 @@ static constexpr std::string_view
 std::string_view PrivacyModeToPathString(PrivacyMode privacy_mode) {
   switch (privacy_mode) {
     case PRIVACY_MODE_DISABLED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PRIVACY_MODE_ENABLED:
       return kPrivacyModeEnabledPath;
     case PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS:

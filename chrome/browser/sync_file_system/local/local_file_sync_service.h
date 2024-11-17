@@ -156,7 +156,8 @@ class LocalFileSyncService final : public RemoteChangeProcessor,
   void SetOriginEnabled(const GURL& origin, bool enabled);
 
  private:
-  typedef std::map<GURL, storage::FileSystemContext*> OriginToContext;
+  typedef std::map<GURL, raw_ptr<storage::FileSystemContext, CtnExperimental>>
+      OriginToContext;
   friend class OriginChangeMapTest;
 
   class OriginChangeMap {

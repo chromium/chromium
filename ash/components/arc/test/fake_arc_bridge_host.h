@@ -33,6 +33,9 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       override;
   void OnAppfuseInstanceReady(
       mojo::PendingRemote<mojom::AppfuseInstance> appfuse_remote) override;
+  void OnArcShellExecutionInstanceReady(
+      mojo::PendingRemote<mojom::ArcShellExecutionInstance>
+          arc_shell_execution_remote) override;
   void OnArcWifiInstanceReady(
       mojo::PendingRemote<mojom::ArcWifiInstance> arc_wifi_remote) override;
   void OnAudioInstanceReady(
@@ -81,9 +84,6 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
   void OnIntentHelperInstanceReady(
       mojo::PendingRemote<mojom::IntentHelperInstance> intent_helper_remote)
       override;
-  void OnKeyboardShortcutInstanceReady(
-      mojo::PendingRemote<mojom::KeyboardShortcutInstance>
-          keyboard_shortcut_remote) override;
   void OnKeymasterInstanceReady(
       mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) override;
   void OnKeyMintInstanceReady(
@@ -110,6 +110,9 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
                                      obb_mounter_remote) override;
   void OnOemCryptoInstanceReady(
       mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) override;
+  void OnOnDeviceSafetyInstanceReady(
+      mojo::PendingRemote<mojom::OnDeviceSafetyInstance>
+          on_device_safety_remote) override;
   void OnPaymentAppInstanceReady(
       mojo::PendingRemote<chromeos::payments::mojom::PaymentAppInstance>
           payment_app_remote) override;

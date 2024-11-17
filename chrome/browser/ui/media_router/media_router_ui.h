@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes.h"
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes_observer.h"
 #include "chrome/browser/ui/media_router/presentation_request_source_observer.h"
-#include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/mirroring_media_controller_host.h"
@@ -44,6 +43,7 @@ class MediaRouter;
 class MediaRoutesObserver;
 class MediaSink;
 class RouteRequestResult;
+class WebContentsDisplayObserver;
 
 // Functions as an intermediary between MediaRouter and Views Cast dialog.
 class MediaRouterUI : public CastDialogController,

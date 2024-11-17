@@ -63,7 +63,7 @@ TestProtoSetLoader::TestProtoSetLoader(const base::FilePath& descriptor_path) {
 TestProtoSetLoader::~TestProtoSetLoader() = default;
 
 std::string TestProtoSetLoader::ParseFromText(
-    const std::string_view type_name,
+    std::string_view type_name,
     const std::string& proto_text) const {
   // Create a message of the given type, parse, and return.
   std::unique_ptr<google::protobuf::Message> message =
@@ -74,7 +74,7 @@ std::string TestProtoSetLoader::ParseFromText(
 }
 
 std::string TestProtoSetLoader::PrintToText(
-    const std::string_view type_name,
+    std::string_view type_name,
     const std::string& serialized_message) const {
   // Create a message of the given type, read the serialized message, and
   // print to text format.

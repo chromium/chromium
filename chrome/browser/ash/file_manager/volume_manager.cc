@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
-#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -268,8 +267,7 @@ std::unique_ptr<Volume> CreateForFuseBoxDownloads(
 }
 
 bool IsArcEnabled(Profile* profile) {
-  return base::FeatureList::IsEnabled(arc::kMediaViewFeature) &&
-         arc::IsArcAllowedForProfile(profile);
+  return arc::IsArcAllowedForProfile(profile);
 }
 
 bool IsSkyVaultV2Enabled() {
@@ -394,6 +392,11 @@ void VolumeManager::Initialize() {
   RegisterShareCacheMountPoint(profile_);
   DoMountEvent(
       Volume::CreateForShareCache(util::GetShareCacheFilePath(profile_)));
+
+  // Start Trash autocleanup.
+  if (!base::FeatureList::IsEnabled(ash::features::kFilesTrashAutoCleanup)) {
+    trash_auto_cleanup_ = trash::TrashAutoCleanup::Create(profile_);
+  }
 }
 
 void VolumeManager::Shutdown() {
@@ -410,6 +413,7 @@ void VolumeManager::Shutdown() {
   disk_mount_manager_->RemoveObserver(this);
   documents_provider_root_manager_->RemoveObserver(this);
   documents_provider_root_manager_.reset();
+  trash_auto_cleanup_.reset();
 
   if (storage_monitor::StorageMonitor* const p =
           storage_monitor::StorageMonitor::GetInstance()) {
@@ -512,13 +516,13 @@ void VolumeManager::AddSshfsCrostiniVolume(
 }
 
 void VolumeManager::AddSftpGuestOsVolume(
-    const std::string display_name,
+    std::string display_name,
     const base::FilePath& sftp_mount_path,
     const base::FilePath& remote_mount_path,
     const guest_os::VmType vm_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DoMountEvent(Volume::CreateForSftpGuestOs(display_name, sftp_mount_path,
-                                            remote_mount_path, vm_type));
+  DoMountEvent(Volume::CreateForSftpGuestOs(
+      std::move(display_name), sftp_mount_path, remote_mount_path, vm_type));
 }
 
 void VolumeManager::RemoveSshfsCrostiniVolume(
@@ -726,7 +730,7 @@ void VolumeManager::OnAutoMountableDiskEvent(
 
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void VolumeManager::OnDeviceEvent(
@@ -751,7 +755,7 @@ void VolumeManager::OnDeviceEvent(
       DVLOG(1) << "Ignore SCANNED event: " << device_path;
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void VolumeManager::OnMountEvent(
@@ -781,7 +785,7 @@ void VolumeManager::OnMountEvent(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unexpected event type " << event;
+  NOTREACHED() << "Unexpected event type " << event;
 }
 
 void VolumeManager::OnFormatEvent(
@@ -819,7 +823,7 @@ void VolumeManager::OnFormatEvent(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unexpected FormatEvent " << event;
+  NOTREACHED() << "Unexpected FormatEvent " << event;
 }
 
 void VolumeManager::OnPartitionEvent(
@@ -857,7 +861,7 @@ void VolumeManager::OnPartitionEvent(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unexpected PartitionEvent " << event;
+  NOTREACHED() << "Unexpected PartitionEvent " << event;
 }
 
 void VolumeManager::OnRenameEvent(
@@ -905,7 +909,7 @@ void VolumeManager::OnRenameEvent(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unexpected RenameEvent " << event;
+  NOTREACHED() << "Unexpected RenameEvent " << event;
 }
 
 void VolumeManager::OnProvidedFileSystemMount(
@@ -1093,6 +1097,10 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
 
   documents_provider_root_manager_->SetEnabled(mounting);
   arc_volumes_mounted_ = mounting;
+}
+
+void VolumeManager::OnShutdown() {
+  arc_session_manager_observation_.Reset();
 }
 
 void VolumeManager::OnExternalStorageDisabledChanged() {
@@ -1453,7 +1461,7 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
         break;
       }
       case ash::MountType::kInvalid: {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }
@@ -1719,9 +1727,8 @@ void VolumeManager::UnsubscribeFromArcEvents() {
   }
   // TODO(crbug.com/40497410): We need nullptr check here because
   // ArcSessionManager may or may not be alive at this point.
-  if (arc::ArcSessionManager* const session_manager =
-          arc::ArcSessionManager::Get()) {
-    session_manager->RemoveObserver(this);
+  if (arc::ArcSessionManager::Get()) {
+    arc_session_manager_observation_.Reset();
   }
 }
 
@@ -1733,7 +1740,7 @@ void VolumeManager::SubscribeAndMountArc() {
   // Registers a mount point for Android files only when the flag is enabled.
   RegisterAndroidFilesMountPoint();
   if (arc::ArcSessionManager::Get()) {
-    arc::ArcSessionManager::Get()->AddObserver(this);
+    arc_session_manager_observation_.Observe(arc::ArcSessionManager::Get());
   } else {
     // Can be NULL only in tests.
     CHECK_IS_TEST();
@@ -1778,6 +1785,13 @@ void VolumeManager::OnMigrationSucceeded() {
 
   read_only_local_folders_ = false;
   OnLocalUserFilesDisabled();
+}
+
+void VolumeManager::OnMigrationReset() {
+  if (!read_only_local_folders_) {
+    read_only_local_folders_ = true;
+    OnLocalUserFilesPolicyChanged();
+  }
 }
 
 }  // namespace file_manager

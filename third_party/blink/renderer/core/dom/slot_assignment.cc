@@ -311,6 +311,13 @@ void SlotAssignment::RecalcAssignment() {
 
         if (HTMLSlotElement* slot = FindSlotByName(child.SlotName())) {
           slot->AppendAssignedNode(child);
+          // If changing tree scope, recompute the a11y subtree.
+          // This normally occurs when the slottable node is removed
+          // from the flat tree via the below call to RemovedFromFlatTree(),
+          // which calls DetachLayoutTree().
+          if (cache) {
+            cache->RemoveSubtree(&child);
+          }
         } else {
           child.ClearFlatTreeNodeData();
           child.RemovedFromFlatTree();

@@ -50,7 +50,6 @@ class CORE_EXPORT ComputedStyleUtils {
     return ZoomAdjustedPixelValue(length.Value(), style);
   }
 
-  static const CSSValue* ValueForColor(const StyleColor&);
   static const CSSValue* ValueForColor(const StyleColor&,
                                        const ComputedStyle&,
                                        const Color* override_current_color,
@@ -265,6 +264,10 @@ class CORE_EXPORT ComputedStyleUtils {
   static const CSSValue* ValueForSVGPaint(const SVGPaint&,
                                           const ComputedStyle&);
   static CSSValue* ValueForSVGResource(const StyleSVGResource*);
+  static const CSSValue* ValueForGapDecorationColorDataList(
+      const GapDataList<StyleColor>&,
+      const ComputedStyle&,
+      CSSValuePhase);
   static CSSValue* ValueForShadowData(const ShadowData&,
                                       const ComputedStyle&,
                                       bool use_spread,

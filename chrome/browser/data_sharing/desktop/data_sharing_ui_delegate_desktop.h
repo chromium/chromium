@@ -17,7 +17,9 @@ class DataSharingUIDelegateDesktop : public DataSharingUIDelegate {
   ~DataSharingUIDelegateDesktop() override;
 
   // DataSharingUIDelegate implementation.
-  void HandleShareURLIntercepted(const GURL& url) override;
+  void HandleShareURLIntercepted(
+      const GURL& url,
+      std::unique_ptr<ShareURLInterceptionContext> context) override;
 
  private:
   raw_ptr<Profile> profile_;

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
@@ -105,8 +106,7 @@ CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
     case CSSValueID::kColorSbix:
       return CSSFontFaceSrcValue::FontTechnology::kTechnologySBIX;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CSSFontFaceSrcValue::FontTechnology::kTechnologyUnknown;
+      NOTREACHED();
   }
 }
 
@@ -308,7 +308,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kApplyMixin:
     case StyleRule::kPositionTry:
       // TODO(andruud): Handle other descriptor types here.
-      NOTREACHED_IN_MIGRATION();
+      // Note that we can reach this path through @supports at-rule(...).
       return nullptr;
   }
 }
@@ -431,6 +431,15 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
     case AtRuleDescriptorID::Syntax:
       stream.ConsumeWhitespace();
       parsed_value = css_parsing_utils::ConsumeString(stream);
+      if (parsed_value) {
+        CSSSyntaxStringParser parser(To<CSSStringValue>(parsed_value)->Value());
+        if (!parser.Parse().has_value()) {
+          // Treat an invalid syntax string as a parse error.
+          // In particular, this means @supports at-rule() will reject
+          // descriptors we do not support.
+          parsed_value = nullptr;
+        }
+      }
       break;
     case AtRuleDescriptorID::InitialValue: {
       bool important_ignored;
@@ -440,7 +449,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
               /*is_animation_tainted=*/false,
               /*must_contain_variable_reference=*/false,
               /*restricted_value=*/false, /*comma_ends_declaration=*/false,
-              important_ignored, context.GetExecutionContext());
+              important_ignored, context);
       if (variable_data) {
         return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
                                                                  &context);
@@ -506,7 +515,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
   return parsed_value;
 }
 
-bool AtRuleDescriptorParser::ParseAtRule(
+bool AtRuleDescriptorParser::ParseDescriptorValue(
     StyleRule::RuleType rule_type,
     AtRuleDescriptorID id,
     CSSParserTokenStream& stream,

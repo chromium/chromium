@@ -67,6 +67,7 @@ constexpr char kCancelButton[] = "cancelButton";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
 constexpr char kConfirmAccountDialog[] = "confirmAccountDialog";
 constexpr char kSetupCompleteDialog[] = "setupCompleteDialog";
+constexpr char kSetupCompleteHistogram[] = "QuickStart.SetupComplete";
 constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
 constexpr char kViewDurationHistogram[] = ".ViewDuration";
 constexpr char kReasonHistogram[] = ".Reason";
@@ -84,6 +85,7 @@ constexpr char kAuthenticationMethodHistogram[] =
     "QuickStart.AuthenticationMethod";
 constexpr char kFlowAbortedReason[] = "QuickStart.FlowAborted.Reason";
 constexpr char kEntryPointHistogram[] = "QuickStart.EntryPoint";
+constexpr char kEntryPointVisibleHistogram[] = "QuickStart.EntryPointVisible";
 
 constexpr test::UIPath kQuickStartEntryPointPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartEntryPoint};
@@ -210,6 +212,9 @@ class QuickStartBrowserTest : public OobeBaseTest {
     WaitForSigninScreen();
     WaitForGaiaPageLoad();
     OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
+    histogram_tester_.ExpectBucketCount(
+        kEntryPointVisibleHistogram,
+        quick_start::QuickStartMetrics::EntryPoint::GAIA_SCREEN, 1);
   }
 
   void EnterQuickStartFlowFromWelcomeScreen() {
@@ -462,6 +467,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartNotDeterminedBrowserTest,
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
       ->Wait();
+  histogram_tester_.ExpectBucketCount(
+      kEntryPointVisibleHistogram,
+      quick_start::QuickStartMetrics::EntryPoint::WELCOME_SCREEN, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,
@@ -1034,6 +1042,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, FullFlow) {
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kSetupCompleteDialogPath)
       ->Wait();
+  histogram_tester_.ExpectBucketCount(kSetupCompleteHistogram, true, 1);
 
   // Ensure that there is a SessionRefresher on the QuickStart screen keeping
   // the AuthSession alive.

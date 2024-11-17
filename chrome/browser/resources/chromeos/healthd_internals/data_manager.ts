@@ -8,7 +8,7 @@ import {sendWithPromise} from '//resources/js/cr.js';
 import {LINE_CHART_COLOR_SET} from './constants.js';
 import {CpuUsageHelper} from './cpu_usage_helper.js';
 import type {CpuUsage} from './cpu_usage_helper.js';
-import type {HealthdApiBatteryResult, HealthdApiCpuResult, HealthdApiMemoryResult, HealthdApiTelemetryResult, HealthdApiThermalResult} from './externs.js';
+import type {CrosSystemResult, HealthdApiBatteryResult, HealthdApiCpuResult, HealthdApiMemoryResult, HealthdApiTelemetryResult, HealthdApiThermalResult, SystemZramInfo} from './externs.js';
 import {DataSeries} from './line_chart/utils/data_series.js';
 import type {HealthdInternalsGenericChartElement} from './pages/generic_chart.js';
 import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
@@ -32,6 +32,12 @@ const LINE_CHART_MEMORY_HEADERS: string[] = [
   'Unreclaim Slab',
 ];
 
+const LINE_CHART_ZRAM_HEADERS: string[] = [
+  'Total Used',
+  'Original Size',
+  'Compressed Size',
+];
+
 function getLineChartColor(index: number) {
   const colorIdx: number = index % LINE_CHART_COLOR_SET.length;
   return LINE_CHART_COLOR_SET[colorIdx];
@@ -51,6 +57,7 @@ export interface LineChartPages {
   cpuUsage: HealthdInternalsGenericChartElement;
   memory: HealthdInternalsGenericChartElement;
   thermal: HealthdInternalsGenericChartElement;
+  zram: HealthdInternalsGenericChartElement;
 }
 
 /**
@@ -68,6 +75,7 @@ export class DataManager {
 
     this.initBatteryDataSeries();
     this.initMemoryDataSeries();
+    this.initZramDataSeries()
   }
 
   // Historical data for line chart. The following `DataSeries` collection
@@ -76,6 +84,8 @@ export class DataManager {
   private batteryDataSeries: DataSeries[] = [];
   // - Memory data.
   private memoryDataSeries: DataSeries[] = [];
+  // - Zram data.
+  private zramDataSeries: DataSeries[] = [];
 
   // Historical data for line chart. The following `DataSeries` collection
   // is dynamic and initialized when the first batch of data is obtained.
@@ -93,8 +103,8 @@ export class DataManager {
   // The helper class for calculating CPU usage.
   private readonly cpuUsageHelper: CpuUsageHelper = new CpuUsageHelper();
 
-  // The data fetching interval ID used for cancelling the running interval.
-  private fetchDataInternalId?: number = undefined;
+  // The data fetching interval IDs used for cancelling the running interval.
+  private fetchDataInternalIds: number[] = [];
 
   // The duration (in milliseconds) that the data will be retained.
   private dataRetentionDuration: number;
@@ -105,18 +115,32 @@ export class DataManager {
    * @param pollingCycle - Polling cycle in milliseconds.
    */
   setupFetchDataRequests(pollingCycle: number) {
-    if (this.fetchDataInternalId !== undefined) {
-      clearInterval(this.fetchDataInternalId);
-      this.fetchDataInternalId = undefined;
+    if (this.fetchDataInternalIds.length !== 0) {
+      for (const internalId of this.fetchDataInternalIds) {
+        clearInterval(internalId);
+      }
+      this.fetchDataInternalIds = [];
     }
-    const fetchData = () => {
+
+    const fetchHealthdData = () => {
       sendWithPromise('getHealthdTelemetryInfo')
           .then((data: HealthdApiTelemetryResult) => {
             this.handleHealthdTelemetryInfo(data);
           });
     };
-    fetchData();
-    this.fetchDataInternalId = setInterval(fetchData, pollingCycle);
+    fetchHealthdData();
+    this.fetchDataInternalIds.push(setInterval(fetchHealthdData, pollingCycle));
+
+    // TODO(crbug.com/362430588): `getCrosSystemInfo` is a workaround API for
+    // collecting data from SysFs or libchrome. The data should be collected in
+    // `cros_healthd` and requested in the `getHealthdTelemetryInfo` API.
+    const fetchSystemData = () => {
+      sendWithPromise('getCrosSystemInfo').then((data: CrosSystemResult) => {
+        this.handleSystemZramInfo(data);
+      });
+    };
+    fetchSystemData();
+    this.fetchDataInternalIds.push(setInterval(fetchSystemData, pollingCycle));
   }
 
   updateDataRetentionDuration(durationHours: number) {
@@ -137,12 +161,21 @@ export class DataManager {
     this.updateMemoryData(data.memory, timestamp);
     this.updateThermalData(data.thermals, timestamp);
 
-    const cpuUsage: CpuUsage[][]|null =
-        this.cpuUsageHelper.getCpuUsage(data.cpu);
+    const cpuUsage = this.cpuUsageHelper.getCpuUsage(data.cpu);
     if (cpuUsage !== null) {
       this.updateCpuUsageData(cpuUsage, timestamp);
+      this.telemetryPage.updateCpuUsageData(cpuUsage);
     }
 
+    this.removeOutdatedData(timestamp);
+  }
+
+  private handleSystemZramInfo(data: CrosSystemResult) {
+    const timestamp: number = Date.now();
+    if (data.zram !== undefined) {
+      this.updateZramData(data.zram, timestamp);
+      this.telemetryPage.updateZramData(data.zram);
+    }
     this.removeOutdatedData(timestamp);
   }
 
@@ -171,6 +204,9 @@ export class DataManager {
     }
     if (shouldUpdateChart(this.thermalDataSeries)) {
       this.chartPages.thermal.updateStartTime(newStartTime);
+    }
+    if (shouldUpdateChart(this.zramDataSeries)) {
+      this.chartPages.zram.updateStartTime(newStartTime);
     }
   }
 
@@ -204,7 +240,7 @@ export class DataManager {
   }
 
   private updateCpuUsageData(
-      physcialCpuUsage: CpuUsage[][], timestamp: number) {
+      physcialCpuUsage: (CpuUsage|null)[][], timestamp: number) {
     if (this.cpuUsageDataSeries.length === 0) {
       this.initCpuUsageDataSeries(physcialCpuUsage);
     }
@@ -225,7 +261,7 @@ export class DataManager {
     let count: number = 1;
     for (const logicalCpuUsage of physcialCpuUsage) {
       for (const cpuUsage of logicalCpuUsage) {
-        if (cpuUsage.usagePercentage !== null) {
+        if (cpuUsage !== null) {
           this.cpuUsageDataSeries[count].addDataPoint(
               cpuUsage.usagePercentage, timestamp);
           sumCpuUsage += cpuUsage.usagePercentage;
@@ -274,6 +310,14 @@ export class DataManager {
     }
   }
 
+  private updateZramData(zram: SystemZramInfo, timestamp: number) {
+    const zramDataPoints: string[] =
+        [zram.totalUsedMemory, zram.originalDataSize, zram.compressedDataSize];
+    for (const [index, zramData] of zramDataPoints.entries()) {
+      this.zramDataSeries[index].addDataPoint(parseInt(zramData), timestamp);
+    }
+  }
+
   private initBatteryDataSeries() {
     for (const [index, header] of LINE_CHART_BATTERY_HEADERS.entries()) {
       this.batteryDataSeries.push(
@@ -295,7 +339,7 @@ export class DataManager {
     this.chartPages.cpuFrequency.addDataSeries(this.cpuFrequencyDataSeries);
   }
 
-  private initCpuUsageDataSeries(physcialCpuUsage: CpuUsage[][]) {
+  private initCpuUsageDataSeries(physcialCpuUsage: (CpuUsage|null)[][]) {
     this.cpuUsageDataSeries.push(
         new DataSeries('Overall', getLineChartColor(0)));
     let count: number = 1;
@@ -324,5 +368,13 @@ export class DataManager {
           `${thermal.name} (${thermal.source})`, getLineChartColor(index)));
     }
     this.chartPages.thermal.addDataSeries(this.thermalDataSeries);
+  }
+
+  private initZramDataSeries() {
+    for (const [index, header] of LINE_CHART_ZRAM_HEADERS.entries()) {
+      this.zramDataSeries.push(
+          new DataSeries(header, getLineChartColor(index)));
+    }
+    this.chartPages.zram.addDataSeries(this.zramDataSeries);
   }
 }

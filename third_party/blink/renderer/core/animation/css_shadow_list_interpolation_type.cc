@@ -30,8 +30,7 @@ const ShadowList* GetShadowList(const CSSProperty& property,
     case CSSPropertyID::kTextShadow:
       return style.TextShadow();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -213,7 +212,7 @@ void CSSShadowListInterpolationType::ApplyStandardPropertyValue(
       state.StyleBuilder().SetTextShadow(shadow_list);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

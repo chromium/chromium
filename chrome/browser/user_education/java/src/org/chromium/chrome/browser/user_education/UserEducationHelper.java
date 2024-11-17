@@ -29,37 +29,28 @@ import java.util.List;
 
 /**
  * Class that manages requests to trigger IPH's. Customizes the IPH with text bubbles, view
- * highlights, etc. based on the configuration.
- * Recipes for use:
- * 1. Create an IPH bubble anchored to a view:
- * mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(myContext.getResources(),
- *                 FeatureConstants.MY_FEATURE_NAME, R.string.my_feature_iph_text,
- *                 R.string.my_feature_iph_accessibility_text)
- *                                                     .setAnchorView(myAnchorView)
- *                                                     .setCircleHighlight(true)
- *                                                     .build());
- * 2. Create an IPH bubble that does custom logic when shown and hidden
- * mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(myContext.getResources(),
- *                 FeatureConstants.MY_FEATURE_NAME, R.string.my_feature_iph_text,
- *                 R.string.my_feature_iph_accessibility_text)
- *                                                     .setAnchorView(myAnchorView)
- *                                                     .setCircleHighlight(true)
- *                                                     .setOnShowCallback( ()-> doCustomShowLogic())
- *                                                     .setOnDismissCallback(() ->
- *                                                         doCustomDismissLogic())
- *                                                     .build());
+ * highlights, etc. based on the configuration. Recipes for use: 1. Create an IPH bubble anchored to
+ * a view: mUserEducationHelper.requestShowIph(new IphCommandBuilder(myContext.getResources(),
+ * FeatureConstants.MY_FEATURE_NAME, R.string.my_feature_iph_text,
+ * R.string.my_feature_iph_accessibility_text) .setAnchorView(myAnchorView)
+ * .setCircleHighlight(true) .build()); 2. Create an IPH bubble that does custom logic when shown
+ * and hidden mUserEducationHelper.requestShowIph(new IphCommandBuilder(myContext.getResources(),
+ * FeatureConstants.MY_FEATURE_NAME, R.string.my_feature_iph_text,
+ * R.string.my_feature_iph_accessibility_text) .setAnchorView(myAnchorView)
+ * .setCircleHighlight(true) .setOnShowCallback( ()-> doCustomShowLogic()) .setOnDismissCallback(()
+ * -> doCustomDismissLogic()) .build());
  */
 public class UserEducationHelper {
     private final Activity mActivity;
     private final Handler mHandler;
 
     private Profile mProfile;
-    private List<IPHCommand> mPendingIPHCommands;
+    private List<IphCommand> mPendingIphCommands;
     private TextBubble mTextBubble;
 
     /**
      * Constructs a {@link UserEducationHelper} that is immediately available to process inbound
-     * {@link IPHCommand}s.
+     * {@link IphCommand}s.
      */
     public UserEducationHelper(
             @NonNull Activity activity, @NonNull Profile profile, Handler handler) {
@@ -74,7 +65,7 @@ public class UserEducationHelper {
 
     /**
      * Constructs a {@link UserEducationHelper} that will wait for a {@link Profile} to become
-     * available before processing inbound {@link IPHCommand}s.
+     * available before processing inbound {@link IphCommand}s.
      *
      * <p>Caveat, this will only observe the first available Profile from the supplier and will keep
      * a reference to the {@link Profile#getOriginalProfile()}.
@@ -96,36 +87,36 @@ public class UserEducationHelper {
         assert profile != null;
         mProfile = profile.getOriginalProfile();
 
-        if (mPendingIPHCommands != null) {
-            for (IPHCommand iphCommand : mPendingIPHCommands) {
-                requestShowIPH(iphCommand);
+        if (mPendingIphCommands != null) {
+            for (IphCommand iphCommand : mPendingIphCommands) {
+                requestShowIph(iphCommand);
             }
-            mPendingIPHCommands = null;
+            mPendingIphCommands = null;
         }
     }
 
     /**
      * Requests display of the in-product help (IPH) data in @param iphCommand.
-     * @see IPHCommand for a breakdown of this data.
-     * Display will only occur if the feature engagement tracker for the current profile says it
-     * should.
+     *
+     * @see IphCommand for a breakdown of this data. Display will only occur if the feature
+     *     engagement tracker for the current profile says it should.
      */
-    public void requestShowIPH(IPHCommand iphCommand) {
+    public void requestShowIph(IphCommand iphCommand) {
         if (iphCommand == null) return;
 
         if (mProfile == null) {
-            if (mPendingIPHCommands == null) mPendingIPHCommands = new ArrayList<>();
-            mPendingIPHCommands.add(iphCommand);
+            if (mPendingIphCommands == null) mPendingIphCommands = new ArrayList<>();
+            mPendingIphCommands.add(iphCommand);
             return;
         }
 
-        try (TraceEvent te = TraceEvent.scoped("UserEducationHelper::requestShowIPH")) {
+        try (TraceEvent te = TraceEvent.scoped("UserEducationHelper::requestShowIph")) {
             final Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
-            tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
+            tracker.addOnInitializedCallback(success -> showIph(tracker, iphCommand));
         }
     }
 
-    private void showIPH(Tracker tracker, IPHCommand iphCommand) {
+    private void showIph(Tracker tracker, IphCommand iphCommand) {
         // Activity was destroyed; don't show IPH.
         View anchorView = iphCommand.anchorView;
         if (mActivity == null
@@ -150,7 +141,7 @@ public class UserEducationHelper {
         mTextBubble = null;
         TriggerDetails triggerDetails =
                 new TriggerDetails(
-                        tracker.shouldTriggerHelpUI(featureName), /* shouldShowSnooze= */ false);
+                        tracker.shouldTriggerHelpUi(featureName), /* shouldShowSnooze= */ false);
 
         assert (triggerDetails != null);
         if (!triggerDetails.shouldTriggerIph) {
@@ -165,8 +156,8 @@ public class UserEducationHelper {
         if (iphCommand.showTextBubble) {
             String contentString = iphCommand.contentString;
             String accessibilityString = iphCommand.accessibilityText;
-            assert (!contentString.isEmpty());
-            assert (!accessibilityString.isEmpty());
+            assert !contentString.isEmpty();
+            assert !accessibilityString.isEmpty();
 
             mTextBubble =
                     new TextBubble(

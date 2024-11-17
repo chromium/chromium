@@ -24,7 +24,9 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget,
                                    public ShelfObserver,
                                    views::ViewObserver {
  public:
-  MahiPanelWidget(InitParams params, MahiUiController* ui_controller);
+  MahiPanelWidget(InitParams params,
+                  RefreshBannerView* refresh_view,
+                  MahiUiController* ui_controller);
 
   MahiPanelWidget(const MahiPanelWidget&) = delete;
   MahiPanelWidget& operator=(const MahiPanelWidget&) = delete;

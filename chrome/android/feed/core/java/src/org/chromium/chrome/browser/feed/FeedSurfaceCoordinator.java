@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
@@ -65,7 +64,9 @@ import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -90,7 +91,6 @@ public class FeedSurfaceCoordinator
                 SurfaceCoordinator,
                 HasContentListener,
                 FeedContentFirstLoadWatcher {
-    private static final long DELAY_FEED_HEADER_IPH_MS = 50;
 
     protected final Activity mActivity;
     private final JankTracker mJankTracker;
@@ -123,7 +123,6 @@ public class FeedSurfaceCoordinator
     private @Nullable Profile mProfile;
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     private @Nullable View mSigninPromoView;
-    private @Nullable FeedStreamViewResizer mStreamViewResizer;
     // Feed header fields.
     private @Nullable PropertyModel mSectionHeaderModel;
     private @Nullable ViewGroup mViewportView;
@@ -446,8 +445,7 @@ public class FeedSurfaceCoordinator
 
         mUiConfig = new UiConfig(mRootView);
         mRecyclerView = setUpView();
-        mStreamViewResizer =
-                FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
+        FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
 
         // Pull-to-refresh set up.
         if (mSwipeRefreshLayout != null && mSwipeRefreshLayout.getParent() == null) {
@@ -564,7 +562,7 @@ public class FeedSurfaceCoordinator
         Toolbar toolbar = mToolbarSupplier.get();
         // If the ToolbarLayout isn't visible, we shouldn't change the toolbar_hairline to be
         // visible.
-        if (toolbar == null || !toolbar.isBrowsingModeToolbarVisible() && isVisible) {
+        if (toolbar == null || (!toolbar.isBrowsingModeToolbarVisible() && isVisible)) {
             return;
         }
         toolbar.setBrowsingModeHairlineVisibility(isVisible);
@@ -598,7 +596,7 @@ public class FeedSurfaceCoordinator
 
     public void maybeShowWebFeedAwarenessIph() {
         if (mWebFeedHasContent
-                && FeedFeatures.shouldUseWebFeedAwarenessIPH()
+                && FeedFeatures.shouldUseWebFeedAwarenessIph()
                 && !FeedFeatures.isFeedFollowUiUpdateEnabled()) {
             UserEducationHelper helper = new UserEducationHelper(mActivity, mProfile, mHandler);
             mSectionHeaderView.showWebFeedAwarenessIph(
@@ -1137,7 +1135,7 @@ public class FeedSurfaceCoordinator
                         () -> {
                             UserEducationHelper helper =
                                     new UserEducationHelper(mActivity, mProfile, mHandler);
-                            mSwipeRefreshLayout.showIPH(helper);
+                            mSwipeRefreshLayout.showIph(helper);
                         });
         mScrollableContainerDelegate.addScrollListener(mRefreshIphScrollListener);
     }
@@ -1177,7 +1175,7 @@ public class FeedSurfaceCoordinator
     }
 
     @Override
-    public boolean isFeedHeaderPositionInContainerSuitableForIPH(float headerMaxPosFraction) {
+    public boolean isFeedHeaderPositionInContainerSuitableForIph(float headerMaxPosFraction) {
         assert headerMaxPosFraction >= 0.0f && headerMaxPosFraction <= 1.0f
                 : "Max position fraction should be ranging between 0.0 and 1.0";
 
@@ -1243,6 +1241,11 @@ public class FeedSurfaceCoordinator
         return mActivity
                 .getResources()
                 .getDimensionPixelSize(R.dimen.ntp_header_lateral_paddings_v2);
+    }
+
+    @Override
+    public @ClosedReason int getClosedReason() {
+        return mMediator.getClosedReason();
     }
 
     public void setReliabilityLoggerForTesting(FeedReliabilityLogger logger) {

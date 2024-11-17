@@ -21,7 +21,7 @@ if (is_chromeos_device) {
       deploy_lacros = true
       skip_generating_board_args = true
     }
-    if (!is_chromeos_ash || also_build_lacros_chrome_for_architecture != "") {
+    if (!is_chromeos_ash) {
       data = [
         # A script needed to launch Lacros in testing environment.
         "//build/lacros/mojo_connection_lacros_launcher.py",
@@ -137,6 +137,17 @@ if (is_android) {
       "//android_webview/test:webview_instrumentation_apk",
       "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
     ]
+  }
+
+  if (android_64bit_target_cpu) {
+    group("telemetry_chrome_test_android_trichrome_chrome_64_32_bundle") {
+      testonly = true
+
+      data_deps = [
+        ":telemetry_chrome_test",
+        "//chrome/android:trichrome_chrome${_bitness_if_needed}_bundle",
+      ]
+    }
   }
 
   if (enable_chrome_android_internal) {

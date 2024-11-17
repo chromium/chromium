@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -100,7 +101,7 @@ void LaunchPluginVm(Profile* profile, LaunchCallback callback) {
 void LaunchBruschetta(Profile* profile,
                       const std::string& name,
                       LaunchCallback callback) {
-  auto* service = bruschetta::BruschettaService::GetForProfile(profile);
+  auto* service = bruschetta::BruschettaServiceFactory::GetForProfile(profile);
   auto launcher = service->GetLauncher(name);
   if (!launcher) {
     std::move(callback).Run(

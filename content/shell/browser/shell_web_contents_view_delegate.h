@@ -14,7 +14,7 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 
 #if defined(SHELL_USE_TOOLKIT_VIEWS)
-#include "ui/base/models/simple_menu_model.h"    // nogncheck
+#include "ui/menus/simple_menu_model.h"          // nogncheck
 #include "ui/views/controls/menu/menu_runner.h"  // nogncheck
 #endif
 

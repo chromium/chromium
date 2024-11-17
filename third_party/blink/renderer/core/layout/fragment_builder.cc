@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
@@ -134,29 +135,37 @@ void FragmentBuilder::PropagateStickyDescendants(
   }
 }
 
-HeapVector<Member<LayoutBox>>& FragmentBuilder::EnsureSnapAreas() {
+HeapVector<Member<Element>>& FragmentBuilder::EnsureSnapAreas() {
   if (!snap_areas_) {
-    snap_areas_ = MakeGarbageCollected<HeapVector<Member<LayoutBox>>>();
+    snap_areas_ = MakeGarbageCollected<HeapVector<Member<Element>>>();
   }
   return *snap_areas_;
 }
 
 void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
-  auto get_insertion_pos = [&](LayoutBox* snap_area) {
+  auto get_insertion_pos = [&](Element* snap_area) {
     auto& snap_areas = EnsureSnapAreas();
+    // TODO(crbug.com/365680822): ::column pseudo elements don't have layout
+    // objects, and how snap areas established by them should be sorted,
+    // relatively to real elements, is undefined.
+    const LayoutBox* new_box = snap_area->GetLayoutBox();
+    if (!new_box) {
+      return snap_areas.size();
+    }
     // Ensure that snap areas are added in DOM order.
-    for (int i = snap_areas.size(); i >= 1; i--) {
-      if (snap_areas.at(i - 1)->IsBeforeInPreOrder(*snap_area)) {
+    for (wtf_size_t i = snap_areas.size(); i >= 1; i--) {
+      const LayoutBox* existing_box = snap_areas.at(i - 1)->GetLayoutBox();
+      if (existing_box && existing_box->IsBeforeInPreOrder(*new_box)) {
         return i;
       }
     }
-    return 0;
+    return 0u;
   };
   if (child.IsSnapArea()) {
     // Insert a new snap area *once* per node, when at the last fragment
     // (i.e. when there's no outgoing break token).
     if (!To<PhysicalBoxFragment>(child).GetBreakToken()) {
-      auto* snap_area = To<LayoutBox>(child.GetMutableLayoutObject());
+      auto* snap_area = To<Element>(child.GetLayoutObject()->GetNode());
       EnsureSnapAreas().insert(get_insertion_pos(snap_area), snap_area);
     }
   }
@@ -169,6 +178,10 @@ void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
   if (child.IsSnapArea() && child.PropagatedSnapAreas()) {
     child.GetDocument().CountUse(WebFeature::kScrollSnapNestedSnapAreas);
   }
+}
+
+void FragmentBuilder::AddSnapAreaForColumn(ColumnPseudoElement* column_pseudo) {
+  EnsureSnapAreas().push_back(column_pseudo);
 }
 
 LogicalAnchorQuery& FragmentBuilder::EnsureAnchorQuery() {
@@ -242,34 +255,25 @@ void FragmentBuilder::PropagateFromLayoutResult(
       child_result.HasOrthogonalFallbackSizeDescendant();
 }
 
-ScrollStartTargetCandidates& FragmentBuilder::EnsureScrollStartTargets() {
-  if (!scroll_start_targets_) {
-    scroll_start_targets_ = MakeGarbageCollected<ScrollStartTargetCandidates>();
+void FragmentBuilder::UpdateScrollStartTarget(const LayoutObject* new_target) {
+  if (new_target != scroll_start_target_ &&
+      (!scroll_start_target_ ||
+       new_target->IsBeforeInPreOrder(*scroll_start_target_))) {
+    scroll_start_target_ = new_target;
   }
-  return *scroll_start_targets_;
 }
 
 void FragmentBuilder::PropagateScrollStartTarget(
     const PhysicalFragment& child) {
-  auto UpdateScrollStartTarget = [](Member<const LayoutBox>& old_target,
-                                    const LayoutBox* new_target) {
-    if (new_target &&
-        (!old_target || old_target->IsBeforeInPreOrder(*new_target))) {
-      old_target = new_target;
+  if (child.Style().ScrollStartTarget() != EScrollStartTarget::kNone) {
+    if (auto* child_object = child.GetMutableLayoutObject()) {
+      UpdateScrollStartTarget(child_object);
     }
-  };
-  const auto* child_box = DynamicTo<LayoutBox>(child.GetLayoutObject());
-  if (child.Style().ScrollStartTargetY() != EScrollStartTarget::kNone) {
-    UpdateScrollStartTarget(EnsureScrollStartTargets().y, child_box);
-  }
-  if (child.Style().ScrollStartTargetX() != EScrollStartTarget::kNone) {
-    UpdateScrollStartTarget(EnsureScrollStartTargets().x, child_box);
   }
 
-  // Prefer deeper scroll-start-targets.
-  if (const auto* targets = child.PropagatedScrollStartTargets()) {
-    UpdateScrollStartTarget(EnsureScrollStartTargets().y, targets->y);
-    UpdateScrollStartTarget(EnsureScrollStartTargets().x, targets->x);
+  if (const Member<const LayoutObject> target =
+          child.PropagatedScrollStartTarget()) {
+    UpdateScrollStartTarget(target);
   }
 }
 

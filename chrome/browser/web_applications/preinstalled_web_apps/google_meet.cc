@@ -4,8 +4,8 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 
 namespace web_app {
 
@@ -19,7 +19,7 @@ ExternalInstallOptions GetConfigForGoogleMeet() {
   // Exclude managed users until we have a way for admins to block the app.
   options.user_type_allowlist = {"unmanaged", "child"};
   options.only_for_new_users = true;
-  options.expected_app_id = kGoogleMeetAppId;
+  options.expected_app_id = ash::kGoogleMeetAppId;
 
   return options;
 }

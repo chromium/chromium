@@ -1,0 +1,292 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A module for a prototype of the Read Anything feature. Read Anything is an
+// untrusted WebUI.
+module read_anything.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "ui/accessibility/ax_features.mojom";
+import "ui/accessibility/mojom/ax_event.mojom";
+import "ui/accessibility/mojom/ax_location_and_scroll_updates.mojom";
+import "ui/accessibility/mojom/ax_tree_id.mojom";
+import "ui/accessibility/mojom/ax_tree_update.mojom";
+import "mojo/public/mojom/base/values.mojom";
+
+[Extensible]
+enum InstallationState {
+  [Default] kUnknown = 0,
+  kNotInstalled = 1,
+  kInstalling = 2,
+  kInstalled = 3
+};
+
+[Extensible]
+enum ErrorCode {
+  [Default] kNone = 0,
+  kOther = 1,
+  kWrongId = 2,
+  kNeedReboot = 3,
+  kAllocation = 4,
+  kUnsupportedPlatform = 5
+};
+
+union VoicePackInstallationState {
+  InstallationState installation_state;
+  ErrorCode error_code;
+};
+
+struct VoicePackInfo {
+  VoicePackInstallationState pack_state;
+  string language;
+};
+
+// Used by the untrusted WebUI page to bootstrap bidirectional communication.
+interface UntrustedPageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreateUntrustedPageHandler(pending_remote<UntrustedPage> page,
+                             pending_receiver<UntrustedPageHandler> handler);
+
+  // Signals that the side panel content has finished loading and it is now
+  // safe to show the UI. This is to avoid loading artifacts if the side panel
+  // is shown before ready.
+  ShouldShowUI();
+};
+
+// Used as identifiers for the Read Anything theme options.
+// Next value: 5
+[Extensible, Stable, Uuid="03f38cfc-a34f-460a-a0a7-faf711f11a64"]
+// LINT.IfChange(Colors)
+enum Colors {
+  [Default]kDefault = 0,
+  kLight = 1,
+  kDark = 2,
+  kYellow = 3,
+  [MinVersion=1] kBlue = 4,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingColor)
+
+[Extensible, Stable, Uuid="2B5C793A-D81E-4C76-8CDF-695C7E0A30E2",
+ RenamedFrom="read_anything.mojom.Spacing"]
+// LINT.IfChange(LetterSpacing)
+enum LetterSpacing {
+  kTightDeprecated = 0,
+  [Default]kStandard = 1,
+  kWide = 2,
+  kVeryWide = 3,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingLetterSpacing)
+
+[Extensible, Stable, Uuid="49212e28-ae8a-4244-94df-0cbb7fcdf5bc",
+ RenamedFrom="read_anything.mojom.Spacing"]
+// LINT.IfChange(LineSpacing)
+enum LineSpacing {
+  kTightDeprecated = 0,
+  kStandard = 1,
+  [Default]kLoose = 2,
+  kVeryLoose = 3,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingLineSpacing)
+
+[Extensible, Stable, Uuid="b8c27619-fe28-44a6-bb89-f4eda846b0f8"]
+// Granularity used for highlighting text as it's spoken.
+enum HighlightGranularity {
+  // Automatically selects highlighting granularity based on voice speed.
+  [Default]kOn = 0,
+  // Turns off all highlighting.
+  kOff = 1,
+  // Attempt to select a particular granularity, regardless of voice speed.
+  // Note that if the TTS engine doesn't support word callbacks, we'll fall back
+  // to sentence granularity, and if phrases aren't supported, we fall back to
+  // auto.
+  [MinVersion=1] kWord = 2,
+  [MinVersion=1] kPhrase = 3,
+  [MinVersion=1] kSentence = 4
+};
+
+// Browser-side handler for requests from untrusted WebUI page.
+interface UntrustedPageHandler {
+  // Called by the renderer to load the dependency parser model used for
+  // phrase-based highlighting. May be null if the model file could not be
+  // loaded.
+  GetDependencyParserModel() => (mojo_base.mojom.File? model_file);
+
+  // Called by the renderer to see if a voice is installed, or being installed.
+  // The response for this call comes via UntrustedPage::OnGetVoicePackInfo.
+  GetVoicePackInfo(string language);
+
+  // Called by the renderer to install a natural-voice pack. The response for
+  // this call comes via UntrustedPage::OnGetVoicePackInfo.
+  InstallVoicePack(string language);
+
+  // Called by the renderer to uninstall a natural voice.
+  UninstallVoice(string language);
+
+  // Informs the browser controller that a user tried to copy text from the
+  // WebUI. If the main page allows copy commands, then the current selection
+  // on the main page will be copied to the user's clipboard. Note that even
+  // though selections on the main page and WebUI are in sync, the resulting
+  // content in the user's clipboard may not exactly match what is selected in
+  // the WebUI. This is because the main page selection may contain images,
+  // captions, etc that are not shown in reading mode's simplified view.
+  OnCopy();
+
+  // Informs the browser controller that the user updated the line spacing via
+  // the webui toolbar.
+  OnLineSpaceChange(read_anything.mojom.LineSpacing line_spacing);
+
+  // Informs the browser controller that the user updated the letter spacing via
+  // the webui toolbar.
+  OnLetterSpaceChange(read_anything.mojom.LetterSpacing letter_spacing);
+
+  // Informs the browser controller that the user updated the font name via
+  // the webui toolbar.
+  OnFontChange(string font);
+
+  // Informs the browser controller that the user updated the font size via
+  // the webui toolbar.
+  OnFontSizeChange(double font_size);
+
+  // Informs the browser controller that the user has toggled links
+  // via the webui toolbar.
+  OnLinksEnabledChanged(bool enabled);
+
+  // Informs the browser controller that the user has toggled images
+  // via the webui toolbar.
+  OnImagesEnabledChanged(bool enabled);
+
+  // Informs the browser controller that the user updated the color theme via
+  // the webui toolbar.
+  OnColorChange(read_anything.mojom.Colors color);
+
+  // Informs the browser controller that the user updated the speech rate via
+  // the webui toolbar. rate is a multiplicative scale where 1 is the baseline,
+  // and 2 is twice as fast, 0.5 is half as fast. See
+  // https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/rate
+  OnSpeechRateChange(double rate);
+
+  // Informs the browser controller that the user updated the voice used for
+  // speech via the webui toolbar. lang is the language code that voice is for.
+  OnVoiceChange(string voice, string lang);
+
+  // Informs the browser controller that the user enabled/disabled a language.
+  OnLanguagePrefChange(string lang, bool enabled);
+
+  // Informs the browser controller that the user updated the granularity of
+  // the highlight that follows along with speech via the webui toolbar.
+  OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
+
+  // Informs the browser controller that a link was clicked in the WebUI. The
+  // browser controller responds by performing a click action on the link in
+  // the target tree, which is in the main frame of the currently active web
+  // contents. Target_tree_id is the AXTreeID that contains the link to be
+  // clicked; target_node_id is the AXNodeID of the link node.
+  OnLinkClicked(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
+
+  // Asks the browser provide the image data for the target node.
+  // The data will be received in a tree update via AccessibilityEventReceived.
+  OnImageDataRequested(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
+
+  // Informs the browser controller that a selection was made in the WebUI. The
+  // browser controller responds by making a matching selection in the target
+  // tree, which is in the main frame of the currently active web contents.
+  // Target_tree_id is the AXTreeID that contains the link to be clicked;
+  // anchor_node_id and focus_node_id are AXNodeIDs which identify the anchor
+  // and focus AXNodes of the selection; anchor_offset and focus_offset are
+  // integer offsets in the selection.
+  OnSelectionChange(
+    ax.mojom.AXTreeID target_tree_id,
+    int32 anchor_node_id,
+    int32 anchor_offset,
+    int32 focus_node_id,
+    int32 focus_offset);
+
+  // Informs the browser to collapse the selection made in the WebUI.
+  OnCollapseSelection();
+
+  // Requests the browser to take a screenshot of the active web contents.
+  OnScreenshotRequested();
+
+  // Informs the browser controller that the side page was scrolled to the end.
+  // The browser controller responds by scrolling the main page to show the
+  // last line of text on the side page. target_node_id should be the last
+  // display node shown in the side page.
+  // TODO (b/358169090): Create a cpp typemap to use the ui::AXNodeID type
+  // instead of int32
+  ScrollToTargetNode(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
+};
+
+// Untrusted WebUI-side handler for requests from the browser.
+interface UntrustedPage {
+  // Send an accessibility event notification to the WebUI. The WebUI
+  // unserializes the updates and stores a copy of the tree with ID tree_id in
+  // a map.
+  AccessibilityEventReceived(ax.mojom.AXTreeID tree_id,
+                             array<ax.mojom.AXTreeUpdate> updates,
+                             array<ax.mojom.AXEvent> events);
+
+  // Send a voice pack status change notification to the WebUI. The WebUI can
+  // then show informational or error messages depending on the status.
+  OnGetVoicePackInfo(VoicePackInfo voice_pack_info);
+
+  // Send a location change notification to the WebUI. The WebUI updates the
+  // locations for each node in the vector. This does not trigger a distillation.
+  [RuntimeFeature=ax.mojom.features.kReadAnythingDocsIntegration]
+  AccessibilityLocationChangesReceived(
+    ax.mojom.AXTreeID tree_id,
+    ax.mojom.AXLocationAndScrollUpdates details);
+
+  // Sends the active AXTreeID to the WebUI. This is not guaranteed to be called
+  // after the tree_id was previously passed to AccessibilityEventsReceived.
+  // ukm_source_id is a ukm::SourceId which is used to tie the UKM event to the
+  // main frame URL for metrics collection.
+  // TODO(41496290): Do not pass is_pdf. The renderer should be able to infer
+  // this value from the AXTree, and should not trust it coming from a
+  // potentially compromised renderer.
+  OnActiveAXTreeIDChanged(ax.mojom.AXTreeID tree_id,
+                          int64 ukm_source_id,
+                          bool is_pdf);
+
+  // Notifies the WebUI that an AXTree with the provided AXTreeID was
+  // destroyed. This is not guaranteed to be called after the tree_id was
+  // previously passed to AccessibilityEventsReceived.
+  OnAXTreeDestroyed(ax.mojom.AXTreeID tree_id);
+
+  // Send an updated language code to the WebUI. Will either be the page
+  // language or the browser language depending on what's available.
+  SetLanguageCode(string code);
+
+  // Notifies that the device has been locked. Only called by ChromeOS.
+  [EnableIf=is_chromeos_ash]
+  OnDeviceLocked();
+
+  // Sets the default language code to be available in the WebUI in the event
+  // the language set by SetLanguageCode is invalid.
+  SetDefaultLanguageCode(string code);
+
+  // Send the settings values stored in prefs to the WebUI. voices maps
+  // language to voice name
+  OnSettingsRestoredFromPrefs(read_anything.mojom.LineSpacing line_spacing,
+                           read_anything.mojom.LetterSpacing letter_spacing,
+                           string font,
+                           double font_size,
+                           bool links_enabled,
+                           bool images_enabled,
+                           read_anything.mojom.Colors color,
+                           double speech_rate,
+                           mojo_base.mojom.DictionaryValue voices,
+                           mojo_base.mojom.ListValue languages_enabled_in_pref,
+                           read_anything.mojom.HighlightGranularity granularity);
+
+  // Notifies the WebUI that the ScreenAI service is ready on this device.
+  ScreenAIServiceReady();
+
+  // Notifies the WebUI that an image has been downloaded for a given node.
+  OnImageDataDownloaded(ax.mojom.AXTreeID tree_id,
+    int32 node_id,
+    skia.mojom.BitmapN32 image
+  );
+};

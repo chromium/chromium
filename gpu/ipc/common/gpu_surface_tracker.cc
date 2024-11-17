@@ -59,7 +59,8 @@ SurfaceRecord GpuSurfaceTracker::AcquireJavaSurface(
           [&](const gl::ScopedJavaSurface& surface) {
             DCHECK(surface.IsValid());
             return SurfaceRecord(surface.CopyRetainOwnership(),
-                                 it->second.can_be_used_with_surface_control);
+                                 it->second.can_be_used_with_surface_control,
+                                 it->second.host_input_token);
           },
           [&](const gl::ScopedJavaSurfaceControl& surface_control) {
             return SurfaceRecord(surface_control.CopyRetainOwnership());

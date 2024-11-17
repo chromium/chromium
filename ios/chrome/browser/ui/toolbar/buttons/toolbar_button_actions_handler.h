@@ -14,9 +14,6 @@
 
 class TabBasedIPHBrowserAgent;
 class WebNavigationBrowserAgent;
-namespace feature_engagement {
-class Tracker;
-}
 
 // Handler for the actions associated with the different toolbar buttons.
 @interface ToolbarButtonActionsHandler : NSObject
@@ -32,12 +29,6 @@ class Tracker;
 
 // Whether this handler is created in incognito.
 @property(nonatomic, assign) BOOL incognito;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-// Initilizer, `engagementTracker` must be non-null.
-- (instancetype)initWithEngagementTracker:
-    (feature_engagement::Tracker*)engagementTracker NS_DESIGNATED_INITIALIZER;
 
 // Action when the back button is tapped.
 - (void)backAction;

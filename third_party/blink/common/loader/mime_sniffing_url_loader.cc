@@ -93,7 +93,7 @@ void MimeSniffingURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   // OnReceiveEarlyHints() shouldn't be called. See the comment in
   // OnReceiveResponse().
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MimeSniffingURLLoader::OnReceiveResponse(
@@ -103,7 +103,7 @@ void MimeSniffingURLLoader::OnReceiveResponse(
   // OnReceiveResponse() shouldn't be called because MimeSniffingURLLoader is
   // created by MimeSniffingThrottle::WillProcessResponse(), which is equivalent
   // to OnReceiveResponse().
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MimeSniffingURLLoader::OnReceiveRedirect(
@@ -112,7 +112,7 @@ void MimeSniffingURLLoader::OnReceiveRedirect(
   // OnReceiveRedirect() shouldn't be called because MimeSniffingURLLoader is
   // created by MimeSniffingThrottle::WillProcessResponse(), which is equivalent
   // to OnReceiveResponse().
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MimeSniffingURLLoader::OnUploadProgress(
@@ -156,10 +156,9 @@ void MimeSniffingURLLoader::OnComplete(
       destination_url_loader_client_->OnComplete(status);
       return;
     case State::kAborted:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MimeSniffingURLLoader::FollowRedirect(
@@ -169,7 +168,7 @@ void MimeSniffingURLLoader::FollowRedirect(
     const std::optional<GURL>& new_url) {
   // MimeSniffingURLLoader starts handling the request after
   // OnReceivedResponse(). A redirect response is not expected.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MimeSniffingURLLoader::SetPriority(net::RequestPriority priority,
@@ -221,8 +220,7 @@ void MimeSniffingURLLoader::OnBodyReadable(MojoResult) {
       body_consumer_watcher_.ArmOrNotify();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   DCHECK_EQ(MOJO_RESULT_OK, result);
@@ -323,8 +321,7 @@ void MimeSniffingURLLoader::SendReceivedBodyToClient() {
       body_producer_watcher_.ArmOrNotify();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   bytes_remaining_in_buffer_ -= actually_sent_bytes;
   body_producer_watcher_.ArmOrNotify();
@@ -347,8 +344,7 @@ void MimeSniffingURLLoader::ForwardBodyToClient() {
       CompleteSending();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   size_t actually_written_bytes = 0;
@@ -367,8 +363,7 @@ void MimeSniffingURLLoader::ForwardBodyToClient() {
       body_producer_watcher_.ArmOrNotify();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   body_consumer_handle_->EndReadData(actually_written_bytes);

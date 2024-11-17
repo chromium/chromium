@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer
-++++++++pluginObject
+++++++++pluginObject restriction=disabled
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='Fallback'
 ++++++++++++++inlineTextBox name='Fallback'

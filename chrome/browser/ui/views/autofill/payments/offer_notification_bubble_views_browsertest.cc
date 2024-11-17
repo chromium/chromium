@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 }
 
 // TODO(crbug.com/40205397): Does not work for Wayland-based tests.
-// TODO(crbug.com/40200304): Disabled on Mac, Win, ChromeOS, and Lacros due to
+// TODO(crbug.com/40200304): Disabled on Mac, Win, ChromeOS due to
 // flakiness.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_PromoCodeOffer) {

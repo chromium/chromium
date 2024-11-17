@@ -30,6 +30,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // `automated` and false otherwise.
 bool IsMicrosoftOfficeOneDriveIntegrationAllowed(const Profile* profile);
 
+// Returns true if the MicrosoftOneDriveMount policy is set to `automated` and
+// false otherwise.
+bool IsMicrosoftOfficeOneDriveIntegrationAutomated(const Profile* profile);
+
 // If `kUploadOfficeToCloudForEnterprise` is disabled, returns true if
 // IsEligibleAndEnabledUploadOfficeToCloud() is true.
 // Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true

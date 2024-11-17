@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -140,7 +139,6 @@ void CSSDefaultStyleSheets::Reset() {
   text_track_style_sheet_.Clear();
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
-  selectlist_style_sheet_.Clear();
   customizable_select_style_sheet_.Clear();
   customizable_select_forced_colors_style_sheet_.Clear();
   marker_style_sheet_.Clear();
@@ -192,7 +190,7 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
 
   if (marker_style_sheet_) {
     default_pseudo_element_style_->CompactRulesIfNeeded();
-    DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(), 1u);
+    DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(), 3u);
   }
 #endif
 }
@@ -257,7 +255,6 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
   switch (type) {
     case NamespaceType::kHTML:
       default_html_style_->AddRulesFromSheet(rules, ScreenEval());
-      default_html_quirks_style_->AddRulesFromSheet(rules, ScreenEval());
       break;
     case NamespaceType::kSVG:
       default_svg_style_->AddRulesFromSheet(rules, ScreenEval());
@@ -376,16 +373,6 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
                                    NamespaceType::kMediaControls);
       changed_default_style = true;
     }
-  }
-
-  if (!selectlist_style_sheet_ && IsA<HTMLSelectListElement>(element)) {
-    // TODO: We should assert that this sheet only contains rules for
-    // <selectlist>.
-    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-    selectlist_style_sheet_ = ParseUASheet(
-        UncompressResourceAsASCIIString(IDR_UASTYLE_SELECTLIST_CSS));
-    AddRulesToDefaultStyleSheets(selectlist_style_sheet_, NamespaceType::kHTML);
-    changed_default_style = true;
   }
 
   if (!customizable_select_style_sheet_ && IsA<HTMLSelectElement>(element) &&
@@ -552,7 +539,6 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(text_track_style_sheet_);
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
-  visitor->Trace(selectlist_style_sheet_);
   visitor->Trace(customizable_select_style_sheet_);
   visitor->Trace(customizable_select_forced_colors_style_sheet_);
   visitor->Trace(marker_style_sheet_);

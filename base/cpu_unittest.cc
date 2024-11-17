@@ -181,22 +181,6 @@ TEST(CPU, X86FamilyAndModel) {
 }
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 
-#if defined(ARCH_CPU_ARM_FAMILY) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
-TEST(CPU, ARMImplementerAndPartNumber) {
-  base::CPU cpu;
-
-  const std::string& cpu_brand = cpu.cpu_brand();
-
-  // Some devices, including on the CQ, do not report a cpu_brand
-  // https://crbug.com/1166533 and https://crbug.com/1167123.
-  EXPECT_EQ(cpu_brand, base::TrimWhitespaceASCII(cpu_brand, base::TRIM_ALL));
-  EXPECT_GT(cpu.implementer(), 0u);
-  EXPECT_GT(cpu.part_number(), 0u);
-}
-#endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
-
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 TEST(CPUDeathTest, VerifyModifyingCPUInstanceNoAllocationCrashes) {
   const base::CPU& cpu = base::CPU::GetInstanceNoAllocation();

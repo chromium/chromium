@@ -44,45 +44,16 @@
 
     <div class="list-frame" id="sync-data-types">
       <div class="list-item" hidden="[[!syncPrefs.appsRegistered]]">
-<if expr="not chromeos_lacros">
-      <div id="appCheckboxLabel">$i18n{appCheckboxLabel}</div>
-      <cr-policy-indicator indicator-type="userPolicy"
-            hidden="[[!syncPrefs.appsManaged]]">
-      </cr-policy-indicator>
-      <cr-toggle checked="{{syncPrefs.appsSynced}}"
-          on-change="onSingleSyncDataTypeChanged_"
-          disabled="[[disableTypeCheckBox_(
-              syncPrefs.syncAllDataTypes, syncPrefs.appsManaged)]]"
-          aria-labelledby="appCheckboxLabel">
-      </cr-toggle>
-</if>
-<if expr="chromeos_lacros">
-      <div id="appCheckboxLabel" hidden="[[showSyncSettingsRevamp_]]">
-        $i18n{appCheckboxLabel}
-      </div>
-      <cr-link-row id="osSyncSettingsLink"
-          embedded
-          label="$i18n{appCheckboxLabel}"
-          sub-label="$i18n{appCheckboxSublabel}"
-          on-click="onOsSyncSettingsLinkClick_"
-          hidden="[[!showSyncSettingsRevamp_]]"
-          external>
-      </cr-link-row>
-      <div class="separator" hidden="[[!showSyncSettingsRevamp_]]"></div>
-      <cr-policy-indicator indicator-type="userPolicy"
-          id="appsSyncPolicyIndicator"
-          hidden="[[!showAppsPolicyIndicator_(
-            syncPrefs.appsManaged, showSyncSettingsRevamp_)]]">
-      </cr-policy-indicator>
-      <cr-toggle id="appsSyncToggle"
-          checked="{{syncPrefs.appsSynced}}"
-          on-change="onSingleSyncDataTypeChanged_"
-          disabled="[[disableAppsToggle_(
-            syncPrefs.syncAllDataTypes, showSyncSettingsRevamp_,
-            syncPrefs.appsManaged)]]"
-          aria-labelledby="appCheckboxLabel">
-      </cr-toggle>
-</if>
+        <div id="appCheckboxLabel">$i18n{appCheckboxLabel}</div>
+        <cr-policy-indicator indicator-type="userPolicy"
+              hidden="[[!syncPrefs.appsManaged]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{syncPrefs.appsSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(
+                syncPrefs.syncAllDataTypes, syncPrefs.appsManaged)]]"
+            aria-labelledby="appCheckboxLabel">
+        </cr-toggle>
       </div>
 
       <div class="list-item" hidden="[[!syncPrefs.bookmarksRegistered]]">

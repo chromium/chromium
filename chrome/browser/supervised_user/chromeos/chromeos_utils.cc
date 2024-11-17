@@ -13,19 +13,11 @@
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace supervised_user {
 
 crosapi::mojom::ParentAccess* GetParentAccessApi() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return crosapi::CrosapiManager::Get()->crosapi_ash()->parent_access_ash();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::ParentAccess>()
-      .get();
 #else
   NOTREACHED();
 #endif

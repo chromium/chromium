@@ -610,8 +610,7 @@ void AddLinkedSuggestionToList(const int error_code,
           IDS_ERRORPAGES_SUGGESTION_DELETE_COOKIES_SUMMARY);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   DCHECK(learn_more_url.is_valid());

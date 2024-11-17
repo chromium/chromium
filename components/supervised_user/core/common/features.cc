@@ -53,23 +53,17 @@ bool IsLocalWebApprovalsEnabled() {
 
 BASE_FEATURE(kEnableSupervisedUserSkipParentApprovalToInstallExtensions,
              "EnableSupervisedUserSkipParentApprovalToInstallExtensions",
-#if BUILDFLAG(IS_CHROMEOS)
-             // TODO(b/344580484): Cleanup the feature after at least 2
-             // milestones from full release, i.e. on M131.
              base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 BASE_FEATURE(kUpdatedSupervisedUserExtensionApprovalStrings,
              "UpdatedSupervisedUserExtensionApprovalStrings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
              "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -98,12 +92,8 @@ bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsersUi,
-             "CustomWebSignInInterceptForSupervisedUsersUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSupervisedUserProfileSigninIPH,
-             "SupervisedUserProfileSigninIPH",
+BASE_FEATURE(kCustomProfileStringsForSupervisedUsers,
+             "CustomProfileStringsForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -115,12 +105,16 @@ BASE_FEATURE(kShowKiteForSupervisedUsers,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kHideGuestModeForSupervisedUsers,
              "HideGuestModeForSupervisedUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers,
              "ForceSafeSearchForUnauthenticatedSupervisedUsers",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
@@ -129,16 +123,29 @@ BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
 
 BASE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites,
              "ForceSupervisedUserReauthenticationForBlockedSites",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial,
+             "CloseSignTabsFromReauthenticationInterstitial",
+             // Enabled by default, flag meant to work as a kill switch.
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes,
              "EnableSupervisedUserReauthenticationForSubframes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// TODO: crbug.com/378636321 - Clean up the
+// kUncredentialedFilteringFallbackForSupervisedUsers and
+// kWaitUntilAccessTokenAvailableForClassifyUrl flags, by inlining the
+// platform #defines.
 BASE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers,
              "UncredentialedFilteringFallbackForSupervisedUsers",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
              "WaitUntilAccessTokenAvailableForClassifyUrl",
@@ -167,11 +174,16 @@ BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
 
 BASE_FEATURE(kFetchListFamilyMembersWithCapability,
              "FetchListFamilyMembersWithCapability",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kUseFamilyMemberRolePrefsForFeedback,
              "UseFamilyMemberRolePrefsForFeedback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClassifyUrlOnProcessResponseEvent,
              "ClassifyUrlOnProcessResponseEvent",

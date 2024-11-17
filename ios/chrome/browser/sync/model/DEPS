@@ -1,7 +1,7 @@
 include_rules = [
   "+components/consent_auditor",
   "+components/data_sharing/public",
-  "+components/saved_tab_groups/tab_group_sync_service.h",
+  "+components/saved_tab_groups/public/tab_group_sync_service.h",
   "+components/sharing_message",
   "+components/trusted_vault",
   "+components/webauthn/core/browser",

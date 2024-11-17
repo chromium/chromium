@@ -13,6 +13,8 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/render_surface_filters.h"
+#include "cc/trees/layer_tree_host.h"
+#include "cc/trees/property_tree.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/chunk_to_layer_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/property_tree_manager.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -145,7 +147,7 @@ class ConversionContext {
   ConversionContext(const PropertyTreeState& layer_state,
                     const gfx::Vector2dF& layer_offset,
                     Result& result,
-                    const StateEntry* outer_state_stack_top = nullptr)
+                    const HeapVector<StateEntry>* outer_state_stack = nullptr)
       : chunk_to_layer_mapper_(layer_state, layer_offset),
         current_transform_(&layer_state.Transform()),
         current_clip_(&layer_state.Clip()),
@@ -153,7 +155,7 @@ class ConversionContext {
         current_scroll_translation_(
             &current_transform_->NearestScrollTranslationNode()),
         result_(result),
-        outer_state_stack_top_(outer_state_stack_top) {}
+        outer_state_stack_(outer_state_stack) {}
   ~ConversionContext();
 
  private:
@@ -350,9 +352,9 @@ class ConversionContext {
 
   Result& result_;
 
-  // Points to the top of stack_stack_ of the outer ConversionContext that
-  // initiated the current ConversionContext in EmitDrawScrollingContentsOp().
-  const StateEntry* outer_state_stack_top_ = nullptr;
+  // Points to stack_stack_ of the outer ConversionContext that initiated the
+  // current ConversionContext in EmitDrawScrollingContentsOp().
+  const HeapVector<StateEntry>* outer_state_stack_ = nullptr;
 };
 
 template <typename Result>
@@ -452,11 +454,10 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToClip(
         &target_clip.LowestCommonAncestor(*current_clip_).Unalias();
     const auto* clip = current_clip_;
     while (clip != lca_clip) {
-      if (!state_stack_.size() && outer_state_stack_top_) {
+      if (!state_stack_.size() && outer_state_stack_ &&
+          !outer_state_stack_->empty() && outer_state_stack_->back().IsClip()) {
         // We are ending a clip that is started from the outer
-        // ConversionContext. outer_state_stack_top_ should be always the
-        // overflow clip of the current scroll translation.
-        CHECK(outer_state_stack_top_->IsClip());
+        // ConversionContext.
         return {ScrollTranslationAction::kEnd};
       }
       if (!state_stack_.size() || !state_stack_.back().IsClip()) {
@@ -788,11 +789,9 @@ ScrollTranslationAction ConversionContext<Result>::EndClips() {
   while (state_stack_.size() && state_stack_.back().IsClip()) {
     EndClip();
   }
-  if (!state_stack_.size() && outer_state_stack_top_) {
-    // outer_state_stack_top_ should be always the overflow clip of the current
-    // scroll translation. The outer ConversionState should continue to end the
-    // clips.
-    CHECK(outer_state_stack_top_->IsClip());
+  if (!state_stack_.size() && outer_state_stack_ &&
+      !outer_state_stack_->empty() && outer_state_stack_->back().IsClip()) {
+    // The outer ConversionState should continue to end the clips.
     return {ScrollTranslationAction::kEnd};
   }
   return {};
@@ -894,7 +893,7 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
   auto scrolling_contents_list = base::MakeRefCounted<cc::DisplayItemList>();
   ConversionContext<cc::DisplayItemList>(
       PropertyTreeState(scroll_translation, *current_clip_, *current_effect_),
-      gfx::Vector2dF(), *scrolling_contents_list, &state_stack_.back())
+      gfx::Vector2dF(), *scrolling_contents_list, &state_stack_)
       .Convert(chunk_it, end_chunk);
 
   EndTransform();
@@ -1029,7 +1028,7 @@ void ConversionContext<Result>::Convert(PaintChunkIterator& chunk_it,
       continue;
     }
     if (action.type == ScrollTranslationAction::kEnd) {
-      if (outer_state_stack_top_) {
+      if (outer_state_stack_) {
         // Return to the calling EmitDrawScrollingContentsOp().
         return;
       } else {
@@ -1274,7 +1273,18 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
     if (!scroll_node) {
       return;
     }
+
     auto scroll_element_id = scroll_node->GetCompositorElementId();
+    auto& scroll_tree =
+        layer_.layer_tree_host()->property_trees()->scroll_tree_mutable();
+    if (hit_test_data.scrolling_contents_cull_rect.Contains(
+            scroll_node->ContentsRect())) {
+      scroll_tree.ClearScrollingContentsCullRect(scroll_element_id);
+    } else {
+      scroll_tree.SetScrollingContentsCullRect(
+          scroll_element_id, hit_test_data.scrolling_contents_cull_rect);
+    }
+
     if (layer_.element_id() == scroll_element_id) {
       // layer_ is the composited layer of the scroll hit test chunk.
       return;

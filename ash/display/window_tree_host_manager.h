@@ -186,7 +186,8 @@ class ASH_EXPORT WindowTreeHostManager
   // are rendered on the correct display.
   void UpdateHostOfDisplayProviders();
 
-  typedef std::map<int64_t, AshWindowTreeHost*> WindowTreeHostMap;
+  typedef std::map<int64_t, raw_ptr<AshWindowTreeHost, CtnExperimental>>
+      WindowTreeHostMap;
   // The mapping from display ID to its window tree host.
   WindowTreeHostMap window_tree_hosts_;
 

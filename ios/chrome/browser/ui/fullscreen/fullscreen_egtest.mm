@@ -91,7 +91,6 @@ void WaitforPDFExtensionView() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
-  config.features_disabled.push_back(kDisableFullscreenScrolling);
   return config;
 }
 
@@ -105,11 +104,11 @@ void WaitforPDFExtensionView() {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Reactivate translation.
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:translate::prefs::kOfferTranslateEnabled];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Verifies that the content offset of the web view is set up at the correct
@@ -451,7 +450,6 @@ void WaitforPDFExtensionView() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(web::features::kSmoothScrollingDefault);
-  config.features_disabled.push_back(kDisableFullscreenScrolling);
   return config;
 }
 

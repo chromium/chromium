@@ -4,9 +4,13 @@
 
 #include "components/password_manager/core/browser/passkey_credential.h"
 
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -16,6 +20,10 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "device/fido/features.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace password_manager {
 
@@ -93,25 +101,45 @@ PasskeyCredential::PasskeyCredential(PasskeyCredential&&) = default;
 PasskeyCredential& PasskeyCredential::operator=(PasskeyCredential&&) = default;
 
 std::u16string PasskeyCredential::GetAuthenticatorLabel() const {
-  if (authenticator_label_) {
-    return *authenticator_label_;
-  }
+  return authenticator_label_.value_or(GetAuthenticatorLabelBySourceType());
+}
+
+void PasskeyCredential::SetAuthenticatorLabel(
+    const std::u16string& authenticator_label) {
+  authenticator_label_ = authenticator_label;
+}
+
+std::u16string PasskeyCredential::GetAuthenticatorLabelBySourceType() const {
   int id;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  bool is_updated_labels =
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
+#else
+  bool is_updated_labels = false;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   switch (source_) {
     case Source::kWindowsHello:
-      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO;
+      id = is_updated_labels
+               ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW
+               : IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO;
       break;
     case Source::kTouchId:
-      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE;
+      id = is_updated_labels
+               ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE_NEW
+               : IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE;
       break;
     case Source::kICloudKeychain:
-      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN;
+      id = is_updated_labels
+               ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN_NEW
+               : IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN;
       break;
     case Source::kAndroidPhone:
       id = GetAuthenticationLabelForPasskeysFromAndroid();
       break;
     case Source::kGooglePasswordManager:
-      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER;
+      id = is_updated_labels
+               ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER_NEW
+               : IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER;
       break;
     case Source::kOther:
       id = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;

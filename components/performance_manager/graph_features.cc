@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
+#include "components/performance_manager/decorators/important_frame_decorator.h"
 #include "components/performance_manager/decorators/page_aggregator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/decorators/process_hosted_content_types_aggregator.h"
@@ -21,7 +22,9 @@
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/metrics_collector.h"
+#include "components/performance_manager/public/scenarios/performance_scenario_observer.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
+#include "components/performance_manager/scenarios/loading_scenario_observer.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -43,6 +46,9 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   if (flags_.frame_visibility_decorator) {
     Install<FrameVisibilityDecorator>(graph);
   }
+  if (flags_.important_frame_decorator) {
+    Install<ImportantFrameDecorator>(graph);
+  }
   if (flags_.metrics_collector) {
     Install<MetricsCollector>(graph);
   }
@@ -56,6 +62,8 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
     Install<PageLoadTrackerDecorator>(graph);
   }
   if (flags_.priority_tracking) {
+    // The ExecutionContextPriorityDecorator depends on FrameVisibilityDecorator
+    // and ImportantFrameDecorator and so must be installed after.
     Install<execution_context_priority::ExecutionContextPriorityDecorator>(
         graph);
     Install<ProcessPriorityAggregator>(graph);
@@ -68,6 +76,10 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   }
   if (flags_.frozen_frame_aggregator) {
     Install<FrozenFrameAggregator>(graph);
+  }
+  if (flags_.performance_scenarios) {
+    Install<LoadingScenarioObserver>(graph);
+    Install<PerformanceScenarioNotifier>(graph);
   }
   if (flags_.resource_attribution_scheduler) {
     Install<resource_attribution::internal::QueryScheduler>(graph);

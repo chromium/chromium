@@ -26,6 +26,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,6 +35,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_xml_http_request_response_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_parser_client.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -74,7 +76,6 @@ class ExecutionContext;
 class FormData;
 class PrivateToken;
 class ScriptState;
-class ScriptValue;
 class TextResourceDecoder;
 class ThreadableLoader;
 class URLSearchParams;
@@ -102,15 +103,6 @@ class CORE_EXPORT XMLHttpRequest final
     kHeadersReceived = 2,
     kLoading = 3,
     kDone = 4
-  };
-
-  enum ResponseTypeCode {
-    kResponseTypeDefault,
-    kResponseTypeText,
-    kResponseTypeJSON,
-    kResponseTypeDocument,
-    kResponseTypeBlob,
-    kResponseTypeArrayBuffer,
   };
 
   // ExecutionContextLifecycleObserver
@@ -156,14 +148,16 @@ class CORE_EXPORT XMLHttpRequest final
   const AtomicString& getResponseHeader(const AtomicString&) const;
   String responseText(ExceptionState&);
   Document* responseXML(ExceptionState&);
-  ScriptValue response(ScriptState*, ExceptionState&);
+  v8::Local<v8::Value> response(ScriptState*);
   unsigned timeout() const {
     return static_cast<unsigned>(timeout_.InMilliseconds());
   }
   void setTimeout(unsigned timeout, ExceptionState&);
-  ResponseTypeCode GetResponseTypeCode() const { return response_type_code_; }
-  String responseType();
-  void setResponseType(const String&, ExceptionState&);
+  V8XMLHttpRequestResponseType::Enum GetResponseTypeCode() const {
+    return response_type_code_;
+  }
+  V8XMLHttpRequestResponseType responseType();
+  void setResponseType(const V8XMLHttpRequestResponseType&, ExceptionState&);
   String responseURL();
 
   // For Inspector.
@@ -208,7 +202,7 @@ class CORE_EXPORT XMLHttpRequest final
 
   void EndLoading();
 
-  v8::Local<v8::Value> ResponseJSON(v8::Isolate*, ExceptionState&);
+  v8::Local<v8::Value> ResponseJSON(ScriptState*);
   Blob* ResponseBlob();
   DOMArrayBuffer* ResponseArrayBuffer();
 
@@ -241,7 +235,7 @@ class CORE_EXPORT XMLHttpRequest final
   void ThrowForLoadFailureIfNeeded(ExceptionState&, const String&);
 
   bool InitSend(ExceptionState&);
-  void SendBytesData(const void*, size_t, ExceptionState&);
+  void SendBytesData(base::span<const uint8_t>, ExceptionState&);
   void send(Document*, ExceptionState&);
   void send(const String&, ExceptionState&);
   void send(Blob*, ExceptionState&);
@@ -351,9 +345,14 @@ class CORE_EXPORT XMLHttpRequest final
 
   Member<XMLHttpRequestProgressEventThrottle> progress_event_throttle_;
 
+  // V8XMLHttpRequestResponseType::Enum::k is the default value. For readability
+  // we alias it to kResponseTypeDefault.
+  static constexpr auto kResponseTypeDefault =
+      V8XMLHttpRequestResponseType::Enum::k;
+
   // An enum corresponding to the allowed string values for the responseType
   // attribute.
-  ResponseTypeCode response_type_code_ = kResponseTypeDefault;
+  V8XMLHttpRequestResponseType::Enum response_type_code_ = kResponseTypeDefault;
 
   // The DOMWrapperWorld in which the request initiated. Can be null.
   Member<const DOMWrapperWorld> world_;

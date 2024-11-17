@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.chrome.browser.tracing.TracingNotificationManager;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.lang.annotation.Retention;
@@ -31,7 +31,7 @@ import java.util.Set;
 
 /** Settings fragment that shows options for recording a performance trace. */
 public class TracingSettings extends PreferenceFragmentCompat
-        implements SettingsPage, TracingController.Observer {
+        implements EmbeddableSettingsPage, TracingController.Observer {
     static final String NON_DEFAULT_CATEGORY_PREFIX = "disabled-by-default-";
 
     @VisibleForTesting static final String UI_PREF_DEFAULT_CATEGORIES = "default_categories";

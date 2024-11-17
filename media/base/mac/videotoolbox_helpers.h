@@ -9,6 +9,7 @@
 #include <VideoToolbox/VideoToolbox.h>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/notreached.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
 
@@ -26,6 +27,24 @@ MEDIA_EXPORT bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
                                                  size_t annexb_buffer_size,
                                                  char* annexb_buffer,
                                                  size_t* used_buffer_size);
+
+struct ScopedVTCompressionSessionRefTraits {
+  static VTCompressionSessionRef InvalidValue() { return nullptr; }
+  static VTCompressionSessionRef Retain(VTCompressionSessionRef session) {
+    NOTREACHED() << "Only compatible with ASSUME policy";
+  }
+  static void Release(VTCompressionSessionRef session) {
+    // Blocks until all pending frames have been flushed out.
+    VTCompressionSessionInvalidate(session);
+    CFRelease(session);
+  }
+};
+
+// A scoper for VTCompressionSessionRef that makes sure
+// VTCompressionSessionInvalidate() is called before releasing.
+using ScopedVTCompressionSessionRef =
+    base::apple::ScopedTypeRef<VTCompressionSessionRef,
+                               ScopedVTCompressionSessionRefTraits>;
 
 // Helper class to add session properties to a VTCompressionSessionRef.
 class MEDIA_EXPORT SessionPropertySetter {

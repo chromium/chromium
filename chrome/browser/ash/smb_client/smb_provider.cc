@@ -56,8 +56,7 @@ const file_system_provider::IconSet& SmbProvider::GetIconSet() const {
 }
 
 file_system_provider::RequestManager* SmbProvider::GetRequestManager() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool SmbProvider::RequestMount(

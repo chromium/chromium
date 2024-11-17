@@ -71,7 +71,7 @@ bool ManParser::next_token(std::string& t) {
         } else {
           state = 2;
         }
-      // no break
+      /* FALLTHROUGH */
       case 2:  // non word chars
         if (is_wordchar(line[actual].c_str() + head)) {
           state = 3;

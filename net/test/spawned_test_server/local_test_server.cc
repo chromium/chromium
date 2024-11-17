@@ -49,8 +49,7 @@ bool AppendArgumentFromJSONValue(const std::string& key,
     case base::Value::Type::DICT:
     case base::Value::Type::BINARY:
     default:
-      NOTREACHED_IN_MIGRATION() << "improper json type";
-      return false;
+      NOTREACHED() << "improper json type";
   }
   return true;
 }
@@ -60,7 +59,7 @@ bool AppendArgumentFromJSONValue(const std::string& key,
 LocalTestServer::LocalTestServer(Type type, const base::FilePath& document_root)
     : BaseTestServer(type) {
   if (!Init(document_root))
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 }
 
 LocalTestServer::LocalTestServer(Type type,
@@ -68,7 +67,7 @@ LocalTestServer::LocalTestServer(Type type,
                                  const base::FilePath& document_root)
     : BaseTestServer(type, ssl_options) {
   if (!Init(document_root))
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 }
 
 LocalTestServer::~LocalTestServer() {
@@ -219,8 +218,7 @@ bool LocalTestServer::AddCommandLineArguments(
       command_line->AppendArg("--proxy");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   return true;

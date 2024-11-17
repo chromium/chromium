@@ -74,7 +74,7 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerFreedOnThreadExit) {
   WaitableEvent tls_set;
 
   thread.task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
+      FROM_HERE, BindLambdaForTesting([&] {
         tls_owned_pointer.Set(
             std::make_unique<SetTrueOnDestruction>(&tls_was_destroyed));
         tls_set.Signal();
@@ -98,7 +98,7 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerCleansUpMainThreadOnDestruction) {
   WaitableEvent tls_set;
 
   thread.task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
+      FROM_HERE, BindLambdaForTesting([&] {
         tls_owned_pointer->Set(
             std::make_unique<SetTrueOnDestruction>(&tls_was_destroyed_other));
         tls_set.Signal();
@@ -138,7 +138,7 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerDeathIfDestroyedWithActiveThread) {
   WaitableEvent tls_set;
 
   thread.task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
+      FROM_HERE, BindLambdaForTesting([&] {
         tls_owned_pointer->Set(std::make_unique<int>(1));
         tls_set.Signal();
       }));

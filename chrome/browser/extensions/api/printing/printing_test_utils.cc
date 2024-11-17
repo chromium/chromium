@@ -22,7 +22,7 @@
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/print_backend.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
@@ -75,7 +75,7 @@ static constexpr auto kManifestFileNames =
          {ExtensionType::kExtensionMV2, "manifest_extension.json"},
          {ExtensionType::kExtensionMV3, "manifest_v3_extension.json"}});
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This class uses methods from FakeCupsPrintJobManager while connecting it to
 // the rest of the printing pipeline so that it no longer has to be directly
 // invoked by the test code.
@@ -153,7 +153,7 @@ PrintingBackendInfrastructureHelper::~PrintingBackendInfrastructureHelper() {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 PrintingTestHelper::PrintingTestHelper() {
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()

@@ -14,7 +14,6 @@
 namespace gfx {
 class ImageSkia;
 class Rect;
-class RoundedCornersF;
 }
 
 namespace ui {
@@ -59,20 +58,11 @@ class ShellToplevelWrapper {
   // Initializes the ShellToplevel.
   virtual bool Initialize() = 0;
 
-  // Returns true if `aura_toplevel_` version is equal or newer than `version`.
-  virtual bool IsSupportedOnAuraToplevel(uint32_t version) const = 0;
-
-  // Sets whether the window can be maximized.
-  virtual void SetCanMaximize(bool can_maximize) = 0;
-
   // Sets a native window to maximized state.
   virtual void SetMaximized() = 0;
 
   // Unsets a native window from maximized state.
   virtual void UnSetMaximized() = 0;
-
-  // Sets whether the window can enter fullscreen.
-  virtual void SetCanFullscreen(bool can_fullscreen) = 0;
 
   // Sets a native window to fullscreen state. If the `wayland_output` is a
   // `nullptr`, the current output will be used, otherwise the requested one.
@@ -80,20 +70,6 @@ class ShellToplevelWrapper {
 
   // Unsets a native window from fullscreen state.
   virtual void UnSetFullscreen() = 0;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Sets a native window's immersive mode.
-  virtual void SetUseImmersiveMode(bool immersive) = 0;
-
-  // Sets the top inset (header) height which is reserved or occupied by the top
-  // window frame.
-  virtual void SetTopInset(int height) = 0;
-
-  // Sets the radius of each corner of the drop shadow associated with the
-  // window.
-  virtual void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) = 0;
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Sets a native window to minimized state.
   virtual void SetMinimized() = 0;
@@ -118,13 +94,6 @@ class ShellToplevelWrapper {
   // the content area of the surface.
   virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;
 
-  // Requests a desired window position and size in global screen coordinates,
-  // with a hint in which display the window should be placed.  The compositor
-  // may or may not filfill the request.
-  virtual void RequestWindowBounds(
-      const gfx::Rect& bounds,
-      int64_t display_id = display::kInvalidDisplayId) = 0;
-
   // Sets the minimum size for the top level.
   virtual void SetMinSize(int32_t width, int32_t height) = 0;
 
@@ -142,74 +111,8 @@ class ShellToplevelWrapper {
   // with this top level window.
   virtual void SetDecoration(DecorationMode decoration) = 0;
 
-  // Set session id and restore id for the top level.
-  virtual void SetRestoreInfo(int32_t restore_session_id,
-                              int32_t restore_window_id) = 0;
-
-  virtual void SetRestoreInfoWithWindowIdSource(
-      int32_t restore_session_id,
-      const std::string& restore_window_id_source) = 0;
-
-  // Request that the server set the orientation lock to the provided lock type.
-  // This is only accepted if the requesting window is running in immersive
-  // fullscreen mode and in a tablet configuration.
-  virtual void Lock(WaylandOrientationLockType lock_type) = 0;
-
-  // Request that the server remove the applied orientation lock.
-  virtual void Unlock() = 0;
-
   // Request that the window be made a system modal.
   virtual void SetSystemModal(bool modal) = 0;
-
-  // Checks if the server supports chrome to control the window position in
-  // screen coordinates.
-  virtual bool SupportsScreenCoordinates() const = 0;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Enables screen coordinates support. This is no-op if the server does not
-  // support the screen coordinates.
-  virtual void EnableScreenCoordinates() = 0;
-#endif
-
-  // Sets/usets a native window to float state. This places it on top of other
-  // windows.
-  virtual void SetFloatToLocation(
-      WaylandFloatStartLocation float_start_location) = 0;
-  virtual void UnSetFloat() = 0;
-
-  // Sets the z order of the window.
-  virtual void SetZOrder(ZOrderLevel z_order) = 0;
-
-  // Activation brings a window to the foreground. Deactivation makes a window
-  // non-foregrounded.
-  virtual bool SupportsActivation() = 0;
-  virtual void Activate() = 0;
-  virtual void Deactivate() = 0;
-
-  // Sets the scale factor for the next commit. Scale factor persists until a
-  // new one is set.
-  virtual void SetScaleFactor(float scale_factor) = 0;
-
-  // Snaps the window in the direction of `snap_direction`. `snap_ratio`
-  // indicates the width of the work area to snap to in landscape mode, or
-  // height in portrait mode.
-  virtual void CommitSnap(WaylandWindowSnapDirection snap_direction,
-                          float snap_ratio) = 0;
-
-  // Signals the underneath platform to shows a preview for the given window
-  // snap direction. `allow_haptic_feedback` indicates if it should send haptic
-  // feedback.
-  virtual void ShowSnapPreview(WaylandWindowSnapDirection snap_direction,
-                               bool allow_haptic_feedback) = 0;
-
-  // Sets the persistable window property.
-  virtual void SetPersistable(bool persistable) const = 0;
-
-  // Sets the shape of the toplevel window. If `shape_rects` is null this will
-  // unset the window shape.
-  virtual void SetShape(std::unique_ptr<ShapeRects> shape_rects) = 0;
-
-  virtual void AckRotateFocus(uint32_t serial, uint32_t handled) = 0;
 
   virtual void SetIcon(const gfx::ImageSkia& icon) = 0;
 

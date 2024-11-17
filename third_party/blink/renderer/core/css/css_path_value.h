@@ -32,6 +32,7 @@ class CSSPathValue : public CSSValue {
   String CustomCSSText() const;
 
   bool Equals(const CSSPathValue&) const;
+  unsigned CustomHash() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

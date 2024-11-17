@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -52,13 +51,12 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -71,6 +69,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
@@ -79,9 +78,9 @@
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -129,7 +128,8 @@ class BrowserTabStripController::TabContextMenuContents
       menu_runner_->Cancel();
   }
 
-  void RunMenuAt(const gfx::Point& point, ui::MenuSourceType source_type) {
+  void RunMenuAt(const gfx::Point& point,
+                 ui::mojom::MenuSourceType source_type) {
     menu_runner_->RunMenuAt(tab_->GetWidget(), nullptr,
                             gfx::Rect(point, gfx::Size()),
                             views::MenuAnchorPosition::kTopLeft, source_type);
@@ -147,7 +147,7 @@ class BrowserTabStripController::TabContextMenuContents
 
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     auto* browser = controller_->browser_view_->browser();
     auto* system_app = browser->app_controller()
                            ? browser->app_controller()->system_app()
@@ -156,7 +156,7 @@ class BrowserTabStripController::TabContextMenuContents
                           browser->profile(), command_id)) {
       return false;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     int browser_cmd;
     return TabStripModel::ContextMenuCommandToBrowserCommand(command_id,
@@ -333,7 +333,7 @@ void BrowserTabStripController::OnCloseTab(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Tabs cannot be closed when the app is locked for OnTask. Only relevant for
   // non-web browser scenarios.
   if (browser_view_->browser()->IsLockedForOnTask()) {
@@ -388,9 +388,6 @@ void BrowserTabStripController::CloseTab(int model_index) {
 
   // Try to show reading list IPH if needed.
   if (tabstrip_->GetTabCount() >= 7) {
-    browser_view_->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kClosedTabWithEightOrMore);
-
     browser_view_->MaybeShowFeaturePromo(
         feature_engagement::kIPHReadingListEntryPointFeature);
   }
@@ -485,7 +482,7 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
 void BrowserTabStripController::ShowContextMenuForTab(
     Tab* tab,
     const gfx::Point& p,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   context_menu_contents_ = std::make_unique<TabContextMenuContents>(tab, this);
   context_menu_contents_->RunMenuAt(p, source_type);
   base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",
@@ -582,6 +579,11 @@ tab_groups::TabGroupColorId BrowserTabStripController::GetGroupColorId(
   return model_->group_model()->GetTabGroup(group)->visual_data()->color();
 }
 
+TabGroup* BrowserTabStripController::GetTabGroup(
+    const tab_groups::TabGroupId& group_id) const {
+  return model_->group_model()->GetTabGroup(group_id);
+}
+
 bool BrowserTabStripController::IsGroupCollapsed(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->ContainsTabGroup(group) &&
@@ -644,15 +646,20 @@ Profile* BrowserTabStripController::GetProfile() const {
   return model_->profile();
 }
 
+BrowserWindowInterface* BrowserTabStripController::GetBrowserWindowInterface() {
+  return browser_view_->browser();
+}
+
 const Browser* BrowserTabStripController::GetBrowser() const {
   return browser();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool BrowserTabStripController::IsLockedForOnTask() {
   return browser_view_->browser()->IsLockedForOnTask();
 }
 #endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripController, TabStripModelObserver implementation:
 
@@ -731,8 +738,6 @@ void BrowserTabStripController::OnTabGroupChanged(
   switch (change.type) {
     case TabGroupChange::kCreated: {
       tabstrip_->OnGroupCreated(change.group);
-      browser_view_->NotifyFeatureEngagementEvent(
-          feature_engagement::events::kTabGroupCreated);
       break;
     }
     case TabGroupChange::kEditorOpened: {
@@ -801,7 +806,7 @@ void BrowserTabStripController::TabBlockedStateChanged(WebContents* contents,
 
 void BrowserTabStripController::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    tabs::TabModel* tab,
+    tabs::TabInterface* tab,
     int index) {
   tabstrip_->AddTabToGroup(std::move(group), index);
 }

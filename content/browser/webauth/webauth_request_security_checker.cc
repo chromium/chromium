@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,8 +14,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -378,14 +375,8 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     return nullptr;
   }
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthnRelatedOrigin)) {
-    return RemoteValidation::Create(caller_origin, relying_party_id,
-                                    std::move(callback));
-  }
-
-  std::move(callback).Run(
-      blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID);
-  return nullptr;
+  return RemoteValidation::Create(caller_origin, relying_party_id,
+                                  std::move(callback));
 }
 
 blink::mojom::AuthenticatorStatus

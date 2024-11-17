@@ -38,9 +38,9 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocati
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
@@ -115,7 +115,7 @@ public class MultiWindowUtilsUnitTest {
     @Mock TabModel mNormalTabModel;
     @Mock TabModel mIncognitoTabModel;
     @Mock HomepageManager mHomepageManager;
-    @Mock DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock AppHeaderState mAppHeaderState;
 
     @Before
@@ -167,7 +167,7 @@ public class MultiWindowUtilsUnitTest {
         when(mHomepageManager.getHomepageGurl()).thenReturn(NTP_GURL);
         HomepageManager.setInstanceForTesting(mHomepageManager);
 
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(mAppHeaderState);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
     }
 
@@ -474,13 +474,13 @@ public class MultiWindowUtilsUnitTest {
 
         // Assume that the histograms are attempted to be recorded on a cold start of the app.
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateProvider,
+                mDesktopWindowStateManager,
                 InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
                 /* isColdStart= */ true);
 
         // Assume that the histograms are attempted to be recorded on a subsequent warm start.
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateProvider,
+                mDesktopWindowStateManager,
                 InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
                 /* isColdStart= */ false);
 
@@ -533,7 +533,7 @@ public class MultiWindowUtilsUnitTest {
                                             + HISTOGRAM_DESKTOP_WINDOW_COUNT_NEW_INSTANCE_SUFFIX)
                             .build();
             MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                    mDesktopWindowStateProvider, type, /* isColdStart= */ true);
+                    mDesktopWindowStateManager, type, /* isColdStart= */ true);
             watcher.assertExpected();
         }
     }
@@ -581,7 +581,7 @@ public class MultiWindowUtilsUnitTest {
                                             + HISTOGRAM_DESKTOP_WINDOW_COUNT_EXISTING_INSTANCE_SUFFIX)
                             .build();
             MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                    mDesktopWindowStateProvider, type, /* isColdStart= */ true);
+                    mDesktopWindowStateManager, type, /* isColdStart= */ true);
             watcher.assertExpected();
         }
     }
@@ -610,7 +610,7 @@ public class MultiWindowUtilsUnitTest {
         // Assume that the histograms are attempted to be recorded on a cold start of the app, not
         // in a desktop window.
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateProvider,
+                mDesktopWindowStateManager,
                 InstanceAllocationType.NEW_INSTANCE_NEW_TASK,
                 /* isColdStart= */ true);
 

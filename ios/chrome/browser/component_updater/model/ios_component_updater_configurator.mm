@@ -62,7 +62,6 @@ class IOSConfigurator : public update_client::Configurator {
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
-  bool EnabledDeltas() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -95,7 +94,10 @@ IOSConfigurator::IOSConfigurator(const base::CommandLine* cmdline)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
                          false),
       persisted_data_(update_client::CreatePersistedData(
-          GetApplicationContext()->GetLocalState(),
+          base::BindRepeating([]() {
+            ApplicationContext* context = GetApplicationContext();
+            return context ? context->GetLocalState() : nullptr;
+          }),
           nullptr)) {}
 
 base::TimeDelta IOSConfigurator::InitialDelay() const {
@@ -189,10 +191,6 @@ IOSConfigurator::GetPatcherFactory() {
         base::BindRepeating(&patch::LaunchInProcessFilePatcher));
   }
   return patch_factory_;
-}
-
-bool IOSConfigurator::EnabledDeltas() const {
-  return configurator_impl_.EnabledDeltas();
 }
 
 bool IOSConfigurator::EnabledBackgroundDownloader() const {

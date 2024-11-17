@@ -1,0 +1,18 @@
+include_rules = [
+  "+components/subresource_filter/core/common",
+  "+components/subresource_filter/core/mojom",
+  "+components/subresource_filter/content/shared/renderer",
+  "+components/subresource_filter/content/shared/common",
+  "+components/url_pattern_index/proto",
+  "+content/public/common",
+  "+content/public/renderer",
+  "+mojo/public/cpp/bindings",
+  "+net/base",
+  "+net/url_request",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+third_party/blink/public/common",
+  "+third_party/blink/public/platform",
+  "+third_party/blink/public/web",
+  "+third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h",
+]

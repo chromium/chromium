@@ -70,7 +70,7 @@ constexpr char kImeWindowMissingPermission[] =
     "Extensions require the \"app.window.ime\" permission to create windows.";
 constexpr char kImeOptionIsNotSupported[] =
     "The \"ime\" option is not supported for platform app.";
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kImeWindowUnsupportedPlatform[] =
     "The \"ime\" option can only be used on ChromeOS.";
 #else
@@ -80,10 +80,6 @@ constexpr char kImeWindowMustBeImeWindow[] =
 #endif
 constexpr char kShowInShelfWindowKeyNotSet[] =
     "The \"showInShelf\" option requires the \"id\" option to be set.";
-constexpr char kLockScreenActionRequiresLockScreenContext[] =
-    "The lockScreenAction option requires lock screen app context.";
-constexpr char kLockScreenActionRequiresLockScreenPermission[] =
-    "The lockScreenAction option requires lockScreen permission.";
 constexpr char kAppWindowCreationFailed[] = "Failed to create the app window.";
 constexpr char kPrematureWindowClose[] =
     "App window is closed before ready to commit first navigation.";
@@ -248,7 +244,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
             Error(app_window_constants::kImeWindowMissingPermission));
       }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       // IME window is only supported on ChromeOS.
       return RespondNow(
           Error(app_window_constants::kImeWindowUnsupportedPlatform));
@@ -262,7 +258,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
         return RespondNow(
             Error(app_window_constants::kImeWindowMustBeImeWindow));
       }
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
     } else {
       if (options->ime) {
         return RespondNow(
@@ -272,22 +268,21 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
 
     if (options->alpha_enabled) {
       const char* const kAllowlist[] = {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        "B58B99751225318C7EB8CF4688B5434661083E07",  // http://crbug.com/410550
-        "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // http://crbug.com/425539
-        "F94EE6AB36D6C6588670B2B01EB65212D9C64E33",
-        "B9EF10DDFEA11EF77873CC5009809E5037FC4C7A",  // http://crbug.com/435380
+#if BUILDFLAG(IS_CHROMEOS)
+          "B58B99751225318C7EB8CF4688B5434661083E07",  // http://crbug.com/410550
+          "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // http://crbug.com/425539
+          "F94EE6AB36D6C6588670B2B01EB65212D9C64E33",
+          "B9EF10DDFEA11EF77873CC5009809E5037FC4C7A",  // http://crbug.com/435380
 #endif
-        "0F42756099D914A026DADFA182871C015735DD95",  // http://crbug.com/323773
-        "2D22CDB6583FD0A13758AEBE8B15E45208B4E9A7",
-        "E7E2461CE072DF036CF9592740196159E2D7C089",  // http://crbug.com/356200
-        "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",
-        "312745D9BF916161191143F6490085EEA0434997",
-        "53041A2FA309EECED01FFC751E7399186E860B2C",
-        "A07A5B743CD82A1C2579DB77D353C98A23201EEF",  // http://crbug.com/413748
-        "F16F23C83C5F6DAD9B65A120448B34056DD80691",
-        "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"
-      };
+          "0F42756099D914A026DADFA182871C015735DD95",  // http://crbug.com/323773
+          "2D22CDB6583FD0A13758AEBE8B15E45208B4E9A7",
+          "E7E2461CE072DF036CF9592740196159E2D7C089",  // http://crbug.com/356200
+          "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",
+          "312745D9BF916161191143F6490085EEA0434997",
+          "53041A2FA309EECED01FFC751E7399186E860B2C",
+          "A07A5B743CD82A1C2579DB77D353C98A23201EEF",  // http://crbug.com/413748
+          "F16F23C83C5F6DAD9B65A120448B34056DD80691",
+          "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"};
       if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
           !SimpleFeature::IsIdInArray(extension_id(), kAllowlist,
                                       std::size(kAllowlist))) {
@@ -371,35 +366,11 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     }
   }
 
-  api::app_runtime::ActionType action_type =
-      api::app_runtime::ActionType::kNone;
-  if (options &&
-      options->lock_screen_action != api::app_runtime::ActionType::kNone) {
-    if (source_context_type() != mojom::ContextType::kLockscreenExtension) {
-      return RespondNow(Error(
-          app_window_constants::kLockScreenActionRequiresLockScreenContext));
-    }
-
-    if (!extension()->permissions_data()->HasAPIPermission(
-            mojom::APIPermissionID::kLockScreen)) {
-      return RespondNow(Error(
-          app_window_constants::kLockScreenActionRequiresLockScreenPermission));
-    }
-
-    action_type = options->lock_screen_action;
-    create_params.show_on_lock_screen = true;
-  }
-
   create_params.creator_process_id = source_process_id();
 
   AppWindow* app_window = nullptr;
-  if (action_type == api::app_runtime::ActionType::kNone) {
-    app_window =
-        AppWindowClient::Get()->CreateAppWindow(browser_context(), extension());
-  } else {
-    app_window = AppWindowClient::Get()->CreateAppWindowForLockScreenAction(
-        browser_context(), extension(), action_type);
-  }
+  app_window =
+      AppWindowClient::Get()->CreateAppWindow(browser_context(), extension());
 
   // App window client might refuse to create an app window, e.g. when the app
   // attempts to create a lock screen action handler window when the action was

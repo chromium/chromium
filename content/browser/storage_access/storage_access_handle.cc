@@ -42,29 +42,7 @@ void StorageAccessHandle::Create(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver) {
   CHECK(host);
-  // We need to check if either permission was granted *or* if full cookie
-  // access was granted as pre-3PCD the permission isn't possible to set and
-  // post-3PCD full cookie access remains sufficient, but is not necessary
-  // as permission access is possible without enabling full cookie access.
-  //
-  // For more see:
-  // third_party/blink/renderer/modules/storage_access/README.md
-  //
-  // NOTE: This handles the general permissions check for the entire interface.
-  // Specific binding sights (e.g., IndexedDB) should not need their own
-  // additional checks once the StorageAccessHandle interface has been bound.
-  bool has_full_cookie_access =
-      GetContentClient()->browser()->IsFullCookieAccessAllowed(
-          host->GetBrowserContext(), WebContents::FromRenderFrameHost(host),
-          host->GetLastCommittedURL(), host->GetStorageKey());
-  bool has_permission_access =
-      host->GetProcess()
-          ->GetBrowserContext()
-          ->GetPermissionController()
-          ->GetPermissionStatusForCurrentDocument(
-              blink::PermissionType::STORAGE_ACCESS_GRANT, host) ==
-      blink::mojom::PermissionStatus::GRANTED;
-  if (!has_full_cookie_access && !has_permission_access) {
+  if (!DoesFrameHaveStorageAccess(host)) {
 #if DCHECK_IS_ON()
     mojo::ReportBadMessage(
         "Binding a StorageAccessHandle requires third-party cookie access or "
@@ -73,6 +51,23 @@ void StorageAccessHandle::Create(
     return;
   }
   new StorageAccessHandle(*host, std::move(receiver));
+}
+
+// static
+bool StorageAccessHandle::DoesFrameHaveStorageAccess(RenderFrameHost* host) {
+  bool has_full_cookie_access =
+      GetContentClient()->browser()->IsFullCookieAccessAllowed(
+          host->GetBrowserContext(), WebContents::FromRenderFrameHost(host),
+          host->GetLastCommittedURL(), host->GetStorageKey());
+  if (has_full_cookie_access) {
+    return true;
+  }
+  return host->GetProcess()
+             ->GetBrowserContext()
+             ->GetPermissionController()
+             ->GetPermissionStatusForCurrentDocument(
+                 blink::PermissionType::STORAGE_ACCESS_GRANT, host) ==
+         blink::mojom::PermissionStatus::GRANTED;
 }
 
 void StorageAccessHandle::BindIndexedDB(
@@ -160,7 +155,7 @@ void StorageAccessHandle::EstimateImpl(
   static_cast<RenderFrameHostImpl&>(render_frame_host())
       .GetStoragePartition()
       ->GetQuotaManagerProxy()
-      ->GetBucketUsageAndQuota(
+      ->GetBucketUsageAndReportedQuota(
           bucket_info.id, base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&EstimateImplAfterGetBucketUsageAndQuota,
                          std::move(callback)));

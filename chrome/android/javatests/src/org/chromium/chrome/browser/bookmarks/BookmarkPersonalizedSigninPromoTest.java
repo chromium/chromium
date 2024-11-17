@@ -62,8 +62,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.Set;
 
@@ -150,7 +150,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     // Signing in with a non-default account is disabled on automotive, which only supports one
     // account per OS profile.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/362215887
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/362215887
     public void testSigninButtonNotDefaultAccount() {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
 
@@ -174,7 +174,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/362215887
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/362215887
     public void testSigninButtonNewAccount() {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
 
@@ -201,6 +201,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     })
     // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/372858049
     public void shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
@@ -233,6 +234,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     })
     // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/372858049
     public void shouldHideBookmarksSigninPromoIfDataTypesSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);

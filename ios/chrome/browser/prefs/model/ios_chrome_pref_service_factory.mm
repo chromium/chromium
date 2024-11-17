@@ -70,8 +70,8 @@ std::unique_ptr<PrefService> CreateLocalState(
   return factory.Create(pref_registry.get());
 }
 
-std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
-    const base::FilePath& browser_state_path,
+std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
+    const base::FilePath& profile_path,
     base::SequencedTaskRunner* pref_io_task_runner,
     const scoped_refptr<user_prefs::PrefRegistrySyncable>& pref_registry,
     policy::PolicyService* policy_service,
@@ -84,12 +84,12 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
   // simple JsonPrefStore to store them (which is what PrefStoreManager uses
   // on platforms that do not track preference modifications).
   sync_preferences::PrefServiceSyncableFactory factory;
-  PrepareFactory(&factory, browser_state_path.Append(kPreferencesFilename),
+  PrepareFactory(&factory, profile_path.Append(kPreferencesFilename),
                  pref_io_task_runner, policy_service, policy_connector,
                  supervised_user_prefs);
   if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
     factory.SetAccountPrefStore(base::MakeRefCounted<JsonPrefStore>(
-        browser_state_path.Append(kAccountPreferencesFilename), nullptr,
+        profile_path.Append(kAccountPreferencesFilename), nullptr,
         pref_io_task_runner));
   }
   factory.set_async(async);
@@ -99,7 +99,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
 }
 
 std::unique_ptr<sync_preferences::PrefServiceSyncable>
-CreateIncognitoBrowserStatePrefs(
+CreateIncognitoProfilePrefs(
     sync_preferences::PrefServiceSyncable* pref_service) {
   // List of keys that cannot be changed in the user prefs file by the incognito
   // browser state. All preferences that store information about the browsing

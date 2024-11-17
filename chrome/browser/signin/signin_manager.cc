@@ -246,10 +246,10 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
       identity_manager_->GetAccountsInCookieJar();
 
   std::vector<gaia::ListedAccount> cookie_accounts =
-      cookie_info.signed_in_accounts;
+      cookie_info.GetPotentiallyInvalidSignedInAccounts();
 
   // Fresh cookies and loaded tokens are needed to compute the UPA.
-  if (cookie_info.accounts_are_fresh) {
+  if (cookie_info.AreAccountsFresh()) {
     // Cookies are fresh and tokens are loaded, UPA is the first account
     // in cookies if it exists and has a refresh token.
     if (!cookie_accounts.empty()) {

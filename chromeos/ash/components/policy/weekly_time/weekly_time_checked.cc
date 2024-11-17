@@ -22,6 +22,12 @@ std::array<const char*, 7> WeeklyTimeChecked::kWeekDays = {
     "MONDAY", "TUESDAY",  "WEDNESDAY", "THURSDAY",
     "FRIDAY", "SATURDAY", "SUNDAY"};
 
+// static
+WeeklyTimeChecked::Day WeeklyTimeChecked::NextDay(Day day) {
+  int next_value = static_cast<int>(day) % 7 + 1;
+  return static_cast<Day>(next_value);
+}
+
 WeeklyTimeChecked::WeeklyTimeChecked(Day day_of_week,
                                      int milliseconds_since_midnight)
     : day_of_week_(day_of_week),

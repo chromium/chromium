@@ -11,6 +11,7 @@ from typing import List
 
 from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
+from blinkpy.web_tests.port.base import Port
 
 _log = logging.getLogger(__name__)
 IOS_VERSION = '17.0'
@@ -63,7 +64,7 @@ class Product:
     name = ''
     aliases = []
 
-    def __init__(self, port, options):
+    def __init__(self, port: Port, options):
         self._port = port
         self._host = port.host
         self._options = options
@@ -116,6 +117,7 @@ class DesktopProduct(Product):
         super().update_runner_options(options)
         options.binary = self._port.path_to_driver()
         options.binary_args.extend(self.additional_binary_args())
+        options.enable_swiftshader = True
 
     def additional_binary_args(self) -> List[str]:
         # Base args applicable to all embedders.
@@ -151,6 +153,21 @@ class HeadlessShell(DesktopProduct):
 class ChromeiOS(Product):
     name = 'chrome_ios'
 
+    def get_version(self):
+        # TODO(crbug.com/374199289): The build directory must be plumbed to
+        # `run_cwt_chromedriver_wrapper.py --build-dir` to find the version in
+        # an `Info.plist` file, but the directory isn't known to the `wpt run`
+        # code [0] because "build directory" is a Chromium-specific concept.
+        # For now, explicitly find the version in this Chromium-side wrapper,
+        # which overrides [0].
+        #
+        # [0]: https://github.com/web-platform-tests/wpt/blob/b6027ab/tools/wpt/browser.py#L1558
+        return self._host.executive.run_command([
+            self.webdriver_binary,
+            f'--build-dir={self._port.build_path()}',
+            '--version',
+        ]).strip()
+
     @property
     def processes(self) -> int:
         return 1
@@ -164,10 +181,12 @@ class ChromeiOS(Product):
     def additional_webdriver_args(self):
         # Set up xcode log output dir.
         output_dir = self._host.filesystem.join(
-            self._port.artifacts_directory(), "xcode-output")
+            self._port.artifacts_directory(), 'xcode-output')
         return [
-            '--out-dir=' + output_dir, '--os=' + IOS_VERSION,
-            '--device=' + IOS_DEVICE
+            f'--out-dir={output_dir}',
+            f'--os={IOS_VERSION}',
+            f'--device={IOS_DEVICE}',
+            f'--build-dir={self._port.build_path()}',
         ]
 
 
@@ -192,6 +211,17 @@ class ChromeAndroidBase(Product):
             device.Uninstall(path)
 
     @contextlib.contextmanager
+    def _install_incremental_apk(self, device, path):
+        """Helper context manager for ensuring a device uninstalls incremental
+        APK."""
+        self._host.executive.run_command([path, 'install', '--device', device])
+        try:
+            yield
+        finally:
+            self._host.executive.run_command(
+                [path, 'uninstall', '--device', device])
+
+    @contextlib.contextmanager
     def get_devices(self):
         instances = []
         try:
@@ -208,8 +238,7 @@ class ChromeAndroidBase(Product):
 
                 SyncParallelizer(instances).Start(  # pylint: disable=undefined-variable;
                     writable_system=True,
-                    window=self._options.emulator_window,
-                    require_fast_start=True)
+                    window=self._options.emulator_window)
 
             #TODO(weizhong): when choose device, make sure abi matches with target
             yield device_utils.DeviceUtils.HealthyDevices()  # pylint: disable=undefined-variable;
@@ -310,8 +339,15 @@ class ChromeAndroidBase(Product):
         with contextlib.ExitStack() as exit_stack:
             for apk in self._options.additional_apk:
                 exit_stack.enter_context(self._install_apk(device, apk))
-            exit_stack.enter_context(
-                self._install_apk(device, self.browser_apk))
+            if self._port._build_is_incremental_install():
+                incremental_install_script = self._port.build_path(
+                    'bin/chrome_public_apk')
+                install_context_manager = self._install_incremental_apk(
+                    device, incremental_install_script)
+            else:
+                install_context_manager = self._install_apk(
+                    device, self.browser_apk)
+            exit_stack.enter_context(cm=install_context_manager)
             _log.info('Provisioned device (serial: %s)', device.serial)
             yield
 
@@ -366,4 +402,7 @@ class ChromeAndroid(ChromeAndroidBase):
 
     @property
     def default_browser_apk(self):
+        if self._port._build_is_incremental_install():
+            return self._port.build_path('apks',
+                                         'ChromePublic_incremental.apk')
         return self._port.build_path('apks', 'ChromePublic.apk')

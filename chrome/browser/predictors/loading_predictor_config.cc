@@ -31,8 +31,7 @@ std::string GetStringNameForHintOrigin(HintOrigin hint_origin) {
     case HintOrigin::OPTIMIZATION_GUIDE:
       return "OptimizationGuide";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

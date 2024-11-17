@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/version.h"
 #include "extensions/browser/computed_hashes.h"
 #include "extensions/browser/content_verifier/content_verifier_delegate.h"
@@ -67,7 +68,8 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
     GURL fetch_url;
 
     // The key used to validate verified_contents.json.
-    ContentVerifierKey verifier_key;
+    // TODO(367764863) Rewrite to base::raw_span.
+    RAW_PTR_EXCLUSION ContentVerifierKey verifier_key;
 
     FetchKey(const ExtensionId& extension_id,
              const base::FilePath& extension_root,

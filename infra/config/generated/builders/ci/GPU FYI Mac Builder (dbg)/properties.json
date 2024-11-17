@@ -118,7 +118,8 @@
           "builder": "gpu-fyi-try-mac-intel-dbg",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Mac Builder (dbg)/targets"
     }
   },
   "$build/reclient": {

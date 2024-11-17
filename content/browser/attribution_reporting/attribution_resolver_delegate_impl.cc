@@ -154,18 +154,6 @@ void AttributionResolverDelegateImpl::ShuffleReports(
   }
 }
 
-std::optional<double>
-AttributionResolverDelegateImpl::GetRandomizedResponseRate(
-    const attribution_reporting::TriggerSpecs& trigger_specs,
-    attribution_reporting::EventLevelEpsilon epsilon) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto num_states = GetNumStates(trigger_specs);
-  if (!num_states.has_value()) {
-    return std::nullopt;
-  }
-  return attribution_reporting::GetRandomizedResponseRate(*num_states, epsilon);
-}
-
 AttributionResolverDelegate::GetRandomizedResponseResult
 AttributionResolverDelegateImpl::GetRandomizedResponse(
     SourceType source_type,

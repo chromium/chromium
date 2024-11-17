@@ -110,13 +110,12 @@ class FetchDiscountWorker {
                           signin::AccessTokenInfo access_token_info);
 
   // Load all the active carts.
-  void LoadAllActiveCarts(const bool is_oauth_fetch,
-                          const std::string access_token_str);
+  void LoadAllActiveCarts(bool is_oauth_fetch, std::string access_token_str);
 
   // This is run in the UI thread, it posts the discount fetching work,
   // FetchInBackground(), to another thread as a background task.
-  void ReadyToFetch(const bool is_oauth_fetch,
-                    const std::string access_token_str,
+  void ReadyToFetch(bool is_oauth_fetch,
+                    std::string access_token_str,
                     bool success,
                     std::vector<CartDB::KeyAndValue> proto_pairs);
 
@@ -130,10 +129,10 @@ class FetchDiscountWorker {
       std::unique_ptr<CartDiscountFetcher> fetcher,
       AfterFetchingCallback after_fetching_callback,
       std::vector<CartDB::KeyAndValue> proto_pairs,
-      const bool is_oauth_fetch,
-      const std::string access_token_str,
-      const std::string fetch_for_locale,
-      const std::string variation_headers);
+      bool is_oauth_fetch,
+      std::string access_token_str,
+      std::string fetch_for_locale,
+      std::string variation_headers);
 
   // This is run in a background thread, it posts AfterDiscountFetched() back to
   // UI thread to process the fetched result.

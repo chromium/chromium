@@ -28,6 +28,12 @@ class EmptyDataSharingService : public DataSharingService {
   DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetCollaborationGroupControllerDelegate() override;
+  bool IsGroupDataModelLoaded() override;
+  std::optional<GroupData> ReadGroup(const GroupId& group_id) override;
+  std::set<GroupData> ReadAllGroups() override;
+  std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
+      const GroupId& group_id,
+      const std::string& member_gaia_id) override;
   void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
       override;
@@ -52,10 +58,16 @@ class EmptyDataSharingService : public DataSharingService {
       const GroupId& group_id,
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  void LeaveGroup(
+      const GroupId& group_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+  std::vector<GroupEvent> GetGroupEventsSinceStartup() override;
   bool ShouldInterceptNavigationForShareURL(const GURL& url) override;
-  void HandleShareURLNavigationIntercepted(const GURL& url) override;
-  std::unique_ptr<GURL> GetDataSharingURL(const GroupData& group_data) override;
-  ParseURLResult ParseDataSharingURL(const GURL& url) override;
+  void HandleShareURLNavigationIntercepted(
+      const GURL& url,
+      std::unique_ptr<ShareURLInterceptionContext> context) override;
+  std::unique_ptr<GURL> GetDataSharingUrl(const GroupData& group_data) override;
+  ParseUrlResult ParseDataSharingUrl(const GURL& url) override;
   void EnsureGroupVisibility(
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
@@ -64,8 +76,11 @@ class EmptyDataSharingService : public DataSharingService {
       const GroupToken& group_token,
       base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
           callback) override;
-  DataSharingUIDelegate* GetUIDelegate() override;
-  ServiceStatus GetServiceStatus() override;
+  void SetSDKDelegate(
+      std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
+  void SetUIDelegate(
+      std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
+  DataSharingUIDelegate* GetUiDelegate() override;
 };
 
 }  // namespace data_sharing

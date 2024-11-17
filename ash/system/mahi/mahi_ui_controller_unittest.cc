@@ -103,6 +103,7 @@ class MahiUiControllerTest : public AshTestBase {
                               chromeos::features::kFeatureManagementMahi},
         /*disabled_features=*/{});
 
+    ON_CALL(mock_mahi_manager_, IsEnabled).WillByDefault(Return(true));
     ON_CALL(delegate_, GetView).WillByDefault(Return(&delegate_view_));
     AshTestBase::SetUp();
     scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
@@ -170,7 +171,7 @@ TEST_F(MahiUiControllerTest, NavigateToSummaryOutlinesSection) {
   // visible after navigation.
   ON_CALL(delegate(), GetViewVisibility)
       .WillByDefault([](VisibilityState state) {
-        return state == VisibilityState::kSummaryAndOutlines;
+        return state == VisibilityState::kSummaryAndOutlinesAndElucidation;
       });
 
   EXPECT_CALL(delegate_view(),
@@ -205,6 +206,18 @@ TEST_F(MahiUiControllerTest, NotifyRefreshAvailabilityChanged) {
   Mock::VerifyAndClearExpectations(&delegate());
 }
 
+// Checks `MahiUiController::Delegate` when the panel bounds change.
+TEST_F(MahiUiControllerTest, NotifyPanelBoundsChanged) {
+  const gfx::Rect expected_bounds = gfx::Rect(80, 80);
+  EXPECT_CALL(delegate(),
+              OnUpdated(AllOf(
+                  Property(&MahiUiUpdate::type,
+                           Eq(MahiUiUpdateType::kPanelBoundsChanged)),
+                  Property(&MahiUiUpdate::GetPanelBounds, expected_bounds))));
+  ui_controller().NotifyPanelBoundsChanged(expected_bounds);
+  Mock::VerifyAndClearExpectations(&delegate());
+}
+
 // Checks `MahiUiController::Delegate` when the contents get refreshed.
 TEST_F(MahiUiControllerTest, RefreshContents) {
   InSequence s;
@@ -221,6 +234,48 @@ TEST_F(MahiUiControllerTest, RefreshContents) {
   Mock::VerifyAndClearExpectations(&delegate());
 }
 
+// Checks `MahiUiController::Delegate` when the contents get refreshed and the
+// panel is for elucidation purpose.
+TEST_F(MahiUiControllerTest, RefreshContentsForElucidation) {
+  // Calls `OpenMahiPanel` to set `elucidation_in_use_` to false.
+  // This creates a panel widget and implicitly triggers `RefreshContents`
+  // and `PanelBoundsChanged` calls, hence the first sequence.
+  {
+    InSequence s;
+    EXPECT_CALL(
+        delegate(),
+        OnUpdated(Property(
+            &MahiUiUpdate::type,
+            Eq(MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated))));
+    EXPECT_CALL(delegate(), OnUpdated(Property(
+                                &MahiUiUpdate::type,
+                                Eq(MahiUiUpdateType::kElucidationRequested))));
+    EXPECT_CALL(delegate(),
+                OnUpdated(Property(&MahiUiUpdate::type,
+                                   Eq(MahiUiUpdateType::kPanelBoundsChanged))));
+  }
+
+  ui_controller().OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                /*elucidation_in_use=*/true);
+  Mock::VerifyAndClearExpectations(&delegate());
+
+  // Manually calls `RefreshContents` with `elucidation_in_use_` = false, it
+  // causes the sequence again.
+  {
+    InSequence s;
+    EXPECT_CALL(
+        delegate(),
+        OnUpdated(Property(
+            &MahiUiUpdate::type,
+            Eq(MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated))));
+    EXPECT_CALL(delegate(), OnUpdated(Property(
+                                &MahiUiUpdate::type,
+                                Eq(MahiUiUpdateType::kElucidationRequested))));
+  }
+  ui_controller().RefreshContents();
+  Mock::VerifyAndClearExpectations(&delegate());
+}
+
 // Checks `MahiUiController::Delegate` when retrying summary and outlines.
 TEST_F(MahiUiControllerTest, RetrySummaryAndOutlines) {
   EXPECT_CALL(
@@ -228,7 +283,7 @@ TEST_F(MahiUiControllerTest, RetrySummaryAndOutlines) {
       OnUpdated(Property(&MahiUiUpdate::type,
                          Eq(MahiUiUpdateType::kSummaryAndOutlinesReloaded))));
 
-  ui_controller().Retry(VisibilityState::kSummaryAndOutlines);
+  ui_controller().Retry(VisibilityState::kSummaryAndOutlinesAndElucidation);
   Mock::VerifyAndClearExpectations(&delegate());
 }
 
@@ -549,7 +604,8 @@ TEST_F(MahiUiControllerWithSessionTest, TimesPanelOpenedPerSessionMetric) {
   // Test that locking the screen will record the amount of times the panel
   // was opened while the session was active.
   for (int i = 0; i < kTimesPanelWillOpen; i++) {
-    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                   /*elucidation_in_use=*/false);
     // Immediately close the widget to avoid a dangling pointer.
     ui_controller()->mahi_panel_widget()->CloseNow();
   }
@@ -591,7 +647,8 @@ TEST_F(MahiUiControllerWithSessionTest,
     Shell::Get()->session_controller()->SetSessionInfo(info);
 
     // Open and close the mahi panel. The metric should not be recorded yet.
-    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                   /*elucidation_in_use=*/false);
     // Immediately close the widget to avoid a dangling pointer.
     ui_controller()->mahi_panel_widget()->CloseNow();
     histogram_tester.ExpectBucketCount(
@@ -622,7 +679,8 @@ TEST_F(MahiUiControllerWithSessionTest, PanelCloseOnSessionStateChanged) {
     info.state = session_manager::SessionState::ACTIVE;
     Shell::Get()->session_controller()->SetSessionInfo(info);
 
-    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                   /*elucidation_in_use=*/false);
     EXPECT_TRUE(ui_controller()->IsMahiPanelOpen());
 
     // Set the session to a non-active state, the panel should be closed.
@@ -645,7 +703,8 @@ TEST_F(MahiUiControllerWithSessionTest, PanelCloseOnActiveUserChanged) {
   base::test::RunUntil(
       [&] { return Shell::Get()->session_controller()->IsUserPrimary(); });
 
-  ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+  ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
+                                 /*elucidation_in_use=*/false);
   EXPECT_TRUE(ui_controller()->IsMahiPanelOpen());
 
   // Make user2 the active user, the panel should be closed.

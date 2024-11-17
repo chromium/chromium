@@ -59,11 +59,13 @@ ALIGNMENT_ORDER = [
     'IntrinsicLength',
     'TextBoxEdge',
     'TextDecorationThickness',
+    'StyleAnchorScope',
     'StyleAspectRatio',
     'StyleIntrinsicLength',
     'std::optional<StyleOverflowClipMargin>',
     'std::optional<blink::PositionAreaOffsets>',
     'std::optional<PhysicalOffset>',
+    'GapDataList<StyleColor>',
     # Compressed builds a Member can be 32 bits, vs. a pointer will be 64.
     'Member',
     # Aligns like float

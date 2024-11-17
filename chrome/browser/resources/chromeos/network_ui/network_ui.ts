@@ -11,7 +11,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/ash/common/network/network_select.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './network_state_ui.js';
 import './network_logs_ui.js';
 import './network_metrics_ui.js';

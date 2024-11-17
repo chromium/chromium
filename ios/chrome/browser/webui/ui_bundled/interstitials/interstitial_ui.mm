@@ -86,6 +86,10 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_page = CreateCaptivePortalBlockingPage(web_state.get());
   } else if (path_without_query == kChromeInterstitialSafeBrowsingPath) {
     interstitial_page = CreateSafeBrowsingBlockingPage(web_state.get(), url);
+  } else if (path_without_query == kChromeInterstitialEnterpriseBlock) {
+    interstitial_page = CreateEnterpriseBlockPage(web_state.get(), url);
+  } else if (path_without_query == kChromeInterstitialEnterpriseWarn) {
+    interstitial_page = CreateEnterpriseWarnPage(web_state.get(), url);
   }
   // TODO(crbug.com/40681491): Update the page HTML when a link for an
   // unsupported interstitial type is tapped.

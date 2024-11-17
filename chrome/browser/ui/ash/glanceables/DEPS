@@ -18,6 +18,5 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/test",
 ]

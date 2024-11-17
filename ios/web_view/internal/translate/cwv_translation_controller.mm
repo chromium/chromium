@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
-
 #import <memory>
 #import <string>
 
@@ -13,9 +11,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/translate/core/browser/translate_download_manager.h"
+#import "components/translate/core/common/language_detection_details.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
+#import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
+#import "ios/web_view/internal/translate/cwv_translation_language_detection_details_internal.h"
 #import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -53,8 +54,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
     case translate::TranslateErrors::SCRIPT_LOAD_ERROR:
       return CWVTranslationErrorScriptLoadError;
     case translate::TranslateErrors::TRANSLATE_ERROR_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return CWVTranslationErrorNone;
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -166,6 +166,19 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
   }
 }
 
+- (void)onLanguageDetermined:
+    (const translate::LanguageDetectionDetails&)details {
+  if ([_delegate
+          respondsToSelector:@selector(translationController:
+                                 didDeterminePageLanguageDetectionDetails:)]) {
+    CWVTranslationLanguageDetectionDetails* languageDetectionDetails =
+        [CWVTranslationLanguageDetectionDetails
+            languageDetectionDetailsFrom:details];
+    [_delegate translationController:self
+        didDeterminePageLanguageDetectionDetails:languageDetectionDetails];
+  }
+}
+
 #pragma mark - Public Methods
 
 - (NSSet*)supportedLanguages {
@@ -251,8 +264,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
     case CWVTranslationPolicyAuto: {
       // TODO(crbug.com/41310094): Support auto translation policies for
       // websites.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
 }

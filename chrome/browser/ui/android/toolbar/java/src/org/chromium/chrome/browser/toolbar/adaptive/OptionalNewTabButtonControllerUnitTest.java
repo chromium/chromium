@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -93,32 +93,32 @@ public final class OptionalNewTabButtonControllerUnitTest {
 
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     @Test
-    public void testIPHCommandHelper() {
+    public void testIphCommandHelper() {
         assertNull(
                 mOptionalNewTabButtonController
                         .get(/* tab= */ null)
                         .getButtonSpec()
-                        .getIPHCommandBuilder());
+                        .getIphCommandBuilder());
 
-        // Verify that IPHCommandBuilder is set just once;
-        IPHCommandBuilder builder =
-                mOptionalNewTabButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder();
+        // Verify that IphCommandBuilder is set just once;
+        IphCommandBuilder builder =
+                mOptionalNewTabButtonController.get(mTab).getButtonSpec().getIphCommandBuilder();
 
         assertNotNull(
-                mOptionalNewTabButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
+                mOptionalNewTabButtonController.get(mTab).getButtonSpec().getIphCommandBuilder());
 
-        // Verify that IPHCommandBuilder is same as before, get(Tab) did not create a new one.
+        // Verify that IphCommandBuilder is same as before, get(Tab) did not create a new one.
         assertEquals(
                 builder,
-                mOptionalNewTabButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
+                mOptionalNewTabButtonController.get(mTab).getButtonSpec().getIphCommandBuilder());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    public void testIPHEvent() {
+    public void testIphEvent() {
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(
+                .shouldTriggerHelpUi(
                         FeatureConstants
                                 .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE);
 

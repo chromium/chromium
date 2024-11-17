@@ -116,9 +116,7 @@ CrasInputStream::~CrasInputStream() {
 
 AudioInputStream::OpenOutcome CrasInputStream::Open() {
   if (client_) {
-    NOTREACHED_IN_MIGRATION() << "CrasInputStream already open";
-    ReportStreamOpenResult(StreamOpenResult::kCallbackOpenClientAlreadyOpen);
-    return OpenOutcome::kAlreadyOpen;
+    NOTREACHED() << "CrasInputStream already open";
   }
 
   // Sanity check input values.

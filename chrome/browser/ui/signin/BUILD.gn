@@ -19,6 +19,7 @@ source_set("signin") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/ui/webui/signin",
+    "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/common",
     "//components/signin/public/base",
     "//components/sync/base",
@@ -33,7 +34,6 @@ source_set("signin") {
 
   if (enable_dice_support) {
     sources += [
-      "bubble_signin_promo_delegate.h",
       "chrome_signout_confirmation_prompt.h",
       "dice_web_signin_interceptor_delegate.h",
     ]
@@ -71,6 +71,7 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/signin",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui/signin",
     "//chrome/common",
     "//components/prefs",
@@ -98,6 +99,13 @@ source_set("impl") {
   }
 }
 
+if (enable_dice_support) {
+  # Extracted to a separate target to avoid circular deps in //c/b/ui/bookmarks.
+  source_set("bubble_signin_promo_delegate") {
+    sources = [ "bubble_signin_promo_delegate.h" ]
+  }
+}
+
 if (!is_android) {
   # This is not applicable to ChromeOS, but to lacros + other desktop platforms.
   if (!is_chromeos_device && !is_chromeos_ash) {
@@ -113,6 +121,7 @@ if (!is_android) {
         "//chrome/browser",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_element_identifiers",
+        "//chrome/browser/ui/webui/signin:test_support_ui",
         "//chrome/test:test_support_ui",
         "//components/signin/public/base",
         "//components/signin/public/identity_manager",
@@ -142,6 +151,8 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/webui/signin:test_support_ui",
       "//chrome/test:sync_integration_test_support",
       "//chrome/test:test_support_ui",
       "//components/signin/public/base",
@@ -171,6 +182,8 @@ if (!is_android) {
         "chrome_signout_confirmation_prompt_browsertest.cc",
         "cookie_clear_on_exit_migration_notice_browsertest.cc",
       ]
+
+      deps += [ "//chrome/browser/content_settings:content_settings_factory" ]
     }
   }
 }

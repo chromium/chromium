@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/buffering_bytes_consumer.h"
 
 #include "base/numerics/safe_conversions.h"
@@ -72,15 +67,15 @@ void BufferingBytesConsumer::StopBuffering() {
   buffering_state_ = BufferingState::kStopped;
 }
 
-BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
-                                                        size_t* available) {
+BytesConsumer::Result BufferingBytesConsumer::BeginRead(
+    base::span<const char>& buffer) {
   // Stop delaying buffering on the first read as it will no longer be safe to
   // drain the underlying |bytes_consumer_| anyway.
   MaybeStartBuffering();
 
   if (buffer_.empty()) {
     if (buffering_state_ != BufferingState::kStarted)
-      return bytes_consumer_->BeginRead(buffer, available);
+      return bytes_consumer_->BeginRead(buffer);
 
     if (has_seen_error_)
       return Result::kError;
@@ -101,8 +96,7 @@ BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
 
   HeapVector<char>* first_chunk = buffer_[0];
   DCHECK_LT(offset_for_first_chunk_, first_chunk->size());
-  *buffer = first_chunk->data() + offset_for_first_chunk_;
-  *available = first_chunk->size() - offset_for_first_chunk_;
+  buffer = base::span(*first_chunk).subspan(offset_for_first_chunk_);
   return Result::kOk;
 }
 
@@ -229,17 +223,16 @@ void BufferingBytesConsumer::BufferData() {
   DCHECK(bytes_consumer_);
   while (!is_limiting_total_buffer_size_ ||
          total_buffer_size_ < kMaxBufferSize) {
-    const char* p = nullptr;
-    size_t available = 0;
-    auto result = bytes_consumer_->BeginRead(&p, &available);
+    base::span<const char> p;
+    auto result = bytes_consumer_->BeginRead(p);
     if (result == Result::kShouldWait)
       return;
     if (result == Result::kOk) {
       auto* chunk = MakeGarbageCollected<HeapVector<char>>();
-      chunk->Append(p, base::checked_cast<wtf_size_t>(available));
+      chunk->AppendSpan(p);
       buffer_.push_back(chunk);
       total_buffer_size_ += chunk->size();
-      result = bytes_consumer_->EndRead(available);
+      result = bytes_consumer_->EndRead(p.size());
     }
     if (result == Result::kDone) {
       has_seen_end_of_data_ = true;

@@ -47,55 +47,17 @@ chrome.test.runTests([
   },
 
   // Tests that an error is returned when documentId in request doesn't exist.
-    async function nonExistentDocumentId() {
-      const documentId = 'invalid id';
-      const request = {documentId: documentId};
-      await chrome.test.assertPromiseRejects(
-          chrome.permissions.addSiteAccessRequest(request),
-          `Error: No document with ID '${documentId}'.`);
-
-      chrome.test.succeed();
-  },
-
-  // Tests that an error is returned when the extension cannot access the
-  // current web contents on the tabId provided.
-  async function noAccessRequestedForTabId() {
-    let tab = await navigateTo('non-requested.com');
-
-    const request = {tabId: tab.id};
+  async function nonExistentDocumentId() {
+    const documentId = 'invalid id';
+    const request = {documentId: documentId};
     await chrome.test.assertPromiseRejects(
         chrome.permissions.addSiteAccessRequest(request),
-        `Error: Extension cannot add a site access request for a site it ` +
-            `cannot be granted access to. Extension must have previously ` +
-            `requested host permissions for the current site in the tab or ` +
-            `document provided via 'host_permissions', ` +
-            `'optional_host_permissions', or 'matches' for static content ` +
-            `scripts.`);
+        `Error: No document with ID '${documentId}'.`);
 
     chrome.test.succeed();
   },
 
-  // Tests that an error is returned when the extension cannot access the
-  // current web contents on the documentId provided.
-  async function noAccessRequestedForDocumentId() {
-    let tab = await navigateTo('non-requested.com');
-    let frame = await chrome.webNavigation.getFrame({frameId: 0, tabId: tab.id})
-
-    const request = {documentId: frame.documentId};
-    await chrome.test.assertPromiseRejects(
-      chrome.permissions.addSiteAccessRequest(request),
-      `Error: Extension cannot add a site access request for a site it ` +
-          `cannot be granted access to. Extension must have previously ` +
-          `requested host permissions for the current site in the tab or ` +
-          `document provided via 'host_permissions', ` +
-          `'optional_host_permissions', or 'matches' for static content ` +
-          `scripts.`);
-
-
-    chrome.test.succeed();
-  },
-
-  // Tests that an error is returns when the extension adds a request for a
+  // Tests that an error is returned when the extension adds a request for a
   // tabId that it can already access its current web contents.
   async function accessAlreadyGrantedForTabId() {
     let tab = await navigateTo('requested.com');
@@ -109,7 +71,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Tests that an error is returns when the extension adds a request for a
+  // Tests that an error is returned when the extension adds a request for a
   // documentId that it can already access its current web contents.
   async function accessAlreadyGrantedForDocumentId() {
     let tab = await navigateTo('requested.com');
@@ -123,4 +85,18 @@ chrome.test.runTests([
 
     chrome.test.succeed();
   },
+
+  // Tests that an error is returned when the extension adds a request with an
+  // invalid pattern.
+  async function invalidPattern() {
+    let tab = await navigateTo('requested.com');
+
+    const request = {tabId: tab.id, pattern: 'invalid pattern'};
+    await chrome.test.assertPromiseRejects(
+        chrome.permissions.addSiteAccessRequest(request),
+        `Error: Extension cannot add a request with an invalid value for ` +
+            `'pattern'.`);
+
+    chrome.test.succeed();
+  }
 ])

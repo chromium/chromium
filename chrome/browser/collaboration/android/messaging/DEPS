@@ -1,0 +1,4 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow service construction.
+  "+components/collaboration/internal/android/messaging/messaging_backend_service_bridge.h",
+]

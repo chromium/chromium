@@ -177,7 +177,7 @@ TEST_F(ApplyBlockElementCommandTest, FormatBlockWithDirectChildrenOfRoot) {
   GetDocument().setDesignMode("on");
   DocumentFragment* fragment = DocumentFragment::Create(GetDocument());
   Element* root = GetDocument().documentElement();
-  fragment->ParseXML("a<div>b</div>c", root);
+  fragment->ParseXML("a<div>b</div>c", root, ASSERT_NO_EXCEPTION);
   root->setTextContent("");
   root->appendChild(fragment);
   UpdateAllLifecyclePhasesForTest();

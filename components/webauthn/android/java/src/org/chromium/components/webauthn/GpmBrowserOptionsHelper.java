@@ -81,7 +81,9 @@ public class GpmBrowserOptionsHelper {
         if (sIsIncognitoForTesting != null) return sIsIncognitoForTesting;
         if (frameHost == null) return false;
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(frameHost);
-        return webContents == null ? false : webContents.isIncognito();
+        return (webContents == null || webContents.isDestroyed())
+                ? false
+                : webContents.isIncognito();
     }
 
     @VisibleForTesting

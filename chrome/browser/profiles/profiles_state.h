@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include <vector>
 #endif
 
@@ -60,7 +60,7 @@ bool IsRegularUserProfile(Profile* profile);
 // custom name.
 std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Update the name of |profile| to |new_profile_name|. This updates the profile
 // preferences, which triggers an update in the ProfileAttributesStorage. This
 // method should be called when the user is explicitely changing the profile
@@ -68,7 +68,7 @@ std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path);
 void UpdateProfileName(Profile* profile,
                        const std::u16string& new_profile_name);
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Returns whether the |browser|'s profile is not incognito (a regular profile
 // or a guest session).
@@ -94,23 +94,17 @@ bool IsGuestModeEnabled();
 // associated with |profile|.
 bool IsGuestModeEnabled(const Profile& profile);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Returns true if secondary profiles are allowed by
-// |prefs::kLacrosSecondaryProfilesAllowed|.
-bool AreSecondaryProfilesAllowed();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Returns true if sign in is required to browse as this profile.  Call with
 // profile->GetPath() if you have a profile pointer.
 // TODO(mlerman): Refactor appropriate calls to
 // ProfileAttributesStorage::IsSigninRequired to call here instead.
 bool IsProfileLocked(const base::FilePath& profile_path);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Starts an update for a new version of the Gaia profile picture and other
 // profile info.
 void UpdateGaiaProfileInfoIfNeeded(Profile* profile);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // If the profile given by |profile_path| is loaded in the ProfileManager, use
 // a BrowsingDataRemover to delete all the Profile's data.
@@ -122,17 +116,7 @@ bool IsDemoSession();
 // Returns true if the current session is a Chrome App Kiosk session.
 bool IsChromeAppKioskSession();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Returns true if the current session is a Web Kiosk session.
-bool IsWebKioskSession();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Returns whether it's a regular session (with gaia account)
-bool SessionHasGaiaAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Returns the default name for a new enterprise profile. Never returns an empty
 // string.
 std::u16string GetDefaultNameForNewEnterpriseProfile(
@@ -147,7 +131,7 @@ std::u16string GetDefaultNameForNewSignedInProfile(
 // valid. Never returns an empty string.
 std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
     const CoreAccountInfo& account_info);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

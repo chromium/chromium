@@ -36,12 +36,13 @@ const base::CancelableTaskTracker::TaskId kTaskId = 1;
 favicon_base::FaviconRawBitmapResult CreateTestBitmapResult(
     const GURL& icon_url,
     int desired_size_in_pixel) {
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-  gfx::PNGCodec::EncodeBGRASkBitmap(
-      gfx::test::CreateBitmap(desired_size_in_pixel, SK_ColorRED), false,
-      &data->as_vector());
+  std::optional<std::vector<uint8_t>> png_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(
+          gfx::test::CreateBitmap(desired_size_in_pixel, SK_ColorRED),
+          /*discard_transparency=*/false);
   favicon_base::FaviconRawBitmapResult result;
-  result.bitmap_data = data;
+  result.bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(png_data.value()));
   result.icon_url = icon_url;
   result.pixel_size = gfx::Size(desired_size_in_pixel, desired_size_in_pixel);
   return result;

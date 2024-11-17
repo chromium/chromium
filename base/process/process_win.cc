@@ -27,15 +27,6 @@ DWORD kBasicProcessAccess =
 
 namespace base {
 
-// Sets Eco QoS (Quality of Service) level for background process which would
-// select efficient CPU frequency and schedule the process to efficient cores
-// (available on hybrid CPUs).
-// QoS is a scheduling Win API which indicates the desired performance and power
-// efficiency of a process/thread. EcoQoS is introduced since Windows 11.
-BASE_FEATURE(kUseEcoQoSForBackgroundProcess,
-             "UseEcoQoSForBackgroundProcess",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 Process::Process(ProcessHandle handle)
     : process_(handle), is_current_process_(false) {
   CHECK_NE(handle, ::GetCurrentProcess());
@@ -300,8 +291,7 @@ bool Process::SetPriority(Priority priority) {
     // PROCESS_POWER_THROTTLING_STATE would fail. For kUserVisible, we
     // intentionally exclude clients before 22H2 so that GetPriority() is
     // consistent with SetPriority().
-    if ((priority == Priority::kBestEffort &&
-         FeatureList::IsEnabled(kUseEcoQoSForBackgroundProcess)) ||
+    if (priority == Priority::kBestEffort ||
         (priority == Priority::kUserVisible &&
          os_info->version() >= win::Version::WIN11_22H2)) {
       // Sets Eco QoS level.

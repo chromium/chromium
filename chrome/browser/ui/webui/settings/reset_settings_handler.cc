@@ -35,8 +35,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -60,8 +58,9 @@ ResetRequestOriginFromString(const std::string& request_origin) {
     return reset_report::ChromeResetReport::
         RESET_REQUEST_ORIGIN_TRIGGERED_RESET;
   }
-  if (!request_origin.empty())
-    NOTREACHED_IN_MIGRATION();
+  if (!request_origin.empty()) {
+    NOTREACHED();
+  }
 
   return reset_report::ChromeResetReport::RESET_REQUEST_ORIGIN_UNKNOWN;
 }
@@ -131,10 +130,6 @@ void ResetSettingsHandler::RegisterMessages() {
           &ResetSettingsHandler::HandleGetTriggeredResetToolName,
           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
-      "performSanitizeSettings",
-      base::BindRepeating(&ResetSettingsHandler::SanitizeSettings,
-                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "onShowSanitizeDialog",
       base::BindRepeating(&ResetSettingsHandler::OnShowSanitizeDialog,
@@ -274,30 +269,6 @@ void ResetSettingsHandler::OnShowSanitizeDialog(const base::Value::List& args) {
     ash::LaunchSystemWebAppAsync(ProfileManager::GetPrimaryUserProfile(),
                                  ash::SystemWebAppType::OS_SANITIZE, params);
   }
-}
-
-void ResetSettingsHandler::SanitizeSettings(const base::Value::List& args) {
-  ProfileResetter::ResettableFlags to_sanitize =
-      ProfileResetter::DEFAULT_SEARCH_ENGINE | ProfileResetter::HOMEPAGE |
-      ProfileResetter::CONTENT_SETTINGS | ProfileResetter::EXTENSIONS |
-      ProfileResetter::STARTUP_PAGES | ProfileResetter::PINNED_TABS |
-      ProfileResetter::SHORTCUTS | ProfileResetter::NTP_CUSTOMIZATIONS |
-      ProfileResetter::LANGUAGES | ProfileResetter::DNS_CONFIGURATIONS;
-  // TODO(b/319446147): get send_feedback flag and pass it down
-  GetResetter()->ResetSettings(
-      to_sanitize, nullptr,
-      base::BindOnce(&ResetSettingsHandler::OnSanitizeDone,
-                     callback_weak_ptr_factory_.GetWeakPtr()));
-
-  base::RecordAction(base::UserMetricsAction("Sanitize"));
-}
-
-void ResetSettingsHandler::OnSanitizeDone() {
-  setting_snapshot_.reset();
-  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
-  prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, true);
-  prefs->CommitPendingWrite();
-  chrome::AttemptRestart();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

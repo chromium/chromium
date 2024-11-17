@@ -1,3 +1,14 @@
 include_rules = [
+  "+components/crash/core/common",
+  "+components/google/core/common",
+  "+components/policy/core/browser",
+  "+components/policy/core/common",
+  "+components/prefs",
+  "+components/user_prefs",
+
   "+content/public/browser",
+
+  "+net",
+
+  "+services/metrics/public/cpp",
 ]

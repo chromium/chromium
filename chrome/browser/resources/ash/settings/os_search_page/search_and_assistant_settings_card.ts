@@ -13,17 +13,22 @@ import './magic_boost_review_terms_banner.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import './search_engine.js';
+// <if expr="_google_chrome" >
+import 'chrome://resources/ash/common/internal/ash_internal_icons.html.js';
+
+// </if>
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isAssistantAllowed, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isLobsterSettingsToggleVisible, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isRevampWayfindingEnabled, isSunfishSettingsToggleVisible} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {PrefsState} from '../common/types.js';
+import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './search_and_assistant_settings_card.html.js';
 
@@ -68,6 +73,21 @@ export class SearchAndAssistantSettingsCardElement extends
         },
       },
 
+      isLobsterSettingsToggleVisible_: {
+        type: Boolean,
+        value: () => {
+          return isLobsterSettingsToggleVisible();
+        },
+      },
+
+      isSunfishSettingsToggleVisible_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => {
+          return isSunfishSettingsToggleVisible();
+        },
+      },
+
       /** Can be disallowed due to flag, policy, locale, etc. */
       isAssistantAllowed_: {
         type: Boolean,
@@ -86,6 +106,8 @@ export class SearchAndAssistantSettingsCardElement extends
           Setting.kMagicBoostOnOff,
           Setting.kMahiOnOff,
           Setting.kShowOrca,
+          Setting.kLobsterOnOff,
+          Setting.kSunfishOnOff,
         ]),
       },
 
@@ -109,6 +131,7 @@ export class SearchAndAssistantSettingsCardElement extends
               magicBoost: 'os-settings:magic-boost',
               helpMeRead: 'os-settings:help-me-read',
               helpMeWrite: 'os-settings:help-me-write',
+              lobster: 'ash-internal:lobster',
             };
           }
 
@@ -120,6 +143,7 @@ export class SearchAndAssistantSettingsCardElement extends
             magicBoost: '',
             helpMeRead: '',
             helpMeWrite: '',
+            lobster: '',
           };
         },
       },
@@ -132,6 +156,7 @@ export class SearchAndAssistantSettingsCardElement extends
   private rowIcons_: Record<string, string>;
   private isQuickAnswersSupported_: boolean;
   private isMagicBoostFeatureEnabled_: boolean;
+  private readonly isSunfishSettingsToggleVisible_: boolean;
 
   constructor() {
     super();

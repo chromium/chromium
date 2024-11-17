@@ -80,14 +80,6 @@ bool CaptionBubbleControllerViews::OnTranscription(
   if (active_model_->IsClosed())
     return false;
 
-  // If the caption bubble has no activity and it receives a final
-  // transcription, don't set text. The speech service sends a final
-  // transcription after several seconds of no audio. This prevents the bubble
-  // reappearing with a final transcription after it had disappeared due to no
-  // activity.
-  if (!caption_bubble_->HasActivity() && result.is_final)
-    return true;
-
   active_model_->SetPartialText(result.transcription);
   if (result.is_final)
     active_model_->CommitPartialText();

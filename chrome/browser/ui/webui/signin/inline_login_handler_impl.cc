@@ -109,9 +109,7 @@ HandlerSigninReason GetHandlerSigninReason(const GURL& url) {
     case signin_metrics::Reason::kFetchLstOnly:
       return HandlerSigninReason::kFetchLstOnly;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected signin reason: " << static_cast<int>(reason);
-      return HandlerSigninReason::kForcedSigninPrimaryAccount;
+      NOTREACHED() << "Unexpected signin reason: " << static_cast<int>(reason);
   }
 }
 
@@ -135,7 +133,7 @@ class ForcedSigninTurnSyncOnHelperDelegate
       const std::string& previous_email,
       const std::string& new_email,
       signin::SigninChoiceCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 };
 
@@ -356,13 +354,12 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
              base::Value(result.access_token));
 
     handler_->SendLSTFetchResultsMessage(base::Value(std::move(args)));
-#else
-    NOTREACHED_IN_MIGRATION()
-        << "Google Credential Provider is only available on Windows";
-#endif  // BUILDFLAG(IS_WIN)
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                   this);
     return;
+#else
+    NOTREACHED() << "Google Credential Provider is only available on Windows";
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   AboutSigninInternals* about_signin_internals =

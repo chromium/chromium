@@ -38,6 +38,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ActivityLogStreamItem) {
   RunTest("extensions/activity_log_stream_item_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, AsyncMapDirective) {
+  RunTest("extensions/async_map_directive_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ToggleRow) {
   RunTest("extensions/toggle_row_test.js", "mocha.run()");
 }
@@ -54,14 +58,26 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, HostPermissionsToggleList) {
   RunTest("extensions/host_permissions_toggle_list_test.js", "mocha.run()");
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE(test) DISABLED_##test
+#else
+#define MAYBE(test) test
+#endif
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
-                       ExtensionsMV2DeprecationPanelWarningStage) {
+                       MAYBE(ExtensionsMV2DeprecationPanelWarningStage)) {
   RunTest("extensions/mv2_deprecation_panel_warning_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
-                       ExtensionsMV2DeprecationPanelDisabledStage) {
+                       MAYBE(ExtensionsMV2DeprecationPanelDisabledStage)) {
   RunTest("extensions/mv2_deprecation_panel_disabled_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
+                       MAYBE(ExtensionsMV2DeprecationPanelUnsupportedStage)) {
+  RunTest("extensions/mv2_deprecation_panel_unsupported_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SafetyCheckReviewPanel) {
@@ -241,8 +257,15 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, LayoutSource) {
   RunTestCase("LayoutSource");
 }
 
+// TODO(crbug.com/374318854): Accessibility bug causing flakes on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ElementVisibilityReloadButton \
+  DISABLED_ElementVisibilityReloadButton
+#else
+#define MAYBE_ElementVisibilityReloadButton ElementVisibilityReloadButton
+#endif
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
-                       ElementVisibilityReloadButton) {
+                       MAYBE_ElementVisibilityReloadButton) {
   RunTestCase("ElementVisibilityReloadButton");
 }
 
@@ -253,6 +276,16 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, FailedReloadFiresLoadError) {
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
                        SupervisedUserDisableReasons) {
   RunTestCase("SupervisedUserDisableReasons");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       MV2DeprecationDisabledExtension) {
+  RunTestCase("MV2DeprecationDisabledExtension");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       MV2DeprecationUnsupportedDisabledExtension) {
+  RunTestCase("MV2DeprecationUnsupportedDisabledExtension");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, ClickableElements) {
@@ -304,6 +337,16 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
   RunTestCase("Mv2DeprecationMessage_DisableWithReEnable_Content");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       Mv2DeprecationMessage_Unsupported_Visbility) {
+  RunTestCase("Mv2DeprecationMessage_Unsupported_Visbility");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       Mv2DeprecationMessage_Unsupported) {
+  RunTestCase("Mv2DeprecationMessage_Unsupported_Content");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, PinnedToToolbar) {
   RunTestCase("PinnedToToolbar");
 }
@@ -341,10 +384,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, LoadTimeData) {
   RunTestCase("LoadTimeData");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, SafetyCheckPanel_Disabled) {
-  RunTestCase("SafetyCheckPanel_Disabled");
-}
-
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
                        SafetyCheckPanel_EnabledSafetyCheck) {
   RunTestCase("SafetyCheckPanel_EnabledSafetyCheck");
@@ -368,6 +407,11 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
                        ManifestV2DeprecationPanel_DisableWithReEnable) {
   RunTestCase("ManifestV2DeprecationPanel_DisableWithReEnable");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
+                       ManifestV2DeprecationPanel_Unsupported) {
+  RunTestCase("ManifestV2DeprecationPanel_Unsupported");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
@@ -439,10 +483,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, ProfileSettings) {
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, Uninstall) {
   RunTestCase("Uninstall");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, UninstallFocus) {
-  RunTestCase("UninstallFocus");
 }
 
 // Flaky since r621915: https://crbug.com/922490

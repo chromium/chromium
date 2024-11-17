@@ -24,6 +24,7 @@
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_metrics.h"
+#include "ash/game_dashboard/game_dashboard_network_view.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
@@ -61,13 +62,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "extensions/common/constants.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
@@ -76,6 +81,8 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/image/image.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
@@ -359,6 +366,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     game_dashboard_utils::SetShowWelcomeDialog(false);
     game_dashboard_utils::SetShowToolbar(false);
     GetContext()->AddPostTargetHandler(&post_target_event_capturer_);
+    cros_network_ =
+        std::make_unique<chromeos::network_config::FakeCrosNetworkConfig>();
   }
 
   void TearDown() override {
@@ -422,6 +431,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     frame_header_height_ =
         game_dashboard_utils::GetFrameHeaderHeight(game_window_.get());
     DCHECK_GT(frame_header_height_, 0);
+    EXPECT_NEAR(test_api_->GetGameDashboardButtonCornerRadius(),
+                frame_header_height_ / 2, /*abs_error=*/0.000001f);
 
     if (is_arc_window && set_arc_game_controls_flags_prop) {
       // Initially, Game Controls is not available.
@@ -867,6 +878,10 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
   }
 
+  chromeos::network_config::FakeCrosNetworkConfig* cros_network() {
+    return cros_network_.get();
+  }
+
   std::unique_ptr<aura::Window> game_window_;
   std::unique_ptr<GameDashboardContextTestApi> test_api_;
   int frame_header_height_ = 0;
@@ -874,6 +889,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   EventCapturer post_target_event_capturer_;
 
  private:
+  std::unique_ptr<chromeos::network_config::FakeCrosNetworkConfig>
+      cros_network_;
   gfx::Rect app_bounds_ = gfx::Rect(50, 50, 800, 400);
 };
 
@@ -1602,6 +1619,47 @@ TEST_F(GameDashboardContextTest, MainMenuClockView) {
             reverted_current_time.ends_with(u"PM"));
 }
 
+TEST_F(GameDashboardContextTest, MainMenuNetworkView) {
+  // Enable Game Dashboard utilities flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
+
+  auto network = network_config::CrosNetworkConfigTestHelper::
+      CreateStandaloneNetworkProperties(
+          "wifi", chromeos::network_config::mojom::NetworkType::kWiFi,
+          chromeos::network_config::mojom::ConnectionStateType::kNotConnected);
+
+  cros_network()->AddNetworkAndDevice(mojo::Clone(network));
+
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  test_api_->OpenTheMainMenu();
+  auto* network_view = test_api_->GetMainMenuNetworkView();
+  ASSERT_TRUE(network_view);
+
+  // Ensure that the network view updates during an animation.
+  auto network_icon = gfx::Image(network_view->GetImage());
+  network_view->NetworkIconChanged();
+  EXPECT_NE(network_icon, gfx::Image(network_view->GetImage()));
+
+  // Ensure that the network view updates when the active network state changes.
+  network_icon = gfx::Image(network_view->GetImage());
+  network_view->ActiveNetworkStateChanged();
+  EXPECT_NE(network_icon, gfx::Image(network_view->GetImage()));
+
+  // Ensure that the network view updates when the connection type changes.
+  network_icon = gfx::Image(network_view->GetImage());
+  cros_network()->ClearNetworksAndDevices();
+  network = network_config::CrosNetworkConfigTestHelper::
+      CreateStandaloneNetworkProperties(
+          "ethernet", chromeos::network_config::mojom::NetworkType::kEthernet,
+          chromeos::network_config::mojom::ConnectionStateType::kOnline);
+  cros_network()->AddNetworkAndDevice(mojo::Clone(network));
+  EXPECT_NE(network_icon,
+            gfx::Image(test_api_->GetMainMenuNetworkView()->GetImage()));
+}
+
 TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
@@ -2277,20 +2335,7 @@ TEST_F(GameDashboardContextTest, TabNavigationToolbar) {
   EXPECT_TRUE(test_api_->GetToolbarScreenshotButton()->HasFocus());
 }
 
-class SnapGroupGameDashboardContextTest : public GameDashboardContextTest {
- public:
-  SnapGroupGameDashboardContextTest()
-      : scoped_feature_list_(features::kSnapGroup) {}
-
-  SnapGroupGameDashboardContextTest(const SnapGroupGameDashboardContextTest&) =
-      delete;
-  SnapGroupGameDashboardContextTest& operator=(
-      const SnapGroupGameDashboardContextTest&) = delete;
-  ~SnapGroupGameDashboardContextTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SnapGroupGameDashboardContextTest = GameDashboardContextTest;
 
 // Tests no crash when the game window in a snap group is fullscreen'ed then
 // forces a work area change. Regression test for http://b/348668590.

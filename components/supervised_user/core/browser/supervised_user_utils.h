@@ -44,21 +44,6 @@ enum class FilteringBehavior : int {
   kInvalid = 3,
 };
 
-// This enum describes the state of the interstitial banner that is shown for
-// when previous supervised users of desktop see the interstitial for the first
-// time after desktop controls are enabled.
-enum class FirstTimeInterstitialBannerState : int {
-  // Supervised users should see banner the next time the interstitial is
-  // triggered.
-  kNeedToShow = 0,
-
-  // Banner has been shown to supervised user if needed.
-  kSetupComplete = 1,
-
-  // Banner state has not been set.
-  kUnknown = 2,
-};
-
 // Whether the migration of existing extensions to parent-approved needs to be
 // executed, when the feature
 // `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` becomes enabled.

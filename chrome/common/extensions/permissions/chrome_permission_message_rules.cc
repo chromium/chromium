@@ -246,7 +246,7 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
             IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_UNKNOWN_VENDOR);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return PermissionMessage(msg, permissions);
   }

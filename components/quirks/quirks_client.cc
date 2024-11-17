@@ -66,7 +66,7 @@ QuirksClient::QuirksClient(int64_t product_id,
           IdToFileName(product_id))),
       backoff_entry_(&kDefaultBackoffPolicy) {}
 
-QuirksClient::~QuirksClient() {}
+QuirksClient::~QuirksClient() = default;
 
 void QuirksClient::StartDownload() {
   DCHECK(thread_checker_.CalledOnValidThread());

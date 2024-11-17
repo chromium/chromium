@@ -1359,9 +1359,7 @@ WebInputEventResult EventHandler::UpdateDragAndDrop(
 
   // Drag events should never go to text nodes (following IE, and proper
   // mouseover/out dispatch)
-  Node* new_target = mev.InnerNode();
-  if (new_target && new_target->IsTextNode())
-    new_target = FlatTreeTraversal::Parent(*new_target);
+  Node* new_target = mev.InnerElement();
 
   if (AutoscrollController* controller =
           scroll_manager_->GetAutoscrollController()) {
@@ -2096,7 +2094,7 @@ void EventHandler::ApplyTouchAdjustment(WebGestureEvent* gesture_event,
           TouchAdjustmentCandidateType::kContextMenu;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   Node* adjusted_node = nullptr;

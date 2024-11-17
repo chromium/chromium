@@ -33,10 +33,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -56,7 +56,7 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
     @Mock private Runnable mUnlockIncognitoRunnableMock;
     @Mock private Runnable mSeeOtherTabsRunnableMock;
     @Mock private Runnable mCloseAllIncognitoTabsRunnable;
-    @Mock private SettingsLauncher mSettingsLauncherMock;
+    @Mock private SettingsNavigation mSettingsNavigationMock;
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -68,7 +68,7 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(R.layout.incognito_reauth_view);
@@ -119,7 +119,7 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
 
         // Inside three dots menu.
         onView(withText(R.string.menu_settings)).perform(click());
-        verify(mSettingsLauncherMock).launchSettingsActivity(any());
+        verify(mSettingsNavigationMock).startSettings(any());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class FullScreenIncognitoReauthViewTest extends BlankUiTestActivityTestCa
                                     mUnlockIncognitoRunnableMock,
                                     mSeeOtherTabsRunnableMock,
                                     isFullScreen,
-                                    (isFullScreen)
+                                    isFullScreen
                                             ? () -> mIncognitoReauthMenuDelegate.getBasicListMenu()
                                             : null);
                     mModelChangeProcessor =

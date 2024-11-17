@@ -121,6 +121,7 @@ SavedDeskSaveDeskButton* SavedDeskSaveDeskButtonContainer::GetButtonFromType(
       return save_desk_as_template_button_;
     case DeskTemplateType::kSaveAndRecall:
       return save_desk_for_later_button_;
+    case DeskTemplateType::kCoral:
     case DeskTemplateType::kFloatingWorkspace:
     case DeskTemplateType::kUnknown:
       return nullptr;

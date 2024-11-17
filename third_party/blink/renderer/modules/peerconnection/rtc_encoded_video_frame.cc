@@ -145,8 +145,8 @@ RTCEncodedVideoFrame::RTCEncodedVideoFrame(
     scoped_refptr<RTCEncodedVideoFrameDelegate> delegate)
     : RTCEncodedVideoFrame(delegate->CloneWebRtcFrame()) {}
 
-String RTCEncodedVideoFrame::type() const {
-  return delegate_->Type();
+V8RTCEncodedVideoFrameType RTCEncodedVideoFrame::type() const {
+  return V8RTCEncodedVideoFrameType(delegate_->Type());
 }
 
 uint32_t RTCEncodedVideoFrame::timestamp() const {
@@ -296,7 +296,7 @@ String RTCEncodedVideoFrame::toString(ExecutionContext* context) const {
   sb.Append(", size: ");
   sb.AppendNumber(data(context)->ByteLength());
   sb.Append(" bytes, type: ");
-  sb.Append(type());
+  sb.Append(type().AsCStr());
   sb.Append("}");
   return sb.ToString();
 }

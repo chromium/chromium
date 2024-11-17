@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_MALL_CHROME_MALL_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_MALL_CHROME_MALL_UI_DELEGATE_H_
 
+#include <string_view>
+
 #include "ash/webui/mall/mall_ui_delegate.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "content/public/browser/web_ui.h"
@@ -15,7 +17,8 @@ class ChromeMallUIDelegate : public MallUIDelegate {
   explicit ChromeMallUIDelegate(content::WebUI* web_ui);
   ~ChromeMallUIDelegate() override;
 
-  void GetMallEmbedUrl(base::OnceCallback<void(const GURL&)> callback) override;
+  void GetMallEmbedUrl(std::string_view path,
+                       base::OnceCallback<void(const GURL&)> callback) override;
 
  private:
   raw_ptr<content::WebUI> web_ui_;  // Owns `this`.

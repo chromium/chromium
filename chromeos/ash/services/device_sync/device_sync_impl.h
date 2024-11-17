@@ -35,6 +35,10 @@ class Clock;
 class OneShotTimer;
 }  // namespace base
 
+namespace gcm {
+class GCMDriver;
+}  // namespace gcm
+
 namespace instance_id {
 class InstanceIDDriver;
 }  // namespace instance_id
@@ -49,7 +53,6 @@ namespace device_sync {
 
 class ClientAppMetadataProvider;
 class CryptAuthClientFactory;
-class CryptAuthDeviceManager;
 class CryptAuthDeviceNotifier;
 class CryptAuthDeviceRegistry;
 class CryptAuthFeatureStatusSetter;
@@ -57,7 +60,6 @@ class CryptAuthKeyRegistry;
 class CryptAuthScheduler;
 class CryptAuthV2DeviceManager;
 class GcmDeviceInfoProvider;
-class SoftwareFeatureManager;
 
 // Concrete DeviceSync implementation. When DeviceSyncImpl is constructed, it
 // starts an initialization flow with the following steps:
@@ -80,6 +82,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     // parameter only exists for testing via dependency injection.
     static std::unique_ptr<DeviceSyncBase> Create(
         signin::IdentityManager* identity_manager,
+        gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
         const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -95,6 +98,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     virtual ~Factory();
     virtual std::unique_ptr<DeviceSyncBase> CreateInstance(
         signin::IdentityManager* identity_manager,
+        gcm::GCMDriver* gcm_driver,
         instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
         const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -220,6 +224,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
 
   DeviceSyncImpl(
       signin::IdentityManager* identity_manager,
+      gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
       const GcmDeviceInfoProvider* gcm_device_info_provider,
@@ -254,22 +259,9 @@ class DeviceSyncImpl : public DeviceSyncBase,
   std::optional<multidevice::RemoteDevice> GetSyncedDeviceWithPublicKey(
       const std::string& public_key) const;
 
-  void OnSetSoftwareFeatureStateSuccess();
-  void OnSetSoftwareFeatureStateError(const base::UnguessableToken& request_id,
-                                      NetworkRequestError error);
   void OnSetFeatureStatusSuccess();
   void OnSetFeatureStatusError(const base::UnguessableToken& request_id,
                                NetworkRequestError error);
-  void OnFindEligibleDevicesSuccess(
-      base::OnceCallback<void(mojom::NetworkRequestResult,
-                              mojom::FindEligibleDevicesResponsePtr)> callback,
-      const std::vector<cryptauth::ExternalDeviceInfo>& eligible_devices,
-      const std::vector<cryptauth::IneligibleDevice>& ineligible_devices);
-  void OnFindEligibleDevicesError(
-      const base::OnceCallback<void(mojom::NetworkRequestResult,
-                                    mojom::FindEligibleDevicesResponsePtr)>
-          callback,
-      NetworkRequestError error);
   void OnNotifyDevicesSuccess(const base::UnguessableToken& request_id);
   void OnNotifyDevicesError(const base::UnguessableToken& request_id,
                             NetworkRequestError error);
@@ -287,6 +279,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
   void OnSetSoftwareFeatureTimerFired();
 
   raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<gcm::GCMDriver> gcm_driver_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   raw_ptr<PrefService> profile_prefs_;
   raw_ptr<const GcmDeviceInfoProvider> gcm_device_info_provider_;
@@ -331,9 +324,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
   std::unique_ptr<CryptAuthFeatureStatusSetter> feature_status_setter_;
 
   std::unique_ptr<CryptAuthEnrollmentManager> cryptauth_enrollment_manager_;
-  std::unique_ptr<CryptAuthDeviceManager> cryptauth_device_manager_;
   std::unique_ptr<RemoteDeviceProvider> remote_device_provider_;
-  std::unique_ptr<SoftwareFeatureManager> software_feature_manager_;
   std::unique_ptr<CryptAuthDeviceActivityGetter>
       cryptauth_device_activity_getter_;
 

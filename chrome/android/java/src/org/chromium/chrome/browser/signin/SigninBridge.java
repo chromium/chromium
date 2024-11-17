@@ -60,7 +60,8 @@ final class SigninBridge {
                     deviceLockActivityLauncher,
                     accountPickerLaunchMode,
                     /* isWebSignin= */ true,
-                    SigninAccessPoint.WEB_SIGNIN);
+                    SigninAccessPoint.WEB_SIGNIN,
+                    /* selectedCoreAccountId= */ null);
         }
     }
 

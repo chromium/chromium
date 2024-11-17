@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("shared_storage") {
+  sources = [
+    "shared_storage_private_api.h",
+    "shared_storage_private_api_ash.cc",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//build:chromeos_buildflags",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs",
+  ]
+}

@@ -8,8 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/devtools_settings.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/visual_logging.h"
 
 namespace {
@@ -458,12 +458,10 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandlerWithCallback("showSurvey", &Delegate::ShowSurvey, delegate);
   d->RegisterHandlerWithCallback("canShowSurvey", &Delegate::CanShowSurvey,
                                  delegate);
-  if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
-    d->RegisterHandlerWithCallback("doAidaConversation",
-                                   &Delegate::DoAidaConversation, delegate);
-    d->RegisterHandlerWithCallback("registerAidaClientEvent",
-                                   &Delegate::RegisterAidaClientEvent,
-                                   delegate);
-  }
+
+  d->RegisterHandlerWithCallback("doAidaConversation",
+                                 &Delegate::DoAidaConversation, delegate);
+  d->RegisterHandlerWithCallback("registerAidaClientEvent",
+                                 &Delegate::RegisterAidaClientEvent, delegate);
   return d;
 }

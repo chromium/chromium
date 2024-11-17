@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -356,6 +357,21 @@ void AttachScrollMarkers(LayoutObject& parent,
     if (!child->IsScrollMarkerGroup() && !child->GetScrollMarkerGroup()) {
       AttachScrollMarkers(*child, context, has_absolute_containment,
                           has_fixed_containment);
+    }
+  }
+
+  const LayoutBox* parent_box = DynamicTo<LayoutBox>(&parent);
+  // If this is a multicol container, look for ::column::scroll-marker pseudo
+  // elements, and attach them.
+  if (parent_box && parent_box->IsFragmentationContextRoot()) {
+    if (const ColumnPseudoElementsVector* column_pseudos =
+            To<Element>(parent.EnclosingNode())->GetColumnPseudoElements()) {
+      for (const auto& column_pseudo : *column_pseudos) {
+        if (PseudoElement* scroll_marker =
+                column_pseudo->GetPseudoElement(kPseudoIdScrollMarker)) {
+          scroll_marker->AttachLayoutTree(context);
+        }
+      }
     }
   }
 }
@@ -1578,45 +1594,46 @@ void BlockNode::HandleScrollMarkerGroup() const {
     return;
   }
 
-  GetDocument().GetStyleEngine().SetInScrollMarkersAttachment(true);
+  {
+    StyleEngine::AttachScrollMarkersScope scope(GetDocument().GetStyleEngine());
 
-  // Detach all markers.
-  while (LayoutObject* child = group_node.GetLayoutBox()->SlowFirstChild()) {
-    // Anonymous wrappers may have been inserted. Search for the marker.
-    for (LayoutObject* walker = child; walker;
-         walker = walker->NextInPreOrder(child)) {
-      if (walker->GetNode() &&
-          walker->GetNode()->IsScrollMarkerPseudoElement()) {
-        walker->GetNode()->DetachLayoutTree(/*performing_reattach=*/true);
-        break;
+    // Detach all markers.
+    while (LayoutObject* child = group_node.GetLayoutBox()->SlowFirstChild()) {
+      // Anonymous wrappers may have been inserted. Search for the marker.
+      for (LayoutObject* walker = child; walker;
+           walker = walker->NextInPreOrder(child)) {
+        if (walker->GetNode() &&
+            walker->GetNode()->IsScrollMarkerPseudoElement()) {
+          walker->GetNode()->DetachLayoutTree(/*performing_reattach=*/true);
+          break;
+        }
       }
     }
-  }
-  DCHECK(!group_node.GetLayoutBox()->SlowFirstChild());
+    DCHECK(!group_node.GetLayoutBox()->SlowFirstChild());
 
-  Node::AttachContext context;
-  context.parent = group_node.GetLayoutBox();
-  DCHECK(context.parent);
+    Node::AttachContext context;
+    context.parent = group_node.GetLayoutBox();
+    DCHECK(context.parent);
 
-  auto* scroll_marker_group =
-      To<ScrollMarkerGroupPseudoElement>(group_node.GetLayoutBox()->GetNode());
-  scroll_marker_group->ClearFocusGroup();
-  if (PseudoElement* scroll_next_button =
-          scroll_marker_group->OriginatingElement()->GetPseudoElement(
-              kPseudoIdScrollNextButton)) {
-    To<ScrollButtonPseudoElement>(scroll_next_button)
-        ->SetScrollMarkerGroup(scroll_marker_group);
-  }
-  if (PseudoElement* scroll_prev_button =
-          scroll_marker_group->OriginatingElement()->GetPseudoElement(
-              kPseudoIdScrollPrevButton)) {
-    To<ScrollButtonPseudoElement>(scroll_prev_button)
-        ->SetScrollMarkerGroup(scroll_marker_group);
-  }
-  AttachScrollMarkers(*box_, context);
+    auto* scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+        group_node.GetLayoutBox()->GetNode());
+    scroll_marker_group->ClearFocusGroup();
+    if (PseudoElement* scroll_next_button =
+            scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
+                kPseudoIdScrollNextButton)) {
+      To<ScrollButtonPseudoElement>(scroll_next_button)
+          ->SetScrollMarkerGroup(scroll_marker_group);
+    }
+    if (PseudoElement* scroll_prev_button =
+            scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
+                kPseudoIdScrollPrevButton)) {
+      To<ScrollButtonPseudoElement>(scroll_prev_button)
+          ->SetScrollMarkerGroup(scroll_marker_group);
+    }
+    AttachScrollMarkers(*box_, context);
 
-  DCHECK(GetDocument().GetStyleEngine().InScrollMarkersAttachment());
-  GetDocument().GetStyleEngine().SetInScrollMarkersAttachment(false);
+    DCHECK(GetDocument().GetStyleEngine().InScrollMarkersAttachment());
+  }
 
   // The ::scroll-marker-group has now been populated with markers. If the group
   // comes after the principal box, we can return, and let the parent layout
@@ -1675,6 +1692,7 @@ const LayoutResult* BlockNode::LayoutAtomicInline(
 
   builder.SetIsPaintedAtomically(true);
   builder.SetUseFirstLineStyle(use_first_line_style);
+  builder.SetIsHiddenForPaint(parent_constraint_space.IsHiddenForPaint());
 
   builder.SetBaselineAlgorithmType(baseline_algorithm_type);
 

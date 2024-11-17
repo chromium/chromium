@@ -99,7 +99,6 @@ class AudioSinkAudioTrackImpl {
     private static final long USEC_IN_NSEC = 1000L;
 
     private static final long TIMESTAMP_UPDATE_PERIOD = 250 * MSEC_IN_NSEC;
-    private static final long UNDERRUN_LOG_THROTTLE_PERIOD = SEC_IN_NSEC;
 
     private static long sInstanceCounter;
 
@@ -128,7 +127,6 @@ class AudioSinkAudioTrackImpl {
 
     private String mTag;
 
-    private ThrottledLog mBufferLevelWarningLog;
     private ThrottledLog mUnderrunWarningLog;
     private ThrottledLog mTStampJitterWarningLog;
 
@@ -241,8 +239,12 @@ class AudioSinkAudioTrackImpl {
     public static long getMinimumBufferedTime(int channelCount, int sampleRateInHz) {
         int sizeBytes = AudioTrack.getMinBufferSize(
                 sampleRateInHz, getChannelConfig(channelCount), AUDIO_FORMAT);
-        long sizeUs = SEC_IN_USEC * (long) sizeBytes
-                / (getSampleSize(AUDIO_FORMAT) * channelCount * (long) sampleRateInHz);
+        long sizeUs =
+                SEC_IN_USEC
+                        * (long) sizeBytes
+                        / (getSampleSize(AUDIO_FORMAT)
+                                * (long) channelCount
+                                * (long) sampleRateInHz);
         return sizeUs + MIN_BUFFERED_TIME_PADDING_US;
     }
 
@@ -300,10 +302,9 @@ class AudioSinkAudioTrackImpl {
      */
     private void init(@AudioContentType int castContentType, int channelCount, int sampleRateInHz,
             int bytesPerBuffer, int sessionId, boolean useHwAvSync) {
-        mTag = TAG + "(" + castContentType + ":" + (sInstanceCounter++) + ")";
+        mTag = TAG + "(" + castContentType + ":" + sInstanceCounter++ + ")";
 
         // Setup throttled logs: pass the first 5, then every 1sec, reset after 5.
-        mBufferLevelWarningLog = new ThrottledLog(Log::w, 5, 1000, 5000);
         mUnderrunWarningLog = new ThrottledLog(Log::w, 5, 1000, 5000);
         mTStampJitterWarningLog = new ThrottledLog(Log::w, 5, 1000, 5000);
 
@@ -450,11 +451,8 @@ class AudioSinkAudioTrackImpl {
         return (playtimeLeftNsecs < 0) ? 0 : playtimeLeftNsecs / 1000; // return usecs
     }
 
+    /** Closes the instance by stopping playback and releasing the AudioTrack object. */
     @CalledByNative
-    /**
-     * Closes the instance by stopping playback and releasing the AudioTrack
-     * object.
-     */
     private void close() {
         Log.i(mTag, "Close AudioSinkAudioTrackImpl!");
         if (!isStopped()) mAudioTrack.stop();
@@ -760,16 +758,21 @@ class AudioSinkAudioTrackImpl {
                     return;
                 }
                 // First stable timestamp.
-                mRefNanoTimeAtFramePos0 = prevRefNanoTimeAtFramePos0 = newNanoTimeAtFramePos0;
+                mRefNanoTimeAtFramePos0 = newNanoTimeAtFramePos0;
+                prevRefNanoTimeAtFramePos0 = newNanoTimeAtFramePos0;
                 mReferenceTimestampState = ReferenceTimestampState.STABLE;
-                Log.i(mTag,
-                        "First stable timestamp [" + mTimestampStabilityCounter + "/"
-                                + elapsedNsec(mTimestampStabilityStartTimeNsec) / 1000000 + "ms]");
+                Log.i(
+                        mTag,
+                        "First stable timestamp ["
+                                + mTimestampStabilityCounter
+                                + "/"
+                                + elapsedNsec(mTimestampStabilityStartTimeNsec) / 1000000
+                                + "ms]");
                 break;
             case ReferenceTimestampState.RESYNCING_AFTER_PAUSE:
-            // fall-through
+                // fall-through
             case ReferenceTimestampState.RESYNCING_AFTER_EXCESSIVE_TIMESTAMP_DRIFT:
-            // fall-through
+                // fall-through
             case ReferenceTimestampState.RESYNCING_AFTER_UNDERRUN:
                 // Resyncing happens after we hit a pause, underrun or excessive drift in the
                 // AudioTrack. This causes the Android Audio stack to insert additional samples,

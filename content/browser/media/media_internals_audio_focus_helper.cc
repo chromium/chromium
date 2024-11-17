@@ -44,7 +44,6 @@ const char kMediaSessionPlaybackStatePaused[] = "Paused";
 const char kMediaSessionPlaybackStatePlaying[] = "Playing";
 
 const char kMediaSessionIsControllable[] = "Controllable";
-const char kMediaSessionIsSensitive[] = "Sensitive";
 
 const char kMediaSessionHasAudio[] = "HasAudio";
 const char kMediaSessionHasVideo[] = "HasVideo";
@@ -309,8 +308,7 @@ std::string MediaInternalsAudioFocusHelper::BuildStateString(
               result.append(kMediaSessionHasAudioVideo);
               break;
             case media_session::mojom::MediaAudioVideoState::kDeprecatedUnknown:
-              NOTREACHED_IN_MIGRATION();
-              break;
+              NOTREACHED();
           }
         });
     result.append(" }");
@@ -327,10 +325,6 @@ std::string MediaInternalsAudioFocusHelper::BuildStateString(
   // Convert the |is_controllable| boolean into a string.
   if (state->session_info->is_controllable)
     base::StrAppend(&result, {" ", kMediaSessionIsControllable});
-
-  // Convert the |is_sensitive| boolean into a string.
-  if (state->session_info->is_sensitive)
-    base::StrAppend(&result, {" ", kMediaSessionIsSensitive});
 
   if (!provided_state.empty())
     base::StrAppend(&result, {" ", provided_state});

@@ -95,10 +95,6 @@ class CameraAppUIDelegate {
 
   virtual ~CameraAppUIDelegate() = default;
 
-  // Sets Downloads folder as launch directory by File Handling API so that we
-  // can get the handle on the app side.
-  virtual void SetLaunchDirectory() = 0;
-
   // Takes a WebUIDataSource, and adds load time data into it.
   virtual void PopulateLoadTimeData(content::WebUIDataSource* source) = 0;
 

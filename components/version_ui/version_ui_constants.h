@@ -85,6 +85,8 @@ extern const char kTitle[];
 extern const char kUserAgent[];
 extern const char kUserAgentName[];
 extern const char kVariationsCmdName[];
+extern const char kCopyVariationsLabel[];
+extern const char kCopyVariationsNotice[];
 extern const char kVariationsName[];
 extern const char kVariationsSeed[];
 extern const char kVariationsSeedName[];

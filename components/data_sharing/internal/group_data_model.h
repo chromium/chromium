@@ -10,8 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 #include "components/data_sharing/internal/group_data_store.h"
+#include "components/data_sharing/internal/partial_failure_sdk_delegate_wrapper.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
@@ -30,21 +32,28 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
     Observer() = default;
     ~Observer() override = default;
 
-    // TODO(crbug.com/301390275): Revisit observer methods, in particular
-    // include something around update deltas.
-
     // Indicates that data is loaded from the disk, it can still be stale
     // though. GetGroup() / GetAllGroups() returns no data prior to this call.
     virtual void OnModelLoaded() = 0;
 
-    virtual void OnGroupAdded(const GroupId& group_id) = 0;
-    virtual void OnGroupUpdated(const GroupId& group_id) = 0;
-    virtual void OnGroupDeleted(const GroupId& group_id) = 0;
+    virtual void OnGroupAdded(const GroupId& group_id,
+                              const base::Time& event_time) = 0;
+    virtual void OnGroupUpdated(const GroupId& group_id,
+                                const base::Time& event_time) = 0;
+    virtual void OnGroupDeleted(const GroupId& group_id,
+                                const base::Time& event_time) = 0;
+
+    virtual void OnMemberAdded(const GroupId& group_id,
+                               const std::string& member_gaia_id,
+                               const base::Time& event_time) = 0;
+    virtual void OnMemberRemoved(const GroupId& group_id,
+                                 const std::string& member_gaia_id,
+                                 const base::Time& event_time) = 0;
   };
 
   // `collaboration_group_sync_bridge` and `sdk_delegate` must not be null and
   // must outlive `this`.
-  GroupDataModel(const base::FilePath& profile_dir,
+  GroupDataModel(const base::FilePath& data_sharing_dir,
                  CollaborationGroupSyncBridge* collaboration_group_sync_bridge,
                  DataSharingSDKDelegate* sdk_delegate);
   ~GroupDataModel() override;
@@ -66,23 +75,29 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   std::optional<GroupData> GetGroup(const GroupId& group_id) const;
   // Groups are ordered by id.
   std::set<GroupData> GetAllGroups() const;
+  // Returns nullopt if no data about the member is found.
+  std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
+      const GroupId& group_id,
+      const std::string& member_gaia_id) const;
+  std::vector<GroupEvent> GetGroupEventsSinceStartup() const;
 
   // CollaborationGroupSyncBridge::Observer implementation.
   void OnGroupsUpdated(const std::vector<GroupId>& added_group_ids,
                        const std::vector<GroupId>& updated_group_ids,
                        const std::vector<GroupId>& deleted_group_ids) override;
-  // TODO(crbug.com/301390275): refer to collaborations in the name, since it is
-  // currently confusing (we have model, store and bridge, that are all
-  // indicates that their state is loaded).
-  void OnDataLoaded() override;
+  void OnCollaborationGroupSyncDataLoaded() override;
 
   GroupDataStore& GetGroupDataStoreForTesting();
+  void SetGroupDataStoreLoadedCallbackForTesting(
+      base::OnceClosure db_loaded_callback);
 
  private:
   void OnGroupDataStoreLoaded(GroupDataStore::DBInitStatus status);
-  // `collaboration_group_sync_bridge_` and `group_data_store_` might be out of
-  // sync on startup, this method handles all missed deletions and updates.
-  void ProcessInitialData();
+
+  // Handles all known group changes, i.e. when data stored in
+  // `group_data_store_` is different from data in
+  // `collaboration_group_sync_bridge_`.
+  void ProcessGroupChanges(bool is_initial_load);
 
   // Asynchronously fetches data from the SDK.
   void FetchGroupsFromSDK(const std::vector<GroupId>& added_or_updated_groups);
@@ -91,12 +106,31 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
       const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
           read_groups_result);
 
+  void NotifyObserversAboutChangedMembers(const GroupData& old_group_data,
+                                          const GroupData& new_group_data);
+  void MaybeRecordGroupEvent(
+      const GroupId& group_id,
+      GroupEvent::EventType event_type,
+      base::Time event_time,
+      std::optional<std::string> affected_member_gaia_id = std::nullopt);
+
   GroupDataStore group_data_store_;
   bool is_group_data_store_loaded_ = false;
   bool is_collaboration_group_bridge_loaded_ = false;
+  // TODO(crbug.com/370897286): Add test coverage for the scenarios addressed
+  // by the following two fields: when there is a race condition between two
+  // consecutive fetches (see crrev.com/c/5965993).
+  bool has_ongoing_group_fetch_ = false;
+  bool has_pending_changes_ = false;
+
+  std::vector<GroupEvent> group_events_since_startup_;
 
   raw_ptr<CollaborationGroupSyncBridge> collaboration_group_sync_bridge_;
-  raw_ptr<DataSharingSDKDelegate> sdk_delegate_;
+  PartialFailureSDKDelegateWrapper sdk_delegate_;
+
+  // Used only for tests to notify that GroupDataStore has been loaded (either
+  // successfully or unsuccessfully).
+  base::OnceClosure db_loaded_callback_;
 
   base::ObserverList<Observer> observers_;
 

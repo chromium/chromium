@@ -15,5 +15,6 @@ include_rules = [
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
-  "+ui/strings/grit"
+  "+ui/strings/grit",
+  "+ui/menus",
 ]

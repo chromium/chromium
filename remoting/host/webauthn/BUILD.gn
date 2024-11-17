@@ -52,7 +52,7 @@ source_set("main") {
     "//base",
     "//mojo/core/embedder:embedder",
     "//remoting/base",
-    "//remoting/base:breakpad",
+    "//remoting/base/crash",
     "//remoting/host:chromoting_host_services_client",
     "//remoting/host:common_headers",
     "//remoting/host/base",

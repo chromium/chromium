@@ -5,6 +5,10 @@ include_rules = [
 
 specific_include_rules = {
   ".*_browsertest\.cc": [
+    "+chrome/windows_services/service_program/test_support",
     "+services/test",
+  ],
+  "test_support\.cc": [
+    "+chrome/windows_services/service_program/test_support",
   ],
 }

@@ -359,8 +359,6 @@ void CastMessageHandler::OnMessage(const CastSocket& socket,
   if (IsCastReservedNamespace(message.namespace_())) {
     if (message.payload_type() ==
         openscreen::cast::proto::CastMessage_PayloadType_STRING) {
-      VLOG(1) << __func__ << ": channel_id: " << socket.id()
-              << ", message: " << message;
       parse_json_.Run(
           message.payload_utf8(),
           base::BindOnce(&CastMessageHandler::HandleCastInternalMessage,
@@ -372,8 +370,6 @@ void CastMessageHandler::OnMessage(const CastSocket& socket,
                   << message.namespace_();
     }
   } else {
-    DVLOG(2) << "Got app message from cast channel with namespace: "
-             << message.namespace_();
     for (auto& observer : observers_)
       observer.OnAppMessage(socket.id(), message);
   }
@@ -446,6 +442,9 @@ void CastMessageHandler::SendCastMessageToSocket(CastSocket* socket,
   socket->transport()->SendMessage(
       message, base::BindOnce(&CastMessageHandler::OnMessageSent,
                               weak_ptr_factory_.GetWeakPtr()));
+  for (auto& observer : observers_) {
+    observer.OnMessageSent(socket->id(), message);
+  }
 }
 
 void CastMessageHandler::DoEnsureConnection(

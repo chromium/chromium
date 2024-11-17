@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">‏صفحہ لوڈ کرنا ناکام ہوگیا کیونکہ ڈویلپر UI ماڈیول (dev_ui) انسٹال نہیں ہے</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> سسٹم</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
+<translation id="5606865426897221650">ٹیب</translation>
 <translation id="5613020302032141669">بایاں تیر کا نشان</translation>
 <translation id="5633029987065897167">خالی ہے</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 منٹ}other{# منٹ}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8210608804940886430">صفحہ نیچے</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">ٹیب</translation>
 <translation id="8259556432390118667">ہیکس رنگ کی قدر</translation>
 <translation id="8328145009876646418">بایاں کنارا</translation>
 <translation id="8331626408530291785">اوپر سکرول کریں</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 سیکنڈ}other{# سیکنڈ}}</translation>
 <translation id="9059834730836941392">اطلاع سُکیڑیں</translation>
 <translation id="9170848237812810038">&amp;کالعدم کریں</translation>
+<translation id="9195990613383871904">آئندہ کل</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">ھوم</translation>
 <translation id="944069440740578670">نہ پڑھی ہوئی اطلاعات</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 سیکنڈ پہلے}other{# سیکنڈ پہلے}}</translation>

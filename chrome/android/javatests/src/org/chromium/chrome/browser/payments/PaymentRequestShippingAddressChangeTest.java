@@ -76,7 +76,7 @@ public class PaymentRequestShippingAddressChangeTest {
     @Feature({"Payments"})
     public void testAddressRedactionInShippingAddressChange() throws TimeoutException {
         // Select a shipping address and cancel out.
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickOnShippingAddressSuggestionOptionAndWait(

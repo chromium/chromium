@@ -160,7 +160,7 @@ void AudioFocusRequest::PerformUIAction(mojom::MediaSessionAction action) {
       break;
     default:
       // Only UI transport actions are supported.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -374,23 +374,6 @@ NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size) {
                                       attributes:@{NSFontAttributeName : font}];
 }
 
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-void RegisterEditMenuItem(UIMenuItem* item) {
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  NSArray<UIMenuItem*>* items = [menu menuItems];
-
-  for (UIMenuItem* existingItem in items) {
-    if ([existingItem action] == [item action]) {
-      return;
-    }
-  }
-
-  items = items ? [items arrayByAddingObject:item] : @[ item ];
-
-  [menu setMenuItems:items];
-}
-#endif
-
 UIView* ViewHierarchyRootForView(UIView* view) {
   if (view.window) {
     return view.window;
@@ -451,20 +434,20 @@ NSArray<UITrait>* TraitCollectionSetForTraits(NSArray<UITrait>* traits) {
     // with subsequent releases of iOS. See
     // https://developer.apple.com/documentation/uikit/uimutabletraits?language=objc
     NSMutableArray<UITrait>* mutableTraits = [@[
-      UITraitAccessibilityContrast.self, UITraitActiveAppearance.self,
-      UITraitDisplayGamut.self, UITraitDisplayScale.self,
-      UITraitForceTouchCapability.self, UITraitHorizontalSizeClass.self,
-      UITraitImageDynamicRange.self, UITraitLayoutDirection.self,
-      UITraitLegibilityWeight.self, UITraitPreferredContentSizeCategory.self,
-      UITraitSceneCaptureState.self, UITraitToolbarItemPresentationSize.self,
-      UITraitTypesettingLanguage.self, UITraitUserInterfaceIdiom.self,
-      UITraitUserInterfaceLevel.self, UITraitUserInterfaceStyle.self,
-      UITraitVerticalSizeClass.self
+      UITraitAccessibilityContrast.class, UITraitActiveAppearance.class,
+      UITraitDisplayGamut.class, UITraitDisplayScale.class,
+      UITraitForceTouchCapability.class, UITraitHorizontalSizeClass.class,
+      UITraitImageDynamicRange.class, UITraitLayoutDirection.class,
+      UITraitLegibilityWeight.class, UITraitPreferredContentSizeCategory.class,
+      UITraitSceneCaptureState.class, UITraitToolbarItemPresentationSize.class,
+      UITraitTypesettingLanguage.class, UITraitUserInterfaceIdiom.class,
+      UITraitUserInterfaceLevel.class, UITraitUserInterfaceStyle.class,
+      UITraitVerticalSizeClass.class
     ] mutableCopy];
 
 #if defined(__IPHONE_18_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_0
     if (@available(iOS 18, *)) {
-      [mutableTraits addObject:UITraitListEnvironment.self];
+      [mutableTraits addObject:UITraitListEnvironment.class];
     }
 #endif
 

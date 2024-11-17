@@ -25,6 +25,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
@@ -150,7 +151,7 @@ void ExpectInitialManifestFieldsFromBasicWebApp(WebAppIconManager& icon_manager,
 }  // namespace
 
 class PreinstalledWebAppManagerBrowserTestBase
-    : virtual public InProcessBrowserTest {
+    : public extensions::ExtensionBrowserTest {
  public:
   PreinstalledWebAppManagerBrowserTestBase()
       : skip_preinstalled_web_app_startup_(
@@ -158,14 +159,14 @@ class PreinstalledWebAppManagerBrowserTestBase
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    ExtensionBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
         WebAppProvider::GetForTest(browser()->profile()));
   }
 
   void TearDownOnMainThread() override {
     ResetInterceptor();
-    InProcessBrowserTest::TearDownOnMainThread();
+    ExtensionBrowserTest::TearDownOnMainThread();
   }
 
   void InitUrlLoaderInterceptor() {
@@ -238,7 +239,8 @@ class PreinstalledWebAppManagerBrowserTestBase
       const GURL& install_url,
       std::string_view app_config_string) {
     base::FilePath test_config_dir(FILE_PATH_LITERAL("test_dir"));
-    SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);
+    auto config_auto_reset =
+        test::SetPreinstalledWebAppConfigDirForTesting(test_config_dir);
 
     base::FilePath source_root_dir;
     CHECK(
@@ -279,14 +281,10 @@ class PreinstalledWebAppManagerBrowserTestBase
             }));
     sync_run_loop.Run();
 
-    SetPreinstalledWebAppConfigDirForTesting(nullptr);
-
     return code;
   }
 
   ~PreinstalledWebAppManagerBrowserTestBase() override = default;
-
-  Profile* profile() { return browser()->profile(); }
 
  protected:
   void ResetInterceptor() { url_loader_interceptor_.reset(); }
@@ -300,18 +298,10 @@ class PreinstalledWebAppManagerBrowserTestBase
 class PreinstalledWebAppManagerBrowserTest
     : public PreinstalledWebAppManagerBrowserTestBase {
  public:
-  PreinstalledWebAppManagerBrowserTest() {
-#if BUILDFLAG(IS_CHROMEOS)
-    feature_list_.InitWithFeatures(
-        {features::kRecordWebAppDebugInfo},
-        {chromeos::features::kPreinstalledWebAppsCoreOnly});
-#else
-    feature_list_.InitWithFeatures({features::kRecordWebAppDebugInfo}, {});
-#endif
-  }
+  PreinstalledWebAppManagerBrowserTest() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kRecordWebAppDebugInfo};
 };
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
@@ -475,8 +465,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 }
 
 class PreinstalledWebAppManagerExtensionBrowserTest
-    : public extensions::ExtensionBrowserTest,
-      public PreinstalledWebAppManagerBrowserTest {
+    : public PreinstalledWebAppManagerBrowserTest {
  public:
   PreinstalledWebAppManagerExtensionBrowserTest()
       : enable_chrome_apps_(
@@ -485,13 +474,13 @@ class PreinstalledWebAppManagerExtensionBrowserTest
   ~PreinstalledWebAppManagerExtensionBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    extensions::ExtensionBrowserTest::SetUpOnMainThread();
+    PreinstalledWebAppManagerBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
         WebAppProvider::GetForTest(browser()->profile()));
   }
   void TearDownOnMainThread() override {
     ResetInterceptor();
-    extensions::ExtensionBrowserTest::TearDownOnMainThread();
+    PreinstalledWebAppManagerBrowserTest::TearDownOnMainThread();
   }
 
  private:
@@ -1570,5 +1559,152 @@ IN_PROC_BROWSER_TEST_P(
   // user may have already updated their preference.
   WaitForSupportedLinksPreference(app_id, /*is_preferred_app=*/false);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+
+// State denoting whether preinstalled apps are capturing links by default or
+// not based on the `kPreinstalledBrowserTabWebAppsCaptureOnDefault` flag.
+enum class PreinstalledAppCaptureState {
+  kForcedOn,
+  kForcedOff,
+};
+
+// State denoting whether the safety flag to prevent preinstalled apps from
+// capturing is enabled or not.
+enum class PreinstalledAppSafetyFlagStatus {
+  kSwitchedOn,
+  kSwitchedOff,
+};
+
+class PreinstalledWebAppNavigationCapturing
+    : public PreinstalledWebAppManagerBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<PreinstalledAppCaptureState,
+                     PreinstalledAppSafetyFlagStatus,
+                     apps::test::LinkCapturingFeatureVersion>> {
+ public:
+  PreinstalledWebAppNavigationCapturing() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        apps::test::GetFeaturesToEnableLinkCapturingUX(
+            std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()));
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    // Setup whether preinstalled apps should capture links by default.
+    if (ArePreinstalledAppsCapturingByDefault()) {
+      enabled_features.emplace_back(
+          kPreinstalledBrowserTabWebAppsCaptureOnDefault,
+          base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          kPreinstalledBrowserTabWebAppsCaptureOnDefault);
+    }
+
+    // Setup whether the safety flag to prevent preinstalled apps from capturing
+    // links has been set.
+    if (ShouldForceStopPreinstalledAppsCapture()) {
+      enabled_features.emplace_back(
+          kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff,
+          base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff);
+    }
+
+    nav_capturing_on_.InitWithFeaturesAndParameters(enabled_features,
+                                                    disabled_features);
+  }
+
+  bool ArePreinstalledAppsCapturingByDefault() {
+    return std::get<PreinstalledAppCaptureState>(GetParam()) ==
+           PreinstalledAppCaptureState::kForcedOn;
+  }
+
+  bool ShouldForceStopPreinstalledAppsCapture() {
+    return std::get<PreinstalledAppSafetyFlagStatus>(GetParam()) ==
+           PreinstalledAppSafetyFlagStatus::kSwitchedOn;
+  }
+
+  bool ShouldCaptureLinksByDefault() {
+    return std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()) ==
+           apps::test::LinkCapturingFeatureVersion::kV2DefaultOn;
+  }
+
+  // Capture links for preinstalled apps iff:
+  // 1. The safety flag `kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff`
+  // is not set.
+  // 2. If either the whole reimplementation version is set to capture links by
+  // default, or in the absence of that,
+  // `kPreinstalledBrowserTabWebAppsCaptureOnDefault` is set only for
+  // preinstalled apps.
+  bool ShouldCaptureLinks() {
+    return !ShouldForceStopPreinstalledAppsCapture() &&
+           (ArePreinstalledAppsCapturingByDefault() ||
+            ShouldCaptureLinksByDefault());
+  }
+
+ private:
+  base::test::ScopedFeatureList nav_capturing_on_;
+};
+
+IN_PROC_BROWSER_TEST_P(PreinstalledWebAppNavigationCapturing,
+                       PreinstalledAppsCaptureLinks) {
+  base::AutoReset<bool> bypass_offline_manifest_requirement =
+      PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const auto manifest = base::ReplaceStringPlaceholders(
+      R"({
+        "app_url": "$1",
+        "is_preferred_app_for_supported_links": false,
+        "launch_container": "tab",
+        "user_type": ["unmanaged"]
+      })",
+      {GetAppUrl().spec()}, nullptr);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, GetAppUrl());
+
+  // Install the app for the first time.
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+  EXPECT_EQ(ShouldCaptureLinks(), registrar().CapturesLinksInScope(app_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PreinstalledWebAppNavigationCapturing,
+    testing::Combine(
+        testing::Values(PreinstalledAppCaptureState::kForcedOn,
+                        PreinstalledAppCaptureState::kForcedOff),
+        testing::Values(PreinstalledAppSafetyFlagStatus::kSwitchedOn,
+                        PreinstalledAppSafetyFlagStatus::kSwitchedOff),
+        testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)),
+    [](const auto& param_info) {
+      std::string test_name;
+      test_name.append(apps::test::ToString(
+          std::get<apps::test::LinkCapturingFeatureVersion>(param_info.param)));
+      test_name.append("_");
+      switch (std::get<PreinstalledAppCaptureState>(param_info.param)) {
+        case PreinstalledAppCaptureState::kForcedOn:
+          test_name.append("PreinstalledCaptureOn");
+          break;
+        case PreinstalledAppCaptureState::kForcedOff:
+          test_name.append("PreinstalledCaptureOff");
+          break;
+      }
+      test_name.append("_");
+      switch (std::get<PreinstalledAppSafetyFlagStatus>(param_info.param)) {
+        case PreinstalledAppSafetyFlagStatus::kSwitchedOn:
+          test_name.append("SafetyFlagSwitchedOn");
+          break;
+        case PreinstalledAppSafetyFlagStatus::kSwitchedOff:
+          test_name.append("SafetyFlagSwitchedOff");
+          break;
+      }
+      return test_name;
+    });
+
+#endif
 
 }  // namespace web_app

@@ -127,7 +127,48 @@ suite('HeaderTest', () => {
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     await waitAfterNextRender(header);
 
+    // Ensure the cursor is at the end of the input.
+    assertTrue(input.$.input.selectionStart === input.value.length);
+    assertTrue(input.$.input.selectionEnd === input.value.length);
+
     assertEquals(subtitle, header.subtitle);
     assertEquals(subtitle, input.value);
+  });
+
+  test('cursor moves back to the end of the input on blur', async () => {
+    header.subtitle = 'foo bar baz';
+    header.$.menu.dispatchEvent(new CustomEvent('rename-click'));
+    await waitAfterNextRender(header);
+
+    // Select a middle section of the input text.
+    const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    assertTrue(!!input);
+    input.select(5, 9);
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await waitAfterNextRender(header);
+
+    // Ensure the cursor is at the end of the input.
+    assertTrue(input.$.input.selectionStart === input.value.length);
+    assertTrue(input.$.input.selectionEnd === input.value.length);
+  });
+
+  test('`name-change` event is fired on input blur', async () => {
+    const subtitle = $$(header, '#subtitle');
+    assertTrue(!!subtitle);
+    subtitle.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await waitAfterNextRender(header);
+
+    const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    assertTrue(!!input);
+    assertTrue(isVisible(input));
+    const nameChangePromise = eventToPromise('name-change', document.body);
+    input.value = 'foo';
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    const event = await nameChangePromise;
+
+    // Ensure the event contains the new name.
+    assertTrue(!!event);
+    assertTrue(!!event.detail);
+    assertTrue(event.detail.name === 'foo');
   });
 });

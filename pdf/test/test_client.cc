@@ -50,8 +50,8 @@ v8::Isolate* TestClient::GetIsolate() {
 }
 
 std::vector<PDFiumEngineClient::SearchStringResult> TestClient::SearchString(
-    const char16_t* string,
-    const char16_t* term,
+    const std::u16string& needle,
+    const std::u16string& haystack,
     bool case_sensitive) {
   return std::vector<SearchStringResult>();
 }
@@ -72,10 +72,16 @@ bool TestClient::IsValidLink(const std::string& url) {
   return !url.empty();
 }
 
-#if BUILDFLAG(ENABLE_PDF)
+#if BUILDFLAG(ENABLE_PDF_INK2)
 bool TestClient::IsInAnnotationMode() const {
   return false;
 }
-#endif  // BUILDFLAG(ENABLE_PDF)
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void TestClient::OnSearchifyStateChange(bool busy) {}
+
+void TestClient::OnHasSearchifyText() {}
+#endif
 
 }  // namespace chrome_pdf

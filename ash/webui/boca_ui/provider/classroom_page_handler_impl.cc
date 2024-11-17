@@ -142,7 +142,7 @@ void ClassroomPageHandlerImpl::OnListStudentsFetched(
   for (const auto& item : result.value()->items()) {
     mojom::IdentityPtr student = mojom::Identity::New(
         item->profile().id(), item->profile().name().full_name(),
-        item->profile().email_address());
+        item->profile().email_address(), item->profile().photo_url());
 
     fetched_students->push_back(std::move(student));
   }
@@ -161,6 +161,8 @@ ClassroomPageHandlerImpl::CreateRequestSender() {
   std::vector<std::string> scopes = {
       GaiaConstants::kClassroomReadOnlyRostersOAuth2Scope,
       GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
+      GaiaConstants::kClassroomProfileEmailOauth2Scope,
+      GaiaConstants::kClassroomProfilePhotoUrlScope,
   };
   auto url_loader_factory = BocaAppClient::Get()->GetURLLoaderFactory();
   auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();

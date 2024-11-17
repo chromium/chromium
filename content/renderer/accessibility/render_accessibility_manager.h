@@ -65,7 +65,7 @@ class CONTENT_EXPORT RenderAccessibilityManager
   // Returns the current accessibility mode for the associated RenderFrameImpl.
   ui::AXMode GetAccessibilityMode() const;
 
-  // mojom::RenderAccessibility implementation.
+  // blink::mojom::RenderAccessibility implementation.
   void SetMode(const ui::AXMode& ax_mode, uint32_t reset_token) override;
   void FatalError() override;
   void HitTest(
@@ -76,9 +76,11 @@ class CONTENT_EXPORT RenderAccessibilityManager
   void PerformAction(const ui::AXActionData& data) override;
   void Reset(uint32_t reset_token) override;
 
-  // Communication with the browser process.
-  void HandleAccessibilityEvents(
+  // Pass-through methods that communicate with the browser process,
+  // corresponds with blink::mojom::RenderAccessibilityHost.
+  void HandleAXEvents(
       ui::AXUpdatesAndEvents& updates_and_events,
+      ui::AXLocationAndScrollUpdates& location_and_scroll_updates,
       uint32_t reset_token,
       blink::mojom::RenderAccessibilityHost::HandleAXEventsCallback callback);
 

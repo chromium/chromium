@@ -44,7 +44,8 @@ OverlayProcessorAndroid::OverlayProcessorAndroid(
         &OverlayProcessorAndroid::InitializeOverlayProcessorOnGpu,
         base::Unretained(this), display_controller->controller_on_gpu(),
         &event);
-    gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
+    gpu_task_scheduler_->ScheduleGpuTask(
+        std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
     event.Wait();
   }
 
@@ -71,7 +72,8 @@ OverlayProcessorAndroid::~OverlayProcessorAndroid() {
     auto callback =
         base::BindOnce(&OverlayProcessorAndroid::DestroyOverlayProcessorOnGpu,
                        base::Unretained(this), &event);
-    gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
+    gpu_task_scheduler_->ScheduleGpuTask(
+        std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
     event.Wait();
   }
 }
@@ -124,7 +126,8 @@ void OverlayProcessorAndroid::ScheduleOverlays(
   auto task = base::BindOnce(&OverlayProcessorOnGpu::ScheduleOverlays,
                              base::Unretained(processor_on_gpu_.get()),
                              std::move(overlay_candidates_));
-  gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens);
+  gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens,
+                                       gpu::SyncToken());
   overlay_candidates_.clear();
 }
 
@@ -261,7 +264,8 @@ void OverlayProcessorAndroid::NotifyOverlayPromotion(
                                base::Unretained(processor_on_gpu_.get()),
                                std::move(promotion_denied),
                                std::move(possible_promotions));
-    gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens);
+    gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens,
+                                         gpu::SyncToken());
   }
   promotion_hint_info_map_.clear();
 }

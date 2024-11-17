@@ -56,7 +56,7 @@ void CheckActionTapLabelPosition(TapLabelPosition label_position,
       EXPECT_EQ(expected_label_top_left_pos, label->bounds().origin());
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

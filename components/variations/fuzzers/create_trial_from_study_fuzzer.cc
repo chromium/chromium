@@ -28,7 +28,7 @@ class TestOverrideStringCallback {
   TestOverrideStringCallback& operator=(const TestOverrideStringCallback&) =
       delete;
 
-  virtual ~TestOverrideStringCallback() {}
+  virtual ~TestOverrideStringCallback() = default;
 
   const VariationsSeedProcessor::UIStringOverrideCallback& callback() const {
     return callback_;

@@ -20,8 +20,8 @@ message SyncEntity {
   // client-generated ID.  If the commit succeeds, the server will generate
   // a globally unique ID and return it to the committing client in the
   // CommitResponse.EntryResponse.  In the context of a GetUpdatesResponse,
-  // |id_string| is always the server generated ID.  The original
-  // client-generated ID is preserved in the |originator_client_id| field.
+  // `id_string` is always the server generated ID.  The original
+  // client-generated ID is preserved in the `originator_client_id` field.
   // Present in both GetUpdatesResponse and CommitMessage.
   // Prior to M123, this field was empty for commit-only types.
   optional string id_string = 1;
@@ -49,12 +49,12 @@ message SyncEntity {
   // will interpret this entity as a newly-created item and generate a
   // new server ID and an initial version number.  If nonzero in a
   // CommitMessage, this item is treated as an update to an existing item, and
-  // the server will use |id_string| to locate the item.  Then, if the item's
-  // current version on the server does not match |version|, the commit will
+  // the server will use `id_string` to locate the item.  Then, if the item's
+  // current version on the server does not match `version`, the commit will
   // fail for that item.  The server will not update it, and will return
-  // a result code of CONFLICT.  In a GetUpdatesResponse, |version| is
-  // always positive and indentifies the revision of the item data being sent
-  // to the client.
+  // a result code of CONFLICT.  In a GetUpdatesResponse, `version` is always
+  // positive and identifies the revision of the item data being sent to the
+  // client.
   // Present in both GetUpdatesResponse and CommitMessage.
   // WARNING: This field used to be required before M60. Any client before this
   // will fail to deserialize if this field is missing.
@@ -80,8 +80,8 @@ message SyncEntity {
   // will fail to deserialize if this field is missing.
   optional string name = 7;
 
-  // The name of this item.  Same as |name|.
-  // |non_unique_name| should take precedence over the |name| value if both
+  // The name of this item.  Same as `name`.
+  // `non_unique_name` should take precedence over the `name` value if both
   // are supplied.  For efficiency, clients and servers should avoid setting
   // this redundant value.
   // Present in both GetUpdatesResponse and CommitMessage.
@@ -116,8 +116,8 @@ message SyncEntity {
   reserved 14;
   reserved "bookmark_favicon";
 
-  // Ancient fields, predecessors for |unique_position|, deprecated with M26 and
-  // still supported to deal with old incoming data. See field |unique_position|
+  // Ancient fields, predecessors for `unique_position`, deprecated with M26 and
+  // still supported to deal with old incoming data. See field `unique_position`
   // for details as well as the data-upgrading implementation in
   // GetUniquePositionFromSyncEntity().
   optional int64 position_in_parent = 15 [deprecated = true];
@@ -131,8 +131,8 @@ message SyncEntity {
   optional bool deleted = 18 [default = false];
 
   // A unique ID that identifies the the sync client who initially committed
-  // this entity.  This value corresponds to |cache_guid| in CommitMessage.
-  // This field, along with |originator_client_item_id|, can be used to
+  // this entity.  This value corresponds to `cache_guid` in CommitMessage.
+  // This field, along with `originator_client_item_id`, can be used to
   // reunite the original with its official committed version in the case
   // where a client does not receive or process the commit response for
   // some reason.
@@ -212,7 +212,7 @@ message SyncEntity {
   //    field.
   // 3. Very old data (last committed by M25 or below, before the field was
   //    introduced) does not include this field, and in that case the legacy
-  //    fields |position_in_parent| or |insert_after_item_id| must be honored
+  //    fields `position_in_parent` or `insert_after_item_id` must be honored
   //    instead.
   //
   // May be returned in GetUpdatesMessage and sent up in CommitMessage.

@@ -143,7 +143,8 @@ class AppServiceInstanceRegistryHelper {
   //
   // Note: The Lacros browser should go though BrowserAppShelfController, not
   // via this AppServiceInstanceRegistryHelper.
-  std::map<aura::Window*, aura::Window*> tab_window_to_browser_window_;
+  std::map<aura::Window*, raw_ptr<aura::Window, CtnExperimental>>
+      tab_window_to_browser_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_APP_SERVICE_INSTANCE_REGISTRY_HELPER_H_

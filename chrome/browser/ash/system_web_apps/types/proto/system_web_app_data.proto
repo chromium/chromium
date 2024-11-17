@@ -31,7 +31,7 @@ message SystemWebAppDataProto {
     DEMO_MODE = 18;
     OS_FEEDBACK = 19;
     PROJECTOR = 20;
-    OS_URL_HANDLER = 21;
+    // Removed: OS_URL_HANDLER = 21;
     FIRMWARE_UPDATE = 22;
     OS_FLAGS = 23;
     FACE_ML = 24;

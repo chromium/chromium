@@ -88,8 +88,7 @@ void BlinkOTSContext::Message(int level, const char* format, ...) {
     va_start(args, format);
     vsnprintf(buffer.data(), buffer.size(), format, args);
     va_end(args);
-    error_string_ =
-        StringImpl::Create(reinterpret_cast<const LChar*>(buffer.data()), len);
+    error_string_ = StringImpl::Create(base::span(buffer).first(len));
   }
 }
 

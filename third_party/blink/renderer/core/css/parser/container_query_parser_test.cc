@@ -34,14 +34,16 @@ class ContainerQueryParserTest : public PageTestBase {
     STACK_ALLOCATED();
 
    public:
-    bool IsAllowed(const String& feature) const override {
+    bool IsAllowed(const AtomicString& feature) const override {
       return feature == "width";
     }
-    bool IsAllowedWithoutValue(const String& feature,
+    bool IsAllowedWithoutValue(const AtomicString& feature,
                                const ExecutionContext*) const override {
       return true;
     }
-    bool IsCaseSensitive(const String& feature) const override { return false; }
+    bool IsCaseSensitive(const AtomicString& feature) const override {
+      return false;
+    }
     bool SupportsRange() const override { return true; }
   };
 

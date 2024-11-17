@@ -48,7 +48,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         initRowWrapper();
         initConnection();
         initPermissions();
-        initCookies(params);
+        initCookies();
         initForgetSiteButton();
         initHttpsImageCompression(params);
         initOpenOnline(params);
@@ -67,7 +67,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         mPermissionsRow = findViewById(R.id.page_info_permissions_row);
     }
 
-    private void initCookies(Params params) {
+    private void initCookies() {
         mCookiesRow = findViewById(R.id.page_info_cookies_row);
     }
 

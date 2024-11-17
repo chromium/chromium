@@ -101,4 +101,8 @@ specific_include_rules = {
     "+components/services/storage/privileged/mojom/indexed_db_control.mojom.h",
     "+components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h",
   ],
+
+  "window_open_apitest\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ]
 }

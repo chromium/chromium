@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -43,14 +44,14 @@ class FakeRestrictedUDPSocket final
   explicit FakeRestrictedUDPSocket(ContextLifecycleNotifier* notifier)
       : remote_(notifier) {}
   void Send(base::span<const uint8_t> data, SendCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void SendTo(base::span<const uint8_t> data,
               const net::HostPortPair& dest_addr,
               net::DnsQueryType dns_query_type,
               SendToCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ReceiveMore(uint32_t num_additional_datagrams) override {
@@ -171,8 +172,7 @@ std::pair<UDPMessage*, bool> UnpackPromiseResult(const V8TestingScope& scope,
 
 String UDPMessageDataToString(const UDPMessage* message) {
   DOMArrayPiece array_piece{message->data()};
-  return String{static_cast<const uint8_t*>(array_piece.Bytes()),
-                static_cast<wtf_size_t>(array_piece.ByteLength())};
+  return String{array_piece.ByteSpan()};
 }
 
 TEST(UDPReadableStreamWrapperTest, Create) {

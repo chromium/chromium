@@ -12,13 +12,13 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 
 namespace user_manager {
 
 // Fake user manager with a barebones implementation. Users can be added
 // and set as logged in, and those users can be returned.
-class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
+class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
  public:
   explicit FakeUserManager(PrefService* local_state = nullptr);
 
@@ -61,8 +61,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
                                       bool is_ephemeral);
 
   // UserManager overrides.
-  const UserList& GetUsers() const override;
-  UserList GetUsersAllowedForMultiProfile() const override;
+  UserList GetUsersAllowedForMultiUserSignIn() const override;
   void UpdateUserAccountData(const AccountId& account_id,
                              const UserAccountData& account_data) override;
 
@@ -85,8 +84,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   const AccountId& GetOwnerAccountId() const override;
   void OnSessionStarted() override {}
   bool IsKnownUser(const AccountId& account_id) const override;
-  const User* FindUser(const AccountId& account_id) const override;
-  User* FindUserAndModify(const AccountId& account_id) override;
   void SaveUserOAuthStatus(const AccountId& account_id,
                            User::OAuthTokenStatus oauth_token_status) override {
   }
@@ -98,11 +95,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool IsUserLoggedIn() const override;
   bool IsLoggedInAsUserWithGaiaAccount() const override;
-  bool IsLoggedInAsManagedGuestSession() const override;
-  bool IsLoggedInAsGuest() const override;
-  bool IsLoggedInAsKioskApp() const override;
-  bool IsLoggedInAsWebKioskApp() const override;
-  bool IsLoggedInAsAnyKioskApp() const override;
   bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
@@ -114,16 +106,16 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
 
-  // UserManagerBase overrides:
+  // UserManagerImpl overrides:
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
   void SetUserAffiliated(const AccountId& account_id,
                          bool is_affiliated) override {}
 
   // Just make it public for tests.
-  using UserManagerBase::ResetOwnerId;
-  using UserManagerBase::SetEphemeralModeConfig;
-  using UserManagerBase::SetOwnerId;
+  using UserManagerImpl::ResetOwnerId;
+  using UserManagerImpl::SetEphemeralModeConfig;
+  using UserManagerImpl::SetOwnerId;
 
  protected:
   // If set this is the active user. If empty, the first created user is the

@@ -21,6 +21,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -691,11 +692,12 @@ namespace task_manager {
 ////////////////////////////////////////////////////////////////////////////////
 // TaskManagerMac implementation:
 
-TaskManagerMac::TaskManagerMac()
+TaskManagerMac::TaskManagerMac(StartAction start_action)
     : table_model_(this),
       window_controller_([[TaskManagerWindowController alloc]
           initWithTaskManagerMac:this
                       tableModel:&table_model_]) {
+  task_manager::RecordNewOpenEvent(start_action);
   table_model_.SetObserver(this);  // Hook up the ui::TableModelObserver.
   table_model_.RetrieveSavedColumnsSettingsAndUpdateTable();
 
@@ -709,6 +711,7 @@ TaskManagerMac* TaskManagerMac::instance_ = nullptr;
 
 TaskManagerMac::~TaskManagerMac() {
   table_model_.SetObserver(nullptr);
+  task_manager::RecordCloseEvent(start_time_, base::TimeTicks::Now());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -783,12 +786,12 @@ void TaskManagerMac::OnAppTerminating() {
 }
 
 // static
-TaskManagerTableModel* TaskManagerMac::Show() {
+TaskManagerTableModel* TaskManagerMac::Show(StartAction start_action) {
   if (instance_) {
     [instance_->window_controller_.window
         makeKeyAndOrderFront:instance_->window_controller_];
   } else {
-    instance_ = new TaskManagerMac();
+    instance_ = new TaskManagerMac(start_action);
   }
 
   return &instance_->table_model_;
@@ -805,12 +808,18 @@ void TaskManagerMac::Hide() {
 namespace chrome {
 
 // Declared in browser_dialogs.h.
-task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
-  return task_manager::TaskManagerMac::Show();
+task_manager::TaskManagerTableModel* ShowTaskManager(
+    Browser* browser,
+    task_manager::StartAction start_action) {
+  return base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
+             ? ShowTaskManagerViews(browser, start_action)
+             : task_manager::TaskManagerMac::Show(start_action);
 }
 
 void HideTaskManager() {
-  task_manager::TaskManagerMac::Hide();
+  base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
+      ? HideTaskManagerViews()
+      : task_manager::TaskManagerMac::Hide();
 }
 
 }  // namespace chrome

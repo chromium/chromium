@@ -91,7 +91,8 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
 
   // Determines whether should fetch tail suggestions.
   static bool ShouldFetchTailSuggestions(
-      const OnDeviceHeadProviderParams& params);
+      const OnDeviceHeadProviderParams& params,
+      const std::string& locale);
 
   raw_ptr<AutocompleteProviderClient> client_;
 

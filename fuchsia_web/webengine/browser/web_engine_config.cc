@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -51,14 +52,15 @@ bool IsProtectedMemorySupported() {
 // `value`, otherwise the switch will be set to `value`.
 void AppendToSwitch(std::string_view switch_name,
                     std::string_view value,
-                    base::CommandLine* command_line) {
+                    base::CommandLine* command_line,
+                    std::string_view separator = ",") {
   if (!command_line->HasSwitch(switch_name)) {
     command_line->AppendSwitchNative(switch_name, value);
     return;
   }
 
   std::string new_value = base::StrCat(
-      {command_line->GetSwitchValueASCII(switch_name), ",", value});
+      {command_line->GetSwitchValueASCII(switch_name), separator, value});
   command_line->RemoveSwitch(switch_name);
   command_line->AppendSwitchNative(switch_name, new_value);
 }
@@ -74,8 +76,8 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
       blink::switches::kSharedArrayBufferAllowedOrigins,
       blink::switches::kGpuRasterizationMSAASampleCount,
       blink::switches::kMinHeightForGpuRasterTile,
-      cc::switches::kEnableClippedImageScaling,
-      cc::switches::kEnableGpuBenchmarking,
+      switches::kEnableClippedImageScaling,
+      switches::kEnableGpuBenchmarking,
       embedder_support::kOriginTrialPublicKey,
       embedder_support::kOriginTrialDisabledFeatures,
       switches::kDisableFeatures,
@@ -192,6 +194,24 @@ bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
   // TODO(crbug.com/40269624): Remove this switch once fixed.
   command_line->AppendSwitchASCII(switches::kEnableHardwareOverlays,
                                   "underlay");
+
+  std::optional<int> max_old_space =
+      config.FindInt("js-heap-max-old-space-size");
+  if (max_old_space) {
+    AppendToSwitch(
+        blink::switches::kJavaScriptFlags,
+        "--max_old_space_size=" + base::NumberToString(max_old_space.value()),
+        command_line, " ");
+  }
+
+  std::optional<int> max_semi_space =
+      config.FindInt("js-heap-max-semi-space-size");
+  if (max_semi_space) {
+    AppendToSwitch(
+        blink::switches::kJavaScriptFlags,
+        "--max_semi_space_size=" + base::NumberToString(max_semi_space.value()),
+        command_line, " ");
+  }
 
   return true;
 }

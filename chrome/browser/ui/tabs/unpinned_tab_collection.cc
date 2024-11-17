@@ -143,14 +143,15 @@ UnpinnedTabCollection::GetDirectChildIndexOfCollectionContainingTab(
   }
 }
 
-bool UnpinnedTabCollection::ContainsTab(TabModel* tab_model) const {
-  CHECK(tab_model);
-  return impl_->ContainsTab(tab_model);
+bool UnpinnedTabCollection::ContainsTab(const TabInterface* tab) const {
+  CHECK(tab);
+  return impl_->ContainsTab(tab);
 }
 
-bool UnpinnedTabCollection::ContainsTabRecursive(TabModel* tab_model) const {
-  CHECK(tab_model);
-  return GetIndexOfTabRecursive(tab_model).has_value();
+bool UnpinnedTabCollection::ContainsTabRecursive(
+    const TabInterface* tab) const {
+  CHECK(tab);
+  return GetIndexOfTabRecursive(tab).has_value();
 }
 
 bool UnpinnedTabCollection::ContainsCollection(
@@ -160,8 +161,8 @@ bool UnpinnedTabCollection::ContainsCollection(
 }
 
 std::optional<size_t> UnpinnedTabCollection::GetIndexOfTabRecursive(
-    const TabModel* tab_model) const {
-  CHECK(tab_model);
+    const TabInterface* tab) const {
+  CHECK(tab);
   size_t current_index = 0;
 
   // If the child is a `tab_model` check if it is the the desired tab, otherwise
@@ -172,7 +173,7 @@ std::optional<size_t> UnpinnedTabCollection::GetIndexOfTabRecursive(
   // group.
   for (const auto& child : impl_->GetChildren()) {
     if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
-      if (std::get<std::unique_ptr<tabs::TabModel>>(child).get() == tab_model) {
+      if (std::get<std::unique_ptr<tabs::TabModel>>(child).get() == tab) {
         return current_index;
       }
       current_index++;
@@ -182,7 +183,7 @@ std::optional<size_t> UnpinnedTabCollection::GetIndexOfTabRecursive(
           std::get<std::unique_ptr<tabs::TabCollection>>(child).get();
 
       if (std::optional<size_t> index_within_group_collection =
-              group_collection->GetIndexOfTabRecursive(tab_model);
+              group_collection->GetIndexOfTabRecursive(tab);
           index_within_group_collection.has_value()) {
         return current_index + index_within_group_collection.value();
       } else {
@@ -211,21 +212,6 @@ std::unique_ptr<TabModel> UnpinnedTabCollection::MaybeRemoveTab(
 
 size_t UnpinnedTabCollection::ChildCount() const {
   return impl_->GetChildrenCount();
-}
-
-size_t UnpinnedTabCollection::TabCountRecursive() const {
-  size_t count = 0;
-  for (const auto& child : impl_->GetChildren()) {
-    if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
-      count++;
-    } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
-                   child)) {
-      const TabCollection* const group_collection =
-          std::get<std::unique_ptr<tabs::TabCollection>>(child).get();
-      count += group_collection->ChildCount();
-    }
-  }
-  return count;
 }
 
 std::unique_ptr<TabCollection> UnpinnedTabCollection::MaybeRemoveCollection(

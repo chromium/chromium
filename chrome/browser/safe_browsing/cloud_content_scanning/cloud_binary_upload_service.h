@@ -43,7 +43,7 @@ class CloudBinaryUploadService : public BinaryUploadService {
 
   // Indicates whether the DM token/Connector combination is allowed to upload
   // data.
-  using AuthorizationCallback = base::OnceCallback<void(bool)>;
+  using AuthorizationCallback = base::OnceCallback<void(Result)>;
   void IsAuthorized(const GURL& url,
                     bool per_profile_request,
                     AuthorizationCallback callback,
@@ -62,7 +62,7 @@ class CloudBinaryUploadService : public BinaryUploadService {
   void Shutdown() override;
 
   // Sets `can_upload_data_` for tests.
-  void SetAuthForTesting(const std::string& dm_token, bool authorized);
+  void SetAuthForTesting(const std::string& dm_token, Result auth_check_result);
 
   // Sets `token_fetcher_` for tests.
   void SetTokenFetcherForTesting(
@@ -126,7 +126,7 @@ class CloudBinaryUploadService : public BinaryUploadService {
                       enterprise_connectors::ContentAnalysisResponse response);
 
   void MaybeUploadForDeepScanningCallback(std::unique_ptr<Request> request,
-                                          bool authorized);
+                                          Result auth_check_result);
 
   // Callback once the response from the backend is received.
   void ValidateDataUploadRequestConnectorCallback(
@@ -191,11 +191,12 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // Indicates whether this DM token + Connector combination can be used to
   // upload data for enterprise requests. Advanced Protection scans are
   // validated using the user's Advanced Protection enrollment status.
-  base::flat_map<TokenAndConnector, bool> can_upload_enterprise_data_;
+  base::flat_map<TokenAndConnector, BinaryUploadService::Result>
+      can_upload_enterprise_data_;
 
   // Callbacks waiting on IsAuthorized request. These are organized by DM token
   // and Connector.
-  base::flat_map<TokenAndConnector, std::list<base::OnceCallback<void(bool)>>>
+  base::flat_map<TokenAndConnector, std::list<base::OnceCallback<void(Result)>>>
       authorization_callbacks_;
 
   // Indicates if this service is waiting on the backend to validate event

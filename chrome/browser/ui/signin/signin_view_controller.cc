@@ -181,8 +181,9 @@ void HandleSignoutConfirmationChoice(
       // Sign out from all accounts on the web if needed.
       signin::AccountsInCookieJarInfo accounts_in_cookies =
           identity_manager->GetAccountsInCookieJar();
-      if (!accounts_in_cookies.accounts_are_fresh ||
-          !accounts_in_cookies.signed_in_accounts.empty()) {
+      if (!accounts_in_cookies.AreAccountsFresh() ||
+          !accounts_in_cookies.GetPotentiallyInvalidSignedInAccounts()
+               .empty()) {
         browser->signin_view_controller()->ShowGaiaLogoutTab(
             token_signout_source);
       }
@@ -408,7 +409,7 @@ void SigninViewController::ShowModalProfileCustomizationDialog(
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
           browser_, is_local_profile_creation,
-          /*show_profile_switch_iph=*/true),
+          /*show_profile_switch_iph=*/true, /*show_supervised_user_iph=*/true),
       GetOnModalDialogClosedCallback());
 }
 
@@ -457,8 +458,6 @@ SigninViewController::ShowReauthPrompt(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   if (account_id != primary_account_id) {
-    signin_ui_util::RecordTransactionalReauthResult(
-        access_point, signin::ReauthResult::kAccountNotSignedIn);
     std::move(wrapped_reauth_callback)
         .Run(signin::ReauthResult::kAccountNotSignedIn);
     return abort_handle;
@@ -485,23 +484,17 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
 }
 
 void SigninViewController::ShowModalManagedUserNoticeDialog(
-    const AccountInfo& account_info,
-    bool is_oidc_account,
-    bool force_new_profile,
-    bool show_link_data_option,
-    signin::SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback) {
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+        create_param) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
-          browser_, account_info, is_oidc_account, force_new_profile,
-          show_link_data_option, std::move(process_user_choice_callback),
-          std::move(done_callback)),
+          browser_, std::move(create_param)),
       GetOnModalDialogClosedCallback());
 #else
-  NOTREACHED_IN_MIGRATION() << "Managed user notice dialog modal not supported";
+  NOTREACHED() << "Managed user notice dialog modal not supported";
 #endif
 }
 
@@ -560,7 +553,7 @@ void SigninViewController::ShowDiceSigninTab(
 
     // Account consistency mode does not support signing in to Chrome due to
     // some other unexpected reason. Signing in to Chrome is not supported.
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "OAuth client ID and client secret is configured, but "
            "the account consistency mode does not support signing in to "
            "Chromium.";
@@ -706,8 +699,9 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source,
     syncer::DataTypeSet unsynced_datatypes) {
+  Profile* profile = browser_->profile();
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_->profile());
+      IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId primary_account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (primary_account_id.empty()) {
@@ -719,6 +713,11 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id);
   bool sign_out_immediately = unsynced_datatypes.empty() && needs_reauth;
+
+  // Do not show the dialog to users with implicit signin.
+  if (!profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
+    sign_out_immediately = true;
+  }
 
   base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
       base::BindOnce(&HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),

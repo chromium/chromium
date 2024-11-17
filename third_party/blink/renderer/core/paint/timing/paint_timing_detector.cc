@@ -167,9 +167,6 @@ void PaintTimingDetector::NotifyPaintFinished() {
   if (window) {
     DOMWindowPerformance::performance(*window)->OnPaintFinished();
   }
-  if (Document* document = frame_view_->GetFrame().GetDocument()) {
-    document->OnPaintFinished();
-  }
 }
 
 // static

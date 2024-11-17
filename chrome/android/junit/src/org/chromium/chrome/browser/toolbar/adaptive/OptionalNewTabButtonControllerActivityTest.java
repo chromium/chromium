@@ -56,15 +56,12 @@ import java.util.NoSuchElementException;
  */
 @Config(shadows = {OptionalNewTabButtonControllerActivityTest.ShadowDelegate.class})
 @RunWith(ChromeRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+@EnableFeatures(
+        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
+                + ":min_version_adaptive/0")
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-    "enable-features="
-            + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
-            + "<FakeStudyName",
-    "force-fieldtrials=FakeStudyName/Enabled",
-    "force-fieldtrial-params=FakeStudyName.Enabled:min_version_adaptive/0"
+    ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
 public class OptionalNewTabButtonControllerActivityTest {
 

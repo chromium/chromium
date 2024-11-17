@@ -58,10 +58,10 @@ bool RecordSizeToInt(std::string_view value, uint64_t* rs) {
 EncryptionHeaderIterator::EncryptionHeaderIterator(
     std::string::const_iterator header_begin,
     std::string::const_iterator header_end)
-    : iterator_(header_begin, header_end, ','),
+    : iterator_(std::string_view(header_begin, header_end), /*delimiter=*/','),
       rs_(kDefaultRecordSizeBytes) {}
 
-EncryptionHeaderIterator::~EncryptionHeaderIterator() {}
+EncryptionHeaderIterator::~EncryptionHeaderIterator() = default;
 
 bool EncryptionHeaderIterator::GetNext() {
   keyid_.clear();
@@ -72,7 +72,7 @@ bool EncryptionHeaderIterator::GetNext() {
     return false;
 
   net::HttpUtil::NameValuePairsIterator name_value_pairs(
-      iterator_.value_begin(), iterator_.value_end(), ';',
+      iterator_.value(), /*delimiter=*/';',
       net::HttpUtil::NameValuePairsIterator::Values::REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::NOT_STRICT);
 
@@ -81,8 +81,8 @@ bool EncryptionHeaderIterator::GetNext() {
   bool found_rs = false;
 
   while (name_value_pairs.GetNext()) {
-    const std::string_view name = name_value_pairs.name_piece();
-    const std::string_view value = name_value_pairs.value_piece();
+    const std::string_view name = name_value_pairs.name();
+    const std::string_view value = name_value_pairs.value();
 
     if (base::EqualsCaseInsensitiveASCII(name, "keyid")) {
       if (found_keyid)
@@ -108,9 +108,10 @@ bool EncryptionHeaderIterator::GetNext() {
 CryptoKeyHeaderIterator::CryptoKeyHeaderIterator(
     std::string::const_iterator header_begin,
     std::string::const_iterator header_end)
-    : iterator_(header_begin, header_end, ',') {}
+    : iterator_(std::string_view(header_begin, header_end), /*delimiter=*/',') {
+}
 
-CryptoKeyHeaderIterator::~CryptoKeyHeaderIterator() {}
+CryptoKeyHeaderIterator::~CryptoKeyHeaderIterator() = default;
 
 bool CryptoKeyHeaderIterator::GetNext() {
   keyid_.clear();
@@ -121,7 +122,7 @@ bool CryptoKeyHeaderIterator::GetNext() {
     return false;
 
   net::HttpUtil::NameValuePairsIterator name_value_pairs(
-      iterator_.value_begin(), iterator_.value_end(), ';',
+      iterator_.value(), /*delimiter=*/';',
       net::HttpUtil::NameValuePairsIterator::Values::REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::NOT_STRICT);
 
@@ -130,8 +131,8 @@ bool CryptoKeyHeaderIterator::GetNext() {
   bool found_dh = false;
 
   while (name_value_pairs.GetNext()) {
-    const std::string_view name = name_value_pairs.name_piece();
-    const std::string_view value = name_value_pairs.value_piece();
+    const std::string_view name = name_value_pairs.name();
+    const std::string_view value = name_value_pairs.value();
 
     if (base::EqualsCaseInsensitiveASCII(name, "keyid")) {
       if (found_keyid)

@@ -30,4 +30,11 @@ unsigned Report::MatchId() const {
   return hash;
 }
 
+bool Report::ShouldSendReport() const {
+  // Don't report any URLs from extension code.
+  // TODO(356098278): Investigate whether extension URLs should be reported to
+  // an extension-defined endpoint, if the extension opts in to reporting.
+  return !body()->IsExtensionSource();
+}
+
 }  // namespace blink

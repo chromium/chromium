@@ -42,7 +42,8 @@ SyncInvalidationsServiceFactory::SyncInvalidationsServiceFactory()
 
 SyncInvalidationsServiceFactory::~SyncInvalidationsServiceFactory() = default;
 
-KeyedService* SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SyncInvalidationsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -51,6 +52,6 @@ KeyedService* SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
   instance_id::InstanceIDDriver* instance_id_driver =
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver();
-  return new syncer::SyncInvalidationsServiceImpl(gcm_driver,
-                                                  instance_id_driver);
+  return std::make_unique<syncer::SyncInvalidationsServiceImpl>(
+      gcm_driver, instance_id_driver);
 }

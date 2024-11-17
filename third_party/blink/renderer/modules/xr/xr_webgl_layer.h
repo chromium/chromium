@@ -72,11 +72,9 @@ class XRWebGLLayer final : public XRLayer {
   // The consumers should not attempt to delete the texture themselves.
   WebGLTexture* GetCameraTexture();
 
-  void OnFrameStart(
-      const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
-      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
-  void OnFrameEnd();
-  void OnResize();
+  void OnFrameStart() override;
+  void OnFrameEnd() override;
+  void OnResize() override;
 
   // Called from XRSession::OnFrame handler. Params are background texture
   // mailbox holder and its size respectively.
@@ -87,11 +85,9 @@ class XRWebGLLayer final : public XRLayer {
   void Trace(Visitor*) const override;
 
  private:
-  uint32_t GetBufferTextureId(
-      const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder);
-
-  void BindCameraBufferTexture(
-      const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder);
+  void CreateAndBindCameraBufferTexture(
+      const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
+      const gpu::SyncToken& buffer_sync_token);
 
   Member<XRViewport> left_viewport_;
   Member<XRViewport> right_viewport_;
@@ -107,13 +103,14 @@ class XRWebGLLayer final : public XRLayer {
 
   uint32_t clean_frame_count = 0;
 
-  uint32_t camera_image_texture_id_;
+  std::unique_ptr<gpu::SharedImageTexture> camera_image_shared_image_texture_;
+  std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
+      camera_image_texture_scoped_access_;
+
   // WebGL texture that points to the |camera_image_texture_|. Must be notified
   // via a call to |WebGLUnownedTexture::OnGLDeleteTextures()| when
   // |camera_image_texture_id_| is deleted.
   Member<WebGLUnownedTexture> camera_image_texture_;
-
-  std::optional<gpu::MailboxHolder> camera_image_mailbox_holder_;
 };
 
 }  // namespace blink

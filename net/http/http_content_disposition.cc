@@ -218,7 +218,7 @@ bool DecodeWord(std::string_view encoded_word,
 //
 // However we currently also allow RFC 2047 encoding and non-ASCII
 // strings. Non-ASCII strings are interpreted based on |referrer_charset|.
-bool DecodeFilenameValue(const std::string& input,
+bool DecodeFilenameValue(std::string_view input,
                          const std::string& referrer_charset,
                          std::string* output,
                          int* parse_result_flags) {
@@ -227,8 +227,8 @@ bool DecodeFilenameValue(const std::string& input,
   bool is_previous_token_rfc2047 = true;
 
   // Tokenize with whitespace characters.
-  base::StringTokenizer t(input, " \t\n\r");
-  t.set_options(base::StringTokenizer::RETURN_DELIMS);
+  base::StringViewTokenizer t(input, " \t\n\r");
+  t.set_options(base::StringViewTokenizer::RETURN_DELIMS);
   while (t.GetNext()) {
     if (t.token_is_delim()) {
       // If the previous non-delimeter token is not RFC2047-encoded,
@@ -258,10 +258,10 @@ bool DecodeFilenameValue(const std::string& input,
 // Parses the charset and value-chars out of an ext-value string.
 //
 //  ext-value     = charset  "'" [ language ] "'" value-chars
-bool ParseExtValueComponents(const std::string& input,
+bool ParseExtValueComponents(std::string_view input,
                              std::string* charset,
                              std::string* value_chars) {
-  base::StringTokenizer t(input, "'");
+  base::StringViewTokenizer t(input, "'");
   t.set_options(base::StringTokenizer::RETURN_DELIMS);
   std::string_view temp_charset;
   std::string_view temp_value;
@@ -316,7 +316,7 @@ bool ParseExtValueComponents(const std::string& input,
 //  attr-char     = ALPHA / DIGIT
 //                 / "!" / "#" / "$" / "&" / "+" / "-" / "."
 //                 / "^" / "_" / "`" / "|" / "~"
-bool DecodeExtValue(const std::string& param_value, std::string* decoded) {
+bool DecodeExtValue(std::string_view param_value, std::string* decoded) {
   if (param_value.find('"') != std::string::npos)
     return false;
 
@@ -406,10 +406,10 @@ void HttpContentDisposition::Parse(const std::string& header,
   std::string filename;
   std::string ext_filename;
 
-  HttpUtil::NameValuePairsIterator iter(pos, end, ';');
+  HttpUtil::NameValuePairsIterator iter(base::MakeStringPiece(pos, end), ';');
   while (iter.GetNext()) {
     if (filename.empty() &&
-        base::EqualsCaseInsensitiveASCII(iter.name_piece(), "filename")) {
+        base::EqualsCaseInsensitiveASCII(iter.name(), "filename")) {
       DecodeFilenameValue(iter.value(), referrer_charset, &filename,
                           &parse_result_flags_);
       if (!filename.empty()) {
@@ -417,8 +417,8 @@ void HttpContentDisposition::Parse(const std::string& header,
         if (filename[0] == '\'')
           parse_result_flags_ |= HAS_SINGLE_QUOTED_FILENAME;
       }
-    } else if (ext_filename.empty() && base::EqualsCaseInsensitiveASCII(
-                                           iter.name_piece(), "filename*")) {
+    } else if (ext_filename.empty() &&
+               base::EqualsCaseInsensitiveASCII(iter.name(), "filename*")) {
       DecodeExtValue(iter.raw_value(), &ext_filename);
       if (!ext_filename.empty())
         parse_result_flags_ |= HAS_EXT_FILENAME;

@@ -177,26 +177,26 @@ public class CustomTabMinimizationManager
         } catch (NullPointerException e) {
             if (doesExceptionMatch(e, TASK_DISPLAY_AREA_NPE_STR)) {
                 String msg = "NullPointerException";
-                reportException(TASK_DISPLAY_AREA_NPE_STR, msg, e);
+                reportException(msg, e);
             } else {
                 throw e;
             }
         } catch (IllegalStateException e) {
             if (doesExceptionMatch(e, DEVICE_DOES_NOT_SUPPORT_ISE_STR)) {
                 String msg = "Device doesn't support picture-in-picture mode.";
-                reportException(DEVICE_DOES_NOT_SUPPORT_ISE_STR, msg, e);
+                reportException(msg, e);
             } else if (doesExceptionMatch(e, ACTIVITY_DOES_NOT_SUPPORT_ISE_STR)) {
                 String msg =
                         "Current activity does not support picture-in-picture. Activity class: "
                                 + mActivity.getLocalClassName();
-                reportException(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR, msg, e);
+                reportException(msg, e);
             } else {
                 throw e;
             }
         } catch (IllegalArgumentException e) {
             if (doesExceptionMatch(e, ROOT_TASK_IAE_STR)) {
                 String msg = "IllegalArgumentException";
-                reportException(ROOT_TASK_IAE_STR, msg, e);
+                reportException(msg, e);
             } else {
                 throw e;
             }
@@ -447,7 +447,7 @@ public class CustomTabMinimizationManager
         return e.getMessage() != null && e.getMessage().contains(subString);
     }
 
-    private void reportException(String key, String msg, Exception e) {
+    private void reportException(String msg, Exception e) {
         String msgWithState =
                 msg + " -- ActivityState: " + mLifecycleDispatcher.getCurrentActivityState();
         Log.e(TAG, msgWithState, e);

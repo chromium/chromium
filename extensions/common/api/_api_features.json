@@ -16,7 +16,7 @@
   },
   "app.runtime": [{
     "channel": "stable",
-    "contexts": ["privileged_extension", "lock_screen_extension"],
+    "contexts": ["privileged_extension"],
     "extension_types": ["platform_app"],
     "noparent": true
   }, {
@@ -33,7 +33,7 @@
   }],
   "app.window": [{
     "channel": "stable",
-    "contexts": ["privileged_extension", "lock_screen_extension"],
+    "contexts": ["privileged_extension"],
     "extension_types": ["platform_app"],
     "noparent": true
   }, {
@@ -52,7 +52,7 @@
     "noparent": true,
     "internal": true,
     "channel": "stable",
-    "contexts": ["privileged_extension", "lock_screen_extension"]
+    "contexts": ["privileged_extension"]
   },
   "app.currentWindowInternal.setShape": {
     "dependencies": ["permission:app.window.shape"],
@@ -100,7 +100,7 @@
   "bluetoothLowEnergy": {
     "dependencies": ["manifest:bluetooth"],
     "contexts": ["privileged_extension"],
-    "platforms": ["chromeos", "lacros", "linux"]
+    "platforms": ["chromeos", "linux"]
   },
   "bluetoothPrivate": [{
     "dependencies": ["permission:bluetoothPrivate"],
@@ -210,7 +210,7 @@
   },
   "feedbackPrivate.readLogSource": [
     {
-      "platforms": ["chromeos", "lacros"],
+      "platforms": ["chromeos"],
       "session_types": ["kiosk"]
     },
     {
@@ -238,8 +238,8 @@
       "matches": [
         "chrome://add-supervision/*",
         "chrome://assistant-optin/*",
-        "chrome://discards/*",
         "chrome://extensions/*",
+        "chrome://glic/*",
         "chrome://graduation/*",
         "chrome://home/*",
         "chrome://chrome-signin/*",
@@ -275,8 +275,7 @@
     "contexts": [
       "privileged_extension",
       "unprivileged_extension",
-      "content_script",
-      "lock_screen_extension"
+      "content_script"
     ]
   },
   "idle": {
@@ -284,14 +283,7 @@
     "contexts": ["privileged_extension"]
   },
   "idle.getAutoLockDelay": {
-    "platforms": ["chromeos", "lacros"]
-  },
-  "lockScreen.data": {
-    "dependencies": ["permission:lockScreen"],
-    "contexts": ["privileged_extension", "lock_screen_extension"]
-  },
-  "lockScreen.data.create": {
-    "contexts": ["lock_screen_extension"]
+    "platforms": ["chromeos"]
   },
   "management": [{
     "dependencies": ["permission:management"],
@@ -460,7 +452,7 @@
     "dependencies": ["behavior:imprivata_in_session_extension"],
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "networking.onc": {
     "dependencies": ["permission:networking.onc"],
@@ -501,7 +493,7 @@
     "contexts": ["privileged_extension"]
   },
   "power.reportActivity": {
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "printerProvider": {
     "dependencies": ["permission:printerProvider"],
@@ -522,8 +514,7 @@
       "chromeos_system_extension"
     ],
     "contexts": [
-      "privileged_extension",
-      "lock_screen_extension"
+      "privileged_extension"
     ]
   },
   "runtime.getBackgroundPage": {
@@ -535,7 +526,6 @@
   "runtime.getManifest": {
     "contexts": [
       "privileged_extension",
-      "lock_screen_extension",
       "unprivileged_extension",
       "content_script"
     ]
@@ -546,7 +536,6 @@
       "privileged_web_page",
       "content_script",
       "privileged_extension",
-      "lock_screen_extension",
       "offscreen_extension",
       "unprivileged_extension",
       "user_script",
@@ -572,7 +561,6 @@
   "runtime.getURL": {
     "contexts": [
       "privileged_extension",
-      "lock_screen_extension",
       "offscreen_extension",
       "unprivileged_extension",
       "content_script"
@@ -581,7 +569,6 @@
   "runtime.id": {
     "contexts": [
       "privileged_extension",
-      "lock_screen_extension",
       "offscreen_extension",
       "unprivileged_extension",
       "content_script"
@@ -595,7 +582,6 @@
   "runtime.onConnect": {
     "contexts": [
       "privileged_extension",
-      "lock_screen_extension",
       "offscreen_extension",
       "unprivileged_extension",
       "user_script",
@@ -605,7 +591,6 @@
   "runtime.onConnectExternal": {
     "contexts": [
       "privileged_extension",
-      "lock_screen_extension",
       "offscreen_extension"
     ]
   },
@@ -614,15 +599,14 @@
     "contexts": ["privileged_extension"]
   },
   "runtime.onUserScriptConnect": {
-    // NOTE: We can readily open this up to offscreen extensions and
-    // lockscreen extensions, if there's desire. For now, limit it.
+    // NOTE: We can readily open this up to offscreen extensions,
+    // if there's desire. For now, limit it.
     "contexts": ["privileged_extension"],
     "min_manifest_version": 3
   },
   "runtime.onMessage": {
     "contexts": [
       "privileged_extension",
-      "lock_screen_extension",
       "offscreen_extension",
       "unprivileged_extension",
       "user_script",
@@ -632,13 +616,12 @@
   "runtime.onMessageExternal": {
     "contexts": [
       "privileged_extension",
-      "lock_screen_extension",
       "offscreen_extension"
     ]
   },
   "runtime.onUserScriptMessage": {
-    // NOTE: We can readily open this up to offscreen extensions and
-    // lockscreen extensions, if there's desire. For now, limit it.
+    // NOTE: We can readily open this up to offscreen extensions,
+    // if there's desire. For now, limit it.
     "contexts": ["privileged_extension"],
     "min_manifest_version": 3
   },
@@ -648,7 +631,6 @@
       "privileged_web_page",
       "content_script",
       "privileged_extension",
-      "lock_screen_extension",
       "offscreen_extension",
       "unprivileged_extension",
       "user_script",
@@ -765,7 +747,6 @@
       "privileged_extension",
       "privileged_web_page",
       "content_script",
-      "lock_screen_extension",
       "offscreen_extension",
       "unprivileged_extension",
       "user_script"
@@ -843,6 +824,7 @@
       "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
+      "chrome://glic/*",
       "chrome://graduation/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
@@ -878,6 +860,7 @@
       "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
+      "chrome://glic/*",
       "chrome://graduation/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
@@ -911,6 +894,7 @@
       "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
+      "chrome://glic/*",
       "chrome://graduation/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",

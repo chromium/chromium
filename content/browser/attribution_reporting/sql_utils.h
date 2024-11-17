@@ -34,6 +34,10 @@ class SuitableOrigin;
 class TriggerSpecs;
 }  // namespace attribution_reporting
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace sql {
 class Statement;
 }  // namespace sql
@@ -65,7 +69,7 @@ std::string SerializeReadOnlySourceData(
     const attribution_reporting::TriggerSpecs&,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching,
-    bool debug_cookie_set,
+    bool cookie_based_debug_allowed,
     absl::uint128 aggregatable_debug_key_piece);
 
 CONTENT_EXPORT std::optional<proto::AttributionReadOnlySourceData>
@@ -88,8 +92,9 @@ std::string SerializeAggregationKeys(
 std::optional<attribution_reporting::AggregationKeys>
 DeserializeAggregationKeys(sql::Statement&, int col);
 
-std::string SerializeEventLevelReportMetadata(uint32_t trigger_data,
-                                              int64_t priority);
+CONTENT_EXPORT std::string SerializeEventLevelReportMetadata(
+    uint32_t trigger_data,
+    int64_t priority);
 
 std::string SerializeAggregatableReportMetadata(
     const std::optional<attribution_reporting::SuitableOrigin>&
@@ -109,11 +114,11 @@ std::optional<AttributionReport::EventLevelData>
 DeserializeEventLevelReportMetadata(base::span<const uint8_t>,
                                     const StoredSource&);
 
-std::optional<AttributionReport::AggregatableAttributionData>
+std::optional<AttributionReport::AggregatableData>
 DeserializeAggregatableReportMetadata(base::span<const uint8_t>,
                                       const StoredSource&);
 
-std::optional<AttributionReport::NullAggregatableData>
+std::optional<AttributionReport::AggregatableData>
     DeserializeNullAggregatableReportMetadata(base::span<const uint8_t>);
 
 std::string SerializeAttributionScopesData(
@@ -122,6 +127,12 @@ std::string SerializeAttributionScopesData(
 base::expected<std::optional<attribution_reporting::AttributionScopesData>,
                absl::monostate>
 DeserializeAttributionScopesData(sql::Statement&, int col);
+
+std::string SerializeAggregatableNamedBudgets(
+    const StoredSource::AggregatableNamedBudgets&);
+
+std::optional<StoredSource::AggregatableNamedBudgets>
+DeserializeAggregatableNamedBudgets(sql::Statement& stmt, int col);
 
 void DeduplicateSourceIds(std::vector<StoredSource::Id>&);
 

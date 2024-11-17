@@ -75,7 +75,7 @@ class ScopedModuleModifier {
   }
 
  private:
-  base::span<const uint8_t> modification_region_;
+  base::raw_span<const uint8_t> modification_region_;
 };
 
 }  // namespace
@@ -145,12 +145,14 @@ class SafeBrowsingModuleVerifierWinTest : public testing::Test {
     UNSAFE_BUFFERS(base::span<uint8_t> module_data(
         reinterpret_cast<uint8_t*>(mem_handle), module_info.SizeOfImage));
 
-    uint8_t* export_addr =
-        reinterpret_cast<uint8_t*>(GetProcAddress(mem_handle, export_name));
-    EXPECT_NE(nullptr, export_addr);
-
-    return module_data.subspan(export_addr -
-                               base::to_address(module_data.begin()));
+    const auto export_addr =
+        reinterpret_cast<uintptr_t>(GetProcAddress(mem_handle, export_name));
+    const auto module_addr =
+        reinterpret_cast<uintptr_t>(base::to_address(module_data.begin()));
+    CHECK_GE(export_addr, module_addr);
+    const size_t offset = export_addr - module_addr;
+    CHECK_LT(offset, module_info.SizeOfImage);
+    return module_data.subspan(offset);
   }
 
   static void AssertModuleUnmodified(const ModuleState& state,
@@ -230,10 +232,7 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, MAYBE_VerifyModuleModified) {
                            mem_code_data, disk_code_data));
 
   ScopedModuleModifier<1> mod(mem_code_data.first<1>());
-
-  size_t modification_offset = mem_code_data.size() - 1;
-  ScopedModuleModifier<1> mod2(
-      *mem_code_data.subspan(modification_offset, 1).to_fixed_extent<1>());
+  ScopedModuleModifier<1> mod2(mem_code_data.last<1>());
 
   state.Clear();
   num_bytes_different = 0;
@@ -250,17 +249,17 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, MAYBE_VerifyModuleModified) {
       reinterpret_cast<uint8_t*>(disk_peimage_ptr_->module());
   EXPECT_EQ(expected_file_offset, state.modification(0).file_offset());
   EXPECT_EQ(1, state.modification(0).byte_count());
-  EXPECT_EQ(mem_code_data[0],
-            (uint8_t)state.modification(0).modified_bytes()[0]);
+  EXPECT_EQ(mem_code_data.front(),
+            static_cast<uint8_t>(state.modification(0).modified_bytes()[0]));
 
   expected_file_offset =
       base::to_address(disk_code_data.begin()) -
       reinterpret_cast<uint8_t*>(disk_peimage_ptr_->module()) +
-      modification_offset;
+      mem_code_data.size() - 1;
   EXPECT_EQ(expected_file_offset, state.modification(1).file_offset());
   EXPECT_EQ(1, state.modification(1).byte_count());
-  EXPECT_EQ(mem_code_data[modification_offset],
-            (uint8_t)state.modification(1).modified_bytes()[0]);
+  EXPECT_EQ(mem_code_data.back(),
+            static_cast<uint8_t>(state.modification(1).modified_bytes()[0]));
 }
 
 TEST_F(SafeBrowsingModuleVerifierWinTest, VerifyModuleLongModification) {
@@ -381,9 +380,8 @@ TEST_F(SafeBrowsingModuleVerifierWinTest, MAYBE_VerifyModuleExportModified) {
   // Edit another exported function. VerifyModule should now report both. Add
   // one to the address so that this modification and the previous are not
   // coalesced in the event that the first export is only one byte (e.g., ret).
-  ScopedModuleModifier<1> mod2(*GetCodeAfterExport(kTestDllMainExportName)
-                                    .subspan(1, 1)
-                                    .to_fixed_extent<1>());
+  ScopedModuleModifier<1> mod2(
+      GetCodeAfterExport(kTestDllMainExportName).subspan<1, 1>());
   state.Clear();
   num_bytes_different = 0;
   ASSERT_TRUE(VerifyModule(kTestDllNames[0], &state, &num_bytes_different));

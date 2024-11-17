@@ -443,14 +443,15 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void AddLiveRegistration(ServiceWorkerRegistration* registration);
   // Erases the live registration for `registration_id`, if found.
   void RemoveLiveRegistration(int64_t registration_id);
-  const std::map<int64_t, ServiceWorkerRegistration*>& GetLiveRegistrations()
-      const {
+  const std::map<int64_t, raw_ptr<ServiceWorkerRegistration, CtnExperimental>>&
+  GetLiveRegistrations() const {
     return live_registrations_;
   }
   ServiceWorkerVersion* GetLiveVersion(int64_t version_id);
   void AddLiveVersion(ServiceWorkerVersion* version);
   void RemoveLiveVersion(int64_t registration_id);
-  const std::map<int64_t, ServiceWorkerVersion*>& GetLiveVersions() const {
+  const std::map<int64_t, raw_ptr<ServiceWorkerVersion, CtnExperimental>>&
+  GetLiveVersions() const {
     return live_versions_;
   }
 
@@ -477,14 +478,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       const GURL& url,
       const blink::StorageKey& key,
       const ServiceWorkerContext::CheckHasServiceWorkerCallback callback);
-
-  // Returns OfflineCapability of the service worker matching `url` and `key`.
-  // See ServiceWorkerContext::CheckOfflineCapability for more
-  // details.
-  void CheckOfflineCapability(
-      const GURL& url,
-      const blink::StorageKey& key,
-      const ServiceWorkerContext::CheckOfflineCapabilityCallback callback);
 
   void UpdateVersionFailureCount(int64_t version_id,
                                  blink::ServiceWorkerStatusCode status);
@@ -634,8 +627,10 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // TODO(bashi): Move |live_registrations_| to ServiceWorkerRegistry as
   // ServiceWorkerRegistry is a better place to manage in-memory representation
   // of registrations.
-  std::map<int64_t, ServiceWorkerRegistration*> live_registrations_;
-  std::map<int64_t, ServiceWorkerVersion*> live_versions_;
+  std::map<int64_t, raw_ptr<ServiceWorkerRegistration, CtnExperimental>>
+      live_registrations_;
+  std::map<int64_t, raw_ptr<ServiceWorkerVersion, CtnExperimental>>
+      live_versions_;
   std::map<int64_t, scoped_refptr<ServiceWorkerVersion>> protected_versions_;
 
   std::map<int64_t /* version_id */, FailureInfo> failure_counts_;

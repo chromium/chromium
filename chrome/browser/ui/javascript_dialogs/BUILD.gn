@@ -1,0 +1,80 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("javascript_dialogs") {
+  sources = [
+    "chrome_app_modal_dialog_manager_delegate.h",
+    "chrome_javascript_app_modal_dialog_view_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/javascript_dialogs",
+  ]
+
+  if (is_android) {
+    sources += [ "javascript_tab_modal_dialog_manager_delegate_android.h" ]
+  } else {
+    sources += [ "javascript_tab_modal_dialog_manager_delegate_desktop.h" ]
+    public_deps += [
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/browser/ui/tabs:tabs_public",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [ "chrome_app_modal_dialog_manager_delegate.cc" ]
+
+  deps = [
+    ":javascript_dialogs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui:url_identity",
+    "//components/navigation_metrics",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [ "javascript_tab_modal_dialog_manager_delegate_android.cc" ]
+    deps += [ "//chrome/browser/ui:tab_model_enums_java" ]
+  } else {
+    sources += [ "javascript_tab_modal_dialog_manager_delegate_desktop.cc" ]
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "javascript_dialog_browsertest.cc" ]
+    deps = [
+      ":javascript_dialogs",
+      "//base/test:test_support",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/embedder_support",
+      "//components/ukm:test_support",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/metrics/public/cpp:gen_ukm_builders",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
+}

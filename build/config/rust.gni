@@ -12,8 +12,7 @@ if (is_android) {
 }
 
 if (is_ios) {
-  import("//build/config/ios/config.gni")  # For `target_environment`
-  import("//build/config/ios/ios_sdk.gni")  # For `xcode_version_int`
+  import("//build/config/apple/mobile_config.gni")  # For `target_environment`
 }
 
 declare_args() {
@@ -24,11 +23,20 @@ declare_args() {
   # Chromium-based projects that are built for for architectures Chrome does not
   # support may need to disable this as well, though they may need to replace
   # code with C/C++ to get a functional product.
+  #
+  # Based on the above:
+  #
+  # * `enable_rust` may be consulted under `//build` and `//testing` directories
+  #   (which may be used outside of Chromium build)
+  # * `enable_rust` should *not* be consulted in other Chromium directories
+  #   (including `//base`, `//net`, etc.)
   enable_rust = build_with_chromium
 
   # The CXX tool is in //third_party/rust which is not shared with downstream
   # projects yet. So they need to copy the required dependencies and GN files
   # into their project to enable CXX there.
+  #
+  # We do not support disabling this flag in Chromium code.
   enable_rust_cxx = build_with_chromium
 
   # The chromium prelude crate provides the `chromium::import!` macro which
@@ -41,13 +49,9 @@ declare_args() {
   # specify a globally unique `crate_name` in their rust library GN rules
   # instead. Note that using a `crate_name` is strongly discouraged inside
   # Chromium, and is also discouraged for downstream projects when possible.
+  #
+  # We do not support disabling this flag in Chromium code.
   enable_chromium_prelude = build_with_chromium
-
-  # As we incrementally enable Rust on mainstream builders, we want to enable
-  # the toolchain (by switching 'enable_rust' to true) while still disabling
-  # almost all Rust features). Yet we still want to have some builders with
-  # all Rust features enabled.
-  enable_all_rust_features = false
 
   # Chromium provides a Rust toolchain in //third_party/rust-toolchain.
   #
@@ -97,34 +101,6 @@ declare_args() {
   # a platform. Mostly applicable to Windows, where new versions can handle ANSI
   # escape sequences but it's not reliable in general.
   force_rustc_color_output = false
-}
-
-# Use a separate declare_args so these variables' defaults can depend on the
-# ones above.
-declare_args() {
-  # Individual Rust components.
-
-  # Conversions between Rust types and C++ types.
-  enable_rust_base_conversions = enable_rust
-
-  # The base::JSONReader implementation. Requires base conversions.
-  enable_rust_json = enable_rust
-
-  # Support for chrome://crash-rust to check crash dump collection works.
-  enable_rust_crash = enable_rust
-
-  # Support for Rust mojo bindings.
-  enable_rust_mojo = enable_rust && enable_all_rust_features
-
-  # Rust gtest interop.
-  enable_rust_gtest_interop = enable_rust
-
-  # WIP attempt to replace `libpng` with Rust `png` crate.
-  #
-  # TODO(https://crbug.com/360375227): Remove the `enable_all_rust_features`
-  # condition below (only true on Rust bots) once/if ready to start A/B
-  # experiments.
-  enable_rust_png = enable_rust && enable_all_rust_features
 }
 
 # Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust
@@ -189,14 +165,23 @@ if (enable_rust) {
 # targets to Rust targets comprehensively despite not having official support
 # (see '*_toolchain_supports_platform above') to enable experimentation with
 # other toolchains.
+#
+# The `cargo_target_abi` is the `target_abi` given by Cargo to build scripts
+# as the `CARGO_CFG_TARGET_ABI` environment variable. It is determined for
+# each `rust_abi_target` by doing `cargo build --target $rust_abi_target` with
+# a cargo project that dumps the `CARGO_CFG_TARGET_ABI` from its build.rs. See
+# https://issues.chromium.org/u/1/issues/372512092#comment5 for an example.
 rust_abi_target = ""
 if (is_linux || is_chromeos) {
   if (current_cpu == "arm64") {
     rust_abi_target = "aarch64-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else if (current_cpu == "x86") {
     rust_abi_target = "i686-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
     rust_abi_target = "x86_64-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else if (current_cpu == "arm") {
     if (arm_float_abi == "hard") {
       float_suffix = "hf"
@@ -206,28 +191,56 @@ if (is_linux || is_chromeos) {
     if (arm_arch == "armv7-a" || arm_arch == "armv7") {
       # No way to inform Rust about the -a suffix.
       rust_abi_target = "armv7-unknown-linux-gnueabi" + float_suffix
+      cargo_target_abi = "eabi" + float_suffix
     } else {
       rust_abi_target = "arm-unknown-linux-gnueabi" + float_suffix
+      cargo_target_abi = "eabi" + float_suffix
     }
   } else if (current_cpu == "riscv64") {
     rust_abi_target = "riscv64gc-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else {
     # Best guess for other future platforms.
     rust_abi_target = current_cpu + "-unknown-linux-gnu"
+    cargo_target_abi = ""
   }
 } else if (is_android) {
   import("//build/config/android/abi.gni")
-  rust_abi_target = android_abi_target
-  if (rust_abi_target == "arm-linux-androideabi") {
+  if (android_abi_target == "i686-linux-android") {
+    rust_abi_target = android_abi_target
+    cargo_target_abi = ""
+  } else if (android_abi_target == "arm-linux-androideabi") {
     # Android clang target specifications mostly match Rust, but this
     # is an exception
     rust_abi_target = "armv7-linux-androideabi"
+    cargo_target_abi = "eabi"
+  } else if (android_abi_target == "mipsel-linux-android") {
+    # There is no MIPS android target.
+    rust_abi_target = ""
+    cargo_target_abi = ""
+  } else if (android_abi_target == "x86_64-linux-android") {
+    rust_abi_target = android_abi_target
+    cargo_target_abi = ""
+  } else if (android_abi_target == "aarch64-linux-android") {
+    rust_abi_target = android_abi_target
+    cargo_target_abi = ""
+  } else if (android_abi_target == "mips64el-linux-android") {
+    # There is no MIPS android target.
+    rust_abi_target = ""
+    cargo_target_abi = ""
+  } else if (android_abi_target == "riscv64-linux-android") {
+    rust_abi_target = android_abi_target
+    cargo_target_abi = ""
+  } else {
+    assert(false, "Unknown Android ABI: " + android_abi_target)
   }
 } else if (is_fuchsia) {
   if (current_cpu == "arm64") {
-    rust_abi_target = "aarch64-fuchsia"
+    rust_abi_target = "aarch64-unknown-fuchsia"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
-    rust_abi_target = "x86_64-fuchsia"
+    rust_abi_target = "x86_64-unknown-fuchsia"
+    cargo_target_abi = ""
   } else {
     assert(false, "Architecture not supported")
   }
@@ -235,22 +248,24 @@ if (is_linux || is_chromeos) {
   if (current_cpu == "arm64") {
     if (target_environment == "simulator") {
       rust_abi_target = "aarch64-apple-ios-sim"
+      cargo_target_abi = "sim"
     } else if (target_environment == "catalyst") {
       rust_abi_target = "aarch64-apple-ios-macabi"
+      cargo_target_abi = "macabi"
     } else {
       rust_abi_target = "aarch64-apple-ios"
+      cargo_target_abi = ""
     }
   } else if (current_cpu == "arm") {
-    # There's also an armv7s-apple-ios, which targets a more recent ARMv7
-    # generation CPU found in later iPhones. We'll go with the older one for
-    # maximal compatibility. As we come to support all the different platforms
-    # with Rust, we might want to be more precise here.
-    rust_abi_target = "armv7-apple-ios"
+    rust_abi_target = "armv7s-apple-ios"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
     if (target_environment == "catalyst") {
       rust_abi_target = "x86_64-apple-ios-macabi"
+      cargo_target_abi = "macabi"
     } else {
       rust_abi_target = "x86_64-apple-ios"
+      cargo_target_abi = "sim"
     }
   } else if (current_cpu == "x86") {
     rust_abi_target = "i386-apple-ios"
@@ -260,18 +275,23 @@ if (is_linux || is_chromeos) {
 } else if (is_mac) {
   if (current_cpu == "arm64") {
     rust_abi_target = "aarch64-apple-darwin"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
     rust_abi_target = "x86_64-apple-darwin"
+    cargo_target_abi = ""
   } else {
     assert(false, "Architecture not supported")
   }
 } else if (is_win) {
   if (current_cpu == "arm64") {
     rust_abi_target = "aarch64-pc-windows-msvc"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
     rust_abi_target = "x86_64-pc-windows-msvc"
+    cargo_target_abi = ""
   } else if (current_cpu == "x86") {
     rust_abi_target = "i686-pc-windows-msvc"
+    cargo_target_abi = ""
   } else {
     assert(false, "Architecture not supported")
   }

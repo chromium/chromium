@@ -6,7 +6,7 @@
 
 namespace download {
 
-MockDownloadItem::MockDownloadItem() {}
+MockDownloadItem::MockDownloadItem() = default;
 
 MockDownloadItem::~MockDownloadItem() {
   for (auto& observer : observers_)

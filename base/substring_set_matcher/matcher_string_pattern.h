@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 
 namespace base {
 
@@ -33,7 +34,7 @@ class BASE_EXPORT MatcherStringPattern {
   ~MatcherStringPattern();
   MatcherStringPattern(MatcherStringPattern&&);
   MatcherStringPattern& operator=(MatcherStringPattern&&);
-  const std::string& pattern() const { return pattern_; }
+  const std::string& pattern() const LIFETIME_BOUND { return pattern_; }
   ID id() const { return id_; }
 
   bool operator<(const MatcherStringPattern& rhs) const;

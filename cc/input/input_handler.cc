@@ -16,6 +16,7 @@
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/scroll_elasticity_helper.h"
+#include "cc/input/scroll_snap_data.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar_controller.h"
 #include "cc/input/snap_selection_strategy.h"
@@ -98,8 +99,10 @@ void InputHandler::BindToClient(InputHandlerClient* client) {
   DCHECK(input_handler_client_ == nullptr);
   input_handler_client_ = client;
   input_handler_client_->SetPrefersReducedMotion(prefers_reduced_motion_);
-  input_handler_client_->SetScrollEventDispatchMode(
-      GetScrollEventDispatchMode());
+  if (base::FeatureList::IsEnabled(::features::kWaitForLateScrollEvents)) {
+    input_handler_client_->SetScrollEventDispatchMode(
+        GetScrollEventDispatchMode());
+  }
 }
 
 InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
@@ -118,10 +121,15 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   // ScrollBy is a better place to do it).
   if (scroll_state->delta_granularity() ==
       ui::ScrollGranularity::kScrollByPrecisePixel) {
-    compositor_delegate_->GetImplDeprecated()
-        .mutator_host()
-        ->ScrollAnimationAbort();
-    scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
+    if (ScrollNode* animating_node =
+            GetAnimatingNodeForCurrentScrollingNode()) {
+      compositor_delegate_->GetImplDeprecated()
+          .mutator_host()
+          ->ScrollAnimationAbort(animating_node->element_id);
+    }
+    if (ScrollNode* scroll_node = CurrentlyScrollingNode()) {
+      ClearAnimatingSnapTargetsForElement(scroll_node->element_id);
+    }
   }
 
   if (CurrentlyScrollingNode() && type == latched_scroll_type_) {
@@ -453,42 +461,103 @@ void InputHandler::AdjustScrollDeltaForScrollbarSnap(
   scroll_state.data()->delta_y = snap.position.y() - current_position.y();
 }
 
+void InputHandler::InsertPendingScrollendContainer(
+    const ElementId& element_id) {
+  ScrollNode* outer_viewport_scroll_node = OuterViewportScrollNode();
+  // Ensure that we insert the outer viewport scroll node only if it actually
+  // consumed a delta.
+  if ((!outer_viewport_scroll_node ||
+       outer_viewport_scroll_node->element_id != element_id) ||
+      outer_viewport_consumed_delta_) {
+    pending_scrollend_containers_.insert(element_id);
+  }
+
+  if (outer_viewport_scroll_node) {
+    // Reset {inner,outer}_consumed_delta_ only if the element for which we
+    // know the scroll has ended, |element_id|, corresponds to the viewport
+    // (which would be the outer viewport).
+    if (outer_viewport_scroll_node->element_id == element_id) {
+      if (outer_viewport_consumed_delta_) {
+        outer_viewport_consumed_delta_ = false;
+      }
+      if (inner_viewport_consumed_delta_) {
+        pending_scrollend_containers_.insert(
+            InnerViewportScrollNode()->element_id);
+        inner_viewport_consumed_delta_ = false;
+      }
+    }
+  }
+}
+
 void InputHandler::ScrollEnd(bool should_snap) {
-  scrollbar_controller_->ResetState();
-  if (!CurrentlyScrollingNode())
-    return;
+  ScrollEnd(nullptr, should_snap);
+}
 
-  // Note that if we deferred the scroll end then we should not snap. We will
-  // snap once we deliver the deferred scroll end.
-  if (compositor_delegate_->GetImplDeprecated()
-          .mutator_host()
-          ->ImplOnlyScrollAnimatingElement()) {
-    DCHECK(!deferred_scroll_end_);
-    deferred_scroll_end_ = true;
+void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
+  ScrollNode* latched_node = CurrentlyScrollingNode();
+
+  auto end_of_scroll_cleanup = [&]() {
+    compositor_delegate_->GetImplDeprecated()
+        .browser_controls_manager()
+        ->ScrollEnd();
+    deferred_scroll_end_ = false;
+    snap_fling_state_ = kNoFling;
+    snap_strategy_.reset();
+  };
+
+  // If |scroll_node| exists, it, and not |CurrentlyScrollingNode()|, is the
+  // ScrollNode for which ScrollEnd is being invoked.
+  if (scroll_node && scroll_node != latched_node) {
+    // This call to ScrollEnd marks the end of a snap animation on a ScrollNode
+    // we are no longer latched to.
+    DCHECK(features::MultiImplOnlyScrollAnimationsSupported());
+    DCHECK(!should_snap);
+
+    InsertPendingScrollendContainer(scroll_node->element_id);
+    // Only reset scrollbar controller and tell browser controls about this
+    // ScrollEnd if we haven't latched onto and are actively scrolling something
+    // else.
+    if (!latched_node) {
+      scrollbar_controller_->ResetState();
+      end_of_scroll_cleanup();
+    }
+    snap_animation_data_map_.erase(scroll_node->element_id);
+  } else if (latched_node) {
+    scrollbar_controller_->ResetState();
+
+    // Note that if we deferred the scroll end then we should not snap. We will
+    // snap once we deliver the deferred scroll end.
+    if (GetAnimatingNodeForCurrentScrollingNode()) {
+      DCHECK(!deferred_scroll_end_);
+      deferred_scroll_end_ = true;
+      return;
+    }
+
+    if (should_snap && SnapAtScrollEnd(SnapReason::kGestureScrollEnd)) {
+      deferred_scroll_end_ = true;
+      return;
+    }
+
+    DCHECK(latched_scroll_type_.has_value());
+
+    // Only indicate that the scroll gesture ended if scrolling actually
+    // occurred so that we don't fire a "scrollend" event.
+    if (did_scroll_x_for_scroll_gesture_ || did_scroll_y_for_scroll_gesture_) {
+      scroll_gesture_did_end_ = true;
+      if (features::MultiImplOnlyScrollAnimationsSupported()) {
+        InsertPendingScrollendContainer(latched_node->element_id);
+      }
+    }
+
+    end_of_scroll_cleanup();
+    snap_animation_data_map_.erase(latched_node->element_id);
+    ClearCurrentlyScrollingNode();
+  } else {
+    scrollbar_controller_->ResetState();
     return;
   }
 
-  if (should_snap && SnapAtScrollEnd(SnapReason::kGestureScrollEnd)) {
-    deferred_scroll_end_ = true;
-    return;
-  }
-
-  DCHECK(latched_scroll_type_.has_value());
-
-  compositor_delegate_->GetImplDeprecated()
-      .browser_controls_manager()
-      ->ScrollEnd();
-
-  // Only indicate that the scroll gesture ended if scrolling actually occurred
-  // so that we don't fire a "scrollend" event.
-  if (did_scroll_x_for_scroll_gesture_ || did_scroll_y_for_scroll_gesture_) {
-    scroll_gesture_did_end_ = true;
-  }
-  ClearCurrentlyScrollingNode();
-  deferred_scroll_end_ = false;
   SetNeedsCommit();
-  snap_fling_state_ = kNoFling;
-  snap_strategy_.reset();
 }
 
 void InputHandler::RecordScrollBegin(
@@ -734,9 +803,19 @@ void InputHandler::SetNeedsAnimateInput() {
 
 bool InputHandler::IsCurrentlyScrollingViewport() const {
   auto* node = CurrentlyScrollingNode();
-  if (!node)
-    return false;
-  return GetViewport().ShouldScroll(*node);
+  if (node && GetViewport().ShouldScroll(*node)) {
+    return true;
+  } else if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    // In the snap phase of a scroll gesture, InputHandler will de-latch from
+    // from the snapping ScrollNode (which, for viewport scrolls, is recorded as
+    // outer viewport scrolls). While this animation is ongoing, we consider
+    // InputHandler to still be scrolling the viewport, despite having
+    // de-latched from it.
+    if (auto* outer_viewport_node = OuterViewportScrollNode()) {
+      return IsAnimatingForSnap(outer_viewport_node->element_id);
+    }
+  }
+  return false;
 }
 
 EventListenerProperties InputHandler::GetEventListenerProperties(
@@ -782,17 +861,16 @@ InputHandler::EventListenerTypeForTouchStartOrMoveAt(
     gfx::Transform inverse_layer_screen_space =
         layer_screen_space_transform.GetCheckedInverse();
     bool clipped = false;
-    gfx::Point3F planar_point = MathUtil::ProjectPoint3D(
+    gfx::PointF hit_test_point_in_layer_space = MathUtil::ProjectPoint(
         inverse_layer_screen_space, device_viewport_point, &clipped);
-    gfx::PointF hit_test_point_in_layer_space =
-        gfx::PointF(planar_point.x(), planar_point.y());
     const auto& region = layer_impl_with_touch_handler->touch_action_region();
     gfx::Point point = gfx::ToRoundedPoint(hit_test_point_in_layer_space);
     *out_touch_action = region.GetAllowedTouchAction(point);
   }
 
-  if (!CurrentlyScrollingNode())
+  if (!IsCurrentlyScrolling()) {
     return InputHandler::TouchStartOrMoveEventListenerType::kHandler;
+  }
 
   // Check if the touch start (or move) hits on the current scrolling layer or
   // its descendant. layer_impl_with_touch_handler is the layer hit by the
@@ -801,11 +879,35 @@ InputHandler::EventListenerTypeForTouchStartOrMoveAt(
   // with the actual scrolling layer.
   LayerImpl* layer_impl =
       ActiveTree().FindLayerThatIsHitByPoint(device_viewport_point);
-  bool is_ancestor = IsScrolledBy(layer_impl, CurrentlyScrollingNode());
-  return is_ancestor
-             ? InputHandler::TouchStartOrMoveEventListenerType::
-                   kHandlerOnScrollingLayer
-             : InputHandler::TouchStartOrMoveEventListenerType::kHandler;
+
+  ScrollNode* currently_scroll_node = CurrentlyScrollingNode();
+  if (currently_scroll_node &&
+      IsScrolledBy(layer_impl, currently_scroll_node)) {
+    return InputHandler::TouchStartOrMoveEventListenerType::
+        kHandlerOnScrollingLayer;
+  } else if (features::MultiImplOnlyScrollAnimationsSupported() &&
+             !snap_animation_data_map_.empty()) {
+    // In the snap phase of a scroll gesture on a snap container, InputHandler
+    // will de-latch from from the snapping ScrollNode. While this animation is
+    // ongoing, we consider InputHandler to still be scrolling the node, despite
+    // having de-latched from it.
+    ScrollTree& scroll_tree = GetScrollTree();
+    for (const auto& entry : snap_animation_data_map_) {
+      // Empty targets means not snap-animating..
+      if (entry.second.animating_snap_target_ids_ ==
+          TargetSnapAreaElementIds()) {
+        continue;
+      }
+      if (ScrollNode* animating_node =
+              scroll_tree.FindNodeFromElementId(entry.first)) {
+        if (IsScrolledBy(layer_impl, animating_node)) {
+          return InputHandler::TouchStartOrMoveEventListenerType::
+              kHandlerOnScrollingLayer;
+        }
+      }
+    }
+  }
+  return InputHandler::TouchStartOrMoveEventListenerType::kHandler;
 }
 
 std::unique_ptr<LatencyInfoSwapPromiseMonitor>
@@ -942,9 +1044,7 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
       snap.type == SnapPositionData::Type::kCovered) {
     fling_snap_constrain_x_ = snap.covered_range_x;
     fling_snap_constrain_y_ = snap.covered_range_y;
-    if (base::FeatureList::IsEnabled(
-            features::kScrollSnapCoveringUseNativeFling) &&
-        !ConstrainFling(new_offset)) {
+    if (!ConstrainFling(new_offset)) {
       snap_fling_state_ = kConstrainedNativeFling;
       return false;
     }
@@ -957,7 +1057,9 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
   out_target_position->Scale(scale_factor);
   out_initial_position->Scale(scale_factor);
 
-  scroll_animating_snap_target_ids_ = snap.target_element_ids;
+  EnsureSnapAnimationData(scroll_node->element_id);
+  SetAnimatingSnapTargetsForElement(scroll_node->element_id,
+                                    snap.target_element_ids);
   snap_fling_state_ = kSnapFling;
   return true;
 }
@@ -969,13 +1071,17 @@ void InputHandler::ScrollEndForSnapFling(bool did_finish) {
   // snap targets for this scrolling element.
   if (did_finish && scroll_node &&
       scroll_node->snap_container_data.has_value()) {
+    TargetSnapAreaElementIds target_ids =
+        GetAnimatingSnapTargetsForElement(scroll_node->element_id);
     scroll_node->snap_container_data.value().SetTargetSnapAreaElementIds(
-        scroll_animating_snap_target_ids_);
-    updated_snapped_elements_[scroll_node->element_id] =
-        scroll_animating_snap_target_ids_;
+        target_ids);
+    updated_snapped_elements_[scroll_node->element_id] = target_ids;
     SetNeedsCommit();
   }
-  scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
+
+  if (scroll_node) {
+    ClearAnimatingSnapTargetsForElement(scroll_node->element_id);
+  }
   ScrollEnd(true /* should_snap */);
 }
 
@@ -1048,7 +1154,14 @@ void InputHandler::ProcessCommitDeltas(
   // TODO(bokan): This is wrong - if we also started a scroll this frame then
   // this will clear this value for that scroll. https://crbug.com/1116780.
   commit_data->scroll_latched_element_id = last_latched_scroller_;
-  if (commit_data->scroll_end_data.scroll_gesture_did_end) {
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    commit_data->scroll_end_data.done_containers =
+        std::move(pending_scrollend_containers_);
+    if (commit_data->scroll_end_data.done_containers.contains(
+            last_latched_scroller_)) {
+      last_latched_scroller_ = ElementId();
+    }
+  } else if (commit_data->scroll_end_data.scroll_gesture_did_end) {
     last_latched_scroller_ = ElementId();
     commit_data->scroll_end_data.gesture_affects_outer_viewport_scroll =
         outer_viewport_consumed_delta_;
@@ -1135,28 +1248,65 @@ void InputHandler::DidUnregisterScrollbar(ElementId scroll_element_id,
   scrollbar_controller_->DidUnregisterScrollbar(scroll_element_id, orientation);
 }
 
-void InputHandler::ScrollOffsetAnimationFinished() {
+void InputHandler::ScrollOffsetAnimationFinished(ElementId element_id) {
   TRACE_EVENT0("cc", "InputHandler::ScrollOffsetAnimationFinished");
+  ScrollNode* finished_node = GetScrollTree().FindNodeFromElementId(element_id);
+  bool inner_viewport_animating =
+      InnerViewportScrollNode() && finished_node == InnerViewportScrollNode();
+  if (inner_viewport_animating) {
+    // When the inner viewport node is animating, it is the outer viewport
+    // scroll node that is tracked as the CurrentlyScrollingNode and is
+    // associated with the snap targets.
+    finished_node = OuterViewportScrollNode();
+  }
+
+  if (!finished_node) {
+    return;
+  }
+
+  bool was_animating_for_snap = IsAnimatingForSnap(finished_node->element_id);
+  ScrollNode* latched_node = CurrentlyScrollingNode();
+
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    // With MultiImplOnlyScrollAnimationsSupported, the node that was animating
+    // might not be the currently scrolling node.
+    // The only instance in which we expect that the animating node is not the
+    // currently latched node is if this was a snap animation (during which we
+    // de-latch from the animating node).
+    DCHECK(finished_node == latched_node || was_animating_for_snap);
+  } else {
+    DCHECK(finished_node == latched_node);
+  }
+
   // ScrollOffsetAnimationFinished is called in two cases:
   //  1- smooth scrolling animation is over (IsAnimatingForSnap == false).
   //  2- snap scroll animation is over (IsAnimatingForSnap == true).
   //
   //  Only for case (1) we should check and run snap scroll animation if needed.
-  if (!IsAnimatingForSnap() &&
-      SnapAtScrollEnd(SnapReason::kScrollOffsetAnimationFinished))
-    return;
-
   // The end of a scroll offset animation means that the scrolling node is at
   // the target offset.
-  ScrollNode* scroll_node = CurrentlyScrollingNode();
-  if (scroll_node && scroll_node->snap_container_data.has_value()) {
-    scroll_node->snap_container_data.value().SetTargetSnapAreaElementIds(
-        scroll_animating_snap_target_ids_);
-    updated_snapped_elements_[scroll_node->element_id] =
-        scroll_animating_snap_target_ids_;
-    SetNeedsCommit();
+  if (was_animating_for_snap) {
+    if (finished_node && finished_node->snap_container_data.has_value()) {
+      TargetSnapAreaElementIds target_ids =
+          GetAnimatingSnapTargetsForElement(finished_node->element_id);
+      finished_node->snap_container_data.value().SetTargetSnapAreaElementIds(
+          target_ids);
+      updated_snapped_elements_[finished_node->element_id] = target_ids;
+      SetNeedsCommit();
+    }
+
+    ClearAnimatingSnapTargetsForElement(finished_node->element_id);
+    if (latched_node != finished_node) {
+      // Finish the scroll for a non-latched scroll node.
+      ScrollEnd(finished_node, false);
+      return;
+    }
+  } else if (SnapAtScrollEnd(SnapReason::kScrollOffsetAnimationFinished)) {
+    return;
   }
-  scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
+
+  ClearAnimatingSnapTargetsForElement(finished_node ? finished_node->element_id
+                                                    : element_id);
 
   // Call scrollEnd with the deferred scroll end state when the scroll animation
   // completes after GSE arrival.
@@ -1176,23 +1326,51 @@ void InputHandler::SetPrefersReducedMotion(bool prefers_reduced_motion) {
 }
 
 bool InputHandler::IsCurrentlyScrolling() const {
-  return CurrentlyScrollingNode();
+  if (CurrentlyScrollingNode()) {
+    return true;
+  }
+
+  // In the snap phase of a scroll gesture on a snap container, InputHandler
+  // will de-latch from from the snapping ScrollNode. While this animation is
+  // ongoing, we consider InputHandler to still be scrolling the node, despite
+  // having de-latched from it.
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    for (const auto& entry : snap_animation_data_map_) {
+      // Empty targets means not snap-animating.
+      if (entry.second.animating_snap_target_ids_ !=
+          TargetSnapAreaElementIds()) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 ActivelyScrollingType InputHandler::GetActivelyScrollingType() const {
-  if (!CurrentlyScrollingNode())
-    return ActivelyScrollingType::kNone;
+  const ScrollNode* currently_scrolling_node = CurrentlyScrollingNode();
+  if (currently_scrolling_node && last_scroll_update_state_ &&
+      delta_consumed_for_scroll_gesture_) {
+    if (ShouldAnimateScroll(last_scroll_update_state_.value())) {
+      return ActivelyScrollingType::kAnimated;
+    }
+    return ActivelyScrollingType::kPrecise;
+  }
 
-  if (!last_scroll_update_state_)
-    return ActivelyScrollingType::kNone;
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    // In the snap phase of a scroll gesture on a snap container, InputHandler
+    // will de-latch from from the snapping ScrollNode. While this animation is
+    // ongoing, we consider InputHandler to still be scrolling the node, despite
+    // having de-latched from it.
+    for (const auto& entry : snap_animation_data_map_) {
+      if (entry.second.animating_snap_target_ids_ !=
+          TargetSnapAreaElementIds()) {
+        return ActivelyScrollingType::kAnimated;
+      }
+    }
+  }
 
-  if (!delta_consumed_for_scroll_gesture_)
-    return ActivelyScrollingType::kNone;
-
-  if (ShouldAnimateScroll(last_scroll_update_state_.value()))
-    return ActivelyScrollingType::kAnimated;
-
-  return ActivelyScrollingType::kPrecise;
+  return ActivelyScrollingType::kNone;
 }
 
 bool InputHandler::IsHandlingTouchSequence() const {
@@ -1201,11 +1379,36 @@ bool InputHandler::IsHandlingTouchSequence() const {
 
 bool InputHandler::IsCurrentScrollMainRepainted() const {
   const ScrollNode* scroll_node = CurrentlyScrollingNode();
-  if (!scroll_node)
-    return false;
-  uint32_t repaint_reasons =
-      GetScrollTree().GetMainThreadRepaintReasons(*scroll_node);
-  return repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain;
+  if (scroll_node) {
+    uint32_t repaint_reasons =
+        GetScrollTree().GetMainThreadRepaintReasons(*scroll_node);
+    if (repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain) {
+      return true;
+    }
+  }
+
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    // Ensure InputHandler factors in snap animations (during which
+    // InputHandler de-latches from the ScrollNode) when queried about
+    // nodes it's scrolling which require main thread repaints.
+    const auto& scroll_tree = GetScrollTree();
+    for (const auto& entry : snap_animation_data_map_) {
+      if (entry.second.animating_snap_target_ids_ ==
+          TargetSnapAreaElementIds()) {
+        continue;
+      }
+      if (const ScrollNode* animating_node =
+              scroll_tree.FindNodeFromElementId(entry.first)) {
+        uint32_t repaint_reasons =
+            GetScrollTree().GetMainThreadRepaintReasons(*animating_node);
+        if (repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }
 
 bool InputHandler::HasQueuedInput() const {
@@ -1637,6 +1840,36 @@ gfx::Vector2dF InputHandler::ScrollSingleNode(const ScrollNode& scroll_node,
   return ScrollNodeWithLocalDelta(scroll_node, adjusted_delta);
 }
 
+ScrollNode* InputHandler::GetAnimatingNodeForCurrentScrollingNode() {
+  ScrollNode* scroll_node = CurrentlyScrollingNode();
+  if (!scroll_node) {
+    return nullptr;
+  }
+
+  if (compositor_delegate_->GetImplDeprecated()
+          .mutator_host()
+          ->ElementHasImplOnlyScrollAnimation(scroll_node->element_id)) {
+    return scroll_node;
+  }
+
+  // Usually the CurrentlyScrollingNode will be the currently animating
+  // one. The one exception is the inner viewport. Scrolling the combined
+  // viewport will always set the outer viewport as the currently scrolling
+  // node. However, if an animation is created on the inner viewport we
+  // must use it when updating the animation curve.
+  ScrollNode* inner_viewport_scroll_node = InnerViewportScrollNode();
+  if (scroll_node->scrolls_outer_viewport && inner_viewport_scroll_node) {
+    if (compositor_delegate_->GetImplDeprecated()
+            .mutator_host()
+            ->ElementHasImplOnlyScrollAnimation(
+                inner_viewport_scroll_node->element_id)) {
+      return inner_viewport_scroll_node;
+    }
+  }
+
+  return nullptr;
+}
+
 void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
                                          base::TimeDelta delayed_by) {
   DCHECK(CurrentlyScrollingNode());
@@ -1653,21 +1886,13 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
   if (ShouldAnimateScroll(scroll_state)) {
     DCHECK(!scroll_state.is_in_inertial_phase());
 
-    if (ElementId id = compositor_delegate_->GetImplDeprecated()
-                           .mutator_host()
-                           ->ImplOnlyScrollAnimatingElement()) {
+    if (ScrollNode* animating_scroll_node =
+            GetAnimatingNodeForCurrentScrollingNode()) {
       TRACE_EVENT_INSTANT0("cc", "UpdateExistingAnimation",
                            TRACE_EVENT_SCOPE_THREAD);
 
-      ScrollNode* animating_scroll_node =
-          GetScrollTree().FindNodeFromElementId(id);
-      DCHECK(animating_scroll_node);
-
-      // Usually the CurrentlyScrollingNode will be the currently animating
-      // one. The one exception is the inner viewport. Scrolling the combined
-      // viewport will always set the outer viewport as the currently scrolling
-      // node. However, if an animation is created on the inner viewport we
-      // must use it when updating the animation curve.
+      // See comment in GetAnimatingNodeForCurrentScrollingNode for explanation
+      // of this DCHECK.
       DCHECK(animating_scroll_node->id == scroll_node.id ||
              animating_scroll_node->scrolls_inner_viewport);
 
@@ -1870,15 +2095,17 @@ void InputHandler::DidLatchToScroller(const ScrollState& scroll_state,
   compositor_delegate_->GetImplDeprecated()
       .browser_controls_manager()
       ->ScrollBegin();
-  compositor_delegate_->GetImplDeprecated()
-      .mutator_host()
-      ->ScrollAnimationAbort();
-
-  scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
+  if (ScrollNode* animating_node = GetAnimatingNodeForCurrentScrollingNode()) {
+    compositor_delegate_->GetImplDeprecated()
+        .mutator_host()
+        ->ScrollAnimationAbort(animating_node->element_id);
+  }
 
   last_latched_scroller_ = CurrentlyScrollingNode()->element_id;
   latched_scroll_type_ = type;
   last_scroll_begin_state_ = scroll_state;
+
+  ClearAnimatingSnapTargetsForElement(last_latched_scroller_);
 
   compositor_delegate_->DidStartScroll();
 
@@ -1937,7 +2164,7 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   SnapContainerData& data = scroll_node->snap_container_data.value();
   gfx::PointF current_position = GetVisualScrollOffset(*scroll_node);
 
-  if (!snap_strategy_ || snap_fling_state_ == kConstrainedNativeFling) {
+  if (!snap_strategy_ || last_scroll_update_state_->is_in_inertial_phase()) {
     // If this was a constrained native fling, SnapFlingController would not
     // have had the correct final scroll position with which to create the snap
     // strategy.
@@ -1964,7 +2191,9 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
     // are still snapped to in case of scrolls in an axis where no snapping
     // happens.
     if (reason == SnapReason::kScrollOffsetAnimationFinished) {
-      scroll_animating_snap_target_ids_ = snap.target_element_ids;
+      EnsureSnapAnimationData(CurrentlyScrollingNode()->element_id);
+      SetAnimatingSnapTargetsForElement(CurrentlyScrollingNode()->element_id,
+                                        snap.target_element_ids);
     } else if (data.SetTargetSnapAreaElementIds(snap.target_element_ids)) {
       updated_snapped_elements_[scroll_node->element_id] =
           snap.target_element_ids;
@@ -1991,10 +2220,18 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
         compositor_delegate_->GetImplDeprecated().ScrollAnimationCreate(
             *scroll_node, delta, base::TimeDelta());
   }
-  DCHECK(!IsAnimatingForSnap());
+  DCHECK(!IsAnimatingForSnap(CurrentlyScrollingNode()->element_id));
   if (did_animate) {
-    // The snap target will be set when the animation is completed.
-    scroll_animating_snap_target_ids_ = snap.target_element_ids;
+    if (features::MultiImplOnlyScrollAnimationsSupported()) {
+      // Forget the scroll container that is currently
+      // latched so that any scroll gesture that occurs during the snap
+      // animation will be allowed to scroll the appropriate container.
+      ClearCurrentlyScrollingNode();
+    }
+    EnsureSnapAnimationData(scroll_node->element_id);
+    // The updated snap target will be set when the animation is completed.
+    SetAnimatingSnapTargetsForElement(scroll_node->element_id,
+                                      snap.target_element_ids);
   } else if (data.SetTargetSnapAreaElementIds(snap.target_element_ids)) {
     updated_snapped_elements_[scroll_node->element_id] =
         snap.target_element_ids;
@@ -2003,8 +2240,9 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   return did_animate;
 }
 
-bool InputHandler::IsAnimatingForSnap() const {
-  return scroll_animating_snap_target_ids_ != TargetSnapAreaElementIds();
+bool InputHandler::IsAnimatingForSnap(ElementId element_id) const {
+  return GetAnimatingSnapTargetsForElement(element_id) !=
+         TargetSnapAreaElementIds();
 }
 
 gfx::PointF InputHandler::GetVisualScrollOffset(
@@ -2016,12 +2254,14 @@ gfx::PointF InputHandler::GetVisualScrollOffset(
 
 void InputHandler::ClearCurrentlyScrollingNode() {
   TRACE_EVENT0("cc", "InputHandler::ClearCurrentlyScrollingNode");
+  ClearAnimatingSnapTargetsForElement(CurrentlyScrollingNode()
+                                          ? CurrentlyScrollingNode()->element_id
+                                          : ElementId());
   ActiveTree().ClearCurrentlyScrollingNode();
   accumulated_root_overscroll_ = gfx::Vector2dF();
   did_scroll_x_for_scroll_gesture_ = false;
   did_scroll_y_for_scroll_gesture_ = false;
   delta_consumed_for_scroll_gesture_ = false;
-  scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
   latched_scroll_type_.reset();
   last_scroll_update_state_.reset();
   last_scroll_begin_state_.reset();
@@ -2034,9 +2274,9 @@ std::optional<gfx::PointF> InputHandler::ScrollAnimationUpdateTarget(
     base::TimeDelta delayed_by) {
   // TODO(bokan): Remove |scroll_node| as a parameter and just use the value
   // coming from |mutator_host|.
-  DCHECK_EQ(scroll_node.element_id, compositor_delegate_->GetImplDeprecated()
-                                        .mutator_host()
-                                        ->ImplOnlyScrollAnimatingElement());
+  DCHECK(compositor_delegate_->GetImplDeprecated()
+             .mutator_host()
+             ->ElementHasImplOnlyScrollAnimation(scroll_node.element_id));
 
   float scale_factor = compositor_delegate_->PageScaleFactor();
   gfx::Vector2dF adjusted_delta =
@@ -2051,14 +2291,14 @@ std::optional<gfx::PointF> InputHandler::ScrollAnimationUpdateTarget(
               compositor_delegate_->GetImplDeprecated()
                   .CurrentBeginFrameArgs()
                   .frame_time,
-              delayed_by);
+              delayed_by, scroll_node.element_id);
   if (animation_target) {
     compositor_delegate_->DidUpdateScrollAnimationCurve();
 
     // The animation is no longer targeting a snap position. By clearing the
     // target, this will ensure that we attempt to resnap at the end of this
     // animation.
-    scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
+    ClearAnimatingSnapTargetsForElement(scroll_node.element_id);
   }
 
   return animation_target;
@@ -2132,12 +2372,32 @@ void InputHandler::SetIsHandlingTouchSequence(bool is_handling_touch_sequence) {
 }
 
 bool InputHandler::CurrentScrollNeedsFrameAlignment() const {
-  if (const ScrollNode* node = CurrentlyScrollingNode()) {
-    // We need frame-aligned handling of GestureScrollUpdate if an animation
-    // is linked to the scroll position.  If we update the scroll offset between
-    // tick and draw, then things will be out of sync in the drawn frame.
-    if (compositor_delegate_->HasScrollLinkedAnimation(node->element_id)) {
-      return true;
+  // We need frame-aligned handling of GestureScrollUpdate if an animation
+  // is linked to the scroll position.  If we update the scroll offset between
+  // tick and draw, then things will be out of sync in the drawn frame.
+  const ScrollNode* node = CurrentlyScrollingNode();
+  if (node &&
+      compositor_delegate_->HasScrollLinkedAnimation(node->element_id)) {
+    return true;
+  }
+
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    // Ensure InputHandler factors in snap animations (during which
+    // InputHandler de-latches from the ScrollNode) when queried about
+    // nodes it's scrolling which need frame alignment.
+    const auto& scroll_tree = GetScrollTree();
+    for (const auto& entry : snap_animation_data_map_) {
+      if (entry.second.animating_snap_target_ids_ ==
+          TargetSnapAreaElementIds()) {
+        continue;
+      }
+      if (const ScrollNode* animating_node =
+              scroll_tree.FindNodeFromElementId(entry.first)) {
+        if (compositor_delegate_->HasScrollLinkedAnimation(
+                animating_node->element_id)) {
+          return true;
+        }
+      }
     }
   }
   return false;
@@ -2177,6 +2437,45 @@ void InputHandler::SetViewportConsumedDelta(
   if (std::abs(result.inner_viewport_scrolled_delta.x()) > kScrollEpsilon ||
       std::abs(result.inner_viewport_scrolled_delta.y()) > kScrollEpsilon) {
     inner_viewport_consumed_delta_ = true;
+  }
+}
+
+TargetSnapAreaElementIds InputHandler::GetAnimatingSnapTargetsForElement(
+    ElementId element_id) const {
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    auto entry = snap_animation_data_map_.find(element_id);
+    if (entry != snap_animation_data_map_.end()) {
+      return entry->second.animating_snap_target_ids_;
+    }
+    return TargetSnapAreaElementIds();
+  } else {
+    return scroll_animating_snap_target_ids_;
+  }
+}
+
+void InputHandler::SetAnimatingSnapTargetsForElement(
+    ElementId element_id,
+    TargetSnapAreaElementIds target_ids) {
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    auto entry = snap_animation_data_map_.find(element_id);
+    if (entry != snap_animation_data_map_.end()) {
+      entry->second.animating_snap_target_ids_ = target_ids;
+    }
+  } else {
+    scroll_animating_snap_target_ids_ = target_ids;
+  }
+}
+
+void InputHandler::ClearAnimatingSnapTargetsForElement(ElementId element_id) {
+  SetAnimatingSnapTargetsForElement(element_id);
+}
+
+void InputHandler::EnsureSnapAnimationData(ElementId element_id) {
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    if (!snap_animation_data_map_.contains(element_id)) {
+      snap_animation_data_map_.insert_or_assign(element_id,
+                                                SnapAnimationData());
+    }
   }
 }
 

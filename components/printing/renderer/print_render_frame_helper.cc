@@ -29,6 +29,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
@@ -640,8 +641,8 @@ class HeaderAndFooterContext {
     void BindToFrame(blink::WebNavigationControl* frame) override {
       frame_ = frame;
     }
-    void FrameDetached() override {
-      frame_->Close();
+    void FrameDetached(blink::DetachReason detach_reason) override {
+      frame_->Close(detach_reason);
       frame_ = nullptr;
     }
 
@@ -844,7 +845,7 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
       blink::WebPolicyContainerBindParams policy_container_bind_params,
       ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override;
-  void FrameDetached() override;
+  void FrameDetached(blink::DetachReason detach_reason) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
   void CallOnReady();
@@ -1036,10 +1037,11 @@ blink::WebLocalFrame* PrepareFrameAndViewForPrint::CreateChildFrame(
   return nullptr;
 }
 
-void PrepareFrameAndViewForPrint::FrameDetached() {
+void PrepareFrameAndViewForPrint::FrameDetached(
+    blink::DetachReason detach_reason) {
   blink::WebLocalFrame* frame = frame_.GetFrame();
   DCHECK(frame);
-  frame->Close();
+  frame->Close(detach_reason);
   navigation_control_ = nullptr;
   frame_.Reset(nullptr);
 }
@@ -1130,7 +1132,7 @@ PrintRenderFrameHelper::PrintRenderFrameHelper(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-PrintRenderFrameHelper::~PrintRenderFrameHelper() {}
+PrintRenderFrameHelper::~PrintRenderFrameHelper() = default;
 
 const mojo::AssociatedRemote<mojom::PrintManagerHost>&
 PrintRenderFrameHelper::GetPrintManagerHost() {
@@ -1385,8 +1387,7 @@ void PrintRenderFrameHelper::PrintForSystemDialog() {
 
   blink::WebLocalFrame* frame = print_preview_context_.source_frame();
   if (!frame) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   Print(frame, print_preview_context_.source_node(),
@@ -1838,26 +1839,41 @@ bool PrintRenderFrameHelper::RenderPreviewPage(
   render_metafile->UtilizeTypefaceContext(
       print_preview_context_.typeface_content_info());
   base::TimeTicks begin_time = base::TimeTicks::Now();
-  PrintPageInternal(print_params, page_index,
-                    print_preview_context_.total_page_count(),
-                    print_preview_context_.prepared_frame(),
-                    header_footer_frame, render_metafile);
-  print_preview_context_.RenderedPreviewPage(base::TimeTicks::Now() -
-                                             begin_time);
+  PrintPageInternalResult result = PrintPageInternal(
+      print_params, page_index, print_preview_context_.total_page_count(),
+      print_preview_context_.prepared_frame(), header_footer_frame,
+      render_metafile);
+  switch (result) {
+    case PrintPageInternalResult::kSuccess:
+      print_preview_context_.RenderedPreviewPage(base::TimeTicks::Now() -
+                                                 begin_time);
 
-  // For non-modifiable content, there is no need to call PreviewPageRendered()
-  // since it generally renders very fast. Just render and send the finished
-  // document to the browser.
-  if (!print_preview_context_.IsModifiable())
-    return true;
+      // For non-modifiable content, there is no need to call
+      // PreviewPageRendered() since it generally renders very fast.
+      // Just render and send the finished document to the browser.
+      if (!print_preview_context_.IsModifiable()) {
+        return true;
+      }
 
-  // Let the browser know this page has been rendered. Send
-  // |page_render_metafile|, which contains the rendering for just this one
-  // page. Then the browser can update the user visible print preview one page
-  // at a time, instead of waiting for the entire document to be rendered.
-  page_render_metafile =
-      render_metafile->GetMetafileForCurrentPage(print_params.printed_doc_type);
-  return PreviewPageRendered(page_index, std::move(page_render_metafile));
+      // Let the browser know this page has been rendered. Send
+      // `page_render_metafile`, which contains the rendering for just this one
+      // page. Then the browser can update the user visible print preview one
+      // page at a time, instead of waiting for the entire document to be
+      // rendered.
+      page_render_metafile = render_metafile->GetMetafileForCurrentPage(
+          print_params.printed_doc_type);
+      return PreviewPageRendered(page_index, std::move(page_render_metafile));
+
+    case PrintPageInternalResult::kNoCanvas:
+      print_preview_context_.set_error(PrintPreviewErrorBuckets::kNoCanvas);
+      return false;
+
+    case PrintPageInternalResult::kNoRenderFrame:
+      print_preview_context_.set_error(
+          PrintPreviewErrorBuckets::kNoRenderFrame);
+      return false;
+  }
+  NOTREACHED();
 }
 
 bool PrintRenderFrameHelper::FinalizePrintReadyDocument() {
@@ -2278,8 +2294,12 @@ bool PrintRenderFrameHelper::PrintPagesNative(
       header_footer_frame = header_footer_context->frame();
     }
     for (uint32_t printed_page : printed_pages) {
-      PrintPageInternal(print_params, printed_page, page_count, frame,
-                        header_footer_frame, &metafile);
+      PrintPageInternalResult result =
+          PrintPageInternal(print_params, printed_page, page_count, frame,
+                            header_footer_frame, &metafile);
+      if (result != PrintPageInternalResult::kSuccess) {
+        return false;
+      }
     }
   }
 
@@ -2488,7 +2508,8 @@ bool PrintRenderFrameHelper::RenderPagesForPrint(blink::WebLocalFrame* frame,
   return true;
 }
 
-void PrintRenderFrameHelper::PrintPageInternal(
+PrintRenderFrameHelper::PrintPageInternalResult
+PrintRenderFrameHelper::PrintPageInternal(
     const mojom::PrintParams& params,
     uint32_t page_index,
     uint32_t page_count,
@@ -2523,18 +2544,23 @@ void PrintRenderFrameHelper::PrintPageInternal(
     gfx::Size page_size_in_points =
         gfx::ToRoundedSize(gfx::SizeF(page_width, page_height));
 
-    const double scale_factor_for_points = static_cast<double>(kPointsPerInch) /
-                                           static_cast<double>(kPixelsPerInch);
+    constexpr double kScaleFactorInPoints =
+        static_cast<double>(kPointsPerInch) /
+        static_cast<double>(kPixelsPerInch);
     canvas = metafile->GetVectorCanvasForNewPage(
         page_size_in_points, gfx::Rect(page_size_in_points),
-        scale_factor_for_points, layout.page_orientation);
+        kScaleFactorInPoints, layout.page_orientation);
   }
-  if (!canvas)
-    return;
+  if (!canvas) {
+    return PrintPageInternalResult::kNoCanvas;
+  }
 
   canvas->SetPrintingMetafile(metafile);
 
   RenderPageContent(frame, page_index, canvas);
+  if (render_frame_gone_) {
+    return PrintPageInternalResult::kNoRenderFrame;
+  }
 
   // Render headers and footers after the page content, as suggested in the spec
   // (the term "page margin boxes" is a generalization of headers and footers):
@@ -2548,7 +2574,11 @@ void PrintRenderFrameHelper::PrintPageInternal(
 
   // Done printing. Close the canvas to retrieve the compiled metafile.
   bool ret = metafile->FinishPage();
-  DCHECK(ret);
+  // Since `metafile` is known to have a non-null `canvas` at this point,
+  // FinishPage() cannot fail.
+  CHECK(ret);
+
+  return PrintPageInternalResult::kSuccess;
 }
 
 void PrintRenderFrameHelper::SetupOnStopLoadingTimeout() {
@@ -2582,8 +2612,22 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
       // Since currently we can not block the `window.print()` call and load
       // the print only resources at the same time, no need to call
       // `WillPrintSoon()`.
+      //
       // This is a conscious tradeoff between rendering correctness and
       // expected blocking behavior.
+      //
+      // The main Bugs that led us to taking this tradeoff are:
+      // crbug.com/357784797
+      // crbug.com/361375802
+      //
+      // Potential solutions to these bugs and the current chosen tradeoff
+      // were discussed on:
+      // https://groups.google.com/u/0/a/chromium.org/g/platform-architecture-dev/c/O45yJShVmZg
+      //
+      // Bug tracking further investigation into a solution that satisfies
+      // both the blocking of the `window.print()` call and loading of
+      // print only resources:
+      // crbug.com/369111067
 
       is_loading_ = print_preview_context_.source_frame()->WillPrintSoon();
       if (is_loading_) {
@@ -2858,8 +2902,7 @@ void PrintRenderFrameHelper::PrintPreviewContext::FinalizePrintReadyDocument() {
     metafile_->FinishDocument();
 
   if (print_ready_metafile_page_count_ <= 0) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   base::TimeDelta total_time =

@@ -74,8 +74,6 @@ void SVGTextPositioningElement::SvgAttributeChanged(
     UpdateRelativeLengthsInformation();
 
   if (update_relative_lengths || attr_name == svg_names::kRotateAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object)
       return;

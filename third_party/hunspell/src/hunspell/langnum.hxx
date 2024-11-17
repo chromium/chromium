@@ -48,6 +48,7 @@ enum {
   LANG_az = 100,  // custom number
   LANG_bg = 41,
   LANG_ca = 37,
+  LANG_crh = 102, // custom number
   LANG_cs = 42,
   LANG_da = 45,
   LANG_de = 49,

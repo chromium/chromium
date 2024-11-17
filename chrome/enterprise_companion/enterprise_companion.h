@@ -27,10 +27,6 @@ extern const char kCrashMeSwitch[];
 // Install the application.
 extern const char kInstallSwitch[];
 
-// Install the application if the device requires cloud management and it is not
-// already present.
-extern const char kInstallIfNeededSwitch[];
-
 // Remove all traces of the application from the system.
 extern const char kUninstallSwitch[];
 

@@ -10,6 +10,8 @@
 #include "media/base/test_data_util.h"
 
 #include <stdint.h>
+
+#include <optional>
 #include <ostream>
 
 #include "base/check_op.h"
@@ -45,6 +47,8 @@ const char kMp4Vp9Profile2Video[] =
 const char kMp4Vp9Video[] =
     "video/mp4; codecs=\"vp09.00.10.08.01.02.02.02.00\"";
 const char kMp4XheAacAudio[] = "audio/mp4; codecs=\"mp4a.40.42\"";
+const char kMp4DolbyVisionProfile5[] = "video/mp4; codecs=\"dvh1.05.06\"";
+const char kMp4DolbyVisionProfile8x[] = "video/mp4; codecs=\"dvhe.08.07\"";
 // WebM
 const char kWebMAv110bitVideo[] = "video/webm; codecs=\"av01.0.04M.10\"";
 const char kWebMAv1Video[] = "video/webm; codecs=\"av01.0.04M.08\"";
@@ -70,6 +74,7 @@ using FileToMimeTypeMap = base::flat_map<std::string, std::string>;
 // main profile, a new mime type should be added.
 const FileToMimeTypeMap& GetFileToMimeTypeMap() {
   static const base::NoDestructor<FileToMimeTypeMap> kFileToMimeTypeMap({
+      {"bear-1280x720-av_frag.mp4", kMp4AacAudioAvc1Video},
       {"bear-1280x720-a_frag-cenc-key_rotation.mp4", kMp4AacAudio},
       {"bear-1280x720-a_frag-cenc.mp4", kMp4AacAudio},
       {"bear-1280x720-a_frag-cenc_clear-all.mp4", kMp4AacAudio},
@@ -144,6 +149,17 @@ const FileToMimeTypeMap& GetFileToMimeTypeMap() {
       {"bear-vp8a.webm", kWebMVp8Video},
       {"bear-vp9-blockgroup.webm", kWebMVp9Video},
       {"bear-vp9.webm", kWebMVp9Video},
+      {"color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4",
+       kMp4DolbyVisionProfile5},
+      {"color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-"
+       "2sec.mp4",
+       kMp4DolbyVisionProfile5},
+      {"color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-"
+       "cenc.mp4",
+       kMp4DolbyVisionProfile8x},
+      {"color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-"
+       "cenc-clearlead-2sec.mp4",
+       kMp4DolbyVisionProfile8x},
       {"frame_size_change-av_enc-v.webm", kWebMVorbisAudioVp8Video},
       {"icy_sfx.mp3", kMp3Audio},
       {"noise-xhe-aac.mp4", kMp4XheAacAudio},
@@ -220,11 +236,10 @@ std::string GetURLQueryString(const base::StringPairs& query_params) {
 scoped_refptr<DecoderBuffer> ReadTestDataFile(std::string_view name) {
   base::FilePath file_path = GetTestDataFilePath(name);
 
-  int64_t tmp = 0;
-  CHECK(base::GetFileSize(file_path, &tmp))
-      << "Failed to get file size for '" << name << "'";
+  std::optional<int64_t> tmp = base::GetFileSize(file_path);
+  CHECK(tmp.has_value()) << "Failed to get file size for '" << name << "'";
 
-  int file_size = base::checked_cast<int>(tmp);
+  int file_size = base::checked_cast<int>(tmp.value());
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(file_size));
   auto* data = reinterpret_cast<char*>(buffer->writable_data());

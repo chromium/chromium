@@ -52,7 +52,7 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
   base::Value::Dict dict(snapshot.ToValue());
   EXPECT_EQ(14u, dict.size());
   ExpectDictStringValue(kBirthday, dict, "birthday");
-  // Base64-encoded version of |kBagOfChips|.
+  // Base64-encoded version of `kBagOfChips`.
   ExpectDictStringValue("YmFnb2ZjaGlwcwE=", dict, "bagOfChips");
   ExpectDictIntegerValue(model_neutral.num_successful_commits, dict,
                          "numSuccessfulCommits");

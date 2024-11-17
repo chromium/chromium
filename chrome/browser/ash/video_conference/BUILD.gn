@@ -98,6 +98,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/chromeos/video_conference",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",

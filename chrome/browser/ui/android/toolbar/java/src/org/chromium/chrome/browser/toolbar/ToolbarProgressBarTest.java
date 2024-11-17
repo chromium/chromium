@@ -42,6 +42,7 @@ import java.util.concurrent.TimeoutException;
 public class ToolbarProgressBarTest {
     @Mock ProgressBarObserver mMockProgressBarObserver;
     private ToolbarProgressBar mProgressBar;
+    private ToolbarProgressBarAnimatingView mProgressBarAnimatingView;
     private ShadowLooper mShadowLooper;
     private ActivityScenario<TestActivity> mActivityScenario;
 
@@ -77,9 +78,10 @@ public class ToolbarProgressBarTest {
                                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                                     heightPx * 2));
 
-                                    mProgressBar =
-                                            new ToolbarProgressBar(
-                                                    activity, heightPx, anchor, false);
+                                    mProgressBarAnimatingView =
+                                            new ToolbarProgressBarAnimatingView(activity, null);
+                                    mProgressBar = new ToolbarProgressBar(activity, null);
+                                    mProgressBar.setAnimatingView(mProgressBarAnimatingView);
                                     final @ColorInt int toolbarColor =
                                             SemanticColorUtils.getToolbarBackgroundPrimary(
                                                     activity);
@@ -107,13 +109,10 @@ public class ToolbarProgressBarTest {
         return mProgressBar.getProgress();
     }
 
-    /**
-     * Get the current progress bar visibility from the UI thread.
-     *
-     * @return The current progress displayed by the progress bar.
-     */
+    /** Whether the progress bar and its animating view are visible. */
     private boolean isProgressBarVisible() {
-        return mProgressBar.getVisibility() == View.VISIBLE;
+        return mProgressBar.getVisibility() == View.VISIBLE
+                && mProgressBarAnimatingView.getVisibility() == View.VISIBLE;
     }
 
     /** Test that the progress bar indeterminate animation completely traverses the screen. */
@@ -134,6 +133,7 @@ public class ToolbarProgressBarTest {
         mProgressBar.setProgress(0.5f);
 
         assertTrue("Indeterminate animation should be running.", progressAnimator.isRunning());
+        assertTrue(mProgressBarAnimatingView.isRunning());
 
         // Wait for progress updates to reach 50%.
         while (!MathUtils.areFloatsEqual(getProgress(), 0.5f)) {
@@ -147,6 +147,7 @@ public class ToolbarProgressBarTest {
             mShadowLooper.runOneTask();
         }
 
+        assertFalse(mProgressBarAnimatingView.isRunning());
         // Make sure the progress bar remains visible through completion.
         assertTrue("Progress bar should still be visible.", isProgressBarVisible());
 
@@ -248,6 +249,7 @@ public class ToolbarProgressBarTest {
         mProgressBar.startIndeterminateAnimationForTesting();
         mProgressBar.setProgress(0.5f);
 
+        assertTrue(mProgressBarAnimatingView.isRunning());
         assertTrue("Indeterminate animation should be running.", progressAnimator.isRunning());
 
         // Wait for progress updates to reach 50%.
@@ -265,5 +267,20 @@ public class ToolbarProgressBarTest {
         assertTrue("Progress bar should still be visible.", isProgressBarVisible());
 
         assertEquals("Progress should be at 0%.", 0.0f, getProgress(), MathUtils.EPSILON);
+    }
+
+    @Test
+    @Feature({"Android-Progress-Bar"})
+    @SmallTest
+    public void testProgressBarHideWithBrowserControls() {
+        mProgressBar.setAlpha(1.0f);
+        mProgressBar.onAndroidControlsVisibilityChanged(View.INVISIBLE);
+
+        assertEquals(View.INVISIBLE, mProgressBar.getVisibility());
+        assertEquals(View.INVISIBLE, mProgressBarAnimatingView.getVisibility());
+
+        mProgressBar.onAndroidControlsVisibilityChanged(View.VISIBLE);
+        assertEquals(View.VISIBLE, mProgressBar.getVisibility());
+        assertEquals(View.VISIBLE, mProgressBarAnimatingView.getVisibility());
     }
 }

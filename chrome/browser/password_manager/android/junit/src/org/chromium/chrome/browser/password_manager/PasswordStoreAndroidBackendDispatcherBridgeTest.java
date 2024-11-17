@@ -21,11 +21,13 @@ import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.Status;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -64,6 +66,8 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
     private static final Optional<Account> sTestAccount =
             Optional.of(AccountUtils.createAccountFromName(sTestAccountEmail));
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private PasswordStoreAndroidBackendReceiverBridgeImpl mBackendReceiverBridgeMock;
     @Mock private PasswordStoreAndroidBackend mBackendMock;
 
@@ -71,7 +75,6 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mBackendDispatcherBridge =
                 new PasswordStoreAndroidBackendDispatcherBridgeImpl(
                         mBackendReceiverBridgeMock, mBackendMock);

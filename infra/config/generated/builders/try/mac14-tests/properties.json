@@ -78,7 +78,8 @@
           "builder": "mac14-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac14-tests/targets"
     }
   },
   "$build/reclient": {

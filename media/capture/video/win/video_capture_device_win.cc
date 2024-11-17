@@ -149,7 +149,8 @@ void VideoCaptureDeviceWin::GetPinCapabilityList(
   auto caps = base::HeapArray<BYTE>::Uninit(byte_size);
   for (int i = 0; i < count; ++i) {
     VideoCaptureDeviceWin::ScopedMediaType media_type;
-    hr = stream_config->GetStreamCaps(i, media_type.Receive(), caps.data());
+    hr = stream_config->GetStreamCaps(
+        i, &media_type.Receive()->AsEphemeralRawAddr(), caps.data());
     // GetStreamCaps() may return S_FALSE, so don't use FAILED() or SUCCEED()
     // macros here since they'll trigger incorrectly.
     if (hr != S_OK || !media_type.get()) {
@@ -281,7 +282,7 @@ void VideoCaptureDeviceWin::ScopedMediaType::Free() {
   media_type_ = nullptr;
 }
 
-AM_MEDIA_TYPE** VideoCaptureDeviceWin::ScopedMediaType::Receive() {
+raw_ptr<AM_MEDIA_TYPE>* VideoCaptureDeviceWin::ScopedMediaType::Receive() {
   DCHECK(!media_type_);
   return &media_type_;
 }
@@ -295,7 +296,7 @@ void VideoCaptureDeviceWin::ScopedMediaType::FreeMediaType(AM_MEDIA_TYPE* mt) {
     mt->pbFormat = nullptr;
   }
   if (mt->pUnk != nullptr) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     // pUnk should not be used.
     mt->pUnk->Release();
     mt->pUnk = nullptr;
@@ -461,7 +462,8 @@ void VideoCaptureDeviceWin::AllocateAndStart(
   // GetStreamCaps can return S_FALSE which we consider an error. Therefore the
   // FAILED macro can't be used.
   hr = stream_config->GetStreamCaps(found_capability.media_type_index,
-                                    media_type.Receive(), caps.data());
+                                    &media_type.Receive()->AsEphemeralRawAddr(),
+                                    caps.data());
   if (hr != S_OK) {
     SetErrorState(media::VideoCaptureError::
                       kWinDirectShowFailedToGetCaptureDeviceCapabilities,
@@ -896,7 +898,8 @@ void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
     // DXVA_NominalRangeto build a gfx::ColorSpace. See http://crbug.com/959992.
     client_->OnIncomingCapturedData(
         buffer, length, format, gfx::ColorSpace(), camera_rotation_.value(),
-        flip_y, base::TimeTicks::Now(), timestamp, std::nullopt);
+        flip_y, base::TimeTicks::Now(), timestamp,
+        /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
   }
 
   while (!take_photo_callbacks_.empty()) {

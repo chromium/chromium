@@ -25,7 +25,7 @@ void ObjectPainter::PaintOutline(const PaintInfo& paint_info,
 
   const ComputedStyle& style_to_use = layout_object_.StyleRef();
   if (!style_to_use.HasOutline() ||
-      style_to_use.UsedVisibility() != EVisibility::kVisible) {
+      style_to_use.Visibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -64,7 +64,7 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
                                        const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.ShouldAddUrlMetadata());
   if (!layout_object_.GetNode() || !layout_object_.GetNode()->IsLink() ||
-      layout_object_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+      layout_object_.StyleRef().Visibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -92,7 +92,7 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
   String fragment_name;
   if (url.HasFragmentIdentifier() &&
       EqualIgnoringFragmentIdentifier(url, document.BaseURL())) {
-    fragment_name = url.FragmentIdentifier();
+    fragment_name = url.FragmentIdentifier().ToString();
     if (!document.FindAnchor(fragment_name)) {
       return;
     }
@@ -155,7 +155,7 @@ void ObjectPainter::RecordHitTestData(
   // If an object is not visible, it does not participate in painting or hit
   // testing. TODO(crbug.com/1471738): Some pointer-events values actually
   // allow hit testing with visibility:hidden.
-  if (layout_object_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+  if (layout_object_.StyleRef().Visibility() != EVisibility::kVisible) {
     return;
   }
 

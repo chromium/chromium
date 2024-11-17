@@ -164,9 +164,8 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
     case POTENTIALLY_HARMFUL_APPLICATION:
     case SOCIAL_ENGINEERING_PUBLIC:
     case THREAT_TYPE_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected ThreatType encountered: " << list_id.threat_type();
-      return kLeastSeverity;
+      NOTREACHED() << "Unexpected ThreatType encountered: "
+                   << list_id.threat_type();
   }
 }
 
@@ -191,9 +190,7 @@ ListIdentifier GetUrlIdFromSBThreatType(SBThreatType sb_threat_type) {
       return GetUrlBillingId();
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      // Compiler requires a return statement here.
-      return GetUrlMalwareId();
+      NOTREACHED();
   }
 }
 
@@ -287,11 +284,9 @@ scoped_refptr<V4LocalDatabaseManager> V4LocalDatabaseManager::Create(
     const base::FilePath& base_path,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    ExtendedReportingLevelCallback extended_reporting_level_callback,
-    RecordMigrationMetricsCallback record_migration_metrics_callback) {
+    ExtendedReportingLevelCallback extended_reporting_level_callback) {
   return base::WrapRefCounted(new V4LocalDatabaseManager(
-      base_path, extended_reporting_level_callback,
-      std::move(record_migration_metrics_callback), std::move(ui_task_runner),
+      base_path, extended_reporting_level_callback, std::move(ui_task_runner),
       std::move(io_task_runner), nullptr));
 }
 
@@ -315,15 +310,12 @@ void V4LocalDatabaseManager::CollectDatabaseManagerInfo(
 V4LocalDatabaseManager::V4LocalDatabaseManager(
     const base::FilePath& base_path,
     ExtendedReportingLevelCallback extended_reporting_level_callback,
-    RecordMigrationMetricsCallback record_migration_metrics_callback,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests)
     : SafeBrowsingDatabaseManager(std::move(ui_task_runner)),
       base_path_(base_path),
       extended_reporting_level_callback_(extended_reporting_level_callback),
-      record_migration_metrics_callback_(
-          std::move(record_migration_metrics_callback)),
       list_infos_(GetListInfos()),
       task_runner_(task_runner_for_tests
                        ? task_runner_for_tests
@@ -642,12 +634,6 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
     v4_database_ = std::move(v4_database);
 
     v4_database_->RecordFileSizeHistograms();
-    if (record_migration_metrics_callback_) {
-      ui_task_runner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(record_migration_metrics_callback_),
-                         v4_database_->GetMigrateResult()));
-    }
 
     PopulateArtificialDatabase();
 
@@ -863,7 +849,7 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
                               : SBThreatType::SB_THREAT_TYPE_SAFE;
       RespondToClient(std::move(check));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -1156,8 +1142,7 @@ void V4LocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
     }
 
     case ClientCallbackType::CHECK_OTHER:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected client_callback_type encountered";
+      NOTREACHED() << "Unexpected client_callback_type encountered";
   }
 }
 
@@ -1183,7 +1168,7 @@ void V4LocalDatabaseManager::SetupUpdateProtocolManager(
       base::BindRepeating(&V4LocalDatabaseManager::UpdateRequestCompleted,
                           weak_factory_.GetWeakPtr());
 
-  v4_update_protocol_manager_ = V4UpdateProtocolManager::Create(
+  v4_update_protocol_manager_ = std::make_unique<V4UpdateProtocolManager>(
       url_loader_factory, config, update_callback,
       extended_reporting_level_callback_);
 }

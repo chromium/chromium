@@ -31,7 +31,7 @@ using ::testing::UnorderedElementsAre;
 
 class V4StoreTest : public PlatformTest {
  public:
-  V4StoreTest() {}
+  V4StoreTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -1084,33 +1084,6 @@ TEST_F(V4StoreTest, MigrateToMmap) {
   EXPECT_EQ(mmap_store2.GetMatchingHashPrefix(kFullHash), kHash);
 }
 
-TEST_F(V4StoreTest, MigrateFileOffsets) {
-  const std::string kFullHash = "abcdefghijklmnopqrstu";
-  const std::string kHash = "abcd";
-  const std::string kFullHash2 = "zzzzefghijklmnopqrstu";
-  const std::string kHash2 = "zzzz";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "8"}});
-  V4Store write_store(task_runner(), store_path_);
-  write_store.state_ = "test_client_state";
-  write_store.hash_prefix_map_->Append(4, kHash + kHash2);
-  EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
-  EXPECT_EQ(write_store.GetMatchingHashPrefix(kFullHash), kHash);
-  EXPECT_EQ(write_store.GetMatchingHashPrefix(kFullHash2), kHash2);
-
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "4"}});
-
-  V4Store mmap_store(task_runner(), store_path_);
-
-  EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
-  EXPECT_EQ("test_client_state", mmap_store.state());
-  EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash), kHash);
-  EXPECT_EQ(mmap_store.GetMatchingHashPrefix(kFullHash2), kHash2);
-}
-
 TEST_F(V4StoreTest, CleanUpOldFiles) {
   base::FilePath old_hashes_path = HashPrefixMap::GetPath(store_path_, "foo");
   base::WriteFile(old_hashes_path, "abcde");
@@ -1145,48 +1118,7 @@ TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
   EXPECT_EQ(read_store.file_size(), original_file_size + 4);
 }
 
-TEST_F(V4StoreTest, ReserveSpaceInPrefixMap) {
-  class ReserveTrackingHashPrefixMap : public HashPrefixMap {
-   public:
-    explicit ReserveTrackingHashPrefixMap(base::FilePath store_path)
-        : HashPrefixMap(store_path) {}
-
-    void Reserve(PrefixSize size, size_t capacity) override {
-      reserve_map_[size] = capacity;
-    }
-
-    std::unordered_map<PrefixSize, size_t> reserve_map_;
-  };
-
-  std::unordered_map<PrefixSize, HashPrefixes> old_map;
-  std::unordered_map<PrefixSize, HashPrefixes> additions_map;
-  old_map[4] = "abcdefgh";
-  old_map[5] = "abcdefghij";
-  additions_map[4] = "123456789012zzzz";
-  additions_map[5] = "1234567890";
-
-  ReserveTrackingHashPrefixMap reserve_map(store_path_);
-  V4Store::ReserveSpaceInPrefixMap(PrefixMapToView(old_map),
-                                   PrefixMapToView(additions_map), 0,
-                                   &reserve_map);
-
-  EXPECT_EQ(reserve_map.reserve_map_[4], 24u);
-  EXPECT_EQ(reserve_map.reserve_map_[5], 20u);
-
-  ReserveTrackingHashPrefixMap reserve_map_with_removals(store_path_);
-  V4Store::ReserveSpaceInPrefixMap(PrefixMapToView(old_map),
-                                   PrefixMapToView(additions_map), 2,
-                                   &reserve_map_with_removals);
-
-  EXPECT_EQ(reserve_map_with_removals.reserve_map_[4], 16u);
-  EXPECT_EQ(reserve_map_with_removals.reserve_map_[5], 10u);
-}
-
 TEST_F(V4StoreTest, MergeUpdatesWithHashPrefixMap) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kHashDatabaseOffsetMap, {{"HashDatabaseOffsetMapBytesPerOffset", "2"}});
-
   std::unordered_map<PrefixSize, HashPrefixes> prefix_map_old;
   prefix_map_old[4] = "abcdefgh";
   prefix_map_old[5] = "54321abcde";
@@ -1226,8 +1158,6 @@ TEST_F(V4StoreTest, MergeUpdatesWithHashPrefixMap) {
   EXPECT_TRUE(file_format.ParseFromString(proto_contents));
 
   EXPECT_EQ(file_format.hash_files().size(), 2);
-  for (const auto& hash_file : file_format.hash_files())
-    EXPECT_EQ(hash_file.offsets().size(), 10);
 }
 
 }  // namespace safe_browsing

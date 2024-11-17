@@ -80,8 +80,8 @@ class OverlayPresentationContextImplTest;
 class OverlayPresentationContextImplTest : public PlatformTest {
  public:
   OverlayPresentationContextImplTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     context_ = std::make_unique<TestOverlayPresentationContext>(browser_.get());
     delegate_ = [[FakeOverlayPresenationContextDelegate alloc] init];
     root_view_controller_ = [[UIViewController alloc] init];
@@ -188,7 +188,7 @@ class OverlayPresentationContextImplTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestOverlayPresentationContext> context_;
   MockOverlayPresentationContextImplObserver observer_;

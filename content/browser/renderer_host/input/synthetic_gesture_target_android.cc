@@ -115,7 +115,7 @@ void SyntheticGestureTargetAndroid::DispatchWebTouchEventToPlatform(
       action = MOTION_EVENT_ACTION_END;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   const unsigned num_touches = web_touch.touches_length;
   int touch_index = -1;

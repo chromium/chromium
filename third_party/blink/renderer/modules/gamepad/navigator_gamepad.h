@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_NAVIGATOR_GAMEPAD_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_NAVIGATOR_GAMEPAD_H_
 
+#include <array>
+
 #include "base/time/time.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -99,8 +101,7 @@ class MODULES_EXPORT NavigatorGamepad final
       const Gamepad&) override;
   void SetTouchEvents(const Gamepad&,
                       GamepadTouchVector&,
-                      unsigned,
-                      const device::GamepadTouch*) override;
+                      base::span<const device::GamepadTouch>) override;
 
   // A reference to the buffer containing the last-received gamepad state. May
   // be nullptr if no data has been received yet. Do not overwrite this buffer
@@ -122,8 +123,8 @@ class MODULES_EXPORT NavigatorGamepad final
   using TouchIdMap =
       WTF::HashMap<uint32_t, uint32_t, WTF::IntWithZeroKeyHashTraits<uint32_t>>;
 
-  TouchIdMap touch_id_map_[device::Gamepads::kItemsLengthCap];
-  uint32_t next_touch_id_[device::Gamepads::kItemsLengthCap];
+  std::array<TouchIdMap, device::Gamepads::kItemsLengthCap> touch_id_map_;
+  std::array<uint32_t, device::Gamepads::kItemsLengthCap> next_touch_id_;
 
   // The timestamp for the navigationStart attribute. Gamepad timestamps are
   // reported relative to this value.

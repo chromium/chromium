@@ -56,33 +56,6 @@ bool ShouldWaitForSync(syncer::SyncService* sync_service) {
          should_wait(syncer::DataType::CONTACT_INFO);
 }
 
-// Quasi duplicates of rank one, those conflicting token has low quality qualify
-// for silent removal.
-bool IsSilentlyRemovableQuasiDuplicate(
-    const AutofillProfile& profile,
-    const std::vector<AutofillProfile>& other_profiles,
-    const AutofillProfileComparator& comparator) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillSilentlyRemoveQuasiDuplicates)) {
-    return false;
-  }
-  const std::vector<FieldTypeSet> incompatible_sets =
-      AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
-          profile, other_profiles, comparator);
-  // Only rank one quasi duplicates are silently removed. Note that all sets in
-  // `incompatible_sets` have the same size.
-  if (incompatible_sets.empty() || incompatible_sets.back().size() != 1) {
-    return false;
-  }
-  // Return true if any of the conflicting tokens is low quality in the profile.
-  return std::ranges::any_of(
-      incompatible_sets, [&](const FieldTypeSet& incompatible_set) {
-        CHECK_EQ(incompatible_set.size(), 1u);
-        return AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
-            profile, *incompatible_set.begin());
-      });
-}
-
 // - Merges local profiles occurring earlier in `profiles` with mergeable other
 //   local profiles later in `profiles`, deleting the earlier one.
 // - Deletes local profiles that are subsets of account profiles.
@@ -96,7 +69,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
   auto bgn_account_profiles = base::ranges::stable_partition(
       profiles, std::not_fn(&AutofillProfile::IsAccountProfile));
 
-  size_t num_profiles_deleted = 0, num_quasi_duplicates_deleted = 0;
+  size_t num_profiles_deleted = 0;
   for (auto local_profile_it = profiles.begin();
        local_profile_it != bgn_account_profiles; ++local_profile_it) {
     // If possible, merge `*local_profile_it` with another local profile and
@@ -140,18 +113,9 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
       adm.UpdateProfile(*superset_account_profile);
       continue;
     }
-    // `*local_profile_it` might be a low quality quasi duplicate.
-    if (IsSilentlyRemovableQuasiDuplicate(*local_profile_it, profiles,
-                                          comparator)) {
-      adm.RemoveProfile(local_profile_it->guid());
-      num_profiles_deleted++;
-      num_quasi_duplicates_deleted++;
-    }
   }
   autofill_metrics::LogNumberOfProfilesRemovedDuringDedupe(
       num_profiles_deleted);
-  autofill_metrics::LogNumberOfQuasiDuplicateProfilesRemovedDuringDedupe(
-      num_quasi_duplicates_deleted);
 }
 
 template <typename T, typename Proj>
@@ -214,21 +178,10 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   are_cleanups_pending_ = false;
 
   // Ensure that deduplication is only run one per milestone.
-  // To simplify the rollout of AutofillSilentlyRemoveQuasiDuplicates, this
-  // condition is relaxed to twice per milestone (but still limited to at most
-  // once per startup).
-  // TODO(crbug.com/325450676): Revert to once per milestone after the rollout.
   if (pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
       CHROME_VERSION_MAJOR) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                               CHROME_VERSION_MAJOR);
-    ApplyDeduplicationRoutine();
-  } else if (base::FeatureList::IsEnabled(
-                 features::kAutofillSilentlyRemoveQuasiDuplicates) &&
-             !pref_service_->GetBoolean(
-                 prefs::kAutofillRanQuasiDuplicateExtraDeduplication)) {
-    pref_service_->SetBoolean(
-        prefs::kAutofillRanQuasiDuplicateExtraDeduplication, true);
     ApplyDeduplicationRoutine();
   }
 
@@ -269,6 +222,17 @@ AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
       [](const AutofillProfile* other, FieldTypeSet s) {
         return DifferingProfileWithTypeSet(other, s);
       });
+}
+
+// static
+std::vector<DifferingProfileWithTypeSet>
+AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
+    const AutofillProfile& profile,
+    base::span<const AutofillProfile> existing_profiles,
+    const AutofillProfileComparator& comparator) {
+  return CalculateMinimalIncompatibleProfileWithTypeSets(
+      profile, base::ToVector(existing_profiles, [](auto& x) { return &x; }),
+      comparator);
 }
 
 // static

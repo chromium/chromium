@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
 #define CHROME_BROWSER_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/lobster/lobster_client.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/lobster/lobster_service.h"
@@ -35,6 +37,12 @@ class LobsterClientImpl : public ash::LobsterClient {
                       const std::string& model_version,
                       const std::string& description,
                       const std::string& image_bytes) override;
+  void QueueInsertion(const std::string& image_bytes,
+                      StatusCallback insert_status_callback) override;
+  void LoadUI(std::optional<std::string> query, ash::LobsterMode mode) override;
+  void ShowUI() override;
+  void CloseUI() override;
+  bool UserHasAccess() override;
 
  private:
   // Not owned by this class

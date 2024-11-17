@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -33,12 +34,12 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
+#include "net/test/spawned_test_server/spawned_test_server.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/user_names.h"
 #endif
@@ -351,6 +352,59 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
   test::WaitUntilWebAppProviderAndSubsystemsReady(guest_provider);
   EXPECT_FALSE(guest_provider->registrar_unsafe().IsInstalled(app_id));
 #endif
+}
+
+class WebAppPolicyManagerBrowserTestWithAuthProxy
+    : public WebAppBrowserTestBase {
+ public:
+  WebAppPolicyManagerBrowserTestWithAuthProxy()
+      : auth_proxy_server_(std::make_unique<net::SpawnedTestServer>(
+            net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
+            base::FilePath())) {}
+
+  // WebAppControllerBrowserTest:
+  void SetUp() override {
+    // Start proxy server
+    auth_proxy_server_->set_redirect_connect_to_localhost(true);
+    ASSERT_TRUE(auth_proxy_server_->Start());
+
+    WebAppBrowserTestBase::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        ::switches::kProxyServer,
+        auth_proxy_server_->host_port_pair().ToString());
+    WebAppBrowserTestBase::SetUpCommandLine(command_line);
+  }
+
+  Profile* profile() { return browser()->profile(); }
+
+  std::unique_ptr<net::SpawnedTestServer> auth_proxy_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTestWithAuthProxy, Install) {
+  WebAppPolicyManager& policy_manager =
+      WebAppProvider::GetForTest(profile())->policy_manager();
+
+  base::Value::List list;
+  list.Append(GetCustomAppIconAndNameItem());
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
+
+  // Policy is for kInstallUrl, but we pretend to get a manifest
+  // from kStartUrl.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kStartUrl)));
+
+  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
+  policy_manager.MaybeOverrideManifest(browser()
+                                           ->tab_strip_model()
+                                           ->GetActiveWebContents()
+                                           ->GetPrimaryMainFrame(),
+                                       manifest);
+
+  EXPECT_EQ(std::u16string(), manifest->name.value_or(std::u16string()));
+  EXPECT_EQ(0u, manifest->icons.size());
 }
 
 }  // namespace web_app

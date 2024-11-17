@@ -87,14 +87,14 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
           &connection, &delegate, MakeAccountInfoWithGaiaId("user"),
           degraded_recoverability_state);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDegradedRecoverabilityValue2",
+      "TrustedVault.TrustedVaultDegradedRecoverabilityValue",
       /*sample=*/trusted_vault_pb::DegradedRecoverabilityValue::kNotDegraded,
       /*expected_bucket_count=*/0);
 
   // Start the scheduler.
   scheduler->GetIsRecoverabilityDegraded(base::DoNothing());
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultDegradedRecoverabilityValue2",
+      "TrustedVault.TrustedVaultDegradedRecoverabilityValue",
       /*sample=*/trusted_vault_pb::DegradedRecoverabilityValue::kNotDegraded,
       /*expected_bucket_count=*/1);
 }
@@ -182,7 +182,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
       TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
           kPersistentAuthErrorResolved);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultHintDegradedRecoverabilityChangedReason2",
+      "TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason",
       /*sample=*/
       TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
           kPersistentAuthErrorResolved,

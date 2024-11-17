@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests system and application interaction with Contextual Search using instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -151,7 +151,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testAppMenuSuppressedWhenExpanded() throws Exception {
         triggerPanelPeek();
         expandPanelAndAssert();

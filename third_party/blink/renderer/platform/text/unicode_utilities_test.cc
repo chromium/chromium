@@ -144,13 +144,14 @@ TEST(UnicodeUtilitiesTest, FoldQuoteMarkOrSoftHyphenTest) {
                                      kRightSingleQuotationMarkCharacter,
                                      kSoftHyphenCharacter};
 
-  String string_to_fold(kCharactersToFold, std::size(kCharactersToFold));
+  String string_to_fold{base::span(kCharactersToFold)};
   Vector<UChar> buffer;
   string_to_fold.AppendTo(buffer);
 
   FoldQuoteMarksAndSoftHyphens(string_to_fold);
 
-  const String folded_string("\"\"\"\'\'\'\0", std::size(kCharactersToFold));
+  const String folded_string(base::span_from_cstring("\"\"\"\'\'\'\0"));
+  ASSERT_EQ(std::size(kCharactersToFold), folded_string.length());
   EXPECT_EQ(string_to_fold, folded_string);
 
   FoldQuoteMarksAndSoftHyphens(base::span(buffer));

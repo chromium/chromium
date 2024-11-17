@@ -29,9 +29,6 @@ struct CONTENT_EXPORT SpeechRecognitionSessionConfig {
   ~SpeechRecognitionSessionConfig();
 
   std::string language;
-  // Accept language header. If |language| is empty, used to get a language
-  // instead.
-  std::string accept_language;
   std::vector<media::mojom::SpeechRecognitionGrammar> grammars;
   url::Origin origin;
   bool filter_profanities;

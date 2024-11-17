@@ -99,7 +99,7 @@ PepperUDPSocketMessageFilter::PepperUDPSocketMessageFilter(
 
   if (!host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
                                           &render_frame_id_)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -306,8 +306,7 @@ int32_t PepperUDPSocketMessageFilter::OnMsgSetOption(
       return PP_OK;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return PP_ERROR_BADARGUMENT;
+      NOTREACHED();
     }
   }
 }
@@ -448,8 +447,7 @@ int32_t PepperUDPSocketMessageFilter::OnMsgSendTo(
       num_bytes >
           static_cast<size_t>(UDPSocketResourceConstants::kMaxWriteSize)) {
     // Size of |data| is checked on the plugin side.
-    NOTREACHED_IN_MIGRATION();
-    return PP_ERROR_BADARGUMENT;
+    NOTREACHED();
   }
 
   net::IPAddressBytes address;

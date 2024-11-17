@@ -269,6 +269,10 @@ class SessionStoreTest : public SessionStoreOpenTest {
 
   SessionStore* session_store() { return session_store_.get(); }
 
+  std::unique_ptr<SessionStore> TakeSessionStore() {
+    return std::move(session_store_);
+  }
+
  private:
   std::unique_ptr<SessionStore> session_store_;
 };
@@ -279,8 +283,52 @@ TEST_F(SessionStoreTest, ShouldClearLegacySessionsGuidFromPrefs) {
       kLegacySyncSessionsGUID);
   ASSERT_THAT(session_sync_prefs_.GetLegacySyncSessionsGUID(),
               Eq(kLegacySyncSessionsGUID));
-  session_store()->DeleteAllDataAndMetadata();
+  SessionStore::DeleteAllDataAndMetadata(TakeSessionStore());
   EXPECT_THAT(session_sync_prefs_.GetLegacySyncSessionsGUID(), IsEmpty());
+}
+
+TEST_F(SessionStoreTest, ShouldRecreateEmptyStore) {
+  const SessionStore::SessionInfo original_local_session_info =
+      session_store()->local_session_info();
+
+  // Put some data into the store.
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+  SessionSpecifics header;
+  header.set_session_tag(kLocalCacheGuid);
+  header.mutable_header()->add_window()->set_window_id(1);
+  header.mutable_header()->mutable_window(0)->add_tab(2);
+  ASSERT_TRUE(SessionStore::AreValidSpecifics(header));
+  batch->PutAndUpdateTracker(header, base::Time::Now());
+  SessionStore::WriteBatch::Commit(std::move(batch));
+  ASSERT_THAT(ReadAllPersistedDataFrom(underlying_store_.get()),
+              Not(IsEmpty()));
+
+  auto recreate_store_callback =
+      SessionStore::DeleteAllDataAndMetadata(TakeSessionStore());
+
+  // Re-create the store with a new cache GUID / session tag.
+  const std::string kNewLocalCacheGuid = "new_cache_guid";
+  ASSERT_NE(kLocalCacheGuid, kNewLocalCacheGuid);
+  std::unique_ptr<SessionStore> new_store =
+      std::move(recreate_store_callback)
+          .Run(kNewLocalCacheGuid, mock_sync_sessions_client_.get());
+
+  // The newly (re)created store should be empty.
+  EXPECT_THAT(ReadAllPersistedDataFrom(underlying_store_.get()), IsEmpty());
+
+  const SessionStore::SessionInfo new_local_session_info =
+      new_store->local_session_info();
+  // The session tag (aka cache GUID) should've been updated.
+  EXPECT_EQ(new_local_session_info.session_tag, kNewLocalCacheGuid);
+  // The remaining local session fields should be unchanged.
+  EXPECT_EQ(original_local_session_info.client_name,
+            new_local_session_info.client_name);
+  EXPECT_EQ(original_local_session_info.device_type,
+            new_local_session_info.device_type);
+  EXPECT_EQ(original_local_session_info.device_form_factor,
+            new_local_session_info.device_form_factor);
 }
 
 TEST_F(SessionStoreTest, ShouldCreateLocalSession) {

@@ -330,16 +330,30 @@ SavedDeskPresenter::~SavedDeskPresenter() = default;
 
 size_t SavedDeskPresenter::GetEntryCount(DeskTemplateType type) const {
   auto* model = GetDeskModel();
-  return type == DeskTemplateType::kTemplate
-             ? model->GetDeskTemplateEntryCount()
-             : model->GetSaveAndRecallDeskEntryCount();
+  switch (type) {
+    case DeskTemplateType::kTemplate:
+      return model->GetDeskTemplateEntryCount();
+    case DeskTemplateType::kSaveAndRecall:
+      return model->GetSaveAndRecallDeskEntryCount();
+    case DeskTemplateType::kCoral:
+      return model->GetCoralEntryCount();
+    default:
+      NOTREACHED();
+  }
 }
 
 size_t SavedDeskPresenter::GetMaxEntryCount(DeskTemplateType type) const {
   auto* model = GetDeskModel();
-  return type == DeskTemplateType::kTemplate
-             ? model->GetMaxDeskTemplateEntryCount()
-             : model->GetMaxSaveAndRecallDeskEntryCount();
+  switch (type) {
+    case DeskTemplateType::kTemplate:
+      return model->GetMaxDeskTemplateEntryCount();
+    case DeskTemplateType::kSaveAndRecall:
+      return model->GetMaxSaveAndRecallDeskEntryCount();
+    case DeskTemplateType::kCoral:
+      return model->GetMaxCoralEntryCount();
+    default:
+      NOTREACHED();
+  }
 }
 
 ash::DeskTemplate* SavedDeskPresenter::FindOtherEntryWithName(
@@ -418,8 +432,7 @@ void SavedDeskPresenter::LaunchSavedDesk(
 
   // Set the lacros profile ID for the newly created desk. This is effectively a
   // no-op if `lacros_profile_id` returns zero.
-  new_desk->SetLacrosProfileId(saved_desk->lacros_profile_id(),
-                               /*source=*/std::nullopt);
+  new_desk->SetLacrosProfileId(saved_desk->lacros_profile_id());
 
   LaunchSavedDeskIntoNewDesk(std::move(saved_desk), root_window, new_desk);
 

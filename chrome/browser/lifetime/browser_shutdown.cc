@@ -83,8 +83,7 @@ int g_shutdown_num_processes_slow;
 const char* ToShutdownTypeString(ShutdownType type) {
   switch (type) {
     case ShutdownType::kNotValid:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case ShutdownType::kWindowClose:
       return "close";
     case ShutdownType::kBrowserExit:
@@ -291,8 +290,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 
     switch (restart_mode) {
       case RestartMode::kNoRestart:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
 
       case RestartMode::kRestartInBackground:
         new_cl.AppendSwitch(switches::kNoStartupWindow);

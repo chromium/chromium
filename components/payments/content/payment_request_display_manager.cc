@@ -97,7 +97,7 @@ PaymentRequestDisplayManager::DisplayHandle::GetWeakPtr() {
 PaymentRequestDisplayManager::PaymentRequestDisplayManager()
     : current_handle_(nullptr) {}
 
-PaymentRequestDisplayManager::~PaymentRequestDisplayManager() {}
+PaymentRequestDisplayManager::~PaymentRequestDisplayManager() = default;
 
 std::unique_ptr<PaymentRequestDisplayManager::DisplayHandle>
 PaymentRequestDisplayManager::TryShow(

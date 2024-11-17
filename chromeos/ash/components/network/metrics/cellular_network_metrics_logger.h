@@ -92,6 +92,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  enum class CreateCustomApnResult {
+    kSuccess = 0,
+    kNetworkNotFound = 1,
+    kShillError = 2,
+    kMaxValue = kShillError,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class UserTextMessageSuppressionState {
     kTextMessagesAllow = 0,
     kTextMessagesSuppress = 1,
@@ -118,6 +127,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   static constexpr char kCreateCustomApnResultHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.Result";
+  static constexpr char kCreateCustomApnShillErrorHistogram[] =
+      "Network.Ash.Cellular.Apn.CreateCustomApn.ShillError";
   static constexpr char kCreateCustomApnAuthenticationTypeHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.AuthenticationType";
   static constexpr char kCreateCustomApnIpTypeHistogram[] =
@@ -285,8 +296,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   // Logs results from attempting operations related to custom APNs.
   static void LogCreateCustomApnResult(
-      bool success,
-      chromeos::network_config::mojom::ApnPropertiesPtr apn);
+      CreateCustomApnResult result,
+      chromeos::network_config::mojom::ApnPropertiesPtr apn,
+      const std::optional<std::string>& shill_error);
   static void LogCreateExclusivelyEnabledCustomApnResult(
       bool success,
       chromeos::network_config::mojom::ApnPropertiesPtr apn);

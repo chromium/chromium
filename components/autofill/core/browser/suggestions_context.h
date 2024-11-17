@@ -47,27 +47,9 @@ struct SuggestionsContext {
   // avoided. This can happen in multiple scenarios (e.g. During manual
   // fallbacks for plus addresses or if the form is a mixed content form).
   bool do_not_generate_autofill_suggestions = false;
-  // Indicates whether the form filling is under ablation, meaning that
-  // autofill popups are suppressed.
-  AblationGroup ablation_group = AblationGroup::kDefault;
-  // Indicates whether the form filling is under ablation, under the condition
-  // that the user has data to fill on file. All users that don't have data
-  // to fill are in the AbationGroup::kDefault.
-  // Note that it is possible (due to implementation details) that this is
-  // incorrectly set to kDefault: If the user has typed some characters into a
-  // text field, it may look like no suggestions are available, but in
-  // practice the suggestions are just filtered out (Autofill only suggests
-  // matches that start with the typed prefix). Any consumers of the
-  // conditional_ablation_group attribute should monitor it over time.
-  // Any transitions of conditional_ablation_group from {kAblation,
-  // kControl} to kDefault should just be ignored and the previously reported
-  // value should be used. As the ablation experience is stable within a day,
-  // such a transition typically indicates that the user has type a prefix
-  // which led to the filtering of all autofillable data. In short: once
-  // either kAblation or kControl were reported, consumers should stick to
-  // that.
-  AblationGroup conditional_ablation_group = AblationGroup::kDefault;
-  int day_in_ablation_window = -1;
+  // Indicates whether fetching the list of plus addresses is required to
+  // generate the overall list of suggestions.
+  bool field_is_relevant_for_plus_addresses = false;
 };
 
 }  // namespace autofill

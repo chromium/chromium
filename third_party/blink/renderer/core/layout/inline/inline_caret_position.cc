@@ -439,9 +439,8 @@ InlineCaretPosition ComputeInlineCaretPosition(
     if (position.IsAfterAnchor()) {
       return ComputeInlineCaretPositionAfterInline(position_with_affinity);
     }
-    NOTREACHED_IN_MIGRATION()
-        << "Caller should not pass a position inside inline: " << position;
-    return InlineCaretPosition();
+    NOTREACHED() << "Caller should not pass a position inside inline: "
+                 << position;
   }
 
   LayoutBlockFlow* const context = NGInlineFormattingContextOf(position);
@@ -465,8 +464,7 @@ InlineCaretPosition ComputeInlineCaretPosition(
       DCHECK_EQ(data->length(), 0u);
     } else {
       // TODO(xiaochengh): Investigate if we reach here.
-      NOTREACHED_IN_MIGRATION();
-      return InlineCaretPosition();
+      NOTREACHED();
     }
   }
 
@@ -538,8 +536,7 @@ PositionWithAffinity InlineCaretPosition::ToPositionInDOMTreeWithAffinity()
       }
       return PositionWithAffinity(position, affinity);
   }
-  NOTREACHED_IN_MIGRATION();
-  return PositionWithAffinity();
+  NOTREACHED();
 }
 
 }  // namespace blink

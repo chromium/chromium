@@ -54,8 +54,12 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extensions_client.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/install_limiter.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
+#include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif
 
 namespace extensions {
@@ -243,6 +247,12 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
       service_(nullptr),
       testing_local_state_(TestingBrowserProcess::GetGlobal()),
       registry_(nullptr),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      user_manager_(std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<ash::UserManagerDelegateImpl>(),
+          testing_local_state_.Get(),
+          ash::CrosSettings::Get())),
+#endif
       verifier_format_override_(crx_file::VerifierFormat::CRX3) {
   base::FilePath test_data_dir;
   if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir)) {
@@ -399,7 +409,7 @@ void ExtensionServiceTestBase::SetUp() {
   ExtensionsClient::Get()->InitializeWebStoreUrls(
       base::CommandLine::ForCurrentProcess());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/308107135) own KioskController instead of KioskAppManager.
   // A test might have initialized a `KioskAppManager` already.
   if (!ash::KioskChromeAppManager::IsInitialized()) {
@@ -423,7 +433,7 @@ void ExtensionServiceTestBase::TearDown() {
     }
   }
   policy_provider_.Shutdown();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   kiosk_chrome_app_manager_.reset();
 #endif
 }
@@ -440,15 +450,11 @@ content::BrowserContext* ExtensionServiceTestBase::browser_context() {
 }
 
 Profile* ExtensionServiceTestBase::profile() {
-// TODO(crbug.com/40891982): Refactor this convenience upstream to test callers.
-// Possibly just BuiltInAppTest.BuildGuestMode.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (profile_->IsGuestSession()) {
-    return profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   return profile_.get();
+}
+
+void ExtensionServiceTestBase::SetGuestSessionOnProfile(bool guest_session) {
+  profile_->SetGuestSession(guest_session);
 }
 
 sync_preferences::TestingPrefServiceSyncable*
@@ -483,9 +489,13 @@ void ExtensionServiceTestBase::CreateExtensionService(
   service_->RegisterInstallGate(ExtensionPrefs::DelayReason::kWaitForImports,
                                 service_->shared_module_service());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!enable_install_limiter) {
-    InstallLimiter::Get(profile())->DisableForTest();
+    auto* install_limiter =
+        InstallLimiter::Get(profile()->GetOriginalProfile());
+    if (install_limiter) {
+      install_limiter->DisableForTest();
+    }
   }
 #endif
 }

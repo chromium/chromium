@@ -69,7 +69,7 @@ ArcFileSystemMounter::~ArcFileSystemMounter() {
       storage::ExternalMountPoints::GetSystemInstance();
 
   mount_points->RevokeFileSystem(kContentFileSystemMountPointName);
-  mount_points->RevokeFileSystem(kDocumentsProviderMountPointPath);
+  mount_points->RevokeFileSystem(kDocumentsProviderMountPointName);
 }
 
 // static

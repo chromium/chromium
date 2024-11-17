@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+import android.util.Pair;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
@@ -17,21 +15,20 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
+import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
+import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
 public class WebPageStation extends PageStation {
-
-    public static final ViewSpec URL_BAR = viewSpec(withId(R.id.url_bar));
-
     protected Supplier<WebContents> mWebContentsSupplier;
     private boolean mIgnoreUrlBar;
 
@@ -106,6 +103,16 @@ public class WebPageStation extends PageStation {
                 throw new RuntimeException(e);
             }
         };
+    }
+
+    /** Click the URL bar to enter the Omnibox. */
+    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
+            FakeOmniboxSuggestions fakeSuggestions) {
+        OmniboxFacility omniboxFacility =
+                new OmniboxFacility(/* incognito= */ mIncognito, fakeSuggestions);
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility(mActivityElement);
+        enterFacilitiesSync(List.of(omniboxFacility, softKeyboard), URL_BAR::click);
+        return Pair.create(omniboxFacility, softKeyboard);
     }
 
     private static class WebContentsPresentCondition extends ConditionWithResult<WebContents> {

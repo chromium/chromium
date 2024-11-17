@@ -13,6 +13,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_test_model.h"
@@ -40,11 +41,11 @@ class AppsCollectionSectionViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {app_list_features::kAppsCollections,
-         app_list_features::kForceShowAppsCollections},
-        {});
+    scoped_feature_list_.InitWithFeatures({app_list_features::kAppsCollections},
+                                          {});
     AshTestBase::SetUp();
+    AppsCollectionsController::Get()->ForceAppsCollectionsForTesting(
+        /*force=*/true);
   }
 
   void ShowAppList() {

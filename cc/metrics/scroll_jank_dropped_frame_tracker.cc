@@ -75,8 +75,7 @@ const char* GetPerVsyncScrollHistogramName(int num_vsyncs,
       return "Event.ScrollJank.MissedVsyncsPercentage.PerScroll.Large";
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 }
 }  // namespace

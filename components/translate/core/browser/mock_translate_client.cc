@@ -23,7 +23,7 @@ MockTranslateClient::MockTranslateClient(TranslateDriver* driver,
                                          PrefService* prefs)
     : driver_(driver), prefs_(prefs) {}
 
-MockTranslateClient::~MockTranslateClient() {}
+MockTranslateClient::~MockTranslateClient() = default;
 
 TranslateDriver* MockTranslateClient::GetTranslateDriver() {
   return driver_;

@@ -184,35 +184,37 @@ base::File NativeFileUtil::CreateOrOpen(const base::FilePath& path,
 
 base::File::Error NativeFileUtil::EnsureFileExists(const base::FilePath& path,
                                                    bool* created) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::DirectoryExists(path.DirName())) {
+    // If its parent does not exist, should return NOT_FOUND error.
+    return base::File::FILE_ERROR_NOT_FOUND;
+  }
+#endif
+
+  // If |path| is a directory, return an error.
+  if (base::DirectoryExists(path)) {
+    return base::File::FILE_ERROR_NOT_A_FILE;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
-    if (ContentUriExists(path)) {
+    if (base::PathExists(path)) {
       if (created) {
         *created = false;
       }
       return base::File::FILE_OK;
     }
-    base::File file = OpenContentUri(
-        path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    if (file.IsValid()) {
-      if (created) {
-        *created = true;
-      }
-      return base::File::FILE_OK;
-    }
+    base::FilePath result =
+        base::ContentUriGetDocumentFromQuery(path, /*create=*/true);
     if (created) {
-      *created = false;
+      *created = !result.empty();
     }
-    return base::File::FILE_ERROR_NOT_FOUND;
+    if (result.empty()) {
+      return base::File::FILE_ERROR_FAILED;
+    }
+    return base::File::FILE_OK;
   }
 #endif
-  if (!base::DirectoryExists(path.DirName()))
-    // If its parent does not exist, should return NOT_FOUND error.
-    return base::File::FILE_ERROR_NOT_FOUND;
-
-  // If |path| is a directory, return an error.
-  if (base::DirectoryExists(path))
-    return base::File::FILE_ERROR_NOT_A_FILE;
 
   // Tries to create the |path| exclusively.  This should fail
   // with base::File::FILE_ERROR_EXISTS if the path already exists.
@@ -237,20 +239,39 @@ base::File::Error NativeFileUtil::EnsureFileExists(const base::FilePath& path,
 base::File::Error NativeFileUtil::CreateDirectory(const base::FilePath& path,
                                                   bool exclusive,
                                                   bool recursive) {
+#if !BUILDFLAG(IS_ANDROID)
   // If parent dir of file doesn't exist.
   if (!recursive && !base::PathExists(path.DirName()))
     return base::File::FILE_ERROR_NOT_FOUND;
+#endif
 
   bool path_exists = base::PathExists(path);
   if (exclusive && path_exists)
     return base::File::FILE_ERROR_EXISTS;
 
   // If file exists at the path.
-  if (path_exists && !base::DirectoryExists(path))
+  bool directory_exists = base::DirectoryExists(path);
+  if (path_exists && !directory_exists) {
     return base::File::FILE_ERROR_NOT_A_DIRECTORY;
+  }
 
-  if (!base::CreateDirectory(path))
-    return base::File::FILE_ERROR_FAILED;
+  if (!directory_exists) {
+#if BUILDFLAG(IS_ANDROID)
+    if (path.IsContentUri()) {
+      base::FilePath result =
+          base::ContentUriGetDocumentFromQuery(path, /*create=*/true);
+      if (result.empty()) {
+        return base::File::FILE_ERROR_FAILED;
+      }
+    } else if (!base::CreateDirectory(path)) {
+      return base::File::FILE_ERROR_FAILED;
+    }
+#else
+    if (!base::CreateDirectory(path)) {
+      return base::File::FILE_ERROR_FAILED;
+    }
+#endif
+  }
 
   if (!SetPlatformSpecificDirectoryPermissions(path)) {
     // Since some file systems don't support permission setting, we do not treat
@@ -295,8 +316,8 @@ base::File::Error NativeFileUtil::Truncate(const base::FilePath& path,
     if (length != 0) {
       return base::File::FILE_ERROR_FAILED;
     }
-    base::File file = OpenContentUri(
-        path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    base::File file(path,
+                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     return file.error_details();
   }
 #endif

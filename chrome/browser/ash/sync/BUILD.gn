@@ -18,16 +18,6 @@ static_library("sync") {
     "sync_error_notifier.h",
     "sync_error_notifier_factory.cc",
     "sync_error_notifier_factory.h",
-    "sync_explicit_passphrase_client_ash.cc",
-    "sync_explicit_passphrase_client_ash.h",
-    "sync_mojo_service_ash.cc",
-    "sync_mojo_service_ash.h",
-    "sync_mojo_service_factory_ash.cc",
-    "sync_mojo_service_factory_ash.h",
-    "sync_user_settings_client_ash.cc",
-    "sync_user_settings_client_ash.h",
-    "synced_session_client_ash.cc",
-    "synced_session_client_ash.h",
   ]
 
   public_deps = [
@@ -53,6 +43,7 @@ static_library("sync") {
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/webui/signin:login",
     "//chrome/common",
     "//components/account_id",
     "//components/account_manager_core",
@@ -77,10 +68,6 @@ source_set("unit_tests") {
     "sync_appsync_optin_client_unittest.cc",
     "sync_appsync_service_unittest.cc",
     "sync_error_notifier_unittest.cc",
-    "sync_explicit_passphrase_client_ash_unittest.cc",
-    "sync_mojo_service_ash_unittest.cc",
-    "sync_user_settings_client_ash_unittest.cc",
-    "synced_session_client_ash_unittest.cc",
   ]
 
   deps = [
@@ -90,6 +77,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/signin:login",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
     "//components/account_id",

@@ -321,7 +321,24 @@ chromium-metrics-reviews@google.com.
   <int value="118" label="TEST_THIRD_PARTY_COOKIE_PHASEOUT_DELEGATE"/>
   <int value="119" label="ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE"/>
   <int value="120" label="DEV_TOOLS_SHARED_PROCESS_DELEGATE"/>
+  <int value="121" label="ENHANCED_SAFE_BROWSING_INFOBAR_DELEGATE"/>
+  <int value="122" label="CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_IOS"/>
 </enum>
+
+<!-- LINT.IfChange(NoSpareRendererReason) -->
+
+<enum name="NoSpareRendererReason">
+  <int value="0" label="kNotYetCreated"/>
+  <int value="1" label="kTakenByPreviousNavigation"/>
+  <int value="2" label="kTimeout"/>
+  <int value="3" label="kNotEnabled"/>
+  <int value="4" label="kProcessLimit"/>
+  <int value="5" label="kMemoryPressure"/>
+  <int value="6" label="kProcessExited"/>
+  <int value="7" label="kProcessHostDestroyed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:NoSpareRendererReason) -->
 
 <enum name="RendererType">
   <int value="1" label="Normal renderer"/>
@@ -362,6 +379,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(SpareProcessMaybeTakeAction) -->
+
 <enum name="SpareProcessMaybeTakeAction">
   <int value="0" label="NoSparePresent"/>
   <int value="1" label="MismatchedBrowserContext"/>
@@ -381,6 +400,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="RefusedForPdfContent"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/renderer_host/render_process_host_impl.h:SpareProcessMaybeTakeAction) -->
+
 <!-- LINT.IfChange(SpareProcessRefusedByEmbedderReason) -->
 
 <enum name="SpareProcessRefusedByEmbedderReason">
@@ -394,6 +415,20 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/content_browser_client.h:SpareProcessRefusedByEmbedderReason) -->
+
+<!-- LINT.IfChange(SpareRendererDispatchResult) -->
+
+<enum name="SpareRendererDispatchResult">
+  <int value="0" label="kUsed"/>
+  <int value="1" label="kTimeout"/>
+  <int value="2" label="kOverridden"/>
+  <int value="3" label="kDestroyedNotEnabled"/>
+  <int value="4" label="kDestroyedProcessLimit"/>
+  <int value="5" label="kProcessExited"/>
+  <int value="6" label="kProcessHostDestroyed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:SpareRendererDispatchResult) -->
 
 <enum name="SupportToolWebUIActionType">
   <summary>

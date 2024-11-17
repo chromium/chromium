@@ -6,7 +6,6 @@
 #define NET_DISK_CACHE_BLOCKFILE_STRESS_SUPPORT_H_
 
 #include "base/check.h"
-#include "base/notreached.h"
 
 namespace disk_cache {
 
@@ -20,7 +19,10 @@ namespace disk_cache {
 // #define STRESS_CACHE_EXTENDED_VALIDATION 1
 
 #if defined(NET_BUILD_STRESS_CACHE)
-#define STRESS_NOTREACHED() NOTREACHED_IN_MIGRATION()
+// Note that these may fail in the real world due to corruption, but we don't
+// expect them to fire in stress tests. We use CHECK(false) instead of
+// NOTREACHED() here since the latter is [[noreturn]] which we don't want here.
+#define STRESS_NOTREACHED() CHECK(false)
 #define STRESS_DCHECK(a) DCHECK(a)
 #else
 // We don't support streams with these macros, but that's a small price to pay

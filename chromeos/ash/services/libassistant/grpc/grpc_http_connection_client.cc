@@ -44,8 +44,7 @@ HttpConnection::Method ConvertToHttpConnectionMethod(
     case StreamHttpConnectionResponse::DELETE:
       return HttpConnection::DELETE;
     case StreamHttpConnectionResponse::METHOD_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return HttpConnection::GET;
+      NOTREACHED();
   }
 }
 
@@ -232,7 +231,7 @@ void GrpcHttpConnectionClient::OnRpcReadAvailable(
       DVLOG(1) << "StreamHttpConnectionResponse::START";
       DCHECK(response.has_parameters());
       const auto& param = response.parameters();
-      auto* http_connection = iter->second;
+      auto* http_connection = iter->second.get();
       http_connection->SetRequest(
           param.url(), ConvertToHttpConnectionMethod(param.method()));
       for (const auto& header : param.headers()) {
@@ -280,7 +279,7 @@ void GrpcHttpConnectionClient::OnRpcReadAvailable(
                                response.chunked_data().is_last_chunk());
       break;
     case StreamHttpConnectionResponse::COMMAND_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

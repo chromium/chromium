@@ -116,6 +116,7 @@ struct AttributionSourceRecord {
   int remaining_aggregatable_debug_budget;
   int num_aggregatable_debug_reports;
   std::optional<std::string> attribution_scopes_data;
+  std::string aggregatable_named_budgets;
 };
 
 struct AttributionReportRecord {
@@ -343,7 +344,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     static constexpr char kStoreSourceSql[] =
         "INSERT INTO sources "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?,?)";
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?,?,?)";
     sql::Statement statement(raw_db.GetUniqueStatement(kStoreSourceSql));
     statement.BindInt64(0, record.source_id);
     statement.BindInt64(1, record.source_event_id);
@@ -377,6 +378,7 @@ class AttributionStorageSqlTest : public testing::Test {
     } else {
       statement.BindNull(21);
     }
+    statement.BindBlob(22, record.aggregatable_named_budgets);
     ASSERT_TRUE(statement.Run());
   }
 
@@ -386,7 +388,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     static constexpr char kStoreReportSql[] =
         "INSERT INTO reports "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
     sql::Statement statement(raw_db.GetUniqueStatement(kStoreReportSql));
     statement.BindInt64(0, record.report_id);
     statement.BindInt64(1, record.source_id);
@@ -406,6 +408,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     statement.BindInt(10, record.report_type);
     statement.BindBlob(11, record.metadata);
+    statement.BindString(12, record.context_origin);
     ASSERT_TRUE(statement.Run());
   }
 
@@ -1435,51 +1438,6 @@ TEST_F(AttributionStorageSqlTest,
   }
 }
 
-TEST_F(AttributionStorageSqlTest,
-       RandomizedResponseRateNotStored_RecalculatedWhenHandled) {
-  {
-    OpenDatabase();
-    storage()->StoreSource(SourceBuilder().Build());
-    CloseDatabase();
-  }
-
-  {
-    sql::Database raw_db;
-    ASSERT_TRUE(raw_db.Open(db_path()));
-
-    static constexpr char kGetSql[] =
-        "SELECT source_id,read_only_source_data FROM sources";
-    sql::Statement get_statement(raw_db.GetUniqueStatement(kGetSql));
-
-    static constexpr char kSetSql[] =
-        "UPDATE sources SET read_only_source_data=? WHERE source_id=?";
-    sql::Statement set_statement(raw_db.GetUniqueStatement(kSetSql));
-
-    while (get_statement.Step()) {
-      int64_t id = get_statement.ColumnInt64(0);
-
-      proto::AttributionReadOnlySourceData msg;
-      {
-        base::span<const uint8_t> blob = get_statement.ColumnBlob(1);
-        ASSERT_TRUE(msg.ParseFromArray(blob.data(), blob.size()));
-      }
-
-      msg.clear_randomized_response_rate();
-
-      set_statement.Reset(/*clear_bound_vars=*/true);
-      set_statement.BindBlob(0, msg.SerializeAsString());
-      set_statement.BindInt64(1, id);
-      ASSERT_TRUE(set_statement.Run());
-    }
-  }
-
-  OpenDatabase();
-
-  delegate()->set_randomized_response_rate(0.2);
-  EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(RandomizedResponseRateIs(0.2)));
-}
-
 TEST_F(AttributionStorageSqlTest, EpsilonNotStored_RecalculatedWhenHandled) {
   {
     OpenDatabase();
@@ -2364,7 +2322,8 @@ TEST_F(AttributionStorageSqlTest,
       .aggregation_keys = "foo",
       .filter_data = "bar",
       .read_only_source_data = "baz",
-      .attribution_scopes_data = "qux"};
+      .attribution_scopes_data = "qux",
+      .aggregatable_named_budgets = "quux"};
   AttributionReportRecord report_record{
       .report_id = 1,
       .source_id = 2,
@@ -2457,7 +2416,11 @@ TEST_F(AttributionStorageSqlTest,
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidAttributionScopesData,
                                2);
-  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 29);
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
+                               AttributionStorageSql::ReportCorruptionStatus::
+                                   kSourceInvalidAggregatableNamedBudgets,
+                               2);
+  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 31);
 }
 
 TEST_F(AttributionStorageSqlTest, SourceRemainingAggregatableBudget) {
@@ -2546,48 +2509,49 @@ TEST_F(AttributionStorageSqlTest, SourceRemainingAggregatableBudget) {
   }
 }
 
-TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
+TEST_F(AttributionStorageSqlTest,
+       SourceDebugKeyAndCookieBasedDebugAllowedCombination) {
   const struct {
     const char* desc;
-    std::optional<bool> debug_cookie_set;
+    std::optional<bool> cookie_based_debug_allowed;
     std::optional<uint64_t> debug_key;
-    std::optional<bool> expected_debug_cookie_set;
+    std::optional<bool> expected_cookie_based_debug_allowed;
   } kTestCases[] = {
       {
-          .desc = "debug cookie missing, debug key set",
-          .debug_cookie_set = std::nullopt,
+          .desc = "debug allowed missing, debug key set",
+          .cookie_based_debug_allowed = std::nullopt,
           .debug_key = 123,
-          .expected_debug_cookie_set = true,
+          .expected_cookie_based_debug_allowed = true,
       },
       {
-          .desc = "debug cookie missing, debug key not set",
-          .debug_cookie_set = std::nullopt,
+          .desc = "debug allowed missing, debug key not set",
+          .cookie_based_debug_allowed = std::nullopt,
           .debug_key = std::nullopt,
-          .expected_debug_cookie_set = false,
+          .expected_cookie_based_debug_allowed = false,
       },
       {
-          .desc = "debug cookie not set, debug key set",
-          .debug_cookie_set = false,
+          .desc = "debug not allowed, debug key set",
+          .cookie_based_debug_allowed = false,
           .debug_key = 123,
-          .expected_debug_cookie_set = std::nullopt,
+          .expected_cookie_based_debug_allowed = std::nullopt,
       },
       {
-          .desc = "debug cookie not set, debug key not set",
-          .debug_cookie_set = false,
+          .desc = "debug not allowed, debug key not set",
+          .cookie_based_debug_allowed = false,
           .debug_key = std::nullopt,
-          .expected_debug_cookie_set = false,
+          .expected_cookie_based_debug_allowed = false,
       },
       {
-          .desc = "debug cookie set, debug key set",
-          .debug_cookie_set = true,
+          .desc = "debug allowed, debug key set",
+          .cookie_based_debug_allowed = true,
           .debug_key = 123,
-          .expected_debug_cookie_set = true,
+          .expected_cookie_based_debug_allowed = true,
       },
       {
-          .desc = "debug cookie set, debug key not set",
-          .debug_cookie_set = true,
+          .desc = "debug allowed, debug key not set",
+          .cookie_based_debug_allowed = true,
           .debug_key = std::nullopt,
-          .expected_debug_cookie_set = true,
+          .expected_cookie_based_debug_allowed = true,
       },
   };
 
@@ -2601,7 +2565,7 @@ TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
 
     storage()->StoreSource(SourceBuilder()
                                .SetDebugKey(test_case.debug_key)
-                               .SetDebugCookieSet(true)
+                               .SetCookieBasedDebugAllowed(true)
                                .Build());
     ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
@@ -2618,11 +2582,11 @@ TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
               DeserializeReadOnlySourceDataAsProto(read_statement, 0);
       ASSERT_TRUE(read_only_source_data_msg);
 
-      if (test_case.debug_cookie_set.has_value()) {
-        read_only_source_data_msg->set_debug_cookie_set(
-            *test_case.debug_cookie_set);
+      if (test_case.cookie_based_debug_allowed.has_value()) {
+        read_only_source_data_msg->set_cookie_based_debug_allowed(
+            *test_case.cookie_based_debug_allowed);
       } else {
-        read_only_source_data_msg->clear_debug_cookie_set();
+        read_only_source_data_msg->clear_cookie_based_debug_allowed();
       }
 
       sql::Statement update_statement(raw_db.GetUniqueStatement(kUpdateSql));
@@ -2633,9 +2597,10 @@ TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
 
     OpenDatabase();
     auto sources = storage()->GetActiveSources();
-    if (test_case.expected_debug_cookie_set.has_value()) {
-      ASSERT_THAT(sources, ElementsAre(SourceDebugCookieSetIs(
-                               *test_case.expected_debug_cookie_set)));
+    if (test_case.expected_cookie_based_debug_allowed.has_value()) {
+      ASSERT_THAT(sources,
+                  ElementsAre(SourceCookieBasedDebugAllowedIs(
+                      *test_case.expected_cookie_based_debug_allowed)));
     } else {
       ASSERT_THAT(sources, IsEmpty());
     }

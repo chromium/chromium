@@ -1562,6 +1562,40 @@ const DeviceCapabilities kSplitModifierKeyboard = {
     /* kbd_top_row_layout */ "",
 };
 
+const DeviceAbsoluteAxis kAdvantechUsbInternalTouchscreenAbsAxes[] = {
+    {ABS_X, {0, 0, 4095, 0, 0, 9}},
+    {ABS_Y, {0, 0, 4095, 0, 0, 15}},
+    {ABS_MT_SLOT, {0, 0, 9, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 0, 4095, 0, 0, 9}},
+    {ABS_MT_POSITION_Y, {0, 0, 4095, 0, 0, 15}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+};
+const DeviceCapabilities kAdvantechUsbInternalTouchscreen = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0/0003:0EEF:C000.0004/"
+    "input/input8/event8",
+    /* name */ "eGalax Inc. eGalaxTouch P80H80 1303 v00_T7 k05_134",
+    /* phys */ "usb-0000:00:14.0-6/input0",
+    /* uniq */ "",
+    /* bustype */ "0003",
+    /* vendor */ "0eef",
+    /* product */ "c000",
+    /* version */ "0111",
+    /* prop */ "2",
+    /* ev */ "1b",
+    /* key */ "400 0 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "260800000000003",
+    /* msc */ "20",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kAdvantechUsbInternalTouchscreenAbsAxes,
+    std::size(kAdvantechUsbInternalTouchscreenAbsAxes),
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "",
+};
+
 // NB: Please use the capture_device_capabilities.py script to add more
 // test data here. This will help ensure the data matches what the kernel
 // reports for a real device and is entered correctly.

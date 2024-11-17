@@ -11,7 +11,6 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
@@ -112,7 +111,13 @@ void MahiMediaAppClient::OnPdfFileNameUpdated(const std::string& new_name) {
   OnWindowFocused(focus_observation_.GetSource()->GetFocusedWindow(), nullptr);
 }
 
-void MahiMediaAppClient::OnPdfContextMenuShow(const ::gfx::RectF& anchor) {
+void MahiMediaAppClient::OnPdfContextMenuShow(
+    const ::gfx::RectF& anchor,
+    const std::string& selected_text) {
+  // The order matters here because some event observers need to inquire the
+  // latest selected text.
+  chromeos::MahiMediaAppContentManager::Get()->SetSelectedText(selected_text);
+
   chromeos::MahiMediaAppEventsProxy::Get()->OnPdfContextMenuShown(
       client_id_, ::gfx::ToEnclosingRect(anchor));
 }

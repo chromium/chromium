@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_OBSERVER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_OBSERVER_H_
 
+#include <optional>
+
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 
 using mojom::LifecycleUnitDiscardReason;
@@ -18,21 +20,20 @@ namespace resource_coordinator {
 // Interface to be notified of changes to the lifetime of tabs.
 class TabLifecycleObserver {
  public:
-  // Invoked after |contents| is discarded or reloaded after a discard.
-  // |is_discarded| indicates if |contents| is currently discarded.
-  virtual void OnDiscardedStateChange(content::WebContents* contents,
-                                      LifecycleUnitDiscardReason reason,
-                                      bool is_discarded) {}
+  // Invoked when the lifecycle state of `contents` changes. `previous_state`
+  // and `new_state` are the previous and new states. If either is `DISCARDED,
+  // `discard_reason` contains the discard reason.
+  virtual void OnTabLifecycleStateChange(
+      content::WebContents* contents,
+      mojom::LifecycleUnitState previous_state,
+      mojom::LifecycleUnitState new_state,
+      std::optional<LifecycleUnitDiscardReason> discard_reason) {}
 
   // Invoked when the auto-discardable state of |contents| changes.
   // |is_auto_discardable| indicates whether |contents| can be automatically
   // discarded.
-  virtual void OnAutoDiscardableStateChange(content::WebContents* contents,
-                                            bool is_auto_discardable) {}
-
-  // Invoked when a tab is frozen or resumed.
-  virtual void OnFrozenStateChange(content::WebContents* contents,
-                                   bool is_frozen) {}
+  virtual void OnTabAutoDiscardableStateChange(content::WebContents* contents,
+                                               bool is_auto_discardable) {}
 
  protected:
   virtual ~TabLifecycleObserver() = default;

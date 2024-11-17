@@ -69,6 +69,10 @@ FilePathWatcher::PlatformDelegate::~PlatformDelegate() {
   DCHECK(is_cancelled());
 }
 
+size_t FilePathWatcher::PlatformDelegate::current_usage() const {
+  return 0;
+}
+
 bool FilePathWatcher::Watch(const base::FilePath& path,
                             Type type,
                             const Callback& callback) {
@@ -88,10 +92,11 @@ bool FilePathWatcher::WatchWithOptions(const base::FilePath& path,
 bool FilePathWatcher::WatchWithChangeInfo(
     const base::FilePath& path,
     const WatchOptions& options,
-    const CallbackWithChangeInfo& callback) {
+    const CallbackWithChangeInfo& callback,
+    const UsageChangeCallback& usage_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path.IsAbsolute());
-  return impl_->WatchWithChangeInfo(path, options, callback);
+  return impl_->WatchWithChangeInfo(path, options, callback, usage_callback);
 }
 
 bool FilePathWatcher::PlatformDelegate::WatchWithOptions(
@@ -104,7 +109,8 @@ bool FilePathWatcher::PlatformDelegate::WatchWithOptions(
 bool FilePathWatcher::PlatformDelegate::WatchWithChangeInfo(
     const base::FilePath& path,
     const WatchOptions& options,
-    const CallbackWithChangeInfo& callback) {
+    const CallbackWithChangeInfo& callback,
+    const UsageChangeCallback& usage_callback) {
   return Watch(path, options.type, base::BindRepeating(callback, ChangeInfo()));
 }
 
@@ -118,5 +124,15 @@ base::Lock& FilePathWatcher::GetWatchThreadLockForTest() {
   return impl_->GetWatchThreadLockForTest();  // IN-TEST
 }
 #endif
+
+size_t FilePathWatcher::current_usage() const {
+  return impl_->current_usage();
+}
+
+// static
+size_t FilePathWatcher::quota_limit() {
+  // TODO(crbug.com/338457523): Decide per platform limits.
+  return SIZE_MAX;
+}
 
 }  // namespace content

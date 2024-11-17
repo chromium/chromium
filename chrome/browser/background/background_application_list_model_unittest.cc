@@ -451,8 +451,7 @@ TEST_F(BackgroundApplicationListModelTest, RandomTest) {
         TogglePermission(service(), &extensions, model(), &expected, &count);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

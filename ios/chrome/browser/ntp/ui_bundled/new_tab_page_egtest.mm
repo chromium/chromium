@@ -72,10 +72,10 @@ BOOL WaitForHistoryToDisappear() {
 
 @implementation NewTabPageTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [self releaseHistogramTester];
   policy_test_utils::ClearPolicies();
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)setupHistogramTester {

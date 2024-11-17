@@ -174,8 +174,7 @@ using base::UserMetricsAction;
       [self.dispatcher showPriceNotifications];
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected identifier";
-      break;
+      NOTREACHED() << "Unexpected identifier";
   }
 
   // Close the tools menu.

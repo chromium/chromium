@@ -40,10 +40,10 @@ group("resources") {
       "identity_internals:resources",
       "key_value_pair_viewer_shared:resources",
       "lens/overlay:resources",
-      "lens/overlay/search_bubble:resources",
       "lens/shared:resources",
       "management:resources",
       "new_tab_page:resources",
+      "new_tab_page/untrusted:resources",
       "new_tab_page_instant:resources",
       "new_tab_page_third_party:resources",
       "omnibox_popup:resources",
@@ -56,7 +56,6 @@ group("resources") {
       "settings_shared:resources",
       "side_panel/bookmarks:resources",
       "side_panel/commerce:resources",
-      "side_panel/companion:resources",
       "side_panel/customize_chrome:resources",
       "side_panel/history_clusters:resources",
       "side_panel/read_anything:resources",
@@ -107,11 +106,7 @@ group("resources") {
   }
 
   if (is_chromeos) {
-    public_deps += [ "dlp_internals:resources" ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
-    public_deps += [ "browser_switch:resources" ]
+    public_deps += [ "chromeos/dlp_internals:resources" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -122,24 +117,25 @@ group("resources") {
     public_deps += [
       "app_home:resources",
       "app_settings:resources",
+      "browser_switch:resources",
+      "on_device_translation_internals:resources",
+      "tts_engine:resources",
     ]
-  }
-
-  if (is_linux || is_chromeos) {
-    public_deps += [ "webui_js_error:resources" ]
   }
 
   if (!is_android && !is_chromeos_ash) {
     public_deps += [
       "inline_login:resources",
-      "intro:resources",
       "signin/profile_picker:resources",
       "welcome:resources",
     ]
   }
 
   if (enable_dice_support) {
-    public_deps += [ "signin/batch_upload:resources" ]
+    public_deps += [
+      "intro:resources",
+      "signin/batch_upload:resources",
+    ]
   }
 
   if (enable_webui_tab_strip) {
@@ -147,10 +143,7 @@ group("resources") {
   }
 
   if (enable_extensions) {
-    public_deps += [
-      "extensions:resources",
-      "sync_file_system_internals:resources",
-    ]
+    public_deps += [ "extensions:resources" ]
   }
 
   if (enable_pdf) {
@@ -167,6 +160,10 @@ group("resources") {
 
   if (enable_compose) {
     public_deps += [ "compose:resources" ]
+  }
+
+  if (enable_glic) {
+    public_deps += [ "glic:resources" ]
   }
 }
 
@@ -257,6 +254,7 @@ group("dev_ui_resources") {
     "components:resources",
     "device_log:resources",
     "engagement:resources",
+    "family_link_user_internals:resources",
     "internals:resources",
     "location_internals:resources",
     "media:resources",
@@ -271,6 +269,7 @@ group("dev_ui_resources") {
     "//components/download/resources/download_internals:resources",
     "//components/history_clusters/history_clusters_internals/resources",
     "//components/metrics/debug:resources",
+    "//components/ntp_tiles/webui/resources:resources",
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/policy/resources/webui:resources",
     "//components/resources:dev_ui_components_resources",
@@ -301,6 +300,7 @@ group("dev_ui_resources") {
     public_deps += [
       "media_router/internals:resources",
       "on_device_internals:resources",
+      "webui_js_error:resources",
     ]
   }
 
@@ -320,6 +320,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/dev_ui_browser_resources.pak",
     "$root_gen_dir/chrome/device_log_resources.pak",
     "$root_gen_dir/chrome/engagement_resources.pak",
+    "$root_gen_dir/chrome/family_link_user_internals_resources.pak",
     "$root_gen_dir/chrome/internals_resources.pak",
     "$root_gen_dir/chrome/location_internals_resources.pak",
     "$root_gen_dir/chrome/media_resources.pak",
@@ -334,6 +335,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/components/download_internals_resources.pak",
     "$root_gen_dir/components/history_clusters_internals_resources.pak",
     "$root_gen_dir/components/metrics_internals_resources.pak",
+    "$root_gen_dir/components/ntp_tiles_internals_resources.pak",
     "$root_gen_dir/components/optimization_guide_internals_resources.pak",
     "$root_gen_dir/components/policy_resources.pak",
     "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
@@ -359,6 +361,7 @@ repack("dev_ui_paks") {
     sources += [
       "$root_gen_dir/chrome/media_router_internals_resources.pak",
       "$root_gen_dir/chrome/on_device_internals_resources.pak",
+      "$root_gen_dir/chrome/webui_js_error_resources.pak",
     ]
   }
 

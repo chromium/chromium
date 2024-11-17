@@ -7,15 +7,17 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "ui/base/idle/idle.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "ui/base/idle/idle.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "ui/base/idle/idle_internal.h"
 #include "ui/display/screen.h"
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,7 +33,7 @@
 
 namespace ui {
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 
 namespace {
 
@@ -221,7 +223,7 @@ DBusScreenSaverWatcher* GetDBusScreenSaverWatcher() {
 
 }  // namespace
 
-#endif  // defined(USE_DBUS)
+#endif  // BUILDFLAG(USE_DBUS)
 
 int CalculateIdleTime() {
   auto* const screen = display::Screen::GetScreen();
@@ -235,7 +237,7 @@ bool CheckIdleStateIsLocked() {
   if (IdleStateForTesting().has_value())
     return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   auto lock_state = GetDBusScreenSaverWatcher()->lock_state();
   if (lock_state != DBusScreenSaverWatcher::LockState::kUnknown)
     return lock_state == DBusScreenSaverWatcher::LockState::kLocked;

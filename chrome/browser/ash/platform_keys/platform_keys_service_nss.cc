@@ -1442,8 +1442,7 @@ void SignRSAOnWorkerThread(std::unique_ptr<SignState> state) {
       sign_alg_tag = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
       break;
     case HashAlgorithm::HASH_ALGORITHM_NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   crypto::ScopedSECItem sign_result(SECITEM_AllocItem(nullptr, nullptr, 0));
@@ -1520,6 +1519,8 @@ void SignOnWorkerThread(std::unique_ptr<SignState> state) {
     case KeyType::kEcdsa:
       SignECOnWorkerThread(std::move(state));
       break;
+    case KeyType::kRsaOaep:
+      NOTREACHED();
   }
 }
 

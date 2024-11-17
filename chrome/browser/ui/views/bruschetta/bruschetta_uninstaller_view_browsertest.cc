@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -56,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(BruschettaUninstallerViewBrowserTest, InvokeUi_default) {
 }
 
 IN_PROC_BROWSER_TEST_F(BruschettaUninstallerViewBrowserTest, UninstallFlow) {
-  bruschetta::BruschettaService::GetForProfile(browser()->profile())
+  bruschetta::BruschettaServiceFactory::GetForProfile(browser()->profile())
       ->RegisterInPrefs(bruschetta::MakeBruschettaId(kTestVmName),
                         kTestVmConfig);
 

@@ -16,9 +16,11 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/splitview/split_view_setup_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,9 +48,7 @@ class OverviewFocusCyclerTest : public OverviewTestBase,
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kDesksTemplates, AreDeskTemplatesEnabled()},
-         {features::kSnapGroup, true},
-         {features::kDeskBarWindowOcclusionOptimization, true}});
+        {{features::kDesksTemplates, AreDeskTemplatesEnabled()}});
     OverviewTestBase::SetUp();
   }
 
@@ -346,6 +346,37 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
   EXPECT_EQ(item3->item_widget()->GetContentsView(), GetFocusedView());
 }
 
+// Tests that the locations of the overview focus ring are as expected when
+// tabbing through split view setup UI. This tests the case were splitview is
+// entered via snapping a window while already in overview. Regression test for
+// http://b/369539129 for more details.
+TEST_P(OverviewFocusCyclerTest, TabbingWithSplitview) {
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+
+  ToggleOverview();
+  SplitViewController::Get(Shell::GetPrimaryRootWindow())
+      ->SnapWindow(window1.get(), SnapPosition::kPrimary);
+
+  // Tab once to focus `item2`.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(
+      GetOverviewItemForWindow(window2.get())->item_widget()->GetContentsView(),
+      GetFocusedView());
+
+  // Tab to the toast dismiss button and then the settings button.
+  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(grid->GetSplitViewSetupView()->GetViewByID(
+                SplitViewSetupView::kDismissButtonIDForTest),
+            GetFocusedView());
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_EQ(grid->GetSplitViewSetupView()->GetViewByID(
+                SplitViewSetupView::kSettingsButtonIDForTest),
+            GetFocusedView());
+}
+
 // ----------------------------------------------------------------------------
 // DesksOverviewFocusCyclerTest:
 
@@ -457,14 +488,16 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   // hidden when we have no templates.
   if (AreDeskTemplatesEnabled()) {
     PressAndReleaseKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+    EXPECT_EQ(OverviewGridTestApi(desk_bar_view->overview_grid())
+                  .GetSaveDeskAsTemplateButton(),
               GetFocusedView());
   }
 
   // Tests that after the save desk as template button (if the feature was
   // enabled), focus goes to the save desk for later button.
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+  EXPECT_EQ(OverviewGridTestApi(desk_bar_view->overview_grid())
+                .GetSaveDeskForLaterButton(),
             GetFocusedView());
 }
 
@@ -486,14 +519,16 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
     // Tests that the first focused item when reversing is the save desk for
     // later button.
     PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+    EXPECT_EQ(OverviewGridTestApi(desk_bar_view->overview_grid())
+                  .GetSaveDeskForLaterButton(),
               GetFocusedView());
 
     // Tests that after the save desk for later button, we get the save desk as
     // template button, if the feature is enabled.
     if (AreDeskTemplatesEnabled()) {
       PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-      EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+      EXPECT_EQ(OverviewGridTestApi(desk_bar_view->overview_grid())
+                    .GetSaveDeskAsTemplateButton(),
                 GetFocusedView());
     }
   }
@@ -543,14 +578,16 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   // button.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+  EXPECT_EQ(OverviewGridTestApi(desk_bar_view->overview_grid())
+                .GetSaveDeskForLaterButton(),
             GetFocusedView());
 
   // Tests that we return to the save desk as template button after reverse
   // tabbing through the save desk for later button if the feature is enabled.
   if (AreDeskTemplatesEnabled()) {
     PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+    EXPECT_EQ(OverviewGridTestApi(desk_bar_view->overview_grid())
+                  .GetSaveDeskAsTemplateButton(),
               GetFocusedView());
   }
 }
@@ -625,11 +662,13 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   if (!saved_desk_ui_revamp_enabled_) {
     if (AreDeskTemplatesEnabled()) {
       PressAndReleaseKey(ui::VKEY_TAB);
-      EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskAsTemplateButton(),
+      EXPECT_EQ(OverviewGridTestApi(desk_bar_view1->overview_grid())
+                    .GetSaveDeskAsTemplateButton(),
                 GetFocusedView());
     }
     PressAndReleaseKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskForLaterButton(),
+    EXPECT_EQ(OverviewGridTestApi(desk_bar_view1->overview_grid())
+                  .GetSaveDeskForLaterButton(),
               GetFocusedView());
   }
 
@@ -651,11 +690,13 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   if (!saved_desk_ui_revamp_enabled_) {
     if (AreDeskTemplatesEnabled()) {
       PressAndReleaseKey(ui::VKEY_TAB);
-      EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskAsTemplateButton(),
+      EXPECT_EQ(OverviewGridTestApi(desk_bar_view2->overview_grid())
+                    .GetSaveDeskAsTemplateButton(),
                 GetFocusedView());
     }
     PressAndReleaseKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskForLaterButton(),
+    EXPECT_EQ(OverviewGridTestApi(desk_bar_view2->overview_grid())
+                  .GetSaveDeskForLaterButton(),
               GetFocusedView());
   }
 
@@ -677,11 +718,13 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   if (!saved_desk_ui_revamp_enabled_) {
     if (AreDeskTemplatesEnabled()) {
       PressAndReleaseKey(ui::VKEY_TAB);
-      EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskAsTemplateButton(),
+      EXPECT_EQ(OverviewGridTestApi(desk_bar_view3->overview_grid())
+                    .GetSaveDeskAsTemplateButton(),
                 GetFocusedView());
     }
     PressAndReleaseKey(ui::VKEY_TAB);
-    EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskForLaterButton(),
+    EXPECT_EQ(OverviewGridTestApi(desk_bar_view3->overview_grid())
+                  .GetSaveDeskForLaterButton(),
               GetFocusedView());
   }
 

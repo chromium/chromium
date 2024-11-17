@@ -52,7 +52,7 @@ public class ChannelsUpdaterTest {
         MockitoAnnotations.initMocks(this);
 
         Context context = RuntimeEnvironment.getApplication();
-        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create(context);
+        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create();
 
         mMockResources = context.getResources();
 
@@ -104,7 +104,7 @@ public class ChannelsUpdaterTest {
         ChannelsUpdater updater = new ChannelsUpdater(mSharedPreferences, mChannelsInitializer, 21);
         updater.updateChannels();
 
-        assertThat(getChannelsIgnoringDefault(), hasSize((greaterThan(0))));
+        assertThat(getChannelsIgnoringDefault(), hasSize(greaterThan(0)));
         assertThat(
                 getChannelIds(getChannelsIgnoringDefault()),
                 containsInAnyOrder(

@@ -58,6 +58,12 @@ struct SessionPolicies {
   // Enable curtaining of remote access hosts. Defaults to false.
   // Corresponding Chrome policy: RemoteAccessHostRequireCurtain
   std::optional<bool> curtain_required;
+
+  // Require that the name of the local user and the remote access host owner
+  // match. For example, if the host owner's email address is foo@gmail.com,
+  // then the local user of the OS must be foo. Defaults to false.
+  // Corresponding Chrome policy: RemoteAccessHostMatchUsername
+  std::optional<bool> host_username_match_required;
 };
 
 std::ostream& operator<<(std::ostream& os,

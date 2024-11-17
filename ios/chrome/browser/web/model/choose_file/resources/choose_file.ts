@@ -206,6 +206,10 @@ function processChooseFileClick(inputEvent: MouseEvent): void {
   if (acceptString) {
     accept = MultipleStringToAcceptType(acceptString!);
   }
+  var hasFiles = false;
+  if (target.files && target.files.length > 0) {
+    hasFiles = true;
+  }
 
   acceptString = acceptString ? acceptString : '';
   const response = {
@@ -213,6 +217,7 @@ function processChooseFileClick(inputEvent: MouseEvent): void {
     'acceptType': accept,
     'mimeTypes': parseAcceptAttributeMimeTypes(acceptString),
     'fileExtensions': parseAcceptAttributeFileExtensions(acceptString),
+    'hasSelectedFile': hasFiles,
   };
 
   sendWebKitMessage(CHOOSE_FILE_INPUT_HANDLER_NAME, response);

@@ -5,7 +5,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
@@ -63,7 +62,7 @@ auto WaitForDownloadBubbleShow(views::NamedWidgetShownWaiter& waiter) {
 
 bool IsExclusiveAccessBubbleVisible(ExclusiveAccessBubbleViews* bubble) {
   bool is_hiding = bubble->animation_for_test()->IsClosing();
-  return bubble->IsShowing() || (bubble->IsVisibleForTesting() && !is_hiding);
+  return bubble->IsShowing() || (bubble->IsVisible() && !is_hiding);
 }
 #endif
 
@@ -163,7 +162,7 @@ class DownloadBubbleInteractiveUiTest
         [](DownloadToolbarButtonView* download_toolbar_button, Browser* browser,
            bool active, const base::Feature& feature) {
           return active == BrowserView::GetBrowserViewForBrowser(browser)
-                               ->GetFeaturePromoController()
+                               ->GetFeaturePromoControllerForTesting()
                                ->IsPromoActive(feature);
         },
         download_toolbar_button(), browser(), active, std::cref(feature));
@@ -246,14 +245,10 @@ class DownloadBubbleInteractiveUiTest
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   auto EnterImmersiveFullscreen() {
     return [&]() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
-#else  // BUILDFLAG(IS_MAC)
       ui_test_utils::ToggleFullscreenModeAndWait(browser());
-#endif
     };
   }
 
@@ -264,7 +259,7 @@ class DownloadBubbleInteractiveUiTest
              browser_view->immersive_mode_controller()->IsEnabled();
     };
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   bool IsPartialViewEnabled() {
     return download::IsDownloadBubblePartialViewEnabled(browser()->profile());
@@ -400,8 +395,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 #endif
 
-// This test is only for ChromeOS and Mac where we have immersive fullscreen.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+// This test is only for Mac where we have immersive fullscreen.
+#if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                        ToolbarIconShownAfterImmersiveFullscreenDownload) {
   RunTestSequence(
@@ -422,10 +417,9 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
       Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
       WaitForHide(kToolbarDownloadButtonElementId));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-// This test is only for Lacros, where tab fullscreen is non-immersive, and
-// other platforms, where fullscreen is not immersive.
+// This test is only for platforms where fullscreen is not immersive.
 // TODO(chlily): Add test coverage for Mac.
 #if !BUILDFLAG(IS_MAC)
 // Test that downloading a file in tab fullscreen (not browser fullscreen)

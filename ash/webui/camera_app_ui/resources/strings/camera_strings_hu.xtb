@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR-kód</translation>
 <translation id="2244252133441425811">FPS-választó engedélyezése a videóknál</translation>
 <translation id="2271433936731426666">Teljes méretű videó-pillanatkép engedélyezése</translation>
-<translation id="2281736597583450397">A fokozott nagyítással élesebb részleteket kaphat</translation>
 <translation id="2320741269052147773">Pásztázás balra</translation>
 <translation id="2360840973209616515">A kameraalkalmazást a rendszergazda kezeli.
         A részletekért forduljon a rendszergazdához.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Kicsinyítés</translation>
 <translation id="5976160379964388480">Egyéb</translation>
 <translation id="6073451960410192870">Felvétel leállítása</translation>
-<translation id="6165508094623778733">További információ</translation>
 <translation id="6197807149213783179">Metaadatok mentése</translation>
 <translation id="6233780560267770709">Háromszor hármas</translation>
 <translation id="6243827288366940320">Aranymetszés</translation>
@@ -122,7 +120,6 @@
 Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mellékeljen valamilyen mintafotót vagy -videót, és ismertesse a problémát. (Például túl sötét a fotó, vagy a kép tárgya nincs fókuszban.)</translation>
 <translation id="6519884562954018934">Csatlakozás a következőhöz: <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Megosztás</translation>
-<translation id="6586509689874700895">Először nyomja meg a <ph name="BUTTON_NAME" /> gombot a nagyításhoz. A fotó elkészítése után több részletet láthat.</translation>
 <translation id="659539649712855529">Másolva: <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Minden felbontás megjelenítése</translation>
 <translation id="6631515515009660915">Tükrözés ki</translation>
@@ -168,7 +165,6 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8609951387004618906"><ph name="URL" /> megnyitása</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Némítsa el a mikrofont. A némítás be van kapcsolva.</translation>
-<translation id="8712637175834984815">Értem</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8732462232047530626">Metaadatok előnézete</translation>
 <translation id="874854738381978209">Wi-Fi-hálózat észlelve.</translation>

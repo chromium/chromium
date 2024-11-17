@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/components/phonehub/find_my_device_controller.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeFindMyDeviceController : public FindMyDeviceController {
  public:
@@ -32,7 +31,6 @@ class FakeFindMyDeviceController : public FindMyDeviceController {
   bool should_request_fail_ = false;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_FIND_MY_DEVICE_CONTROLLER_H_

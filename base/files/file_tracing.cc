@@ -55,7 +55,7 @@ void FileTracing::ScopedTrace::Initialize(const char* name,
                                           int64_t size) {
   id_ = &file->trace_enabler_;
   name_ = name;
-  GetProvider()->FileTracingEventBegin(name_, id_, file->tracing_path_, size);
+  GetProvider()->FileTracingEventBegin(name_, id_, file->path_, size);
 }
 
 }  // namespace base

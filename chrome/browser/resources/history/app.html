@@ -197,7 +197,11 @@
                       on-more-from-site-click="onHistoryEmbeddingsItemMoreFromSiteClick_"
                       on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_"
                       on-is-empty-changed="onHistoryEmbeddingsIsEmptyChanged_"
-                      force-suppress-logging="[[historyEmbeddingsDisclaimerLinkClicked_]]">
+                      force-suppress-logging="[[historyEmbeddingsDisclaimerLinkClicked_]]"
+                      show-more-from-site-menu-option="[[!getShowResultsByGroup_(selectedPage_)]]"
+                      show-relative-times="[[
+                          getShowResultsByGroup_(selectedPage_)]]"
+                      other-history-result-clicked="[[nonEmbeddingsResultClicked_]]">
                   </cr-history-embeddings>
                 </template>
               </div>

@@ -55,14 +55,13 @@ TEST_F(IncognitoGridMediatorTest, CloseAllItemsCommand) {
 }
 
 // Checks that opening a new regular tab from the toolbar is done when allowed.
-// TODO(crbug.com/361080595): Flaky on various bots.
-TEST_F(IncognitoGridMediatorTest, DISABLED_OpenNewTab_OpenIfAllowedByPolicy) {
+TEST_F(IncognitoGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
   // Disconnect the existing mediator first as we will re-create it.
   [mediator_ disconnect];
 
   // IncognitoModePrefs::kEnabled Means that users may open pages in both
   // Incognito mode and normal mode
-  browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kEnabled)));
@@ -81,10 +80,14 @@ TEST_F(IncognitoGridMediatorTest, DISABLED_OpenNewTab_OpenIfAllowedByPolicy) {
 
   // IncognitoModePrefs::kDisabled Means that users may not open pages in
   // Incognito mode. Only normal mode is available for browsing.
-  browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));
+
+  // Disconnect the mediator as we will destroy it.
+  [mediator_ disconnect];
+
   mediator_ = [[IncognitoGridMediator alloc] initWithModeHolder:mode_holder_];
   mediator_.consumer = consumer_;
   mediator_.browser = browser_.get();

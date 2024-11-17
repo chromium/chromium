@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -276,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // close. Note that some platforms don't implement Widget::Deactivate() so we
   // activate another window (the browser window in this case) to trigger that.
   extension_popup_widget->Activate();
-  // However, on Lacros activating the browser window does not cause the
+  // However, on Linux activating the browser window does not cause the
   // extension popup to deactivate, thus we also explicitly call Deactivate().
   extension_popup_widget->Deactivate();
   browser()->window()->Activate();
@@ -521,16 +522,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   extensions::ExtensionHostTestHelper popup_waiter(browser()->profile(),
                                                    extension->id());
   popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
-  ExtensionActionTestHelper::Create(browser())->TriggerPopupForAPI(
-      extension->id());
+  BrowserView& browser_view = browser()->GetBrowserView();
+  ExtensionsToolbarContainer* extensions_container =
+      browser_view.toolbar()->extensions_container();
+  extensions_container->ShowToolbarActionPopupForAPICall(extension->id(),
+                                                         ShowPopupCallback());
 
   // The extension should load the image.
   slow_img_response.WaitForRequest();
 
   // While the extension is loading, open a security UI.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::UniqueWidgetPtr security_widget =
-      CreateTestDialogWidget(browser_view->GetWidget());
+      CreateTestDialogWidget(browser_view.GetWidget());
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
       security_widget.get());
   security_widget->Show();
@@ -583,9 +586,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   slow_img_response.WaitForRequest();
 
   // While the extension is loading, open a security UI.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserView& browser_view = browser()->GetBrowserView();
   views::UniqueWidgetPtr security_widget =
-      CreateTestDialogWidget(browser_view->GetWidget());
+      CreateTestDialogWidget(browser_view.GetWidget());
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
       security_widget.get());
   security_widget->Show();

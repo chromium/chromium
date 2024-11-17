@@ -108,8 +108,7 @@ interface CanvasRenderingContext2D {
 
     // path API (see also CanvasPath)
     [HighEntropy, NoAllocDirectCall] void beginPath();
-    [HighEntropy, NoAllocDirectCall] void fill();
-    [HighEntropy] void fill(CanvasFillRule winding);
+    [HighEntropy] void fill(optional CanvasFillRule winding);
     [HighEntropy] void fill(Path2D path, optional CanvasFillRule winding);
     [HighEntropy, NoAllocDirectCall] void stroke();
     [HighEntropy] void stroke(Path2D path);
@@ -128,6 +127,7 @@ interface CanvasRenderingContext2D {
     [HighEntropy] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy] void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy] TextMetrics measureText(DOMString text);
+    [RuntimeEnabled=ExtendedTextMetrics] void fillTextCluster(TextCluster textCluster, double x, double y);
 
     // drawing images
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);

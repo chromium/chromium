@@ -43,9 +43,7 @@ bool EnumTraits<memory_instrumentation::mojom::DumpType,
       *out = base::trace_event::MemoryDumpType::kSummaryOnly;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid type: " << static_cast<uint8_t>(input);
-      return false;
+      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
   }
   return true;
 }
@@ -85,9 +83,7 @@ bool EnumTraits<memory_instrumentation::mojom::LevelOfDetail,
       *out = base::trace_event::MemoryDumpLevelOfDetail::kDetailed;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid type: " << static_cast<uint8_t>(input);
-      return false;
+      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
   }
   return true;
 }
@@ -122,9 +118,7 @@ bool EnumTraits<memory_instrumentation::mojom::Determinism,
       *out = base::trace_event::MemoryDumpDeterminism::kForceGc;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid type: " << static_cast<uint8_t>(input);
-      return false;
+      NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(input);
   }
   return true;
 }
@@ -212,7 +206,7 @@ bool StructTraits<memory_instrumentation::mojom::RawAllocatorDumpDataView,
       absolute_name, level_of_detail,
       base::trace_event::MemoryAllocatorDumpGuid(input.id()));
   if (input.weak())
-    mad->set_flags(base::trace_event::MemoryAllocatorDump::WEAK);
+    mad->set_flags(base::trace_event::MemoryAllocatorDump::kWeak);
   if (!input.ReadEntries(mad->mutable_entries_for_serialization()))
     return false;
   *out = std::move(mad);

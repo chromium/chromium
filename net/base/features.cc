@@ -152,10 +152,6 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
              "PartitionConnectionsByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTLS13KeyUpdate,
-             "TLS13KeyUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPostQuantumKyber,
              "PostQuantumKyber",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -164,7 +160,7 @@ BASE_FEATURE(kPostQuantumKyber,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNetUnusedIdleSocketTimeout,
              "NetUnusedIdleSocketTimeout",
@@ -176,14 +172,6 @@ BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
 
 BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
              "SameSiteDefaultChecksMethodRigorously",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTurnOffStreamingMediaCachingOnBattery,
-             "TurnOffStreamingMediaCachingOnBattery",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTurnOffStreamingMediaCachingAlways,
-             "TurnOffStreamingMediaCachingAlways",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSchemefulSameSite,
@@ -226,6 +214,10 @@ BASE_FEATURE(kDocumentReporting,
 
 BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
              "CookieSameSiteConsidersRedirectChain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAllowSameSiteNoneCookiesInSandbox,
+             "AllowSameSiteNoneCookiesInSandbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWaitForFirstPartySetsInit,
@@ -354,7 +346,7 @@ BASE_FEATURE(kEnableIpProtectionProxy,
 
 const base::FeatureParam<std::string> kIpPrivacyTokenServer{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServer",
-    /*default_value=*/"https://phosphor-pa.googleapis.com"};
+    /*default_value=*/"https://prod.ipprotectionauth.goog"};
 
 const base::FeatureParam<std::string> kIpPrivacyTokenServerGetInitialDataPath{
     &kEnableIpProtectionProxy,
@@ -455,6 +447,16 @@ const base::FeatureParam<bool> kIpPrivacyCacheTokensByGeo{
     /*name=*/"IpPrivacyCacheTokensByGeo",
     /*default_value=*/false};
 
+const base::FeatureParam<bool> kIpPrivacyAlwaysCreateCore{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyAlwaysCreateCore",
+    /*default_value=*/false};
+
+const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyOnlyInIncognito",
+    /*default_value=*/false};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).
@@ -518,10 +520,6 @@ BASE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault,
              "ThirdPartyPartitionedStorageAllowedByDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPriorityHeader,
-             "PriorityHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder,
              "SpdyHeadersToHttpResponseUseBuilder",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -552,6 +550,9 @@ BASE_FEATURE(kReduceIPAddressChangeNotification,
 
 BASE_FEATURE(kDeviceBoundSessions,
              "DeviceBoundSessions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPersistDeviceBoundSessions,
+             "PersistDeviceBoundSessions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStoreConnectionSubtype,
@@ -584,7 +585,7 @@ BASE_FEATURE(kReportingApiEnableEnterpriseCookieIssues,
 
 BASE_FEATURE(kOptimizeParsingDataUrls,
              "OptimizeParsingDataUrls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/347047841): Remove this flag when we branch for M131 or later,
 // if we haven't had to turn this off.
@@ -598,6 +599,30 @@ BASE_FEATURE(kKeepWhitespaceForDataUrls,
 
 BASE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys,
              "NoVarySearchIgnoreUnrecognizedKeys",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEncryptedAndPlaintextValuesAreInvalid,
+             "EncryptedAndPlaintextValuesAreInvalid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableStaticCTAPIEnforcement,
+             "EnableStaticCTAPIEnforcement",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDiskCacheBackendExperiment,
+             "DiskCacheBackendExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<DiskCacheBackend>::Option
+    kDiskCacheBackendOptions[] = {
+        {DiskCacheBackend::kSimple, "simple"},
+        {DiskCacheBackend::kBlockfile, "blockfile"},
+};
+const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
+    &kDiskCacheBackendExperiment, "backend", DiskCacheBackend::kBlockfile,
+    &kDiskCacheBackendOptions};
+
+BASE_FEATURE(kIgnoreHSTSForLocalhost,
+             "IgnoreHSTSForLocalhost",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace net::features

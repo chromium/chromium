@@ -91,7 +91,6 @@ class FindBarView : public views::BoxLayoutView,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void OnThemeChanged() override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,

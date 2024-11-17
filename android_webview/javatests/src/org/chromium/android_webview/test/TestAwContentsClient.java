@@ -446,10 +446,8 @@ public class TestAwContentsClient extends NullContentsClient {
         }
 
         /**
-         * Need to mock the action of uploading files when a user selects files.
-         * This sets up plumbing to provide files to the showFileChooser callback.
-         *
-         * @param files
+         * Need to mock the action of uploading files when a user selects files. This sets up
+         * plumbing to provide files to the showFileChooser callback.
          */
         public void setChosenFilesToUpload(@NonNull String[] files) {
             mFilesUploaded = files;

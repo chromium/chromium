@@ -29,6 +29,11 @@ class ReadingListModelFactory : public ProfileKeyedServiceFactory {
   static reading_list::DualReadingListModel*
   GetAsDualReadingListForBrowserContext(content::BrowserContext* context);
 
+  // Returns whether a ReadingListModel was created for `profile`.
+  // GetForBrowserContext() can't be used because it creates the model if one
+  // doesn't exist yet.
+  static bool HasModel(content::BrowserContext* context);
+
   static ReadingListModelFactory* GetInstance();
 
   static BrowserContextKeyedServiceFactory::TestingFactory

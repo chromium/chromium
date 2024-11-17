@@ -26,7 +26,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -309,7 +308,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   // Notify all subscribers of new text pasted to the clipboard when there is a
   // source URL.
-  void NotifyCopyWithUrl(const std::string_view text,
+  void NotifyCopyWithUrl(std::string_view text,
                          const GURL& frame,
                          const GURL& main_frame);
 
@@ -362,11 +361,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     // TODO(dcheng): Describe format here.
     std::string data;
   };
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  struct EncodedDataTransferEndpointData {
-    std::string data;
-  };
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Data is a variant that that represents all types that Chromium supports
   // writing to the clipboard. This representation is OS-agnostic; the
@@ -394,12 +388,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
                              RawData,
                              SvgData,
                              FilenamesData,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                             WebCustomFormatMapData,
-                             EncodedDataTransferEndpointData
-#else
                              WebCustomFormatMapData
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
                              >;
 
   // TODO (https://crbug.com/994928): Rename ObjectMap-related types.

@@ -31,6 +31,7 @@ suite('TabSearchAppFocusTest', () => {
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);
 
     tabSearchPage = document.createElement('tab-search-page');
+    tabSearchPage.availableHeight = 500;
     document.body.appendChild(tabSearchPage);
     await eventToPromise('viewport-filled', tabSearchPage.$.tabsList);
     await microtasksFinished();
@@ -195,6 +196,9 @@ suite('TabSearchAppFocusTest', () => {
           'Sample Tab', 1, sampleToken(0n, 1n)),
       recentlyClosedSectionExpanded: false,
     }));
+
+    tabSearchPage.availableHeight = windowHeight;
+    await microtasksFinished();
 
     const recentlyClosedTitleItem = queryListTitle()[1];
     assertTrue(!!recentlyClosedTitleItem);

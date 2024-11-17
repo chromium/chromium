@@ -123,8 +123,7 @@ class ResolvedFrameDataTest : public testing::Test {
   gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
 
   DisplayResourceProviderSoftware resource_provider_{
-      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
-      &gpu_scheduler_};
+      &shared_bitmap_manager_, &shared_image_manager_, &gpu_scheduler_};
   FrameSinkManagerImpl frame_sink_manager_{
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
 
@@ -809,6 +808,58 @@ TEST_F(ResolvedFrameDataTest, OffsetTagContainingRectNonRootRenderPass) {
     // 25,25 5x5.
     EXPECT_EQ(helper.GetCurrentContainingRect(tag_def.tag),
               gfx::Rect(25, 25, 5, 5));
+
+    resolved_frame.ResetAfterAggregation();
+  }
+}
+
+TEST_F(ResolvedFrameDataTest, OffsetTagMaskFilterTranslated) {
+  auto tag_def = MakeOffsetTagDefinition();
+  auto offset_tag = tag_def.tag;
+
+  constexpr gfx::Rect quad_rect(20, 30, 10, 10);
+  constexpr gfx::Vector2dF offset(10, 10);
+
+  gfx::LinearGradient gradient;
+  gradient.AddStep(0.0f, 0);
+  gradient.AddStep(1.0f, 255);
+  gfx::MaskFilterInfo mask_info(gfx::RRectF(gfx::RectF(quad_rect)), gradient);
+
+  Surface* surface = nullptr;
+  {
+    // The same layer introduces both offset tag and mask filter.
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kOutputRect)
+                               .SetDamageRect(kOutputRect)
+                               .AddSolidColorQuad(quad_rect, SkColors::kRed)
+                               .SetQuadMaskFilterInfo(mask_info)
+                               .SetQuadOffsetTag(offset_tag))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    surface = SubmitCompositorFrame(std::move(frame));
+  }
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
+
+  {
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+    resolved_frame.UpdateOffsetTags(
+        [&offset](const OffsetTagDefinition&) { return offset; });
+
+    ASSERT_THAT(resolved_frame.GetResolvedPasses(), testing::SizeIs(1));
+    auto& resolved_render_pass =
+        resolved_frame.GetResolvedPasses()[0].render_pass();
+
+    auto translated_mask_info = mask_info;
+    translated_mask_info.ApplyTransform(
+        gfx::Transform::MakeTranslation(offset));
+
+    // Verify that the mask filter is translated.
+    EXPECT_THAT(resolved_render_pass.quad_list,
+                testing::ElementsAre(
+                    testing::AllOf(IsSolidColorQuad(SkColors::kRed),
+                                   HasMaskFilterInfo(translated_mask_info))));
 
     resolved_frame.ResetAfterAggregation();
   }

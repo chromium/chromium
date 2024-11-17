@@ -12,6 +12,7 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/html.star", "linkify_builder")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -33,6 +34,12 @@ ci.defaults.set(
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.console_view(
@@ -67,6 +74,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_webkit_isolated_scripts",
+        ],
+        mixins = [
+            "win10",
+        ],
+    ),
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "misc",
@@ -100,6 +115,14 @@ ci.builder(
             "x86",
             "no_symbols",
             "win",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win_scripts",
+        ],
+        additional_compile_targets = [
+            "pdf_fuzzers",
         ],
     ),
     builderless = False,
@@ -137,6 +160,11 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     builderless = True,
     cores = 32,
     os = os.WINDOWS_ANY,
@@ -164,6 +192,82 @@ ci.builder(
             target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-win-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win_gtests",
+            "chromium_win_dbg_isolated_scripts",
+        ],
+        mixins = [
+            "x86-64",
+            "win10",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "blink_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "chrome_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "headless_shell_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "browser_tests": targets.remove(
+                reason = "Disabled due to failing test suites (crbug/40565753)",
+            ),
+            "chromedriver_py_tests": targets.remove(
+                reason = "Timeout happens sometimes (crbug.com/951799)",
+            ),
+            "components_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                # crbug.com/868082
+                args = [
+                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
+                ],
+                experiment_percentage = 100,
+            ),
+            "content_shell_crash_test": targets.mixin(
+                # https://crbug.com/861730
+                experiment_percentage = 100,
+            ),
+            "extensions_browsertests": targets.mixin(
+                # https://crbug.com/876615
+                experiment_percentage = 100,
+            ),
+            "interactive_ui_tests": targets.mixin(
+                # temporary, https://crbug.com/818832
+                experiment_percentage = 100,
+            ),
+            "leveldb_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-timeout=90000",
+                ],
+            ),
+            "performance_test_suite": targets.mixin(
+                args = [
+                    "--browser=debug_x64",
+                ],
+                experiment_percentage = 100,
+            ),
+            "sync_integration_tests": targets.mixin(
+                # https://crbug.com/840369
+                experiment_percentage = 100,
+            ),
+            "telemetry_perf_unittests": targets.remove(
+                reason = "Disabled due to failing test suites (crbug/40565753)",
+            ),
+            "telemetry_unittests": targets.mixin(
+                # crbug.com/870673
+                experiment_percentage = 100,
+            ),
+        },
     ),
     # Too flaky. See crbug.com/876224 for more details.
     gardener_rotations = args.ignore_default(None),
@@ -200,6 +304,11 @@ ci.builder(
             "x86",
             "no_symbols",
             "win",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
         ],
     ),
     builderless = False,
@@ -250,6 +359,18 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win_scripts",
+        ],
+        additional_compile_targets = [
+            "base_nocompile_tests",
+            "blink_platform_nocompile_tests",
+            "blink_probes_nocompile_tests",
+            "content_nocompile_tests",
+            "pdf_fuzzers",
+        ],
+    ),
     builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,
@@ -258,9 +379,6 @@ ci.builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
-    experiments = {
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
 )
 
 ci.builder(
@@ -285,6 +403,88 @@ ci.builder(
             target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-win-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win10_gtests",
+            "chromium_win_rel_isolated_scripts_once",
+        ],
+        mixins = [
+            "x86-64",
+            "win10",
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                swarming = targets.swarming(
+                    # blink_web_tests has issues when mixing different CPUs.
+                    # see https://crbug.com/1458859
+                    # As of 2024 Q4, all e2 machines in chromium.tests use
+                    # x86-64-Broadwell_GCE. But, the situation may change when
+                    # GCE replaces the hardwares. If that happens, it needs to
+                    # be updated to run on the most popular CPU platform.
+                    dimensions = {
+                        "cpu": "x86-64-Broadwell_GCE",
+                    },
+                    shards = 12,
+                ),
+            ),
+            "blink_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 18,
+                ),
+            ),
+            "browser_tests": targets.mixin(
+                # crbug.com/868082
+                args = [
+                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
+                ],
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                retry_only_failed_tests = True,
+                swarming = targets.swarming(
+                    # This is for slow test execution that often becomes a
+                    # critical path of swarming jobs. crbug.com/868114
+                    shards = 55,
+                ),
+            ),
+            "chromedriver_py_tests": targets.mixin(
+                # TODO(crbug.com/40868908): Fix & re-enable.
+                isolate_profile_data = False,
+            ),
+            "content_browsertests": targets.mixin(
+                # crbug.com/868082
+                args = [
+                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
+                ],
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1475852
+                retry_only_failed_tests = True,
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
+            ),
+            "interactive_ui_tests_no_field_trial": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+            "telemetry_perf_unittests": targets.remove(
+                reason = "Some test cases fail on win-rel (crbug/40622135).",
+            ),
+            "telemetry_unittests": targets.remove(
+                reason = "Some test cases fail on win-rel (crbug/40622135).",
+            ),
+        },
     ),
     builderless = False,
     console_view_entry = consoles.console_view_entry(
@@ -315,6 +515,84 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-win-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win10_gtests",
+            "chromium_win_rel_isolated_scripts",
+        ],
+        mixins = [
+            "x86-64",
+            "win11",
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+            "blink_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 18,
+                ),
+            ),
+            "browser_tests": targets.mixin(
+                # crbug.com/868082
+                args = [
+                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
+                ],
+                swarming = targets.swarming(
+                    # This is for slow test execution that often becomes a
+                    # critical path of swarming jobs. crbug.com/868114
+                    shards = 15,
+                ),
+            ),
+            "browser_tests_no_field_trial": targets.remove(
+                reason = "crbug/40630866",
+            ),
+            "components_browsertests_no_field_trial": targets.remove(
+                reason = "crbug/40630866",
+            ),
+            "content_browsertests": targets.mixin(
+                # crbug.com/868082
+                args = [
+                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
+                ],
+            ),
+            "interactive_ui_tests_no_field_trial": targets.remove(
+                reason = "crbug/40630866",
+            ),
+            "pixel_browser_tests": targets.remove(
+                reason = [
+                    "This target should be removed from any CI only builders.",
+                    "Developers can intentionally make UI changes. Without ",
+                    "running pixel tests on CQ, those cls will get wrongly ",
+                    "reverted by sheriffs.",
+                    "When we switch CQ builders(e.g. use Win11 to replace ",
+                    "Win10), we also need to update this field.",
+                ],
+            ),
+            "pixel_interactive_ui_tests": targets.remove(
+                reason = [
+                    "This target should be removed from any CI only builders.",
+                    "Developers can intentionally make UI changes. Without ",
+                    "running pixel tests on CQ, those cls will get wrongly ",
+                    "reverted by sheriffs.",
+                    "When we switch CQ builders(e.g. use Win11 to replace ",
+                    "Win10), we also need to update this field.",
+                ],
+            ),
+            "sync_integration_tests_no_field_trial": targets.remove(
+                reason = "crbug/40630866",
+            ),
+            "telemetry_perf_unittests": targets.remove(
+                reason = "Similar to Win10 Tests x64. Some test cases fail on win-rel (crbug/40622135)",
+            ),
+            "telemetry_unittests": targets.remove(
+                reason = "Similar to Win10 Tests x64. Some test cases fail on win-rel (crbug/40622135)",
+            ),
+        },
     ),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -357,6 +635,12 @@ ci.builder(
             "remoteexec",
             "minimal_symbols",
             "win",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "chrome",
+            "chromedriver_group",
         ],
     ),
     builderless = False,
@@ -403,6 +687,67 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win10_gtests",
+            "chromium_win_rel_isolated_scripts_once",
+        ],
+        mixins = [
+            "win-arm64",
+        ],
+        per_test_modifications = {
+            "blink_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 18,
+                ),
+            ),
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    # This is for slow test execution that often becomes a
+                    # critical path of swarming jobs. crbug.com/868114
+                    shards = 15,
+                ),
+            ),
+            "browser_tests_no_field_trial": targets.remove(
+                reason = "Disabled on similar Windows testers due to crbug/40630866.",
+            ),
+            "components_browsertests_no_field_trial": targets.remove(
+                reason = "Disabled on similar Windows testers due to crbug/40630866.",
+            ),
+            "interactive_ui_tests_no_field_trial": targets.remove(
+                reason = "Disabled on similar Windows testers due to crbug/40630866.",
+            ),
+            "pixel_browser_tests": targets.remove(
+                reason = [
+                    "This target should be removed from any CI only builders.",
+                    "Developers can intentionally make UI changes. Without ",
+                    "running pixel tests on CQ, those cls will get wrongly ",
+                    "reverted by sheriffs.",
+                    "When we switch CQ builders(e.g. use Win11 to replace ",
+                    "Win10), we also need to update this field.",
+                ],
+            ),
+            "pixel_interactive_ui_tests": targets.remove(
+                reason = [
+                    "This target should be removed from any CI only builders.",
+                    "Developers can intentionally make UI changes. Without ",
+                    "running pixel tests on CQ, those cls will get wrongly ",
+                    "reverted by sheriffs.",
+                    "When we switch CQ builders(e.g. use Win11 to replace ",
+                    "Win10), we also need to update this field.",
+                ],
+            ),
+            "sync_integration_tests_no_field_trial": targets.remove(
+                reason = "Disabled on similar Windows testers due to crbug/40630866.",
+            ),
+            "telemetry_perf_unittests": targets.remove(
+                reason = "Disabled on similar Windows testers due to crbug/40622135.",
+            ),
+            "telemetry_unittests": targets.remove(
+                reason = "Disabled on similar Windows testers due to crbug/40622135.",
+            ),
+        },
+    ),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
@@ -440,6 +785,11 @@ ci.builder(
             "win",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -472,6 +822,53 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-win-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win_gtests",
+            "chromium_win_dbg_isolated_scripts",
+        ],
+        mixins = [
+            "win-arm64",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "blink_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "chrome_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "headless_shell_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "browser_tests": targets.remove(
+                reason = "Disabled due to failing test suites (crbug/40565753)",
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 16,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
+            ),
+            "leveldb_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-timeout=90000",
+                ],
+            ),
+            "telemetry_perf_unittests": targets.remove(
+                reason = "Disabled on similar Windows testers due to crbug/40622135.",
+            ),
+            "telemetry_unittests": targets.remove(
+                reason = "Disabled on similar Windows testers due to crbug/40622135.",
+            ),
+        },
     ),
     # TODO(crbug.com/40877793): Enable gardening when stable and green.
     gardener_rotations = args.ignore_default(None),
@@ -533,6 +930,68 @@ ci.builder(
             "ci/Win x64 Builder",
             "win_cross",
         ],
+    ),
+    targets = targets.bundle(
+        # TODO: crbug.com/346921029 - Support the same test suites with
+        # Win10 Tests x64.
+        targets = [
+            "chromium_win10_gtests",
+            "chromium_win_rel_isolated_scripts_once",
+            "chromium_win_scripts",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "win10",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.remove(
+                reason = "TODO: crbug.com/346921029 - fix broken tests.",
+            ),
+            "blink_wpt_tests": targets.remove(
+                reason = "TODO: crbug.com/346921029 - fix broken tests.",
+            ),
+            "grit_python_unittests": targets.remove(
+                reason = "TODO: crbug.com/346921029 - fix broken tests.",
+            ),
+            "interactive_ui_tests": targets.mixin(
+                # Shadow Win10 Tests x64
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
+            ),
+            "interactive_ui_tests_no_field_trial": targets.mixin(
+                # Shadow Win10 Tests x64
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "metrics_python_tests": targets.remove(
+                reason = "TODO: crbug.com/347165944 - Fix missing dirmd.exe on Linux.",
+            ),
+            "mini_installer_tests": targets.remove(
+                reason = [
+                    "TODO: crbug.com/346921029: support mini_installer_tests",
+                    "The label \"//chrome/test/mini_installer:mini_installer_tests(//build/toolchain/win:win_clang_x64)\" ",
+                    "isn't a target.",
+                    "https://ci.chromium.org/ui/p/chromium/builders/try/linux-win-cross-rel/44/overview",
+                ],
+            ),
+            "telemetry_desktop_minidump_unittests": targets.remove(
+                reason = "TODO: crbug.com/347165944 - Fix missing dirmd.exe on Linux.",
+            ),
+            "telemetry_gpu_unittests": targets.remove(
+                reason = "TODO: crbug.com/347165944 - Fix missing dirmd.exe on Linux.",
+            ),
+            "telemetry_perf_unittests": targets.remove(
+                reason = "Shadow Win10 Tests x64.",
+            ),
+            "telemetry_unittests": targets.remove(
+                reason = "Shadow Win10 Tests x64.",
+            ),
+        },
     ),
     cores = 32,
     os = os.LINUX_DEFAULT,

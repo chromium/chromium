@@ -105,16 +105,6 @@ void PlusAddressWebDataService::AddOrUpdatePlusProfile(
   wdbs_->ScheduleDBTask(FROM_HERE, std::move(db_task));
 }
 
-void PlusAddressWebDataService::ClearPlusProfiles() {
-  CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  wdbs_->ScheduleDBTask(
-      FROM_HERE, base::BindOnce([](WebDatabase* db) {
-        return PlusAddressTable::FromWebDatabase(db)->ClearPlusProfiles()
-                   ? WebDatabase::COMMIT_NEEDED
-                   : WebDatabase::COMMIT_NOT_NEEDED;
-      }));
-}
-
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 PlusAddressWebDataService::GetSyncControllerDelegate() {
   CHECK(ui_task_runner_->RunsTasksInCurrentSequence());

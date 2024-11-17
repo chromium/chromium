@@ -14,11 +14,13 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.ClosingSource;
@@ -31,6 +33,9 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 /** Utility methods for tab group sync. */
 public final class TabGroupSyncUtils {
     // The URL written to sync when the local URL isn't in a syncable format, i.e. HTTP or HTTPS.
@@ -38,6 +43,16 @@ public final class TabGroupSyncUtils {
     public static final String UNSAVEABLE_TAB_TITLE = "Unsavable tab";
     public static final GURL NTP_URL = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
     public static final String NEW_TAB_TITLE = "New tab";
+
+    // On startup, we look for any unsynced local tab groups and add them to sync. But if the group
+    // was too old in past, we don't consider them relevant and exclude them from sync in order to
+    // avoid noise in the tab group list surface.
+    public static final int
+            DEFAULT_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP =
+                    Integer.MAX_VALUE;
+    public static final String
+            PARAM_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP =
+                    "max_days_of_staleness_accepted_for_adding_tab_group_to_sync_on_startup";
 
     /**
      * Whether the given {@param localId} corresponds to a tab group in the current window
@@ -111,12 +126,8 @@ public final class TabGroupSyncUtils {
             if (savedTabGroup.localId == null) continue;
 
             if (!isInCurrentWindow(filter, savedTabGroup.localId)) {
-                tabGroupSyncService.removeLocalTabGroupMapping(savedTabGroup.localId);
-                recordTabGroupOpenCloseMetrics(
-                        tabGroupSyncService,
-                        /* open= */ false,
-                        ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE,
-                        savedTabGroup.localId);
+                tabGroupSyncService.removeLocalTabGroupMapping(
+                        savedTabGroup.localId, ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE);
             }
         }
     }
@@ -158,15 +169,54 @@ public final class TabGroupSyncUtils {
     }
 
     /**
-     * Called to update the URL redirect chain of the current page in the tab.
+     * @return Whether a tab group is ineligible for syncing, e.g. too old to sync. An ineligible
+     *     group will be skipped from adding to sync during initial sync on startup.
+     */
+    public static boolean isTabGroupEligibleForSyncing(
+            LocalTabGroupId localTabGroupId, TabGroupModelFilter tabGroupModelFilter) {
+        long lastAccessTime =
+                getTabGroupLastAccessTime(localTabGroupId.tabGroupId, tabGroupModelFilter);
+        long currentTime = TimeUtils.currentTimeMillis();
+        int maxDaysOfStalenessAccepted =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+                        PARAM_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP,
+                        DEFAULT_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP);
+        long maxStalenessAcceptedInMillis =
+                TimeUnit.MILLISECONDS.convert(maxDaysOfStalenessAccepted, TimeUnit.DAYS);
+        return currentTime - lastAccessTime < maxStalenessAcceptedInMillis;
+    }
+
+    /**
+     * Returns the last access time of a tab group which is determined by most recent access time
+     * across all of its tabs.
+     *
+     * @param tabGroupId The local tab group ID.
+     * @param tabGroupModelFilter The tab group model filter.
+     * @return The last access time of the tab group.
+     */
+    public static long getTabGroupLastAccessTime(
+            Token tabGroupId, TabGroupModelFilter tabGroupModelFilter) {
+        int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);
+        List<Tab> tabs = tabGroupModelFilter.getRelatedTabListForRootId(rootId);
+        long mostRecentAccessTime = 0;
+        for (Tab tab : tabs) {
+            mostRecentAccessTime = Math.max(mostRecentAccessTime, tab.getTimestampMillis());
+        }
+
+        return mostRecentAccessTime;
+    }
+
+    /**
+     * Called to when a navigation finishes in the tab.
      *
      * @param tab Tab that triggers the navigation.
      * @param navigationHandle Navigation handle to retrieve the redirect chain from.
      */
-    public static void updateTabRedirectChain(Tab tab, NavigationHandle navigationHandle) {
+    public static void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
         if (tab.getTabGroupId() == null) return;
         TabGroupSyncUtilsJni.get()
-                .updateTabRedirectChain(
+                .onDidFinishNavigation(
                         tab.getProfile(),
                         getLocalTabGroupId(tab),
                         tab.getId(),
@@ -189,7 +239,7 @@ public final class TabGroupSyncUtils {
 
     @NativeMethods
     interface Natives {
-        void updateTabRedirectChain(
+        void onDidFinishNavigation(
                 @JniType("Profile*") Profile profile,
                 LocalTabGroupId groupId,
                 int tabId,

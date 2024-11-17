@@ -21,10 +21,12 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -32,7 +34,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.sync.PassphraseType;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -40,10 +42,14 @@ import java.io.IOException;
 /** Tests to make sure that PassphraseTypeDialogFragment presents the correct options. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCase {
+public class PassphraseTypeDialogFragmentTest {
     private static final int RENDER_TEST_REVISION = 3;
     private static final String RENDER_TEST_DESCRIPTION =
             "Updated strings and re-ordering of the two options.";
+
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -56,6 +62,11 @@ public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCas
     private static final String TAG = "PassphraseTypeDialogFragmentTest";
 
     private PassphraseTypeDialogFragment mTypeFragment;
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.launchActivity(null);
+    }
 
     @Test
     @SmallTest
@@ -184,8 +195,8 @@ public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCas
 
     public void createFragment(@PassphraseType int type, boolean isCustomPassphraseAllowed) {
         mTypeFragment = PassphraseTypeDialogFragment.create(type, isCustomPassphraseAllowed);
-        mTypeFragment.show(getActivity().getSupportFragmentManager(), TAG);
-        ActivityTestUtils.waitForFragment(getActivity(), TAG);
+        mTypeFragment.show(mActivityTestRule.getActivity().getSupportFragmentManager(), TAG);
+        ActivityTestUtils.waitForFragment(mActivityTestRule.getActivity(), TAG);
     }
 
     private View getDialogView() {

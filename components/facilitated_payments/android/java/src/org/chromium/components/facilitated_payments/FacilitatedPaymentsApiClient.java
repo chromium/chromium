@@ -95,8 +95,7 @@ public class FacilitatedPaymentsApiClient {
          * Notifies the delegate whether the facilitated payment was successful.
          *
          * @param isPurchaseActionSuccessful Whether the purchase action was successful.
-         *
-         * @Deprecated TODO(b/300335735): Remove this method.
+         * @deprecated TODO(b/300335735): Remove this method.
          */
         default void onPurchaseActionResult(boolean isPurchaseActionSuccessful) {}
     }
@@ -163,8 +162,7 @@ public class FacilitatedPaymentsApiClient {
      * Initiates the payment flow UI. Will invoke a delegate callback with the result.
      *
      * @param actionToken An opaque token used for invoking the purchase action.
-     *
-     * @Deprecated TODO(https://crbug.com/329108444): Remove this method.
+     * @deprecated TODO(https://crbug.com/329108444): Remove this method.
      */
     public void invokePurchaseAction(byte[] actionToken) {
         mDelegate.onPurchaseActionResultEnum(PurchaseActionResult.COULD_NOT_INVOKE);

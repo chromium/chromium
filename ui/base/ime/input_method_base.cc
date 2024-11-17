@@ -32,8 +32,7 @@ InputMethodBase::InputMethodBase(
       keyboard_controller_(std::move(keyboard_controller)) {}
 
 InputMethodBase::~InputMethodBase() {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnInputMethodDestroyed(this);
+  observer_list_.Notify(&InputMethodObserver::OnInputMethodDestroyed, this);
 }
 
 void InputMethodBase::SetImeKeyEventDispatcher(
@@ -83,8 +82,9 @@ TextInputType InputMethodBase::GetTextInputType() const {
 }
 
 void InputMethodBase::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnVirtualKeyboardVisibilityChangedIfEnabled(should_show);
+  observer_list_.Notify(
+      &InputMethodObserver::OnVirtualKeyboardVisibilityChangedIfEnabled,
+      should_show);
   auto* keyboard = GetVirtualKeyboardController();
   if (keyboard) {
     if (should_show) {
@@ -140,14 +140,12 @@ ui::EventDispatchDetails InputMethodBase::DispatchKeyEventPostIME(
 
 void InputMethodBase::NotifyTextInputStateChanged(
     const TextInputClient* client) {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnTextInputStateChanged(client);
+  observer_list_.Notify(&InputMethodObserver::OnTextInputStateChanged, client);
 }
 
 void InputMethodBase::NotifyTextInputCaretBoundsChanged(
     const TextInputClient* client) {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnCaretBoundsChanged(client);
+  observer_list_.Notify(&InputMethodObserver::OnCaretBoundsChanged, client);
 }
 
 void InputMethodBase::SetFocusedTextInputClientInternal(

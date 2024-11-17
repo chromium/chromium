@@ -88,6 +88,17 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
     },
+    'android-pixel4_webview-perf-pgo': {
+        'jetstream2': {
+            'JetStream2': 5,
+        },
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
+        'speedometer3': {
+            'Speedometer3': 20,
+        },
+    },
     'android-pixel6-perf': {
         'jetstream2': {
             'JetStream2': 5,
@@ -215,6 +226,19 @@ TARGET_DEVICES = {
         'blink_perf.shadow_dom': 31
     },
     'mac-laptop_high_end-perf': {
+        'jetstream2': {
+            'JetStream2': 5,
+        },
+        'jetstream2.crossbench': 5,
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
+        'speedometer3': {
+            'Speedometer3': 20,
+        },
+        'speedometer3.crossbench': 20,
+    },
+    'mac-intel-perf': {
         'jetstream2': {
             'JetStream2': 5,
         },

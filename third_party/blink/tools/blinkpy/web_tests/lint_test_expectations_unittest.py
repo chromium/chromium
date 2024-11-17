@@ -464,6 +464,35 @@ class LintTest(LoggingTestCase):
         self.assertRegexpMatches(failures[0], ':2 .*Skip')
 
 
+class CheckTestListsTest(unittest.TestCase):
+
+    def test_check_existence(self):
+        options = optparse.Values({
+            'additional_expectations': [],
+            'platform': 'test'
+        })
+        host = MockHost()
+        port = host.port_factory.get(options.platform, options=options)
+        finder = PathFinder(host.filesystem)
+
+        host.filesystem.write_text_file(
+            finder.path_from_web_tests('TestLists', 'tests.filter'),
+            textwrap.dedent("""\
+                +exists/1.html
+                exists/
+                -does/not/exist/
+                does/not/exist/1.html
+                """))
+        host.filesystem.write_text_file(
+            finder.path_from_web_tests('exists', '1.html'), '')
+
+        failures = lint_test_expectations.check_test_lists(host, options)
+        self.assertEqual(failures, [
+            'tests.filter:3 Test does not exist: does/not/exist/',
+            'tests.filter:4 Test does not exist: does/not/exist/1.html',
+        ])
+
+
 class CheckVirtualSuiteTest(unittest.TestCase):
     def setUp(self):
         self.host = MockHost()
@@ -486,8 +515,17 @@ class CheckVirtualSuiteTest(unittest.TestCase):
 
     def test_check_virtual_test_suites_readme(self):
         self.port.virtual_test_suites = lambda: [
-            VirtualTestSuite(prefix='foo', platforms=['Linux', 'Mac', 'Win'], bases=['test'], args=['--foo']),
-            VirtualTestSuite(prefix='bar', platforms=['Linux', 'Mac', 'Win'], bases=['test'], args=['--bar']), ]
+            VirtualTestSuite(prefix='foo',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             owners=['testowner@chromium.org'],
+                             bases=['test'],
+                             args=['--foo']),
+            VirtualTestSuite(prefix='bar',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             owners=['testowner@chromium.org'],
+                             bases=['test'],
+                             args=['--bar']),
+        ]
         fs = self.host.filesystem
         fs.maybe_make_directory(fs.join(MOCK_WEB_TESTS, 'test'))
 
@@ -535,6 +573,7 @@ class CheckVirtualSuiteTest(unittest.TestCase):
                                  'external/wpt/test.any.worker.html?b'
                              ],
                              exclusive_tests='ALL',
+                             owners=['testowner@chromium.org'],
                              args=['--arg']),
         ]
         with patch.object(self.port,
@@ -546,7 +585,11 @@ class CheckVirtualSuiteTest(unittest.TestCase):
 
     def test_check_virtual_test_suites_redundant(self):
         self.port.virtual_test_suites = lambda: [
-            VirtualTestSuite(prefix='foo', platforms=['Linux', 'Mac', 'Win'], bases=['test/sub', 'test'], args=['--foo']),
+            VirtualTestSuite(prefix='foo',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             owners=['testowner@chromium.org'],
+                             bases=['test/sub', 'test'],
+                             args=['--foo']),
         ]
 
         self.host.filesystem.exists = lambda _: True
@@ -557,7 +600,11 @@ class CheckVirtualSuiteTest(unittest.TestCase):
 
     def test_check_virtual_test_suites_non_redundant(self):
         self.port.virtual_test_suites = lambda: [
-            VirtualTestSuite(prefix='foo', platforms=['Linux', 'Mac', 'Win'], bases=['test_a', 'test'], args=['--foo']),
+            VirtualTestSuite(prefix='foo',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             owners=['testowner@chromium.org'],
+                             bases=['test_a', 'test'],
+                             args=['--foo']),
         ]
 
         self.host.filesystem.exists = lambda _: True
@@ -574,6 +621,7 @@ class CheckVirtualSuiteTest(unittest.TestCase):
                 bases=['base1', 'base2', 'base3.html'],
                 exclusive_tests=
                 ['base1/exist.html', 'base1/missing.html', 'base4'],
+                owners=['testowner@chromium.org'],
                 args=['-foo']),
         ]
 
@@ -590,6 +638,53 @@ class CheckVirtualSuiteTest(unittest.TestCase):
         self.assertRegexpMatches(res[0], 'base2.* or directory')
         self.assertRegexpMatches(res[1], 'base1/missing.html.* or directory')
         self.assertRegexpMatches(res[2], 'base4.*subset of bases')
+
+    def test_check_virtual_test_suites_name_length_tests(self):
+        self.port.virtual_test_suites = lambda: [
+            VirtualTestSuite(
+                prefix=
+                'testing_prefix_with_larger_character_count_then_the_allowed_amount_of_48',
+                platforms=['Linux', 'Mac', 'Win'],
+                owners=['testowner@chromium.org'],
+                bases=['test'],
+                args=['--arg']),
+        ]
+
+        self.host.filesystem.exists = lambda _: True
+        self.host.filesystem.isdir = lambda _: True
+        res = lint_test_expectations.check_virtual_test_suites(
+            self.host, self.options)
+        self.assertRegexpMatches(
+            res[0],
+            'Virtual suite name "testing_prefix_with_larger_character_count_then_the_allowed_amount_of_48" is over the "48" filename length limit'
+        )
+
+    def test_check_virtual_test_suites_with_no_owner(self):
+        self.port.virtual_test_suites = lambda: [
+            VirtualTestSuite(prefix='test',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             bases=['test'],
+                             args=['--arg']),
+        ]
+        self.host.filesystem.exists = lambda _: True
+        self.host.filesystem.isdir = lambda _: True
+        res = lint_test_expectations.check_virtual_test_suites(
+            self.host, self.options)
+        self.assertRegexpMatches(res[0],
+                                 'Virtual suite name "test" has no owner.')
+        self.assertEqual(len(res), 1)
+        self.port.virtual_test_suites = lambda: [
+            VirtualTestSuite(prefix='test',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             owners=[],
+                             bases=['test'],
+                             args=['--arg']),
+        ]
+        res2 = lint_test_expectations.check_virtual_test_suites(
+            self.host, self.options)
+        self.assertRegexpMatches(res2[0],
+                                 'Virtual suite name "test" has no owner.')
+        self.assertEqual(len(res2), 1)
 
 
 class MainTest(unittest.TestCase):

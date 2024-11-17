@@ -61,14 +61,17 @@
 // Passkey encrypted. Used by passkeys only.
 @property(nonatomic, readonly) NSData* encrypted;
 
-// Passkey creation time. Used by passkeys only.
+// Passkey creation time in milliseconds. Used by passkeys only.
 @property(nonatomic, readonly) int64_t creationTime;
 
-// Passkey last used time. Used by passkeys only.
+// Passkey last used time in microseconds. Used by passkeys only.
 @property(nonatomic, assign) int64_t lastUsedTime;
 
 // Whether the credential is a passkey.
 - (BOOL)isPasskey;
+
+// Converts and returns the creation time as an NSDate.
+- (NSDate*)creationDate;
 
 @end
 

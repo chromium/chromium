@@ -1,40 +1,31 @@
 <!DOCTYPE html>
-<html>
-<head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="./canvas-test.js"></script>
 <script src="./webgpu-helpers.js"></script>
-</head>
 
 <h1>Canvas2D WebGPU Transfer: transferToGPUTexture-balanced-access</h1>
-
-<p>transferToGPUTexture() allows repeated calls after a call to
+<p>transferToGPUTexture() can be called again after a call to
 transferBackFromGPUTexture().</p>
-
-<canvas id="c" width="50" height="50"></canvas>
 
 <script>
 
-promise_test(() => {
-    return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToGPUTexture_balanced_access(
-          device,
-          document.getElementById('c'));
-    });
-  },
-  'transferToGPUTexture() allows repeated calls after a call to ' +
-  'transferBackFromGPUTexture().'
-);
+runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
 
-promise_test(() => {
-    return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToGPUTexture_balanced_access(
-          device,
-          new OffscreenCanvas(50, 50));
-    });
-  },
-  'transferToGPUTexture() on an offscreen context allows repeated calls ' +
-  'after a call to transferBackFromGPUTexture().'
-);
+/**
+ * transferToGPUTexture() can be called again after a call to
+ * transferBackFromGPUTexture().
+ */
+canvasPromiseTest(async (canvas) => {
+  const device = await getWebGPUDevice();
+  const ctx = canvas.getContext('2d');
+
+  // Begin and end a WebGPU access session several times.
+  for (let count = 0; count < 10; ++count) {
+    ctx.transferToGPUTexture({device: device});
+    ctx.transferBackFromGPUTexture();
+  }
+}, 'transferToGPUTexture() can be called again after a call to ' +
+   'transferBackFromGPUTexture()');
 
 </script>

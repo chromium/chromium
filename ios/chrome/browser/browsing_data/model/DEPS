@@ -1,5 +1,4 @@
 include_rules = [
-  "+ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/sync/model",

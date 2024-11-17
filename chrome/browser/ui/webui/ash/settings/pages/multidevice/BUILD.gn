@@ -19,6 +19,7 @@ static_library("multidevice") {
     "//ash/webui/eche_app_ui",
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/phonehub",
     "//chromeos/ash/services/multidevice_setup/public/cpp",

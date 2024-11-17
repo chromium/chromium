@@ -163,7 +163,7 @@ void ArcDiskSpaceMonitor::MaybeShowNotification(bool is_pre_stop) {
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 
   Profile* profile = arc::ArcSessionManager::Get()->profile();
-  NotificationDisplayService::GetForProfile(profile)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }

@@ -9,6 +9,16 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <org.chromium.chrome.browser.toolbar.settings.AddressBarHeaderPreference
+        android:key="address_bar_header"
+        android:selectable="false"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false" />
+
+    <PreferenceCategory
+        android:key="address_bar_section"
+        android:title="@string/address_bar_settings" />
+
     <org.chromium.chrome.browser.toolbar.settings.AddressBarPreference
         android:key="address_bar_preference"
         android:selectable="false"

@@ -48,8 +48,7 @@ V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
           V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
           options->GetAsUnrestrictedDouble());
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace

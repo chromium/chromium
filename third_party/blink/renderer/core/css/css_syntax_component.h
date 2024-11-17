@@ -30,8 +30,57 @@ enum class CSSSyntaxType {
   kCustomIdent,
   kString,
 };
+static inline String ToString(CSSSyntaxType type) {
+  switch (type) {
+    case CSSSyntaxType::kTokenStream:
+      return "*";
+    case CSSSyntaxType::kLength:
+      return "<length>";
+    case CSSSyntaxType::kNumber:
+      return "<number>";
+    case CSSSyntaxType::kPercentage:
+      return "<percentage>";
+    case CSSSyntaxType::kLengthPercentage:
+      return "<length-percentage>";
+    case CSSSyntaxType::kColor:
+      return "<color>";
+    case CSSSyntaxType::kImage:
+      return "<image>";
+    case CSSSyntaxType::kUrl:
+      return "<url>";
+    case CSSSyntaxType::kInteger:
+      return "<integer>";
+    case CSSSyntaxType::kAngle:
+      return "<angle>";
+    case CSSSyntaxType::kTime:
+      return "<time>";
+    case CSSSyntaxType::kResolution:
+      return "<resolution>";
+    case CSSSyntaxType::kTransformFunction:
+      return "<transform-function>";
+    case CSSSyntaxType::kTransformList:
+      return "<transform-list>";
+    case CSSSyntaxType::kCustomIdent:
+      return "<custom-ident>";
+    case CSSSyntaxType::kString:
+      return "<string>";
+    case CSSSyntaxType::kIdent:
+      // <ident> type should be serialized separately.
+      NOTREACHED();
+  }
+}
 
 enum class CSSSyntaxRepeat { kNone, kSpaceSeparated, kCommaSeparated };
+static inline String ToString(CSSSyntaxRepeat repeat) {
+  switch (repeat) {
+    case CSSSyntaxRepeat::kNone:
+      return "";
+    case CSSSyntaxRepeat::kSpaceSeparated:
+      return "+";
+    case CSSSyntaxRepeat::kCommaSeparated:
+      return "#";
+  }
+}
 
 class CSSSyntaxComponent {
   DISALLOW_NEW();
@@ -54,6 +103,11 @@ class CSSSyntaxComponent {
   char Separator() const {
     DCHECK(IsRepeatable());
     return repeat_ == CSSSyntaxRepeat::kSpaceSeparated ? ' ' : ',';
+  }
+  String ToString() const {
+    String result =
+        (type_ == CSSSyntaxType::kIdent) ? string_ : blink::ToString(type_);
+    return result + blink::ToString(repeat_);
   }
 
  private:

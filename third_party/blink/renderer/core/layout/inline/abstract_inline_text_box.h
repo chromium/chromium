@@ -63,10 +63,10 @@ class CORE_EXPORT AbstractInlineTextBox final
   AbstractInlineTextBox* PreviousOnLine() const;
   bool IsLineBreak() const;
   bool NeedsTrailingSpace() const;
+  InlineCursor GetCursor() const;
 
  private:
   LayoutText* GetFirstLetterPseudoLayoutText() const;
-  InlineCursor GetCursor() const;
   InlineCursor GetCursorOnLine() const;
   String GetTextContent() const;
 

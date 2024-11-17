@@ -47,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Controls when and how the Web Feed follow intro is shown.
  *
+ * <pre>
  * Main requirements for the presentation of the intro (all must be true):
  *  1. The URL is recommended.
  *  2. This site was visited enough times in day-boolean visits and in total visits.
@@ -57,16 +58,13 @@ import java.util.concurrent.TimeUnit;
  *
  * If the intro debug mode pref is enabled then only 1. is checked for.
  *
- * Note: The feature engagement tracker check happens only later, and it includes checking for
- * a weekly limit.
+ * Note: The feature engagement tracker check happens only later, and it includes checking for a
+ * weekly limit.
+ * </pre>
  */
 public class WebFeedFollowIntroController {
     private static final String TAG = "WFFollowIntroCtrl";
 
-    // Intro style control
-    private static final String PARAM_INTRO_STYLE = "intro_style";
-    private static final String INTRO_STYLE_IPH = "IPH";
-    private static final String INTRO_STYLE_ACCELERATOR = "accelerator";
     // In-page time delay to show the intro.
     private static final int DEFAULT_WAIT_TIME_MILLIS = 3 * 1000;
     // Visit history requirements.
@@ -261,12 +259,12 @@ public class WebFeedFollowIntroController {
         // FeatureEngagementTrackerbased based on the configuration used for this IPH. See the
         // kIPHWebFeedFollowFeature entry in
         // components/feature_engagement/public/feature_configurations.cc.
-        maybeShowIPH(recommendedInfo);
+        maybeShowIph(recommendedInfo);
     }
 
-    private void maybeShowIPH(RecommendedWebFeedInfo recommendedInfo) {
+    private void maybeShowIph(RecommendedWebFeedInfo recommendedInfo) {
         UserEducationHelper helper = new UserEducationHelper(mActivity, mProfile, new Handler());
-        mWebFeedFollowIntroView.showIPH(
+        mWebFeedFollowIntroView.showIph(
                 helper, () -> introWasShown(recommendedInfo), this::introWasNotShown);
     }
 
@@ -275,7 +273,7 @@ public class WebFeedFollowIntroController {
             mFeatureEngagementTracker.notifyEvent(EventConstants.WEB_FEED_FOLLOW_INTRO_CLICKED);
         }
 
-        mWebFeedFollowIntroView.showLoadingUI();
+        mWebFeedFollowIntroView.showLoadingUi();
         Tab currentTab = mTabSupplier.get();
         FeedServiceBridge.reportOtherUserAction(
                 StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_ON_FOLLOW_ACCELERATOR);
@@ -285,13 +283,13 @@ public class WebFeedFollowIntroController {
                 url,
                 WebFeedBridge.CHANGE_REASON_WEB_PAGE_ACCELERATOR,
                 results ->
-                        mWebFeedFollowIntroView.hideLoadingUI(
+                        mWebFeedFollowIntroView.hideLoadingUi(
                                 new LoadingView.Observer() {
                                     @Override
-                                    public void onShowLoadingUIComplete() {}
+                                    public void onShowLoadingUiComplete() {}
 
                                     @Override
-                                    public void onHideLoadingUIComplete() {
+                                    public void onHideLoadingUiComplete() {
                                         mWebFeedFollowIntroView.dismissBubble();
                                         if (results.requestStatus
                                                 == WebFeedSubscriptionRequestStatus.SUCCESS) {
@@ -396,7 +394,6 @@ public class WebFeedFollowIntroController {
         private static class Request {
             public Tab tab;
             public GURL url;
-            public long fetchStartTime;
             public Callback<RecommendedWebFeedInfo> callback;
         }
 
@@ -418,7 +415,6 @@ public class WebFeedFollowIntroController {
             request.tab = tab;
             request.url = url;
             request.callback = callback;
-            request.fetchStartTime = System.nanoTime();
 
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,

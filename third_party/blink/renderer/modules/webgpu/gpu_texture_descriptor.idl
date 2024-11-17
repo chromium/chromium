@@ -127,4 +127,11 @@ enum GPUTextureFormat {
     "astc-12x10-unorm-srgb",
     "astc-12x12-unorm",
     "astc-12x12-unorm-srgb",
+    /* R/RG/RGBA16 norm texture formats - Non-standard (not currently in the spec) */
+    "r16unorm",
+    "rg16unorm",
+    "rgba16unorm",
+    "r16snorm",
+    "rg16snorm",
+    "rgba16snorm",
 };

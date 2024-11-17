@@ -20,9 +20,7 @@ class CredentialLeakDialogControllerImpl
  public:
   CredentialLeakDialogControllerImpl(
       PasswordsLeakDialogDelegate* delegate,
-      password_manager::CredentialLeakType leak_type,
-      const GURL& url,
-      const std::u16string& username,
+      password_manager::LeakedPasswordDetails details,
       std::unique_ptr<
           password_manager::metrics_util::LeakDialogMetricsRecorder>);
 

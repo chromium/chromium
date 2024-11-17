@@ -27,6 +27,7 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
@@ -36,6 +37,8 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -50,7 +53,7 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -77,8 +80,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             Arrays.asList(
-                    new ParameterSet().value(RpMode.WIDGET).name("widget"),
-                    new ParameterSet().value(RpMode.BUTTON).name("button"));
+                    new ParameterSet().value(RpMode.PASSIVE).name("passive"),
+                    new ParameterSet().value(RpMode.ACTIVE).name("active"));
 
     private @BottomSheetController.SheetState int mExpectedSheetState;
 
@@ -87,14 +90,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
     public AccountSelectionIntegrationTest(@RpMode.EnumType int rpMode) {
         mRpMode = rpMode;
         mExpectedSheetState =
-                rpMode == RpMode.BUTTON
+                rpMode == RpMode.ACTIVE
                         ? BottomSheetController.SheetState.HALF
                         : BottomSheetController.SheetState.FULL;
     }
-
-    private static final String TEST_ERROR_CODE = "invalid_request";
-    private static final IdentityCredentialTokenError TOKEN_ERROR =
-            new IdentityCredentialTokenError(TEST_ERROR_CODE, TEST_URL);
 
     @Test
     @MediumTest
@@ -361,43 +360,52 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
 
     @Test
     @MediumTest
-    public void testErrorDialogBackDismissesAndCallsCallback() {
+    public void testDismissAddAccountCctReopensAccountChooser() {
         runOnUiThreadBlocking(
                 () -> {
-                    mAccountSelection.showErrorDialog(
+                    mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            IDP_METADATA,
-                            RpContext.SIGN_IN,
-                            TOKEN_ERROR);
+                            Arrays.asList(NEW_BOB, RETURNING_ANA),
+                            mIdpDataWithAddAccount,
+                            /* isAutoReauthn= */ false,
+                            /* newAccounts= */ Collections.EMPTY_LIST);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
-        Espresso.pressBack();
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
 
-        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
-    }
+        RecyclerView accountsList = contentView.findViewById(R.id.sheet_item_list);
+        assertEquals(accountsList.getChildCount(), 3);
+        assertEquals(
+                accountsList.getAdapter().getItemViewType(2),
+                AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT);
 
-    @Test
-    @MediumTest
-    public void testErrorDialogSwipeDismissesAndCallsCallback() {
+        // Close the use other account CCT when it is opened.
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                mAccountSelection
+                                        .getMediator()
+                                        .onDismissed(IdentityRequestDialogDismissReason.OTHER);
+                                return null;
+                            }
+                        })
+                .when(mMockBridge)
+                .onLoginToIdP(any(), any());
+
+        // Click "Use a different account".
         runOnUiThreadBlocking(
                 () -> {
-                    mAccountSelection.showErrorDialog(
-                            EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
-                            IDP_METADATA,
-                            RpContext.SIGN_IN,
-                            TOKEN_ERROR);
+                    accountsList.getChildAt(2).performClick();
                 });
-        pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
-        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
-        runOnUiThreadBlocking(
-                () -> {
-                    sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
-                });
-        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
+
+        // Verify that account chooser remains open.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 }

@@ -72,15 +72,14 @@
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
 
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
-          IOSChromeAffiliationServiceFactory::GetForBrowserState(profile),
-          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+          IOSChromeAffiliationServiceFactory::GetForProfile(profile),
+          IOSChromeProfilePasswordStoreFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+          IOSChromeAccountPasswordStoreFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           IOSPasskeyModelFactory::GetForProfile(profile));
 

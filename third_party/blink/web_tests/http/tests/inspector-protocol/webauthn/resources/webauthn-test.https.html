@@ -154,6 +154,24 @@ async function getFlags(bitNumber) {
   }
 }
 
+async function signalCurrentUserDetails(options) {
+  try {
+    await PublicKeyCredential.signalCurrentUserDetails(options);
+    return { status: "OK" };
+  } catch (error) {
+    return { status: error.toString() };
+  }
+}
+
+async function signalUnknownCredential(options) {
+  try {
+    await PublicKeyCredential.signalUnknownCredential(options);
+    return { status: "OK" };
+  } catch (error) {
+    return { status: error.toString() };
+  }
+}
+
   </script>
 </head>
 <body>

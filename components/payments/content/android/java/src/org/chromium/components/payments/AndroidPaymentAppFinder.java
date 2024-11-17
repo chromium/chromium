@@ -43,6 +43,14 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     /** The maximum number of payment method manifests to download. */
     private static final int MAX_NUMBER_OF_MANIFESTS = 10;
 
+    /**
+     * The name of the intent for the service that updates the payment method, the shipping address,
+     * or the shipping option in response to user actions in the payment app.
+     */
+    @VisibleForTesting
+    public static final String ACTION_UPDATE_PAYMENT_DETAILS =
+            "org.chromium.intent.action.UPDATE_PAYMENT_DETAILS";
+
     /** The name of the intent for the service to check whether an app is ready to pay. */
     public static final String ACTION_IS_READY_TO_PAY =
             "org.chromium.intent.action.IS_READY_TO_PAY";
@@ -131,6 +139,13 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * {"com.bobpay.app": "com.bobpay.app.IsReadyToPayService"}
      */
     private final Map<String, String> mIsReadyToPayServices = new HashMap<>();
+
+    /*
+     * A mapping from package names to their UPDATE_PAYMENT_DETAILS service names, e.g.:
+     *
+     * {"com.bobpay.app": "com.bobpay.app.UpdatePaymentDetails"}
+     */
+    private final Map<String, String> mUpdatePaymentDetailsServices = new HashMap<>();
 
     private int mPendingVerifiersCount;
     private int mPendingIsReadyToPayQueries;
@@ -221,8 +236,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                                 META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME);
         GURL defaultUrlMethod = new GURL(defaultMethod);
         assert urlMethod.isValid();
-        return (getSupportedPaymentMethods(app.activityInfo).contains(urlMethod.getSpec()))
-                || (urlMethod.equals(defaultUrlMethod));
+        return getSupportedPaymentMethods(app.activityInfo).contains(urlMethod.getSpec())
+                || urlMethod.equals(defaultUrlMethod);
     }
 
     private ResolveInfo findAppWithPackageName(List<ResolveInfo> apps, String packageName) {
@@ -259,14 +274,13 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         }
 
         if (!mIsOffTheRecord) {
-            List<ResolveInfo> services =
-                    mPackageManagerDelegate.getServicesThatCanRespondToIntent(
-                            new Intent(ACTION_IS_READY_TO_PAY));
-            int numberOfServices = services.size();
-            for (int i = 0; i < numberOfServices; i++) {
-                ServiceInfo service = services.get(i).serviceInfo;
-                mIsReadyToPayServices.put(service.packageName, service.name);
-            }
+            addIntentServiceToServiceMap(ACTION_IS_READY_TO_PAY, mIsReadyToPayServices);
+        }
+
+        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                PaymentFeatureList.UPDATE_PAYMENT_DETAILS_INTENT_FILTER_IN_PAYMENT_APP)) {
+            addIntentServiceToServiceMap(
+                    ACTION_UPDATE_PAYMENT_DETAILS, mUpdatePaymentDetailsServices);
         }
 
         if (!PaymentOptionsUtils.requestAnyInformation(
@@ -446,9 +460,20 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             return;
         }
 
-        mPendingVerifiersCount = mPendingResourceUsersCount = manifestVerifiers.size();
+        mPendingResourceUsersCount = manifestVerifiers.size();
+        mPendingVerifiersCount = mPendingResourceUsersCount;
         for (PaymentManifestVerifier manifestVerifier : manifestVerifiers) {
             manifestVerifier.verify();
+        }
+    }
+
+    private void addIntentServiceToServiceMap(
+            String intentName, Map<String, String> packageNameToServiceNameMap) {
+        List<ResolveInfo> services =
+                mPackageManagerDelegate.getServicesThatCanRespondToIntent(new Intent(intentName));
+        for (int i = 0; i < services.size(); i++) {
+            ServiceInfo service = services.get(i).serviceInfo;
+            packageNameToServiceNameMap.put(service.packageName, service.name);
         }
     }
 
@@ -458,7 +483,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      *
      * @param activityInfo The application information to query.
      * @return The set of non-default payment method names that this application supports. Never
-     *         null.
+     *     null.
      */
     private Set<String> getSupportedPaymentMethods(ActivityInfo activityInfo) {
         Set<String> result = new HashSet<>();
@@ -668,13 +693,18 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                             packageName,
                             resolveInfo.activityInfo.name,
                             mIsReadyToPayServices.get(packageName),
+                            mUpdatePaymentDetailsServices.get(packageName),
                             label.toString(),
                             mPackageManagerDelegate.getAppIcon(resolveInfo),
                             mIsOffTheRecord,
                             webAppIdCanDeduped,
                             appSupportedDelegations,
                             PaymentFeatureList.isEnabled(
-                                    PaymentFeatureList.SHOW_READY_TO_PAY_DEBUG_INFO));
+                                    PaymentFeatureList.SHOW_READY_TO_PAY_DEBUG_INFO),
+                            /* removeDeprecatedFields= */ PaymentFeatureList
+                                    .isEnabledOrExperimentalFeaturesEnabled(
+                                            PaymentFeatureList
+                                                    .ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS));
             mValidApps.put(packageName, app);
         }
 

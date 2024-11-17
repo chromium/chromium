@@ -93,12 +93,7 @@ std::optional<std::string> RedirectUtil::GetReferrerPolicyHeader(
     const HttpResponseHeaders* response_headers) {
   if (!response_headers)
     return std::nullopt;
-  std::string referrer_policy_header;
-  if (!response_headers->GetNormalizedHeader("Referrer-Policy",
-                                             &referrer_policy_header)) {
-    return std::nullopt;
-  }
-  return referrer_policy_header;
+  return response_headers->GetNormalizedHeader("Referrer-Policy");
 }
 
 // static

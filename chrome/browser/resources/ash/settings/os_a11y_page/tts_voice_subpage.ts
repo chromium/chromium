@@ -15,19 +15,23 @@ import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import '../controls/settings_slider.js';
 import '../settings_shared.css.js';
 
-import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeat, DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
-import {Route, routes} from '../router.js';
+import type {LanguagesBrowserProxy} from '../os_languages_page/languages_browser_proxy.js';
+import {LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {getTemplate} from './tts_voice_subpage.html.js';
-import {TtsVoiceSubpageBrowserProxy, TtsVoiceSubpageBrowserProxyImpl} from './tts_voice_subpage_browser_proxy.js';
+import type {TtsVoiceSubpageBrowserProxy} from './tts_voice_subpage_browser_proxy.js';
+import {TtsVoiceSubpageBrowserProxyImpl} from './tts_voice_subpage_browser_proxy.js';
 
 /**
  * Represents a voice as sent from the TTS Handler class. |languageCode| is

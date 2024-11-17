@@ -25,17 +25,16 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import '../settings_shared.css.js';
 import '/shared/nearby_onboarding_one_page.js';
-import '/shared/nearby_onboarding_page.js';
 import '/shared/nearby_visibility_page.js';
 import './nearby_share_confirm_page.js';
 import './nearby_share_high_visibility_page.js';
 
-import {ReceiveManagerInterface, ReceiveObserverReceiver, RegisterReceiveSurfaceResult, ShareTarget, TransferMetadata, TransferStatus} from '/shared/nearby_share.mojom-webui.js';
-import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
+import type {ReceiveManagerInterface, ReceiveObserverReceiver, RegisterReceiveSurfaceResult, ShareTarget, TransferMetadata} from '/shared/nearby_share.mojom-webui.js';
+import {TransferStatus} from '/shared/nearby_share.mojom-webui.js';
+import type {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_share_receive_dialog.html.js';
@@ -44,7 +43,6 @@ import {getReceiveManager, observeReceiveManager} from './nearby_share_receive_m
 enum Page {
   HIGH_VISIBILITY = 'high-visibility',
   CONFIRM = 'confirm',
-  ONBOARDING = 'onboarding',
   ONEPAGE_ONBOARDING = 'onboarding-one',
   VISIBILITY = 'visibility',
 }
@@ -262,11 +260,7 @@ export class NearbyShareReceiveDialogElement extends PolymerElement {
       // We need to show onboarding first if onboarding is not yet complete, but
       // we need to run the callback afterward.
       this.postOnboardingCallback_ = callback;
-      if (this.isOnePageOnboardingEnabled_()) {
-        this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
-      } else {
-        this.getViewManager_().switchView(Page.ONBOARDING);
-      }
+      this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
       return true;
     }
 
@@ -286,11 +280,7 @@ export class NearbyShareReceiveDialogElement extends PolymerElement {
   showOnboarding(): void {
     // Setup the callback to close this dialog when onboarding is complete.
     this.postOnboardingCallback_ = this.close_.bind(this);
-    if (this.isOnePageOnboardingEnabled_()) {
-      this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
-    } else {
-      this.getViewManager_().switchView(Page.ONBOARDING);
-    }
+    this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
   }
 
   /**
@@ -340,14 +330,6 @@ export class NearbyShareReceiveDialogElement extends PolymerElement {
     if (urlParams.get('entrypoint') === 'notification') {
       this.receiveManager_!.recordFastInitiationNotificationUsage(success);
     }
-  }
-
-  /**
-   * Determines if the feature flag for One-page onboarding workflow is enabled.
-   * @return whether the new one-page onboarding workflow is enabled
-   */
-  private isOnePageOnboardingEnabled_(): boolean {
-    return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
   }
 
   private onSettingsLoaded_(): void {

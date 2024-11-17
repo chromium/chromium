@@ -45,6 +45,14 @@ class ResourcePrefetchPredictorTablesTest : public testing::Test {
   void GetAllData(RedirectDataMap* host_redirect_data,
                   OriginDataMap* origin_data) const;
 
+  size_t GetTocalCount(std::string_view name) {
+    size_t count = 0u;
+    for (auto bucket : tester_.GetAllSamples(name)) {
+      count += bucket.count;
+    }
+    return count;
+  }
+
  protected:
   void ReopenDatabase();
   void TestGetAllData();
@@ -541,12 +549,9 @@ TEST_F(ResourcePrefetchPredictorTablesTest, DatabaseIsResetWhenIncompatible) {
 
 TEST_F(ResourcePrefetchPredictorTablesTest, ReportUMA) {
   const std::string name = "LoadingPredictor.PredictorDatabaseFileSize";
-  const std::vector<base::Bucket> samples = tester_.GetAllSamples(name);
-  EXPECT_EQ(1u, samples.size());
-  const base::Bucket& sample = samples[0];
-  EXPECT_EQ(1, sample.count);
-  const base::HistogramBase::Sample file_size = sample.min;
-  EXPECT_GT(file_size, 0);
+  EXPECT_EQ(1u, GetTocalCount(name));
+  int64_t file_size = tester_.GetTotalSum(name);
+  EXPECT_GT(file_size, 0u);
 
   // Write some data.
   {
@@ -561,11 +566,10 @@ TEST_F(ResourcePrefetchPredictorTablesTest, ReportUMA) {
         base::Unretained(tables_->origin_table()), data.host(), data));
   }
   task_environment_.FastForwardBy(base::Days(1));
-  const std::vector<base::Bucket> samples2 = tester_.GetAllSamples(name);
-  EXPECT_EQ(2u, samples2.size());
-  const base::Bucket& sample2 = samples2[1];
-  EXPECT_EQ(1, sample2.count);
-  const base::HistogramBase::Sample file_size2 = sample2.min;
+  EXPECT_EQ(2u, GetTocalCount(name));
+  int64_t total_sum2 = tester_.GetTotalSum(name);
+  CHECK_GT(total_sum2, file_size);
+  int64_t file_size2 = total_sum2 - file_size;
   EXPECT_GT(file_size2, file_size);
 }
 

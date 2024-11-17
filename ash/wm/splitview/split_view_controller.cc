@@ -1637,7 +1637,7 @@ bool SplitViewController::EndResizeWithDivider(
       GetClosestFixedDividerPosition(divider_position);
   // TODO(b/298515283): Separate Snap Group and tablet resize.
   if (divider_position == target_divider_position ||
-      IsSnapGroupEnabledInClamshellMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     return true;
   }
     divider_snap_animation_ = std::make_unique<DividerSnapAnimation>(
@@ -2141,7 +2141,7 @@ void SplitViewController::OnWindowSnapped(
   RestoreTransformIfApplicable(window);
 
   // We must add snap group and end split view before updating state.
-  if (IsSnapGroupEnabledInClamshellMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     if (SnapGroupController::Get()->OnWindowSnapped(window,
                                                     snap_action_source)) {
       // Detaching the snapped window will end split view so no need to
@@ -2395,7 +2395,8 @@ void SplitViewController::RestoreTransformIfApplicable(aura::Window* window) {
 }
 
 void SplitViewController::SetWindowsTransformDuringResizing() {
-  CHECK(InTabletSplitViewMode() || IsSnapGroupEnabledInClamshellMode());
+  CHECK(InTabletSplitViewMode() ||
+        !display::Screen::GetScreen()->InTabletMode());
   const int divider_position = GetDividerPosition();
   CHECK_GE(divider_position, 0);
   aura::Window* left_or_top_window = GetPhysicallyLeftOrTopWindow();

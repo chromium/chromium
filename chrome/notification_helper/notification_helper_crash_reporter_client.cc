@@ -47,11 +47,6 @@ void NotificationHelperCrashReporterClient::
       exe_path);
 }
 
-bool NotificationHelperCrashReporterClient::ShouldCreatePipeName(
-    const std::wstring& process_type) {
-  return true;
-}
-
 bool NotificationHelperCrashReporterClient::GetAlternativeCrashDumpLocation(
     std::wstring* crash_dir) {
   return false;
@@ -81,33 +76,9 @@ void NotificationHelperCrashReporterClient::GetProductNameAndVersion(
       install_static::GetChromeChannelName(/*with_extended_stable=*/true);
 }
 
-bool NotificationHelperCrashReporterClient::ShouldShowRestartDialog(
-    std::wstring* title,
-    std::wstring* message,
-    bool* is_rtl_locale) {
-  // There is no UX associated with notification_helper, so no dialog should be
-  // shown.
-  return false;
-}
-
-bool NotificationHelperCrashReporterClient::AboutToRestart() {
-  // The notification_helper should never be restarted after a crash.
-  return false;
-}
-
-bool NotificationHelperCrashReporterClient::GetIsPerUserInstall() {
-  return !install_static::IsSystemInstall();
-}
-
 bool NotificationHelperCrashReporterClient::GetShouldDumpLargerDumps() {
   // Use large dumps for all but the stable channel.
   return install_static::GetChromeChannel() != version_info::Channel::STABLE;
-}
-
-int NotificationHelperCrashReporterClient::GetResultCodeRespawnFailed() {
-  // The restart dialog is never shown for the notification_helper.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
 }
 
 bool NotificationHelperCrashReporterClient::GetCrashDumpLocation(
@@ -149,6 +120,5 @@ bool NotificationHelperCrashReporterClient::
 bool NotificationHelperCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   // This is not used by Crashpad (at least on Windows).
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }

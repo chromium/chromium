@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
+#include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -15,7 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
@@ -32,6 +33,7 @@ class HistoryEmbeddingsHandler;
 
 namespace commerce {
 class ShoppingServiceHandler;
+class ProductSpecificationsHandler;
 }  // namespace commerce
 
 namespace page_image_service {
@@ -51,7 +53,9 @@ class HistoryUIConfig : public content::WebUIConfig {
 
 class HistoryUI : public ui::MojoWebUIController,
                   public shopping_service::mojom::ShoppingServiceHandlerFactory,
-                  public help_bubble::mojom::HelpBubbleHandlerFactory {
+                  public help_bubble::mojom::HelpBubbleHandlerFactory,
+                  public commerce::product_specifications::mojom::
+                      ProductSpecificationsHandlerFactory {
  public:
   explicit HistoryUI(content::WebUI* web_ui);
   HistoryUI(const HistoryUI&) = delete;
@@ -76,6 +80,9 @@ class HistoryUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
+  void BindInterface(
+      mojo::PendingReceiver<commerce::product_specifications::mojom::
+                                ProductSpecificationsHandlerFactory> receiver);
 
   // For testing only.
   history_clusters::HistoryClustersHandler*
@@ -93,6 +100,11 @@ class HistoryUI : public ui::MojoWebUIController,
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
       override;
+  void CreateProductSpecificationsHandler(
+      mojo::PendingRemote<commerce::product_specifications::mojom::Page> page,
+      mojo::PendingReceiver<
+          commerce::product_specifications::mojom::ProductSpecificationsHandler>
+          receiver) override;
   std::unique_ptr<HistoryEmbeddingsHandler> history_embeddings_handler_;
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
@@ -105,6 +117,11 @@ class HistoryUI : public ui::MojoWebUIController,
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
+  mojo::Receiver<commerce::product_specifications::mojom::
+                     ProductSpecificationsHandlerFactory>
+      product_specifications_handler_factory_receiver_{this};
+  std::unique_ptr<commerce::ProductSpecificationsHandler>
+      product_specifications_handler_;
 
   void UpdateDataSource();
 

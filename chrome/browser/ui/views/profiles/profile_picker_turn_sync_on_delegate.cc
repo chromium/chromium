@@ -9,7 +9,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -65,17 +64,6 @@ void OpenSettingsInBrowser(Browser* browser) {
   chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
 }
 
-bool IsLacrosPrimaryProfileFirstRun(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(profile);
-  // The primary profile can never get _created_ through profile creation flow
-  // so if it's the primary (main) profile, it must be onboarding.
-  return profile->IsMainProfile();
-#else
-  return false;
-#endif
-}
-
 }  // namespace
 
 ProfilePickerTurnSyncOnDelegate::ProfilePickerTurnSyncOnDelegate(
@@ -91,12 +79,6 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
 
   // If the controller is null we cannot treat the error.
   if (!controller_) {
-    return;
-  }
-
-  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
-    // The primary profile onboarding is silently skipped if there's any error.
-    controller_->FinishAndOpenBrowser(PostHostClearedCallback());
     return;
   }
 
@@ -154,16 +136,6 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   DCHECK(callback);
   sync_confirmation_callback_ = std::move(callback);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
-    if (controller_) {
-      controller_->SwitchToLacrosIntro(
-          base::BindOnce(&ProfilePickerTurnSyncOnDelegate::OnLacrosIntroClosed,
-                         base::Unretained(this)));
-    }
-    return;
-  }
-#endif
   if (enterprise_account_) {
     // First show the notice screen and only after that (if the user proceeds
     // with the flow) the sync consent.
@@ -175,24 +147,11 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   ShowSyncConfirmationScreen();
 }
 
-bool ProfilePickerTurnSyncOnDelegate::
-    ShouldAbortBeforeShowSyncDisabledConfirmation() {
-  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
-    // The primary profile first run experience is silently skipped if sync is
-    // disabled (there's no point to promo a feature that cannot get enabled).
-    LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
-    return true;
-  }
-
-  return false;
-}
-
 void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
     bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);
-  DCHECK(!IsLacrosPrimaryProfileFirstRun(profile_));
   sync_disabled_ = true;
 
   sync_confirmation_callback_ = std::move(callback);
@@ -284,8 +243,6 @@ void ProfilePickerTurnSyncOnDelegate::HandleCancelSigninChoice(
   // what happens to sync as the signed-in profile creation gets cancelled
   // right after.
   FinishSyncConfirmation(LoginUIService::UI_CLOSED);
-  // During the Lacros intro, this is a no-op as the profile picker will already
-  // be closed.
   ProfilePicker::CancelSignedInFlow();
 }
 
@@ -332,21 +289,7 @@ void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ProfilePickerTurnSyncOnDelegate::OnLacrosIntroClosed(
-    signin::SigninChoice choice) {
-  if (choice == signin::SIGNIN_CHOICE_CANCEL) {
-    HandleCancelSigninChoice(ProfileMetrics::ProfileSignedInFlowOutcome::
-                                 kAbortedOnEnterpriseWelcome);
-    return;
-  }
-  ShowSyncConfirmationScreen();
-}
-#endif
-
 void ProfilePickerTurnSyncOnDelegate::LogOutcome(
     ProfileMetrics::ProfileSignedInFlowOutcome outcome) {
-  if (!IsLacrosPrimaryProfileFirstRun(profile_)) {
-    ProfileMetrics::LogProfileAddSignInFlowOutcome(outcome);
-  }
+  ProfileMetrics::LogProfileAddSignInFlowOutcome(outcome);
 }

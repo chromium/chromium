@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -167,32 +166,48 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
 }
 
 String CSSUnparsedValue::ToUnparsedString() const {
-  StringBuilder input;
+  StringBuilder builder;
+  HeapHashSet<Member<const CSSUnparsedValue>> values_on_stack;
+  if (AppendUnparsedString(builder, values_on_stack)) {
+    return builder.ReleaseString();
+  }
+  return g_empty_atom;
+}
 
+bool CSSUnparsedValue::AppendUnparsedString(
+    StringBuilder& builder,
+    HeapHashSet<Member<const CSSUnparsedValue>>& values_on_stack) const {
+  if (values_on_stack.Contains(this)) {
+    return false;  // Cycle.
+  }
+  values_on_stack.insert(this);
   for (unsigned i = 0; i < tokens_.size(); i++) {
     if (i) {
-      input.Append("/**/");
+      builder.Append("/**/");
     }
     switch (tokens_[i]->GetContentType()) {
       case V8CSSUnparsedSegment::ContentType::kCSSVariableReferenceValue: {
         const auto* reference_value =
             tokens_[i]->GetAsCSSVariableReferenceValue();
-        input.Append("var(");
-        input.Append(reference_value->variable());
+        builder.Append("var(");
+        builder.Append(reference_value->variable());
         if (reference_value->fallback()) {
-          input.Append(",");
-          input.Append(reference_value->fallback()->ToUnparsedString());
+          builder.Append(",");
+          if (!reference_value->fallback()->AppendUnparsedString(
+                  builder, values_on_stack)) {
+            return false;  // Cycle.
+          }
         }
-        input.Append(")");
+        builder.Append(")");
         break;
       }
       case V8CSSUnparsedSegment::ContentType::kString:
-        input.Append(tokens_[i]->GetAsString());
+        builder.Append(tokens_[i]->GetAsString());
         break;
     }
   }
-
-  return input.ReleaseString();
+  values_on_stack.erase(this);
+  return true;
 }
 
 }  // namespace blink

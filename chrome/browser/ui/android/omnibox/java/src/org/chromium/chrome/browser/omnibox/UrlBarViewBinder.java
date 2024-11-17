@@ -25,7 +25,7 @@ import java.util.Optional;
 /** Handles translating the UrlBar model data to the view state. */
 class UrlBarViewBinder {
     /**
-     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
+     * @see PropertyModelChangeProcfessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, UrlBar view, PropertyKey propertyKey) {
         if (UrlBarProperties.ACTION_MODE_CALLBACK.equals(propertyKey)) {
@@ -91,8 +91,6 @@ class UrlBarViewBinder {
             view.setTypingStartedListener(model.get(UrlBarProperties.TYPING_STARTED_LISTENER));
         } else if (UrlBarProperties.KEY_DOWN_LISTENER.equals(propertyKey)) {
             view.setKeyDownListener(model.get(UrlBarProperties.KEY_DOWN_LISTENER));
-        } else if (UrlBarProperties.WINDOW_DELEGATE.equals(propertyKey)) {
-            view.setWindowDelegate(model.get(UrlBarProperties.WINDOW_DELEGATE));
         } else if (UrlBarProperties.HAS_URL_SUGGESTIONS.equals(propertyKey)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 view.setHandwritingBoundsOffsets(
@@ -105,6 +103,10 @@ class UrlBarViewBinder {
             }
         } else if (UrlBarProperties.SELECT_ALL_ON_FOCUS.equals(propertyKey)) {
             view.setSelectAllOnFocus(model.get(UrlBarProperties.SELECT_ALL_ON_FOCUS));
+        } else if (UrlBarProperties.LONG_CLICK_LISTENER.equals(propertyKey)) {
+            view.setOnLongClickListener(model.get(UrlBarProperties.LONG_CLICK_LISTENER));
+        } else if (UrlBarProperties.HINT_TEXT.equals(propertyKey)) {
+            view.setHint(view.getContext().getString(model.get(UrlBarProperties.HINT_TEXT)));
         }
     }
 

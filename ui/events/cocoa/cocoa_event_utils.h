@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -36,7 +37,7 @@ EVENTS_EXPORT std::vector<uint8_t> EventToData(NSEvent* event);
 
 // Create an NSEvent from an opaque serialization using CGEventCreateFromData.
 // The result is autoreleased.
-EVENTS_EXPORT NSEvent* EventFromData(const std::vector<uint8_t>& data);
+EVENTS_EXPORT NSEvent* EventFromData(base::span<const uint8_t> data);
 
 }  // namespace ui
 

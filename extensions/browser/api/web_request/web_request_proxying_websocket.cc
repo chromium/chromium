@@ -47,8 +47,7 @@ class ShutdownNotifierFactory
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
-    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-        context, /*force_guest_profile=*/true);
+    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
   }
 };
 
@@ -487,8 +486,7 @@ void WebRequestProxyingWebSocket::OnAuthRequiredComplete(
       break;
     case WebRequestEventRouter::AuthRequiredResponse::
         AUTH_REQUIRED_RESPONSE_IO_PENDING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

@@ -41,9 +41,6 @@ public class CoreImpl implements Core {
     /** the size of a handle, in bytes. */
     private static final int HANDLE_SIZE = 8;
 
-    /** the size of a flag, in bytes. */
-    private static final int FLAG_SIZE = 4;
-
     /** The mojo handle for an invalid handle. */
     static final long INVALID_HANDLE = 0;
 

@@ -135,9 +135,9 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
                                        CFDictionaryRef user_info) {
   std::string notification_str = base::SysCFStringRefToUTF8(notification);
 
-  if (notification_str == "AXDrawerCreated") {
-    // The drawer created event is used as an end-of-test signal because it
-    // is used for an obsolete OS feature that will never occur in tests.
+  if (notification_str == "AXApplicationDeactivated") {
+    // The application deactivated event is used as an end-of-test signal
+    // because it never occurs in tests.
     has_seen_end_of_test_sentinel_ = true;
     if (end_of_test_loop_runner_) {
       end_of_test_loop_runner_->Quit();

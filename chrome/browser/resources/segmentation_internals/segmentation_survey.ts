@@ -17,6 +17,7 @@ function getSafeURL(untrustedURL: URL|undefined): URL|undefined {
   const allowedList = [
     'https://www.google.com/search',
     'https://surveys.qualtrics.com/jfe/form/SV_cNMWDhaegCrsrsy',
+    'https://surveys.qualtrics.com/jfe/form/SV_40HhSVolVzTvBNI',
   ];
   const allowedParams = ['ID', 'SG', 'Q_CHL', 'Q_DL', '_g_', 'QRID', 'CR', 'q'];
   const withoutParams: string = untrustedURL.origin + untrustedURL.pathname;

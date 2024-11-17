@@ -39,6 +39,7 @@ class JavaScriptTabModalDialogManagerDelegateIOS
   void SetTabNeedsAttention(bool attention) override;
   bool IsWebContentsForemost() override;
   bool IsApp() override;
+  bool CanShowModalUI() override;
 
  private:
   raw_ptr<content::WebContents> web_contents_;

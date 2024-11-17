@@ -6,7 +6,7 @@ use crate::config::BuildConfig;
 use crate::crates;
 use crate::group::Group;
 use crate::paths;
-use anyhow::{format_err, Result};
+use anyhow::{bail, format_err, Result};
 use semver::Version;
 use serde::Deserialize;
 use serde::Serialize;
@@ -112,7 +112,11 @@ pub fn readme_file_from_package<'a>(
     };
 
     let path_if_exists = |path: &'a Path| -> Result<Option<&'a Path>> {
-        if crate_dir.join(path).try_exists()? { Ok(Some(path)) } else { Ok(None) }
+        if crate_dir.join(path).try_exists()? {
+            Ok(Some(path))
+        } else {
+            Ok(None)
+        }
     };
     let to_crate_dir_string = |path: &Path| -> String {
         format!("//{}", paths::normalize_unix_path_separator(&crate_dir.join(path)))
@@ -142,14 +146,26 @@ pub fn readme_file_from_package<'a>(
                 .collect()
         }
     };
-    if license_files.is_empty() && shipped {
-        log::warn!(
-            "License file not found for crate {name}.\n  Crates that are \
-            marked `shipped` must specify a License File.\n  You can specify \
-            the `license_files` in [crate.{name}] relative to the crate's root \
-            directory.",
-            name = package.name
-        );
+
+    if license_files.is_empty() {
+        // Exceptions for https://crbug.com/369075726 can only apply to crates that are not
+        // shipped.
+        let does_crbug_369075726_apply = !shipped
+            && crate_config
+                .as_ref()
+                .map_or(false, |cfg| cfg.no_license_file_tracked_in_crbug_369075726);
+        if !does_crbug_369075726_apply {
+            bail!(
+                "License file not found for crate {name}.\n
+                 \n
+                 You can specify the `license_files` in `crate.{name}]` \
+                 section of the `gnrt_config.toml` to manually point out \
+                 a license file relative to the crate's root. \
+                 (Alternatively you can tweak `gnrt`'s source code to improve \
+                 its ability to recognize license files based on their name).",
+                name = package.name
+            );
+        }
     }
 
     let revision = {
@@ -221,12 +237,13 @@ static ALLOWED_LICENSES: [(&str, &str); 21] = [
     ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache 2.0"),
 ];
 
-static EXPECTED_LICENSE_FILE: [(&str, &str); 20] = [
+static EXPECTED_LICENSE_FILE: [(&str, &str); 21] = [
     ("Apache 2.0", "LICENSE"),
-    ("Apache 2.0", "LICENSE.md"),
     ("Apache 2.0", "LICENSE-APACHE"),
-    ("Apache 2.0", "LICENSE-APACHE.txt"),
     ("Apache 2.0", "LICENSE-APACHE.md"),
+    ("Apache 2.0", "LICENSE-APACHE.txt"),
+    ("Apache 2.0", "LICENSE.md"),
+    ("Apache 2.0", "license-apache-2.0"),
     ("MIT", "LICENSE"),
     ("MIT", "LICENSE.md"),
     ("MIT", "LICENSE-MIT"),

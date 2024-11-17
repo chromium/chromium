@@ -11,7 +11,9 @@
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -24,6 +26,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/interaction/interactive_views_test_internal.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -207,6 +210,69 @@ gfx::NativeWindow InteractiveBrowserTestPrivate::GetNativeWindowFromContext(
     }
   }
   return window;
+}
+
+std::string InteractiveBrowserTestPrivate::DebugDescribeContext(
+    ui::ElementContext context) const {
+  if (const auto* browser =
+          InteractionTestUtilBrowser::GetBrowserFromContext(context)) {
+    std::string type;
+    switch (browser->type()) {
+      case Browser::TYPE_APP:
+        type = "App window";
+        break;
+      case Browser::TYPE_APP_POPUP:
+        type = "Popup app window";
+        break;
+      case Browser::TYPE_NORMAL:
+        type = "Tabbed browser window";
+        break;
+      case Browser::TYPE_DEVTOOLS:
+        type = "Devtools window";
+        break;
+      case Browser::TYPE_PICTURE_IN_PICTURE:
+        type = "Picture-in-picture window";
+        break;
+      default:
+        type = "Other browser window";
+        break;
+    }
+    if (browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP)) {
+      type += base::StringPrintf(", %d tab(s) (active: %d)",
+                                 browser->tab_strip_model()->count(),
+                                 browser->tab_strip_model()->active_index());
+    }
+    return base::StringPrintf(
+        "%s%s profile %s%s at %s",
+        (browser->window()->IsActive() ? "[ACTIVE] " : ""), type,
+        browser->profile()->GetDebugName(),
+        (browser->profile()->IsOffTheRecord() ? " (off-the-record)" : ""),
+        DebugDumpBounds(browser->window()->GetBounds()));
+  } else {
+    return InteractiveViewsTestPrivate::DebugDescribeContext(context);
+  }
+}
+
+InteractiveBrowserTestPrivate::DebugTreeNode
+InteractiveBrowserTestPrivate::DebugDumpElement(
+    const ui::TrackedElement* el) const {
+  if (const auto* contents = el->AsA<TrackedElementWebContents>()) {
+    auto* const web_contents = contents->owner()->web_contents();
+    int index = TabStripModel::kNoTab;
+    if (const auto* browser =
+            InteractionTestUtilBrowser::GetBrowserFromContext(el->context())) {
+      index = browser->tab_strip_model()->GetIndexOfWebContents(web_contents);
+    }
+    return DebugTreeNode(base::StringPrintf(
+        "WebContents %s - %s at %s with URL \"%s\"",
+        (index == TabStripModel::kNoTab
+             ? "in secondary UI"
+             : base::StringPrintf("in tab %d", index).c_str()),
+        el->identifier().GetName(), DebugDumpBounds(el->GetScreenBounds()),
+        web_contents->GetURL().spec().c_str()));
+  } else {
+    return InteractiveViewsTestPrivate::DebugDumpElement(el);
+  }
 }
 
 }  // namespace internal

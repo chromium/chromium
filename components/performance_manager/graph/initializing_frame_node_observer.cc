@@ -157,10 +157,10 @@ void InitializingFrameNodeObserverManager::OnIsCapturingMediaStreamChanged(
   }
 }
 
-void InitializingFrameNodeObserverManager::OnViewportIntersectionStateChanged(
+void InitializingFrameNodeObserverManager::OnViewportIntersectionChanged(
     const FrameNode* frame_node) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {
-    observer.OnViewportIntersectionStateChanged(frame_node);
+    observer.OnViewportIntersectionChanged(frame_node);
   }
 }
 
@@ -169,6 +169,13 @@ void InitializingFrameNodeObserverManager::OnFrameVisibilityChanged(
     FrameNode::Visibility previous_value) {
   for (InitializingFrameNodeObserver& observer : observer_list_) {
     observer.OnFrameVisibilityChanged(frame_node, previous_value);
+  }
+}
+
+void InitializingFrameNodeObserverManager::OnIsImportantChanged(
+    const FrameNode* frame_node) {
+  for (InitializingFrameNodeObserver& observer : observer_list_) {
+    observer.OnIsImportantChanged(frame_node);
   }
 }
 

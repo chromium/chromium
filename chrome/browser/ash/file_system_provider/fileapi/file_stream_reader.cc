@@ -309,8 +309,7 @@ int FileStreamReader::Read(net::IOBuffer* buffer,
       break;
 
     case INITIALIZING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case INITIALIZED:
       ReadAfterInitialized(
@@ -320,8 +319,7 @@ int FileStreamReader::Read(net::IOBuffer* buffer,
       break;
 
     case FAILED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return net::ERR_IO_PENDING;
@@ -348,16 +346,14 @@ int64_t FileStreamReader::GetLength(net::Int64CompletionOnceCallback callback) {
       break;
 
     case INITIALIZING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case INITIALIZED:
       GetLengthAfterInitialized();
       break;
 
     case FAILED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return net::ERR_IO_PENDING;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -49,7 +50,7 @@ class TimedEventRecorder final {
     base::TimeTicks start_time;
   };
 
-  MetricsRecorder* const metrics_recorder_;
+  const raw_ptr<MetricsRecorder> metrics_recorder_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Maps a named event to a set of TimelineMeasurements that will conclude with

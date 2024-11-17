@@ -124,9 +124,7 @@ static bool DragTypeIsValid(DragSourceAction action) {
     case kDragSourceActionNone:
       return false;
   }
-  // Make sure MSVC doesn't complain that not all control paths return a value.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 #endif  // DCHECK_IS_ON()
 
@@ -899,6 +897,8 @@ Node* DragController::DraggableNode(const LocalFrame* src,
         candidate_drag_type = kDragSourceActionDHTML;
         break;
       }
+      // TODO(crbug.com/369219144): Should this be
+      // DynamicTo<HTMLAnchorElementBase>?
       auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
       if (html_anchor_element && html_anchor_element->IsLiveLink()) {
         candidate_drag_type = kDragSourceActionLink;
@@ -984,6 +984,7 @@ bool DragController::PopulateDragDataTransfer(LocalFrame* src,
   DataTransfer* data_transfer = state.drag_data_transfer_.Get();
   Node* node = state.drag_src_.Get();
 
+  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
   auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
   if (html_anchor_element && html_anchor_element->IsLiveLink() &&
       !link_url.IsEmpty()) {
@@ -1103,7 +1104,7 @@ std::unique_ptr<DragImage> DragImageForImage(
   if (image_size.Area64() > kMaxOriginalImageArea)
     return nullptr;
 
-  InterpolationQuality interpolation_quality = kInterpolationDefault;
+  InterpolationQuality interpolation_quality = GetDefaultInterpolationQuality();
   if (layout_image->StyleRef().ImageRendering() == EImageRendering::kPixelated)
     interpolation_quality = kInterpolationNone;
 
@@ -1337,8 +1338,7 @@ bool DragController::StartDrag(LocalFrame* frame,
       return false;
   } else if (state.drag_type_ != kDragSourceActionSelection &&
              state.drag_type_ != kDragSourceActionDHTML) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   if (state.drag_type_ == kDragSourceActionLink)

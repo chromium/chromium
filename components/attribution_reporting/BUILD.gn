@@ -47,6 +47,10 @@ component("attribution_reporting") {
     "aggregatable_dedup_key.h",
     "aggregatable_filtering_id_max_bytes.cc",
     "aggregatable_filtering_id_max_bytes.h",
+    "aggregatable_named_budget_candidate.cc",
+    "aggregatable_named_budget_candidate.h",
+    "aggregatable_named_budget_defs.cc",
+    "aggregatable_named_budget_defs.h",
     "aggregatable_trigger_config.cc",
     "aggregatable_trigger_config.h",
     "aggregatable_trigger_data.cc",
@@ -61,6 +65,7 @@ component("attribution_reporting") {
     "attribution_scopes_data.h",
     "attribution_scopes_set.cc",
     "attribution_scopes_set.h",
+    "attribution_src_request_status.h",
     "constants.h",
     "debug_types.cc",
     "debug_types.h",
@@ -149,6 +154,8 @@ source_set("unit_tests") {
     "aggregatable_debug_reporting_config_unittest.cc",
     "aggregatable_dedup_key_unittest.cc",
     "aggregatable_filtering_id_max_bytes_unittest.cc",
+    "aggregatable_named_budget_candidate_unittest.cc",
+    "aggregatable_named_budget_defs_unittest.cc",
     "aggregatable_trigger_config_unittest.cc",
     "aggregatable_trigger_data_unittest.cc",
     "aggregatable_utils_unittest.cc",
@@ -425,6 +432,16 @@ mojom("registration_mojom") {
           forward_declaration =
               "namespace attribution_reporting { class AttributionScopesData; }"
         },
+        {
+          mojom = "attribution_reporting.mojom.AggregatableNamedBudgetDefs"
+          cpp = "::attribution_reporting::AggregatableNamedBudgetDefs"
+          forward_declaration = "namespace attribution_reporting { class AggregatableNamedBudgetDefs; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AggregatableNamedBudgetCandidate"
+          cpp = "::attribution_reporting::AggregatableNamedBudgetCandidate"
+          forward_declaration = "namespace attribution_reporting { class AggregatableNamedBudgetCandidate; }"
+        },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]
       traits_public_deps = [ ":registration_mojom_traits" ]
@@ -474,6 +491,10 @@ mojom("registration_header_error_mojom") {
           mojom = "attribution_reporting.mojom.RegistrationHeaderError"
           cpp = "::attribution_reporting::RegistrationHeaderError"
           forward_declaration = "namespace attribution_reporting { struct RegistrationHeaderError; }"
+
+          # Avoid expensive copies by forcing Mojo methods to take the type by
+          # value, not const ref
+          move_only = true
         },
         {
           mojom = "attribution_reporting.mojom.RegistrationHeaderErrorDetails"
@@ -541,22 +562,6 @@ mojom("data_host_mojom") {
   export_class_attribute_blink = "PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
-}
-
-test("privacy_math_fuzztest") {
-  sources = [ "privacy_math_fuzztest.cc" ]
-
-  fuzztests = [
-    "PrivacyMathTest.GetKCombinationAtIndex",
-    "PrivacyMathTest.SingleSpecNumStatesMatchesRecursive",
-  ]
-
-  deps = [
-    ":attribution_reporting",
-    ":fuzzer_support",
-    ":test_support",
-    "//third_party/fuzztest:fuzztest_gtest_main",
-  ]
 }
 
 test("filters_fuzztest") {

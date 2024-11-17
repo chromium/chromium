@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,8 +14,9 @@ import android.os.Bundle;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge.PasswordStoreObserver;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -61,7 +64,7 @@ class PasswordAccessLossExportDialogMediator
 
     public String getDialogTitle() {
         PrefService prefService = UserPrefs.get(mProfile);
-        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
+        if (PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService)
                 == PasswordAccessLossWarningType.NO_GMS_CORE) {
             return mActivity.getString(R.string.access_loss_export_dialog_title_no_gms);
         }
@@ -70,7 +73,7 @@ class PasswordAccessLossExportDialogMediator
 
     public void handlePositiveButtonClicked() {
         PasswordManagerHandlerProvider.getForProfile(mProfile).addObserver(this);
-        mExportFlow = new ExportFlow();
+        mExportFlow = new ExportFlow(getAccessLossWarningType());
         // TODO (crbug.com/354876446): Handle metrics in separate CL.
         mExportFlow.onCreate(new Bundle(), this, "");
         mExportFlow.startExporting();
@@ -143,6 +146,9 @@ class PasswordAccessLossExportDialogMediator
 
     @Override
     public void onExportFlowCanceled() {
+        // If password export is canceled, then it ends at this step.
+        logExportFlowLastStepMetric(
+                getAccessLossWarningType(), PasswordAccessLossWarningExportStep.EXPORT_CANCELED);
         destroy();
     }
 
@@ -183,7 +189,7 @@ class PasswordAccessLossExportDialogMediator
 
     private boolean shouldDeleteAllPasswords() {
         PrefService prefService = UserPrefs.get(mProfile);
-        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
+        if (PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService)
                 == PasswordAccessLossWarningType.NO_GMS_CORE) return true;
         if (prefService.getInteger(Pref.PASSWORDS_USE_UPM_LOCAL_AND_SEPARATE_STORES)
                 == /* UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending */ 1) return true;
@@ -209,5 +215,10 @@ class PasswordAccessLossExportDialogMediator
                 != null) {
             PasswordManagerHandlerProvider.getForProfile(mProfile).removeObserver(this);
         }
+    }
+
+    private @PasswordAccessLossWarningType int getAccessLossWarningType() {
+        PrefService prefService = UserPrefs.get(mProfile);
+        return PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService);
     }
 }

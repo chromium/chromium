@@ -103,7 +103,7 @@ void UpdateService::SendUninstallPing(const std::string& id,
 }
 
 void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
-                                     update_client::CrxUpdateItem item) {
+                                     const update_client::CrxUpdateItem& item) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Custom attributes can only be sent for NOT_UPDATED/UPDATE_FOUND events.
@@ -123,12 +123,10 @@ void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
     case update_client::ComponentState::kChecking:
     case update_client::ComponentState::kDownloadingDiff:
     case update_client::ComponentState::kDownloading:
-    case update_client::ComponentState::kDownloaded:
     case update_client::ComponentState::kUpdatingDiff:
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpdated:
     case update_client::ComponentState::kUpdateError:
-    case update_client::ComponentState::kPingOnly:
     case update_client::ComponentState::kRun:
     case update_client::ComponentState::kLastStatus:
       break;
@@ -263,7 +261,7 @@ void UpdateService::RemoveUpdateClientObserver(
 }
 
 base::Value::Dict UpdateService::GetExtensionOmahaAttributes(
-    update_client::CrxUpdateItem& update_item) {
+    const update_client::CrxUpdateItem& update_item) {
   base::Value::Dict attributes;
 
   for (const char* key : kOmahaAttributes) {

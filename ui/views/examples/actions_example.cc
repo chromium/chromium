@@ -201,8 +201,7 @@ std::u16string ControlTypeComboboxModel::GetItemAt(size_t index) const {
     case 1:
       return u"Checkbox";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 
@@ -526,7 +525,7 @@ void ActionsExample::CreateControl(actions::ActionItem* action,
               .Build();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   action_panel_->AddChildView(std::move(new_view));
   ++control_num;

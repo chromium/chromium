@@ -46,6 +46,8 @@ class ExtensionsMetricsProvider : public metrics::MetricsProvider {
   ~ExtensionsMetricsProvider() override;
 
   // metrics::MetricsProvider:
+  void ProvideCurrentSessionData(
+      metrics::ChromeUserMetricsExtension* uma_proto) override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile) override;
 

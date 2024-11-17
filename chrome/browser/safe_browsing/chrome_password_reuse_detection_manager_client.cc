@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,12 +41,6 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/cpp/scoped_allow_sync_call.h"
-#include "chromeos/crosapi/mojom/clipboard.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 namespace {
 
 using password_manager::metrics_util::PasswordType;
@@ -71,10 +64,8 @@ std::vector<std::string> GetMatchingDomains(
         matching_reused_credentials) {
   base::flat_set<std::string> matching_domains;
   for (const auto& credential : matching_reused_credentials) {
-    // TODO(crbug.com/40895227): Avoid converting signon_realm to URL,
-    // ideally use PasswordForm::url.
     std::string domain = base::UTF16ToUTF8(url_formatter::FormatUrl(
-        GURL(credential.signon_realm),
+        credential.url,
         url_formatter::kFormatUrlOmitDefaults |
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
@@ -359,38 +350,14 @@ void ChromePasswordReuseDetectionManagerClient::RenderFrameCreated(
 
 void ChromePasswordReuseDetectionManagerClient::OnPaste() {
   std::u16string text;
-  bool used_crosapi_workaround = false;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, the ozone/wayland clipboard implementation is asynchronous by
-  // default and runs a nested message loop to fake synchroncity. This in turn
-  // causes crashes. See https://crbug.com/1155662 for details. In the short
-  // term, we skip ozone/wayland entirely and use a synchronous crosapi to get
-  // clipboard text.
-  // TODO(crbug.com/40605786): This logic can be removed once all
-  // clipboard APIs are async.
-  auto* service = chromeos::LacrosService::Get();
-  if (service->IsAvailable<crosapi::mojom::Clipboard>()) {
-    used_crosapi_workaround = true;
-    std::string text_utf8;
-    {
-      crosapi::ScopedAllowSyncCall allow_sync_call;
-      service->GetRemote<crosapi::mojom::Clipboard>()->GetCopyPasteText(
-          &text_utf8);
-    }
-    text = base::UTF8ToUTF16(text_utf8);
-  }
-#endif
-
-  if (!used_crosapi_workaround) {
-    ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-    // Given that this clipboard data read happens in the background and not
-    // initiated by a user gesture, then the user shouldn't see a notification
-    // if the clipboard is restricted by the rules of data leak prevention
-    // policy.
-    ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-        ui::EndpointType::kDefault, {.notify_if_restricted = false});
-    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
-  }
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  // Given that this clipboard data read happens in the background and not
+  // initiated by a user gesture, then the user shouldn't see a notification
+  // if the clipboard is restricted by the rules of data leak prevention
+  // policy.
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
 
   password_reuse_detection_manager_.OnPaste(std::move(text));
   phishy_interaction_tracker_.HandlePasteEvent();

@@ -776,6 +776,7 @@ public class TraceEvent implements AutoCloseable {
      * the trace. Enabled/disabled via the disabled-by-default-android_view_hierarchy trace
      * category.
      *
+     * <pre>
      * The class registers itself as an idle handler, so that it can run when there are no other
      * tasks in the queue (but not more often than once a second). When the queue is idle,
      * it calls the initViewHierarchyDump() native function which in turn calls the
@@ -788,9 +789,9 @@ public class TraceEvent implements AutoCloseable {
      *            -> JNI#startActivityDump()
      *            -> ViewHierarchyDumper.dumpView()
      *                -> JNI#addViewDump()
+     * </pre>
      */
     private static final class ViewHierarchyDumper implements MessageQueue.IdleHandler {
-        private static final String EVENT_NAME = "TraceEvent.ViewHierarchyDumper";
         private static final long MIN_VIEW_DUMP_INTERVAL_MILLIS = 1000L;
         private static boolean sEnabled;
         private static ViewHierarchyDumper sInstance;

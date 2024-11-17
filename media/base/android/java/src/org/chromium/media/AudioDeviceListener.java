@@ -245,13 +245,12 @@ class AudioDeviceListener {
     private void registerForWiredHeadsetIntentBroadcast() {
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
 
-        /** Receiver which handles changes in wired headset availability. */
+        /* Receiver which handles changes in wired headset availability. */
         mWiredHeadsetReceiver =
                 new BroadcastReceiver() {
                     private static final int STATE_UNPLUGGED = 0;
                     private static final int STATE_PLUGGED = 1;
                     private static final int HAS_NO_MIC = 0;
-                    private static final int HAS_MIC = 1;
 
                     @Override
                     public void onReceive(Context context, Intent intent) {
@@ -311,7 +310,7 @@ class AudioDeviceListener {
      * turned on or off. BLUETOOTH permission is required to receive this one.
      */
     private void registerForBluetoothHeadsetIntentBroadcast() {
-        /** Receiver which handles changes in BT headset availability. */
+        /* Receiver which handles changes in BT headset availability. */
         mBluetoothHeadsetReceiver =
                 new BroadcastReceiver() {
                     @Override

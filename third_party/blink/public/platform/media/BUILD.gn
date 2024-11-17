@@ -10,7 +10,6 @@
 source_set("media") {
   sources = [
     "key_system_config_selector.h",
-    "remote_playback_client_wrapper_impl.h",
     "video_frame_compositor.h",
     "web_encrypted_media_client_impl.h",
     "web_media_player_builder.h",

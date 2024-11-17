@@ -11,8 +11,8 @@
 
 namespace skia {
 
-// Exposing the feature so that tests can inspect it and turn it on/off,
-// but product code should instead use `IsRustyPngEnabled`.
+// Exposing the feature so that chrome://flags and tests can inspect it and turn
+// it on/off, but product code should instead just call `IsRustyPngEnabled`.
 COMPONENT_EXPORT(SKIA_RUSTY_PNG_FEATURE_DETECTION)
 BASE_DECLARE_FEATURE(kRustyPngFeature);
 

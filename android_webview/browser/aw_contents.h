@@ -34,6 +34,7 @@
 class SkBitmap;
 
 namespace content {
+class PrerenderHandle;
 class WebContents;
 }
 
@@ -123,10 +124,6 @@ class AwContents : public FindHelper::Listener,
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& jvisited_links);
   base::android::ScopedJavaLocalRef<jbyteArray> GetCertificate(JNIEnv* env);
-  void RequestNewHitTestDataAt(JNIEnv* env,
-                               jfloat x,
-                               jfloat y,
-                               jfloat touch_major);
   void UpdateLastHitTestData(JNIEnv* env);
   void OnSizeChanged(JNIEnv* env, int w, int h, int ow, int oh);
   void OnConfigurationChanged(JNIEnv* env);
@@ -203,6 +200,10 @@ class AwContents : public FindHelper::Listener,
 
   void FlushBackForwardCache(JNIEnv* env, jint reason);
 
+  void StartPrerendering(
+      JNIEnv* env,
+      const std::string& prerendering_url,
+      const base::android::JavaParamRef<jobject>& prefetch_params);
   void CancelAllPrerendering(JNIEnv* env);
 
   bool GetViewTreeForceDarkState() { return view_tree_force_dark_state_; }
@@ -369,6 +370,8 @@ class AwContents : public FindHelper::Listener,
       storage_access_url_loader_factory_;
   std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
       asset_link_handler_;
+
+  std::unique_ptr<content::PrerenderHandle> prerender_handle_;
 
   bool view_tree_force_dark_state_ = false;
   std::string scheme_;

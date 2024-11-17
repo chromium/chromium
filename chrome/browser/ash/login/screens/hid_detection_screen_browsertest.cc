@@ -158,10 +158,8 @@ class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
         fake_hid_detection_manager_->SetHidStatusKeyboardMetadata(
             {InputState::kPairingViaBluetooth, kTestKeyboardName});
       } else {
-        NOTREACHED_IN_MIGRATION()
-            << "SimulateBluetoothDeviceDiscovered() should only be "
-            << "called with cases MOUSE or KEYBOARD.";
-        return;
+        NOTREACHED() << "SimulateBluetoothDeviceDiscovered() should only be "
+                     << "called with cases MOUSE or KEYBOARD.";
       }
   }
 

@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.DspHotwordDetection"
-    enum="DspHotwordDetectionStatus" expires_after="2025-01-19">
+    enum="DspHotwordDetectionStatus" expires_after="2025-03-23">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.EntryPoint" enum="AssistantEntryPoint"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
-    expires_after="2024-11-03">
+    expires_after="2025-10-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -74,8 +74,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.HotwordEnableNotification" enum="BooleanHit"
-    expires_after="2024-10-31">
-  <owner>updowndota@chromium.org</owner>
+    expires_after="2025-10-28">
+  <owner>yawano@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     Counts the number of times user click the hotword enable notification to
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.Interaction.Resolution"
-    enum="AssistantInteractionResolution" expires_after="2025-02-10">
+    enum="AssistantInteractionResolution" expires_after="2025-04-13">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.LauncherSearchIphQueryType.{Location}"
-    enum="Assistant.LauncherSearchIphQueryType" expires_after="2025-02-02">
+    enum="Assistant.LauncherSearchIphQueryType" expires_after="2025-04-06">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.Libassistant.DlcInstallResult"
-    enum="Assistant.LibassistantDlcInstallResult" expires_after="2025-02-10">
+    enum="Assistant.LibassistantDlcInstallResult" expires_after="2025-04-13">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.Libassistant.DlcLoadStatus"
-    enum="Assistant.LibassistantDlcLoadStatus" expires_after="2025-02-10">
+    enum="Assistant.LibassistantDlcLoadStatus" expires_after="2025-04-13">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -159,21 +159,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.QueryCountPerEntryPoint" enum="AssistantEntryPoint"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>Number of queries fired for each entry point.</summary>
 </histogram>
 
 <histogram name="Assistant.QueryResponseType" enum="AssistantQueryResponseType"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>The Assistant query response type.</summary>
 </histogram>
 
 <histogram name="Assistant.QuerySource" enum="AssistantQuerySource"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -205,15 +205,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceStartTime" units="ms"
-    expires_after="2024-12-17">
-  <owner>updowndota@chromium.org</owner>
+    expires_after="2025-10-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>Amount of time spent in starting Assistant service.</summary>
 </histogram>
 
 <histogram name="Assistant.ServiceState" enum="AssistantServiceState"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>wutao@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -223,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.SetDspHotwordLocale" enum="BooleanSuccess"
-    expires_after="2024-11-12">
+    expires_after="2025-10-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

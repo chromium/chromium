@@ -8,6 +8,8 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -19,10 +21,15 @@ option java_outer_classname = "FormsAnnotationsProto";
 // refer to http://go/chrome-intelligence-feature-protos (Google-internal link),
 // and then changes will be synced with Chrome automatically.
 
+// Next ID: 5
 message FormsAnnotationsLoggingData {
   FormsAnnotationsRequest request = 1;
 
   FormsAnnotationsResponse response = 2;
+
+  FormsAnnotationsQuality quality = 3;
+
+  ModelExecutionInfo model_execution_info = 4;
 }
 
 message FormsAnnotationsRequest {
@@ -37,12 +44,30 @@ message FormsAnnotationsRequest {
 }
 
 message FormsAnnotationsResponse {
-// The user annotations entries that were newly added to the database.
-  repeated UserAnnotationsEntry added_entries = 1;
+  // The user annotations entries that were newly added or updated to the
+  // database. New entries will have 0 as entry id.
+  repeated UserAnnotationsEntry upserted_entries = 1;
 
   // The user annotations entry IDs that were not changed.
   repeated int64 unchanged_entry_ids = 2;
 
   // The user annotations entry IDs that were deleted.
   repeated int64 deleted_entry_ids = 3;
+}
+
+message FormsAnnotationsQuality {
+  UserFeedback user_feedback = 1;
+
+  // The action the user took when presented with the save prompt.
+  FormsAnnotationsSavePromptAction save_prompt_action = 3;
+}
+
+enum FormsAnnotationsSavePromptAction {
+  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_UNSPECIFIED = 0;
+
+  // User explicitly accepted the save prompt.
+  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_ACCEPTED = 1;
+
+  // User explicitly rejected the save prompt.
+  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_REJECTED = 2;
 }

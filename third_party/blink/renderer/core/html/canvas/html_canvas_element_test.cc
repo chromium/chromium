@@ -52,6 +52,32 @@ void HTMLCanvasElementTest::TearDown() {
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
 }
 
+// This test enforces that there is no eager creation of
+// CanvasResourceProvider for html canvas with 2d context when its
+// Canvas2DLayerBridge is initially set up. This enforcement might be changed
+// in the future refactoring; but change is seriously warned against because
+// certain code paths in canvas 2d (that depend on the existence of
+// CanvasResourceProvider) will be changed too, causing bad regressions.
+TEST_P(HTMLCanvasElementTest,
+       NoResourceProviderAfterCanvas2DLayerBridgeCreation) {
+  SetBodyInnerHTML("<canvas id='c' width='10' height='20'></canvas>");
+
+  // The canvas having a 2D context is a prerequisite for calling
+  // GetOrCreateCanvas2DLayerBridge().
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setTextContent(R"JS(
+    var canvas = document.getElementById('c');
+    var ctx = canvas.getContext('2d');
+  )JS");
+  GetDocument().body()->appendChild(script);
+
+  auto* canvas =
+      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
+  EXPECT_TRUE(canvas->GetOrCreateCanvas2DLayerBridge());
+  EXPECT_FALSE(canvas->ResourceProvider());
+}
+
 TEST_P(HTMLCanvasElementTest, CleanCanvasResizeDoesntClearFrameBuffer) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   // Enable printing so that flushes preserve the last recording.
@@ -329,16 +355,12 @@ INSTANTIATE_TEST_SUITE_P(
          )JS",
                            "OffscreenCanvas.convertToBlob")}));
 
-class Resolve final : public ScriptFunction::Callable {
+class Resolve final : public ThenCallable<IDLAny, Resolve> {
  public:
   explicit Resolve(base::RepeatingClosure callback)
       : callback_(std::move(callback)) {}
 
-  ScriptValue Call(ScriptState*, ScriptValue) override {
-    callback_.Run();
-    return ScriptValue();
-  }
-  int Length() const override { return 1; }
+  void React(ScriptState*, ScriptValue) { callback_.Run(); }
 
  private:
   base::RepeatingClosure callback_;
@@ -361,8 +383,7 @@ TEST_P(HTMLCanvasElementWithTracingAsyncTest,
   ScriptState::Scope script_state_scope(script_state);
 
   base::RunLoop run_loop;
-  ScriptFunction* fn = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<Resolve>(run_loop.QuitClosure()));
+  auto* resolve = MakeGarbageCollected<Resolve>(run_loop.QuitClosure());
 
   ClassicScript* script = ClassicScript::CreateUnspecifiedScript(
       GetParam().first, ScriptSourceLocationType::kUnknown,
@@ -373,7 +394,7 @@ TEST_P(HTMLCanvasElementWithTracingAsyncTest,
 
   auto promise =
       ToResolvedPromise<IDLAny>(script_state, script_result.GetSuccessValue());
-  promise.Then(fn, fn);
+  promise.Then(script_state, resolve, resolve);
 
   // Avoid the NOTREACHED in CanvasPerformanceMonitor::WillProcessTask().
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
@@ -446,6 +467,5 @@ TEST_P(HTMLCanvasElementWithTracingAsyncTest,
                                                      StartsWith("data:"))));
   }
 }
-
 
 }  // namespace blink

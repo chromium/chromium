@@ -246,19 +246,7 @@ void KcerFactoryAsh::RegisterProfilePrefs(
 base::WeakPtr<Kcer> KcerFactoryAsh::GetKcerImpl(Profile* profile) {
   if (ash::IsSigninBrowserContext(profile) ||
       ash::IsLockScreenBrowserContext(profile)) {
-    if (ash::switches::IsSigninFrameClientCertsEnabled()) {
-      // Sign-in and lock screen profiles should only have access to the device
-      // token.
-      return ExtraInstances::GetDeviceKcer();
-    } else {
-      return ExtraInstances::GetEmptyKcer();
-    }
-  }
-
-  if (ash::IsLockScreenAppBrowserContext(profile)) {
-    // Returning an empty Kcer here is not a strict requirement, but seem to be
-    // the status quo for now.
-    return ExtraInstances::GetEmptyKcer();
+    return ExtraInstances::GetDeviceKcer();
   }
 
   if (!ash::IsUserBrowserContext(profile)) {

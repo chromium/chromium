@@ -63,9 +63,6 @@ class PlusAddressWebDataService : public WebDataServiceBase {
   // sequence.
   void GetPlusProfiles(WebDataServiceConsumer* consumer);
   void AddOrUpdatePlusProfile(const PlusProfile& profile);
-  // TODO(b/322147254): Once the sync integration is complete, this shouldn't
-  // be necessary on the UI sequence anymore either.
-  void ClearPlusProfiles();
 
   // Returns a controller delegate for the `sync_bridge` owned this service.
   std::unique_ptr<syncer::DataTypeControllerDelegate>

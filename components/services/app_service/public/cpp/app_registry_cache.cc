@@ -4,12 +4,17 @@
 
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 namespace apps {
@@ -288,6 +293,23 @@ void AppRegistryCache::OnAppTypeInitialized() {
       obs.OnAppTypeInitialized(app_type);
     }
   }
+}
+
+std::optional<AppUpdate> AppRegistryCache::GetAppUpdate(
+    std::string_view app_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+  auto s_iter = states_.find(app_id);
+  const App* state = (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+
+  auto d_iter = deltas_in_progress_.find(app_id);
+  const App* delta =
+      (d_iter != deltas_in_progress_.end()) ? d_iter->second : nullptr;
+
+  if (state || delta) {
+    return AppUpdate(state, delta, account_id_);
+  }
+  return std::nullopt;
 }
 
 }  // namespace apps

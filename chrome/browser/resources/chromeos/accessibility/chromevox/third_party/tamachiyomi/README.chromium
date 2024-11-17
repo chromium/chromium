@@ -4,8 +4,8 @@ URL: https://source.corp.google.com/piper///depot/google3/third_party/tamachiyom
 Version: 0
 License: MIT
 License File: LICENSE
-Security Critical: No (data only)
+Security Critical: No
 Shipped: yes
-Description: Provides Japanese phonetic reading data for ChromeVox.
+Description: Provides Japanese phonetic reading data for ChromeVox. Data files only, thus not security critical.
 Local Modifications:
 Imported from google3 and wrapped for use by ChromeVox.

@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
@@ -285,9 +286,6 @@ void TriggerLaunchDemoModeApp() {
 
 }  // namespace
 
-// static
-constexpr char DemoSession::kSupportedCountries[][3];
-
 constexpr char DemoSession::kCountryNotSelectedId[];
 
 // static
@@ -301,8 +299,7 @@ std::string DemoSession::DemoConfigToString(
     case DemoSession::DemoModeConfig::kOfflineDeprecated:
       return "offlineDeprecated";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown demo mode configuration";
-  return std::string();
+  NOTREACHED() << "Unknown demo mode configuration";
 }
 
 // static
@@ -503,16 +500,6 @@ base::Value::List DemoSession::GetCountryList() {
   return country_list;
 }
 
-// static
-void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kDemoModeDefaultLocale, std::string());
-  registry->RegisterStringPref(prefs::kDemoModeCountry, kSupportedCountries[0]);
-  registry->RegisterStringPref(prefs::kDemoModeRetailerId, std::string());
-  registry->RegisterStringPref(prefs::kDemoModeStoreId, std::string());
-  registry->RegisterStringPref(prefs::kDemoModeAppVersion, std::string());
-  registry->RegisterStringPref(prefs::kDemoModeResourcesVersion, std::string());
-}
-
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
   if (!components_)
     components_ = std::make_unique<DemoComponents>(GetDemoConfig());
@@ -567,7 +554,7 @@ std::vector<CountryCodeAndFullNamePair>
 DemoSession::GetSortedCountryCodeAndNamePairList() {
   const std::string current_locale = g_browser_process->GetApplicationLocale();
   std::vector<CountryCodeAndFullNamePair> result;
-  for (const std::string country : kSupportedCountries) {
+  for (const std::string country : demo_mode::kSupportedCountries) {
     result.push_back({country, l10n_util::GetDisplayNameForCountry(
                                    country, current_locale)});
   }
@@ -577,8 +564,8 @@ DemoSession::GetSortedCountryCodeAndNamePairList() {
   DCHECK(U_SUCCESS(error_code));
 
   std::sort(result.begin(), result.end(),
-            [&collator](CountryCodeAndFullNamePair pair1,
-                        CountryCodeAndFullNamePair pair2) {
+            [&collator](const CountryCodeAndFullNamePair& pair1,
+                        const CountryCodeAndFullNamePair& pair2) {
               return base::i18n::CompareString16WithCollator(
                          *collator, pair1.country_name, pair2.country_name) < 0;
             });

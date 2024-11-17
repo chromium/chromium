@@ -75,7 +75,6 @@ class CORE_EXPORT IntersectionObservation final
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();
-  void InvalidateCachedRects() { cached_rects_.valid = false; }
 
   void Trace(Visitor*) const;
 

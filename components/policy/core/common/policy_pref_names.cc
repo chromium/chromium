@@ -124,13 +124,6 @@ const char kHideWebStoreIcon[] = "hide_web_store_icon";
 // 2 - Forced. All pages/sessions are forced into Incognito.
 const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 
-// A boolean indicating whether the new behavior for beforeunload show cancel
-// dialog is in effect. If true, then
-// 1. If event.preventDefault() is called, prompt cancel dialog.
-// 2. If event.returnValue is the empty string, do not prompt cancel dialog.
-const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
-    "policy.beforeunload_event_cancel_by_prevent_default_enabled";
-
 // A boolean indicating whether scrollers should be focusable. If true, then
 // scrollers without focusable children are keyboard-focusable by default.
 const char kKeyboardFocusableScrollersEnabled[] =
@@ -144,6 +137,13 @@ const char kStandardizedBrowserZoomEnabled[] =
 // The value is controlled by the PolicyTestPageEnabled policy.
 // If this is set to True, the page will be accessible.
 const char kPolicyTestPageEnabled[] = "policy_test_page_enabled";
+
+// Boolean indicating if the user has permanently dismissed the promotion
+// banner on the chrome://policy page. If it's true, it means the user
+// has clicked the "dismiss" button and has the banner turned off, if the
+// value is false, the user has taken no action to turn off the banner.
+const char kHasDismissedPolicyPagePromotionBanner[] =
+    "has_dismissed_policy_page_promotion_banner";
 
 // A boolean pref indicating whether the new the page with "Cache-Control:
 // no-store" header is allowed to be stored in back/forward cache.
@@ -163,11 +163,26 @@ const char kMutationEventsEnabled[] =
 const char kCSSCustomStateDeprecatedSyntaxEnabled[] =
     "policy.css_custom_state_deprecated_syntax_enabled";
 
+// A boolean pref indicating whether the new HTML parser for the <select>
+// element is enabled. When enabled, the HTML parser allows more tags to be used
+// inside <select> instead of removing them.
+const char kSelectParserRelaxationEnabled[] =
+    "policy.select_parser_relaxation_enabled";
+
 // A boolean pref indicating whether to allow deprecation of the "unload"
 // event.
 // If false, the deprecation rollout will be ignored.
 const char kForcePermissionPolicyUnloadDefaultEnabled[] =
     "policy.force_permission_policy_unload_default_enabled";
+
+// Prevents certain types of downloads based on integer value, which corresponds
+// to policy::DownloadRestriction.
+// 0 - No special restrictions (default)
+// 1 - Block dangerous downloads
+// 2 - Block potentially dangerous downloads
+// 3 - Block all downloads
+// 4 - Block malicious downloads
+const char kDownloadRestrictions[] = "download_restrictions";
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Allows user browser navigation access to the listed host patterns. Only

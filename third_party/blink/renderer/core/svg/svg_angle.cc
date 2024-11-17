@@ -41,11 +41,11 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGMarkerOrientType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {kSVGMarkerOrientAuto, "auto"},
-      {kSVGMarkerOrientAngle, "angle"},
-      {kSVGMarkerOrientAutoStartReverse, "auto-start-reverse"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "auto",
+      "angle",
+      "auto-start-reverse",
+  });
   static const SVGEnumerationMap entries(enum_items, kSVGMarkerOrientAngle);
   return entries;
 }
@@ -113,8 +113,7 @@ float SVGAngle::Value() const {
       return value_in_specified_units_;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void SVGAngle::SetValue(float value) {
@@ -174,19 +173,19 @@ static SVGAngle::SVGAngleType StringToAngleType(const CharType*& ptr,
 }
 
 String SVGAngle::ValueAsString() const {
-  const char* unit_string = "";
+  base::span<const char> unit_string;
   switch (unit_type_) {
     case kSvgAngletypeDeg:
-      unit_string = "deg";
+      unit_string = base::span_from_cstring("deg");
       break;
     case kSvgAngletypeRad:
-      unit_string = "rad";
+      unit_string = base::span_from_cstring("rad");
       break;
     case kSvgAngletypeGrad:
-      unit_string = "grad";
+      unit_string = base::span_from_cstring("grad");
       break;
     case kSvgAngletypeTurn:
-      unit_string = "turn";
+      unit_string = base::span_from_cstring("turn");
       break;
     case kSvgAngletypeUnspecified:
     case kSvgAngletypeUnknown:
@@ -194,7 +193,7 @@ String SVGAngle::ValueAsString() const {
   }
   StringBuilder builder;
   builder.AppendNumber(value_in_specified_units_);
-  builder.Append(unit_string, static_cast<unsigned>(strlen(unit_string)));
+  builder.Append(base::as_bytes(unit_string));
   return builder.ToString();
 }
 
@@ -274,8 +273,7 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
           break;
         case kSvgAngletypeTurn:
         case kSvgAngletypeUnknown:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case kSvgAngletypeRad:
@@ -293,8 +291,7 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
           break;
         case kSvgAngletypeRad:
         case kSvgAngletypeUnknown:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case kSvgAngletypeGrad:
@@ -311,8 +308,7 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
           break;
         case kSvgAngletypeGrad:
         case kSvgAngletypeUnknown:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case kSvgAngletypeUnspecified:
@@ -333,13 +329,11 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType unit_type) {
         case kSvgAngletypeDeg:
           break;
         case kSvgAngletypeUnknown:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case kSvgAngletypeUnknown:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   unit_type_ = unit_type;

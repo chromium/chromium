@@ -92,8 +92,7 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       return nullptr;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

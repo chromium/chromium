@@ -386,7 +386,6 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
 void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
     content::WebContents* web_contents,
     const GURL& blocked_url,
-    const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
   ShowFramebustBlockMessageInternal(web_contents, blocked_url);
 }
@@ -568,6 +567,16 @@ bool TabWebContentsDelegateAndroid::IsModalContextMenu() const {
   if (obj.is_null())
     return true;
   return Java_TabWebContentsDelegateAndroidImpl_isModalContextMenu(env, obj);
+}
+
+bool TabWebContentsDelegateAndroid::IsDynamicSafeAreaInsetsEnabled() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return false;
+  }
+  return Java_TabWebContentsDelegateAndroidImpl_isDynamicSafeAreaInsetsEnabled(
+      env, obj);
 }
 
 }  // namespace android

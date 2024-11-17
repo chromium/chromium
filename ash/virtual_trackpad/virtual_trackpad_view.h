@@ -39,6 +39,7 @@ class VirtualTrackpadView : public views::View {
   static void Toggle();
 
   // views::View:
+  void AddedToWidget() override;
   void Layout(PassKey) override;
 
   static ASH_EXPORT views::Widget* GetWidgetForTesting();
@@ -62,7 +63,8 @@ class VirtualTrackpadView : public views::View {
   // `finger_buttons_panel_`. The key represents the number of fingers that the
   // `LabelButton` activates for future gestures. This map is ultimately used to
   // highlight the active button with a different color.
-  base::flat_map<int, views::LabelButton*> finger_buttons_;
+  base::flat_map<int, raw_ptr<views::LabelButton, CtnExperimental>>
+      finger_buttons_;
   raw_ptr<TrackpadInternalSurfaceView> trackpad_view_ = nullptr;
 
   // Creates a new layer that blurs the background underneath the view layer.

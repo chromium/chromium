@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -48,10 +49,10 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -198,6 +199,7 @@ public class JavascriptTabModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
+    @DisabledTest(message = "Flaky - crbug.com/378915567")
     public void testAlertModalDialogMessageFocus() throws TimeoutException, ExecutionException {
         assertScrollViewFocusabilityInAlertDialog("alert('Short message!');", false);
 
@@ -260,7 +262,7 @@ public class JavascriptTabModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testDialogDismissedAfterToggleOverview() {
         executeJavaScriptAndWaitForDialog("alert('Android')");
 

@@ -7,7 +7,6 @@
 #include <functional>
 #include <iterator>
 #include <memory>
-#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -96,7 +95,8 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
   }
 }
 
-bool IsOriginOpaqueHttpOrHttps(const url::Origin* top_frame_origin) {
+bool IsOriginOpaqueHttpOrHttps(
+    base::optional_ref<const url::Origin> top_frame_origin) {
   if (!top_frame_origin) {
     return false;
   }
@@ -203,19 +203,17 @@ bool CookieSettings::IsCookieAccessible(
     const net::CanonicalCookie& cookie,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const std::optional<url::Origin>& top_frame_origin,
+    base::optional_ref<const url::Origin> top_frame_origin,
     const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieSettingOverrides overrides,
     net::CookieInclusionStatus* cookie_inclusion_status) const {
   const CookieSettingWithMetadata setting_with_metadata =
       GetCookieSettingWithMetadata(url, site_for_cookies,
-                                   base::OptionalToPtr(top_frame_origin),
-                                   overrides);
+                                   top_frame_origin.as_ptr(), overrides);
   bool allowed = IsCookieAllowed(cookie, setting_with_metadata);
   if (cookie_inclusion_status) {
-    AugmentInclusionStatus(cookie, base::OptionalToPtr(top_frame_origin),
-                           setting_with_metadata, first_party_set_metadata,
-                           *cookie_inclusion_status);
+    AugmentInclusionStatus(cookie, top_frame_origin, setting_with_metadata,
+                           first_party_set_metadata, *cookie_inclusion_status);
   }
   return allowed;
 }
@@ -242,17 +240,17 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
 net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const std::optional<url::Origin>& top_frame_origin,
+    base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides) const {
   return PrivacySetting(GetCookieSettingWithMetadata(
-      url, site_for_cookies, base::OptionalToPtr(top_frame_origin), overrides));
+      url, site_for_cookies, top_frame_origin.as_ptr(), overrides));
 }
 
 CookieSettings::CookieSettingWithMetadata
 CookieSettings::GetCookieSettingWithMetadata(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const url::Origin* top_frame_origin,
+    base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides) const {
   return GetCookieSettingInternal(
       url, site_for_cookies,
@@ -263,16 +261,16 @@ CookieSettings::GetCookieSettingWithMetadata(
 // static
 GURL CookieSettings::FirstPartyURLForMetadata(
     const net::SiteForCookies& site_for_cookies,
-    const url::Origin* top_frame_origin) {
+    base::optional_ref<const url::Origin> top_frame_origin) {
   return IsOriginOpaqueHttpOrHttps(top_frame_origin)
              ? top_frame_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL()
-             : GetFirstPartyURL(site_for_cookies, top_frame_origin);
+             : GetFirstPartyURL(site_for_cookies, top_frame_origin.as_ptr());
 }
 
 bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const url::Origin* top_frame_origin,
+    base::optional_ref<const url::Origin> top_frame_origin,
     const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieSettingOverrides overrides,
     net::CookieAccessResultList& maybe_included_cookies,
@@ -384,7 +382,7 @@ bool CookieSettings::MitigationsEnabledFor3pcd() const {
 
 void CookieSettings::AugmentInclusionStatus(
     const net::CanonicalCookie& cookie,
-    const url::Origin* top_frame_origin,
+    base::optional_ref<const url::Origin> top_frame_origin,
     const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
     const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieInclusionStatus& out_status) const {
@@ -459,6 +457,12 @@ bool CookieSettings::IsStorageAccessHeadersEnabled(
              url, top_frame_origin->GetURL(),
              ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
              /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
+}
+
+bool CookieSettings::ShouldAlwaysAllowCookiesForTesting(
+    const GURL& url,
+    const GURL& first_party_url) const {
+  return ShouldAlwaysAllowCookies(url, first_party_url);
 }
 
 }  // namespace network

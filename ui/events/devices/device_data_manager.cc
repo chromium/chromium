@@ -82,8 +82,7 @@ void DeviceDataManager::ConfigureTouchDevices(
   for (const TouchDeviceTransform& transform : transforms)
     UpdateTouchInfoFromTransform(transform);
   are_touchscreen_target_displays_valid_ = true;
-  for (InputDeviceEventObserver& observer : observers_)
-    observer.OnTouchDeviceAssociationChanged();
+  observers_.Notify(&InputDeviceEventObserver::OnTouchDeviceAssociationChanged);
 }
 
 void DeviceDataManager::ClearTouchDeviceAssociations() {

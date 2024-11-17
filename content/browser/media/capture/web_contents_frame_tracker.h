@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
+#include "content/browser/media/capture/web_contents_auto_scaler.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -29,6 +30,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
+
 class WebContentsVideoCaptureDevice;
 class MouseCursorOverlayController;
 class RenderFrameHost;
@@ -42,9 +44,9 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // We generally retrieve certain properties by accessing fields on the
   // WebContents object, however these properties may come from a different
   // context in some circumstances, such as testing.
-  class Context {
+  class Context : public WebContentsAutoScaler::Delegate {
    public:
-    virtual ~Context() = default;
+    ~Context() override = default;
 
     // Get bounds of the attached screen, if any.
     virtual std::optional<gfx::Rect> GetScreenBounds() = 0;
@@ -58,10 +60,6 @@ class CONTENT_EXPORT WebContentsFrameTracker final
     // initialized in the test harness.
     virtual void IncrementCapturerCount(const gfx::Size& capture_size) = 0;
     virtual void DecrementCapturerCount() = 0;
-
-    // Adjust the associated RenderWidgetHostView's rendering scale for capture.
-    virtual void SetScaleOverrideForCapture(float scale) = 0;
-    virtual float GetScaleOverrideForCapture() const = 0;
   };
 
   // The |device| weak pointer will be used to post tasks back to the device via
@@ -94,22 +92,7 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // the post" system is used and the first capturer's preferred size is set.
   gfx::Size CalculatePreferredSize(const gfx::Size& capture_size);
 
-  // Determines the preferred DPI scaling factor based on the current content
-  // size of the video frame, meaning the populated pixels, and the unscaled
-  // current content size, meaning the original size of the frame before scaling
-  // was applied to fit the frame. These values are used to compare against
-  // the currently requested |capture_size_| set in
-  // |WillStartCapturingWebContents()|.
-  float CalculatePreferredScaleFactor(
-      const gfx::Size& current_content_size,
-      const gfx::Size& unscaled_current_content_size);
-
   // Called whenever the capture device gets updated feedback.
-  //
-  // NOTE: the way this report gets applied in this class assumes that it is
-  // updated relatively infrequently (e.g. multiple seconds between reports). If
-  // we find that this is called more frequently the algorithm should be updated
-  // to weigh historic reports as well as the last received feedback.
   void OnUtilizationReport(media::VideoCaptureFeedback feedback);
 
   // WebContentsObserver overrides.
@@ -164,20 +147,9 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // Noop on Android.
   void SetTargetView(gfx::NativeView view);
 
-  // Helper for setting the capture scale override, should always update the
-  // context at the same time. NOTE: `new_value`
-  void SetCaptureScaleOverride(float new_value);
-
-  // Helper for applying the latest-received utilization feedback to throttle
-  // the capture scale override, if necessary.
-  float DetermineMaxScaleOverride();
-
   // Return the right VideoCaptureSubTarget based on whether which sub-capture
   // has been applied, if any.
   viz::VideoCaptureSubTarget DeriveSubTarget() const;
-
-  // The maximum capture scale override.
-  static const float kMaxCaptureScaleOverride;
 
   // |device_| may be dereferenced only by tasks run by |device_task_runner_|.
   const base::WeakPtr<WebContentsVideoCaptureDevice> device_;
@@ -221,34 +193,6 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // with an uncropped track.)
   uint32_t sub_capture_target_version_ = 0;
 
-  // Scale multiplier used for the captured content when HiDPI capture mode is
-  // active. A value of 1.0 means no override, using the original unmodified
-  // resolution. The scale override is a multiplier applied to both the X and Y
-  // dimensions, so a value of 2.0 means four times the pixel count. This value
-  // tracks the intended scale according to the heuristic. Whenever the value
-  // changes, the new scale is immediately applied to the RenderWidgetHostView
-  // via SetScaleOverrideForCapture. The value is also saved in this attribute
-  // so that it can be undone and/or re-applied when the RenderFrameHost
-  // changes.
-  //
-  // NOTE: the value provided to the captured content is the min of this
-  // property and `max_capture_scale_override_`.
-  float desired_capture_scale_override_ = 1.0f;
-
-  // Track the number of times the capture scale override mutates in a single
-  // session.
-  int scale_override_change_count_ = 0;
-
-  // The maximum capture scale override, based on the last received
-  // `capture_feedback_`.
-  float max_capture_scale_override_ = kMaxCaptureScaleOverride;
-
-  // The last reported content size, if any.
-  std::optional<gfx::Size> content_size_;
-
-  // The last received video capture feedback, if any.
-  std::optional<media::VideoCaptureFeedback> capture_feedback_;
-
   // The consumer-requested capture size, set in |WillStartCapturingWebContents|
   // to indicate the preferred frame size from the video frame consumer. Note
   // that frames will not necessarily be this size due to a variety of reasons,
@@ -256,10 +200,10 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // may differ from this value.
   gfx::Size capture_size_;
 
-  // When true, the WebContents may be rendered at a higher device scale factor
-  // to produce a sharper image. When false, disables HiDPI capture mode and no
+  // When set, the WebContents may be rendered at a higher device scale factor
+  // to produce a sharper image. When unset, disables HiDPI capture mode and no
   // scale factor adjustments will be made.
-  bool is_high_dpi_enabled_ = false;
+  std::unique_ptr<WebContentsAutoScaler> auto_scaler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

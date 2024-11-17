@@ -21,9 +21,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 
@@ -94,7 +95,6 @@ class TestBrowserWindow : public BrowserWindow {
   void UpdateDevTools() override {}
   void UpdateLoadingAnimations(bool is_visible) override {}
   void SetStarredState(bool is_starred) override {}
-  void SetTranslateIconToggled(bool is_lit) override {}
   void OnActiveTabChanged(content::WebContents* old_contents,
                           content::WebContents* new_contents,
                           int index,
@@ -159,7 +159,6 @@ class TestBrowserWindow : public BrowserWindow {
                                    SharingDialogData data) override;
   void ShowUpdateChromeDialog() override {}
   void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) override {}
-  void ShowBubbleFromManagementToolbarButton() override {}
   qrcode_generator::QRCodeGeneratorBubbleView* ShowQRCodeGeneratorBubble(
       content::WebContents* contents,
       const GURL& url,
@@ -218,6 +217,7 @@ class TestBrowserWindow : public BrowserWindow {
       override;
   void ShowAvatarBubbleFromAvatarButton(bool is_source_keyboard) override {}
   void MaybeShowProfileSwitchIPH() override {}
+  void MaybeShowSupervisedUserProfileSignInIPH() override {}
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_LINUX)
@@ -248,28 +248,29 @@ class TestBrowserWindow : public BrowserWindow {
   void SetCloseCallback(base::OnceClosure close_callback);
 
   void CreateTabSearchBubble(
-      int tab_index = -1,
+      tab_search::mojom::TabSearchSection section =
+          tab_search::mojom::TabSearchSection::kNone,
       tab_search::mojom::TabOrganizationFeature feature =
           tab_search::mojom::TabOrganizationFeature::kNone) override {}
   void CloseTabSearchBubble() override {}
 
-  user_education::FeaturePromoController* GetFeaturePromoController() override;
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
   user_education::FeaturePromoResult CanShowFeaturePromo(
       const base::Feature& iph_feature) const override;
-  user_education::FeaturePromoResult MaybeShowFeaturePromo(
+  void MaybeShowFeaturePromo(
       user_education::FeaturePromoParams params) override;
-  bool MaybeShowStartupFeaturePromo(
+  void MaybeShowStartupFeaturePromo(
       user_education::FeaturePromoParams params) override;
-  bool CloseFeaturePromo(
-      const base::Feature& iph_feature,
-      user_education::EndFeaturePromoReason close_reason) override;
+  bool AbortFeaturePromo(const base::Feature& iph_feature) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) override;
-  void NotifyFeatureEngagementEvent(const char* event_name) override;
-  void NotifyPromoFeatureUsed(const base::Feature& feature) override;
+  bool NotifyFeaturePromoFeatureUsed(
+      const base::Feature& feature,
+      FeaturePromoFeatureUsedAction action) override;
+  void NotifyAdditionalConditionEvent(const char* event_name) override;
   user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& new_badge_feature) override;
+  void NotifyNewBadgeFeatureUsed(const base::Feature& feature) override;
 
   // Sets the controller returned by GetFeaturePromoController().
   // Deletes the existing one, if any.
@@ -315,6 +316,9 @@ class TestBrowserWindow : public BrowserWindow {
     void OnPopupVisibilityChanged() override {}
     void UpdateWithoutTabRestore() override {}
   };
+
+  user_education::FeaturePromoController* GetFeaturePromoControllerImpl()
+      override;
 
   autofill::TestAutofillBubbleHandler autofill_bubble_handler_;
   TestDownloadShelf download_shelf_{nullptr};

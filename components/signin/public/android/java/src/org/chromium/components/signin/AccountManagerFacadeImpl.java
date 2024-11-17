@@ -85,6 +85,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private int mPendingTokenRequests;
     private Runnable mTokenRequestsCompletedCallback;
 
+    private boolean mDisallowTokenRequestsForTesting;
+
     /**
      * @param delegate the AccountManagerDelegate to use as a backend
      */
@@ -141,6 +143,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         ThreadUtils.assertOnUiThread();
         assert coreAccountInfo != null;
         assert scope != null;
+
+        if (mDisallowTokenRequestsForTesting) {
+            callback.onGetTokenFailure(false);
+            return;
+        }
+
         pendingRequestStarted();
         ConnectionRetry.runAuthTask(
                 new AuthTask<AccessTokenData>() {
@@ -184,8 +192,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void invalidateAccessToken(String accessToken, @Nullable Runnable completedRunnable) {
         ThreadUtils.assertOnUiThread();
-        if (TextUtils.isEmpty(accessToken)) {
-            // TODO(https://crbug.com/366403142): Replace this with an exception.
+        if (TextUtils.isEmpty(accessToken) || mDisallowTokenRequestsForTesting) {
+            // TODO(https://crbug.com/366403142): Replace isEmpty check with an exception.
             if (completedRunnable != null) {
                 completedRunnable.run();
             }
@@ -478,5 +486,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mCoreAccountInfosPromise = new Promise<>();
         mAllAccounts.set(null);
         updateAccounts();
+    }
+
+    @Override
+    public void disallowTokenRequestsForTesting() {
+        ThreadUtils.assertOnUiThread();
+        mDisallowTokenRequestsForTesting = true;
     }
 }

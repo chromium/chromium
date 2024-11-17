@@ -306,8 +306,10 @@ impl EnclaveServer {
             })
             .unwrap_or(ClientState::Initial);
 
+        let mut metrics = processor::MetricsUpdate::default();
         let cbor_response = match processor::process_client_msg(
             client_state,
+            &mut metrics,
             processor::ExternalContext {
                 // This timestamp is fixed so that any XML files submitted by tests will be
                 // considered unexpired.
@@ -337,6 +339,8 @@ impl EnclaveServer {
 
                 let err = match err {
                     processor::Error::UnknownClient => Value::Int(0),
+                    processor::Error::UnknownKey => Value::Int(1),
+                    processor::Error::SignatureVerificationFailed => Value::Int(2),
                     processor::Error::Str(s) => Value::String(String::from(s)),
                     _ => Value::String(format!("{:?}", err)),
                 };

@@ -9,8 +9,8 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
@@ -19,7 +19,7 @@ class Canvas;
 class Insets;
 class Rect;
 
-class GFX_EXPORT NineImagePainter {
+class COMPONENT_EXPORT(GFX) NineImagePainter {
  public:
   explicit NineImagePainter(const std::vector<ImageSkia>& images);
   NineImagePainter(const ImageSkia& image, const Insets& insets);

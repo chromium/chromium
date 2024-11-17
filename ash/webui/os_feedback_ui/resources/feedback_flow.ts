@@ -6,7 +6,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './confirmation_page.js';
 import './search_page.js';
 import './share_data_page.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';

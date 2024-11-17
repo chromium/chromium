@@ -142,4 +142,13 @@ bool MahiMediaAppContentManagerImpl::ActivateClientWindow(
   return true;
 }
 
+void MahiMediaAppContentManagerImpl::SetSelectedText(
+    const std::string& selected_text) {
+  selected_text_ = selected_text;
+}
+
+std::string MahiMediaAppContentManagerImpl::GetSelectedText() const {
+  return selected_text_;
+}
+
 }  // namespace ash

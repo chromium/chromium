@@ -9,6 +9,7 @@
 #include <map>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_base_export.h"
@@ -102,7 +103,8 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   std::map<FrameID, AXTreeID> frame_to_ax_tree_id_map_;
 
   // Maps an id to its handler.
-  std::map<AXTreeID, AXActionHandlerBase*> id_to_action_handler_;
+  std::map<AXTreeID, raw_ptr<AXActionHandlerBase, CtnExperimental>>
+      id_to_action_handler_;
 
   // Tracks all observers.
   base::ObserverList<AXActionHandlerObserver> observers_;

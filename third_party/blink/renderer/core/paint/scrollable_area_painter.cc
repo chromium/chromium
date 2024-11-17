@@ -44,7 +44,7 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
                                          const PhysicalOffset& paint_offset,
                                          const CullRect& cull_rect) {
   const auto* box = scrollable_area_.GetLayoutBox();
-  DCHECK_EQ(box->StyleRef().UsedVisibility(), EVisibility::kVisible);
+  DCHECK_EQ(box->StyleRef().Visibility(), EVisibility::kVisible);
   if (!box->CanResize())
     return;
 
@@ -182,7 +182,7 @@ bool ScrollableAreaPainter::PaintOverflowControls(
   // Don't do anything if we have no overflow.
   const auto& box = *scrollable_area_.GetLayoutBox();
   CHECK(box.IsScrollContainer());
-  if (box.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+  if (box.StyleRef().Visibility() != EVisibility::kVisible) {
     return false;
   }
 
@@ -362,6 +362,18 @@ void ScrollableAreaPainter::PaintScrollCorner(
   if (!cull_rect.Intersects(visual_rect))
     return;
 
+  const auto& client = scrollable_area_.GetScrollCornerDisplayItemClient();
+
+  // Make sure to set up the effect node before painting custom or native
+  // scrollbar.
+  std::optional<ScopedPaintChunkProperties> chunk_properties;
+  const auto* properties =
+      scrollable_area_.GetLayoutBox()->FirstFragment().PaintProperties();
+  if (const auto* effect = properties->ScrollCornerEffect()) {
+    chunk_properties.emplace(context.GetPaintController(), *effect, client,
+                             DisplayItem::kScrollCorner);
+  }
+
   if (const auto* scroll_corner = scrollable_area_.ScrollCorner()) {
     CustomScrollbarTheme::PaintIntoRect(*scroll_corner, context,
                                         PhysicalRect(visual_rect));
@@ -381,17 +393,7 @@ void ScrollableAreaPainter::PaintScrollCorner(
   } else if (scrollable_area_.VerticalScrollbar()) {
     theme = &scrollable_area_.VerticalScrollbar()->GetTheme();
   } else {
-    NOTREACHED_IN_MIGRATION();
-  }
-
-  const auto& client = scrollable_area_.GetScrollCornerDisplayItemClient();
-
-  std::optional<ScopedPaintChunkProperties> chunk_properties;
-  const auto* properties =
-      scrollable_area_.GetLayoutBox()->FirstFragment().PaintProperties();
-  if (const auto* effect = properties->ScrollCornerEffect()) {
-    chunk_properties.emplace(context.GetPaintController(), *effect, client,
-                             DisplayItem::kScrollCorner);
+    NOTREACHED();
   }
 
   theme->PaintScrollCorner(context, scrollable_area_, client, visual_rect);

@@ -34,6 +34,7 @@ static_library("key_permissions") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/platform_keys",

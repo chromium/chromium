@@ -9,10 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/selection_bound.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/touchui/touch_selection_controller.h"
 #include "ui/views/view.h"

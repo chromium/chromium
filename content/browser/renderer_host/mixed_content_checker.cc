@@ -169,11 +169,9 @@ void ReportBasicMixedContentFeatures(
     case blink::mojom::RequestContextType::PLUGIN:
     case blink::mojom::RequestContextType::VIDEO:
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "RequestContextType has value " << request_context_type
-          << " and has MixedContentContextType of "
-          << mixed_content_context_type;
-      return;
+      NOTREACHED() << "RequestContextType has value " << request_context_type
+                   << " and has MixedContentContextType of "
+                   << mixed_content_context_type;
   }
   mixed_content_features.insert(feature);
 }
@@ -320,8 +318,7 @@ bool MixedContentChecker::ShouldBlockInternal(
       break;
 
     case blink::mojom::MixedContentContextType::kNotMixedContent:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   };
 
   if (should_report_to_renderer) {

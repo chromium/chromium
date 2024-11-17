@@ -12,10 +12,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
-#include "components/user_education/common/events.h"
-#include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/user_education_events.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
@@ -28,6 +28,7 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -422,8 +423,7 @@ TEST_F(HelpBubbleViewsTest, AnchorRectOverlapsEdge) {
       EXPECT_GT(help_bubble_bounds.x(), kNewAnchorBounds.right());
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Arrow should only be right-center or left-center.";
+      NOTREACHED() << "Arrow should only be right-center or left-center.";
   }
 }
 
@@ -486,6 +486,18 @@ TEST_F(HelpBubbleViewsTest, MoveAnchorWidget) {
   gfx::Rect expected = old_bubble_bounds;
   expected.Offset(kOffset);
   EXPECT_EQ(expected, help_bubble_->GetBoundsInScreen());
+}
+
+TEST_F(HelpBubbleViewsTest, RootViewAccessibleName) {
+  ui::AXNodeData root_view_data;
+  help_bubble_->bubble_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      help_bubble_->bubble_view()->GetAccessibleWindowTitle());
 }
 
 }  // namespace user_education

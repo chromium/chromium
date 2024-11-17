@@ -14,7 +14,6 @@
 
 namespace WTF {
 class String;
-class TextStream;
 }  // namespace WTF
 
 namespace blink {
@@ -242,7 +241,6 @@ CORE_EXPORT PhysicalRect
 UnionRectEvenIfEmpty(const Vector<PhysicalRect>& rects);
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalRect&);
-CORE_EXPORT WTF::TextStream& operator<<(WTF::TextStream&, const PhysicalRect&);
 
 }  // namespace blink
 

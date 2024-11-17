@@ -189,11 +189,8 @@ TEST_F(SerializationUtilsTest, IllegalNameAreFilteredTest) {
       SerializationUtils::WriteMetricToFile(*sample1.get(), filename()));
   EXPECT_FALSE(
       SerializationUtils::WriteMetricToFile(*sample2.get(), filename()));
-  int64_t size = 0;
 
-  ASSERT_TRUE(!PathExists(filepath()) || base::GetFileSize(filepath(), &size));
-
-  EXPECT_EQ(0, size);
+  ASSERT_FALSE(base::PathExists(filepath()));
 }
 
 TEST_F(SerializationUtilsTest, BadInputIsCaughtTest) {
@@ -207,8 +204,9 @@ TEST_F(SerializationUtilsTest, MessageSeparatedByZero) {
       MetricSample::CrashSample("mycrash", /*num_samples=*/10);
 
   SerializationUtils::WriteMetricToFile(*crash.get(), filename());
-  int64_t size = 0;
-  ASSERT_TRUE(base::GetFileSize(filepath(), &size));
+  std::optional<int64_t> size = base::GetFileSize(filepath());
+
+  ASSERT_TRUE(size.has_value());
   // 4 bytes for the size
   // 5 bytes for crash
   // 1 byte for \0
@@ -216,7 +214,7 @@ TEST_F(SerializationUtilsTest, MessageSeparatedByZero) {
   // 3 bytes for " 10"
   // 1 byte for \0
   // -> total of 21
-  EXPECT_EQ(size, 21);
+  EXPECT_EQ(size.value(), 21);
 }
 
 TEST_F(SerializationUtilsTest, MessagesTooLongAreDiscardedTest) {
@@ -228,9 +226,10 @@ TEST_F(SerializationUtilsTest, MessagesTooLongAreDiscardedTest) {
   std::unique_ptr<MetricSample> crash =
       MetricSample::CrashSample(name, /*num_samples=*/10);
   EXPECT_FALSE(SerializationUtils::WriteMetricToFile(*crash.get(), filename()));
-  int64_t size = 0;
-  ASSERT_TRUE(base::GetFileSize(filepath(), &size));
-  EXPECT_EQ(0, size);
+
+  std::optional<int64_t> size = base::GetFileSize(filepath());
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(0, size.value());
 }
 
 TEST_F(SerializationUtilsTest, ReadLongMessageTest) {
@@ -328,9 +327,9 @@ TEST_F(SerializationUtilsTest, WriteReadTest_TruncateFile) {
   EXPECT_TRUE(shist->IsEqual(*vect[3]));
   EXPECT_TRUE(action->IsEqual(*vect[4]));
 
-  int64_t size = 0;
-  ASSERT_TRUE(base::GetFileSize(filepath(), &size));
-  ASSERT_EQ(0, size);
+  std::optional<int64_t> size = base::GetFileSize(filepath());
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(0, size.value());
 }
 
 TEST_F(SerializationUtilsTest, WriteReadTest_DeleteFile) {
@@ -387,9 +386,9 @@ TEST_F(SerializationUtilsTest, TooManyMessagesTest) {
     EXPECT_TRUE(hist->IsEqual(*sample));
   }
 
-  int64_t size = 0;
-  ASSERT_TRUE(base::GetFileSize(filepath(), &size));
-  ASSERT_EQ(0, size);
+  std::optional<int64_t> size = base::GetFileSize(filepath());
+  ASSERT_TRUE(size.has_value());
+  ASSERT_EQ(0, size.value());
 }
 
 TEST_F(SerializationUtilsTest, ReadEmptyFile) {

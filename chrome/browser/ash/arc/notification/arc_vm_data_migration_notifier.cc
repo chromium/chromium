@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/ash/arc/arc_vm_data_migration_confirmation_dialog.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -155,14 +156,14 @@ void ArcVmDataMigrationNotifier::ShowNotification() {
   // Set no timeout so that the notification never disappears spontaneously.
   notification.set_never_timeout(true);
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       nullptr /* metadata */);
 }
 
 void ArcVmDataMigrationNotifier::CloseNotification() {
   auto* notification_display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   if (notification_display_service) {
     notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
                                         kNotificationId);

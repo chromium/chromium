@@ -65,6 +65,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:visibility="gone"
+            android:background="@drawable/tab_resumption_module_tile_reason_background"
             style="@style/TabResumptionAppChip" />
 
         <TextView

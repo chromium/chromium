@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -18,7 +20,6 @@ class SpeedMenuSheetContent extends SingleMenuSheetContent {
     private static final String TAG = "ReadAloudSpeed";
     private final Context mContext;
     private final PropertyModel mModel;
-    private InteractionHandler mInteractionHandler;
     private float[] mSpeeds = {0.5f, 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f, 4.0f};
 
     SpeedMenuSheetContent(
@@ -33,8 +34,7 @@ class SpeedMenuSheetContent extends SingleMenuSheetContent {
         float currentSpeed = mModel.get(PlayerProperties.SPEED);
         for (int i = 0; i < mSpeeds.length; i++) {
             String speedString =
-                    mContext.getResources()
-                            .getString(R.string.readaloud_speed, speedFormatter(mSpeeds[i]));
+                    mContext.getString(R.string.readaloud_speed, speedFormatter(mSpeeds[i]));
             MenuItem item =
                     mMenu.addItem(i, 0, speedString, /* header= */ null, MenuItem.Action.RADIO);
             if (mSpeeds[i] == currentSpeed) {
@@ -44,7 +44,6 @@ class SpeedMenuSheetContent extends SingleMenuSheetContent {
     }
 
     void setInteractionHandler(InteractionHandler handler) {
-        mInteractionHandler = handler;
         mMenu.setRadioTrueHandler(
                 (itemId) -> {
                     handler.onSpeedChange(mSpeeds[itemId]);
@@ -57,9 +56,7 @@ class SpeedMenuSheetContent extends SingleMenuSheetContent {
 
     // BottomSheetContent
     @Override
-    public int getSheetContentDescriptionStringId() {
-        // "Speed menu"
-        // Automatically appended: "Swipe down to close."
-        return R.string.readaloud_speed_menu_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.readaloud_speed_menu_description);
     }
 }

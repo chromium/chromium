@@ -1,13 +1,13 @@
 # You can add new small tools to this directory at your desire, feel free
 # to owners-TBR new folders (assuming you have a regular review already,
-# of course). Include an OWNERS file with at least two people for your new
-# folder.
+# of course). Include README.md, DIR_METADATA and an OWNERS file with
+# at least two people for your new folder.
 # If you're changing existing tools, have your change reviewed by the
 # OWNERS of the existing tool.
 
 set noparent
-brucedawson@chromium.org
 dpranke@google.com
+jessemckenna@google.com
 thakis@chromium.org
 
 per-file add_header*.py=dcheng@chromium.org

@@ -11,13 +11,14 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
-/** Controls the behaviour of the Safe Browsing privacy guide page. */
+/** Controls the behavior of the Safe Browsing privacy guide page. */
 public class SafeBrowsingFragment extends PrivacyGuideBasePage
         implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener,
                 RadioGroup.OnCheckedChangeListener {
@@ -41,6 +42,12 @@ public class SafeBrowsingFragment extends PrivacyGuideBasePage
                 (RadioButtonWithDescriptionAndAuxButton) view.findViewById(R.id.enhanced_option);
         mStandardProtection = (RadioButtonWithDescription) view.findViewById(R.id.standard_option);
 
+        if (ChromeFeatureList.sEsbAiStringUpdate.isEnabled()) {
+            mEnhancedProtection.setDescriptionText(
+                    getContext()
+                            .getString(R.string.safe_browsing_enhanced_protection_summary_updated));
+        }
+
         if (SafeBrowsingBridge.isHashRealTimeLookupEligibleInSession()) {
             mStandardProtection.setDescriptionText(
                     getContext()
@@ -49,22 +56,28 @@ public class SafeBrowsingFragment extends PrivacyGuideBasePage
 
         mEnhancedProtection.setAuxButtonClickedListener(this);
 
-        initialRadioButtonConfig();
+        updateRadioButtonConfig();
     }
 
-    private void initialRadioButtonConfig() {
+    private void updateRadioButtonConfig() {
         @SafeBrowsingState
         int safeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState(getProfile());
         switch (safeBrowsingState) {
-            case (SafeBrowsingState.ENHANCED_PROTECTION):
+            case SafeBrowsingState.ENHANCED_PROTECTION:
                 mEnhancedProtection.setChecked(true);
                 break;
-            case (SafeBrowsingState.STANDARD_PROTECTION):
+            case SafeBrowsingState.STANDARD_PROTECTION:
                 mStandardProtection.setChecked(true);
                 break;
             default:
                 assert false : "Unexpected SafeBrowsingState " + safeBrowsingState;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateRadioButtonConfig();
     }
 
     @Override

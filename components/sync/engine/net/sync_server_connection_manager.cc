@@ -42,7 +42,7 @@ class Connection : public CancelationSignal::Observer {
 
  private:
   // Pointer to the factory we use for creating HttpPostProviders. We do not
-  // own |factory_|.
+  // own `factory_`.
   const raw_ptr<HttpPostProviderFactory> factory_;
 
   // Cancelation signal is signalled when engine shuts down. Current blocking

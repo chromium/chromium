@@ -325,9 +325,8 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // If primary account is signed in.
   virtual bool IsPrimaryAccountSignedIn() const = 0;
 
-  // If the domain for the account is equal to |kNoHostedDomainFound|,
-  // this means that the account is a Gmail account.
-  virtual bool IsAccountGmail(const std::string& username) const = 0;
+  // If |username| maps to a consumer account (vs. an enterprise account).
+  virtual bool IsAccountConsumer(const std::string& username) const = 0;
 
   // Gets the account based off of the username from a list of signed in
   // accounts.

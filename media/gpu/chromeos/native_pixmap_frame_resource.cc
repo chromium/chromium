@@ -140,8 +140,8 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
   // method, CreateVideoFrame().
   return base::WrapRefCounted(new NativePixmapFrameResource(
       layout, visible_rect, natural_size, timestamp, *buffer_format,
-      GetNextSharedMemoryId(), /*buffer_usage=*/std::nullopt,
-      std::move(handle)));
+      GetNextSharedMemoryId(), base::UnguessableToken::Create(),
+      /*buffer_usage=*/std::nullopt, std::move(handle)));
 }
 
 scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
@@ -198,7 +198,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
 
   return base::WrapRefCounted(new NativePixmapFrameResource(
       *layout, visible_rect, natural_size, timestamp, GetNextSharedMemoryId(),
-      buffer_usage, std::move(pixmap)));
+      base::UnguessableToken::Create(), buffer_usage, std::move(pixmap)));
 }
 
 NativePixmapFrameResource::NativePixmapFrameResource(
@@ -208,6 +208,7 @@ NativePixmapFrameResource::NativePixmapFrameResource(
     base::TimeDelta timestamp,
     gfx::BufferFormat buffer_format,
     gfx::GenericSharedMemoryId id,
+    const base::UnguessableToken& tracking_token,
     std::optional<gfx::BufferUsage> buffer_usage,
     gfx::NativePixmapHandle handle)
     : NativePixmapFrameResource(
@@ -216,6 +217,7 @@ NativePixmapFrameResource::NativePixmapFrameResource(
           natural_size,
           timestamp,
           id,
+          tracking_token,
           buffer_usage,
           base::MakeRefCounted<gfx::NativePixmapDmaBuf>(layout.coded_size(),
                                                         buffer_format,
@@ -227,6 +229,7 @@ NativePixmapFrameResource::NativePixmapFrameResource(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     gfx::GenericSharedMemoryId id,
+    const base::UnguessableToken& tracking_token,
     std::optional<gfx::BufferUsage> buffer_usage,
     scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap)
     : pixmap_(std::move(pixmap)),
@@ -237,6 +240,8 @@ NativePixmapFrameResource::NativePixmapFrameResource(
       natural_size_(natural_size),
       timestamp_(timestamp) {
   metadata().is_webgpu_compatible = pixmap_->SupportsZeroCopyWebGPUImport();
+  CHECK(!tracking_token.is_empty());
+  metadata().tracking_token = tracking_token;
 }
 
 NativePixmapFrameResource::~NativePixmapFrameResource() {
@@ -381,7 +386,10 @@ VideoFrameMetadata& NativePixmapFrameResource::metadata() {
 
 void NativePixmapFrameResource::set_metadata(
     const VideoFrameMetadata& metadata) {
+  // This keeps the original tracking token in |metadata_|.
+  base::UnguessableToken original_tracking_token = tracking_token();
   metadata_ = metadata;
+  metadata_.tracking_token = original_tracking_token;
 }
 
 base::TimeDelta NativePixmapFrameResource::timestamp() const {
@@ -416,7 +424,7 @@ scoped_refptr<FrameResource> NativePixmapFrameResource::CreateWrappingFrame(
   auto wrapping_frame = base::WrapRefCounted<NativePixmapFrameResource>(
       new NativePixmapFrameResource(layout(), visible_rect, natural_size,
                                     timestamp(), GetSharedMemoryId(),
-                                    buffer_usage_, pixmap_));
+                                    tracking_token(), buffer_usage_, pixmap_));
 
   // All other metadata is copied to the "wrapping" frame.
   wrapping_frame->metadata().MergeMetadataFrom(metadata());

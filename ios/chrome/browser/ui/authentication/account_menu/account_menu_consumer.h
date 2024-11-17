@@ -16,10 +16,20 @@
 
 // Updates the list of accounts.
 - (void)updateAccountListWithGaiaIDsToAdd:(NSArray<NSString*>*)indicesToAdd
-                          gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove;
+                          gaiaIDsToRemove:(NSArray<NSString*>*)gaiaIDsToRemove
+                            gaiaIDsToKeep:(NSArray<NSString*>*)gaiaIDsToKeep;
 
 // Updates the primary account details.
 - (void)updatePrimaryAccount;
+
+// Called wthen the account switch starts.
+- (void)switchingStarted;
+
+// Tells the consumer the switch is no longer in progress.
+- (void)switchingStopped;
+
+// Enable or disable the UI interaction.
+- (void)setUserInteractionsEnabled:(BOOL)enabled;
 
 @end
 

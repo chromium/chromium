@@ -26,8 +26,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -43,7 +45,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 @RunWith(BaseRobolectricTestRunner.class)
 public class CookiesFragmentTest {
     // TODO(crbug.com/40860773): Use Espresso for view interactions
-    @Rule public JniMocker mMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -58,10 +59,10 @@ public class CookiesFragmentTest {
 
     @Before
     public void setUp() {
-        mMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
 
-        mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceNativesMock);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceNativesMock);
     }
 
     @After
@@ -106,6 +107,7 @@ public class CookiesFragmentTest {
     }
 
     @Test(expected = AssertionError.class)
+    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testInitWhenCookiesAllowed() {
         initFragmentWithCookiesState(CookieControlsMode.OFF, true);
     }
@@ -165,5 +167,12 @@ public class CookiesFragmentTest {
         mBlockThirdParty.performClick();
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeCookiesBlock3P"));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void blockThirdPartyIncogintoCheckedWhenOff() {
+        initFragmentWithCookiesState(CookieControlsMode.OFF, true);
+        assertTrue(mBlockThirdPartyIncognito.isChecked());
     }
 }

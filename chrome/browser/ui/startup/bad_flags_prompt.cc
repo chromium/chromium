@@ -60,8 +60,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
-namespace chrome {
-
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -91,10 +89,6 @@ const char* const kBadFlags[] = {
     switches::kDisableWebRtcEncryption,
     switches::kIgnoreCertificateErrors,
     network::switches::kIgnoreCertificateErrorsSPKIList,
-
-    // This flag could prevent QuotaChange events from firing or cause the event
-    // to fire too often, potentially impacting web application behavior.
-    switches::kQuotaChangeEventInterval,
 
     // These flags change the URLs that handle PII.
     switches::kGaiaUrl,
@@ -173,7 +167,7 @@ const char* const kBadFlags[] = {
     // This flag enables injecting synthetic input. It is meant to be used only
     // in tests and performance benchmarks. Using it could allow faking user
     // interaction across origins.
-    cc::switches::kEnableGpuBenchmarking,
+    switches::kEnableGpuBenchmarking,
 
     // This flag enables loading a developer-signed certificate for Cast
     // streaming receivers and should only be used for testing purposes.
@@ -256,9 +250,11 @@ void ShowBadFlagsInfoBar(content::WebContents* web_contents,
 }
 
 void MaybeShowInvalidUserDataDirWarningDialog() {
-  const base::FilePath& user_data_dir = GetInvalidSpecifiedUserDataDir();
-  if (user_data_dir.empty())
+  const base::FilePath& user_data_dir =
+      chrome::GetInvalidSpecifiedUserDataDir();
+  if (user_data_dir.empty()) {
     return;
+  }
 
   startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
 
@@ -271,7 +267,5 @@ void MaybeShowInvalidUserDataDirWarningDialog() {
       IDS_CANT_WRITE_USER_DIRECTORY_SUMMARY, user_data_dir.LossyDisplayName());
 
   // More complex dialogs cannot be shown before the earliest calls here.
-  ShowWarningMessageBox(nullptr, title, message);
+  chrome::ShowWarningMessageBox(nullptr, title, message);
 }
-
-}  // namespace chrome

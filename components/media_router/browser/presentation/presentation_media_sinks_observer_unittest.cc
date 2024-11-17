@@ -34,7 +34,7 @@ class PresentationMediaSinksObserverTest : public ::testing::Test {
   PresentationMediaSinksObserverTest& operator=(
       const PresentationMediaSinksObserverTest&) = delete;
 
-  ~PresentationMediaSinksObserverTest() override {}
+  ~PresentationMediaSinksObserverTest() override = default;
 
   void SetUp() override {
     EXPECT_CALL(router_, RegisterMediaSinksObserver(_)).WillOnce(Return(true));

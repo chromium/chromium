@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/user_selectable_type.h"
 
 namespace web_app::integration_tests {
@@ -73,6 +74,35 @@ void TwoClientWebAppsIntegrationTestBase::SyncTurnOn() {
   AwaitWebAppQuiescence();
 }
 
+void TwoClientWebAppsIntegrationTestBase::SyncSignOut(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#else
+  for (int i = 0; i < num_clients(); ++i) {
+    if (GetProfile(i) != profile) {
+      continue;
+    }
+    GetClient(i)->SignOutPrimaryAccount();
+  }
+  AwaitWebAppQuiescence();
+#endif
+}
+
+void TwoClientWebAppsIntegrationTestBase::SyncSignIn(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#else
+  for (int i = 0; i < num_clients(); ++i) {
+    if (GetProfile(i) != profile) {
+      continue;
+    }
+    ASSERT_TRUE(
+        GetClient(i)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+  }
+  AwaitWebAppQuiescence();
+#endif
+}
+
 void TwoClientWebAppsIntegrationTestBase::AwaitWebAppQuiescence() {
   ASSERT_TRUE(apps_helper::AwaitWebAppQuiescence(GetAllProfiles()));
 }
@@ -85,8 +115,7 @@ Profile* TwoClientWebAppsIntegrationTestBase::GetProfileClient(
     case ProfileClient::kClient2:
       return GetProfile(1);
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void TwoClientWebAppsIntegrationTestBase::SetUp() {

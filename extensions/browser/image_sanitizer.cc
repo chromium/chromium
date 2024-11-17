@@ -9,6 +9,8 @@
 
 #include "extensions/browser/image_sanitizer.h"
 
+#include <optional>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -33,23 +35,16 @@ std::tuple<std::vector<uint8_t>, bool, bool> ReadAndDeleteBinaryFile(
     const base::FilePath& path) {
   std::vector<uint8_t> contents;
   bool read_success = false;
-  int64_t file_size;
-  if (base::GetFileSize(path, &file_size)) {
-    contents.resize(file_size);
+  std::optional<int64_t> file_size = base::GetFileSize(path);
+  if (file_size.has_value()) {
+    int64_t size = file_size.value();
+    contents.resize(size);
     read_success =
-        base::ReadFile(path, reinterpret_cast<char*>(contents.data()),
-                       file_size) == file_size;
+        base::ReadFile(path, reinterpret_cast<char*>(contents.data()), size) ==
+        size;
   }
   bool delete_success = base::DeleteFile(path);
   return std::make_tuple(std::move(contents), read_success, delete_success);
-}
-
-std::pair<bool, std::vector<unsigned char>> EncodeImage(const SkBitmap& image) {
-  std::vector<unsigned char> image_data;
-  bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
-      image,
-      /*discard_transparency=*/false, &image_data);
-  return std::make_pair(success, std::move(image_data));
 }
 
 bool WriteFile(const base::FilePath& path,
@@ -163,11 +158,10 @@ void ImageSanitizer::ImageDecoded(const base::FilePath& image_path,
     return;
   }
 
-  // TODO(mpcomplete): It's lame that we're encoding all images as PNG, even
-  // though they may originally be .jpg, etc.  Figure something out.
-  // http://code.google.com/p/chromium/issues/detail?id=12459
   io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&EncodeImage, decoded_image),
+      FROM_HERE,
+      base::BindOnce(gfx::PNGCodec::EncodeBGRASkBitmap, decoded_image,
+                     /*discard_transparency=*/false),
       base::BindOnce(&ImageSanitizer::ImageReencoded,
                      weak_factory_.GetWeakPtr(), image_path));
 
@@ -177,9 +171,8 @@ void ImageSanitizer::ImageDecoded(const base::FilePath& image_path,
 
 void ImageSanitizer::ImageReencoded(
     const base::FilePath& image_path,
-    std::pair<bool, std::vector<unsigned char>> result) {
-  bool success = result.first;
-  std::vector<unsigned char> image_data = std::move(result.second);
+    std::optional<std::vector<uint8_t>> result) {
+  bool success = result.has_value();
   if (!success) {
     ReportError(Status::kEncodingError, image_path);
     return;
@@ -188,7 +181,7 @@ void ImageSanitizer::ImageReencoded(
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&WriteFile, image_dir_.Append(image_path),
-                     std::move(image_data)),
+                     std::move(result.value())),
       base::BindOnce(&ImageSanitizer::ImageWritten, weak_factory_.GetWeakPtr(),
                      image_path));
 }

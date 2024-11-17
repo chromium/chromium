@@ -371,7 +371,7 @@ void MassageSendMessageArguments(v8::Isolate* isolate,
       options = arguments[2];
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (allow_options_argument)

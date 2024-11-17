@@ -360,7 +360,7 @@ base::Value::Dict CreateShillConfiguration(
     // TODO(pneubeck): change to source ONC_SOURCE_USER
     onc_source = ::onc::ONC_SOURCE_NONE;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   RemoveFakeCredentials(chromeos::onc::kNetworkConfigurationSignature,

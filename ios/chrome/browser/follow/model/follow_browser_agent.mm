@@ -239,7 +239,7 @@ void FollowBrowserAgent::OnFollowSuccess(WebPageURLs* web_page_urls,
 
   // Enable the feed prefs to show the feed and to expand it if they
   // are disabled.
-  PrefService* const pref_service = browser_->GetBrowserState()->GetPrefs();
+  PrefService* const pref_service = browser_->GetProfile()->GetPrefs();
   if (!pref_service->GetBoolean(prefs::kArticlesForYouEnabled))
     pref_service->SetBoolean(prefs::kArticlesForYouEnabled, true);
 
@@ -395,8 +395,8 @@ void FollowBrowserAgent::OnUnfollowFailure(WebPageURLs* web_page_urls,
 
 raw_ptr<FollowService> FollowBrowserAgent::GetFollowService() {
   if (!service_) {
-    ChromeBrowserState* browser_state = browser_->GetBrowserState();
-    service_ = FollowServiceFactory::GetForBrowserState(browser_state);
+    ProfileIOS* profile = browser_->GetProfile();
+    service_ = FollowServiceFactory::GetForProfile(profile);
     DCHECK(service_);
   }
   return service_;

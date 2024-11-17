@@ -285,7 +285,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
         String domainUrl = TabResumptionModuleUtils.getDomainUrl(entry.url);
         boolean isHistory = entry.type == SuggestionEntryType.HISTORY;
         String postInfoText =
-                entry.isLocalTab() || isHistory && TextUtils.isEmpty(entry.sourceName)
+                entry.isLocalTab() || (isHistory && TextUtils.isEmpty(entry.sourceName))
                         ? domainUrl
                         : res.getString(
                                 R.string.tab_resumption_module_domain_url_and_device_name,

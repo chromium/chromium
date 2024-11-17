@@ -5,7 +5,7 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
-import {FaceGazeConstants} from './constants.js';
+import {BubbleController} from './bubble_controller.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
@@ -24,17 +24,36 @@ export class FaceGaze {
   private prefsListener_: (prefs: PrefObject[]) => void;
   private metricsUtils_: MetricsUtils;
   private webCamFaceLandmarker_: WebCamFaceLandmarker;
-  private weightsWindowId_ = -1;
+  private bubbleController_: BubbleController;
 
-  constructor() {
+  constructor(isDictationActive: () => boolean) {
     this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
         (resultWithLatency: FaceLandmarkerResultWithLatency) => {
           const {result, latency} = resultWithLatency;
           this.processFaceLandmarkerResult_(result, latency);
         });
 
-    this.mouseController_ = new MouseController();
-    this.gestureHandler_ = new GestureHandler(this.mouseController_);
+    this.bubbleController_ = new BubbleController(() => {
+      return {
+        paused: this.gestureHandler_.isPaused() ?
+            this.gestureHandler_.getGestureForPause() :
+            undefined,
+        scrollMode: this.mouseController_.isScrollModeActive() ?
+            this.gestureHandler_.getGestureForScroll() :
+            undefined,
+        longClick: this.mouseController_.isLongClickActive() ?
+            this.gestureHandler_.getGestureForLongClick() :
+            undefined,
+        dictation: isDictationActive() ?
+            this.gestureHandler_.getGestureForDictation() :
+            undefined,
+        heldActions: this.gestureHandler_.getHeldMacroDisplayStrings(),
+      };
+    });
+
+    this.mouseController_ = new MouseController(this.bubbleController_);
+    this.gestureHandler_ = new GestureHandler(
+        this.mouseController_, this.bubbleController_, isDictationActive);
     this.metricsUtils_ = new MetricsUtils();
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init_();
@@ -54,6 +73,10 @@ export class FaceGaze {
     }
     this.initialized_ = true;
 
+    this.maybeShowConfirmationDialog_();
+  }
+
+  private maybeShowConfirmationDialog_(): void {
     chrome.settingsPrivate.getPref(
         FaceGaze.PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, pref => {
           if (pref.value === undefined || pref.value === null) {
@@ -91,10 +114,10 @@ export class FaceGaze {
     }
 
     // If the dialog was accepted, then initialize FaceGaze.
-    this.openWeightsPanel_();
     chrome.accessibilityPrivate.openSettingsSubpage(
         FaceGaze.SETTINGS_PAGE_ROUTE);
 
+    this.bubbleController_.updateBubble('');
     this.webCamFaceLandmarker_.init();
   }
 
@@ -117,6 +140,7 @@ export class FaceGaze {
     if (this.cursorControlEnabled_ === value) {
       return;
     }
+
     this.cursorControlEnabled_ = value;
     if (this.cursorControlEnabled_) {
       this.mouseController_.start();
@@ -129,11 +153,23 @@ export class FaceGaze {
     if (this.actionsEnabled_ === value) {
       return;
     }
+
     this.actionsEnabled_ = value;
     if (this.actionsEnabled_) {
       this.gestureHandler_.start();
     } else {
       this.gestureHandler_.stop();
+
+      // If actions are turned off while a toggled action is active, then we
+      // should toggle out of the relevant action. Otherwise, the user will be
+      // stuck in the action with no way to exit.
+      if (this.mouseController_.isScrollModeActive()) {
+        this.mouseController_.toggleScrollMode();
+      }
+
+      if (this.mouseController_.isLongClickActive()) {
+        this.mouseController_.toggleLongClick();
+      }
     }
   }
 
@@ -152,7 +188,7 @@ export class FaceGaze {
     }
 
     if (this.actionsEnabled_) {
-      const macros = this.gestureHandler_.detectMacros(result);
+      const {macros, displayText} = this.gestureHandler_.detectMacros(result);
       for (const macro of macros) {
         const checkContextResult = macro.checkContext();
         if (!checkContextResult.canTryAction) {
@@ -161,12 +197,17 @@ export class FaceGaze {
               checkContextResult.error, checkContextResult.failedContext);
           continue;
         }
+
         const runMacroResult = macro.run();
         if (!runMacroResult.isSuccess) {
           console.warn(
               'Failed to execute macro ', macro.getName(),
               runMacroResult.error);
         }
+      }
+
+      if (displayText) {
+        this.bubbleController_.updateBubble(displayText);
       }
     }
   }
@@ -176,9 +217,6 @@ export class FaceGaze {
     this.mouseController_.reset();
     this.gestureHandler_.stop();
     this.webCamFaceLandmarker_.stop();
-    if (this.weightsWindowId_ !== -1) {
-      chrome.windows.remove(this.weightsWindowId_);
-    }
   }
 
   /** Allows tests to wait for FaceGaze to be fully initialized. */
@@ -189,28 +227,6 @@ export class FaceGaze {
     }
 
     callback();
-  }
-
-  private openWeightsPanel_(): void {
-    const params = {
-      url: chrome.runtime.getURL('accessibility_common/facegaze/weights.html'),
-      type: chrome.windows.CreateType.PANEL,
-    };
-    chrome.windows.create(params, (win) => {
-      if (!win || win.id === undefined) {
-        return;
-      }
-
-      this.weightsWindowId_ = win.id;
-      chrome.runtime.onMessage.addListener(message => {
-        if (message.type === FaceGazeConstants.UPDATE_LANDMARK_WEIGHTS) {
-          this.mouseController_.updateLandmarkWeights(
-              new Map(Object.entries(message.weights)));
-        }
-
-        return false;
-      });
-    });
   }
 }
 

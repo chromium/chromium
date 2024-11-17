@@ -5,6 +5,7 @@
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_connectors {
@@ -51,18 +52,8 @@ ConnectorsServiceBase::GetAppliedRealTimeUrlCheck() const {
       GetPrefs()->GetInteger(kEnterpriseRealTimeUrlCheckMode));
 }
 
-bool ConnectorsServiceBase::IsConnectorEnabled(
-    ReportingConnector connector) const {
-  if (!ConnectorsEnabled()) {
-    return false;
-  }
-
-  return GetConnectorsManagerBase()->IsReportingConnectorEnabled(connector);
-}
-
 std::vector<std::string>
-ConnectorsServiceBase::GetReportingServiceProviderNames(
-    ReportingConnector connector) {
+ConnectorsServiceBase::GetReportingServiceProviderNames() {
   if (!ConnectorsEnabled()) {
     return {};
   }
@@ -71,18 +62,16 @@ ConnectorsServiceBase::GetReportingServiceProviderNames(
     return {};
   }
 
-  return GetConnectorsManagerBase()->GetReportingServiceProviderNames(
-      connector);
+  return GetConnectorsManagerBase()->GetReportingServiceProviderNames();
 }
 
-std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings(
-    ReportingConnector connector) {
+std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings() {
   if (!ConnectorsEnabled()) {
     return std::nullopt;
   }
 
   std::optional<ReportingSettings> settings =
-      GetConnectorsManagerBase()->GetReportingSettings(connector);
+      GetConnectorsManagerBase()->GetReportingSettings();
   if (!settings.has_value()) {
     return std::nullopt;
   }
@@ -98,5 +87,20 @@ std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings(
 
   return settings;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+std::optional<std::string> ConnectorsServiceBase::GetProfileDmToken() const {
+  policy::CloudPolicyManager* policy_manager =
+      GetManagedUserCloudPolicyManager();
+  if (policy_manager && policy_manager->core() &&
+      policy_manager->core()->store() &&
+      policy_manager->core()->store()->has_policy() &&
+      policy_manager->core()->store()->policy()->has_request_token()) {
+    return policy_manager->core()->store()->policy()->request_token();
+  }
+
+  return std::nullopt;
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

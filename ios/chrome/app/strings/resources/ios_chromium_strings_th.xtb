@@ -12,8 +12,10 @@
 <translation id="1260702988262336471">เปิดเมนู Chromium</translation>
 <translation id="12739128458173458">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chromium ในอุปกรณ์ทั้ง 2 เครื่อง</translation>
 <translation id="1361748954329991663">Chromium เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chromium เวอร์ชันใหม่อีกต่อไป</translation>
+<translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1423007117030725713">เริ่มการค้นหาในแท็บใหม่ของ Chromium</translation>
 <translation id="1431818719585918472">ให้ Chromium ล็อกแท็บที่ไม่ระบุตัวตน</translation>
+<translation id="1451665391191990528">ซ่อนแท็บที่ไม่ระบุตัวตนที่เปิดอยู่เมื่อออกจาก Chromium</translation>
 <translation id="146407871188825689">ใช้ Chromium ใน iPad โดยค่าเริ่มต้น</translation>
 <translation id="1471084500615228555">ลบข้อมูลการท่องเว็บใน Chromium</translation>
 <translation id="1472013873724362412">บัญชีของคุณไม่ทำงานใน Chromium โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
@@ -49,6 +51,7 @@
 <translation id="2195025571279539885">คุณต้องการให้ Chromium เสนอการแปลหน้าภาษา<ph name="LANGUAGE_NAME" />จากเว็บไซต์นี้ในครั้งถัดไปไหม</translation>
 <translation id="22313767259766852">บันทึกที่อยู่นี้ไว้ใน Chromium แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="2236584955986023187">ซึ่งหมายความว่า Chromium จะขอเว็บไซต์ในเดสก์ท็อปทุกครั้ง</translation>
+<translation id="2270466829363945454">เลือกซื้อ</translation>
 <translation id="2313870531055795960">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chromium หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chromium อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
 <translation id="231828342043114302">ลงชื่อเข้าใช้ Chromium เพื่อรับเนื้อหาที่ปรับเปลี่ยนตามความสนใจของคุณ</translation>
 <translation id="2326738825692478496">ยังไม่ได้บันทึกข้อมูล Chromium บางอย่างของคุณลงในบัญชี Google
@@ -107,6 +110,7 @@
 <translation id="377649297473651452">ขยายมุมมองการป้อนข้อความอัตโนมัติของ Chromium อยู่</translation>
 <translation id="3780779443901618967">เตือนคุณเกี่ยวกับเว็บไซต์ที่เป็นอันตราย แม้แต่เว็บไซต์ที่ Google ไม่เคยรู้จักมาก่อนด้วยการวิเคราะห์ข้อมูลจากเว็บไซต์มากกว่าการปกป้องแบบมาตรฐาน คุณเลือกข้ามคำเตือนของ Chromium ได้</translation>
 <translation id="3805899903892079518">Chromium ไม่มีสิทธิ์เข้าถึงรูปภาพหรือวิดีโอของคุณ เปิดใช้การเข้าถึงได้ในการตั้งค่า iOS &gt; ความเป็นส่วนตัว &gt; รูปภาพ</translation>
+<translation id="3816686541346279443">Chromium จะเสนอให้บันทึกรหัสผ่าน</translation>
 <translation id="3827545470516145620">คุณกำลังได้รับการรักษาความปลอดภัยแบบมาตรฐานในอุปกรณ์นี้</translation>
 <translation id="3833326979834193417">Chromium เรียกใช้การตรวจสอบความปลอดภัยโดยอัตโนมัติทุกวันเพื่อช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่เป็นอันตราย และอื่นๆ ดูข้อมูลเพิ่มเติมเกี่ยวกับการตรวจสอบความปลอดภัยได้ในการตั้งค่า</translation>
 <translation id="3855938650519180865">มีอะไรใหม่ใน Chromium</translation>
@@ -129,6 +133,7 @@
 <translation id="4432744876818348753">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="4445228361214254027">องค์กรได้ปิดความสามารถในการใช้และบันทึกข้อมูล Chromium ในบัญชี Google ของคุณ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="4498832288620833153">เพิ่ม URL ที่ป้อนลงในเรื่องรออ่านใน Chromium</translation>
+<translation id="4508268628669724828">กลับมาที่นี่เพื่อดูเคล็ดลับที่มีประโยชน์เพิ่มเติมในการใช้ประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="452436063477828504">ตรวจสอบว่าคุณใช้ข้อมูล Chromium ในบัญชี Google ได้เสมอ</translation>
 <translation id="4527452566931097835">ตั้งค่า Chromium เป็นค่าเริ่มต้นไหม</translation>
 <translation id="4555020257205549924">เมื่อเปิดฟีเจอร์นี้ Chromium จะเสนอให้แปลหน้าต่างๆ ที่เขียนด้วยภาษาอื่นโดยใช้ Google แปลภาษา <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -177,6 +182,7 @@
 <translation id="5571094606370987472">เปิดแท็บล่าสุดใน Chromium</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">เปิดแท็บล่าสุดของฉันใน Chromium</translation>
+<translation id="5671188105328420281">เคล็ดลับในการใช้ Chromium</translation>
 <translation id="5688047395118852662">การ์ดนี้แสดงคำแนะนำเกี่ยวกับวิธีใช้ Chromium ให้เกิดประโยชน์สูงสุด</translation>
 <translation id="5700709190537129682">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="584550191241316896">ลงชื่อเข้าใช้ Chromium แล้ว</translation>
@@ -218,6 +224,7 @@
 <translation id="6752854822223394465">องค์กรของคุณกำลังตั้งค่า Chromium...</translation>
 <translation id="6794054469102824109">เปิดเกมไดโนเสาร์ของ Chromium</translation>
 <translation id="6820823224820483452">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
+<translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6852419005633611413">เข้าถึง Chromium ได้เร็วขึ้นจากแถบแอปในหน้าจอหลัก</translation>
 <translation id="6852799557929001644">เข้าถึงรหัสผ่าน Chromium และอีกมากมายจากแอปอื่นๆ ในอุปกรณ์นี้</translation>
 <translation id="6887138405044152640">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chromium ในอุปกรณ์นั้น</translation>

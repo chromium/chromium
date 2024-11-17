@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[PRECONDITION_FAILED] BroadcastChannel message while in bfcache should evict the entry.
-  Precondition fail reasons are reported.
-Harness: the test ran to completion.
-

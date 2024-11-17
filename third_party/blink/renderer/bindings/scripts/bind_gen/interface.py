@@ -399,35 +399,15 @@ def bind_callback_local_vars(code_node, cg_context):
     # exception_state
     def create_exception_state(symbol_node):
         node = SymbolDefinitionNode(symbol_node)
-        pattern = ("{exception_state_type} ${exception_state}({init_args});"
-                   "{exception_to_reject_promise}")
-        exception_state_type = "ExceptionState"
-        init_args = ["${isolate}", "${exception_context_type}"]
-        exception_to_reject_promise = ""
-        if cg_context.is_legacy_factory_function:
-            init_args.append("\"{}\"".format(cg_context.property_.identifier))
-        else:
-            init_args.append("${class_like_name}")
-        if cg_context.indexed_interceptor_kind:
-            init_args.append("${blink_property_index}")
-            init_args.append("ExceptionState::kForInterceptor")
-        elif (cg_context.named_interceptor_kind
-              and cg_context.named_interceptor_kind != "Enumerator"):
-            init_args.append("${blink_property_name}")
-            init_args.append("ExceptionState::kForInterceptor")
-        elif (cg_context.property_ and cg_context.property_.identifier
-              and not cg_context.constructor_group):
-            init_args.append("${property_name}")
+
+        init_args = ["${isolate}"]
         if cg_context.is_return_type_promise_type:
-            exception_to_reject_promise = (
-                "\n"
-                "ExceptionToRejectPromiseScope reject_promise_scope"
-                "(${info}, ${exception_state});")
+            init_args.append("${exception_context_type}")
+            init_args.append("${class_like_name}")
+            init_args.append("${property_name}")
         node.append(
-            F(pattern,
-              exception_state_type=exception_state_type,
-              init_args=", ".join(init_args),
-              exception_to_reject_promise=exception_to_reject_promise))
+            F("ExceptionState ${exception_state}({init_args});",
+              init_args=", ".join(init_args)))
         return node
 
     local_vars.append(
@@ -622,6 +602,11 @@ def _make_reflect_accessor_func_name(cg_context):
 
         if "URL" in cg_context.attribute.extended_attributes:
             return "GetURLAttribute"
+    else:
+        if ("StringContext"
+                in cg_context.attribute.idl_type.effective_annotations):
+            return "SetAttributeWithoutValidation"
+
 
     FAST_ACCESSORS = {
         "boolean": ("FastHasAttribute", "SetBooleanAttribute"),
@@ -713,6 +698,13 @@ def _make_reflect_process_keyword_state(cg_context):
     return SequenceNode(nodes)
 
 
+def _wrap_passed_argument(name, idl_type):
+    assert isinstance(idl_type, web_idl.IdlType)
+    if not idl_type.unwrap().is_sequence:
+        return name
+    return _format("std::move({})", name)
+
+
 def _make_blink_api_call(code_node,
                          cg_context,
                          num_of_args=None,
@@ -781,13 +773,17 @@ def _make_blink_api_call(code_node,
     elif cg_context.attribute_get:
         pass
     elif cg_context.attribute_set:
-        arguments.append("${arg1_value}")
+        arguments.append(
+            _wrap_passed_argument("${arg1_value}",
+                                  cg_context.attribute.idl_type))
     else:
         for index, argument in enumerate(cg_context.function_like.arguments):
             if num_of_args is not None and index == num_of_args:
                 break
             name = name_style.arg_f("arg{}_{}", index + 1, argument.identifier)
-            arguments.append(_format("${{{}}}", name))
+            arguments.append(
+                _wrap_passed_argument(_format("${{{}}}", name),
+                                      argument.idl_type))
 
     if cg_context.may_throw_exception:
         arguments.append("${exception_state}")
@@ -986,7 +982,8 @@ def make_check_argument_length(cg_context):
                                           num_of_required_args),
                              attribute="[[unlikely]]",
                              body=[
-                                 F(("${exception_state}.ThrowTypeError("
+                                 F(("V8ThrowException::ThrowTypeError("
+                                    "${isolate}, "
                                     "ExceptionMessages::NotEnoughArguments"
                                     "({}, ${info}.Length()));"),
                                    num_of_required_args),
@@ -1003,7 +1000,7 @@ def make_check_constructor_call(cg_context):
         CxxUnlikelyIfNode(
             cond="!${info}.IsConstructCall()",
             attribute=None,
-            body=T("${exception_state}.ThrowTypeError("
+            body=T("V8ThrowException::ThrowTypeError(${isolate}, "
                    "ExceptionMessages::ConstructorCalledAsFunction());\n"
                    "return;")),
     ])
@@ -1051,16 +1048,36 @@ def make_check_proxy_access(cg_context):
     else:
         error_exit_return_statement = "return;"
 
-    return CxxUnlikelyIfNode(
+    node = CxxUnlikelyIfNode(
         cond=
         ("auto reason = ${blink_receiver}->GetProxyAccessBlockedReason(${isolate})"
          ),
         attribute="[[unlikely]]",
         body=[
-            T("${exception_state}.ThrowSecurityError("
+            T("V8ThrowDOMException::Throw(${isolate}, "
+              "DOMExceptionCode::kSecurityError, "
               "DOMWindow::GetProxyAccessBlockedExceptionMessage(*reason));"),
             T(error_exit_return_statement),
         ])
+    node.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+        ]))
+    return node
+
+
+def make_promise_return_context(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    if not cg_context.is_return_type_promise_type:
+        return None
+
+    T = TextNode
+    return SequenceNode([
+        T("// Promise returning function: "
+          "Convert a TypeError to a reject promise."),
+        T("ExceptionToRejectPromiseScope reject_promise_scope(${info});"),
+    ])
 
 
 def make_check_receiver(cg_context):
@@ -1083,13 +1100,11 @@ def make_check_receiver(cg_context):
 
     if cg_context.is_return_type_promise_type:
         return SequenceNode([
-            T("// Promise returning function: "
-              "Convert a TypeError to a reject promise."),
             CxxUnlikelyIfNode(
                 cond="!${class_name}::HasInstance(${isolate}, ${v8_receiver})",
                 attribute=None,
                 body=[
-                    T("${exception_state}.ThrowTypeError("
+                    T("V8ThrowException::ThrowTypeError(${isolate}, "
                       "\"Illegal invocation\");"),
                     T("return;"),
                 ])
@@ -1219,7 +1234,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
     else:
         arg_index = None
     func_like = None
-    dispatcher_nodes = SequenceNode()
+    dispatcher_nodes_stack = [SequenceNode()]
 
     # True if there exists a case that overload resolution will fail.
     can_fail = True
@@ -1259,6 +1274,23 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
             cg_context, overload_index=func_like.overload_index)
         return TextNode(_format(pattern, value=value, func_name=func_name))
 
+    # {begin,end}_condifitional_scope allow nesting some of the checks in
+    # an additional conditional to save on expensive checks. If no dispatches
+    # are generated in the nested block, the conditional is also omitted.
+    # The condition is supplied in `end_conditional_scope()` for convenience
+    # of implementation.
+    def begin_conditional_scope():
+        dispatcher_nodes_stack.append(SequenceNode())
+
+    def end_conditional_scope(expr):
+        assert len(dispatcher_nodes_stack) > 1
+        sequence_node = dispatcher_nodes_stack.pop()
+        cond = _format(expr, value=_format("${info}[{}]", arg_index))
+        if not len(sequence_node):
+            return
+        node = CxxUnlikelyIfNode(cond=cond, attribute=None, body=sequence_node)
+        dispatcher_nodes_stack[-1].append(node)
+
     def dispatch_if(expr):
         if expr is True:
             pattern = "return {func_name}(${info});"
@@ -1272,7 +1304,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
             node = CxxUnlikelyIfNode(cond=conditional,
                                      attribute=None,
                                      body=node)
-        dispatcher_nodes.append(node)
+        dispatcher_nodes_stack[-1].append(node)
         return expr is True and conditional.is_always_true
 
     if len(items) == 1:
@@ -1289,6 +1321,8 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
     func_like = find(lambda t, u: t.does_include_nullable_or_dict)
     if func_like:
         dispatch_if("{value}->IsNullOrUndefined()")
+
+    begin_conditional_scope()  # if (value->IsObject()) { ...
 
     # 12.4. if V is a platform object, ...
     def inheritance_length(func_and_type):
@@ -1351,7 +1385,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
         dispatch_if("{value}->IsArray() || "  # Excessive optimization
                     "bindings::IsEsIterableObject"
                     "(${isolate}, {value}, ${exception_state})")
-        dispatcher_nodes.append(
+        dispatcher_nodes_stack[-1].append(
             CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
                               attribute="[[unlikely]]",
                               body=TextNode("return;")))
@@ -1360,7 +1394,9 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
     func_like = find(lambda t, u: u.is_callback_interface or u.is_dictionary or
                      u.is_record or u.is_object)
     if func_like:
-        dispatch_if("{value}->IsObject()")
+        dispatch_if(True)
+
+    end_conditional_scope("{value}->IsObject()")
 
     # 12.11. if Type(V) is Boolean and ...
     func_like = find(lambda t, u: u.is_boolean)
@@ -1389,7 +1425,8 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
                 can_fail = False
                 break
 
-    return dispatcher_nodes, can_fail
+    assert (len(dispatcher_nodes_stack) == 1)
+    return dispatcher_nodes_stack[0], can_fail
 
 
 def make_overload_dispatcher(cg_context):
@@ -1453,8 +1490,8 @@ def make_overload_dispatcher(cg_context):
         branches,
         EmptyNode(),
         make_check_argument_length(cg_context),
-        T("${exception_state}.ThrowTypeError"
-          "(\"Overload resolution failed.\");\n"
+        T("V8ThrowException::ThrowTypeError(${isolate}, "
+          "\"Overload resolution failed.\");\n"
           "return;"),
     ])
 
@@ -1757,7 +1794,7 @@ def make_steps_of_put_forwards(cg_context):
         CxxUnlikelyIfNode(cond="!target->IsObject()",
                           attribute=None,
                           body=[
-                              T("${exception_state}.ThrowTypeError("
+                              T("V8ThrowException::ThrowTypeError(${isolate}, "
                                 "\"The attribute value is not an object\");"),
                               T(error_exit_return_statement),
                           ]),
@@ -2033,6 +2070,7 @@ def make_attribute_get_callback_def(cg_context, function_name):
     body = func_def.body
 
     body.extend([
+        make_promise_return_context(cg_context),
         make_check_receiver(cg_context),
         EmptyNode(),
         make_runtime_call_timer_scope(cg_context),
@@ -2261,6 +2299,7 @@ def make_overload_dispatcher_function_def(cg_context, function_name):
     body = func_def.body
 
     if cg_context.operation_group:
+        body.append(make_promise_return_context(cg_context))
         body.append(make_operation_entry(cg_context))
         body.append(EmptyNode())
         body.append(make_cooperative_scheduling_safepoint(cg_context))
@@ -2308,7 +2347,8 @@ def make_constructor_function_def(cg_context, function_name):
                     expr_from_exposure(cg_context.constructor.exposure)),
                                   attribute=None,
                                   body=[
-                                      T("${exception_state}.ThrowTypeError("
+                                      T("V8ThrowException::ThrowTypeError("
+                                        "${isolate}, "
                                         "\"Illegal constructor\");"),
                                       T("return;"),
                                   ]))
@@ -2631,13 +2671,17 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
           "v8::Isolate* ${isolate} = ${v8_arg_callback_options}.isolate;"),
         S("v8_receiver", ("v8::Local<v8::Object> ${v8_receiver} = "
                           "${v8_arg0_receiver};")),
+        S("handle_scope", "v8::HandleScope handle_scope(${isolate});")
     ])
     bind_callback_local_vars(body, cg_context)
 
-    body.extend([
-        T("v8::HandleScope handle_scope(${isolate});"),
-        EmptyNode(),
-    ])
+    if cg_context.may_throw_exception:
+        body.append(T("<% handle_scope.request_symbol_definition() %>"))
+
+    for argument in function_like.arguments[:argument_count]:
+        u = argument.idl_type.unwrap()
+        if (not u.is_numeric) and (not u.is_boolean):
+            body.append(T("<% handle_scope.request_symbol_definition() %>"))
 
     # If [CallWith=Isolate] is specified, make sure ${isolate} is passed first.
     blink_arguments = list()
@@ -2710,6 +2754,7 @@ def make_operation_function_def(cg_context, function_name):
 
     if not cg_context.operation_group or len(cg_context.operation_group) == 1:
         body.append(make_operation_entry(cg_context))
+        body.append(make_promise_return_context(cg_context))
         body.append(EmptyNode())
 
     body.extend([
@@ -2978,7 +3023,7 @@ return ${class_name}::NamedPropertySetterCallback(
                 cond="${info}.ShouldThrowOnError()",
                 attribute=None,
                 body=TextNode(
-                    "${exception_state}.ThrowTypeError("
+                    "V8ThrowException::ThrowTypeError(${isolate}, "
                     "\"Indexed property setter is not supported.\");")),
             TextNode("return v8::Intercepted::kYes;"),
         ])
@@ -3059,7 +3104,7 @@ return ${class_name}::NamedPropertyDeleterCallback(
         CxxLikelyIfNode(cond="is_supported && ${info}.ShouldThrowOnError()",
                         attribute=None,
                         body=TextNode(
-                            "${exception_state}.ThrowTypeError("
+                            "V8ThrowException::ThrowTypeError(${isolate}, "
                             "\"Index property deleter is not supported.\");")),
         TextNode("return v8::Intercepted::kYes;")
     ])
@@ -3104,7 +3149,7 @@ return ${class_name}::NamedPropertyDefinerCallback(
                     cond="${info}.ShouldThrowOnError()",
                     attribute=None,
                     body=TextNode(
-                        "${exception_state}.ThrowTypeError("
+                        "V8ThrowException::ThrowTypeError(${isolate}, "
                         " \"Accessor properties are not allowed.\");")),
                 TextNode("return v8::Intercepted::kYes;")
             ])
@@ -3120,8 +3165,8 @@ return ${class_name}::NamedPropertyDefinerCallback(
                 cond="${info}.ShouldThrowOnError()",
                 attribute=None,
                 body=TextNode(
-                    "${exception_state}.ThrowTypeError(\"Index property"
-                    " setter is not supported.\");")),
+                    "V8ThrowException::ThrowTypeError(${isolate}, "
+                    "\"Index property setter is not supported.\");")),
             TextNode("return v8::Intercepted::kYes;"),
         ])
     else:
@@ -3328,7 +3373,7 @@ def make_named_property_setter_callback(cg_context, function_name):
                 cond="${info}.ShouldThrowOnError()",
                 attribute=None,
                 body=TextNode(
-                    "${exception_state}.ThrowTypeError("
+                    "V8ThrowException::ThrowTypeError(${isolate}, "
                     "\"Named property setter is not supported.\");")),
             TextNode("return v8::Intercepted::kYes;")
         ]
@@ -3447,8 +3492,8 @@ def make_named_property_deleter_callback(cg_context, function_name):
         CxxLikelyIfNode(cond="${info}.ShouldThrowOnError()",
                         attribute=None,
                         body=TextNode(
-                            "${exception_state}.ThrowTypeError(\""
-                            "Named property deleter is not supported.\");")),
+                            "V8ThrowException::ThrowTypeError(${isolate}, "
+                            "\"Named property deleter is not supported.\");")),
         TextNode("return v8::Intercepted::kYes;"),
     ]
 
@@ -3524,7 +3569,8 @@ return v8::Intercepted::kNo;\
                 CxxLikelyIfNode(cond="${info}.ShouldThrowOnError()",
                                 attribute=None,
                                 body=TextNode(
-                                    "${exception_state}.ThrowTypeError("
+                                    "V8ThrowException::ThrowTypeError("
+                                    "${isolate}, "
                                     "\"Failed to delete a property.\");")),
                 TextNode("return v8::Intercepted::kYes;"),
             ]),
@@ -3552,7 +3598,7 @@ def make_named_property_definer_callback(cg_context, function_name):
         CxxLikelyIfNode(cond="${info}.ShouldThrowOnError()",
                         attribute=None,
                         body=TextNode(
-                            "${exception_state}.ThrowTypeError("
+                            "V8ThrowException::ThrowTypeError(${isolate}, "
                             "\"Named property setter is not supported.\");")),
         TextNode("return v8::Intercepted::kYes;")
     ]
@@ -3620,7 +3666,7 @@ return v8::Intercepted::kNo;
                         attribute=None,
                         body=[
                             TextNode(
-                                "${exception_state}.ThrowTypeError("
+                                "V8ThrowException::ThrowTypeError(${isolate}, "
                                 " \"Accessor properties are not allowed.\");"),
                         ]),
                     TextNode("return v8::Intercepted::kYes;"),
@@ -7159,7 +7205,7 @@ def generate_class_like(class_like,
         # Blink implementation class' header (e.g. node.h for Node)
         (class_like.code_generator_info.blink_headers
          and class_like.code_generator_info.blink_headers[0]),
-        "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+        "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h",
         "third_party/blink/renderer/bindings/core/v8/is_return_type_compatible.h",
     ])
     if interface and interface.inherited:
@@ -7183,7 +7229,7 @@ def generate_class_like(class_like,
         "third_party/blink/renderer/platform/bindings/idl_member_installer.h",
         "third_party/blink/renderer/platform/bindings/runtime_call_stats.h",
         "third_party/blink/renderer/platform/bindings/v8_binding.h",
-        "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+        "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h",
     ])
     impl_source_node.accumulator.add_include_headers(
         _collect_include_headers(class_like))
@@ -7400,7 +7446,7 @@ def generate_install_properties_per_feature(function_name,
         "base/containers/span.h",
         "third_party/blink/renderer/platform/bindings/script_state.h",
         "third_party/blink/renderer/platform/bindings/v8_per_context_data.h",
-        "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+        "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h",
     ])
     source_node.extend([
         make_copyright_header(),
@@ -7517,7 +7563,7 @@ for (const auto* wrapper_type_info : wrapper_type_info_list) {
       NOTIMPLEMENTED();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   wrapper_type_info->install_context_dependent_props_func(

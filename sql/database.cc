@@ -746,8 +746,8 @@ std::string Database::CollectCorruptionInfo() {
   // If the file cannot be accessed it is unlikely that an integrity check will
   // turn up actionable information.
   const base::FilePath db_path = DbPath();
-  int64_t db_size = -1;
-  if (!base::GetFileSize(db_path, &db_size) || db_size < 0) {
+  std::optional<int64_t> db_size = GetFileSize(db_path);
+  if (db_size && *db_size < 0) {
     return std::string();
   }
 
@@ -756,11 +756,11 @@ std::string Database::CollectCorruptionInfo() {
   // fixed-size reporting buffer.
   std::string debug_info;
   base::StringAppendF(&debug_info, "SQLITE_CORRUPT, db size %" PRId64 "\n",
-                      db_size);
+                      *db_size);
 
   // Only check files up to 8M to keep things from blocking too long.
   const int64_t kMaxIntegrityCheckSize = 8192 * 1024;
-  if (db_size > kMaxIntegrityCheckSize) {
+  if (*db_size > kMaxIntegrityCheckSize) {
     debug_info += "integrity_check skipped due to size\n";
   } else {
     std::vector<std::string> messages;

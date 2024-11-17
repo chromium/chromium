@@ -59,10 +59,6 @@ class FakeSyncWorker : public SyncWorkerInterface {
   void SetRemoteChangeProcessor(RemoteChangeProcessorOnWorker*
                                     remote_change_processor_on_worker) override;
   RemoteServiceState GetCurrentState() const override;
-  void GetOriginStatusMap(
-      RemoteFileSyncService::StatusMapCallback callback) override;
-  base::Value::List DumpFiles(const GURL& origin) override;
-  base::Value::List DumpDatabase() override;
   void SetSyncEnabled(bool enabled) override;
   void PromoteDemotedChanges(base::OnceClosure callback) override;
   void ApplyLocalChange(const FileChange& local_change,

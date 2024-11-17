@@ -1,3 +1,8 @@
 [style]
 based_on_style = pep8
 
+# we keep this around because PRESUBMIT.py uses a linter that enforces
+# this format.
+column_limit = 80
+indent_width = 2
+

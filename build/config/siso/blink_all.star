@@ -33,6 +33,11 @@ def __step_config(ctx, step_config):
                 "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/build/scripts/run_with_pythonpath.py -I ../../third_party/blink/renderer/build/scripts -I ../../third_party -I ../../third_party/pyjson5/src -I ../../tools ../../third_party/blink/renderer/build/scripts/",
                 "remote": True,
                 "timeout": "2m",
+                # crbug.com/372628498:
+                # chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/generate_testcase.py
+                # needs to read the generated .mojom files. But, the inputs are
+                # not specified in the build graph correctly.
+                "output_local": True,
             },
         ])
     return step_config

@@ -127,7 +127,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
   }
 
   // The finalized `item` should exist in the model and be handled above.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {

@@ -930,7 +930,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
     private void showDownloadOnInfoBar(DownloadItem downloadItem, int downloadStatus) {
         DownloadMessageUiController messageUiController =
                 DownloadManagerService.getDownloadManagerService()
-                        .getMessageUiController(downloadItem.getDownloadInfo().getOTRProfileId());
+                        .getMessageUiController(downloadItem.getDownloadInfo().getOtrProfileId());
         if (messageUiController == null) return;
         OfflineItem offlineItem = DownloadItem.createOfflineItem(downloadItem);
         offlineItem.id.namespace = LegacyHelpers.LEGACY_ANDROID_DOWNLOAD_NAMESPACE;

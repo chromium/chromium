@@ -42,6 +42,7 @@
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "url/origin.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 
 namespace net {
 class NetworkAnonymizationKey;
@@ -268,7 +269,9 @@ class TestNetworkContext : public mojom::NetworkContext {
       uint32_t num_streams,
       const GURL& url,
       mojom::CredentialsMode credentials_mode,
-      const net::NetworkAnonymizationKey& network_anonymization_key) override {}
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {}
 #if BUILDFLAG(IS_P2P_ENABLED)
   void CreateP2PSocketManager(
       const net::NetworkAnonymizationKey& network_anonymization_key,
@@ -371,6 +374,9 @@ class TestNetworkContext : public mojom::NetworkContext {
                     traffic_annotation) override {}
   void GetBoundNetworkForTesting(
       GetBoundNetworkForTestingCallback callback) override {}
+  void GetDeviceBoundSessionManager(
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
+          device_bound_session_manager) override {}
 };
 
 }  // namespace network

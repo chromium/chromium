@@ -109,5 +109,5 @@ void ChromeBrowserMainPartsAndroid::PostBrowserStart() {
 }
 
 void ChromeBrowserMainPartsAndroid::ShowMissingLocaleMessageBox() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

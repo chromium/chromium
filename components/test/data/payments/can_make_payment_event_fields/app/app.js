@@ -5,7 +5,7 @@
  */
 
 /** {object} - The "canmakepayment" event field check results. */
-let details = {};
+const details = {};
 
 self.addEventListener('canmakepayment', (event) => {
   // "if" condition checks.
@@ -18,8 +18,9 @@ self.addEventListener('canmakepayment', (event) => {
   details.emptyTopOrigin = (!event.topOrigin || event.topOrigin === '');
   details.emptyPaymentRequestOrigin =
       (!event.paymentRequestOrigin || event.paymentRequestOrigin === '');
-  details.emptyMethodData = (!event.methodData || event.methodData.length == 0);
-  details.emptyModifiers = (!event.modifiers || event.modifiers.length == 0);
+  details.emptyMethodData =
+      (!event.methodData || event.methodData.length === 0);
+  details.emptyModifiers = (!event.modifiers || event.modifiers.length === 0);
 
   // Comparison to "undefined".
   details.definedTopOrigin = (event.topOrigin !== undefined);

@@ -22,8 +22,10 @@ enum class Event {
   kMakeCredentialPriorityShown = 7,
   kMakeCredentialPriorityDeclined = 8,
   kICloudRecoverySuccessful = 9,
+  kDownloadAccountStateTimeout = 10,
+  kEnclaveReauthNeeded = 11,
 
-  kMaxValue = 9,
+  kMaxValue = kEnclaveReauthNeeded,
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO) void RecordEvent(Event event);

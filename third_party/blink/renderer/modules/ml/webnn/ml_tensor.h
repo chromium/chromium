@@ -5,14 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_TENSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_TENSOR_H_
 
+#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -55,7 +56,9 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // ml_tensor.idl
   V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
-  uint32_t usage() const;
+  bool importableToWebGPU() const;
+  bool readable() const;
+  bool writable() const;
 
   void destroy();
 
@@ -100,14 +103,17 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // OS machine learning APIs.
   void OnDidReadTensor(ScopedMLTrace scoped_trace,
                        ScriptPromiseResolver<DOMArrayBuffer>* resolver,
+                       base::ElapsedTimer read_tensor_timer,
                        webnn::mojom::blink::ReadTensorResultPtr result);
   void OnDidReadTensorByob(ScopedMLTrace scoped_trace,
                            ScriptPromiseResolver<IDLUndefined>* resolver,
                            DOMArrayBufferBase* dst_data,
+                           base::ElapsedTimer read_tensor_timer,
                            webnn::mojom::blink::ReadTensorResultPtr result);
   void OnDidReadTensorByobView(ScopedMLTrace scoped_trace,
                                ScriptPromiseResolver<IDLUndefined>* resolver,
                                DOMArrayBufferView* dst_data,
+                               base::ElapsedTimer read_tensor_timer,
                                webnn::mojom::blink::ReadTensorResultPtr result);
 
   void OnConnectionError();
@@ -117,13 +123,13 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // Represents a valid MLTensorDescriptor.
   const webnn::OperandDescriptor descriptor_;
 
-  // Represents a valid MLTensorUsage.
+  // Represents usage flags for the MLTensor.
   const webnn::MLTensorUsage usage_;
 
   // Identifies this `WebNNTensor` mojo instance in the service process.
   const blink::WebNNTensorToken webnn_handle_;
 
-  // The `WebNNTensor` is a buffer that can be used by the hardware
+  // The `WebNNTensor` is a tensor that can be used by the hardware
   // accelerated OS machine learning API.
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNTensor> remote_tensor_;
 

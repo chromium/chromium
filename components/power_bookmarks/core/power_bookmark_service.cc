@@ -31,7 +31,7 @@ PowerBookmarkService::PowerBookmarkService(
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : model_(model), backend_task_runner_(backend_task_runner) {
   if (model_)
-    model_->AddObserver(this);
+    model_observation_.Observe(model_);
 
   backend_ = std::make_unique<PowerBookmarkBackend>(
       database_dir, frontend_task_runner, weak_ptr_factory_.GetWeakPtr());
@@ -43,9 +43,6 @@ PowerBookmarkService::PowerBookmarkService(
 }
 
 PowerBookmarkService::~PowerBookmarkService() {
-  if (model_)
-    model_->RemoveObserver(this);
-
   backend_task_runner_->DeleteSoon(FROM_HERE, std::move(backend_));
 }
 

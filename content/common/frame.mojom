@@ -179,6 +179,7 @@ struct CreateViewParams {
 // creation and remote main frame creation.
 union CreateMainFrameUnion {
   CreateLocalMainFrameParams local_params;
+  CreateProvisionalLocalMainFrameParams provisional_local_params;
   CreateRemoteMainFrameParams remote_params;
 };
 
@@ -220,6 +221,12 @@ struct CreateLocalMainFrameParams {
   // Subresource loader factories to be used by the initial empty document.
   blink.mojom.URLLoaderFactoryBundle subresource_loader_factories;
 
+};
+
+// Parameters used for browser-initiated provisional local main frame creation.
+struct CreateProvisionalLocalMainFrameParams {
+  CreateLocalMainFrameParams local_params;
+
   // The FrameToken of the previous LocalFrame that this new LocalFrame will
   // replace. Will only be set when RenderDocument is enabled, for main frame
   // LocalFrame <-> LocalFrame swap.
@@ -235,7 +242,7 @@ struct CreateRemoteMainFrameParams {
   blink.mojom.RemoteMainFrameInterfaces main_frame_interfaces;
 };
 
-// Parameters used for creating a new frame widget.
+// Parameters used for creating a new frame widget for a local root.
 struct CreateFrameWidgetParams {
   // Gives the routing ID for the RenderWidget that will be attached to the
   // new RenderFrame.
@@ -250,9 +257,9 @@ struct CreateFrameWidgetParams {
   // The initial visual properties of the widget.
   blink.mojom.VisualProperties visual_properties;
 
-  // If set, this widget should take the compositor from this frame instead of
-  // creating a new instance.
-  blink.mojom.FrameToken? previous_frame_token_for_compositor_reuse;
+  // If true, reuse the compositor by taking it from the current local root's
+  // frame widget when this frame widget's frame commits and is swapped in.
+  bool reuse_compositor;
 };
 
 // Used for recreating child frames after a crash (does this still happen?) and

@@ -74,9 +74,10 @@ class CopyOutputScalingPixelTest
   // The scene is drawn, which also causes the copy request to execute. Then,
   // the resulting bitmap is compared against an expected bitmap.
   void RunTest() {
-    // TODO(b/297344089): Enable these tests once Skia Graphite supports stale
-    // mipmap regeneration.
-    if (is_skia_graphite()) {
+    // TODO(b/341104760): Enable these once non-rescale cases are handled
+    // correctly.
+    if (is_skia_graphite() && scale_from_ == scale_to_ &&
+        result_format_ == CopyOutputResult::Format::I420_PLANES) {
       GTEST_SKIP();
     }
 
@@ -90,6 +91,7 @@ class CopyOutputScalingPixelTest
       result_format_as_str = "I420_PLANES";
     else
       NOTIMPLEMENTED();
+
     SCOPED_TRACE(testing::Message()
                  << "scale_from=" << scale_from_.ToString()
                  << ", scale_to=" << scale_to_.ToString()
@@ -145,44 +147,18 @@ class CopyOutputScalingPixelTest
     {
       base::RunLoop loop;
 
-      // Add a dummy copy request to be executed when the RED RenderPass is
-      // drawn (before the root RenderPass). This is a regression test to
-      // confirm GLRenderer state is consistent with the GL context after each
-      // copy request executes, and before the next RenderPass is drawn.
-      // http://crbug.com/792734
-      bool dummy_ran = false;
+      // Add a copy request to the root RenderPass, to capture the results of
+      // drawing all passes for this frame.
       auto request = std::make_unique<CopyOutputRequest>(
           result_format_, CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
-              [](bool* dummy_ran, std::unique_ptr<CopyOutputResult> result) {
-                EXPECT_TRUE(!result->IsEmpty());
-                EXPECT_FALSE(*dummy_ran);
-                *dummy_ran = true;
-              },
-              &dummy_ran));
-      // Set a 10X zoom, which should be more than sufficient to disturb the
-      // results of the main copy request (below) if the GL state is not
-      // properly restored.
-      request->SetUniformScaleRatio(1, 10);
-      // Ensure the result callback is run on test main thread.
-      request->set_result_task_runner(
-          base::SequencedTaskRunner::GetCurrentDefault());
-      list.front()->copy_requests.push_back(std::move(request));
-
-      // Add a copy request to the root RenderPass, to capture the results of
-      // drawing all passes for this frame.
-      request = std::make_unique<CopyOutputRequest>(
-          result_format_, CopyOutputRequest::ResultDestination::kSystemMemory,
-          base::BindOnce(
-              [](bool* dummy_ran,
-                 std::unique_ptr<CopyOutputResult>* test_result,
+              [](std::unique_ptr<CopyOutputResult>* test_result,
                  const base::RepeatingClosure& quit_closure,
                  std::unique_ptr<CopyOutputResult> result_from_renderer) {
-                EXPECT_TRUE(*dummy_ran);
                 *test_result = std::move(result_from_renderer);
                 quit_closure.Run();
               },
-              &dummy_ran, &result, loop.QuitClosure()));
+              &result, loop.QuitClosure()));
       request->set_result_selection(
           copy_output::ComputeResultRect(copy_rect, scale_from_, scale_to_));
       request->SetScaleRatio(scale_from_, scale_to_);

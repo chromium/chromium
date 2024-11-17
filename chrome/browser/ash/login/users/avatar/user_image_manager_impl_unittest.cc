@@ -110,48 +110,6 @@ class UserImageManagerImplTest : public testing::Test {
   std::unique_ptr<UserImageManagerRegistry> user_image_manager_registry_;
 };
 
-// TODO(b/339503132) should set to google profile image.
-TEST_F(UserImageManagerImplTest, SetsRandomDefaultInitialImageForNewUsers) {
-  const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      std::string(kFakeRegularUserEmail), std::string(kFakeRegularUserEmail));
-  user_manager::User* user = AddUser(account_id);
-
-  GURL requested_url;
-
-  EXPECT_CALL(*mock_user_image_loader_delegate(), FromGURLAnimated)
-      .WillOnce(testing::DoAll(
-          testing::SaveArg<0>(&requested_url),
-          testing::Invoke([](const GURL& default_image_url,
-                             user_image_loader::LoadedCallback loaded_cb) {
-            base::SequencedTaskRunner::GetCurrentDefault()
-                ->PostTaskAndReplyWithResult(
-                    FROM_HERE, base::BindLambdaForTesting([]() {
-                      return std::make_unique<user_manager::UserImage>();
-                    }),
-                    std::move(loaded_cb));
-          })));
-
-  fake_chrome_user_manager()->SetIsCurrentUserNew(true);
-  fake_chrome_user_manager()->UserLoggedIn(
-      account_id, /*user_id_hash=*/
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-      /*browser_restart=*/false,
-      /*is_child=*/false);
-
-  test::UserImageChangeWaiter user_image_change_waiter;
-  user_image_change_waiter.Wait();
-
-  EXPECT_TRUE(default_user_image::IsInCurrentImageSet(user->image_index()));
-  EXPECT_EQ(requested_url,
-            default_user_image::GetDefaultImageUrl(user->image_index()));
-
-  EXPECT_FALSE(is_downloading_profile_image(account_id));
-  EXPECT_FALSE(NeedProfileImage(account_id));
-  EXPECT_TRUE(
-      user_image_manager_impl(account_id)->DownloadedProfileImage().isNull());
-  EXPECT_TRUE(is_random_image_set(account_id));
-}
-
 TEST_F(UserImageManagerImplTest, RecordsUserImageLoggedInHistogram) {
   constexpr int kDefaultImageIndex = 85;
   ASSERT_TRUE(default_user_image::IsInCurrentImageSet(kDefaultImageIndex));

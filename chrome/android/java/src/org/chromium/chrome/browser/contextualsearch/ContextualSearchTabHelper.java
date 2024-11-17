@@ -79,9 +79,6 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     /** To listen for when the current tab has an active ReadAloud playback. */
     private ObservableSupplier<Tab> mReadAloudActivePlaybackTab;
 
-    /** Callback for when the ReadAloudController is ready. */
-    private OneShotCallback<ReadAloudController> mReadAloudControllerSupplierCallback;
-
     /**
      * Creates a contextual search tab helper for the given tab.
      *
@@ -110,10 +107,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (isReadAloudTapToSeekEnabled()) {
             mReadAloudControllerSupplier = getReadAloudControllerSupplier(tab);
             if (mReadAloudControllerSupplier != null) {
-                mReadAloudControllerSupplierCallback =
-                        new OneShotCallback<ReadAloudController>(
-                                mReadAloudControllerSupplier,
-                                this::onReadAloudControllerSupplierReady);
+                new OneShotCallback<ReadAloudController>(
+                        mReadAloudControllerSupplier, this::onReadAloudControllerSupplierReady);
             }
         }
     }
@@ -363,7 +358,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                         // and Talkback has poor interaction with Contextual Search (see
                         // http://crbug.com/399708 and http://crbug.com/396934).
                         && !manager.isRunningInCompatibilityMode()
-                        && !(mTab.isShowingErrorPage())
+                        && !mTab.isShowingErrorPage()
                         && isDeviceOnline(manager);
         if (mTab.isCustomTab() && !isActive) {
             // TODO(donnd): remove after https://crbug.com/1192143 is resolved.
@@ -469,10 +464,10 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
      * coordinates.
      */
     @CalledByNative
-    void onShowUnhandledTapUIIfNeeded(int x, int y) {
+    void onShowUnhandledTapUiIfNeeded(int x, int y) {
         // Only notify the manager if we currently have a valid listener.
         if (mGestureStateListener != null && getContextualSearchManager(mTab) != null) {
-            getContextualSearchManager(mTab).onShowUnhandledTapUIIfNeeded(x, y);
+            getContextualSearchManager(mTab).onShowUnhandledTapUiIfNeeded(x, y);
         }
     }
 

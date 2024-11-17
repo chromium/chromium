@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_view_controller.h"
 
-#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -289,22 +287,9 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
 }
 
 - (void)setUIEnabled:(BOOL)UIEnabled {
-  if (base::FeatureList::IsEnabled(
-          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
-    // For the history sync minor mode experiment, we do not use the spinner
-    // overlay. The disabled UI has a spinner in the primary button.
-    self.primaryButtonSpinnerEnabled = !UIEnabled;
-    self.view.userInteractionEnabled = UIEnabled;
-  } else {
-    // Use the spinner overlay to disable the view.
-    if (UIEnabled) {
-      [self.overlay removeFromSuperview];
-    } else {
-      [self.view addSubview:self.overlay];
-      AddSameConstraints(self.view, self.overlay);
-      [self.overlay.indicator startAnimating];
-    }
-  }
+  // For the disabled UI, show a spinner in the primary button.
+  self.primaryButtonSpinnerEnabled = !UIEnabled;
+  self.view.userInteractionEnabled = UIEnabled;
 }
 
 @end

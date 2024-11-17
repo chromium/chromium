@@ -69,7 +69,8 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_Normal) {
   buffer->set_discard_padding(DecoderBuffer::DiscardPadding(
       base::Milliseconds(5), base::Milliseconds(6)));
   buffer->WritableSideData().spatial_layers = {1, 2, 3};
-  buffer->WritableSideData().alpha_data = {0, 1, 2};
+  buffer->WritableSideData().alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span("alpha_data"));
   buffer->WritableSideData().secure_handle = 42;
 
   MojoDecoderBufferConverter converter;

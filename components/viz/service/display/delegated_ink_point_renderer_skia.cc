@@ -13,7 +13,9 @@
 
 namespace viz {
 
-void DelegatedInkPointRendererSkia::DrawDelegatedInkTrail(SkCanvas* canvas) {
+void DelegatedInkPointRendererSkia::DrawDelegatedInkTrail(
+    SkCanvas* canvas,
+    const gfx::Transform& transform_to_render_pass) {
   TRACE_EVENT1("viz", "DelegatedInkPointRendererSkia::DrawDelegatedInkTrail",
                "points", path_.countPoints());
 
@@ -24,6 +26,7 @@ void DelegatedInkPointRendererSkia::DrawDelegatedInkTrail(SkCanvas* canvas) {
 
   if (!path_.isEmpty() && canvas) {
     canvas->save();
+    canvas->concat(gfx::TransformToSkM44(transform_to_render_pass));
 
     SkRect bounds = gfx::RectFToSkRect(metadata_->presentation_area());
     canvas->clipRect(bounds);
@@ -79,8 +82,9 @@ std::vector<SkPoint> DelegatedInkPointRendererSkia::GetPointsToDraw() {
   PredictPoints(&ink_points_to_draw);
 
   std::vector<SkPoint> sk_points;
-  for (gfx::DelegatedInkPoint ink_point : ink_points_to_draw)
+  for (gfx::DelegatedInkPoint ink_point : ink_points_to_draw) {
     sk_points.push_back(gfx::PointFToSkPoint(ink_point.point()));
+  }
 
   return sk_points;
 }
@@ -96,6 +100,7 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
   if (!metadata_) {
     SetDamageRect(gfx::RectF());
     ResetPrediction();
+    ResetPoints();
     return;
   }
 

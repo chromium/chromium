@@ -79,7 +79,7 @@ class POLICY_EXPORT PolicyService {
         ConfigurationPolicyProvider* provider) = 0;
   };
 
-  virtual ~PolicyService() {}
+  virtual ~PolicyService() = default;
 
   // Observes changes to all components of the given |domain|.
   virtual void AddObserver(PolicyDomain domain, Observer* observer) = 0;

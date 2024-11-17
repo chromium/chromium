@@ -17,12 +17,10 @@ namespace {
 
 using EnabledSuggestions = AssistiveSuggesterSwitch::EnabledSuggestions;
 
-base::RepeatingCallback<void(GetFocusedTabUrlCallback)> ReturnUrl(
+base::RepeatingCallback<std::optional<GURL>(void)> ReturnUrl(
     const std::string& url) {
-  return base::BindLambdaForTesting([url](GetFocusedTabUrlCallback callback) {
-    std::optional<GURL> gurl =
-        url.empty() ? std::nullopt : std::optional<GURL>(GURL(url));
-    std::move(callback).Run(gurl);
+  return base::BindLambdaForTesting([url]() {
+    return url.empty() ? std::nullopt : std::optional<GURL>(GURL(url));
   });
 }
 

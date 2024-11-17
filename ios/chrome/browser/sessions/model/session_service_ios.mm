@@ -431,11 +431,9 @@ using SaveSessionCallback =
                                              sessionPath:sessionPath];
                           }));
   } @catch (NSException* exception) {
-    NOTREACHED_IN_MIGRATION()
-        << "Error serializing session for path: "
-        << base::SysNSStringToUTF8(sessionPath) << ": "
-        << base::SysNSStringToUTF8([exception description]);
-    return;
+    NOTREACHED() << "Error serializing session for path: "
+                 << base::SysNSStringToUTF8(sessionPath) << ": "
+                 << base::SysNSStringToUTF8([exception description]);
   }
 }
 
@@ -467,10 +465,9 @@ using SaveSessionCallback =
   }
 
   if (!isDirectory) {
-    NOTREACHED_IN_MIGRATION() << "Error creating destination directory: "
-                              << base::SysNSStringToUTF8(directory) << ": "
-                              << "file exists and is not a directory.";
-    return;
+    NOTREACHED() << "Error creating destination directory: "
+                 << base::SysNSStringToUTF8(directory) << ": "
+                 << "file exists and is not a directory.";
   }
 
   NSDataWritingOptions options =

@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_prefix.h"
@@ -41,9 +42,14 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/page_transition_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_util.h"
+
+namespace {
+constexpr int kAndroidHubMaxMatches = 5;
+}  // namespace
 
 bool HistoryQuickProvider::disabled_ = false;
 
@@ -90,6 +96,12 @@ void HistoryQuickProvider::DoAutocomplete() {
   size_t max_matches = autocomplete_input_.InKeywordMode()
                            ? provider_max_matches_in_keyword_mode_
                            : provider_max_matches_;
+  if (autocomplete_input_.current_page_classification() ==
+      metrics::OmniboxEventProto::ANDROID_HUB) {
+    // LINT.IfChange(HubHistoryMaxMatches)
+    max_matches = kAndroidHubMaxMatches;
+    // LINT.ThenChange(//components/omnibox/browser/autocomplete_grouper_sections.cc:HubHistorySectionSlots)
+  }
 
   // Get the matching URLs from the DB.
   ScoredHistoryMatches matches = in_memory_url_index_->HistoryItemsForTerms(
@@ -110,7 +122,14 @@ void HistoryQuickProvider::DoAutocomplete() {
     for (const auto& history_match : matches) {
       // Set max_match_score to the score we'll assign this result.
       max_match_score = std::min(max_match_score, history_match.raw_score);
-      matches_.push_back(QuickMatchToACMatch(history_match, max_match_score));
+      auto match = QuickMatchToACMatch(history_match, max_match_score);
+      if (autocomplete_input_.current_page_classification() ==
+          PageClassification::
+              OmniboxEventProto_PageClassification_ANDROID_HUB) {
+        match.suggestion_group_id = omnibox::GROUP_MOBILE_HISTORY;
+      }
+
+      matches_.push_back(std::move(match));
       // Mark this max_match_score as being used.
       max_match_score--;
     }
@@ -118,12 +137,16 @@ void HistoryQuickProvider::DoAutocomplete() {
 
   add_matches(matches);
 
-  // If ML scoring is enabled, mark all "extra" matches as `culled_by_provider`.
-  // If ML scoring is disabled, this is effectively a no-op as the matches will
-  // already be resized in the above call to `HistoryItemsForTerms()`.
-  ResizeMatches(
-      max_matches,
-      OmniboxFieldTrial::IsMlUrlScoringUnlimitedNumCandidatesEnabled());
+  if (autocomplete_input_.current_page_classification() !=
+      PageClassification::OmniboxEventProto_PageClassification_ANDROID_HUB) {
+    // If ML scoring is enabled, mark all "extra" matches as
+    // `culled_by_provider`. If ML scoring is disabled, this is effectively a
+    // no-op as the matches will already be resized in the above call to
+    // `HistoryItemsForTerms()`.
+    ResizeMatches(
+        max_matches,
+        OmniboxFieldTrial::IsMlUrlScoringUnlimitedNumCandidatesEnabled());
+  }
 
   // Add suggestions from the user's highly visited domains bypassing
   // `provider_max_matches_`.

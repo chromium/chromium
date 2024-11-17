@@ -70,7 +70,8 @@
           "builder": "gpu-fyi-try-android-p-pixel-2-32",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android FYI Release (Pixel 2)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

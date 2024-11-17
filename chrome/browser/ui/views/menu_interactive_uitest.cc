@@ -1,8 +1,6 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "ui/views/controls/menu/menu_controller.h"
-
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -20,10 +18,12 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/focus/focus_manager.h"
@@ -82,7 +82,7 @@ class MenuControllerUITest : public InProcessBrowserTest {
     // Run the menu, so that the menu item size will be calculated.
     menu_runner_->RunMenuAt(widget, nullptr, gfx::Rect(),
                             views::MenuAnchorPosition::kTopLeft,
-                            ui::MENU_SOURCE_NONE);
+                            ui::mojom::MenuSourceType::kNone);
     RunPendingMessages();
     // Figure out the middle of the first menu item.
     mouse_pos_.set_x(first_item_->width() / 2);
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
 #endif
   menu_runner_->RunMenuAt(widget.get(), nullptr, gfx::Rect(),
                           views::MenuAnchorPosition::kTopLeft,
-                          ui::MENU_SOURCE_NONE);
+                          ui::mojom::MenuSourceType::kNone);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuStart), 2);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart), 2);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 1);
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   menu_item->AppendMenuItem(2, u"Two");
   menu_runner->RunMenuAt(nullptr, nullptr, gfx::Rect(),
                          views::MenuAnchorPosition::kTopLeft,
-                         ui::MENU_SOURCE_NONE);
+                         ui::mojom::MenuSourceType::kNone);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuStart), 1);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupStart), 1);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 0);

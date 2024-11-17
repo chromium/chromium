@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
@@ -187,7 +188,7 @@ void MTPDeviceDelegateImplMac::CreateDirectory(
     const bool recursive,
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::ReadDirectory(
@@ -223,7 +224,7 @@ void MTPDeviceDelegateImplMac::ReadBytes(
     int buf_len,
     ReadBytesSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool MTPDeviceDelegateImplMac::IsReadOnly() const {
@@ -237,7 +238,7 @@ void MTPDeviceDelegateImplMac::CopyFileLocal(
     CopyFileProgressCallback progress_callback,
     CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::MoveFileLocal(
@@ -246,7 +247,7 @@ void MTPDeviceDelegateImplMac::MoveFileLocal(
     CreateTemporaryFileCallback create_temporary_file_callback,
     MoveFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::CopyFileFromLocal(
@@ -254,21 +255,21 @@ void MTPDeviceDelegateImplMac::CopyFileFromLocal(
     const base::FilePath& device_file_path,
     CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::DeleteFile(
     const base::FilePath& file_path,
     DeleteFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::DeleteDirectory(
     const base::FilePath& file_path,
     DeleteDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::AddWatcher(
@@ -462,9 +463,11 @@ void MTPDeviceDelegateImplMac::NotifyReadDir() {
 
       base::FilePath relative_path;
       read_path.AppendRelativePath(file_paths_[i], &relative_path);
+      auto name = base::SafeBaseName::Create(relative_path);
+      CHECK(name) << relative_path;
       base::File::Info info = file_info_[file_paths_[i].value()];
       entry_list.emplace_back(
-          std::move(relative_path), base::FilePath(),
+          *name, std::string(),
           info.is_directory ? filesystem::mojom::FsFileType::DIRECTORY
                             : filesystem::mojom::FsFileType::REGULAR_FILE);
     }

@@ -19,6 +19,7 @@
 
 namespace {
 class WebAppNonClientFrameViewChromeOSTest;
+class LocationBarViewQuietNotificationInteractiveUITest;
 }
 
 namespace views {
@@ -81,7 +82,6 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   views::View* GetAnchorView(std::optional<PageActionIconType> type) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;
-  ManagementToolbarButton* GetManagementToolbarButton() override;
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
   IntentChipButton* GetIntentChipButton() override;
@@ -112,6 +112,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   friend class ImmersiveModeControllerChromeosWebAppBrowserTest;
   friend class WebAppAshInteractiveUITest;
   friend class WebAppNonClientFrameViewChromeOSTest;
+  friend class LocationBarViewQuietNotificationInteractiveUITest;
 
   views::View* GetContentSettingContainerForTesting();
 

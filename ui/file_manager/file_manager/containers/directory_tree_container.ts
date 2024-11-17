@@ -530,7 +530,7 @@ export class DirectoryTreeContainer {
   /** Append an eject button as the trailing slot of the navigation item. */
   private setupEjectButton_(element: XfTreeItem, label: string) {
     let ejectButton =
-        element.querySelector('[slot=trailingIcon]') as CrButtonElement;
+        element.querySelector<CrButtonElement>('[slot=trailingIcon]')!;
     if (!ejectButton) {
       ejectButton = document.createElement('cr-button');
       ejectButton.className = 'root-eject align-right-icon';
@@ -547,7 +547,7 @@ export class DirectoryTreeContainer {
       });
       ejectButton.addEventListener('click', (event) => {
         event.stopPropagation();
-        const command = document.querySelector('command#unmount') as Command;
+        const command = document.querySelector<Command>('command#unmount')!;
         // Ensure 'canExecute' state of the command is properly setup for the
         // root before executing it.
         command.canExecuteChange(element);
@@ -566,7 +566,7 @@ export class DirectoryTreeContainer {
   /** Create an external link icon for android app navigation item.*/
   private setupAndroidAppLink_(element: XfTreeItem) {
     let externalLink =
-        element.querySelector('[slot=trailingIcon]') as HTMLSpanElement;
+        element.querySelector<HTMLSpanElement>('[slot=trailingIcon]');
     if (!externalLink) {
       // Use aria-describedby attribute to let ChromeVox users know that the
       // link launches an external app window.

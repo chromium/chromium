@@ -46,7 +46,6 @@ class PinTextfield : public views::Textfield {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  protected:
   // views::Textfield:
@@ -60,6 +59,8 @@ class PinTextfield : public views::Textfield {
   // Updates the current selection and notifies that it changed along with the
   // pin value.
   void UpdateAccessibilityAfterPinChange();
+
+  void UpdatePinAccessibleValue();
 
   // Updates text color based on the current state of `disabled_`.
   void UpdateTextColor();

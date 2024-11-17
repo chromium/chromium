@@ -135,12 +135,7 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 
 class FrameSizeButtonTest : public AshTestBase {
  public:
-  FrameSizeButtonTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
+  FrameSizeButtonTest() = default;
   explicit FrameSizeButtonTest(bool resizable) : resizable_(resizable) {}
 
   FrameSizeButtonTest(const FrameSizeButtonTest&) = delete;
@@ -210,8 +205,6 @@ class FrameSizeButtonTest : public AshTestBase {
   TestWidgetDelegate* widget_delegate() { return widget_delegate_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // Not owned.
   raw_ptr<WindowState, DanglingUntriaged> window_state_;
   raw_ptr<views::Widget, DanglingUntriaged> widget_;
@@ -1317,17 +1310,7 @@ TEST_F(MultitaskMenuTest, AdjustedMenuBounds) {
       GetMultitaskMenu()->GetBoundsInScreen()));
 }
 
-class SnapGroupFrameSizeButtonTest : public MultitaskMenuTest {
- public:
-  SnapGroupFrameSizeButtonTest() : scoped_feature_list_(features::kSnapGroup) {}
-  SnapGroupFrameSizeButtonTest(const SnapGroupFrameSizeButtonTest&) = delete;
-  SnapGroupFrameSizeButtonTest& operator=(const SnapGroupFrameSizeButtonTest&) =
-      delete;
-  ~SnapGroupFrameSizeButtonTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SnapGroupFrameSizeButtonTest = MultitaskMenuTest;
 
 // Tests that long press caption button to show snap phantom bounds are updated.
 TEST_F(SnapGroupFrameSizeButtonTest, SnapCaptionButton) {

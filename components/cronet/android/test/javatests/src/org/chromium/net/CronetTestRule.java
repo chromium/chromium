@@ -147,7 +147,7 @@ public class CronetTestRule implements TestRule {
 
         // Find the API version required by the test.
         int requiredApiVersion = getMaximumAvailableApiLevel();
-        int requiredAndroidApiVersion = Build.VERSION_CODES.LOLLIPOP;
+        int requiredAndroidApiVersion = Build.VERSION_CODES.M;
         boolean netLogEnabled = true;
         for (Annotation a : desc.getTestClass().getAnnotations()) {
             if (a instanceof RequiresMinApi) {
@@ -678,6 +678,8 @@ public class CronetTestRule implements TestRule {
         ExperimentalCronetEngine.Builder getCronetEngineBuilder(Context context);
     }
 
+    // Warning should go away once we can use java.util.function.Function.
+    @SuppressWarnings("ImmutableEnumChecker")
     public enum CronetImplementation {
         STATICALLY_LINKED(
                 context ->

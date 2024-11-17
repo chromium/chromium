@@ -189,7 +189,7 @@ class OfflinePageRequestHandler {
   // All the work related to validations.
   void ValidateFile();
   void GetFileSizeForValidation();
-  void DidGetFileSizeForValidation(const int64_t* actual_file_size);
+  void DidGetFileSizeForValidation(std::optional<int64_t> file_size);
   void DidOpenForValidation(int result);
   void ReadForValidation();
   void DidReadForValidation(int result);

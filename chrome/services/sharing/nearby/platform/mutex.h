@@ -8,8 +8,7 @@
 #include "base/synchronization/lock.h"
 #include "third_party/nearby/src/internal/platform/implementation/mutex.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete Mutex implementation. Non-recursive lock.
 class Mutex : public api::Mutex {
@@ -29,7 +28,6 @@ class Mutex : public api::Mutex {
   base::Lock lock_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_MUTEX_H_

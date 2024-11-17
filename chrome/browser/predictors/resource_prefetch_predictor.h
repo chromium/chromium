@@ -213,6 +213,11 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
       const std::optional<url::Origin>& initiator_origin,
       const GURL& url) const;
 
+  void GetPreconnectAndPrefetchRequest(
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& url,
+      PreconnectPrediction& prediction);
+
  private:
   friend class LoadingPredictor;
   friend class ::PredictorsHandler;

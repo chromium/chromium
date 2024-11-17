@@ -17,6 +17,8 @@
 
 + (void)enrollUserToProvisionalNotificationsForClientIds:
             (std::vector<PushNotificationClientId>)clientIds
+                             clientEnabledForProvisional:
+                                 (BOOL)clientEnabledForProvisional
                                          withAuthService:
                                              (AuthenticationService*)authService
                                    deviceInfoSyncService:
@@ -24,11 +26,13 @@
                                            deviceInfoSyncService {
   if (authService &&
       authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    // Only users with "Not Determined" authorization status are eligible for
-    // provisional notifications.
+    // Only users with a "Not Determined" (`UNAuthorizationStatusNotDetermined`)
+    // or "Provisional" (`UNAuthorizationStatusProvisional`) notification
+    // authorization status are eligible for provisional notifications.
     [PushNotificationUtil getPermissionSettings:^(
                               UNNotificationSettings* settings) {
-      if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
+      if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined ||
+          settings.authorizationStatus == UNAuthorizationStatusProvisional) {
         [PushNotificationUtil enableProvisionalPushNotificationPermission:^(
                                   BOOL granted, NSError* error) {
           if (granted && !error) {
@@ -38,7 +42,8 @@
               id<SystemIdentity> identity = authService->GetPrimaryIdentity(
                   signin::ConsentLevel::kSignin);
               for (PushNotificationClientId clientId : clientIds) {
-                service->SetPreference(identity.gaiaID, clientId, true);
+                service->SetPreference(identity.gaiaID, clientId,
+                                       clientEnabledForProvisional);
                 if (clientId == PushNotificationClientId::kSendTab &&
                     deviceInfoSyncService) {
                   deviceInfoSyncService->RefreshLocalDeviceInfo();

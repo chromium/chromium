@@ -50,10 +50,11 @@ class ExtensionCacheFake;
 class ExtensionService;
 class ExtensionSet;
 class ProcessManager;
+class WindowController;
 
 // Base class for extension browser tests. Provides utilities for loading,
 // unloading, and installing extensions.
-class ExtensionBrowserTest : virtual public InProcessBrowserTest,
+class ExtensionBrowserTest : public InProcessBrowserTest,
                              public ExtensionRegistryObserver {
  public:
   // Different types of extension's lazy background contexts used in some tests.
@@ -249,7 +250,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
     return InstallOrUpdateExtension(
         std::string(), file_path, InstallUIType::kNone,
         std::move(expected_change), mojom::ManifestLocation::kInternal,
-        browser(), Extension::NO_FLAGS, false, true);
+        GetWindowController(), Extension::NO_FLAGS, false, true);
   }
 
   // Installs extension as if it came from the Chrome Webstore.
@@ -275,20 +276,16 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   const Extension* InstallExtensionWithUIAutoConfirm(
       const base::FilePath& path,
       std::optional<int> expected_change,
-      Browser* browser) {
-    return InstallOrUpdateExtension(
-        std::string(), path, InstallUIType::kAutoConfirm,
-        std::move(expected_change), browser, Extension::NO_FLAGS);
-  }
+      Browser* browser);
 
   const Extension* InstallExtensionWithSourceAndFlags(
       const base::FilePath& path,
       std::optional<int> expected_change,
       mojom::ManifestLocation install_source,
       Extension::InitFromValueFlags creation_flags) {
-    return InstallOrUpdateExtension(std::string(), path, InstallUIType::kNone,
-                                    std::move(expected_change), install_source,
-                                    browser(), creation_flags, false, false);
+    return InstallOrUpdateExtension(
+        std::string(), path, InstallUIType::kNone, std::move(expected_change),
+        install_source, GetWindowController(), creation_flags, false, false);
   }
 
   // Begins install process but simulates a user cancel.
@@ -379,7 +376,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   static content::ServiceWorkerContext* GetServiceWorkerContext(
       content::BrowserContext* browser_context);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // True if the command line should be tweaked as if ChromeOS user is
   // already logged in.
   bool set_chromeos_user_;
@@ -421,7 +418,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
       const base::FilePath& path,
       InstallUIType ui_type,
       std::optional<int> expected_change,
-      Browser* browser,
+      WindowController* window_controller,
       Extension::InitFromValueFlags creation_flags);
   const Extension* InstallOrUpdateExtension(
       const extensions::ExtensionId& id,
@@ -435,10 +432,13 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
       InstallUIType ui_type,
       std::optional<int> expected_change,
       mojom::ManifestLocation install_source,
-      Browser* browser,
+      WindowController* window_controller,
       Extension::InitFromValueFlags creation_flags,
       bool wait_for_idle,
       bool grant_permissions);
+
+  // Returns the WindowController for this test's browser window.
+  WindowController* GetWindowController();
 
   // Used for setting the default scoped current channel for extension browser
   // tests to UNKNOWN (trunk), in order to enable channel restricted features.

@@ -39,6 +39,26 @@ NSArray* AXChildrenOf(const id node) {
   return AXElementWrapper(node).Children();
 }
 
+bool HasAXRole(const char* role, const AXUIElementRef node) {
+  AXElementWrapper ax_node((__bridge id)node);
+  NSString* node_role =
+      *ax_node.GetAttributeValue(NSAccessibilityRoleAttribute);
+  return base::SysNSStringToUTF8(node_role) == role;
+}
+
+bool HasIDOrClass(const std::string& idOrClass, const AXUIElementRef node) {
+  AXElementWrapper nsNode((__bridge id)node);
+  NSString* nsIDOrClass = base::SysUTF8ToNSString(idOrClass);
+  NSString* idValue =
+      *nsNode.GetAttributeValue(NSAccessibilityDOMIdentifierAttribute);
+  if ([idValue isEqualToString:nsIDOrClass]) {
+    return true;
+  }
+
+  NSArray* classList = *nsNode.GetAttributeValue(NSAccessibilityDOMClassList);
+  return [classList containsObject:nsIDOrClass];
+}
+
 }  // namespace
 
 bool IsValidAXAttribute(const std::string& attribute) {
@@ -102,6 +122,12 @@ bool IsValidAXAttribute(const std::string& attribute) {
 
 base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXUIElement(
     const AXUIElementRef node,
+    const char* role) {
+  return FindAXUIElement(node, base::BindRepeating(&HasAXRole, role));
+}
+
+base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXUIElement(
+    const AXUIElementRef node,
     const AXFindCriteria& criteria) {
   if (criteria.Run(node)) {
     return base::apple::ScopedCFTypeRef<AXUIElementRef>(
@@ -121,6 +147,31 @@ base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXUIElement(
 }
 
 std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
+    const AXTreeSelector& selector) {
+  int pid;
+  base::apple::ScopedCFTypeRef<AXUIElementRef> node;
+  std::tie(node, pid) = FindAXApplication(selector);
+
+  // ActiveTab selector.
+  if (!node) {
+    return {node, pid};
+  }
+
+  if (selector.types & AXTreeSelector::ActiveTab) {
+    // Only active tab in exposed in browsers, thus find first
+    // AXWebArea role.
+    node = FindAXUIElement(node.get(), "AXWebArea");
+  }
+
+  if (selector.types & AXTreeSelector::IDOrClass) {
+    node = FindAXUIElement(
+        node.get(), base::BindRepeating(&HasIDOrClass, selector.pattern));
+  }
+
+  return {node, pid};
+}
+
+std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXApplication(
     const AXTreeSelector& selector) {
   if (selector.widget) {
     return {base::apple::ScopedCFTypeRef<AXUIElementRef>(
@@ -172,19 +223,6 @@ std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
       if (window) {
         node = window;
       }
-    }
-
-    // ActiveTab selector.
-    if (node && selector.types & AXTreeSelector::ActiveTab) {
-      node = FindAXUIElement(
-          node.get(), base::BindRepeating([](const AXUIElementRef node) {
-            // Only active tab in exposed in browsers, thus find first
-            // AXWebArea role.
-            AXElementWrapper ax_node((__bridge id)node);
-            NSString* role =
-                *ax_node.GetAttributeValue(NSAccessibilityRoleAttribute);
-            return base::SysNSStringToUTF8(role) == "AXWebArea";
-          }));
     }
 
     // Found a match.

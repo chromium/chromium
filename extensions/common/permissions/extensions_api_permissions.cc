@@ -97,7 +97,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kIdle, "idle",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
-    {APIPermissionID::kLockScreen, "lockScreen"},
     {APIPermissionID::kLockWindowFullscreenPrivate,
      "lockWindowFullscreenPrivate", APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kLogin, "login"},

@@ -319,7 +319,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_auth_java") {
-      aar_path = "cipd/libs/com_google_android_gms_play_services_auth/play-services-auth-20.1.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_auth/play-services-auth-21.1.1.aar"
       info_path = "libs/com_google_android_gms_play_services_auth/com_google_android_gms_play_services_auth.info"
       enable_bytecode_checks = false
       deps = [
@@ -327,6 +327,7 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_auth_base_java",
         "$google_play_services_package:google_play_services_base_java",
         "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_fido_java",
         "$google_play_services_package:google_play_services_tasks_java",
         "//third_party/androidx:androidx_fragment_fragment_java",
         "//third_party/androidx:androidx_loader_loader_java",
@@ -337,7 +338,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_auth_api_phone_java") {
-      aar_path = "cipd/libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone-18.0.1.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone-18.0.2.aar"
       info_path = "libs/com_google_android_gms_play_services_auth_api_phone/com_google_android_gms_play_services_auth_api_phone.info"
       enable_bytecode_checks = false
       deps = [
@@ -351,7 +352,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_auth_base_java") {
-      aar_path = "cipd/libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-18.0.2.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-18.0.10.aar"
       info_path = "libs/com_google_android_gms_play_services_auth_base/com_google_android_gms_play_services_auth_base.info"
       enable_bytecode_checks = false
       deps = [
@@ -359,6 +360,21 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_basement_java",
         "$google_play_services_package:google_play_services_tasks_java",
         "//third_party/androidx:androidx_collection_collection_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_auth_blockstore_java") {
+      aar_path = "cipd/libs/com_google_android_gms_play_services_auth_blockstore/play-services-auth-blockstore-16.4.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_auth_blockstore/com_google_android_gms_play_services_auth_blockstore.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -439,6 +455,22 @@ if (!limit_android_deps) {
         "//third_party/androidx:androidx_media_media_java",
         "//third_party/androidx:androidx_mediarouter_mediarouter_java",
         "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_fido_java") {
+      aar_path = "cipd/libs/com_google_android_gms_play_services_fido/play-services-fido-21.1.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_fido/com_google_android_gms_play_services_fido.info"
+      enable_bytecode_checks = false
+      deps = [
+        ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
   }
@@ -560,6 +592,18 @@ if (!limit_android_deps) {
         "$google_play_services_package:google_play_services_phenotype_java",
       ]
     }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt(
+      "com_google_android_libraries_identity_googleid_googleid_java") {
+    aar_path = "cipd/libs/com_google_android_libraries_identity_googleid_googleid/googleid-1.1.1.aar"
+    info_path = "libs/com_google_android_libraries_identity_googleid_googleid/com_google_android_libraries_identity_googleid_googleid.info"
+    enable_bytecode_checks = false
+    deps = [
+      "//third_party/androidx:androidx_credentials_credentials_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -805,7 +849,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_okio_okio_jvm_java") {
-    jar_path = "cipd/libs/com_squareup_okio_okio_jvm/okio-jvm-3.9.0.jar"
+    jar_path = "cipd/libs/com_squareup_okio_okio_jvm/okio-jvm-3.9.1.jar"
     output_name = "com_squareup_okio_okio_jvm"
     supports_android = true
     enable_bytecode_checks = false
@@ -1045,6 +1089,14 @@ if (!limit_android_deps) {
     supports_android = true
     enable_bytecode_checks = false
     testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_jspecify_jspecify_java") {
+    jar_path = "cipd/libs/org_jspecify_jspecify/jspecify-1.0.0.jar"
+    output_name = "org_jspecify_jspecify"
+    supports_android = true
+    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

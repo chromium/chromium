@@ -48,7 +48,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   device::BluetoothRemoteGattService* GetService() const override;
   void ReadRemoteCharacteristic(ValueCallback callback) override;
   void WriteRemoteCharacteristic(
-      const std::vector<uint8_t>& value,
+      base::span<const uint8_t> value,
       device::BluetoothRemoteGattCharacteristic::WriteType write_type,
       base::OnceClosure callback,
       ErrorCallback error_callback) override;
@@ -56,11 +56,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   // places. This simply calls |WriteRemoteCharacteristic| with a default value
   // for |WriteType| to make it easy to remove in the future.
   void DeprecatedWriteRemoteCharacteristic(
-      const std::vector<uint8_t>& value,
+      base::span<const uint8_t> value,
       base::OnceClosure callback,
       ErrorCallback error_callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
-  void PrepareWriteRemoteCharacteristic(const std::vector<uint8_t>& value,
+  void PrepareWriteRemoteCharacteristic(base::span<const uint8_t> value,
                                         base::OnceClosure callback,
                                         ErrorCallback error_callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -105,7 +105,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
       ErrorCallback error_callback) override;
 
   // Common impl for various writes calls.
-  void WriteRemoteCharacteristicImpl(const std::vector<uint8_t>& value,
+  void WriteRemoteCharacteristicImpl(base::span<const uint8_t> value,
                                      floss::WriteType write_type,
                                      base::OnceClosure callback,
                                      ErrorCallback error_callback);

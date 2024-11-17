@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//crypto/features.gni")
-import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 if (use_blink) {
@@ -39,9 +37,11 @@ generate_grd("build_grd") {
     "js:build_grdp",
     "mojo:build_grdp",
     "//third_party/jstemplate:build_grdp",
+    "//third_party/lit/v3_0:build_grdp",
   ]
   grdp_files = [
     "$root_gen_dir/third_party/jstemplate/resources.grdp",
+    "$root_gen_dir/third_party/lit/v3_0/resources.grdp",
     "$target_gen_dir/cr_components/commerce/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/css/resources.grdp",
@@ -50,7 +50,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/mojo/resources.grdp",
   ]
 
-  if (include_polymer) {
+  if (!is_android && !is_ios) {
     public_deps += [
       "cr_components/app_management:build_grdp",
       "cr_components/customize_color_scheme_mode:build_grdp",
@@ -61,12 +61,10 @@ generate_grd("build_grd") {
       "cr_components/most_visited:build_grdp",
       "cr_components/theme_color_picker:build_grdp",
       "//third_party/d3:build_grdp",
-      "//third_party/lit/v3_0:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
       "$root_gen_dir/third_party/d3/d3_resources.grdp",
-      "$root_gen_dir/third_party/lit/v3_0/resources.grdp",
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/theme_color_picker/resources.grdp",
@@ -111,7 +109,7 @@ generate_grd("build_grd") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     # NOTE: Do not add any new Ash-only grdp files below.
     # TODO(crbug.com/40233082): Move remaining Ash-only shared resources to
     # ash/webui/common/resources:build_grd
@@ -133,7 +131,7 @@ generate_grd("build_grd") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   generate_grd("build_cros_styles_grdp") {
     grd_prefix = "webui"
     out_grd = "$target_gen_dir/cros_styles_resources.grdp"

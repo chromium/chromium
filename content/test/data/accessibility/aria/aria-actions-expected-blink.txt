@@ -1,0 +1,37 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField hasActions value='your-file-name.pdf EditOpenClose' actionsIds=button,button,button actions=setValue
+++++++++staticText name='your-file-name.pdf '
+++++++++++inlineTextBox name='your-file-name.pdf '
+++++++++button name='Edit'
+++++++++++staticText name='Edit'
+++++++++++++inlineTextBox name='Edit'
+++++++++button name='Open'
+++++++++++staticText name='Open'
+++++++++++++inlineTextBox name='Open'
+++++++++button name='Close'
+++++++++++staticText name='Close'
+++++++++++++inlineTextBox name='Close'
+++++++button name='Delete'
+++++++++staticText name='Delete'
+++++++++++inlineTextBox name='Delete'
+=== Start Continuation ===
+rootWebArea name='change-aria-action-id'
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField hasActions value='your-file-name.pdf EditOpenClose' actionsIds=button actions=setValue
+++++++++staticText name='your-file-name.pdf '
+++++++++++inlineTextBox name='your-file-name.pdf '
+++++++++button name='Edit'
+++++++++++staticText name='Edit'
+++++++++++++inlineTextBox name='Edit'
+++++++++button name='Open'
+++++++++++staticText name='Open'
+++++++++++++inlineTextBox name='Open'
+++++++++button name='Close'
+++++++++++staticText name='Close'
+++++++++++++inlineTextBox name='Close'
+++++++button name='Delete'
+++++++++staticText name='Delete'
+++++++++++inlineTextBox name='Delete'

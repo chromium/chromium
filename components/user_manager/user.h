@@ -20,7 +20,6 @@
 class PrefService;
 
 namespace ash {
-class ChromeUserManagerImpl;
 class FakeChromeUserManager;
 class UserAddingScreenTest;
 class UserSessionManager;
@@ -41,7 +40,7 @@ class ProfilePolicyConnectorTest;
 
 namespace user_manager {
 
-class UserManagerBase;
+class UserManagerImpl;
 class FakeUserManager;
 
 // A class representing information about a previously logged in user.
@@ -199,8 +198,7 @@ class USER_MANAGER_EXPORT User {
   void AddProfileCreatedObserver(base::OnceClosure on_profile_created);
 
  protected:
-  friend class UserManagerBase;
-  friend class ash::ChromeUserManagerImpl;
+  friend class UserManagerImpl;
   friend class chromeos::SupervisedUserManagerImpl;
   friend class ash::UserImageManagerImpl;
   friend class ash::UserSessionManager;
@@ -219,6 +217,7 @@ class USER_MANAGER_EXPORT User {
   static User* CreateGuestUser(const AccountId& guest_account_id);
   static User* CreateKioskAppUser(const AccountId& kiosk_app_account_id);
   static User* CreateWebKioskAppUser(const AccountId& web_kiosk_account_id);
+  static User* CreateKioskIwaUser(const AccountId& kiosk_iwa_account_id);
   static User* CreatePublicAccountUser(const AccountId& account_id,
                                        bool is_using_saml = false);
 

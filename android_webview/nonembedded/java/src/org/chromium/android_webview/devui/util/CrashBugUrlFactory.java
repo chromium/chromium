@@ -43,7 +43,7 @@ public class CrashBugUrlFactory {
             Expected result:
             (What should have happened?)
 
-            <Any additional comments, you want to share>"
+            <Any additional comments, you want to share>
 
             ---
 
@@ -68,6 +68,9 @@ public class CrashBugUrlFactory {
      * Build a report uri to open an issue on
      * https://issues.chromium.org/issues/new?component=1456456&template=1923373. It uses WebView
      * Bugs Template and overrides labels and description fields.
+     *
+     * <p>For instructions on the query parameters we support, see this Google-internal document:
+     * http://shortn/_GvVo3hts09.
      */
     public Uri getReportUri() {
         var builder =
@@ -79,6 +82,7 @@ public class CrashBugUrlFactory {
                                 "component", BugTrackerConstants.COMPONENT_MOBILE_WEBVIEW)
                         .appendQueryParameter(
                                 "template", BugTrackerConstants.DEFAULT_WEBVIEW_TEMPLATE)
+                        .appendQueryParameter("title", "User reported crash")
                         .appendQueryParameter("description", getDescription())
                         .appendQueryParameter("priority", "P3")
                         .appendQueryParameter("type", "BUG")

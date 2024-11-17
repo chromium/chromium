@@ -65,7 +65,7 @@ id<GREYMatcher> BandwidthSettingsButton() {
 
 @implementation SettingsAccessibilityTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // It is possible for a test to fail with a menu visible, which can cause
   // future tests to fail.
 
@@ -89,7 +89,7 @@ id<GREYMatcher> BandwidthSettingsButton() {
         performAction:grey_tap()];
   }
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Closes a sub-settings menu, and then the general Settings menu.

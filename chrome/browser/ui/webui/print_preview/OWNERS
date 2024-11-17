@@ -1,8 +1,1 @@
 file://printing/OWNERS
-
-per-file extension_printer_handler_adapter*=xiangdongkong@google.com
-per-file extension_printer_handler_adapter*=jennyz@chromium.org
-per-file extension_printer_handler_adapter*=erikchen@chromium.org
-per-file extension_printer_service*=xiangdongkong@google.com
-per-file extension_printer_service*=jennyz@chromium.org
-per-file extension_printer_service*=erikchen@chromium.org

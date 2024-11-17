@@ -40,6 +40,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -492,6 +493,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
           gfx::Insets::VH(views::FocusRing::kDefaultHaloThickness / 2, 0), 0));
 
   UpdateAccessibleDescription();
+  UpdateAccessibleName();
 }
 
 ShelfAppButton::~ShelfAppButton() {
@@ -677,7 +679,7 @@ void ShelfAppButton::OnMenuClosed() {
 }
 
 void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
-                                     ui::MenuSourceType source_type) {
+                                     ui::mojom::MenuSourceType source_type) {
   // Return early if:
   // 1. the context menu controller is not set; or
   // 2. `context_menu_target_visibility_` is already true.
@@ -700,14 +702,6 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
     else
       ClearState(STATE_HOVERED);
   }
-}
-
-void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  ShelfButton::GetAccessibleNodeData(node_data);
-  const std::u16string accessible_name = GetViewAccessibility().GetCachedName();
-  node_data->SetName(!accessible_name.empty()
-                         ? accessible_name
-                         : shelf_view_->GetTitleForView(this));
 }
 
 bool ShelfAppButton::ShouldEnterPushedState(const ui::Event& event) {
@@ -1200,6 +1194,7 @@ void ShelfAppButton::UpdateState() {
   icon_view_->SetVerticalAlignment(is_horizontal_shelf
                                        ? views::ImageView::Alignment::kLeading
                                        : views::ImageView::Alignment::kCenter);
+  UpdateAccessibleName();
   SchedulePaint();
 }
 
@@ -1454,6 +1449,23 @@ void ShelfAppButton::UpdateAccessibleDescription() {
     default:
       GetViewAccessibility().RemoveDescription();
       break;
+  }
+}
+
+void ShelfAppButton::UpdateAccessibleName() {
+  std::u16string accessible_name = GetViewAccessibility().GetCachedName();
+
+  if (!accessible_name.empty()) {
+    GetViewAccessibility().SetName(accessible_name);
+  } else {
+    accessible_name = shelf_view_->GetTitleForView(this);
+
+    if (!accessible_name.empty()) {
+      GetViewAccessibility().SetName(accessible_name);
+    } else {
+      GetViewAccessibility().SetName(
+          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    }
   }
 }
 

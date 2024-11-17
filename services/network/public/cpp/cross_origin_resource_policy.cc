@@ -53,10 +53,14 @@ CrossOriginResourcePolicy::ParsedHeader ParseHeaderByString(
 
 CrossOriginResourcePolicy::ParsedHeader ParseHeaderByHttpResponseHeaders(
     const net::HttpResponseHeaders* headers) {
-  std::string header_value;
-  if (!headers || !headers->GetNormalizedHeader(
-                      CrossOriginResourcePolicy::kHeaderName, &header_value))
+  if (!headers) {
     return CrossOriginResourcePolicy::kNoHeader;
+  }
+  std::optional<std::string> header_value =
+      headers->GetNormalizedHeader(CrossOriginResourcePolicy::kHeaderName);
+  if (!header_value) {
+    return CrossOriginResourcePolicy::kNoHeader;
+  }
   return ParseHeaderByString(header_value);
 }
 

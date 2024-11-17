@@ -12,7 +12,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_webcontents_manager.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros_factory.h"
@@ -52,17 +51,14 @@
 #include "chrome/browser/lacros/net/network_settings_observer.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
 #include "chrome/browser/lacros/suggestion_service_lacros.h"
-#include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/views_text_services_context_menu_lacros.h"
-#include "chrome/browser/lacros/vpn_extension_tracker_lacros.h"
 #include "chrome/browser/lacros/web_app_provider_bridge_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
 #include "chrome/browser/lacros/webauthn_request_registrar_lacros.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_manager_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -287,9 +283,6 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   force_installed_tracker_ = std::make_unique<ForceInstalledTrackerLacros>();
   force_installed_tracker_->Start();
 
-  vpn_extension_tracker_ = std::make_unique<VpnExtensionTrackerLacros>();
-  vpn_extension_tracker_->Start();
-
   webauthn_request_registrar_lacros_ =
       std::make_unique<WebAuthnRequestRegistrarLacros>();
 
@@ -317,7 +310,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   if (chromeos::features::IsMahiEnabled() &&
       chromeos::LacrosService::Get()
           ->IsAvailable<crosapi::mojom::MahiBrowserDelegate>()) {
-    mahi::MahiWebContentsManager::Get()->Initialize();
+    chromeos::MahiWebContentsManager::Get()->Initialize();
   }
 
   if (base::FeatureList::IsEnabled(::features::kPrintPreviewCrosPrimary) &&
@@ -331,8 +324,6 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
     Profile* profile,
     bool is_initial_profile) {
-  sync_crosapi_manager_.PostProfileInit(profile);
-
   // The setup below is intended to run for only the initial profile.
   if (!is_initial_profile) {
     return;

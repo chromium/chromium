@@ -3064,9 +3064,9 @@ bool UpgradeDB(sql::Database& db,
     return true;
   }
 
-  NOTREACHED_IN_MIGRATION();  // Only versions 6 up to the current version
-                              // should have passed RazeIfIncompatible.
-  return false;
+  // Only versions 6 up to the current version should have passed
+  // RazeIfIncompatible.
+  NOTREACHED();
 }
 
 bool RemoveJoinHistory(sql::Database& db,
@@ -5106,11 +5106,7 @@ bool ClearExpiredInterestGroups(sql::Database& db,
   return transaction.Commit();
 }
 
-// Removes interest groups so that per-owner limit is respected. Note that
-// we're intentionally not trying to keep this in sync with
-// `blink::InterestGroup::EstimateSize()`. There's not a compelling reason to
-// keep those exactly aligned and keeping them in sync would require a
-// significant amount of extra work.
+// Removes interest groups so that per-owner limit is respected.
 bool ClearExcessiveStorage(sql::Database& db, size_t max_owner_storage_size) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin()) {
@@ -5454,13 +5450,9 @@ constexpr base::TimeDelta InterestGroupStorage::kUpdateFailedBackoffPeriod;
 InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
     : path_to_database_(DBPath(path)),
       max_owners_(blink::features::kInterestGroupStorageMaxOwners.Get()),
-      max_owner_regular_interest_groups_(
-          blink::features::kInterestGroupStorageMaxGroupsPerOwner.Get()),
-      max_owner_negative_interest_groups_(
-          blink::features::kInterestGroupStorageMaxNegativeGroupsPerOwner
-              .Get()),
-      max_owner_storage_size_(
-          blink::features::kInterestGroupStorageMaxStoragePerOwner.Get()),
+      max_owner_regular_interest_groups_(MaxOwnerRegularInterestGroups()),
+      max_owner_negative_interest_groups_(MaxOwnerNegativeInterestGroups()),
+      max_owner_storage_size_(MaxOwnerStorageSize()),
       max_ops_before_maintenance_(
           blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
       db_(std::make_unique<sql::Database>(GetDatabaseOptions())),
@@ -5737,7 +5729,7 @@ InterestGroupStorage::UpdateInterestGroup(
 }
 
 void InterestGroupStorage::AllowUpdateIfOlderThan(
-    const blink::InterestGroupKey& group_key,
+    blink::InterestGroupKey group_key,
     base::TimeDelta update_if_older_than) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
@@ -5757,9 +5749,7 @@ void InterestGroupStorage::ReportUpdateFailed(
     bool parse_failure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
-    NOTREACHED_IN_MIGRATION();  // We already fetched interest groups to
-                                // update...
-    return;
+    NOTREACHED();  // We already fetched interest groups to update...
   }
 
   if (!DoReportUpdateFailed(*db_, group_key, parse_failure,
@@ -6041,9 +6031,10 @@ void InterestGroupStorage::PerformDBMaintenance() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   last_maintenance_time_ = base::Time::Now();
   ops_since_last_maintenance_ = 0;
-  int64_t db_size;
-  if (base::GetFileSize(path_to_database_, &db_size)) {
-    UMA_HISTOGRAM_MEMORY_KB("Storage.InterestGroup.DBSize", db_size / 1024);
+  std::optional<int64_t> db_size = base::GetFileSize(path_to_database_);
+  if (db_size.has_value()) {
+    UMA_HISTOGRAM_MEMORY_KB("Storage.InterestGroup.DBSize",
+                            db_size.value() / 1024);
   }
   if (EnsureDBInitialized()) {
     DoPerformDatabaseMaintenance(
@@ -6098,6 +6089,21 @@ InterestGroupStorage::GetBiddingAndAuctionServerKeys(
     return {base::Time::Min(), {}};
   }
   return DoGetBiddingAndAuctionServerKeys(*db_, coordinator);
+}
+
+// static
+size_t InterestGroupStorage::MaxOwnerRegularInterestGroups() {
+  return blink::features::kInterestGroupStorageMaxGroupsPerOwner.Get();
+}
+
+// static
+size_t InterestGroupStorage::MaxOwnerNegativeInterestGroups() {
+  return blink::features::kInterestGroupStorageMaxNegativeGroupsPerOwner.Get();
+}
+
+// static
+size_t InterestGroupStorage::MaxOwnerStorageSize() {
+  return blink::features::kInterestGroupStorageMaxStoragePerOwner.Get();
 }
 
 base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {

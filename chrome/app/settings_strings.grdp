@@ -25,6 +25,9 @@
   <message name="IDS_SETTINGS_COLUMN_HEADING_CONSIDER" desc="The header used above a bulleted section on a Settings page that notes things the user might want to consider when turning this setting on or off.">
     Things to consider
   </message>
+  <message name="IDS_SETTINGS_COLUMN_HEADING_WHEN_USED" desc="The header used above a bulleted section on a Settings page that describes the behavior of a particular feature.">
+    When used
+  </message>
 
   <if expr="not chromeos_ash">
     <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY" desc="The body of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
@@ -164,11 +167,6 @@
   <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the focused object to make it easier to see.">
       Show a quick highlight on the focused object
-    </message>
-  </if>
-  <if expr="chromeos_lacros">
-    <message name="IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES" desc="In the settings tab, the title of a link that opens a screen allowing the user to change accessibility features.">
-      Manage accessibility features
     </message>
   </if>
   <if expr="is_win or is_linux or is_macosx">
@@ -624,41 +622,41 @@
       =1 {1 reused password}
       other {{NUM_REUSED} reused passwords}}
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE" desc="The title of the page in Settings that allows to manage the autofill improved predictions settings." translateable="false">
-    Autofill prediction improvements
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE" desc="The title of the page in Settings that allows to manage the autofill improved predictions settings.">
+    Autofill with AI
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL" desc="The description of the main toggle that enables/disables improved autofill predictions." translateable="false">
-    Chrome can adapt to a form's format — for example, automatically filling your birthday as MM/DD/YYYY or DD/MM/YY. Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Chrome Autofill<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_NEW_FEATURE"  desc="One of the items describing what the user should consider before enabling improved autofill predictions.">
+    This feature uses AI, is in early development, and won’t always get it right
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO" desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
-    Chrome asks if you want to use saved info to fill forms
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE"  desc="One of the items describing what the user should consider before enabling improved autofill predictions.">
+    When you fill a form, your info and the page it comes from are sent to Google to generate suggestions
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_ADAPTS"  desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
-    TODO: Describe how autofill adapts to user preferences
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_STORAGE"  desc="One of the items describing what the user should consider before enabling improved autofill predictions.">
+    Your saved information is stored on your device
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_INFO_LOCAL"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
-    Your info is saved on your device and isn't shared with others
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_IMPROVEMENT"  desc="One of the items describing what the user should consider before enabling improved autofill predictions.">
+    Data may be seen by human reviewers to improve this feature
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE"  desc="One of the items describing what the user should consider before enabling improved autofill predictions." translateable="false">
-    TODO: Describe how data is used
-  </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER"  desc="User annotation entries header on the autofill prediction improvements settings page." translateable="false">
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER"  desc="User annotation entries header on the autofill prediction improvements settings page.">
     Saved information
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE"  desc="The title of the delete user annotations entry confirmation dialog." translateable="false">
-    Delete annotation entry
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_NONE"  desc="The placeholder message for the user annotation entries empty list.">
+    Saved information will appear here
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT"  desc="The body text of the delete user annotations entry confirmation dialog dscribing the entry." translateable="false">
-    The following entry will be deleted: <ph name="KEY">$1<ex>Date of birth</ex></ph> / <ph name="VALUE">$2<ex>15/02/1989</ex></ph>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE"  desc="The title of the delete user annotations entry confirmation dialog.">
+    Delete data
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_BUTTON_LABEL"  desc="The label of the delete all user annotations entries button." translateable="false">
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT"  desc="The body text of the delete user annotations entry confirmation dialog dscribing the entry.">
+    <ph name="KEY">$1<ex>Date of birth</ex></ph>: <ph name="VALUE">$2<ex>15/02/1989</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_BUTTON_LABEL" desc="The label of the delete all user annotations entries button.">
     Delete all
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TITLE"  desc="The title of the delete all user annotations entries confirmation dialog." translateable="false">
-    Delete all entries
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TITLE" desc="The title of the delete all user annotations entries confirmation dialog.">
+    Delete all data used by autofill with AI
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT"  desc="The body text of the delete all user annotations entries confirmation dialog." translateable="false">
-    All the annotation entries will be deleted. This action cannot be undone
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT" desc="The body text of the delete all user annotations entries confirmation dialog.">
+    All data will be deleted. This action cannot be undone
   </message>
 
   <if expr="is_win or is_macosx">
@@ -993,9 +991,6 @@
   </message>
   <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_WITH_EXCEPTION" desc="A summary for the 'Cookies and site data' option in the 'Delete Browsing Data' screen, explaining that deleting cookies and site data will sign the user out of most websites but your Google sign in will stay.">
     Signs you out of most sites. You'll stay signed in to your Google Account so your synced data can be deleted.
-  </message>
-  <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_MAIN_PROFILE" desc="A summary for the 'Cookies and site data' option in the 'Clear Browsing Data' screen, explaining that deleting cookies and site data will sign the user out of most websites but your Google sign in will stay.">
-    Signs you out of most sites. You won't be signed out of your Google Account.
   </message>
   <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SUPERVISED_PROFILE" desc="A summary for the 'Cookies and site data' option in the 'Clear Browsing Data' screen, explaining that deleting cookies and site data will sign the the child user out of most websites but your Google account and Family Link settings will stay .">
     Signs you out of most sites. You'll stay signed in to your Google Account so your Family Link settings for Chrome apply.
@@ -1452,6 +1447,9 @@
   </if>
 
   <!-- Offer Writing Help Page -->
+  <message name="IDS_SETTINGS_AI_COMPOSE_SUBLABEL_V2" desc="This string is the subheading of a setting for ‘Help me write’. This subheading summarizes the user benefit of the Help Me Write feature. This is an AI (artificial intelligence) feature that suggests writing help when users are writing short-form text on the web. The tone should be motivating.">
+    Helps you write short-form text for things on the web, like reviews
+  </message>
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL" desc="Label of the setting that enables the feature that provides writing help suggestions.">
     Offer writing help
   </message>
@@ -1467,11 +1465,23 @@
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL" desc="Label of the list of sites on which the writing help suggestion feature is disabled.">
     Never offer writing help on these sites
   </message>
+  <message name="IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL_V2" desc="Label of the list of sites on which the writing help suggestion feature is disabled.">
+    Not allowed to offer writing help
+  </message>
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_NO_DISABLED_SITES" desc="Placeholder text for the writing help suggestions disabled sites list, when no sites have been added.">
     No sites added
   </message>
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_REMOVE_SITE_ARIA_LABEL" desc="Text read by screen readers when focusing on the remove icon for disabled sites. Activating this button will remove the corresponding site. This text only announced by screen readers and is not visible in the UI.">
     Remove <ph name="SITE_NAME">$1<ex>https://www.google.com</ex></ph> from disabled sites
+  </message>
+  <message name="IDS_SETTINGS_COMPOSE_SETTING_LINK_A11Y" desc="This string is found in a link that takes the user to the Help Me Write help center article when the user taps it. It is at the end of the Help Me Write setting description that users see when they visit the ‘AI innovations’ section of settings (AI = artificial intelligence). The tone should be informative.">
+    Learn more about Help me write
+  </message>
+  <message name="IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_HELP" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature suggests writing help when users are writing short-form text on the web. The tone should be motivating.">
+    Helps you write short-form text for things on the web, like reviews. Writing suggestions are based on your prompts and the content of the web page
+  </message>
+  <message name="IDS_SETTINGS_COMPOSE_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
+    When you get writing help, the page’s URL, content, and your text are sent to Google. Don’t enter personal info (like medical or financial details)
   </message>
 
   <!-- Anti-abuse Page -->
@@ -1553,26 +1563,11 @@
 
   <!-- Privacy Sandbox v4 - Topics Page -->
   <!-- Where possible, these strings have been unified on Desktop & Android in privacy_sandox_strings.grdp. The strings here either only appear on one platform, or have platform specific requirements, e.g. the format of placeholders, and so cannot be unified. For the latter case, they have corresponding _CANONICAL representations used when consent is recorded on either platform, and so they must stay in sync -->
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" desc="A description that appear beneath the 'Your topics' label. * 'You can block': There is a 'Block' button (or an X on mobile) that appears next to each topic in the list. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
-    You can block topics you don’t want shared with sites. Chrome also auto-deletes your topics older than 4 weeks.
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_A11Y_LABEL" desc="Read by screen readers and associated with a 'learn more' button.">
-    Learn more about ad topics
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_LINK" desc="Text read by screen readers to help users distinguish this 'Learn more' link from others that might get added to this page.">
-    Learn more
-  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_REGION_A11Y_DESCRIPTION" desc="An explanation read by screen readers that describes the list of topics.">
     List of topics estimated by Chrome based on your recent browsing history
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_REGION_A11Y_DESCRIPTION" desc="Read by screen readers to describe the list of blocked topics.">
     List of topics you blocked that you don't want shared with sites
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" desc="Paragraph 3 of 3 on the Learn more about ad topics page. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
-    Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics you don’t want Chrome to share with sites. Learn more about <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>managing your ad privacy in Chrome.<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
-    As you browse, whether an ad you see is personalized depends on this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>Site-suggested ads<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you’re viewing personalizes ads
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER_V2" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
     Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>site-suggested ads<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you're viewing personalizes ads. Learn more about <ph name="BEGIN_LINK3">&lt;a href="$3" target="_blank"&gt;</ph>managing your ad privacy<ph name="LINK_END3">&lt;/a&gt;</ph>.
@@ -1631,9 +1626,6 @@
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_ALLOW_SITE_A11Y_LABEL" desc="A button label read by screen readers that indicates which site will get added back to the pool of potential sites.">
     Add <ph name="DOMAIN">$1<ex>example.com</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Site-suggested ads' setting. The user is on this page. * 'Ad topics': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
-    As you browse, whether an ad you see is personalized depends on this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>Ad topics<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you're viewing personalizes ads
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_HEADING" desc="The title of a dialog box that explains site-suggested ads in more detail.">
     More about site-suggested ads
@@ -2093,6 +2085,9 @@
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC" desc="Description of safe browsing enhanced protection mode">
     Real-time, proactive protection against dangerous sites, downloads, and extensions that's based on your browsing data getting sent to Google
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC_UPDATED" desc="Description of safe browsing enhanced protection mode">
+    Real-time, AI-powered protection against dangerous sites, downloads, and extensions that's based on your browsing data getting sent to Google
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing enhanced protection. Only visible by screen reader software.">
     Show enhanced protection details
@@ -2831,13 +2826,19 @@
     Isolated Web Apps control smart card readers to gain access to smart cards that are inserted or presented to them. Smart cards usually contain identities that are used to authenticate or authorize operations, log into services, etc.
   </message>
   <message name="IDS_SITE_SETTINGS_SMART_CARDS_DEFAULT_DESCRIPTION" desc="Label indicating the default behavior for smart card access.">
-    Isolated Web Apps automatically follow this setting.
+    Isolated Web Apps automatically follow this setting
   </message>
   <message name="IDS_SITE_SETTINGS_SMART_CARDS_ALLOWED" desc="Option to allow Isolated Web Apps to control smart card readers.">
     Isolated Web Apps can ask to control smart card readers. Apps will gain access to smart cards presented to readers under their control.
   </message>
   <message name="IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED" desc="Option to block Isolated Web Apps from controlling smart card readers.">
     Isolated Web Apps cannot control smart card readers. Apps won't gain access to any smart card.
+  </message>
+  <message name="IDS_SITE_SETTINGS_NO_SMART_CARD_READERS_FOUND" desc="No smart card readers were found.">
+    No smart card readers found
+  </message>
+  <message name="IDS_SITE_SETTINGS_RESET_SMART_CARD_CONFIRMATION" desc="Confirmation for resetting smart card reader permissions.">
+    Reset all smart card reader permissions?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_DESCRIPTION" desc="Description of the images content setting.">
     Sites usually show images to provide illustration, like photos for online stores or news articles
@@ -3865,10 +3866,10 @@
   <message name="IDS_SETTINGS_TURN_OFF_SYNC_MANAGED_PROFILE_EXPLANATION" desc="The text to display in the 'Turn Sync off' dialog to stop syncing for managed profiles.">
     Because this account is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph> you will not be signed out of your Google Account. Your bookmarks, history, passwords, and other settings will no longer be synced. However, your previously synced data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK">&lt;a href="$2" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$2" target=&quot;_blank&quot;&gt;</ex></ph>Google Dashboard<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
   </message>
-  <message name="IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_TITLE" desc="The text to display on the title of the dialog to turn off sync.">
-    Turn off sync?
-  </message>
   <message name="IDS_SETTINGS_TURN_OFF_SYNC_AND_SIGN_OUT_DIALOG_TITLE" desc="The text to display on the title of the dialog to turn off sync and sign out.">
+    Turn off sync and personalization?
+  </message>
+  <message name="IDS_SETTINGS_TURN_OFF_SYNC_AND_SIGN_OUT_DIALOG_TITLE_SUPERVISED_PROFILE" desc="The text to display on the title of the dialog to turn off sync and sign out of a supervised profile." translateable="false">
     Turn off sync and personalization?
   </message>
   <message name="IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_MANAGED_CONFIRM" desc="The text to display on the confirm button of the dialog to turn off sync, when the profile is managed by admin.">
@@ -3908,11 +3909,11 @@
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_EXPLANATION" desc="The text to display in the Sign out of Chrome dialog to stop syncing for non-managed profiles.">
     Changes to your bookmarks, history, passwords, and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>Google Dashboard<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
   </message>
-  <message name="IDS_SETTINGS_SYNC_DISCONNECT_MAIN_PROFILE_EXPLANATION" desc="The text to display in the Turn off sync dialog to stop syncing for the main profile in Lacros.">
-    Your bookmarks, history, passwords, and more will no longer be synced.
-  </message>
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_AND_SIGN_OUT_EXPLANATION" desc="The text to display in the Sign out of Chrome dialog to stop syncing and sign-out for non-managed profiles.">
     This will sign you out of your Google Accounts. Your bookmarks, history, passwords, and more will no longer be synced.
+  </message>
+  <message name="IDS_SETTINGS_SYNC_DISCONNECT_AND_SIGN_OUT_EXPLANATION_SUPERVISED_PROFILE" desc="The text to display in the Sign out of Chrome dialog to stop syncing and sign-out for supervised profiles." translateable="false">
+    This will sign you out of your Google Accounts. Your parent's choices won't be able to keep you safer online. Your bookmarks, history, passwords, and more will no longer be synced.
   </message>
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button in the Sign out of Chrome dialog that toggles showing the profile stats. Only visible by screen reader software.">
     Show profile stats
@@ -4055,6 +4056,9 @@
   <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search." translateable="false">
     Use everyday language to search your browsing history and find sites you visited. Only sites you visit after turning on this feature are shown in AI-powered history search results.
   </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL_V2" desc="This string is the subheading of a setting for ‘History search, powered by AI’. This subheading summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
+    Use everyday language to search your browsing history and find sites you visited
+  </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_BULLET_ONE" desc="Bullet point in the 'When on' column of the description of the setting that enables history search.">
     You can search your browsing history based on general page content, not only page title and URL. This gives you improved results, whether you're searching browsing history in the address bar using @history or from the History page.
   </message>
@@ -4066,6 +4070,60 @@
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL" desc="Label for the 'Learn more' link in the toggle for the setting that enables history search.">
     Learn more about history searches
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search with answers enabled." translateable="false">
+    Use everyday language to search your browsing history. You can also ask questions and get answers based on your browsing history.
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_ONE" desc="Bullet point in the 'When on' column of the description of the setting that enables history search with answers enabled." translateable="false">
+    Answers and search results are based on the content of a page.  This gives you improved results, whether you're searching browsing history in the address bar using “@history” or from the History page.
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_TWO" desc="Bullet point in the 'When on' column of the description of the setting that enables history search with answers enabled." translateable="false">
+    Only sites you visit after turning on this feature are shown in AI-powered history search results.
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_ONE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search with answers enabled." translateable="false">
+    When you search browsing history, your history searches, the page content of best matches, and generated model outputs are sent to Google and may be seen by human reviewers to improve this feature.
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search with answers enabled."  translateable="false">
+    As you browse sites, their page contents are encrypted and saved to your device.  AI-powered history search results and answers may become outdated if site content has changed since your last visit.  This feature may also affect Chrome’s performance.
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_PAGE_CONTENT" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
+    You can search your browsing history based on general page content, not only page title and URL, and see improved results
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_SEARCH_FROM" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users search their Chrome browsing history from the address bar (always shown on the top of Chrome). They can also search from the History page itself. The tone should be motivating." translateable="false">
+    You can search in the address bar using "@history", as well as from the History page
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative." translateable="false">
+    When you search browsing history, your history searches, the page content of best matches, and generated model outputs are sent to Google
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA_ENCRYPTED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will save data to the user’s device in order to provide the feature’s respective benefit. The data will be appropriately encrypted for security. The tone should be informative.">
+    As you browse sites, their page contents are encrypted and saved to your device
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_ON" desc="This string is the subheading of a setting for ‘History search, powered by AI’. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
+    On • Use everyday language to search your browsing history and find sites you visited
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_OFF" desc="This string is the subheading of a setting for ‘History search, powered by AI’. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
+    Off • Use everyday language to search your browsing history and find sites you visited
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SETTING_SUBLABEL_V2" desc="Sublabel of the setting that enables history search, powered by AI, with answers enabled." translateable="false">
+    Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_PAGE_CONTENT" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users can write queries in natural language and search their Chrome browsing history to get answers. The tone should be motivating." translateable="false">
+    When you search your browsing history, answers and search results are based on the content of a page. This gives you improved results
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_LOG_START" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how only sites the user visits after turning on the feature will be available in history search results powered by AI." translateable="false">
+    Only sites you visit after turning on this feature are shown in AI-powered history results
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_CONSIDER_DATA_ENCRYPTED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will save data to the user’s device in order to provide the feature’s respective benefit. The data will be appropriately encrypted for security. The tone should be informative." translateable="false">
+    As you browse sites, their page contents are encrypted and saved to your device. This may affect Chrome's performance
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_CONSIDER_OUTDATED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that history search results and answers powered by AI may become outdated since they are dependent on the user's last visit to the page contents." translateable="false">
+    AI-powered history search results and answers may become outdated if site content has changed since your last visit
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_ON" desc="This string is the subheading of a setting for ‘History search, powered by AI’ when answers are available. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating." translateable="false">
+    On • Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_OFF" desc="This string is the subheading of a setting for ‘History search, powered by AI’ when answers are available. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating." translateable="false">
+    Off • Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history
   </message>
 
   <!-- Web Content -->
@@ -4145,14 +4203,6 @@
     </message>
     <message name="IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_POLICY_LABEL" desc="Non-interactive label that describes when Chrome's proxy settings are overwritten by policy. This is used in place of IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL above.">
       <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> is using proxy settings from your administrator
-    </message>
-  </if>
-  <if expr="chromeos_lacros">
-    <message name="IDS_SETTINGS_SYSTEM_USE_ASH_PROXY_LABEL" desc="Label for the checkbox that enables using the ash proxy for the Lacros browser.">
-      Use ChromeOS proxy settings for this profile.
-    </message>
-    <message name="IDS_SETTINGS_SYSTEM_USES_ASH_PROXY_LABEL" desc="Non-interactive label that describes that the primary profile uses the computer's proxy settings.">
-      This profile uses ChromeOS proxy settings.
     </message>
   </if>
 
@@ -4615,28 +4665,84 @@
   <message name="IDS_SETTINGS_AI_PAGE_TITLE" desc="Title of page holding experimental AI settings">
     Experimental AI
   </message>
-  <message name="IDS_SETTINGS_AI_PAGE_MAIN_LABEL" desc="Toggle primary description">
-    Try out experimental AI features
+  <message name="IDS_SETTINGS_AI_INNOVATIONS_PAGE_TITLE" desc="This label is on the left Navigation sidebar in Chrome’s settings. It tells the user that they can see settings related to AI (artificial intelligence) in this section. It is a noun phrase that refers to our collection of AI settings. These settings include Help me write, Tab organizer, and more. If possible, translate this so that it closely matches the Navigation tab title at the top of this marketing page: https://www.google.com/chrome/ai-innovations.">
+    AI innovations
   </message>
-  <message name="IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL" desc="Toggle secondary description">
-    These features use AI, are in early development, and won’t always get it right.
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_TITLE" desc="This string is the title of a card that sets the context for the ‘AI innovations’ section of Chrome’s settings. Here, the user can see settings related to AI (artificial intelligence) in this section; these settings include Help me write, Tab organizer, and more. This title is before the ‘Things to consider’ subheading and bullet points. We want users to read this card and understand the considerations that apply to all Chrome’s AI features. The tone should be motivating.">
+    Reimagine Chrome, supercharged with AI
   </message>
-  <message name="IDS_SETTINGS_AI_COMPOSE_LABEL" desc="The primary description for the 'Help me write' feature.">
-    Help me write
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_1" desc="This is a bullet point on a card that sets the context for the ‘AI innovations’ section of Chrome’s settings. Here, the user can see settings related to AI (artificial intelligence) in this section; these settings include Help me write, Tab organizer, and more. This bullet point is after the ‘Reimagine Chrome, supercharged with AI’ title and ‘Things to consider’ subheading. We want users to read this card and understand the considerations that apply to all Chrome’s AI features. This bullet point specifically notes that AI features are actively developing and results may include errors. The tone should be informative.">
+    These features use AI, are in early development, and won’t always get it right
   </message>
-  <message name="IDS_SETTINGS_AI_COMPOSE_SUBLABEL" desc="Secondary description explaining the 'Help me write' feature.">
-    Helps you write short-form content for things on the web, like reviews. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_2" desc="This is a bullet point on a card that sets the context for the ‘AI innovations’ section of Chrome’s settings. Here, the user can see settings related to AI (artificial intelligence) in this section; these settings include Help me write, Tab organizer, and more. This bullet point is after the ‘Reimagine Chrome, supercharged with AI’ title and ‘Things to consider’ subheading. We want users to read this card and understand the considerations that apply to all Chrome’s AI features. This bullet point specifically notes that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
+    When you use these features, relevant data is sent to Google in order to create AI experiences
   </message>
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_3" desc="This is a bullet point on a card that sets the context for the ‘AI innovations’ section of Chrome’s settings. Here, the user can see settings related to AI (artificial intelligence) in this section; these settings include Help me write, Tab organizer, and more. This bullet point is after the ‘Reimagine Chrome, supercharged with AI’ title and ‘Things to consider’ subheading. We want users to read this card and understand the considerations that apply to all Chrome’s AI features. This bullet point specifically notes that AI features are actively developing, and that humans may review feature usage and corresponding data in order to further improve the feature. The tone should be informative.">
+    Data sent to Google may be seen by human reviewers to improve Chrome AI’s technology
+  </message>
+  <message name="IDS_SETTINGS_AI_PAGE_MAIN_MANAGED_SUBLABEL_3" desc="This is a bullet point on a card that sets the context for the ‘AI innovations’ section of Chrome’s settings. Here, the user can see settings related to AI (artificial intelligence) in this section; these settings include Help me write, Tab organizer, and more. This bullet point is after the ‘Reimagine Chrome, supercharged with AI’ title and ‘Things to consider’ subheading. We want users to read this card and understand the considerations that apply to all Chrome’s AI features. This bullet point specifically notes that AI features are actively developing, and that humans may review feature usage and corresponding data in order to further improve the feature. The tone should be informative.">
+    Your organization controls how data collected by these features may be used. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_AI" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features are actively developing and results may include errors. The tone should be informative.">
+    This feature uses AI, is in early development, and won’t always get it right
+  </message>
+  <message name="IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_REVIEWERS" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features are actively developing, and that humans may review feature usage and corresponding data in order to further improve the feature. The tone should be informative.">
+    Data sent to Google may be seen by human reviewers to improve this feature
+  </message>
+  <message name="IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_LOGGING_MANAGED_DISABLED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features are actively developing, and that humans may review feature usage and corresponding data in order to further improve the feature. The tone should be informative.">
+    Your content will not be used by human reviewers to improve AI. Your organization may change these settings at any time
+  </message>
+
+  <!-- Experimental settings - Tab Organization -->
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description">
     Tab organizer
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL" desc="Toggle secondary description">
-    Automatically creates tab groups based on your open tabs. To use this feature, right-click on a tab and click Organize similar tabs.
+  <message name="IDS_SETTINGS_TAB_ORGANIZER_SUB_LABEL" desc="This string is the subheading of a setting for ‘Tab organizer’. This subheading summarizes the user benefit of the Tab Organizer feature. This is an AI (artificial intelligence) feature that helps users get organized by suggesting and automatically creating tab groups out of the user’s open tabs. The tone should be motivating.">
+    Automatically creates tab groups based on your open tabs
   </message>
+  <message name="IDS_SETTINGS_AUTOTABS_SETTING_LINK_A11Y" desc="This string is found in a link that takes the user to the Tab Organizer help center article when the user taps it. It is at the end of the Tab Organizer setting description that users see when they visit the ‘AI innovations’ section of settings (AI = artificial intelligence). The tone should be informative.">
+    Learn more about tab organizer
+  </message>
+  <message name="IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_AUTO_GROUPS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature helps users get organized by suggesting and automatically creating tab groups out of the user’s open tabs. The tone should be motivating.">
+    Automatically suggests and creates groups from your open tabs, making it easier to find what you're looking for
+  </message>
+  <message name="IDS_SETTINGS_TAB_ORGANIZER_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
+    When you use organize tabs, the titles and URLs of your open tabs are sent to Google to generate suggested tab groups
+  </message>
+
+  <!-- Experimental settings - Wallpaper Search -->
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="The primary description for the create themes with AI feature.">
     Create themes with AI
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL" desc="The secondary description for the create themes with AI feature.">
-    Creates custom themes based on the subject, mood, visual style, and color that you choose. To use this feature, open a new tab and click Customize Chrome.
+  <message name="IDS_SETTINGS_AI_THEMES_SUB_LABEL" desc="This string is the subheading of a setting for ‘Create themes with AI’. This subheading summarizes the user benefit of the Create Themes feature. This is an AI (artificial intelligence) feature that helps users create their own custom Chrome themes/wallpapers by letting users select from a list of options. The tone should be motivating.">
+    Helps you design custom themes for Chrome
+  </message>
+
+  <!-- Experimental settings - Compare -->
+  <message name="IDS_SETTINGS_COMPARE_SETTING_SUBLABEL" desc="This string is the subheading of a setting for ‘Compare products’. This subheading summarizes the user benefit of the Compare Products feature. This is an AI (artificial intelligence) feature that helps users compare products in open tabs by generating an information table and summarizing key differences. The tone should be motivating.">
+    Easily compare similar products
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_SETTING_LINK_A11Y" desc="This string is found in a link that takes the user to the Compare Products help center article when the user taps it. It is at the end of the Compare Products setting description that users see when they visit the ‘AI innovations’ section of settings (AI = artificial intelligence). The tone should be informative.">
+    Learn more about comparing products
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_DETAILS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature helps users compare products in open tabs by generating an information table and summarizing key differences. The tone should be motivating.">
+    Helps you see similar products side-by-side and easily compare the details that matter to you
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
+    When you compare products, the tab titles and URLs of the products are sent to Google
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_CONSIDER_TABLES_IN_ACCOUNT" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will save data to the user’s Google Account in order to provide the feature’s respective benefit. The tone should be informative.">
+    Comparison tables are saved in your Google Account
+  </message>
+
+  <!-- Security settings toast confirmation -->
+  <message name="IDS_SETTINGS_SAFEBROWSING_TURN_ON_ENHANCED_TOAST_BUTTON" desc="When Chrome shows a toast notification after the user turned off the Enhanced Protection setting, there's a button the user can click to turn on the Enhanced Protection setting.">
+    Turn on
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_ON_TOAST_MESSAGE" desc="When Chrome shows a toast notification after the user turned off the Enhanced Protection setting, this is the text on the toast letting the user know that the Enhanced Protection setting is on.">
+    Enhanced protection is on
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_OFF_TOAST_MESSAGE" desc="When Chrome shows a toast notification after the user turned off the Enhanced Protection setting, this is the text on the toast letting the user know that the Enhanced Protection setting is off.">
+    Enhanced protection is off
   </message>
 </grit-part>

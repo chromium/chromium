@@ -45,7 +45,6 @@ class ParseTestCase {
 DictationE2ETestBase = class extends E2ETestBase {
   constructor() {
     super();
-    this.navigateLacrosWithAutoComplete = true;
 
     this.mockAccessibilityPrivate = new MockAccessibilityPrivate();
     this.iconType = this.mockAccessibilityPrivate.DictationBubbleIconType;

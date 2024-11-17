@@ -387,7 +387,7 @@ const double kPriorityWeightLow = 1;
 const double kPriorityWeightMedium = 2;
 const double kPriorityWeightHigh = 4;
 
-std::string PriorityFromDouble(double priority) {
+V8RTCPriorityType::Enum PriorityFromDouble(double priority) {
   // Find the middle point between 2 priority weights to match them to a
   // WebRTC priority
   const double very_low_upper_bound =
@@ -398,62 +398,57 @@ std::string PriorityFromDouble(double priority) {
       (kPriorityWeightMedium + kPriorityWeightHigh) / 2;
 
   if (priority < webrtc::kDefaultBitratePriority * very_low_upper_bound) {
-    return "very-low";
+    return V8RTCPriorityType::Enum::kVeryLow;
   }
   if (priority < webrtc::kDefaultBitratePriority * low_upper_bound) {
-    return "low";
+    return V8RTCPriorityType::Enum::kLow;
   }
   if (priority < webrtc::kDefaultBitratePriority * medium_upper_bound) {
-    return "medium";
+    return V8RTCPriorityType::Enum::kMedium;
   }
-  return "high";
+  return V8RTCPriorityType::Enum::kHigh;
 }
 
-double PriorityToDouble(const WTF::String& priority) {
-  double result = 1;
-
-  if (priority == "very-low") {
-    result = webrtc::kDefaultBitratePriority * kPriorityWeightVeryLow;
-  } else if (priority == "low") {
-    result = webrtc::kDefaultBitratePriority * kPriorityWeightLow;
-  } else if (priority == "medium") {
-    result = webrtc::kDefaultBitratePriority * kPriorityWeightMedium;
-  } else if (priority == "high") {
-    result = webrtc::kDefaultBitratePriority * kPriorityWeightHigh;
-  } else {
-    NOTREACHED_IN_MIGRATION();
+double PriorityToDouble(V8RTCPriorityType::Enum priority) {
+  switch (priority) {
+    case V8RTCPriorityType::Enum::kVeryLow:
+      return webrtc::kDefaultBitratePriority * kPriorityWeightVeryLow;
+    case V8RTCPriorityType::Enum::kLow:
+      return webrtc::kDefaultBitratePriority * kPriorityWeightLow;
+    case V8RTCPriorityType::Enum::kMedium:
+      return webrtc::kDefaultBitratePriority * kPriorityWeightMedium;
+    case V8RTCPriorityType::Enum::kHigh:
+      return webrtc::kDefaultBitratePriority * kPriorityWeightHigh;
   }
-  return result;
+  NOTREACHED();
 }
 
-std::string PriorityFromEnum(webrtc::Priority priority) {
+V8RTCPriorityType::Enum PriorityFromEnum(webrtc::Priority priority) {
   switch (priority) {
     case webrtc::Priority::kVeryLow:
-      return "very-low";
+      return V8RTCPriorityType::Enum::kVeryLow;
     case webrtc::Priority::kLow:
-      return "low";
+      return V8RTCPriorityType::Enum::kLow;
     case webrtc::Priority::kMedium:
-      return "medium";
+      return V8RTCPriorityType::Enum::kMedium;
     case webrtc::Priority::kHigh:
-      return "high";
+      return V8RTCPriorityType::Enum::kHigh;
   }
+  NOTREACHED();
 }
 
-webrtc::Priority PriorityToEnum(const WTF::String& priority) {
-  webrtc::Priority result = webrtc::Priority::kLow;
-
-  if (priority == "very-low") {
-    result = webrtc::Priority::kVeryLow;
-  } else if (priority == "low") {
-    result = webrtc::Priority::kLow;
-  } else if (priority == "medium") {
-    result = webrtc::Priority::kMedium;
-  } else if (priority == "high") {
-    result = webrtc::Priority::kHigh;
-  } else {
-    NOTREACHED_IN_MIGRATION();
+webrtc::Priority PriorityToEnum(V8RTCPriorityType::Enum priority) {
+  switch (priority) {
+    case V8RTCPriorityType::Enum::kVeryLow:
+      return webrtc::Priority::kVeryLow;
+    case V8RTCPriorityType::Enum::kLow:
+      return webrtc::Priority::kLow;
+    case V8RTCPriorityType::Enum::kMedium:
+      return webrtc::Priority::kMedium;
+    case V8RTCPriorityType::Enum::kHigh:
+      return webrtc::Priority::kHigh;
   }
-  return result;
+  NOTREACHED();
 }
 
 std::tuple<Vector<webrtc::RtpEncodingParameters>,
@@ -482,7 +477,7 @@ ToRtpParameters(ExecutionContext* context,
       degradation_preference =
           webrtc::DegradationPreference::MAINTAIN_RESOLUTION;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -546,9 +541,10 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
     webrtc_encoding.rid = encoding->rid().Utf8();
   }
   webrtc_encoding.active = encoding->active();
-  webrtc_encoding.bitrate_priority = PriorityToDouble(encoding->priority());
+  webrtc_encoding.bitrate_priority =
+      PriorityToDouble(encoding->priority().AsEnum());
   webrtc_encoding.network_priority =
-      PriorityToEnum(encoding->networkPriority());
+      PriorityToEnum(encoding->networkPriority().AsEnum());
   if (encoding->hasMaxBitrate()) {
     webrtc_encoding.max_bitrate_bps = ClampTo<int>(encoding->maxBitrate());
   }
@@ -563,14 +559,14 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
     if (encoding->hasScaleResolutionDownTo()) {
       RTCResolutionRestriction* resolution_restriction =
           encoding->scaleResolutionDownTo();
-      webrtc::Resolution requested_resolution;
+      webrtc::Resolution scale_resolution_down_to;
       if (resolution_restriction->hasMaxWidth()) {
-        requested_resolution.width = resolution_restriction->maxWidth();
+        scale_resolution_down_to.width = resolution_restriction->maxWidth();
       }
       if (resolution_restriction->hasMaxHeight()) {
-        requested_resolution.height = resolution_restriction->maxHeight();
+        scale_resolution_down_to.height = resolution_restriction->maxHeight();
       }
-      webrtc_encoding.requested_resolution = requested_resolution;
+      webrtc_encoding.scale_resolution_down_to = scale_resolution_down_to;
     }
     if (encoding->hasMaxFramerate()) {
       webrtc_encoding.max_framerate = encoding->maxFramerate();
@@ -752,7 +748,7 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
         degradation_preference_str = "balanced";
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     parameters->setDegradationPreference(degradation_preference_str);
   }
@@ -773,10 +769,9 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
     if (webrtc_encoding.max_bitrate_bps) {
       encoding->setMaxBitrate(webrtc_encoding.max_bitrate_bps.value());
     }
-    encoding->setPriority(
-        PriorityFromDouble(webrtc_encoding.bitrate_priority).c_str());
+    encoding->setPriority(PriorityFromDouble(webrtc_encoding.bitrate_priority));
     encoding->setNetworkPriority(
-        PriorityFromEnum(webrtc_encoding.network_priority).c_str());
+        PriorityFromEnum(webrtc_encoding.network_priority));
     if (webrtc_encoding.codec) {
       encoding->setCodec(ToRtpCodec(*webrtc_encoding.codec));
     }
@@ -784,6 +779,15 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
       if (webrtc_encoding.scale_resolution_down_by) {
         encoding->setScaleResolutionDownBy(
             webrtc_encoding.scale_resolution_down_by.value());
+      }
+      if (webrtc_encoding.scale_resolution_down_to) {
+        RTCResolutionRestriction* resolution_restriction =
+            RTCResolutionRestriction::Create();
+        resolution_restriction->setMaxWidth(
+            webrtc_encoding.scale_resolution_down_to->width);
+        resolution_restriction->setMaxHeight(
+            webrtc_encoding.scale_resolution_down_to->height);
+        encoding->setScaleResolutionDownTo(resolution_restriction);
       }
       if (webrtc_encoding.max_framerate) {
         encoding->setMaxFramerate(webrtc_encoding.max_framerate.value());
@@ -906,9 +910,8 @@ void RTCRtpSender::SetTrack(MediaStreamTrack* track) {
     if (kind_.IsNull()) {
       kind_ = track->kind();
     } else if (kind_ != track->kind()) {
-      LOG(ERROR) << "Trying to set track to a different kind: Old " << kind_
-                 << " new " << track->kind();
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED() << "Trying to set track to a different kind: Old " << kind_
+                   << " new " << track->kind();
     }
   }
 }

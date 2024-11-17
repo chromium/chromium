@@ -87,10 +87,8 @@ std::vector<GURL> ExternalConstantsOverrider::UpdateURL() const {
     default:
       LOG(FATAL) << "Unexpected type of override[" << kDevOverrideKeyUrl
                  << "]: " << base::Value::GetTypeName(update_url_value->type());
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
 }
 
 GURL ExternalConstantsOverrider::CrashUploadURL() const {
@@ -245,6 +243,19 @@ bool ExternalConstantsOverrider::EnableDiffUpdates() const {
                           << kDevOverrideKeyEnableDiffUpdates
                           << "]: " << base::Value::GetTypeName(value->type());
   return value->GetBool();
+}
+
+base::TimeDelta ExternalConstantsOverrider::CecaConnectionTimeout() const {
+  if (!override_values_.contains(kDevOverrideKeyCecaConnectionTimeout)) {
+    return next_provider_->CecaConnectionTimeout();
+  }
+
+  const base::Value* value =
+      override_values_.Find(kDevOverrideKeyCecaConnectionTimeout);
+  CHECK(value->is_int()) << "Unexpected type of override["
+                         << kDevOverrideKeyCecaConnectionTimeout
+                         << "]: " << base::Value::GetTypeName(value->type());
+  return base::Seconds(value->GetInt());
 }
 
 // static

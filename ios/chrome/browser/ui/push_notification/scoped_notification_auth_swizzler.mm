@@ -10,7 +10,9 @@
 
 ScopedNotificationAuthSwizzler::ScopedNotificationAuthSwizzler(
     UNAuthorizationStatus initial_status,
-    BOOL grant) {
+    BOOL grant,
+    UNNotificationSetting initial_lockscreen_setting,
+    UNNotificationSetting initial_alert_setting) {
   status_ = initial_status;
 
   // Swizzle the authorization status.
@@ -20,12 +22,34 @@ ScopedNotificationAuthSwizzler::ScopedNotificationAuthSwizzler(
   status_swizzler_ = std::make_unique<EarlGreyScopedBlockSwizzler>(
       @"UNNotificationSettings", @"authorizationStatus", status_block);
 
+  // Swizzle the lockscreen setting.
+  lockscreen_setting_ = initial_lockscreen_setting;
+  auto lock_screen_block = ^{
+    return lockscreen_setting_;
+  };
+  lockscreen_status_swizzler_ = std::make_unique<EarlGreyScopedBlockSwizzler>(
+      @"UNNotificationSettings", @"lockScreenSetting", lock_screen_block);
+
+  // Swizzle the alert setting.
+  alert_setting_ = initial_alert_setting;
+  auto alert_block = ^{
+    return alert_setting_;
+  };
+  alert_status_swizzler_ = std::make_unique<EarlGreyScopedBlockSwizzler>(
+      @"UNNotificationSettings", @"alertSetting", alert_block);
+
   // Swizzle the authorization request.
   auto request_block =
       ^(id center, UNAuthorizationOptions options,
         void (^completionHandler)(BOOL granted, NSError* error)) {
-        status_ = grant ? UNAuthorizationStatusAuthorized
-                        : UNAuthorizationStatusDenied;
+        if (grant) {
+          // If app asked for provisional, grant provisional.
+          status_ = options & UNAuthorizationOptionProvisional
+                        ? UNAuthorizationStatusProvisional
+                        : UNAuthorizationStatusAuthorized;
+        } else {
+          status_ = UNAuthorizationStatusDenied;
+        }
         completionHandler(grant, nil);
       };
   request_swizzler_ = std::make_unique<EarlGreyScopedBlockSwizzler>(

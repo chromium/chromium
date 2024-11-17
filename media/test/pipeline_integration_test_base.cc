@@ -73,7 +73,15 @@ class TestDataSourceFactory
   ~TestDataSourceFactory() override = default;
   void CreateDataSource(GURL uri, bool, DataSourceCb callback) override {
     auto file_data_source = std::make_unique<FileDataSource>();
-    base::FilePath file_path(uri.GetContent());
+    base::FilePath file_path(
+#if BUILDFLAG(IS_WIN)
+        // Windows file paths can't start with '/' the way unix file paths can,
+        // So we have to strip the leading one which comes from GetContent().
+        base::UTF8ToWide(uri.GetContent().erase(0, 1))
+#else
+        uri.GetContent()
+#endif
+    );
     CHECK(file_data_source->Initialize(file_path))
         << "Is " << file_path.value() << " missing?";
     std::move(callback).Run(std::move(file_data_source));
@@ -280,6 +288,7 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithHlsManifest(
 
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       std::move(hls_dsp), task_environment_.GetMainThreadTaskRunner(),
+      base::DoNothing(), base::DoNothing(),
       /*name=*/false, manifest_root, &media_log_);
   demuxer_ = std::make_unique<ManifestDemuxer>(
       task_environment_.GetMainThreadTaskRunner(), base::DoNothing(),

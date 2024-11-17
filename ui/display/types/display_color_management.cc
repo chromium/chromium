@@ -58,8 +58,7 @@ float EvaluateLut(float x,
       lut_j1 = lut[j1].b;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return (alpha * lut_j0 + one_minus_alpha * lut_j1) / 65535.f;
@@ -68,7 +67,7 @@ float EvaluateLut(float x,
 }  // namespace
 
 GammaCurve::GammaCurve() = default;
-GammaCurve::GammaCurve(const std::vector<GammaRampRGBEntry>& lut)
+GammaCurve::GammaCurve(std::vector<GammaRampRGBEntry>&& lut)
     : lut_(std::move(lut)) {}
 GammaCurve::GammaCurve(GammaCurve&& other)
     : lut_(std::move(other.lut_)), pre_curve_(std::move(other.pre_curve_)) {}

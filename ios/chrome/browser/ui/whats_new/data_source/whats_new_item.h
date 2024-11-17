@@ -34,7 +34,11 @@ enum class WhatsNewType {
   kPackageTracking = 18,
   kPasswordSharing = 19,
   kCustomizableOverflowMenu = 20,
-  kMaxValue = kCustomizableOverflowMenu
+  kDockingBling = 21,
+  kPriceTracking = 22,
+  kPriceHistory = 23,
+  kOtherBuyingOptions = 24,
+  kMaxValue = kOtherBuyingOptions
 };
 
 // An enum representing the different primary button actions for features in

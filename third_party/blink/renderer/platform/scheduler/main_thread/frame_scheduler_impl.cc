@@ -633,15 +633,13 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     // WebSchedulingTaskQueue with CreateWebSchedulingTaskQueue().
     case TaskType::kWebSchedulingPostedTask:
       // Not a valid frame-level TaskType.
-      NOTREACHED_IN_MIGRATION();
-      return QueueTraits();
+      NOTREACHED();
   }
   // This method is called for all values between 0 and kCount. TaskType,
   // however, has numbering gaps, so even though all enumerated TaskTypes are
   // handled in the switch and return a value, we fall through for some values
   // of |type|.
-  NOTREACHED_IN_MIGRATION();
-  return QueueTraits();
+  NOTREACHED();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> FrameSchedulerImpl::GetTaskRunner(

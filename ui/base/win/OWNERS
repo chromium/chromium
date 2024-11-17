@@ -1,7 +1,6 @@
-brucedawson@chromium.org
 davidbienvenu@chromium.org
+jessemckenna@google.com
 robliao@chromium.org
-sky@chromium.org
 
 # For Cursor-specific changes:
 per-file win_cursor*=file://ui/base/cursor/OWNERS

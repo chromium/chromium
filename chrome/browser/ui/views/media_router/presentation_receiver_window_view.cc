@@ -170,7 +170,6 @@ void PresentationReceiverWindowView::Init() {
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
 
   ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
-  ChromeTranslateClient::CreateForWebContents(web_contents);
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
@@ -232,7 +231,7 @@ gfx::Rect PresentationReceiverWindowView::GetWindowBounds() const {
 void PresentationReceiverWindowView::ShowInactiveFullscreen() {
   frame_->ShowInactive();
   exclusive_access_manager_.fullscreen_controller()
-      ->ToggleBrowserFullscreenMode();
+      ->ToggleBrowserFullscreenMode(/*user_initiated=*/false);
 }
 
 void PresentationReceiverWindowView::UpdateWindowTitle() {
@@ -279,7 +278,7 @@ std::u16string PresentationReceiverWindowView::GetWindowTitle() const {
 bool PresentationReceiverWindowView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   exclusive_access_manager_.fullscreen_controller()
-      ->ToggleBrowserFullscreenMode();
+      ->ToggleBrowserFullscreenMode(/*user_initiated=*/true);
   return true;
 }
 
@@ -346,7 +345,8 @@ void PresentationReceiverWindowView::UpdateExclusiveAccessBubble(
 }
 
 bool PresentationReceiverWindowView::IsExclusiveAccessBubbleDisplayed() const {
-  return exclusive_access_bubble_ && exclusive_access_bubble_->IsShowing();
+  return exclusive_access_bubble_ && (exclusive_access_bubble_->IsShowing() ||
+                                      exclusive_access_bubble_->IsVisible());
 }
 
 void PresentationReceiverWindowView::OnExclusiveAccessUserInput() {}
@@ -354,6 +354,10 @@ void PresentationReceiverWindowView::OnExclusiveAccessUserInput() {}
 content::WebContents*
 PresentationReceiverWindowView::GetWebContentsForExclusiveAccess() {
   return delegate_->web_contents();
+}
+
+bool PresentationReceiverWindowView::CanUserEnterFullscreen() const {
+  return true;
 }
 
 bool PresentationReceiverWindowView::CanUserExitFullscreen() const {

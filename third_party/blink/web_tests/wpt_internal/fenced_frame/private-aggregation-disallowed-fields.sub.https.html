@@ -10,6 +10,14 @@
 <script src="/wpt_internal/private-aggregation/resources/utils.js"></script>
 <body>
 <script>
+"use strict";
+
+const reportPoller = new ReportPoller(
+    '/.well-known/private-aggregation/report-shared-storage',
+    '/.well-known/private-aggregation/debug/report-shared-storage',
+    /*fullTimeoutMs=*/ 6000,
+);
+
 promise_test(async t => {
   const fencedframe = await attachFencedFrameContext({
     generator_api: 'shared-storage',
@@ -51,9 +59,8 @@ promise_test(async t => {
     }
   });
 
-  const reports = await pollReports(
-      '/.well-known/private-aggregation/report-shared-storage');
-  assert_equals(reports, null, "No report should have been sent.");
+  await reportPoller.pollReportsAndAssert(
+      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
 }, 'contextId and filteringIdMaxBytes cannot be set from fenced frames.');
 </script>
 </body>

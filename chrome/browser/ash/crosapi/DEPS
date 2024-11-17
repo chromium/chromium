@@ -58,7 +58,6 @@ include_rules = [
   "+chrome/browser/ash/sync",
   "+chrome/browser/ash/system",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/ash/trusted_vault",
   "+chrome/browser/ash/video_conference",
   "+chrome/browser/ash/wallpaper_handlers",
   "+chrome/browser/browser_process.h",
@@ -74,7 +73,6 @@ include_rules = [
   "+chrome/browser/extensions/api/image_writer_private",
   "+chrome/browser/extensions/api/printing",
   "+chrome/browser/extensions/extension_apitest.h",
-  "+chrome/browser/extensions/extension_keeplist_chromeos.h",
   "+chrome/browser/extensions/forced_extensions",
   "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/file_system_access/cloud_identifier",
@@ -113,7 +111,6 @@ include_rules = [
   "+chrome/browser/web_applications/preinstalled_web_app_config_utils.h",
   "+chrome/browser/web_applications/preinstalled_web_app_utils.h",
   "+chrome/browser/web_applications/test",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/browser/web_applications/web_app_utils.h",
@@ -163,9 +160,5 @@ specific_include_rules = {
   "select_file_ash\.cc": [
     # For Chrome OS-specific file manager parameters.
     "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
-  ],
-  "test_controller_ash\.cc": [
-    # For Chrome OS-specific tab scrubbing tests.
-    "+chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h",
   ],
 }

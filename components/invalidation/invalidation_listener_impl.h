@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_INVALIDATION_INVALIDATION_LISTENER_IMPL_H_
 #define COMPONENTS_INVALIDATION_INVALIDATION_LISTENER_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -42,7 +45,7 @@ class InvalidationListenerImpl : public InvalidationListener,
 
   InvalidationListenerImpl(gcm::GCMDriver* gcm_driver,
                            instance_id::InstanceIDDriver* instance_id_driver,
-                           std::string project_number,
+                           int64_t project_number,
                            std::string log_prefix);
   ~InvalidationListenerImpl() override;
 
@@ -55,6 +58,7 @@ class InvalidationListenerImpl : public InvalidationListener,
   void Shutdown() override;
   void SetRegistrationUploadStatus(
       RegistrationTokenUploadStatus status) override;
+  int64_t project_number() const override;
 
   // `GCMAppHandler`:
   void ShutdownHandler() override;
@@ -92,7 +96,8 @@ class InvalidationListenerImpl : public InvalidationListener,
   // Registration data.
   raw_ptr<gcm::GCMDriver> gcm_driver_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
-  const std::string project_number_;
+  const int64_t project_number_;
+  const std::string gcm_app_id_;
   const std::string log_prefix_;
 
   std::optional<std::string> registration_token_;
@@ -103,7 +108,7 @@ class InvalidationListenerImpl : public InvalidationListener,
 
   // Each observer is mapped to exactly one type.
   base::ObserverList<Observer, true> observers_;
-  std::map<std::string, Observer*> type_to_handler_;
+  std::map<std::string, raw_ptr<Observer, CtnExperimental>> type_to_handler_;
   std::map<std::string, DirectInvalidation> type_to_invalidation_cache_;
 
   // Calculates timeout until next registration attempt on failure.

@@ -34,8 +34,7 @@ enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
 std::optional<std::string> GetUserDmToken(Profile* profile);
 std::optional<std::string> GetUserClientId(Profile* profile);
 
-// TODO(crbug.com/40237124): Enable on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns the client id if the current session is a managed guest session. Must
 // not be called from other sessions.
 // Returns an empty optional if the device is managed by Active Directory or if

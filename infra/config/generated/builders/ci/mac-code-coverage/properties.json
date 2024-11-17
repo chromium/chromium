@@ -47,7 +47,8 @@
           "builder": "mac-code-coverage",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-code-coverage/targets"
     }
   },
   "$build/code_coverage": {

@@ -38,12 +38,19 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
   const gfx::Rect snapped_size = PixelSnappedSize(paint_offset);
   AffineTransform paint_offset_to_border_box =
       AffineTransform::Translation(snapped_size.x(), snapped_size.y());
-  if (ShouldApplySnappingScaleAdjustment(layout_svg_root_)) {
-    PhysicalSize size = layout_svg_root_.Size();
-    if (!size.IsEmpty()) {
+  const PhysicalSize size = layout_svg_root_.Size();
+  if (!size.IsEmpty()) {
+    if (ShouldApplySnappingScaleAdjustment(layout_svg_root_)) {
       paint_offset_to_border_box.Scale(
           snapped_size.width() / size.width.ToFloat(),
           snapped_size.height() / size.height.ToFloat());
+    } else if (RuntimeEnabledFeatures::
+                   SvgInlineRootPixelSnappingScaleAdjustmentEnabled()) {
+      // Scale uniformly to fit in the snapped box.
+      const float scale_x = snapped_size.width() / size.width.ToFloat();
+      const float scale_y = snapped_size.height() / size.height.ToFloat();
+      const float uniform_scale = std::min(scale_x, scale_y);
+      paint_offset_to_border_box.Scale(uniform_scale);
     }
   }
   paint_offset_to_border_box.PreConcat(

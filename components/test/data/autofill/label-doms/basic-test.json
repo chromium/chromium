@@ -1,0 +1,37 @@
+[ {
+   "heuristic": "ForId",
+   "label": "Nested input",
+   "name": "input1"
+}, {
+   "heuristic": "ForId",
+   "label": "Label for",
+   "name": "input2"
+}, {
+   "heuristic": "Combined",
+   "label": "Preceding text node",
+   "name": "input3"
+}, {
+   "heuristic": "Placeholder",
+   "label": "placeholder",
+   "name": "input4"
+}, {
+   "heuristic": "OverlayingLabel",
+   "label": "poor man's placeholder",
+   "name": "input5"
+}, {
+   "heuristic": "AriaLabel",
+   "label": "aria-label",
+   "name": "input6"
+}, {
+   "heuristic": "DivTable",
+   "label": "sibling/ancestor",
+   "name": "input7"
+}, {
+   "heuristic": "DefaultSelectText",
+   "label": "Select country",
+   "name": "input8"
+}, {
+   "heuristic": "DivTable",
+   "label": "Label",
+   "name": "input9"
+} ]

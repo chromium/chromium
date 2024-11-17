@@ -5,6 +5,7 @@ include_rules = [
   "+components/crash/core",
   "+components/guest_view",
   "+components/input",
+  "+components/javascript_dialogs",
   "+components/keyed_service",
   "+components/pref_registry",
   "+components/services/unzip/content",

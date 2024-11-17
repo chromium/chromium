@@ -64,7 +64,7 @@ void StorageNamespace::ProvideSessionStorageNamespaceTo(
     return;
   auto* ss_namespace =
       StorageController::GetInstance()->CreateSessionStorageNamespace(
-          page, String(namespace_id.data(), namespace_id.length()));
+          page, String(namespace_id));
   if (!ss_namespace)
     return;
   ProvideTo(page, ss_namespace);

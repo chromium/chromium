@@ -86,8 +86,7 @@ ContentSettingsContentSettingClearFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
-    NOTREACHED_IN_MIGRATION();
-    return RespondNow(Error(kUnknownErrorDoNotUse));
+    NOTREACHED();
   }
 
   ChromeSettingScope scope = ChromeSettingScope::kRegular;
@@ -124,8 +123,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
-    NOTREACHED_IN_MIGRATION();
-    return RespondNow(Error(kUnknownErrorDoNotUse));
+    NOTREACHED();
   }
 
   GURL primary_url(params->details.primary_url);
@@ -197,8 +195,7 @@ ContentSettingsContentSettingSetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
-    NOTREACHED_IN_MIGRATION();
-    return RespondNow(Error(kUnknownErrorDoNotUse));
+    NOTREACHED();
   }
 
   std::string primary_error;
@@ -262,8 +259,7 @@ ContentSettingsContentSettingSetFunction::Run() {
     } else if (content_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
       readable_type_name = "camera";
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "No human-readable type name defined for this type.";
+      NOTREACHED() << "No human-readable type name defined for this type.";
     }
 
     return RespondNow(Error(base::StringPrintf(kUnsupportedDefaultSettingError,

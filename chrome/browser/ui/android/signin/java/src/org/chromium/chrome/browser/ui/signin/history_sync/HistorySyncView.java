@@ -22,6 +22,8 @@ import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLa
 /** View that wraps history sync consent screen and caches references to UI elements. */
 public class HistorySyncView extends LinearLayout {
     private ImageView mAccountImage;
+    private TextView mTitle;
+    private TextView mSubtitle;
     private Button mDeclineButton;
     private Button mAcceptButton;
     private TextView mDetailsDescription;
@@ -36,11 +38,21 @@ public class HistorySyncView extends LinearLayout {
 
         // TODO(crbug.com/41493766): Set up scrollView.
         mAccountImage = findViewById(R.id.history_sync_account_image);
+        mTitle = findViewById(R.id.history_sync_title);
+        mSubtitle = findViewById(R.id.history_sync_subtitle);
         mDetailsDescription = findViewById(R.id.history_sync_footer);
     }
 
     ImageView getAccountImageView() {
         return mAccountImage;
+    }
+
+    TextView getTitle() {
+        return mTitle;
+    }
+
+    TextView getSubtitle() {
+        return mSubtitle;
     }
 
     Button getDeclineButton() {

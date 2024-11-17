@@ -32,7 +32,7 @@ PageLoadMetricsObserverContentTestHarness::
 }
 
 PageLoadMetricsObserverContentTestHarness::
-    ~PageLoadMetricsObserverContentTestHarness() {}
+    ~PageLoadMetricsObserverContentTestHarness() = default;
 
 void PageLoadMetricsObserverContentTestHarness::SetUp() {
   content::RenderViewHostTestHarness::SetUp();

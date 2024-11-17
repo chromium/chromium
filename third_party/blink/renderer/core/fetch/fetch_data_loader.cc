@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
 
 #include <memory>
@@ -160,14 +155,13 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
 
   void OnStateChange() override {
     while (true) {
-      const char* buffer;
-      size_t available;
-      auto result = consumer_->BeginRead(&buffer, &available);
+      base::span<const char> buffer;
+      auto result = consumer_->BeginRead(buffer);
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk) {
-        if (available > 0) {
-          bool ok = Append(buffer, base::checked_cast<wtf_size_t>(available));
+        if (!buffer.empty()) {
+          bool ok = Append(buffer);
           if (!ok) {
             [[maybe_unused]] auto unused = consumer_->EndRead(0);
             consumer_->Cancel();
@@ -175,14 +169,13 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
             return;
           }
         }
-        result = consumer_->EndRead(available);
+        result = consumer_->EndRead(buffer.size());
       }
       switch (result) {
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone: {
           DOMArrayBuffer* array_buffer = BuildArrayBuffer();
           if (!array_buffer) {
@@ -209,10 +202,10 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
   }
 
  private:
-  // Appending empty data is not allowed. Returns false upon buffer overlow.
-  bool Append(const char* data, wtf_size_t length) {
-    DCHECK_GT(length, 0u);
-    buffer_->Append(data, length);
+  // Appending empty data is not allowed. Returns false upon buffer overflow.
+  bool Append(base::span<const char> data) {
+    DCHECK(!data.empty());
+    buffer_->Append(data);
     if (buffer_->size() >
         static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
       return false;
@@ -228,11 +221,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
     if (!result) {
       return result;
     }
-    char* data = reinterpret_cast<char*>(result->Data());
-    for (const auto& span : *buffer_) {
-      memcpy(data, span.data(), span.size());
-      data += span.size();
-    }
+    CHECK(buffer_->GetBytes(result->ByteSpan()));
     buffer_->Clear();
     return result;
   }
@@ -258,19 +247,17 @@ class FetchDataLoaderAsFailure final : public FetchDataLoader,
 
   void OnStateChange() override {
     while (true) {
-      const char* buffer;
-      size_t available;
-      auto result = consumer_->BeginRead(&buffer, &available);
+      base::span<const char> buffer;
+      auto result = consumer_->BeginRead(buffer);
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk)
-        result = consumer_->EndRead(available);
+        result = consumer_->EndRead(buffer.size());
       switch (result) {
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone:
         case BytesConsumer::Result::kError:
           client_->DidFetchDataLoadFailed();
@@ -324,16 +311,14 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
 
   void OnStateChange() override {
     while (true) {
-      const char* buffer;
-      size_t available;
-      auto result = consumer_->BeginRead(&buffer, &available);
+      base::span<const char> buffer;
+      auto result = consumer_->BeginRead(buffer);
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk) {
-        const bool buffer_appended =
-            multipart_parser_->AppendData(base::span(buffer, available));
+        const bool buffer_appended = multipart_parser_->AppendData(buffer);
         const bool multipart_receive_failed = multipart_parser_->IsCancelled();
-        result = consumer_->EndRead(available);
+        result = consumer_->EndRead(buffer.size());
         if (!buffer_appended || multipart_receive_failed) {
           // No point in reading any more as the input is invalid.
           consumer_->Cancel();
@@ -345,8 +330,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone:
           if (multipart_parser_->Finish()) {
             DCHECK(!multipart_parser_->IsCancelled());
@@ -492,22 +476,21 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
 
   void OnStateChange() override {
     while (true) {
-      const char* buffer;
-      size_t available;
-      auto result = consumer_->BeginRead(&buffer, &available);
+      base::span<const char> buffer;
+      auto result = consumer_->BeginRead(buffer);
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk) {
-        if (available > 0)
-          builder_.Append(decoder_->Decode(base::span(buffer, available)));
-        result = consumer_->EndRead(available);
+        if (!buffer.empty()) {
+          builder_.Append(decoder_->Decode(base::as_bytes(buffer)));
+        }
+        result = consumer_->EndRead(buffer.size());
       }
       switch (result) {
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone:
           builder_.Append(decoder_->Flush());
           client_->DidFetchDataLoadedString(builder_.ToString());
@@ -625,22 +608,17 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
   void OnStateChange() override {
     bool should_wait = false;
     while (!should_wait) {
-      const char* buffer;
-      size_t available;
-      auto result = consumer_->BeginRead(&buffer, &available);
+      base::span<const char> buffer;
+      auto result = consumer_->BeginRead(buffer);
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk) {
-        // SAFETY: `BeginRead` promises to return a valid pointer and size in
-        // the `kOk` case.
-        base::span<const char> span =
-            UNSAFE_BUFFERS(base::span(buffer, available));
-        if (span.empty()) {
+        if (buffer.empty()) {
           result = consumer_->EndRead(0);
         } else {
           size_t actually_written_bytes = 0;
           MojoResult mojo_result = out_data_pipe_->WriteData(
-              base::as_bytes(span), MOJO_WRITE_DATA_FLAG_NONE,
+              base::as_bytes(buffer), MOJO_WRITE_DATA_FLAG_NONE,
               actually_written_bytes);
           if (mojo_result == MOJO_RESULT_OK) {
             result = consumer_->EndRead(actually_written_bytes);
@@ -660,8 +638,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         case BytesConsumer::Result::kDone:
           StopInternal();
           client_->DidFetchDataLoadedDataPipe();

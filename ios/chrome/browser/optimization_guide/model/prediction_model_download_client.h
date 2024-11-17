@@ -7,7 +7,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/download/public/background_service/client.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace download {
 struct CompletionInfo;
@@ -20,7 +21,7 @@ class PredictionModelDownloadManager;
 
 class PredictionModelDownloadClient : public download::Client {
  public:
-  explicit PredictionModelDownloadClient(ChromeBrowserState* browser_state);
+  explicit PredictionModelDownloadClient(ProfileIOS* profile);
   ~PredictionModelDownloadClient() override;
   PredictionModelDownloadClient(const PredictionModelDownloadClient&) = delete;
   PredictionModelDownloadClient& operator=(
@@ -47,10 +48,10 @@ class PredictionModelDownloadClient : public download::Client {
                      download::GetUploadDataCallback callback) override;
 
  private:
-  // Returns the PredictionModelDownloadManager for the BrowserState.
+  // Returns the PredictionModelDownloadManager for the profile.
   PredictionModelDownloadManager* GetPredictionModelDownloadManager();
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 }  // namespace optimization_guide

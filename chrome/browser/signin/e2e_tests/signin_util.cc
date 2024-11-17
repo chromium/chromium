@@ -10,7 +10,6 @@
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/sign_in_test_observer.h"
-#include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,9 +19,9 @@
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
 
@@ -48,8 +47,9 @@ SignInFunctions::SignInFunctions(
 
 SignInFunctions::~SignInFunctions() = default;
 
-void SignInFunctions::SignInFromWeb(const TestAccount& test_account,
-                                    int previously_signed_in_accounts) {
+void SignInFunctions::SignInFromWeb(
+    const TestAccountSigninCredentials& test_account,
+    int previously_signed_in_accounts) {
   ASSERT_TRUE(add_tab_function_.Run(0,
                                     GaiaUrls::GetInstance()->add_account_url(),
                                     ui::PageTransition::PAGE_TRANSITION_TYPED));
@@ -58,8 +58,9 @@ void SignInFunctions::SignInFromWeb(const TestAccount& test_account,
       previously_signed_in_accounts);
 }
 
-void SignInFunctions::SignInFromSettings(const TestAccount& test_account,
-                                         int previously_signed_in_accounts) {
+void SignInFunctions::SignInFromSettings(
+    const TestAccountSigninCredentials& test_account,
+    int previously_signed_in_accounts) {
   GURL settings_url("chrome://settings");
   Browser* browser = browser_.Run();
   ASSERT_TRUE(add_tab_function_.Run(0, settings_url,
@@ -76,9 +77,10 @@ void SignInFunctions::SignInFromSettings(const TestAccount& test_account,
                         test_account, previously_signed_in_accounts);
 }
 
-void SignInFunctions::SignInFromCurrentPage(content::WebContents* web_contents,
-                                            const TestAccount& test_account,
-                                            int previously_signed_in_accounts) {
+void SignInFunctions::SignInFromCurrentPage(
+    content::WebContents* web_contents,
+    const TestAccountSigninCredentials& test_account,
+    int previously_signed_in_accounts) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   SignInTestObserver observer(IdentityManagerFactory::GetForProfile(profile),
@@ -89,8 +91,9 @@ void SignInFunctions::SignInFromCurrentPage(content::WebContents* web_contents,
                                  PrimarySyncAccountWait::kNotWait);
 }
 
-void SignInFunctions::TurnOnSync(const TestAccount& test_account,
-                                 int previously_signed_in_accounts) {
+void SignInFunctions::TurnOnSync(
+    const TestAccountSigninCredentials& test_account,
+    int previously_signed_in_accounts) {
   SignInFromSettings(test_account, previously_signed_in_accounts);
 
   SignInTestObserver observer(identity_manager(browser_.Run()),

@@ -31,8 +31,8 @@ static const char kUserInfoResponse[] =
 
 class MockUserInfoFetcherDelegate : public UserInfoFetcher::Delegate {
  public:
-  MockUserInfoFetcherDelegate() {}
-  ~MockUserInfoFetcherDelegate() {}
+  MockUserInfoFetcherDelegate() = default;
+  ~MockUserInfoFetcherDelegate() = default;
   MOCK_METHOD1(OnGetUserInfoFailure,
                void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnGetUserInfoSuccess, void(const base::Value::Dict& result));

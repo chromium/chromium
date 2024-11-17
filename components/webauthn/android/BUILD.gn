@@ -18,6 +18,7 @@ generate_jni("jni_headers") {
 
 java_cpp_enum("java_enums_srcjar") {
   sources = [
+    "//content/browser/webauth/authenticator_request_outcome_enums.h",
     "cred_man_support.h",
     "webauthn_mode.h",
   ]
@@ -31,6 +32,7 @@ android_library("java") {
   ]
   sources = [
     "java/src/org/chromium/components/webauthn/AuthenticationContextProvider.java",
+    "java/src/org/chromium/components/webauthn/AuthenticatorConstants.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
     "java/src/org/chromium/components/webauthn/Barrier.java",
@@ -39,6 +41,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/Fido2ApiCall.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCallHelper.java",
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
+    "java/src/org/chromium/components/webauthn/Fido2GetCredentialsComparator.java",
     "java/src/org/chromium/components/webauthn/FidoErrorResponseCallback.java",
     "java/src/org/chromium/components/webauthn/FidoIntentSender.java",
     "java/src/org/chromium/components/webauthn/GetAssertionResponseCallback.java",
@@ -48,6 +51,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
+    "java/src/org/chromium/components/webauthn/RecordOutcomeCallback.java",
     "java/src/org/chromium/components/webauthn/WebauthnBrowserBridge.java",
     "java/src/org/chromium/components/webauthn/WebauthnCredentialDetails.java",
     "java/src/org/chromium/components/webauthn/WebauthnModeProvider.java",
@@ -60,7 +64,6 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/cred_man/CredManRequestDecorator.java",
     "java/src/org/chromium/components/webauthn/cred_man/CredManSupportProvider.java",
     "java/src/org/chromium/components/webauthn/cred_man/CredManUiRecommender.java",
-    "java/src/org/chromium/components/webauthn/cred_man/CredManUiRecommenderProvider.java",
     "java/src/org/chromium/components/webauthn/cred_man/GpmCredManRequestDecorator.java",
   ]
 
@@ -69,9 +72,11 @@ android_library("java") {
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
+    "//base:service_loader_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//components/externalauth/android:java",
+    "//components/ukm/android:java",
     "//content/public/android:content_java",
     "//content/public/common:common_java",
     "//mojo/public/java:bindings_java",
@@ -153,6 +158,7 @@ source_set("android") {
     ":jni_headers",
     "//base",
     "//components/cbor",
+    "//components/ukm/android:ukm_recorder",
     "//components/webauthn/core/browser",
     "//components/webauthn/json",
     "//content/public/browser",
@@ -181,14 +187,15 @@ source_set("unit_tests") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/components/webauthn/AuthenticatorImplTest.java",
     "junit/src/org/chromium/components/webauthn/BarrierTest.java",
     "junit/src/org/chromium/components/webauthn/Fido2CredentialRequestRobolectricTest.java",
+    "junit/src/org/chromium/components/webauthn/Fido2GetCredentialsComparatorRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/ShadowWebContentStatics.java",
     "junit/src/org/chromium/components/webauthn/WebauthnModeProviderRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManCreateCredentialRequestHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManGetCredentialRequestHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManHelperRobolectricTest.java",
-    "junit/src/org/chromium/components/webauthn/cred_man/CredManUiRecommenderProviderRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/GpmCredManRequestDecoratorRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/ShadowCreateCredentialException.java",
     "junit/src/org/chromium/components/webauthn/cred_man/ShadowCreateCredentialRequest.java",
@@ -211,6 +218,7 @@ robolectric_library("junit") {
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//services/device/public/java:device_feature_list_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/google-truth:google_truth_java",

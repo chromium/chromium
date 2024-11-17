@@ -260,7 +260,8 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
 }
 
 - (void)recordBannerOnScreenDuration:(base::TimeDelta)duration {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Messages.Banner.OnScreenTime", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Messages.Banner.OnScreenTime",
+                                        duration);
 }
 
 - (void)recordModalEvent:(MobileMessagesModalEvent)event {
@@ -336,8 +337,7 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
       break;
     case InfobarType::kInfobarTypeTailoredSecurityService:
       // TailoredSecurityService infobar doesn't have a badge.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case InfobarType::kInfobarTypeSyncError:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBadgeTappedHistogram, state);
       break;

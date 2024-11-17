@@ -7,9 +7,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
+#include "content/public/browser/webui_config.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class Profile;
+class AppServiceInternalsUI;
+
+class AppServiceInternalsUIConfig
+    : public content::DefaultWebUIConfig<AppServiceInternalsUI> {
+ public:
+  AppServiceInternalsUIConfig();
+};
 
 // The WebUI controller for chrome://app-service-internals.
 class AppServiceInternalsUI : public ui::MojoWebUIController {

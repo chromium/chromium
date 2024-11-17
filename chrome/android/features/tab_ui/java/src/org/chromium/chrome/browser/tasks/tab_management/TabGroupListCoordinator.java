@@ -14,11 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Consumer;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -28,17 +30,21 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -64,6 +70,7 @@ public class TabGroupListCoordinator {
 
     private final SimpleRecyclerViewAdapter mSimpleRecyclerViewAdapter;
     private TabGroupListMediator mTabGroupListMediator;
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /**
      * @param context Used to load resources and views.
@@ -73,6 +80,7 @@ public class TabGroupListCoordinator {
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
      * @param modalDialogManager Used to show confirmation dialogs.
      * @param onIsScrolledChanged To be invoked whenever the scrolled state changes.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     public TabGroupListCoordinator(
             Context context,
@@ -81,7 +89,8 @@ public class TabGroupListCoordinator {
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ModalDialogManager modalDialogManager,
-            Consumer<Boolean> onIsScrolledChanged) {
+            Consumer<Boolean> onIsScrolledChanged,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         ModelList modelList = new ModelList();
         PropertyModel.Builder builder = new PropertyModel.Builder(TabGroupListProperties.ALL_KEYS);
         builder.with(ON_IS_SCROLLED_CHANGED, onIsScrolledChanged);
@@ -89,9 +98,18 @@ public class TabGroupListCoordinator {
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
                 new LayoutViewBuilder<>(R.layout.tab_group_row);
-        mSimpleRecyclerViewAdapter = new SimpleRecyclerViewAdapter(modelList);
+        mSimpleRecyclerViewAdapter =
+                new SimpleRecyclerViewAdapter(modelList) {
+                    @Override
+                    public void onViewRecycled(SimpleRecyclerViewAdapter.ViewHolder holder) {
+                        if (holder.getItemViewType() == RowType.TAB_GROUP) {
+                            TabGroupRowViewBinder.onViewRecycled((TabGroupRowView) holder.itemView);
+                        }
+                        super.onViewRecycled(holder);
+                    }
+                };
         mSimpleRecyclerViewAdapter.registerType(
-                RowType.TAB_GROUP, layoutBuilder, new TabGroupRowViewBinder());
+                RowType.TAB_GROUP, layoutBuilder, TabGroupRowViewBinder::bind);
 
         mView =
                 (TabGroupListView)
@@ -134,6 +152,12 @@ public class TabGroupListCoordinator {
                         actionConfirmationManager,
                         syncService,
                         modalDialogManager);
+
+        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
+            mEdgeToEdgePadAdjuster =
+                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                            mView.getRecyclerView(), edgeToEdgeSupplier);
+        }
     }
 
     @VisibleForTesting
@@ -198,5 +222,9 @@ public class TabGroupListCoordinator {
     public void destroy() {
         mTabGroupListMediator.destroy();
         mSimpleRecyclerViewAdapter.destroy();
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
+            mEdgeToEdgePadAdjuster = null;
+        }
     }
 }

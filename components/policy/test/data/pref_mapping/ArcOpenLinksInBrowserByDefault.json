@@ -1,0 +1,15 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "arc.open_links_in_browser_by_default",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

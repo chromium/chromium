@@ -33,17 +33,28 @@ namespace base::features {
 
 // Alphabetical:
 
-// Enforce that writeable file handles passed to untrusted processes are not
-// backed by executable files.
-BASE_FEATURE(kEnforceNoExecutableFileHandles,
-             "EnforceNoExecutableFileHandles",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 // Activate base::FeatureParamWithCache internal cache.
 // TODO(https://crbug.com/340824113): Remove the feature flag below.
 BASE_FEATURE(kFeatureParamWithCache,
              "FeatureParamWithCache",
              FEATURE_ENABLED_BY_DEFAULT);
+
+// Use the Rust JSON parser. Enabled everywhere except Android, where the switch
+// from using the C++ parser in-thread to using the Rust parser in a thread-pool
+// introduces too much latency.
+BASE_FEATURE(kUseRustJsonParser,
+             "UseRustJsonParser",
+#if BUILDFLAG(IS_ANDROID)
+             FEATURE_DISABLED_BY_DEFAULT
+#else
+             FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID)
+);
+
+// If true, use the Rust JSON parser in-thread; otherwise, it runs in a thread
+// pool.
+const base::FeatureParam<bool> kUseRustJsonParserInCurrentSequence{
+    &kUseRustJsonParser, "UseRustJsonParserInCurrentSequence", false};
 
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
@@ -60,10 +71,6 @@ BASE_FEATURE(kLowEndMemoryExperiment,
 const base::FeatureParam<int> kLowMemoryDeviceThresholdMB{
     &kLowEndMemoryExperiment, "LowMemoryDeviceThresholdMB",
     LOW_MEMORY_DEVICE_THRESHOLD_MB};
-
-BASE_FEATURE(kUseRustJsonParser,
-             "UseRustJsonParser",
-             FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Force to enable LowEndDeviceMode partially on Android 3Gb devices.
@@ -101,7 +108,7 @@ BASE_FEATURE(kCollectAndroidFrameTimelineMetrics,
 // thread,
 BASE_FEATURE(kPostPowerMonitorBroadcastReceiverInitToBackground,
              "PostPowerMonitorBroadcastReceiverInitToBackground",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, getMyMemoryState IPC will be posted to background.
 BASE_FEATURE(kPostGetMyMemoryStateToBackground,
              "PostGetMyMemoryStateToBackground",

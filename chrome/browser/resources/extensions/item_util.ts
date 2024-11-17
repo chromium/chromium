@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
+import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 
 // This `SafetyCheckWarningReason` enum should match the enum of the same
 // name defined in the developer_private.idl and enums.xml files.
@@ -76,7 +78,8 @@ export function isEnabled(state: chrome.developerPrivate.ExtensionState):
  *     enabled.
  */
 export function userCanChangeEnablement(
-    item: chrome.developerPrivate.ExtensionInfo): boolean {
+    item: chrome.developerPrivate.ExtensionInfo,
+    mv2ExperimentStage: Mv2ExperimentStage): boolean {
   // User doesn't have permission.
   if (!item.userMayModify) {
     return false;
@@ -87,6 +90,12 @@ export function userCanChangeEnablement(
       item.disableReasons.updateRequired ||
       item.disableReasons.publishedInStoreRequired ||
       item.disableReasons.blockedByPolicy) {
+    return false;
+  }
+  // Item is disabled when MV2 deprecation is on 'unsupported' experiment stage
+  // and the extension is disabled due to unsupported manifest version.
+  if (item.disableReasons.unsupportedManifestVersion &&
+      mv2ExperimentStage === Mv2ExperimentStage.UNSUPPORTED) {
     return false;
   }
   // An item with dependent extensions can't be disabled (it would bork the
@@ -287,4 +296,53 @@ export function getEnableToggleTooltipText(
       data.permissions.canAccessSiteData ?
           'enableToggleTooltipEnabledWithSiteAccess' :
           'enableToggleTooltipEnabled');
+}
+
+export function createDummyExtensionInfo():
+    chrome.developerPrivate.ExtensionInfo {
+  return {
+    commands: [],
+    dependentExtensions: [],
+    description: '',
+    disableReasons: {
+      suspiciousInstall: false,
+      corruptInstall: false,
+      updateRequired: false,
+      publishedInStoreRequired: false,
+      blockedByPolicy: false,
+      reloading: false,
+      custodianApprovalRequired: false,
+      parentDisabledPermissions: false,
+      unsupportedManifestVersion: false,
+    },
+    errorCollection: {isEnabled: false, isActive: false},
+    fileAccess: {isEnabled: false, isActive: false},
+    homePage: {url: '', specified: false},
+    iconUrl: '',
+    id: '',
+    incognitoAccess: {isEnabled: false, isActive: false},
+    installWarnings: [],
+    location: chrome.developerPrivate.Location.UNKNOWN,
+    manifestErrors: [],
+    manifestHomePageUrl: '',
+    mustRemainInstalled: false,
+    name: '',
+    offlineEnabled: false,
+    permissions: {simplePermissions: [], canAccessSiteData: false},
+    runtimeErrors: [],
+    runtimeWarnings: [],
+    state: chrome.developerPrivate.ExtensionState.ENABLED,
+    type: chrome.developerPrivate.ExtensionType.EXTENSION,
+    updateUrl: '',
+    userMayModify: false,
+    version: '2.0',
+    views: [],
+    webStoreUrl: '',
+    showSafeBrowsingAllowlistWarning: false,
+    showAccessRequestsInToolbar: false,
+    safetyCheckWarningReason:
+        chrome.developerPrivate.SafetyCheckWarningReason.UNPUBLISHED,
+    isAffectedByMV2Deprecation: false,
+    didAcknowledgeMV2DeprecationNotice: false,
+  };
 }

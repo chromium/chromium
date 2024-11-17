@@ -128,8 +128,7 @@ ChromeDevToolsSession::ChromeDevToolsSession(
 
 ChromeDevToolsSession::~ChromeDevToolsSession() = default;
 
-base::HistogramBase::Sample GetCommandUmaId(
-    const std::string_view command_name) {
+base::HistogramBase::Sample GetCommandUmaId(std::string_view command_name) {
   return static_cast<base::HistogramBase::Sample>(
       base::HashMetricName(command_name));
 }

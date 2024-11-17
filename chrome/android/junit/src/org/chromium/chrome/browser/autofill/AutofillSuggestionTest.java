@@ -38,6 +38,7 @@ public class AutofillSuggestionTest {
                         "secondary_label",
                         "sublabel",
                         "secondary_sublabel",
+                        "label_content_description",
                         "item_tag",
                         /* iconId= */ 1,
                         /* isIconAtStart= */ true,

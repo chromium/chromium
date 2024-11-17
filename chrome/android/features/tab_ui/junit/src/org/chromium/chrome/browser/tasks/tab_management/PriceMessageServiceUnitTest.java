@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -74,10 +73,6 @@ public class PriceMessageServiceUnitTest {
 
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                CommerceSubscriptionsServiceConfig.IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM,
-                "true");
         FeatureList.setTestValues(testValues);
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
@@ -87,11 +82,6 @@ public class PriceMessageServiceUnitTest {
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, INITIAL_SHOW_COUNT);
         assertTrue(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
-        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
-                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD, true);
-        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
-                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, INITIAL_SHOW_COUNT);
-        assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
 
         mMessageService =
                 new PriceMessageService(
@@ -109,13 +99,6 @@ public class PriceMessageServiceUnitTest {
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
     }
 
-    @Test(expected = AssertionError.class)
-    public void testPrepareMessage_PriceAlerts_MessageDisabled() {
-        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
-                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD, false);
-        mMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, mPriceTabData);
-    }
-
     @Test
     public void testPrepareMessage_PriceWelcome_ExceedMaxShowCount() {
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
@@ -124,16 +107,6 @@ public class PriceMessageServiceUnitTest {
         assertEquals(
                 MAX_SHOW_COUNT + 1, PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
         assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
-    }
-
-    @Test
-    public void testPrepareMessage_PriceAlerts_ExceedMaxShowCount() {
-        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
-                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT);
-        mMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
-        assertEquals(
-                MAX_SHOW_COUNT + 1, PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
     }
 
     @Test
@@ -146,31 +119,6 @@ public class PriceMessageServiceUnitTest {
                 .messageReady(
                         eq(MessageService.MessageType.PRICE_MESSAGE),
                         any(PriceMessageService.PriceMessageData.class));
-        assertEquals(
-                INITIAL_SHOW_COUNT - 1,
-                PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
-        assertEquals(
-                INITIAL_SHOW_COUNT + 1,
-                PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
-    }
-
-    // Preparing PriceWelcomeMessage shouldn't decrease the show count of PriceAlertsMessage if it's
-    // currently disabled.
-    @Test
-    public void testPrepareMessage_PriceWelcome_PriceAlertsMessageDisabled() {
-        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
-                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD, false);
-
-        InOrder inOrder = Mockito.inOrder(mMessageObserver);
-        mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
-        inOrder.verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_MESSAGE));
-        assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
-        inOrder.verify(mMessageObserver, times(1))
-                .messageReady(
-                        eq(MessageService.MessageType.PRICE_MESSAGE),
-                        any(PriceMessageService.PriceMessageData.class));
-        assertEquals(
-                INITIAL_SHOW_COUNT, PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
         assertEquals(
                 INITIAL_SHOW_COUNT + 1,
                 PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
@@ -192,22 +140,6 @@ public class PriceMessageServiceUnitTest {
     }
 
     @Test
-    public void testReview_PriceAlerts_NotificationsEnabled() {
-        doReturn(true).when(mNotificationManager).areAppNotificationsEnabled();
-        mMessageService.review(PriceMessageType.PRICE_ALERTS);
-        verify(mNotificationManager).createNotificationChannel();
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
-    }
-
-    @Test
-    public void testReview_PriceAlerts_NotificationsDisabled() {
-        doReturn(false).when(mNotificationManager).areAppNotificationsEnabled();
-        mMessageService.review(PriceMessageType.PRICE_ALERTS);
-        verify(mNotificationManager).launchNotificationSettings();
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
-    }
-
-    @Test
     public void testDismiss_PriceWelcome() {
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
@@ -215,12 +147,6 @@ public class PriceMessageServiceUnitTest {
         mMessageService.dismiss(PriceMessageType.PRICE_WELCOME);
         assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
         assertNull(mMessageService.getPriceTabDataForTesting());
-    }
-
-    @Test
-    public void testDismiss_PriceAlerts() {
-        mMessageService.dismiss(PriceMessageType.PRICE_ALERTS);
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
     }
 
     @Test

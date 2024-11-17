@@ -53,6 +53,7 @@ using visited_url_ranking::ResultStatus;
 using visited_url_ranking::ScoredURLUserAction;
 using visited_url_ranking::URLVisitAggregate;
 using visited_url_ranking::URLVisitAggregatesTransformType;
+using visited_url_ranking::URLVisitsMetadata;
 using visited_url_ranking::VisitedURLRankingService;
 
 // Must match Java Tab.INVALID_TAB_ID.
@@ -63,13 +64,11 @@ static constexpr int kInvalidTabId = -1;
 // FetchOptions instance.
 FetchOptions CreateFetchOptionsForTabResumption(base::Time current_time,
                                                 bool fetch_history) {
-  FetchOptions::URLTypeSet expected_types = {
-      FetchOptions::URLType::kActiveRemoteTab};
-  if (fetch_history) {
-    expected_types.Put(FetchOptions::URLType::kActiveLocalTab);
-    expected_types.Put(FetchOptions::URLType::kLocalVisit);
-    expected_types.Put(FetchOptions::URLType::kRemoteVisit);
-    expected_types.Put(FetchOptions::URLType::kCCTVisit);
+  URLVisitAggregate::URLTypeSet expected_types;
+  if (!fetch_history) {
+    expected_types = {URLVisitAggregate::URLType::kActiveRemoteTab};
+  } else {
+    expected_types = FetchOptions::GetFetchResultURLTypes();
   }
   return FetchOptions::CreateFetchOptionsForTabResumption(expected_types);
 }
@@ -111,6 +110,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
 
   // Continuing after RunFlow()'s call to FetchURLVisitAggregates().
   void OnFetched(ResultStatus status,
+                 URLVisitsMetadata url_visits_metadata,
                  std::vector<URLVisitAggregate> aggregates) {
     if (status != ResultStatus::kSuccess) {
       Java_VisitedUrlRankingBackend_onSuggestions(env_, j_suggestions_,
@@ -120,11 +120,13 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
 
     ranking_service_->RankURLVisitAggregates(
         config_, std::move(aggregates),
-        base::BindOnce(&FetchAndRankFlow::OnRanked, base::RetainedRef(this)));
+        base::BindOnce(&FetchAndRankFlow::OnRanked, base::RetainedRef(this),
+                       std::move(url_visits_metadata)));
   }
 
   // Continuing after OnFetched()'s call to RankVisitAggregates().
-  void OnRanked(ResultStatus status,
+  void OnRanked(URLVisitsMetadata url_visits_metadata,
+                ResultStatus status,
                 std::vector<URLVisitAggregate> aggregates) {
     if (status != ResultStatus::kSuccess) {
       Java_VisitedUrlRankingBackend_onSuggestions(env_, j_suggestions_,
@@ -133,7 +135,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
     }
 
     ranking_service_->DecorateURLVisitAggregates(
-        {}, std::move(aggregates),
+        {}, std::move(url_visits_metadata), std::move(aggregates),
         base::BindOnce(&FetchAndRankFlow::PassResults,
                        base::RetainedRef(this)));
   }

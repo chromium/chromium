@@ -280,8 +280,7 @@ public class PermissionDialogController
                                         BuildInfo.getInstance().hostPackageLabel))
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                context.getResources()
-                                        .getString(R.string.overlay_detected_dialog_message))
+                                context.getString(R.string.overlay_detected_dialog_message))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getResources(),

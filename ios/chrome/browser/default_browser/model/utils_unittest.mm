@@ -164,20 +164,16 @@ TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithoutPriorInteraction) {
   EXPECT_TRUE(UserInNonModalPromoCooldown());
 }
 
-// Tests logging user interactions with a non-modal promo with cooldown refactor
-// enabled.
-TEST_F(DefaultBrowserUtilsTest,
-       LogNonModalUserInteractionCooldownRefactorEnabled) {
+// Tests logging user interactions with a non-modal promo.
+TEST_F(DefaultBrowserUtilsTest, LogNonModalUserInteractionCooldown) {
   EXPECT_FALSE(UserInNonModalPromoCooldown());
 
-  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount(),
-                                      DisplayedFullscreenPromoCount());
+  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount());
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 1);
   EXPECT_TRUE(UserInNonModalPromoCooldown());
   EXPECT_FALSE(UserInFullscreenPromoCooldown());
 
-  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount(),
-                                      DisplayedFullscreenPromoCount());
+  LogUserInteractionWithNonModalPromo(UserInteractionWithNonModalPromoCount());
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 2);
   EXPECT_TRUE(UserInNonModalPromoCooldown());
   EXPECT_FALSE(UserInFullscreenPromoCooldown());
@@ -187,36 +183,14 @@ TEST_F(DefaultBrowserUtilsTest,
 // the same current interactions count doesn't over-increment the value.
 TEST_F(DefaultBrowserUtilsTest,
        LogNonModalUserInteractionMultipleTimesSameArguments) {
-  feature_list_.InitWithFeatures(
-      {/*enabled=*/},
-      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
+  LogUserInteractionWithNonModalPromo(2);
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 3);
 
-  LogUserInteractionWithNonModalPromo(2, 2);
-  EXPECT_EQ(3, 3);
+  LogUserInteractionWithNonModalPromo(2);
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 3);
 
-  LogUserInteractionWithNonModalPromo(2, 2);
-  EXPECT_EQ(3, 3);
-
-  LogUserInteractionWithNonModalPromo(2, 2);
-  EXPECT_EQ(3, 3);
-}
-
-// Tests that the cooldown refactor flag is enabled.
-TEST_F(DefaultBrowserUtilsTest, CooldownRefactorFlagEnabled) {
-  feature_list_.InitWithFeatures(
-      {/*enabled=*/kNonModalDefaultBrowserPromoCooldownRefactor},
-      {/*disabled=*/});
-
-  EXPECT_TRUE(IsNonModalDefaultBrowserPromoCooldownRefactorEnabled());
-}
-
-// Tests that the cooldown refactor flag is disabled.
-TEST_F(DefaultBrowserUtilsTest, CooldownRefactorFlagDisabled) {
-  feature_list_.InitWithFeatures(
-      {/*enabled=*/},
-      {/*disabled=*/kNonModalDefaultBrowserPromoCooldownRefactor});
-
-  EXPECT_FALSE(IsNonModalDefaultBrowserPromoCooldownRefactorEnabled());
+  LogUserInteractionWithNonModalPromo(2);
+  EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 3);
 }
 
 // Tests no 2 tailored promos are not shown.

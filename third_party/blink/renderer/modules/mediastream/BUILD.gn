@@ -95,6 +95,8 @@ blink_modules_sources("mediastream") {
     "remote_media_stream_track_adapter.h",
     "restriction_target.cc",
     "restriction_target.h",
+    "scoped_media_stream_tracer.cc",
+    "scoped_media_stream_tracer.h",
     "screen_capture_media_stream_track.cc",
     "screen_capture_media_stream_track.h",
     "sub_capture_target.cc",

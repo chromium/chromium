@@ -26,7 +26,6 @@ enum PermissionName {
     "display-capture",
 
     // Non-standard:
-    "accessibility-events",
     "clipboard-read",
     "clipboard-write",
     "payment-handler",

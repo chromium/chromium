@@ -46,6 +46,7 @@ https://docs.google.com/document/d/1hUPe21CDdbT6_YFHl03KWlcZqhNIPBAfC-5N5DDY2OE/
 """
 
 import sys
+import urllib.parse
 
 import resource
 from os.path import expanduser
@@ -134,6 +135,14 @@ class Node:
         # Skipping the first and last character that correspond to the curly
         # braces denoting the start and end of a serialized node.
         x = txt[1:-1].split('\\,')
+
+        # Value are escaped to avoid conflicts with the separator. Unescape
+        # them.
+        x = [urllib.parse.unquote(y) for y in x]
+
+        # `./apply-edits.py` expects `\n` to be escaped.
+        x = [y.replace('\n', '\0') for y in x]
+
         # Expect exactly 6 elements that correspond to the following node
         # attributes:
         # - is_buffer

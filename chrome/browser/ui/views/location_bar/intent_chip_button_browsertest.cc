@@ -52,16 +52,22 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
-class IntentChipButtonBrowserTest : public web_app::WebAppNavigationBrowserTest,
-                                    public testing::WithParamInterface<bool> {
+class IntentChipButtonBrowserTest
+    : public web_app::WebAppNavigationBrowserTest,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   IntentChipButtonBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            /*override_captures_by_default=*/GetParam()),
-        {});
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
   }
-  bool LinkCapturingEnabledByDefault() const { return GetParam(); }
+  bool LinkCapturingEnabledByDefault() const {
+#if BUILDFLAG(IS_CHROMEOS)
+    return false;
+#else
+    return GetParam() == apps::test::LinkCapturingFeatureVersion::kV2DefaultOn;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   void SetUpOnMainThread() override {
     web_app::WebAppNavigationBrowserTest::SetUpOnMainThread();
@@ -274,22 +280,26 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-INSTANTIATE_TEST_SUITE_P(,
-                         IntentChipButtonBrowserTest,
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IntentChipButtonBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
-                         testing::Values(false),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
 #else
-                         testing::Values(true, false),
-#endif
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "DefaultOn" : "DefaultOff";
-                         });
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);
 
-class IntentChipButtonBrowserUiTest : public UiBrowserTest {
+class IntentChipButtonBrowserUiTest
+    : public UiBrowserTest,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   IntentChipButtonBrowserUiTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
   }
 
   // UiBrowserTest:
@@ -336,6 +346,19 @@ class IntentChipButtonBrowserUiTest : public UiBrowserTest {
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default
 #endif
-IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserUiTest, MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserUiTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
+
+// Only run this test once with the parameterization that should be the
+// "default" release for navigation capturing per OS.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IntentChipButtonBrowserUiTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);

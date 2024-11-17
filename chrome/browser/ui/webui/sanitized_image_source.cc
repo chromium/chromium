@@ -348,16 +348,16 @@ void SanitizedImageSource::EncodeAndReplyStaticImage(
       base::BindOnce(
           [](const SkBitmap& bitmap,
              RequestAttributes::EncodeType encode_type) {
-            auto encoded = base::MakeRefCounted<base::RefCountedBytes>();
-            const bool success =
+            std::optional<std::vector<uint8_t>> result =
                 encode_type == RequestAttributes::EncodeType::kWebP
-                    ? gfx::WebpCodec::Encode(bitmap, /*quality=*/90,
-                                             &encoded->as_vector())
+                    ? gfx::WebpCodec::Encode(bitmap, /*quality=*/90)
                     : gfx::PNGCodec::EncodeBGRASkBitmap(
-                          bitmap, /*discard_transparency=*/false,
-                          &encoded->as_vector());
-            return success ? encoded
-                           : base::MakeRefCounted<base::RefCountedBytes>();
+                          bitmap, /*discard_transparency=*/false);
+            if (!result) {
+              return base::MakeRefCounted<base::RefCountedBytes>();
+            }
+            return base::MakeRefCounted<base::RefCountedBytes>(
+                std::move(result.value()));
           },
           bitmap, request_attributes.encode_type),
       std::move(callback));

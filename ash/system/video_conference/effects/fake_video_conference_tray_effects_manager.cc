@@ -62,7 +62,7 @@ void FakeVideoConferenceTrayEffectsManager::UnregisterDelegate(
   VideoConferenceTrayEffectsManager::UnregisterDelegate(delegate);
 
   // Delete any tile UI controllers associated with any of `delegate`'s effects.
-  for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+  for (auto* effect : delegate->GetAllEffects(VcEffectType::kToggle)) {
     const VcEffectId id = effect->id();
     std::erase_if(
         tile_ui_controllers_,

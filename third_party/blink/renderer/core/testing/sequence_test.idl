@@ -19,6 +19,7 @@ interface SequenceTest {
 
     sequence<Element> getElementSequence();
     void setElementSequence(sequence<Element> arg);
+    void setElementSequenceOfSequences(sequence<sequence<Element>> arg);
 
     boolean unionReceivedSequence((double or sequence<double>) arg);
 };

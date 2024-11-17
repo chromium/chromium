@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -84,9 +84,10 @@ bool g_skip_main_profile_check_for_testing = false;
 #endif
 
 GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
-  std::vector<unsigned char> output;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
-  std::string encoded = base::Base64Encode(output);
+  std::optional<std::vector<uint8_t>> output =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  std::string encoded =
+      base::Base64Encode(output.value_or(std::vector<uint8_t>()));
   return GURL("data:image/png;base64," + encoded);
 }
 
@@ -207,8 +208,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
       return DisplayMode::kMinimalUi;
     case DisplayMode::kUndefined:
     case DisplayMode::kPictureInPicture:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
       return DisplayMode::kStandalone;
@@ -297,7 +297,6 @@ bool AreWebAppsEnabled(Profile* profile) {
   // Web Apps should not be installed to the ChromeOS system profiles except the
   // lock screen app profile.
   if (!ash::ProfileHelper::IsUserProfile(original_profile) &&
-      !ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
       !ash::IsShimlessRmaAppBrowserContext(profile)) {
     return false;
   }
@@ -326,9 +325,6 @@ bool AreWebAppsUserInstallable(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
   if (IsWebAppsCrosapiEnabled()) {
-    return false;
-  }
-  if (ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
     return false;
   }
 #endif
@@ -680,7 +676,7 @@ bool IsValidScopeForLinkCapturing(const GURL& scope) {
 bool WillBeSystemWebApp(const webapps::AppId& app_id,
                         WebAppManagementTypes sources) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  return app_id == kContainerAppId && sources.Has(WebAppManagement::kDefault);
+  return app_id == ash::kGeminiAppId && sources.Has(WebAppManagement::kDefault);
 #else  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
   return false;
 #endif

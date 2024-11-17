@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
@@ -33,8 +34,7 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
     const std::u16string& otp) {
   otp_ = otp;
 
-  unmask_request_ = std::make_unique<
-      payments::PaymentsNetworkInterface::UnmaskRequestDetails>();
+  unmask_request_ = std::make_unique<payments::UnmaskRequestDetails>();
   unmask_request_->card = *card_;
   unmask_request_->billing_customer_number = billing_customer_number_;
   unmask_request_->context_token = context_token_;
@@ -63,10 +63,6 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
     }
     unmask_request_->last_committed_primary_main_frame_origin =
         last_committed_primary_main_frame_origin;
-  }
-  if (!autofill_client_->IsOffTheRecord()) {
-    unmask_request_->merchant_domain_for_footprints =
-        autofill_client_->GetLastCommittedPrimaryMainFrameOrigin();
   }
 
   // Populating risk data and showing OTP dialog may occur asynchronously.
@@ -154,8 +150,7 @@ void CreditCardOtpAuthenticator::SendSelectChallengeOptionRequest() {
   selected_challenge_option_request_ongoing_ = true;
   // Prepare SelectChallengeOption request.
   select_challenge_option_request_ =
-      std::make_unique<payments::PaymentsNetworkInterface::
-                           SelectChallengeOptionRequestDetails>();
+      std::make_unique<payments::SelectChallengeOptionRequestDetails>();
   select_challenge_option_request_->selected_challenge_option =
       selected_challenge_option_;
   select_challenge_option_request_->billing_customer_number =
@@ -276,8 +271,7 @@ void CreditCardOtpAuthenticator::SendUnmaskCardRequest() {
 
 void CreditCardOtpAuthenticator::OnDidGetRealPan(
     PaymentsRpcResult result,
-    const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-        response_details) {
+    const payments::UnmaskResponseDetails& response_details) {
   if (unmask_card_request_timestamp_.has_value()) {
     autofill_metrics::LogOtpAuthUnmaskCardRequestLatency(
         base::TimeTicks::Now() - *unmask_card_request_timestamp_,
@@ -288,15 +282,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     if (response_details.card_type !=
         payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard) {
       // Currently we offer OTP authentication only for virtual cards.
-      NOTREACHED_IN_MIGRATION();
-      if (requester_) {
-        requester_->OnOtpAuthenticationComplete(
-            OtpAuthenticationResponse().with_result(
-                OtpAuthenticationResponse::Result::kGenericError));
-      }
-
-      Reset();
-      return;
+      NOTREACHED();
     }
     // If |flow_status| is present, this intermediate status allows the user to
     // stay in the current session to finish the unmasking with certain user

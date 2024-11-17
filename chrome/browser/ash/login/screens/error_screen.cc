@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/screens/connectivity_diagnostics_dialog.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/ash/login/login_web_dialog.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
-#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
@@ -395,8 +395,9 @@ void ErrorScreen::OnReloadGaiaClicked() {
 
 void ErrorScreen::OnContinueAppLaunchButtonClicked() {
   DCHECK_EQ(parent_screen_, AppLaunchSplashScreenView::kScreenId.AsId());
-  auto* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
-  oobe_ui->GetView<AppLaunchSplashScreenHandler>()->ContinueAppLaunch();
+  WizardController::default_controller()
+      ->GetScreen<AppLaunchSplashScreen>()
+      ->ContinueAppLaunch();
 }
 
 void ErrorScreen::LaunchHelpApp(int help_topic_id) {

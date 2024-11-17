@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
@@ -37,10 +38,8 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
     if (name == "then") {
       return v8::Local<v8::Value>();
     }
-    ExceptionState exception_state(isolate, v8::ExceptionContext::kNamedGetter,
-                                   "Window", name,
-                                   ExceptionState::kForInterceptor);
-    exception_state.ThrowSecurityError(
+    V8ThrowDOMException::Throw(
+        isolate, DOMExceptionCode::kSecurityError,
         DOMWindow::GetProxyAccessBlockedExceptionMessage(*reason));
     return v8::Null(isolate);
   }

@@ -1246,5 +1246,12 @@
       name: "requireTransientActivationAndAuthorizationForSubAppsAPI",
       initial: true,
     },
+    // Enable the features to change the safe-area-inset* CSS environment
+    // variables based on the browser controls's shown ration.
+    {
+      name: "dynamicSafeAreaInsetsEnabled",
+      initial: false,
+      type: "bool"
+    },
   ],
 }

@@ -419,7 +419,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             filters.AppendHueRotateFilter(amount);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         break;
       }
@@ -428,12 +428,11 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       case FilterOperation::OperationType::kComponentTransfer:
       case FilterOperation::OperationType::kTurbulence:
         // These filter types only exist for Canvas filters.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case FilterOperation::OperationType::kColorMatrix: {
         Vector<float> matrix_values =
             To<ColorMatrixFilterOperation>(*op).Values();
-        filters.AppendColorMatrixFilter(matrix_values);
+        filters.AppendColorMatrixFilter(std::move(matrix_values));
         break;
       }
       case FilterOperation::OperationType::kInvert:
@@ -455,7 +454,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             filters.AppendContrastFilter(amount);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         break;
       }
@@ -485,8 +484,6 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             paint_filter_builder::BuildBoxReflectFilter(reflection, nullptr));
         break;
       }
-      case FilterOperation::OperationType::kNone:
-        break;
     }
     // TODO(fs): When transitioning from a reference filter using "linearRGB"
     // to a filter function we should insert a conversion (like the one below)

@@ -60,7 +60,7 @@ GetPasswordProfileStore() {
   // This test does not deal with Incognito, and should not run in Incognito
   // context. Therefore IMPLICIT_ACCESS is used to let the test fail if in
   // Incognito context.
-  return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+  return IOSChromeProfilePasswordStoreFactory::GetForProfile(
       chrome_test_util::GetOriginalProfile(),
       ServiceAccessType::IMPLICIT_ACCESS);
 }

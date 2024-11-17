@@ -37,9 +37,8 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
     case 2:
       return ProfilePicker::AvailabilityOnStartup::kForced;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ProfilePicker::AvailabilityOnStartup::kEnabled;
 }
 
 }  // namespace
@@ -47,12 +46,7 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
 const char ProfilePicker::kTaskManagerUrl[] =
     "chrome://profile-picker/task-manager";
 
-ProfilePicker::Params::~Params() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NotifyAccountSelected(std::string());
-  NotifyFirstRunExited(FirstRunExitStatus::kQuitEarly);
-#endif
-}
+ProfilePicker::Params::~Params() = default;
 
 ProfilePicker::Params::Params(ProfilePicker::Params&&) = default;
 
@@ -64,8 +58,6 @@ ProfilePicker::Params ProfilePicker::Params::FromEntryPoint(
     EntryPoint entry_point) {
   // Use specialized constructors when available.
   DCHECK_NE(entry_point, EntryPoint::kBackgroundModeManager);
-  DCHECK_NE(entry_point, EntryPoint::kLacrosSelectAvailableAccount);
-  DCHECK_NE(entry_point, EntryPoint::kLacrosPrimaryProfileFirstRun);
   return ProfilePicker::Params(entry_point, GetPickerProfilePath());
 }
 
@@ -77,37 +69,13 @@ ProfilePicker::Params ProfilePicker::Params::ForBackgroundManager(
   return params;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// static
-ProfilePicker::Params ProfilePicker::Params::ForLacrosSelectAvailableAccount(
-    const base::FilePath& profile_path,
-    base::OnceCallback<void(const std::string&)> account_selected_callback) {
-  Params params(EntryPoint::kLacrosSelectAvailableAccount,
-                profile_path.empty() ? GetPickerProfilePath() : profile_path);
-  params.account_selected_callback_ = std::move(account_selected_callback);
-  return params;
-}
-
-void ProfilePicker::Params::NotifyAccountSelected(const std::string& gaia_id) {
-  if (account_selected_callback_) {
-    std::move(account_selected_callback_).Run(gaia_id);
-  }
-}
-#endif
-
 // static
 ProfilePicker::Params ProfilePicker::Params::ForFirstRun(
     const base::FilePath& profile_path,
     FirstRunExitedCallback first_run_exited_callback) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK_EQ(profile_path, ProfileManager::GetPrimaryUserProfilePath());
-#endif
-
   Params params(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       EntryPoint::kFirstRun,
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      EntryPoint::kLacrosPrimaryProfileFirstRun,
 #endif
       profile_path);
   params.first_run_exited_callback_ = std::move(first_run_exited_callback);
@@ -129,9 +97,10 @@ bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
 
   // Some entry points have specific UIs that cannot be reused for other entry
   // points.
-  base::flat_set<EntryPoint> exclusive_entry_points = {
-      EntryPoint::kLacrosPrimaryProfileFirstRun,
-      EntryPoint::kLacrosSelectAvailableAccount, EntryPoint::kFirstRun};
+  //
+  // TODO(crbug.com/373891721): The flat_set below has a single entry. Simplify
+  // its use.
+  base::flat_set<EntryPoint> exclusive_entry_points = {EntryPoint::kFirstRun};
   if (entry_point_ != other.entry_point_ &&
       (exclusive_entry_points.contains(entry_point_) ||
        exclusive_entry_points.contains(other.entry_point_))) {
@@ -165,17 +134,6 @@ StartupProfileModeReason ProfilePicker::GetStartupModeReason() {
   if (availability_on_startup == AvailabilityOnStartup::kForced) {
     return StartupProfileModeReason::kPickerForcedByPolicy;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Don't show the profile picker if secondary profiles are not allowed.
-  bool lacros_secondary_profiles_allowed =
-      g_browser_process->local_state()->GetBoolean(
-          prefs::kLacrosSecondaryProfilesAllowed);
-
-  if (!lacros_secondary_profiles_allowed) {
-    return StartupProfileModeReason::kProfilesDisabledLacros;
-  }
-#endif
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 

@@ -130,9 +130,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     self.title = l10n_util::GetNSString(IDS_AUTOFILL_PAYMENT_METHODS);
     self.shouldDisableDoneButtonOnEdit = YES;
     _browser = browser;
-    _personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            _browser->GetBrowserState());
+    _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
+        _browser->GetProfile());
     _observer.reset(new autofill::PersonalDataManagerObserverBridge(self));
     _personalDataManager->AddObserver(_observer.get());
   }
@@ -200,7 +199,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   TableViewModel* model = self.tableViewModel;
 
   [model addSectionWithIdentifier:SectionIdentifierAutofillCardSwitch];
-  if (_browser->GetBrowserState()->GetPrefs()->IsManagedPreference(
+  if (_browser->GetProfile()->GetPrefs()->IsManagedPreference(
           autofill::prefs::kAutofillCreditCardEnabled)) {
     [model addItem:[self cardManagedItem]
         toSectionWithIdentifier:SectionIdentifierAutofillCardSwitch];
@@ -805,12 +804,12 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
 - (BOOL)isAutofillCreditCardEnabled {
   return autofill::prefs::IsAutofillPaymentMethodsEnabled(
-      _browser->GetBrowserState()->GetPrefs());
+      _browser->GetProfile()->GetPrefs());
 }
 
 - (void)setAutofillCreditCardEnabled:(BOOL)isEnabled {
   return autofill::prefs::SetAutofillPaymentMethodsEnabled(
-      _browser->GetBrowserState()->GetPrefs(), isEnabled);
+      _browser->GetProfile()->GetPrefs(), isEnabled);
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate

@@ -209,9 +209,7 @@ void RewriteMinidumpsAsMIMEs(const base::FilePath& src_dir,
         continue;
 
       case crashpad::CrashReportDatabase::kCannotRequestUpload:
-        NOTREACHED_IN_MIGRATION();
-        db->DeleteReport(report.uuid);
-        continue;
+        NOTREACHED();
     }
   }
 }

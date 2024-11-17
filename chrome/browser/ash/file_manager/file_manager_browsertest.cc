@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
 #include <memory>
 
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -12,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/immediate_crash.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -48,7 +50,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
@@ -158,10 +160,8 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
   ash::DeviceStateMixin::State DeviceStateFor(DeviceMode device_mode) {
     switch (device_mode) {
       case kDeviceModeNotSet:
-        CHECK(false) << "device_mode option must be set for "
+        NOTREACHED() << "device_mode option must be set for "
                         "LoggedInUserFilesAppBrowserTest";
-        // TODO(crbug.com/40122554): `base::ImmediateCrash` is necessary.
-        base::ImmediateCrash();
       case kConsumerOwned:
         return ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED;
       case kEnrolled:
@@ -227,38 +227,18 @@ class QuickOfficeBrowserTestBase : public InProcessBrowserTest {
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_file_directory);
     return test_file_directory;
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class QuickOfficeForceFileDownloadEnabledBrowserTest
     : public QuickOfficeBrowserTestBase {
  public:
-  QuickOfficeForceFileDownloadEnabledBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kQuickOfficeForceFileDownload);
-  }
+  QuickOfficeForceFileDownloadEnabledBrowserTest() = default;
   ~QuickOfficeForceFileDownloadEnabledBrowserTest() override = default;
 
   QuickOfficeForceFileDownloadEnabledBrowserTest(
       const QuickOfficeForceFileDownloadEnabledBrowserTest&) = delete;
   QuickOfficeForceFileDownloadEnabledBrowserTest& operator=(
       const QuickOfficeForceFileDownloadEnabledBrowserTest&) = delete;
-};
-
-class QuickOfficeForceFileDownloadDisabledBrowserTest
-    : public QuickOfficeBrowserTestBase {
- public:
-  QuickOfficeForceFileDownloadDisabledBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kQuickOfficeForceFileDownload);
-  }
-  ~QuickOfficeForceFileDownloadDisabledBrowserTest() override = default;
-
-  QuickOfficeForceFileDownloadDisabledBrowserTest(
-      const QuickOfficeForceFileDownloadDisabledBrowserTest&) = delete;
-  QuickOfficeForceFileDownloadDisabledBrowserTest& operator=(
-      const QuickOfficeForceFileDownloadDisabledBrowserTest&) = delete;
 };
 
 IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadEnabledBrowserTest,
@@ -292,36 +272,6 @@ IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadEnabledBrowserTest,
   DownloadItem* download = downloads[0];
 
   download->Cancel(true);
-}
-
-IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadDisabledBrowserTest,
-                       OfficeDocumentsAreNotDownloaded) {
-  using download::DownloadItem;
-
-  GURL download_url =
-      embedded_test_server()->GetURL("/chromeos/file_manager/text.docx");
-
-  content::DownloadManager* download_manager =
-      browser()->profile()->GetDownloadManager();
-  std::unique_ptr<content::DownloadTestObserver> download_observer(
-      new content::DownloadTestObserverTerminal(
-          download_manager, /*num_downloads=*/1,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
-
-  // This call will block until the condition X, but will not wait for the
-  // download to finish.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), download_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  EXPECT_EQ(0u, download_observer->NumDownloadsSeenInState(
-                    DownloadItem::IN_PROGRESS));
-  EXPECT_EQ(0u,
-            download_observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
-
-  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
-  download_manager->GetAllDownloads(&downloads);
-  ASSERT_EQ(0u, downloads.size());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

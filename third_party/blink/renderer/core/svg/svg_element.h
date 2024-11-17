@@ -98,9 +98,6 @@ class CORE_EXPORT SVGElement : public Element {
   };
   virtual AffineTransform LocalCoordinateSpaceTransform(CTMScope) const;
 
-  bool InstanceUpdatesBlocked() const;
-  void SetInstanceUpdatesBlocked(bool);
-
   // Records the SVG element as having a Web Animation on an SVG attribute that
   // needs applying.
   void SetWebAnimationsPending();
@@ -141,10 +138,7 @@ class CORE_EXPORT SVGElement : public Element {
     STACK_ALLOCATED();
 
    public:
-    SvgAttributeChangedParams(const QualifiedName& qname,
-                              AttributeModificationReason reason)
-        : name(qname), reason(reason) {}
-
+    const SVGAnimatedPropertyBase& property;
     const QualifiedName& name;
     const AttributeModificationReason reason;
   };
@@ -207,33 +201,6 @@ class CORE_EXPORT SVGElement : public Element {
   SVGElementResourceClient* GetSVGResourceClient();
   SVGElementResourceClient& EnsureSVGResourceClient();
 
-  class InvalidationGuard {
-    STACK_ALLOCATED();
-
-   public:
-    InvalidationGuard(SVGElement* element) : element_(element) {}
-    InvalidationGuard(const InvalidationGuard&) = delete;
-    InvalidationGuard& operator=(const InvalidationGuard&) = delete;
-    ~InvalidationGuard() { element_->InvalidateInstances(); }
-
-   private:
-    SVGElement* element_;
-  };
-
-  class InstanceUpdateBlocker {
-    STACK_ALLOCATED();
-
-   public:
-    InstanceUpdateBlocker(SVGElement* target_element);
-    InstanceUpdateBlocker(const InstanceUpdateBlocker&) = delete;
-    InstanceUpdateBlocker& operator=(const InstanceUpdateBlocker&) = delete;
-    ~InstanceUpdateBlocker();
-
-   private:
-    SVGElement* target_element_;
-  };
-
-  void InvalidateInstances();
   void SetNeedsStyleRecalcForInstances(StyleChangeType,
                                        const StyleChangeReasonForTracing&);
 
@@ -259,8 +226,8 @@ class CORE_EXPORT SVGElement : public Element {
 
   void ParseAttribute(const AttributeModificationParams&) override;
   void AttributeChanged(const AttributeModificationParams&) override;
+  void InvalidateInstances();
 
-  void UpdatePresentationAttributeStyle(const QualifiedName&);
   void UpdatePresentationAttributeStyle(const SVGAnimatedPropertyBase&);
   void UpdatePresentationAttributeStyle(CSSPropertyID,
                                         const QualifiedName&,
@@ -334,7 +301,8 @@ class CORE_EXPORT SVGElement : public Element {
 
   void WillRecalcStyle(const StyleRecalcChange) override;
   static SVGElementSet& GetDependencyTraversalVisitedSet();
-  void UpdateWebAnimatedAttributeOnBaseValChange(const QualifiedName&);
+  void UpdateWebAnimatedAttributeOnBaseValChange(
+      const SVGAnimatedPropertyBase&);
 
   SMILTimeContainer* GetTimeContainer() const;
 
@@ -388,16 +356,6 @@ struct SVGAttributeHashTranslator {
   }
 };
 
-template <typename T>
-bool IsElementOfType(const SVGElement&);
-template <>
-inline bool IsElementOfType<const SVGElement>(const SVGElement&) {
-  return true;
-}
-template <>
-inline bool IsElementOfType<const SVGElement>(const Node& node) {
-  return IsA<SVGElement>(node);
-}
 template <>
 struct DowncastTraits<SVGElement> {
   static bool AllowFrom(const Node& node) { return node.IsSVGElement(); }

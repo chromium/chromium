@@ -14,7 +14,7 @@ namespace {
 
 // List of IDs of the containers whose windows are actiavated *before* windows
 // in the desks containers.
-constexpr std::array<int, 13> kPreDesksActivatableContainersIds = {
+constexpr std::array<int, 12> kPreDesksActivatableContainersIds = {
     kShellWindowId_OverlayContainer,
     kShellWindowId_LockSystemModalContainer,
     kShellWindowId_AccessibilityBubbleContainer,
@@ -22,7 +22,6 @@ constexpr std::array<int, 13> kPreDesksActivatableContainersIds = {
     kShellWindowId_SettingBubbleContainer,
     kShellWindowId_LiveCaptionContainer,
     kShellWindowId_PowerMenuContainer,
-    kShellWindowId_LockActionHandlerContainer,
     kShellWindowId_LockScreenContainer,
     kShellWindowId_SystemModalContainer,
     kShellWindowId_AlwaysOnTopContainer,

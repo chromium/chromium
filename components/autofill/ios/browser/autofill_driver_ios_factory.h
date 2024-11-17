@@ -80,8 +80,7 @@ class AutofillDriverIOSFactory final
   // needed to create a AutofillDriverIOS.
   AutofillDriverIOSFactory(web::WebState* web_state,
                            AutofillClient* client,
-                           id<AutofillDriverIOSBridge> bridge,
-                           const std::string& app_locale);
+                           id<AutofillDriverIOSBridge> bridge);
 
   void TearDown();
 
@@ -96,7 +95,6 @@ class AutofillDriverIOSFactory final
 
   web::WebFramesManager& GetWebFramesManager();
 
-  std::string app_locale_;
   raw_ptr<AutofillClient> client_ = nullptr;
   raw_ptr<web::WebState> web_state_ = nullptr;
   AutofillDriverRouter router_;

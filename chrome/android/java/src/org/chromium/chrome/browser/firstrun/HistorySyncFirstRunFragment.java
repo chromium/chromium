@@ -18,6 +18,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -52,6 +53,8 @@ public class HistorySyncFirstRunFragment extends Fragment
 
     private void createViewAndAttachToFragment() {
         maybeCreateCoordinator();
+        if (mHistorySyncCoordinator == null) return;
+
         HistorySyncView view = mHistorySyncCoordinator.maybeRecreateView();
         if (view != null) {
             // View is non-null when HistorySyncView has created a new view. This new view will
@@ -80,6 +83,7 @@ public class HistorySyncFirstRunFragment extends Fragment
                         getActivity(),
                         this,
                         profile,
+                        new HistorySyncConfig(),
                         SigninAccessPoint.START_PAGE,
                         false,
                         false,
@@ -98,7 +102,7 @@ public class HistorySyncFirstRunFragment extends Fragment
 
     /** Implements {@link HistorySyncDelegate} */
     @Override
-    public void dismissHistorySync() {
+    public void dismissHistorySync(boolean isHistorySyncAccepted) {
         getPageDelegate().advanceToNextPage();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
@@ -117,6 +121,7 @@ public class HistorySyncFirstRunFragment extends Fragment
         super.onDetach();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
+            mHistorySyncCoordinator = null;
         }
     }
 }

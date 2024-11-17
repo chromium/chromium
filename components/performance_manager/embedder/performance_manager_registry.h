@@ -9,12 +9,9 @@
 #include <vector>
 
 #include "components/performance_manager/public/graph/page_node.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace content {
 class BrowserContext;
-class RenderFrameHost;
 class RenderProcessHost;
 class NavigationHandle;
 class NavigationThrottle;
@@ -22,6 +19,8 @@ class WebContents;
 }  // namespace content
 
 namespace performance_manager {
+
+class Binders;
 
 // Allows tracking of WebContents, RenderProcessHosts and SharedWorkerInstances
 // in the PerformanceManager.
@@ -52,6 +51,9 @@ class PerformanceManagerRegistry {
   // process, or nullptr if there is none.
   static PerformanceManagerRegistry* GetInstance();
 
+  // Returns a helper that binds Mojo interfaces for PerformanceManager.
+  virtual Binders& GetBinders() = 0;
+
   // Helper function that invokes CreatePageNodeForWebContents only if it hasn't
   // already been called for the provided WebContents.
   void MaybeCreatePageNodeForWebContents(content::WebContents* web_contents);
@@ -80,24 +82,15 @@ class PerformanceManagerRegistry {
   virtual void NotifyBrowserContextRemoved(
       content::BrowserContext* browser_context) = 0;
 
-  // Must be invoked when a renderer process is starting up and interfaces are
-  // being exposed to it. This ensures that a process node is created for the
-  // RPH, and exposes the interface that allows the remote renderer process to
-  // bind to the corresponding ProcessNode in the graph. Typically wired up via
-  // ContentBrowserClient::ExposeInterfacesToRenderer.
+  // Must be invoked when a renderer process is starting up to ensure that a
+  // process node is created for the RPH. Typically wired up via
+  // ContentBrowserClient::ExposeInterfacesToRenderer, which should also call
+  // GetBinders().ExposeInterfacesToRendererProcess().
   // NOTE: Ideally we'd have a separate CreateProcessNode notification, but the
   // current content architecture makes it very difficult to get this
   // notification.
-  virtual void CreateProcessNodeAndExposeInterfacesToRendererProcess(
-      service_manager::BinderRegistry* registry,
+  virtual void CreateProcessNode(
       content::RenderProcessHost* render_process_host) = 0;
-
-  // Must be invoked when interfaces are being exposed to a renderer frame.
-  // This allows the remote renderer frame to bind to its corresponding
-  // FrameNode in the graph. Typically wired up via
-  // ContentBrowserClient::RegisterBrowserInterfaceBindersForFrame.
-  virtual void ExposeInterfacesToRenderFrame(
-      mojo::BinderMapWithContext<content::RenderFrameHost*>* map) = 0;
 
   // Must be invoked prior to destroying the object. Schedules deletion of
   // PageNodes and ProcessNodes retained by this registry, even if the

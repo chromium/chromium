@@ -12,9 +12,12 @@ struct DwaEntry {
   // A hash of the content (e.g. hash("example.com")).
   // Uses the same hash function as UMA.
   // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
-  uint64 content_key_hash;
-  // Map of field trials and their values that are relevant for this DWA event.
-  map<uint32,uint32> studies;
+  uint64 content_hash;
+  // Map of names of field trials of interest. Their values are always true.
+  // Since mojom does not support set directly, we use a map to prevent
+  // duplicate keys. We should revisit this in the future to change the
+  // type to type-map it to a set.
+  map<string,bool> studies_of_interest;
   // Map of metrics and their values that are relevant for this DWA event.
   map<uint64,int64> metrics;
 };

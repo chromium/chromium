@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">A privát kulcs beviteli értékéhez érvényes útvonalat kell megadnia.</translation>
 <translation id="388442998277590542">Nem lehet betölteni a(z) "<ph name="OPTIONS_PAGE" />" opcióoldalt.</translation>
 <translation id="3984413272403535372">Hiba történt a bővítmények aláírása során.</translation>
-<translation id="4115165561519362854">A gép rendszergazdája előírta, hogy a(z) <ph name="EXTENSION_NAME" /> bővítmény verziója legalább <ph name="EXTENSION_VERSION" /> legyen. Nem kapcsolható be addig, amíg nincs frissítve erre a verzióra (vagy újabbra).</translation>
 <translation id="4233778200880751280">A(z) „<ph name="ABOUT_PAGE" />” névjegyoldal betöltése sikertelen volt.</translation>
 <translation id="471800408830181311">Nem sikerült a privát kulcs kiírása.</translation>
 <translation id="4811956658694082538">Nem lehetett telepíteni a csomagot, mert egy segédprogram-folyamat összeomlott. Indítsa újra a Chrome-ot, majd próbálja újra.</translation>

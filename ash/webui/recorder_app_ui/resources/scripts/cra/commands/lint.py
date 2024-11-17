@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import logging
-import os
 import pathlib
 import shutil
 import subprocess
@@ -20,8 +19,6 @@ def _check_eslint(fix: bool, eslintrc: Optional[str]) -> Optional[int]:
     cmd = [
         "eslint/bin/eslint.js",
         ".",
-        "--resolve-plugins-relative-to",
-        os.path.join(util.get_chromium_root(), "third_party/node"),
     ]
     if fix:
         cmd.append("--fix")

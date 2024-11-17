@@ -163,8 +163,7 @@ void TrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
 
   // Build the list of known paths that are enabled, for now Downloads is a bind
   // mount at MyFiles/Downloads so treat them as separate volumes.
-  free_space_map_ =
-      trash::GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
+  free_space_map_ = trash::GenerateEnabledTrashLocationsForProfile(profile_);
   progress_.state = State::kInProgress;
 
   UpdateTrashEntry(0);

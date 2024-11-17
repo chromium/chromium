@@ -42,6 +42,8 @@ static_library("common") {
     "html_field_types.cc",
     "html_field_types.h",
     "is_required.h",
+    "label_source_util.cc",
+    "label_source_util.h",
     "language_code.h",
     "logging/log_buffer.cc",
     "logging/log_buffer.h",

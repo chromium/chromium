@@ -1,5 +1,9 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 # image_loader/ files that are also used outside of the generated
-# image_loader/background.rollup.js file (either in tests or in prod code).
+# image_loader/offscreen.rollup.js file (either in tests or in prod code).
 shared_image_loader_ts = [
   "image_loader/image_loader_client.ts",
   "image_loader/image_orientation.ts",
@@ -13,13 +17,14 @@ foreach(_f, shared_image_loader_ts) {
 
 # All image loader files, used for unit test and production.
 image_loader_ts = [
-                    "image_loader/background.ts",
                     "image_loader/cache.ts",
                     "image_loader/image_loader.ts",
                     "image_loader/image_loader_util.ts",
                     "image_loader/image_request_task.ts",
+                    "image_loader/offscreen.ts",
                     "image_loader/piex_loader.ts",
                     "image_loader/scheduler.ts",
+                    "image_loader/service_worker.ts",
                     "image_loader/sw_od_messages.ts",
                   ] + shared_image_loader_ts
 
@@ -182,6 +187,7 @@ ts_files = [
   "file_manager/foreground/js/ui/banners/invalid_usb_filesystem_banner.ts",
   "file_manager/foreground/js/ui/banners/local_disk_low_space_banner.ts",
   "file_manager/foreground/js/ui/banners/files_migrating_to_cloud_banner.ts",
+  "file_manager/foreground/js/ui/banners/odfs_offline_banner.ts",
   "file_manager/foreground/js/ui/banners/photos_welcome_banner.ts",
   "file_manager/foreground/js/ui/banners/shared_with_crostini_pluginvm_banner.ts",
   "file_manager/foreground/js/ui/banners/state_banner.ts",
@@ -336,6 +342,7 @@ ts_templates = [
   "file_manager/foreground/js/ui/banners/invalid_usb_filesystem_banner.html",
   "file_manager/foreground/js/ui/banners/local_disk_low_space_banner.html",
   "file_manager/foreground/js/ui/banners/files_migrating_to_cloud_banner.html",
+  "file_manager/foreground/js/ui/banners/odfs_offline_banner.html",
   "file_manager/foreground/js/ui/banners/photos_welcome_banner.html",
   "file_manager/foreground/js/ui/banners/shared_with_crostini_pluginvm_banner.html",
   "file_manager/foreground/js/ui/banners/state_banner.html",
@@ -517,6 +524,7 @@ other_dts_files = [
   "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/chrome_test.d.ts",
   "//tools/typescript/definitions/metrics_private.d.ts",
+  "//tools/typescript/definitions/offscreen.d.ts",
   "//tools/typescript/definitions/runtime.d.ts",
   "//tools/typescript/definitions/tabs.d.ts",
   "//tools/typescript/definitions/wallpaper.d.ts",

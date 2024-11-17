@@ -28,7 +28,7 @@ class ASH_EXPORT ErrorMessageToast : public views::FlexLayoutView {
 
  public:
   // Used for `action_button_` that indicates what to expect on click.
-  enum class ButtonActionType { kDismiss, kReload };
+  enum class ButtonActionType { kDismiss, kReload, kSettings };
 
   ErrorMessageToast(
       views::Button::PressedCallback callback,
@@ -39,6 +39,10 @@ class ASH_EXPORT ErrorMessageToast : public views::FlexLayoutView {
   ErrorMessageToast& operator=(const ErrorMessageToast&) =
       delete;
   ~ErrorMessageToast() override = default;
+
+  // views::FlexLayoutView:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   views::Label* error_message_label() { return error_message_label_; }
   views::LabelButton* action_button() { return action_button_; }

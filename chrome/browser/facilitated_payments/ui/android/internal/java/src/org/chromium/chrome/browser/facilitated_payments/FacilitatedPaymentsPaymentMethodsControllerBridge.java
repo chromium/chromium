@@ -10,8 +10,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 
 /** JNI wrapper for C++ FacilitatedPaymentsController. */
 @JNINamespace("payments::facilitated")
@@ -46,6 +47,14 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
     }
 
     @Override
+    public void onUiEvent(@UiEvent int uiEvent) {
+        if (mNativeFacilitatedPaymentsController != 0) {
+            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
+                    .onUiEvent(mNativeFacilitatedPaymentsController, uiEvent);
+        }
+    }
+
+    @Override
     public void onBankAccountSelected(long instrumentId) {
         if (mNativeFacilitatedPaymentsController != 0) {
             FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
@@ -54,13 +63,20 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
     }
 
     @Override
+    public void onEwalletSelected(long instrumentId) {
+        if (mNativeFacilitatedPaymentsController != 0) {
+            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
+                    .onEwalletSelected(mNativeFacilitatedPaymentsController, instrumentId);
+        }
+    }
+
+    @Override
     public boolean showFinancialAccountsManagementSettings(Context context) {
         if (context == null) {
             return false;
         }
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(
-                        context, SettingsLauncher.SettingsFragment.FINANCIAL_ACCOUNTS);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS);
         return true;
     }
 
@@ -69,8 +85,8 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
         if (context == null) {
             return false;
         }
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(context, SettingsLauncher.SettingsFragment.PAYMENT_METHODS);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
         return true;
     }
 
@@ -78,6 +94,10 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
     interface Natives {
         void onDismissed(long nativeFacilitatedPaymentsController);
 
+        void onUiEvent(long nativeFacilitatedPaymentsController, @UiEvent int uiEvent);
+
         void onBankAccountSelected(long nativeFacilitatedPaymentsController, long instrumentId);
+
+        void onEwalletSelected(long nativeFacilitatedPaymentsController, long instrumentId);
     }
 }

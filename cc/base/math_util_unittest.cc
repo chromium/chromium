@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/base/math_util.h"
 
 #include <stdint.h>
@@ -33,12 +28,16 @@ TEST(MathUtilTest, ProjectionOfPerpendicularPlane) {
   transform.MakeIdentity();
   transform.set_rc(2, 2, 0);
 
-  gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
-  gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
+  gfx::PointF point(100, 100);
+  bool clipped = false;
+  gfx::PointF projected_point =
+      MathUtil::ProjectPoint(transform, point, &clipped);
+  EXPECT_TRUE(clipped);
+  EXPECT_EQ(gfx::PointF(), projected_point);
 
-  EXPECT_EQ(0, projected_rect.x());
-  EXPECT_EQ(0, projected_rect.y());
-  EXPECT_TRUE(projected_rect.IsEmpty());
+  gfx::RectF rect(0, 0, 100, 100);
+  gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
+  EXPECT_EQ(gfx::RectF(0, 0, 0, 0), projected_rect);
 }
 
 TEST(MathUtilTest, ProjectionOfAlmostPerpendicularPlane) {
@@ -58,12 +57,16 @@ TEST(MathUtilTest, ProjectionOfAlmostPerpendicularPlane) {
   transform.set_rc(2, 2, -1e-33);
   transform.set_rc(2, 3, 51346917453137000267776.0);
 
-  gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
-  gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
+  gfx::PointF point(100, 100);
+  bool clipped = false;
+  gfx::PointF projected_point =
+      MathUtil::ProjectPoint(transform, point, &clipped);
+  EXPECT_TRUE(clipped);
+  EXPECT_EQ(gfx::PointF(), projected_point);
 
-  EXPECT_EQ(0, projected_rect.x());
-  EXPECT_EQ(0, projected_rect.y());
-  EXPECT_TRUE(projected_rect.IsEmpty()) << projected_rect.ToString();
+  gfx::RectF rect(0, 0, 100, 100);
+  gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
+  EXPECT_EQ(gfx::RectF(0, 0, 0, 0), projected_rect);
 }
 
 TEST(MathUtilTest, EnclosingClippedRectHandlesInfinityY) {
@@ -469,6 +472,17 @@ TEST(MathUtilTest, RoundUp) {
   }
 }
 
+TEST(MathUtilTest, RoundUpAlmostOverflow) {
+  // This is the largest multiple of 64 before rounding up overflows.
+  constexpr int value = 2147483584;
+  constexpr int multiple = 64;
+
+  static_assert(MathUtil::VerifyRoundup<int>(value, multiple));
+  static_assert(!MathUtil::VerifyRoundup<int>(value + 1, multiple));
+
+  EXPECT_EQ(MathUtil::UncheckedRoundUp<int>(value, multiple), value);
+}
+
 TEST(MathUtilTest, RoundUpOverflow) {
   // Rounding up 123 by 50 is 150, which overflows int8_t, but fits in uint8_t.
   EXPECT_FALSE(MathUtil::VerifyRoundup<int8_t>(123, 50));
@@ -500,6 +514,17 @@ TEST(MathUtilTest, RoundDown) {
           << "attempt=" << attempt << " multiplier=" << multiplier;
     }
   }
+}
+
+TEST(MathUtilTest, RoundDownAlmostOverflow) {
+  // This is the smallest multiple of 10 before rounding down overflows.
+  constexpr int value = -2147483640;
+  constexpr int multiple = 10;
+
+  static_assert(MathUtil::VerifyRoundDown(value, multiple));
+  static_assert(!MathUtil::VerifyRoundDown(value - 1, multiple));
+
+  EXPECT_EQ(MathUtil::UncheckedRoundDown<int>(value, multiple), value);
 }
 
 TEST(MathUtilTest, RoundDownUnderflow) {

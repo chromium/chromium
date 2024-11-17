@@ -116,12 +116,6 @@ enum class SharedStorageSelectUrlBudgetStatus {
 // sharedStorage.runURLSelectionOperation method) is valid.
 BLINK_COMMON_EXPORT bool IsValidSharedStorageURLsArrayLength(size_t length);
 
-// Whether the length of a shared storage's key is valid.
-BLINK_COMMON_EXPORT bool IsValidSharedStorageKeyStringLength(size_t length);
-
-// Whether the length of shared storage's value is valid.
-BLINK_COMMON_EXPORT bool IsValidSharedStorageValueStringLength(size_t length);
-
 // Logs histogram of the calling method and error type for worklet errors.
 BLINK_COMMON_EXPORT void LogSharedStorageWorkletError(
     SharedStorageWorkletErrorType error_type);

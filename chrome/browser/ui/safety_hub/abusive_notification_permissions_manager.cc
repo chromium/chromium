@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 
+#include <utility>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -141,6 +143,8 @@ bool AbusiveNotificationPermissionsManager::IsRevocationRunning() {
 
 AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     SafeBrowsingCheckClient(
+        base::PassKey<safe_browsing::SafeBrowsingDatabaseManager::Client>
+            pass_key,
         safe_browsing::SafeBrowsingDatabaseManager* database_manager,
         raw_ptr<std::map<SafeBrowsingCheckClient*,
                          std::unique_ptr<SafeBrowsingCheckClient>>>
@@ -149,7 +153,8 @@ AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
         GURL url,
         int safe_browsing_check_delay,
         const base::Clock* clock)
-    : database_manager_(database_manager),
+    : safe_browsing::SafeBrowsingDatabaseManager::Client(std::move(pass_key)),
+      database_manager_(database_manager),
       safe_browsing_request_clients_(safe_browsing_request_clients),
       hcsm_(hcsm),
       url_(url),
@@ -238,6 +243,7 @@ void AbusiveNotificationPermissionsManager::PerformSafeBrowsingChecks(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(database_manager_);
   auto new_sb_check = std::make_unique<SafeBrowsingCheckClient>(
+      safe_browsing::SafeBrowsingDatabaseManager::Client::GetPassKey(),
       database_manager_.get(), &safe_browsing_request_clients_, hcsm_.get(),
       url, safe_browsing_check_delay_, GetClock());
   auto new_sb_check_ptr = new_sb_check.get();

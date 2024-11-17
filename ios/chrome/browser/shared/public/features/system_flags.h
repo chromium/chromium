@@ -20,7 +20,8 @@ enum class SafeBrowsingSafetyCheckState;
 
 namespace experimental_flags {
 
-// NSUserDefaults key to list the number of profile available.
+// NSUserDefaults key to display an experimental "switch profile" entry in
+// settings. For historic reasons, this is int-valued.
 extern NSString* const kDisplaySwitchProfile;
 
 // Whether the First Run UI will always be displayed.
@@ -147,9 +148,8 @@ bool SimulatePostDeviceRestore();
 // limits are suppressed for simpler testing.
 bool ShouldIgnoreHistorySyncDeclineLimits();
 
-// Whether the developer-mode Switch Profile UI will be be displayed, returns
-// the number of test profiles that should be created.
-std::optional<int> DisplaySwitchProfile();
+// Whether the developer-mode Switch Profile UI will be be displayed.
+bool DisplaySwitchProfile();
 
 // Returns the inactivity threshold to be used for displaying Safety Check
 // notifications, overriding the default value stored in the code or any value
@@ -157,6 +157,21 @@ std::optional<int> DisplaySwitchProfile();
 //
 // Returns `std::nullopt` if no override is specified.
 std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications();
+
+// Returns the forced state of the Tips (Magic Stack) module.
+std::optional<int> GetForcedTipsMagicStackState();
+
+// Whether the Lens Shop state for Tips (Magic Stack) should display a product
+// image.
+bool ShouldDisplayLensShopTipWithImage();
+
+// Whether Inactive Tabs should be in Demo mode, where tabs are
+// considered inactive after a minute.
+bool ShouldUseInactiveTabsDemoThreshold();
+
+// Whether Inactive Tabs should be in Automated Testing mode, where
+// tabs are immediately considered inactive.
+bool ShouldUseInactiveTabsTestThreshold();
 
 // Returns the override for Tab Resumption decoration.
 // Returns nil is not set.

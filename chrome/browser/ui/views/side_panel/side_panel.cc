@@ -365,6 +365,27 @@ void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
   static_cast<BorderView*>(border_view_)->SetBorderRadii(background_radii_);
 }
 
+void SidePanel::UpdateWidthOnEntryChanged() {
+  PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
+  ScopedDictPrefUpdate update(pref_service, prefs::kSidePanelIdToWidth);
+  const base::Value::Dict& dict = update.Get();
+  SidePanelUI* coordinator =
+      browser_view_->browser()->GetFeatures().side_panel_ui();
+  if (coordinator) {
+    std::optional<SidePanelEntry::Id> entry_id =
+        coordinator->GetCurrentEntryId();
+    if (entry_id.has_value()) {
+      std::string panel_id = SidePanelEntryIdToString(entry_id.value());
+      std::optional<int> width = dict.FindInt(panel_id);
+      if (width.has_value()) {
+        SetPanelWidth(width.value());
+      } else {
+        SetPanelWidth(GetMinimumSize().width());
+      }
+    }
+  }
+}
+
 void SidePanel::SetHorizontalAlignment(HorizontalAlignment alignment) {
   horizontal_alignment_ = alignment;
 }
@@ -374,7 +395,7 @@ SidePanel::HorizontalAlignment SidePanel::GetHorizontalAlignment() {
 }
 
 bool SidePanel::IsRightAligned() {
-  return GetHorizontalAlignment() == kAlignRight;
+  return GetHorizontalAlignment() == HorizontalAlignment::kRight;
 }
 
 gfx::Size SidePanel::GetMinimumSize() const {
@@ -573,6 +594,7 @@ views::View* SidePanel::GetContentParentView() {
 }
 
 void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
+  animate_transition &= ShouldShowAnimation();
   if (should_be_open) {
     state_ = animate_transition ? State::kOpening : State::kOpen;
   } else {
@@ -613,7 +635,7 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
       border_view_->DestroyLayer();
     }
   }
-  if (ShouldShowAnimation() && animate_transition) {
+  if (animate_transition) {
     if (should_be_open) {
       // If the side panel should remain open but there are views to hide, hide
       // them immediately.

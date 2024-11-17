@@ -71,7 +71,9 @@ class PageActionIconController : public PageActionIconViewObserver,
       const;
 
  private:
-  using IconViews = base::flat_map<PageActionIconType, PageActionIconView*>;
+  using IconViews =
+      base::flat_map<PageActionIconType,
+                     raw_ptr<PageActionIconView, CtnExperimental>>;
 
   // PageActionIconViewObserver:
   void OnPageActionIconViewShown(PageActionIconView* view) override;

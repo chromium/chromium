@@ -267,6 +267,56 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Restore the last session and open URLs"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsAiPageCompareInteractions) -->
+
+<enum name="SettingsAiPageCompareInteractions">
+  <int value="0" label="Feature link clicked"/>
+  <int value="1" label="Learn more link clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageCompareInteractions) -->
+
+<!-- LINT.IfChange(SettingsAiPageComposeInteractions) -->
+
+<enum name="SettingsAiPageComposeInteractions">
+  <int value="0" label="Learn more link clicked"/>
+  <int value="1" label="Compose proactive nudge enabled"/>
+  <int value="2" label="Compose proactive nudge disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageComposeInteractions) -->
+
+<!-- LINT.IfChange(SettingsAiPageHistorySearchInteractions) -->
+
+<enum name="SettingsAiPageHistorySearchInteractions">
+  <int value="0" label="History Search enabled"/>
+  <int value="1" label="History Search disabled"/>
+  <int value="2" label="Feature link clicked"/>
+  <int value="3" label="Learn more link clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageHistorySearchInteractions) -->
+
+<!-- LINT.IfChange(SettingsAiPageInteractions) -->
+
+<enum name="SettingsAiPageInteractions">
+  <int value="0" label="History Search row click"/>
+  <int value="1" label="Compare row click"/>
+  <int value="2" label="Compose row click"/>
+  <int value="3" label="Tab organization row click"/>
+  <int value="4" label="Themes row click"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageInteractions) -->
+
+<!-- LINT.IfChange(SettingsAiPageTabOrganizationInteractions) -->
+
+<enum name="SettingsAiPageTabOrganizationInteractions">
+  <int value="0" label="Learn more link clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageTabOrganizationInteractions) -->
+
 <enum name="SettingsClearBrowsingDataTimePeriod">
   <int value="0" label="Last hour"/>
   <int value="1" label="Last day"/>
@@ -277,26 +327,29 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Last 15 minutes"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsPrivacyElementInteractions) -->
+
 <enum name="SettingsPrivacyElementInteractions">
-  <int value="0" label="Sync control button"/>
-  <int value="1" label="Allow Chrome sign in toggle"/>
+  <int value="0" label="Sync control button (obsolete)"/>
+  <int value="1" label="Allow Chrome sign in toggle (obsolete)"/>
   <int value="2" label="Do not track toggle"/>
   <int value="3" label="Check payment methods toggle"/>
-  <int value="4" label="Network prediction toggle"/>
+  <int value="4" label="Network prediction toggle (obsolete)"/>
   <int value="5" label="Manage certificates link row"/>
-  <int value="6" label="Safe browsing toggle"/>
-  <int value="7" label="Passwords leak detection toggle"/>
+  <int value="6" label="Safe browsing toggle (obsolete)"/>
+  <int value="7" label="Passwords leak detection toggle (obsolete)"/>
   <int value="8" label="Safe browsing reporting toggle"/>
-  <int value="9" label="Cookies allow all radio"/>
-  <int value="10" label="Cookies block third incognito radio"/>
-  <int value="11" label="Cookies block third radio"/>
-  <int value="12" label="Cookies block all radio"/>
-  <int value="13" label="Cookies session only toggle"/>
-  <int value="14" label="Remove all on site data page"/>
-  <int value="15" label="Remove based on current filter on site data page"/>
-  <int value="16" label="Remove site on site data page"/>
-  <int value="17" label="Remove all on cookie details page"/>
-  <int value="18" label="Remove item on cookie details page"/>
+  <int value="9" label="Cookies allow all radio (obsolete)"/>
+  <int value="10" label="Cookies block third incognito radio (obsolete)"/>
+  <int value="11" label="Cookies block third radio (obsolete)"/>
+  <int value="12" label="Cookies block all radio (obsolete)"/>
+  <int value="13" label="Cookies session only toggle (obsolete)"/>
+  <int value="14" label="Remove all on site data page (obsolete)"/>
+  <int value="15"
+      label="Remove based on current filter on site data page (obsolete)"/>
+  <int value="16" label="Remove site on site data page (obsolete)"/>
+  <int value="17" label="Remove all on cookie details page (obsolete)"/>
+  <int value="18" label="Remove item on cookie details page (obsolete)"/>
   <int value="19" label="Clear data on site details page"/>
   <int value="20" label="Third-party cookies allow all radio"/>
   <int value="21" label="Third-party cookies block in incognito radio"/>
@@ -305,6 +358,8 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="IP protection toggle"/>
   <int value="25" label="Fingerprinting protection toggle"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:PrivacyElementInteractions) -->
 
 <enum name="SettingsPrivacyGuideInteractions">
   <int value="0" label="Welcome Page Next Button"/>
@@ -519,6 +574,7 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="kMediaCdmOriginData"/>
   <int value="33" label="kGoogleServicesLastSignedInUsername"/>
   <int value="34" label="kPolicyRecoveryToken"/>
+  <int value="35" label="kExtensionsUIDeveloperMode"/>
 </enum>
 
 </enums>

@@ -7,7 +7,7 @@ module crosapi.mojom;
 // Receives updates from Lacros when Vpn extensions get loaded or unloaded.
 // Next version: 1
 // Next method id: 2
-[Stable, Uuid="e35782e4-76b4-4de1-b808-bb0fec852faa"]
+[Uuid="e35782e4-76b4-4de1-b808-bb0fec852faa"]
 interface VpnExtensionObserver {
   // Invoked when extension with |extension_id| and |extension_name| is loaded.
   // See ExtensionRegistryObserver::OnExtensionLoaded(...) for details.

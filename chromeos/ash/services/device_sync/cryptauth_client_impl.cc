@@ -650,9 +650,8 @@ void CryptAuthClientImpl::MakeApiCall(
     ErrorCallback error_callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
   if (has_call_started_) {
-    PA_LOG(ERROR) << "CryptAuthClientImpl::MakeApiCall(): Tried to make an API "
-                  << "call, but the client had already been used.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "CryptAuthClientImpl::MakeApiCall(): Tried to make an API "
+                 << "call, but the client had already been used.";
     return;
   }
   has_call_started_ = true;

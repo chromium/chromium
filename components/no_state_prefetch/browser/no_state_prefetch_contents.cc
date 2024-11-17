@@ -156,7 +156,7 @@ class NoStatePrefetchContents::WebContentsDelegateImpl
   raw_ptr<NoStatePrefetchContents> no_state_prefetch_contents_;
 };
 
-NoStatePrefetchContents::Observer::~Observer() {}
+NoStatePrefetchContents::Observer::~Observer() = default;
 
 NoStatePrefetchContents::NoStatePrefetchContents(
     std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
@@ -189,7 +189,7 @@ NoStatePrefetchContents::NoStatePrefetchContents(
       break;
     case ORIGIN_NONE:
     case ORIGIN_MAX:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   DCHECK(no_state_prefetch_manager);
@@ -287,7 +287,7 @@ void NoStatePrefetchContents::StartPrerendering(
   web_contents_delegate_ = std::make_unique<WebContentsDelegateImpl>(this);
   no_state_prefetch_contents_->SetDelegate(web_contents_delegate_.get());
 
-  // Set the size of the prerender WebContents.
+  // Set the size of the NoStatePrefetch WebContents.
   no_state_prefetch_contents_->Resize(bounds_);
   no_state_prefetch_contents_->WasHidden();
 
@@ -424,16 +424,16 @@ void NoStatePrefetchContents::PrimaryMainFrameRenderProcessGone(
 
 void NoStatePrefetchContents::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  // When a new RenderFrame is created for a prerendering WebContents, tell the
-  // new RenderFrame it's being used for prerendering before any navigations
+  // When a new RenderFrame is created for a NoStatePrefetch WebContents, tell
+  // the new RenderFrame it's being used for prefetching before any navigations
   // occur.  Note that this is always triggered before the first navigation, so
   // there's no need to send the message just after the WebContents is created.
-  mojo::AssociatedRemote<prerender::mojom::PrerenderMessages>
-      prerender_render_frame;
+  mojo::AssociatedRemote<prerender::mojom::NoStatePrefetchMessages>
+      no_state_prefetch_render_frame;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-      &prerender_render_frame);
-  prerender_render_frame->SetIsPrerendering(
-      PrerenderHistograms::GetHistogramPrefix(origin_));
+      &no_state_prefetch_render_frame);
+  no_state_prefetch_render_frame->SetIsNoStatePrefetching(
+      NoStatePrefetchHistograms::GetHistogramPrefix(origin_));
 }
 
 void NoStatePrefetchContents::DidStopLoading() {
@@ -597,17 +597,18 @@ void NoStatePrefetchContents::MarkAsUsedForTesting() {
   NotifyPrefetchStop();
 }
 
-void NoStatePrefetchContents::CancelPrerenderForUnsupportedScheme() {
+void NoStatePrefetchContents::CancelNoStatePrefetchForUnsupportedScheme() {
   Destroy(FINAL_STATUS_UNSUPPORTED_SCHEME);
 }
 
-void NoStatePrefetchContents::CancelPrerenderForNoStatePrefetch() {
+void NoStatePrefetchContents::
+    CancelNoStatePrefetchAfterSubresourcesDiscovered() {
   Destroy(FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 }
 
-void NoStatePrefetchContents::AddPrerenderCancelerReceiver(
-    mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver) {
-  prerender_canceler_receiver_set_.Add(this, std::move(receiver));
+void NoStatePrefetchContents::AddNoStatePrefetchCancelerReceiver(
+    mojo::PendingReceiver<prerender::mojom::NoStatePrefetchCanceler> receiver) {
+  no_state_prefetch_canceler_receiver_set_.Add(this, std::move(receiver));
 }
 
 }  // namespace prerender

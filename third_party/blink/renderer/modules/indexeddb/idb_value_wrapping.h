@@ -10,6 +10,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -50,7 +51,6 @@ class SerializedScriptValue;
 //     wrapper.Clone(...);  // Structured clone used to extract keys.
 //     wrapper.DoneCloning();
 //     wrapper.TakeWireBytes();
-//     wrapper.TakeBlobDataHandles();
 //     wrapper.TakeBlobInfo();
 //
 // V8 values are first serialized via SerializedScriptValue (SSV), which is
@@ -122,20 +122,6 @@ class MODULES_EXPORT IDBValueWrapper {
   // WrapIfBiggerThan().
   Vector<char> TakeWireBytes();
 
-  // Obtains the BlobDataHandles from the serialized value's Blob array.
-  //
-  // This method must be called at most once, and must be called after
-  // DoneCloning().
-  Vector<scoped_refptr<BlobDataHandle>> TakeBlobDataHandles() {
-#if DCHECK_IS_ON()
-    DCHECK(done_cloning_) << __func__ << " called before DoneCloning()";
-    DCHECK(owns_blob_handles_) << __func__ << " called twice";
-    owns_blob_handles_ = false;
-#endif  // DCHECK_IS_ON()
-
-    return std::move(blob_handles_);
-  }
-
   // Obtains WebBlobInfos for the serialized value's Blob array.
   //
   // This method must be called at most once, and must be called after
@@ -192,7 +178,6 @@ class MODULES_EXPORT IDBValueWrapper {
 
   // V8 value serialization state.
   scoped_refptr<SerializedScriptValue> serialized_value_;
-  Vector<scoped_refptr<BlobDataHandle>> blob_handles_;
   Vector<WebBlobInfo> blob_info_;
 
   // Buffer for wire data that is not stored in SerializedScriptValue.
@@ -201,7 +186,8 @@ class MODULES_EXPORT IDBValueWrapper {
   Vector<char> wire_data_buffer_;
 
   // Points into SerializedScriptValue's data buffer, or into wire_data_buffer_.
-  base::span<const uint8_t> wire_data_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const uint8_t> wire_data_;
 
   size_t original_data_length_ = 0;
 
@@ -212,7 +198,6 @@ class MODULES_EXPORT IDBValueWrapper {
   // Accounting for lifecycle stages.
   bool had_exception_ = false;
   bool done_cloning_ = false;
-  bool owns_blob_handles_ = true;
   bool owns_blob_info_ = true;
   bool owns_wire_bytes_ = true;
   bool owns_file_system_handles_ = true;

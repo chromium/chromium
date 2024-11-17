@@ -74,7 +74,8 @@ void FormFieldParserTestBase::ClassifyAndVerify(
     PatternFile pattern_file) {
   UpdateRanks(fields_);
   AutofillScanner scanner(fields_);
-  ParsingContext context(client_country, page_language, pattern_file);
+  ParsingContext context(client_country, page_language, pattern_file,
+                         GetActiveRegexFeatures());
   std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
 
   if (parse_result == ParseResult::kNotParsed) {

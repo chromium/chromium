@@ -29,30 +29,26 @@ namespace enterprise_idle {
 class IdleTimeoutPolicyUtilsTest : public PlatformTest {
  protected:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    scoped_feature_list_.InitWithFeatures(
-        {kClearDeviceDataOnSignOutForManagedUsers}, {});
-    browser_state_ = std::move(test_cbs_builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    pref_service_ = browser_state_.get()->GetPrefs();
-    authentication_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get()));
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    pref_service_ = profile_.get()->GetPrefs();
+    authentication_service_ =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
-  void TearDown() override { browser_state_.reset(); }
+  void TearDown() override { profile_.reset(); }
 
   void SetIdleTimeoutActions(std::vector<ActionType> action_types) {
     base::Value::List actions;
     for (auto action_type : action_types) {
       actions.Append(static_cast<int>(action_type));
     }
-    browser_state_->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
-                                        std::move(actions));
+    profile_->GetPrefs()->SetList(prefs::kIdleTimeoutActions,
+                                  std::move(actions));
   }
 
   void SignIn() {
@@ -67,8 +63,7 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<AuthenticationService> authentication_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;

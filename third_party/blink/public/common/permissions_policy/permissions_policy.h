@@ -154,7 +154,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     // Permissions-Policy HTTP header than the permissions policy declared in
     // its Web App Manifest.
     void SetAllowedOrigins(
-        const std::vector<OriginWithPossibleWildcards> allowed_origins) {
+        const std::vector<OriginWithPossibleWildcards>& allowed_origins) {
       allowed_origins_ = allowed_origins;
     }
 

@@ -13,7 +13,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   const locationsWidget = await UI.ViewManager.ViewManager.instance().view('emulation-locations').widget();
 
   async function testAddLocation() {
-    const addLocationButton = locationsWidget.defaultFocusedElement;
+    const addLocationButton = locationsWidget.contentElement.querySelector('.add-locations-button');
     addLocationButton.click();
 
     const newLocationInputs = locationsWidget.list.editor.controls;

@@ -37,7 +37,7 @@ class MEDIA_EXPORT HlsRenditionHost : public HlsNetworkAccess {
   // Notifies the rendition host that this rendition's ended state has changed.
   // When all renditions are ended, the rendition host can notify the engine
   // host as well.
-  virtual void SetEndOfStream(bool ended);
+  virtual void SetEndOfStream(bool ended) = 0;
 };
 
 class MEDIA_EXPORT HlsRendition {
@@ -74,7 +74,8 @@ class MEDIA_EXPORT HlsRendition {
       HlsRenditionHost* rendition_host,
       std::string role,
       scoped_refptr<hls::MediaPlaylist> playlist,
-      GURL uri);
+      GURL uri,
+      MediaLog* media_log);
 };
 
 }  // namespace media

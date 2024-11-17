@@ -117,6 +117,16 @@ crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html 
 # Gardener 2024-04-04
 crbug.com/331926164 [ Linux ] http/tests/inspector-protocol/accessibility/accessibility-query-axtree.js [ Crash ]
 
+# Flaky on WebKit Linux MSAN
+crbug.com/375286840 external/wpt/css/css-transitions/retargetted-transition-with-box-sizing.html [ Failure Pass ]
+crbug.com/375377010 external/wpt/css/css-transitions/properties-value-inherit-002.html [ Failure Pass ]
+crbug.com/375587482 external/wpt/css/css-transitions/properties-value-001.html [ Failure Pass ]
+
 # Chrome crashes on start up
-crbug.com/360008882 external/wpt/secure-payment-confirmation/* [ Skip ]
-crbug.com/360008882 wpt_internal/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Skip ]
+crbug.com/359319433 external/wpt/secure-payment-confirmation/constructor-validate-payment-method-data.https.html [ Crash Skip ]
+
+# Fails on headless shell
+crbug.com/377507247 external/wpt/webidl/ecmascript-binding/window-named-properties-object.html [ Failure ]
+
+# Gardener 2024-11-12
+crbug.com/378566920 [ Linux ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]

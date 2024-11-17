@@ -33,7 +33,7 @@ message Session {
 
   Roster roster = 3;
 
-  AccessCode access_code = 4;
+  JoinCode join_code = 4;
 
   map<string, SessionConfig> student_group_configs = 5;
 
@@ -44,6 +44,8 @@ message Session {
   Duration duration = 11;
 
   TeacherCaptionsConfig teacher_captions_config = 12;
+
+  string tachyon_group_id = 13;
 
   bool save_transcript = 9;
 
@@ -60,7 +62,7 @@ message Session {
   SessionState session_state = 10;
 }
 
-message AccessCode {
+message JoinCode {
   bool enabled = 1;
 
   string code = 2;
@@ -110,6 +112,8 @@ message StudentStatus {
   map<string, StudentDevice> devices = 3;
 
   Timestamp raised_hand_time = 4;
+
+  bool in_tachyon_group = 5;
 }
 
 message StudentDevice {
@@ -124,6 +128,28 @@ message StudentDevice {
   StudentDeviceState state = 2;
 
   StudentDeviceActivity activity = 3;
+
+  ViewScreenConfig view_screen_config = 4;
+}
+
+message ViewScreenConfig {
+  enum ViewScreenState {
+    UNKNOWN = 0;
+
+    REQUESTED = 1;
+
+    AVAILABLE = 2;
+
+    ACTIVE = 3;
+  }
+
+  ViewScreenState view_screen_state = 1;
+
+  ConnectionParameter connection_param = 2;
+}
+
+message ConnectionParameter {
+  string connection_code = 1;
 }
 
 message DeviceInfo {

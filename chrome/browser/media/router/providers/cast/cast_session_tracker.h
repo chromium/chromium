@@ -90,6 +90,7 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
   void OnAppMessage(int channel_id, const CastMessage& message) override;
   void OnInternalMessage(int channel_id,
                          const cast_channel::InternalMessage& message) override;
+  void OnMessageSent(int channel_id, const CastMessage& message) override;
 
   static void SetInstanceForTest(CastSessionTracker* session_tracker);
   void SetSessionForTest(const MediaSink::Id& sink_id,

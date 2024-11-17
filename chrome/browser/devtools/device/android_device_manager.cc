@@ -249,9 +249,9 @@ class HttpRequest {
 
           int expected_body_size = 0;
 
-          std::string content_length;
-          if (headers->GetNormalizedHeader("Content-Length", &content_length)) {
-            if (!base::StringToInt(content_length, &expected_body_size)) {
+          if (std::optional<std::string> content_length =
+                  headers->GetNormalizedHeader("Content-Length")) {
+            if (!base::StringToInt(*content_length, &expected_body_size)) {
               CheckNetResultOrDie(net::ERR_FAILED);
               return;
             }
@@ -273,9 +273,9 @@ class HttpRequest {
         if (!command_callback_.is_null()) {
           std::move(command_callback_).Run(net::OK, body);
         } else {
-          std::string sec_websocket_extensions;
-          headers->GetNormalizedHeader("Sec-WebSocket-Extensions",
-                                       &sec_websocket_extensions);
+          std::string sec_websocket_extensions =
+              headers->GetNormalizedHeader("Sec-WebSocket-Extensions")
+                  .value_or(std::string());
           std::move(http_upgrade_callback_)
               .Run(net::OK, sec_websocket_extensions, body,
                    std::move(socket_));

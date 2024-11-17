@@ -978,7 +978,7 @@ TEST_F(ResultWatcherTest, PollCompletesQuickly) {
 
   MockResultWatcher result_watcher(result_file, 2);
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
-      .WillOnce(DoAll(InvokeWithoutArgs([&]() {
+      .WillOnce(DoAll(InvokeWithoutArgs([&] {
                         task_environment.AdvanceClock(Milliseconds(1500));
                       }),
                       Return(true)));

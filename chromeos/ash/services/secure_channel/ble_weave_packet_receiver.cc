@@ -107,7 +107,7 @@ BluetoothLowEnergyWeavePacketReceiver::ReceivePacket(const Packet& packet) {
         // Counter not verified.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return state_;
@@ -209,7 +209,7 @@ void BluetoothLowEnergyWeavePacketReceiver::ReceiveNonFirstPacket(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

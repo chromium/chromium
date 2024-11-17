@@ -337,9 +337,20 @@ mojo.internal.interfaceSupport.Endpoint = class {
 };
 
 /**
+ * @param {!mojo.internal.interfaceSupport.Endpoint} endpoint
+ * @param {!ArrayBuffer} buffer
+ * @export
+ */
+mojo.internal.interfaceSupport.acceptBufferForTesting = function(
+    endpoint, buffer) {
+  endpoint.router_.onMessageReceived_(buffer, []);
+};
+
+/**
  * Creates a new Endpoint wrapping a given pipe handle.
  *
- * @param {!MojoHandle|!mojo.internal.interfaceSupport.Endpoint} pipeOrEndpoint
+ * @param {!MojoHandle|!mojo.internal.interfaceSupport.Endpoint}
+ *     pipeOrEndpoint
  * @param {boolean=} setNamespaceBit
  * @return {!mojo.internal.interfaceSupport.Endpoint}
  */

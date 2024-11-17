@@ -43,9 +43,9 @@ constexpr char kImageCacheMetadataCount[] = "ImageFetcher.CacheMetadataCount";
 
 // Returns a raw pointer to a histogram which is owned
 base::HistogramBase* GetTimeHistogram(const std::string& histogram_name,
-                                      const std::string client_name) {
+                                      const std::string& client_name) {
   return base::LinearHistogram::FactoryTimeGet(
-      histogram_name + std::string(".") + client_name, base::TimeDelta(),
+      histogram_name + "." + client_name, base::TimeDelta(),
       base::Milliseconds(kMaxReportTimeMs),
       /* one bucket every 20ms. */ kMaxReportTimeMs / 20,
       base::Histogram::kUmaTargetedHistogramFlag);

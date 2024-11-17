@@ -64,18 +64,28 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
 
   ~PaintCanvasVideoRenderer();
 
-  // Paints |video_frame| translated and scaled to |dest_rect| on |canvas|.
+  // Paints `video_frame` on `canvas`. The below Paint and Copy functions call
+  // into this function.
   //
-  // If the format of |video_frame| is PIXEL_FORMAT_NATIVE_TEXTURE, |context_3d|
-  // and |context_support| must be provided.
+  // If the format of `video_frame` is PIXEL_FORMAT_NATIVE_TEXTURE, `context_3d`
+  // and `context_support` must be provided.
   //
-  // If |video_frame| is nullptr or an unsupported format, |dest_rect| will be
-  // painted black.
+  // If `video_frame` is nullptr or an unsupported format, then paint black.
+  struct PaintParams {
+    // Translate and scale the video frame to `dest_rect` on the specified
+    // canvas. If not specified, then this will be a rectangle at 0,0 with the
+    // size of `video_frame->visible_rect().size()`.
+    std::optional<gfx::RectF> dest_rect;
+    // If true, then reinterpret the video frame as being in sRGB color space
+    // (though preserving the original YUV to RGB matrix) when drawing.
+    bool reinterpret_as_srgb = false;
+    // The transformation to apply to the video before the copy.
+    VideoTransformation transformation = media::kNoTransformation;
+  };
   void Paint(scoped_refptr<VideoFrame> video_frame,
              cc::PaintCanvas* canvas,
-             const gfx::RectF& dest_rect,
              cc::PaintFlags& flags,
-             VideoTransformation video_transformation,
+             const PaintParams& params,
              viz::RasterContextProvider* raster_context_provider);
 
   // Paints |video_frame|, scaled to its |video_frame->visible_rect().size()|
@@ -121,7 +131,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   bool CopyVideoFrameTexturesToGLTexture(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
-      const gpu::Capabilities& destination_gl_capabilities,
       scoped_refptr<VideoFrame> video_frame,
       unsigned int target,
       unsigned int texture,
@@ -142,7 +151,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   bool CopyVideoFrameYUVDataToGLTexture(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
-      const gpu::Capabilities& destination_gl_capabilities,
       scoped_refptr<VideoFrame> video_frame,
       unsigned int target,
       unsigned int texture,
@@ -249,9 +257,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // This is only set if the VideoFrame was texture-backed.
     gfx::Rect visible_rect;
 
-    // True if the underlying resource was created with a top left origin.
-    bool texture_origin_is_top_left = true;
-
     // Used to allow recycling of the previous shared image. This requires that
     // no external users have access to this resource via SkImage. Returns true
     // if the existing resource can be recycled.
@@ -261,30 +266,11 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // Update the cache holding the most-recently-painted frame. Returns false
   // if the image couldn't be updated.
   bool UpdateLastImage(scoped_refptr<VideoFrame> video_frame,
-                       viz::RasterContextProvider* raster_context_provider,
-                       bool allow_wrap_texture);
+                       viz::RasterContextProvider* raster_context_provider);
 
   bool PrepareVideoFrame(scoped_refptr<VideoFrame> video_frame,
                          viz::RasterContextProvider* raster_context_provider,
                          const gpu::MailboxHolder& dest_holder);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // NOTE: This functionality is currently disabled on Android (see
-  // crbug.com/1494365 for details).
-  bool UploadVideoFrameToGLTexture(
-      viz::RasterContextProvider* raster_context_provider,
-      gpu::gles2::GLES2Interface* destination_gl,
-      const gpu::Capabilities& destination_gl_capabilities,
-      scoped_refptr<VideoFrame> video_frame,
-      unsigned int target,
-      unsigned int texture,
-      unsigned int internal_format,
-      unsigned int format,
-      unsigned int type,
-      bool flip_y);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-  bool CacheBackingWrapsTexture() const;
 
   std::optional<Cache> cache_;
 

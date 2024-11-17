@@ -21,6 +21,7 @@ source_set("subscriptions") {
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:feature_utils",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/leveldb_proto",
     "//components/signin/public/identity_manager:identity_manager",

@@ -17,22 +17,20 @@ import org.chromium.net.NetError;
 import org.chromium.net.NetworkChangeNotifier;
 
 /**
- * Displays error dialog on top of splash screen if there is a network error while loading the
- * start URL.
+ * Displays error dialog on top of splash screen if there is a network error while loading the start
+ * URL.
  */
 public class WebApkSplashNetworkErrorObserver extends EmptyTabObserver {
     private Activity mActivity;
     private WebApkOfflineDialog mOfflineDialog;
-    private String mWebApkName;
 
     private boolean mDidShowNetworkErrorDialog;
 
     /** Indicates whether reloading is allowed. */
     private boolean mAllowReloads;
 
-    public WebApkSplashNetworkErrorObserver(Activity activity, String webApkName) {
+    public WebApkSplashNetworkErrorObserver(Activity activity) {
         mActivity = activity;
-        mWebApkName = webApkName;
     }
 
     public boolean isNetworkErrorDialogVisible() {

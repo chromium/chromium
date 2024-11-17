@@ -36,11 +36,11 @@ PlusAddressSettingServiceImpl::PlusAddressSettingServiceImpl(
 PlusAddressSettingServiceImpl::~PlusAddressSettingServiceImpl() = default;
 
 bool PlusAddressSettingServiceImpl::GetIsPlusAddressesEnabled() const {
-  return GetBoolean(kPlusAddressEnabledSetting);
+  return GetBoolean(kPlusAddressEnabledSetting, /*default_value=*/true);
 }
 
 bool PlusAddressSettingServiceImpl::GetHasAcceptedNotice() const {
-  return GetBoolean(kAcceptedNoticeSetting);
+  return GetBoolean(kAcceptedNoticeSetting, /*default_value=*/false);
 }
 
 void PlusAddressSettingServiceImpl::SetHasAcceptedNotice() {
@@ -57,14 +57,15 @@ PlusAddressSettingServiceImpl::GetSyncControllerDelegate() {
       sync_bridge_->change_processor()->GetControllerDelegate().get());
 }
 
-bool PlusAddressSettingServiceImpl::GetBoolean(std::string_view name) const {
+bool PlusAddressSettingServiceImpl::GetBoolean(std::string_view name,
+                                               bool default_value) const {
   if (!base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
     return false;
   }
   auto setting = sync_bridge_->GetSetting(name);
   DCHECK(!setting || setting->has_bool_value());
   if (!setting || !setting->has_bool_value()) {
-    return false;
+    return default_value;
   }
   return setting->bool_value();
 }

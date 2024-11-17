@@ -10,7 +10,9 @@
 ] interface MLTensor {
   readonly attribute MLOperandDataType dataType;
   readonly attribute FrozenArray<unsigned long> shape;
-  readonly attribute MLTensorUsageFlags usage;
+  readonly attribute boolean importableToWebGPU;
+  readonly attribute boolean readable;
+  readonly attribute boolean writable;
 
   void destroy();
 };

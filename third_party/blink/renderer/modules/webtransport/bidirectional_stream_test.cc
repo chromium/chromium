@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -110,7 +111,7 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
   // Implementation of WebTransport.
   void SendDatagram(base::span<const uint8_t> data,
                     base::OnceCallback<void(bool)>) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void CreateStream(
@@ -203,7 +204,7 @@ class ScopedWebTransport {
 
   BidirectionalStream* CreateBidirectionalStream(const V8TestingScope& scope) {
     auto* script_state = scope.GetScriptState();
-    ScriptPromiseUntyped bidirectional_stream_promise =
+    auto bidirectional_stream_promise =
         GetWebTransport()->createBidirectionalStream(script_state,
                                                      ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
@@ -255,7 +256,7 @@ void TestWrite(const V8TestingScope& scope,
       script_state, ASSERT_NO_EXCEPTION);
   auto* chunk = DOMUint8Array::Create(1);
   *chunk->Data() = 'A';
-  ScriptPromiseUntyped result =
+  auto result =
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, result);
@@ -359,8 +360,7 @@ TEST(BidirectionalStreamTest, IncomingStreamCleanClose) {
   auto* reader = bidirectional_stream->readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
 
-  ScriptPromiseUntyped read_promise =
-      reader->read(script_state, ASSERT_NO_EXCEPTION);
+  auto read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
 
   ScriptPromiseTester read_tester(script_state, read_promise);
   read_tester.WaitUntilSettled();
@@ -384,7 +384,7 @@ TEST(BidirectionalStreamTest, OutgoingStreamCleanClose) {
   ASSERT_TRUE(bidirectional_stream);
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromiseUntyped close_promise = bidirectional_stream->writable()->close(
+  auto close_promise = bidirectional_stream->writable()->close(
       script_state, ASSERT_NO_EXCEPTION);
 
   scoped_web_transport.GetWebTransport()->OnOutgoingStreamClosed(
@@ -443,9 +443,8 @@ TEST(BidirectionalStreamTest, WriteAfterCancellingIncoming) {
   ASSERT_TRUE(bidirectional_stream);
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromiseUntyped cancel_promise =
-      bidirectional_stream->readable()->cancel(script_state,
-                                               ASSERT_NO_EXCEPTION);
+  auto cancel_promise = bidirectional_stream->readable()->cancel(
+      script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester cancel_tester(script_state, cancel_promise);
   cancel_tester.WaitUntilSettled();
   EXPECT_TRUE(cancel_tester.IsFulfilled());
@@ -485,7 +484,7 @@ TEST(BidirectionalStreamTest, ReadAfterClosingOutgoing) {
   ASSERT_TRUE(bidirectional_stream);
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromiseUntyped close_promise = bidirectional_stream->writable()->close(
+  auto close_promise = bidirectional_stream->writable()->close(
       script_state, ASSERT_NO_EXCEPTION);
 
   scoped_web_transport.GetWebTransport()->OnOutgoingStreamClosed(
@@ -507,7 +506,7 @@ TEST(BidirectionalStreamTest, ReadAfterAbortingOutgoing) {
   ASSERT_TRUE(bidirectional_stream);
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromiseUntyped abort_promise = bidirectional_stream->writable()->abort(
+  auto abort_promise = bidirectional_stream->writable()->abort(
       script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester abort_tester(script_state, abort_promise);
   abort_tester.WaitUntilSettled();

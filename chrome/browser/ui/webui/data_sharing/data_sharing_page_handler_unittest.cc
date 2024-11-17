@@ -7,9 +7,12 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -30,6 +33,12 @@ class MockPage : public data_sharing::mojom::Page {
               ReadGroups,
               (const std::vector<std::string>& group_ids,
                ReadGroupsCallback callback));
+  MOCK_METHOD(void,
+              DeleteGroup,
+              (const std::string& group_id, DeleteGroupCallback callback));
+  MOCK_METHOD(void,
+              LeaveGroup,
+              (const std::string& group_id, LeaveGroupCallback callback));
 
   mojo::Receiver<data_sharing::mojom::Page> receiver_{this};
 };
@@ -54,11 +63,10 @@ class DataSharingPageHandlerUnitTest : public BrowserWithTestWindowTest {
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            data_sharing::features::kDataSharingFeature,
-        },
-        /*disabled_features=*/{});
+        {data_sharing::features::kDataSharingFeature,
+         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
+         tab_groups::kTabGroupSyncServiceDesktopMigration},
+        {});
     BrowserWithTestWindowTest::SetUp();
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
@@ -92,6 +100,26 @@ TEST_F(DataSharingPageHandlerUnitTest, GetShareLink) {
       base::BindLambdaForTesting(
           [&](const GURL& url) { ASSERT_TRUE(url.is_valid()); });
   handler()->GetShareLink("GROUP_ID", "ACCESS_TOKEN", std::move(callback));
+}
+
+TEST_F(DataSharingPageHandlerUnitTest, GetTabGroupPreview) {
+  data_sharing::mojom::PageHandler::GetTabGroupPreviewCallback callback =
+      base::BindLambdaForTesting(
+          [&](data_sharing::mojom::GroupPreviewPtr preview) {
+            EXPECT_EQ(preview->title, "");
+            EXPECT_EQ(preview->shared_tabs.size(), size_t(0));
+            EXPECT_EQ(preview->status_code,
+                      mojo_base::mojom::AbslStatusCode::kUnknown);
+          });
+  handler()->GetTabGroupPreview("GROUP_ID", "ACCESS_TOKEN",
+                                std::move(callback));
+}
+
+TEST_F(DataSharingPageHandlerUnitTest, OpenTabGroup) {
+  handler()->OpenTabGroup("FAKE_GROUP_ID");
+  DataSharingOpenGroupHelper* helper =
+      browser()->browser_window_features()->data_sharing_open_group_helper();
+  EXPECT_TRUE(helper->group_ids_for_testing().contains("FAKE_GROUP_ID"));
 }
 
 TEST_F(DataSharingPageHandlerUnitTest, OnAccessTokenFetched) {

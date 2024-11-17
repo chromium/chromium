@@ -236,18 +236,14 @@ class AuthenticatorRequestWindow
         url = GaiaUrls::GetInstance()->gaia_url().Resolve(
             base::StrCat({"/encryption/unlock/desktop?kdi=", kKdi}));
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
-        webauthn::user_actions::RecordRecoveryShown(
-            /*is_create=*/model_->request_type ==
-            device::FidoRequestType::kMakeCredential);
-        if (base::FeatureList::IsEnabled(device::kWebAuthnPasskeysReset)) {
-          passkey_reset_observer_ =
-              std::make_unique<PasskeyResetWebContentsObserver>(
-                  web_contents.get(),
-                  // Unretained: `passkey_reset_observer_` is owned by this
-                  // object so if it exists, this object also exists.
-                  base::BindOnce(&AuthenticatorRequestWindow::OnPasskeysReset,
-                                 base::Unretained(this)));
-        }
+        webauthn::user_actions::RecordRecoveryShown(model_->request_type);
+        passkey_reset_observer_ =
+            std::make_unique<PasskeyResetWebContentsObserver>(
+                web_contents.get(),
+                // Unretained: `passkey_reset_observer_` is owned by this
+                // object so if it exists, this object also exists.
+                base::BindOnce(&AuthenticatorRequestWindow::OnPasskeysReset,
+                               base::Unretained(this)));
         break;
 
       case AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset:

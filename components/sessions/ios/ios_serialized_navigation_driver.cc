@@ -52,8 +52,7 @@ void IOSSerializedNavigationDriver::Sanitize(
     referrer.url = GURL();
   } else {
     if (referrer.policy < 0 || referrer.policy > web::ReferrerPolicyLast) {
-      NOTREACHED_IN_MIGRATION();
-      referrer.policy = web::ReferrerPolicyNever;
+      NOTREACHED();
     }
     referrer.url = GURL(
         ReferrerHeaderValueForNavigation(navigation->virtual_url_, referrer));

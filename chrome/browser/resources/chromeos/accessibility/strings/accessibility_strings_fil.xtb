@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="100421257800558142">Pindutin ang pakanang arrow key</translation>
 <translation id="100506692671054486">walang nakaraang command</translation>
 <translation id="1009046985747440431">Pindutin ang pataas o pababang arrow para mag-navigate; pindutin ang enter para i-activate.</translation>
 <translation id="1011903154582639569">Maghanap ng key, pagkatapos ay iangat para mag-type</translation>
@@ -21,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Mag-swipe pataas gamit ang dalawang daliri</translation>
 <translation id="1126928665165112660">Hindi naka-italic</translation>
+<translation id="1133751489735776037">I-triple click ang mouse</translation>
 <translation id="113582498867142724">Koleksyon ng <ph name="TAG" /> na may <ph name="NUM" /> (na) item</translation>
 <translation id="1146441463334103638">I-on o i-off ang screen</translation>
 <translation id="1156488781945104845">Kasalukuyang oras</translation>
 <translation id="1161762950103988776">Lumaktaw</translation>
 <translation id="1164857107703583584">Magagamit ang mga jump command para mahusay na mag-navigate sa isang web page.</translation>
 <translation id="1175914831232945926">Mga Digit</translation>
+<translation id="1186712907912748007">Kasalukuyang isinasagawa ang pag-drag at pag-drop. <ph name="GESTURE" /> para tapusin. Pansamantalang hindi available ang iba pang galaw.</translation>
 <translation id="1188858454923323853">complementary</translation>
 <translation id="1189258430971676908">Lugar ng pagsasanay: Mga drop-down na listahan</translation>
 <translation id="1195238899008218998">Afterword</translation>
@@ -52,16 +55,19 @@
 <translation id="1243477406442346359">Cornflower Blue</translation>
 <translation id="1246424317317450637">Bold</translation>
 <translation id="1251750620252348585">Susunod na heading sa antas 6</translation>
+<translation id="1264956950255940376">I-squint ang kaliwang mata</translation>
 <translation id="1268366246392928616">Walang nakaraang expression sa math</translation>
 <translation id="1275718070701477396">Pinili</translation>
 <translation id="1284576163386164372">Puwede kang tumingin ng mga tutorial anumang oras sa pamamagitan ng pagbukas ng mga menu gamit ang apat na daliring pag-tap. Pagkatapos ay i-activate ang tutorial sa ilalim ng seksyong “ChromeVox.”</translation>
 <translation id="1291286136605998134">Toggle Button</translation>
 <translation id="1299774449519412690">Light Sky Blue</translation>
 <translation id="1303806948938513162">Mag-tap gamit ang 4 na daliri para makapasok sa mga menu ng ChromeVox</translation>
+<translation id="1304162325618937178">Pindutin ang space key</translation>
 <translation id="1313373992684326101">Lumipat sa nakaraang seksyon. Kasama sa mga halimbawa ang Status Tray at Launcher.</translation>
 <translation id="1315077335264761176">Oryentasyon ng pagpindot</translation>
 <translation id="1325363694295259631">Na-unselect ang <ph name="NAME" />, isang radio button ng item sa menu</translation>
 <translation id="1325946044405407859">Tan</translation>
+<translation id="1328928545650070438">Ibaba ang mga kilay</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> ng <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">echo ng character at salita</translation>
 <translation id="1334570596456017464">Subscript</translation>
@@ -70,6 +76,7 @@
 <translation id="1346059596910821859">Tip</translation>
 <translation id="1354356357730355833">kopyahin</translation>
 <translation id="1360699455582016846">I-click ang item sa ilalim ng routing key na <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Itaas ang mga kilay</translation>
 <translation id="1376703628032300005">pumunta sa susunod na character</translation>
 <translation id="1377925789329510816">Ito ang huling heading. Pindutin ang Search+H upang pumunta sa unang heading, o ang Search+Shift+H upang pumunta sa pangalawang heading sa page na ito.</translation>
 <translation id="138218114945450791">Light Blue</translation>
@@ -131,6 +138,7 @@
 <translation id="1771761307086386028">Mag-scroll pakanan</translation>
 <translation id="1781173782405573156">Ipasa ang susunod na key</translation>
 <translation id="1787176709638001873">Text sa pag-edit ng password</translation>
+<translation id="1795438342141780114">I-reset ang cursor sa gitna</translation>
 <translation id="180203835522132923">Search + O, pagkatapos ay W</translation>
 <translation id="1810107444790159527">Kahon ng listahan</translation>
 <translation id="1812527064848182527">landscape</translation>
@@ -148,6 +156,7 @@
 <translation id="1914424852593176649">Laki <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> chord</translation>
 <translation id="1923956950274750765">Medium Orchid</translation>
+<translation id="1926147969119007125">I-pause ang pagkontrol gamit ang mukha</translation>
 <translation id="1928932365747995741">Walang nakaraang na-e-edit na field ng text</translation>
 <translation id="1964135212174907577">Susunod na Bagay</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -169,6 +178,7 @@
 <translation id="2121067395472282800">access key:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Walang available na text para sa item na ito</translation>
 <translation id="2127747486437921899">Italic</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Isara ang lugar ng pagsasanay</translation>
 <translation id="2163782704988363449">Mga Erratum</translation>
 <translation id="2169714232367507776">Mag-click sa kasalukuyang item</translation>
@@ -178,9 +188,11 @@
 <translation id="2197863150503783129">Saddle Brown</translation>
 <translation id="2199994615414171367">Nakaraang math</translation>
 <translation id="2203046366315513658">Bawasan ang value</translation>
+<translation id="2206580811360135054">Ipakita o i-hide ang pangkalahatang-ideya ng mga window</translation>
 <translation id="2216790501338699346">URL ng link: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Bumalik nang isang char</translation>
 <translation id="2220529011494928058">Mag-ulat ng isyu</translation>
+<translation id="2239819015858077439">Pindutin ang pababang arrow key</translation>
 <translation id="2243633977138166243">Pindutin ang kaliwa o kanang arrow para mag- navigate; enter para i-activate</translation>
 <translation id="224426591676115802">Walang available na boses para sa wika: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Hinihinto ang Learn Mode</translation>
@@ -188,6 +200,7 @@
 <translation id="2267538686624070261">Umaalis sa mali ang spelling</translation>
 <translation id="2267945578749931355">Susunod na Character</translation>
 <translation id="2278490101488436824">Mag-swipe pakaliwa gamit ang tatlong daliri</translation>
+<translation id="228059581448666199">I-left click ang mouse</translation>
 <translation id="2303873575703885770">Mag-activate ng item</translation>
 <translation id="2305942658236913680">Walang susunod na heading</translation>
 <translation id="2311237334957139798">Lumipat sa nakaraang granularity</translation>
@@ -197,6 +210,7 @@
 <translation id="2347456970887948350">Isang link</translation>
 <translation id="2363753371702255035">bullet</translation>
 <translation id="2365384324219615024">Puwede mo ring pindutin ang Enter para mag-activate ng mga item. Halimbawa, magagamit ang Enter para magsumite ng text sa isang form. Para magpatuloy, pindutin ang Enter.</translation>
+<translation id="2371402123699727805">Aktibo ang dictation. <ph name="GESTURE" /> para huminto. Pansamantalang hindi available ang iba pang galaw.</translation>
 <translation id="2381733276052567791">I-toggle pa-on o pa-off ang pananalita</translation>
 <translation id="2390264819538553347">Upang magpatuloy, pindutin ang enter; upang bumalik, pindutin ang backspace.</translation>
 <translation id="2398579267367951220">Mag-type para maghanap sa page. Pindutin ang enter para pumunta sa resulta, pataas o pababang arrow para i-browse ang mga resulta, patuloy na mag-type para baguhin ang iyong paghahanap, o lumabas para kanselahin.</translation>
@@ -259,9 +273,11 @@
 <translation id="2723001399770238859">audio</translation>
 <translation id="2737898226590637227">Walang susunod na landmark ng ARIA</translation>
 <translation id="2749275490991666823">Nilagyan ng check</translation>
+<translation id="2751454300227269244">Ngumuso pakanan</translation>
 <translation id="27527859628328957">Lumaktaw sa susunod na napo-focus na item</translation>
 <translation id="2756452585631602151">Maglagay ng custom na label</translation>
 <translation id="2766299274563946262">Walang cell sa kaliwa</translation>
+<translation id="2770947749427257887">Pumasok sa scroll mode</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Puwede ka ring mag-swipe ng isang daliri pakaliwa para lumipat sa nakaraang item. Subukan ito ngayon.</translation>
 <translation id="280499067616661124">May nakitang ChromeVox sa page</translation>
@@ -272,6 +288,8 @@
 <translation id="2843432675592278677">Walang nakaraang landmark ng ARIA</translation>
 <translation id="2843814945404750166">Dark Olive Green</translation>
 <translation id="2843837985843789981">Nakaraang Pangkat</translation>
+<translation id="2849035674501872372">Maghanap</translation>
+<translation id="2860710618359053450">Ipaling pakanan ang panga</translation>
 <translation id="2864481629947106776">Nakaraang link</translation>
 <translation id="2867808975387772810">Bibliograpiya</translation>
 <translation id="2873259058405069099">Pumunta sa umpisa ng talahanayan</translation>
@@ -308,6 +326,7 @@
 <translation id="3060880924447482063">Mag-swipe pakaliwa o pakanan para lumipat ng item</translation>
 <translation id="3070245424257836917">Mag-swipe pataas gamit ang tatlong daliri</translation>
 <translation id="307516670110542567">Mabilisang orientation</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Susunod na heading sa antas 2</translation>
 <translation id="3078740164268491126">talahanayan</translation>
 <translation id="3082249673510793544">Mag-scroll pabalik</translation>
@@ -335,8 +354,10 @@
 <translation id="3153928844647607688">Talahanayan na <ph name="TABLENAME" />, <ph name="TABLEROWS" /> by <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="316542773973815724">Navigation</translation>
+<translation id="3167446923957429259">Ngumuso pakaliwa</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{espasyo}one{# espasyo}other{# na espasyo}}</translation>
 <translation id="3179119189286472195">Hindi link</translation>
+<translation id="3180990259147710757">Ipaling pakaliwa ang panga</translation>
 <translation id="320041337977930740">Palitan ang istilo ng display para i-interleave</translation>
 <translation id="3206698050650195442">Lumabas sa tutorial</translation>
 <translation id="3208346789712025453">Walang susunod na kontrol</translation>
@@ -364,6 +385,7 @@
 <translation id="3322936298410871309">Nakaraang heading sa antas 1</translation>
 <translation id="3323447499041942178">Text box</translation>
 <translation id="3324983252691184275">Crimson</translation>
+<translation id="334252345105450327">Kumuha ng screenshot</translation>
 <translation id="335581015389089642">Pananalita</translation>
 <translation id="3356951775008366684">Ianunsyo ang phonetic na pagbigkas para sa salita</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -372,6 +394,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{plus}one{# plus sign}other{# na plus sign}}</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3389259863310851658">Nakaraang field ng form</translation>
+<translation id="3390740059150071453">Tumingin sa kaliwa</translation>
 <translation id="3393605254399152980">Mag-drag ng isang daliri para marinig ang pipindutin mo</translation>
 <translation id="3406283310380167331">Ipakita ang listahan ng mga form</translation>
 <translation id="3407726812456125464">Pakinggan ang piniling text</translation>
@@ -385,6 +408,7 @@
 <translation id="3466530247399808663">Isang di-wastong key press</translation>
 <translation id="3468959318854349468">Walang pamagat</translation>
 <translation id="3469413619751135069">Pale Green</translation>
+<translation id="3473744269398144689">Simulan ang dictation</translation>
 <translation id="3490765818161916458">Grid ng listahan</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{kanang bracket}one{# kanang bracket}other{# na kanang bracket}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -426,6 +450,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Snow</translation>
 <translation id="3781428340399460090">Hot Pink</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Ipakita ang Log</translation>
 <translation id="3801735343383419236">Listahan ng autocompletion</translation>
 <translation id="3806327402890551732">Lumipat sa susunod o nakaraang item</translation>
@@ -440,6 +465,7 @@
 <translation id="3870295413168340326">Walang nakaraang heading sa antas 3</translation>
 <translation id="3887399638190992181">Mahahalagang key</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Na-pause ang pagkontrol gamit ang mukha. <ph name="GESTURE" /> para magpatuloy. Pansamantalang hindi available ang iba pang galaw.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Nakaraang heading sa antas 6</translation>
@@ -471,6 +497,7 @@
 <translation id="409334809956508737">Nakaraang Bagay</translation>
 <translation id="4099274309791143834">na may submenu</translation>
 <translation id="4101527861445851766">Isang checkbox na may check</translation>
+<translation id="410225014223200513">Gumawa ng bilog na hugis gamit ang iyong mga labi</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Alerto</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{kanang brace}one{# kanang brace}other{# na kanang brace}}</translation>
@@ -498,6 +525,7 @@
 <translation id="4246217262268234757">Steel Blue</translation>
 <translation id="4253168017788158739">Tala</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4255016471934258618">Ibuka nang todo ang iyong bibig</translation>
 <translation id="4259220820964911921">I-enable ang pagkontrol gamit ang mukha?</translation>
 <translation id="4271220233568730077">Susunod na math</translation>
 <translation id="4275397969489577657">I-enable ang pag-log ng stream ng event</translation>
@@ -506,9 +534,11 @@
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="4294967782363273192">Pataas na pagbubukod-bukod</translation>
 <translation id="4300318234632215983">Ianunsyo ang URL sa likod ng isang link</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{tuldok}=3{ellipsis}one{# tuldok}other{# na tuldok}}</translation>
 <translation id="4352022650330571548">i-type ang <ph name="PHRASE" /></translation>
+<translation id="4360738659108163902">I-right click ang mouse</translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">Ihinto ang speech</translation>
 <translation id="4376316291247992553">Tingnan ang Graphic Bilang Braille</translation>
@@ -518,9 +548,12 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Deep Sky Blue</translation>
 <translation id="4406249099130339147">Echo ng bantas:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Ipakita ang lahat ng iyong ngipin</translation>
 <translation id="4432457053224379116">Indian Red</translation>
 <translation id="4432896207833262240">Minarkahang content</translation>
 <translation id="4437615272777527928">Mag-type para maghanap sa mga menu. Gamitin ang mga pataas at pababang arrow para makita ang mga resulta. Gamitin ang mga pakaliwa at pakanang arrow para maisaayos ang text caret, at para magpalipat-lipat sa mga menu.</translation>
+<translation id="4441677939526091190">Pindutin ang pataas na arrow key</translation>
 <translation id="4453530046591759283">Para pumunta sa iba pang bahagi ng screen, tulad ng mga toolbar o system tray, pindutin ang Control+F1. Ang F1 ay ang unang key sa kanan ng escape key.</translation>
 <translation id="4457472090507035117">Piliin ang kasalukuyang boses:</translation>
 <translation id="4476183483923481720">bagong linya</translation>
@@ -538,6 +571,7 @@
 <translation id="4562381607973973258">Header</translation>
 <translation id="4597532268155981612">form</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Custom na kumbinasyon ng key: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Babalewalain ang susunod na pagpindot ng key</translation>
 <translation id="4617384941327705512">Naka-off ang Smart sticky mode</translation>
 <translation id="4623097797855662355">Colophon</translation>
@@ -566,6 +600,7 @@
 <translation id="4815668758102003883">Pale Turquoise</translation>
 <translation id="4826415162591436065">Mag-navigate pasulong</translation>
 <translation id="4827410568042294688">hindi napili</translation>
+<translation id="4835598628985424375">Ngumuso gamit ang iyong mga labi</translation>
 <translation id="4838490795649708173">Mag-tap gamit ang apat na daliri</translation>
 <translation id="4839925464551908214">Pumunta sa nakaraang row</translation>
 <translation id="4841614409681890122">Deep Pink</translation>
@@ -574,6 +609,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Walang nakaraang widget ng media</translation>
 <translation id="4855927945655956315">Mahahalagang Key: Control</translation>
+<translation id="485806788160414322">Mag-play o mag-pause ng media</translation>
 <translation id="4862744964787595316">Hindi naka-bold</translation>
 <translation id="4865995900839719272">pumunta sa nakaraang linya</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +656,7 @@
 <translation id="5138912041966667164">Medium Slate Blue</translation>
 <translation id="5140016802771803559">Rebecca Purple</translation>
 <translation id="5142101052131610456">Lahat ng aralin</translation>
+<translation id="514387318601895731">Tumingin sa ibaba</translation>
 <translation id="5158275234811857234">Cover</translation>
 <translation id="516076699907426116">Para magpatuloy, mag-explore by touch para hanapin ang button na Susunod na aralin. Pagkatapos ay mag-double tap para magpatuloy.</translation>
 <translation id="5170206230005240598">Na-enable ang mga caption ng braille</translation>
@@ -629,6 +666,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Tapusin</translation>
 <translation id="5290220123487191192">Magsimula tayo sa ilang galaw na regular mong gagamitin. Kung naabot mo ang isang item na gusto mong i-activate, i-double tap ang screen gamit ang isang daliri. Para magpatuloy, mag-double tap ngayon.</translation>
+<translation id="5291860916305032607">Ipagpatuloy ang pagkontrol gamit ang mukha</translation>
 <translation id="5302089807023311274">Sanggunian sa bibliograpiya</translation>
 <translation id="530391007967514163">Subukang magpalipat-lipat sa mga heading para makapag-navigate sa text sa ibaba.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, tab</translation>
@@ -654,6 +692,7 @@
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Isang modal na alerto</translation>
+<translation id="5406272775687194041">Simulan ang pag-drag at pag-drop</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{semicolon}one{# semicolon}other{# na semicolon}}</translation>
 <translation id="5420259671171615858">Hanapin sa mga menu</translation>
 <translation id="5435274640623994081">I-enable ang pag-log ng earcon</translation>
@@ -663,6 +702,7 @@
 <translation id="5452267669091857717">Walang susunod na heading sa antas 1</translation>
 <translation id="5455441614648621694">Complementary</translation>
 <translation id="5462510922370980473">Listahan ng page</translation>
+<translation id="5489460663499094917">Aktibo ang scroll mode. <ph name="GESTURE" /> para lumabas. Pansamantalang hindi available ang iba pang galaw.</translation>
 <translation id="5495517933067991341">Mahahalagang Key: Shift</translation>
 <translation id="549602578321198708">Salita</translation>
 <translation id="5513242761114685513">Menu ng konteksto</translation>
@@ -695,6 +735,7 @@
 <translation id="5653397561111110475">Gamitin ang mga feature sa accessibility ng touch screen ng Chromebook</translation>
 <translation id="5655682562155942719">Mga Command sa Paglaktaw</translation>
 <translation id="56637627897541303">Lugar ng text</translation>
+<translation id="5666746275818170484">Pindutin ang pakaliwang arrow key</translation>
 <translation id="5669637233317991674">Pindutin ang Search + Pakanang Arrow, o Search + Pakaliwang Arrow para mag-navigate sa araling ito</translation>
 <translation id="5677240841070992068">Kasalukuyang lokasyon</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -714,11 +755,13 @@
 <translation id="5776001898637896684">Google Enhanced Network text-to-speech extension</translation>
 <translation id="5783252477644995371">Ang pagkontrol gamit ang mukha ay nagbibigay sa iyo ng pagkontrol sa cursor sa pamamagitan ng pagtutok sa mukha at kakayahang gumawa ng mga aksyon, gaya ng pag-click sa kaliwa gamit ang mga galaw ng mukha gaya ng ngiti</translation>
 <translation id="5805940204952508776">Mag-tap gamit ang dalawang daliri</translation>
+<translation id="5807774529265708172">Ipakita o i-hide ang on-screen na keyboard</translation>
 <translation id="5819072574982403430">Tree item</translation>
 <translation id="5822819874379903994">Dark Turquoise</translation>
 <translation id="5824976764713185207">Awtomatikong basahin ang page pagkatapos nitong mag-load</translation>
 <translation id="5826479389509458994">row <ph name="ROW" /> column <ph name="COL" /></translation>
 <translation id="5833044594931167190">Walang mga landmark ng ARIA</translation>
+<translation id="584044465500042213">Lumabas sa scroll mode</translation>
 <translation id="5842625257683688671">Walang susunod na graphic</translation>
 <translation id="5847883414085148048">Dedikasyon</translation>
 <translation id="5850707923114094062">Mag-pan nang pabalik</translation>
@@ -739,6 +782,7 @@
 <translation id="5923780477617566089">Kasalukuyang petsa</translation>
 <translation id="5926889058434275234">Para sa kumpletong listahan ng mga galaw, bisitahin ang help center.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{equal}one{# equal sign}other{# na equal sign}}</translation>
+<translation id="5947651424015173580">I-double click ang mouse</translation>
 <translation id="5948123859135882163">I-toggle ang pag-interpret sa mga math expression sa pagitan ng structural at semantic</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Dialog</translation>
@@ -747,6 +791,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{may # item}one{may # item}other{may # na item}}</translation>
 <translation id="5981446804259161541">Light Cyan</translation>
 <translation id="5983179082906765664">Paramihin ang granularity ng navigation</translation>
+<translation id="5988563937187882754">Tumingin sa kanan</translation>
 <translation id="5992285135956208197">Dokumento ng graphics</translation>
 <translation id="5999630716831179808">Mga Boses</translation>
 <translation id="6006050241733874051">Form</translation>
@@ -821,6 +866,7 @@
 <translation id="6584162722998608255">Susunod, matututunan mo kung paano gumalaw-galaw sa screen. Puwede kang mag-swipe ng isang daliri pakanan para lumipat sa susunod na item. Subukan ito ngayon para lumipat sa susunod na hakbang.</translation>
 <translation id="6609828810966525877">Mag-explore ng higit pang galaw sa Learn Mode at sa Help Center ng Chromebook</translation>
 <translation id="6628427060004938651">Bahagi</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">Progress bar</translation>
 <translation id="667999046851023355">Dokumento</translation>
@@ -885,6 +931,7 @@
 <translation id="7096001299300236431">Nakaraang media</translation>
 <translation id="7096668131290451939">Pindutin ulit ang escape para umalis sa Learn Mode</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">echo ng salita</translation>
 <translation id="7137397390322864165">Salmon</translation>
 <translation id="7140168702531682811">Superscript</translation>
@@ -895,6 +942,7 @@
 <translation id="7161771961008409533">Pop-up na button</translation>
 <translation id="7167657087543110">echo ng character</translation>
 <translation id="7173102181852295013">Midnight Blue</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Pinalawak</translation>
 <translation id="7209751026933045237">Walang susunod na slider</translation>
 <translation id="7218782500591078391">Golden Rod</translation>
@@ -915,6 +963,7 @@
 <translation id="7285387653379749618">Mga Talahanayan</translation>
 <translation id="7289186959554153431">Heading 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">Tapusin ang pag-drag at pag-drop</translation>
 <translation id="7308519659008003150">Walang nakaraang field ng form</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">tulong</translation>
@@ -973,6 +1022,7 @@
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Walang susunod na combo box</translation>
+<translation id="7715455358521357192">I-squint ang kanang mata</translation>
 <translation id="7724603315864178912">I-cut</translation>
 <translation id="7731785449856576010">Walang susunod na widget ng media</translation>
 <translation id="7735498529470878067">Makakatulong sa iyo ang explore by touch na makakuha kaagad ng ideya kung ano ang nasa screen.</translation>
@@ -1027,6 +1077,7 @@
 <translation id="8098587210054821856">Slate Grey</translation>
 <translation id="8121539003537428024">I-enable ang lahat ng filter ng event</translation>
 <translation id="8123975449645947908">Mag-scroll pabalik</translation>
+<translation id="8126355825906412872">Ngumiti</translation>
 <translation id="8126386426083591964">Walang nakaraang heading sa antas 5</translation>
 <translation id="812886159861361726">Hininto ang pag-download ng <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">Walang cell sa itaas</translation>
@@ -1117,6 +1168,7 @@
 <translation id="8775203254697638994">May mga pagkakataon kung kailan kailangan mong pumili ng item mula sa isang drop-down na listahan. Para gawin ito, palawakin muna ang listahan sa pamamagitan ng pagpindot sa Search + Space. Pagkatapos ay gamitin ang Pataas at Pababang arrow key para pumili ng item. At huli, i-collapse ang listahan sa pamamagitan ng pagpindot sa Search + Space.</translation>
 <translation id="8779057862865475116">Walang nakaraang link</translation>
 <translation id="8796411681063377102">Susunod na heading sa antas 3</translation>
+<translation id="8821891849214789910">Ihinto ang dictation</translation>
 <translation id="8823311177246872527">Page <ph name="CURRENTPAGE" /> sa <ph name="TOTALPAGES" /></translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">main</translation>

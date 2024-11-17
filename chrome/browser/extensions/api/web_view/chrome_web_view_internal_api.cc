@@ -68,12 +68,13 @@ ChromeWebViewInternalContextMenusUpdateFunction::Run() {
                              render_frame_host()->GetRoutingID(),
                              params->instance_id));
 
-  if (params->id.as_string)
+  if (params->id.as_string) {
     item_id.string_uid = *params->id.as_string;
-  else if (params->id.as_integer)
+  } else if (params->id.as_integer) {
     item_id.uid = *params->id.as_integer;
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   std::string error;
   bool success = context_menu_helpers::UpdateMenuItem(
@@ -103,7 +104,7 @@ ChromeWebViewInternalContextMenusRemoveFunction::Run() {
   } else if (params->menu_item_id.as_integer) {
     id.uid = *params->menu_item_id.as_integer;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   MenuItem* item = menu_manager->GetItemById(id);

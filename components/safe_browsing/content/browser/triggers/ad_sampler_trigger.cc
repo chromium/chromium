@@ -101,7 +101,7 @@ AdSamplerTrigger::AdSamplerTrigger(
       referrer_chain_provider_(referrer_chain_provider),
       task_runner_(content::GetUIThreadTaskRunner({})) {}
 
-AdSamplerTrigger::~AdSamplerTrigger() {}
+AdSamplerTrigger::~AdSamplerTrigger() = default;
 
 void AdSamplerTrigger::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,

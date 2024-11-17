@@ -16,12 +16,22 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 namespace safe_browsing {
-SafeBrowsingDatabaseManager::Client::Client() = default;
+SafeBrowsingDatabaseManager::Client::Client(base::PassKey<Client> pass_key) {}
 SafeBrowsingDatabaseManager::Client::~Client() = default;
 
 base::WeakPtr<SafeBrowsingDatabaseManager::Client>
 SafeBrowsingDatabaseManager::Client::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+base::PassKey<SafeBrowsingDatabaseManager::Client>
+SafeBrowsingDatabaseManager::Client::GetPassKeyForTesting() {
+  return base::PassKey<Client>();
+}
+
+base::PassKey<SafeBrowsingDatabaseManager::Client>
+SafeBrowsingDatabaseManager::Client::GetPassKey() {
+  return base::PassKey<Client>();
 }
 
 SafeBrowsingDatabaseManager::SafeBrowsingDatabaseManager(
@@ -40,8 +50,7 @@ bool SafeBrowsingDatabaseManager::CancelApiCheck(Client* client) {
     api_checks_.erase(it);
     return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SafeBrowsingDatabaseManager::CheckApiBlocklistUrl(const GURL& url,

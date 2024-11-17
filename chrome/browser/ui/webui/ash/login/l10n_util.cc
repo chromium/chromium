@@ -51,7 +51,7 @@ constexpr char16_t kMostRelevantLanguagesDivider16[] =
 
 base::Value CreateInputMethodsEntry(
     const input_method::InputMethodDescriptor& method,
-    const std::string selected,
+    const std::string& selected,
     input_method::InputMethodUtil* util) {
   const std::string& ime_id = method.id();
   auto input_method =
@@ -476,8 +476,7 @@ std::string FindMostRelevantLocale(
         available_locale = entry.GetDict().FindString("value");
 
       if (!available_locale) {
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
       }
 
       if (*available_locale == most_relevant)
@@ -516,7 +515,7 @@ base::Value::List GetAndActivateLoginKeyboardLayouts(
       input_methods_added.insert(hardware_login_input_method);
       input_methods_list.Append(CreateInputMethodsEntry(*ime, selected, util));
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

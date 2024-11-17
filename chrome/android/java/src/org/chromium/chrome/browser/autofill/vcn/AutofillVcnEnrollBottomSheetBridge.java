@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -22,16 +23,20 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -65,7 +70,12 @@ import java.util.List;
      * @param cardContainerAccessibilityDescription The accessibility description for the UI element
      *     that contains the issuer icon, card label, and card description.
      * @param issuerIconBitmap The icon for the card. For example, could be an American Express
-     *     logo.
+     *     logo. Not used when
+     *     AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER is enabled.
+     * @param networkIconResource The resource-id icon for the card. For example, could be an
+     *     American Express logo.
+     * @param issuerIconUrl The url for the card icon. For example, could be a custom card art for a
+     *     credit card. This takes precedence over the issuerIconResource.
      * @param cardLabel The label for the card, e.g., "Amex ****1234".
      * @param cardDescription The description of the card, e.g., "Virtual Card".
      * @param googleLegalMessages Legal messages from Google Pay.
@@ -85,6 +95,8 @@ import java.util.List;
             @JniType("std::u16string") String learnMoreLinkText,
             @JniType("std::u16string") String cardContainerAccessibilityDescription,
             Bitmap issuerIconBitmap,
+            @DrawableRes int networkIconResource,
+            @JniType("GURL") GURL issuerIconUrl,
             @JniType("std::u16string") String cardLabel,
             @JniType("std::u16string") String cardDescription,
             @JniType("std::vector") List<LegalMessageLine> googleLegalMessages,
@@ -125,10 +137,14 @@ import java.util.List;
                                 cardContainerAccessibilityDescription)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
-                                new IssuerIcon(
-                                        issuerIconBitmap,
-                                        cardIconSpecs.getWidth(),
-                                        cardIconSpecs.getHeight()))
+                                ChromeFeatureList.isEnabled(
+                                                AutofillFeatures
+                                                        .AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
+                                        ? new IssuerIcon(networkIconResource, issuerIconUrl)
+                                        : new IssuerIcon(
+                                                issuerIconBitmap,
+                                                cardIconSpecs.getWidth(),
+                                                cardIconSpecs.getHeight()))
                         .with(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL, cardLabel)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION,
@@ -161,6 +177,7 @@ import java.util.List;
         mCoordinator =
                 new AutofillVcnEnrollBottomSheetCoordinator(
                         mContext,
+                        Profile.fromWebContents(webContents),
                         modelBuilder,
                         mLayoutStateProviderForTesting != null
                                 ? mLayoutStateProviderForTesting

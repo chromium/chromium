@@ -5,7 +5,6 @@
 #include "headless/lib/browser/headless_permission_manager.h"
 
 #include "base/functional/callback.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -14,9 +13,7 @@
 
 namespace headless {
 
-HeadlessPermissionManager::HeadlessPermissionManager(
-    content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+HeadlessPermissionManager::HeadlessPermissionManager() = default;
 
 HeadlessPermissionManager::~HeadlessPermissionManager() = default;
 

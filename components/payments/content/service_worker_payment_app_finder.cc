@@ -202,45 +202,19 @@ class SelfDeletingServiceWorkerPaymentAppFinder
 
     installed_apps_ = std::move(apps);
 
-    // TODO(crbug.com/40259220): Once kPaymentHandlerAlwaysRefreshIcon is rolled
-    // out fully, remove the 'missing icons' path and rely on the refresh path
-    // to handle any payment app that is missing an icon. This will cause fixing
-    // missing icons to be async rather than synchronous, but by now this is a
-    // very rare case anyway.
-    std::set<GURL> method_manifest_urls_for_missing_icons;
-    std::set<GURL> method_manifest_urls_for_icon_refresh;
-    for (auto& app : installed_apps_) {
-      for (const auto& method : app.second->enabled_methods) {
-        // Only payment methods with manifests are eligible for refetching the
-        // icon of their installed payment apps.
-        GURL method_manifest_url = GURL(method);
-        if (!UrlUtil::IsValidUrlBasedPaymentMethodIdentifier(
-                method_manifest_url)) {
-          continue;
-        }
-        method_manifest_urls_for_icon_refresh.insert(method_manifest_url);
-
-        if (!app.second->icon.get() || app.second->icon.get()->drawsNothing()) {
-          method_manifest_urls_for_missing_icons.insert(method_manifest_url);
-        }
-      }
-    }
-
-    // Crawl installable web payment apps if no web payment apps have been
-    // installed or when an installed app is missing an icon.
+    // Crawl for installable web payment apps if no web payment apps were
+    // already installed.
     //
     // If `crawler_` is null, that indicates that JIT install has been disabled
     // entirely, and so we should be doing no crawling.
-    if ((installed_apps_.empty() ||
-         !method_manifest_urls_for_missing_icons.empty()) &&
-        crawler_ != nullptr) {
+    if (installed_apps_.empty() && crawler_ != nullptr) {
       is_payment_app_crawler_finished_using_resources_ = false;
       crawler_->Start(
           requested_method_data_,
-          std::move(method_manifest_urls_for_missing_icons),
-          base::BindOnce(
-              &SelfDeletingServiceWorkerPaymentAppFinder::OnPaymentAppsCrawled,
-              weak_ptr_factory_.GetWeakPtr()),
+          /*method_manifest_urls_for_icon_refresh=*/std::set<GURL>(),
+          base::BindOnce(&SelfDeletingServiceWorkerPaymentAppFinder::
+                             OnPaymentAppsCrawledForInstallation,
+                         weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&SelfDeletingServiceWorkerPaymentAppFinder::
                              OnPaymentAppsCrawlerFinishedUsingResources,
                          weak_ptr_factory_.GetWeakPtr()));
@@ -253,9 +227,21 @@ class SelfDeletingServiceWorkerPaymentAppFinder
     // the creation of payment apps on it - the app will be updated in the
     // background and changes will take effect on any subsequent Payment Request
     // launch.
-    if (base::FeatureList::IsEnabled(
-            features::kPaymentHandlerAlwaysRefreshIcon) &&
-        !method_manifest_urls_for_icon_refresh.empty() && crawler_ != nullptr) {
+    std::set<GURL> method_manifest_urls_for_icon_refresh;
+    for (auto& app : installed_apps_) {
+      for (const auto& method : app.second->enabled_methods) {
+        // Only payment methods with manifests are eligible for refetching the
+        // icon of their installed payment apps.
+        GURL method_manifest_url = GURL(method);
+        if (!UrlUtil::IsValidUrlBasedPaymentMethodIdentifier(
+                method_manifest_url)) {
+          continue;
+        }
+        method_manifest_urls_for_icon_refresh.insert(method_manifest_url);
+      }
+    }
+
+    if (!method_manifest_urls_for_icon_refresh.empty() && crawler_ != nullptr) {
       DCHECK(!installed_apps_.empty());
       is_payment_app_crawler_finished_using_resources_ = false;
       crawler_->Start(
@@ -290,17 +276,22 @@ class SelfDeletingServiceWorkerPaymentAppFinder
     }
   }
 
-  void OnPaymentAppsCrawled(
+  void OnPaymentAppsCrawledForInstallation(
       std::map<GURL, std::unique_ptr<WebAppInstallationInfo>> apps_info,
       std::map<GURL, std::unique_ptr<RefetchedIcon>> refetched_icons,
       const std::string& error_message) {
+    // This path should only be hit when there were no apps already installed;
+    // see |OnPaymentAppsVerified|.
+    CHECK(installed_apps_.empty());
+
+    // Icons should not be refetched when crawling for installable apps.
+    CHECK(refetched_icons.empty());
+
     if (first_error_message_.empty())
       first_error_message_ = error_message;
 
-    UpdatePaymentAppIcons(refetched_icons);
-
-    std::move(callback_).Run(std::move(installed_apps_), std::move(apps_info),
-                             first_error_message_);
+    std::move(callback_).Run(content::InstalledPaymentAppsFinder::PaymentApps(),
+                             std::move(apps_info), first_error_message_);
   }
 
   void OnPaymentAppsCrawledForUpdatedInfo(
@@ -313,14 +304,9 @@ class SelfDeletingServiceWorkerPaymentAppFinder
     // that mode the crawler should not suggest installable apps to us.
     DCHECK(apps_info.empty());
 
-    // TODO(crbug.com/40259220): Consider optimizing either this database write
-    // or the entire re-crawling process to avoid fetching/saving icons when
-    // nothing has changed in the manifest.
-    UpdatePaymentAppIcons(refetched_icons);
-  }
-
-  void UpdatePaymentAppIcons(
-      const std::map<GURL, std::unique_ptr<RefetchedIcon>>& refetched_icons) {
+    // TODO(crbug.com/40259220): Consider optimizing either these database
+    // writes or the entire re-crawling process to avoid fetching/saving icons
+    // when nothing has changed in the manifest.
     for (auto& refetched_icon : refetched_icons) {
       GURL web_app_manifest_url = refetched_icon.first;
       RefetchedIcon* data = refetched_icon.second.get();

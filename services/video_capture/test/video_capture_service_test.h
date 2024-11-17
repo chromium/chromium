@@ -33,6 +33,7 @@ class VideoCaptureServiceTest : public testing::Test {
   ~VideoCaptureServiceTest() override;
 
   void SetUp() override;
+  void TearDown() override;
 
  protected:
   struct SharedMemoryVirtualDeviceContext {

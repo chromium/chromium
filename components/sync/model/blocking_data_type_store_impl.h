@@ -21,13 +21,13 @@ namespace syncer {
 // they are not needed anymore. See crbug.com/1147556 for more
 // context on move migration.
 
-// Formats key prefix for data records of |data_type| using |storage_type|.
+// Formats key prefix for data records of `data_type` using `storage_type`.
 std::string FormatDataPrefix(DataType data_type, StorageType storage_type);
 
-// Formats key prefix for metadata records of |data_type| using |storage_type|.
+// Formats key prefix for metadata records of `data_type` using `storage_type`.
 std::string FormatMetaPrefix(DataType data_type, StorageType storage_type);
 
-// Formats key for global metadata record of |data_type| using |storage_type|.
+// Formats key for global metadata record of `data_type` using `storage_type`.
 std::string FormatGlobalMetadataKey(DataType data_type,
                                     StorageType storage_type);
 
@@ -35,7 +35,7 @@ class DataTypeStoreBackend;
 
 class BlockingDataTypeStoreImpl : public BlockingDataTypeStore {
  public:
-  // |backend| must not be null.
+  // `backend` must not be null.
   BlockingDataTypeStoreImpl(DataType data_type,
                             StorageType storage_type,
                             scoped_refptr<DataTypeStoreBackend> backend);

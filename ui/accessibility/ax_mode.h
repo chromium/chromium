@@ -61,11 +61,15 @@ class AX_BASE_EXPORT AXMode {
   // attributes typically only needed by screen readers and other
   // assistive technology for blind users. Examples include text style
   // attributes, table cell information, live region properties, range
-  // values, and relationship attributes.
+  // values, and relationship attributes. Note that the HTML tag, ID, class, and
+  // display attributes will also be included.
   static constexpr uint32_t kScreenReader = 1 << 3;
 
-  // The accessibility tree will contain the HTML tag name and HTML attributes
-  // for all accessibility nodes that come from web content.
+  // The accessibility tree will contain all the HTML attributes for all
+  // accessibility nodes that come from web content. This effectively dumps all
+  // the HTML attributes as found in the HTML source, or as created by
+  // Javascript, in the accessibility tree, potentially taking up a lot of
+  // memory.
   static constexpr uint32_t kHTML = 1 << 4;
 
   // The accessibility tree will contain some metadata from the
@@ -156,6 +160,8 @@ class AX_BASE_EXPORT AXMode {
   // IMPORTANT!
   // These values are written to logs. Do not renumber or delete
   // existing items; add new entries to the end of the list.
+  //
+  // LINT.IfChange
   enum class BundleHistogramValue {
     // The unnamed bucket is a catch all for modes that do not match one of the
     // named sets.
@@ -171,6 +177,7 @@ class AX_BASE_EXPORT AXMode {
     // increase, but none of the other enum values may change.
     kMaxValue = 5
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityModeBundleEnum)
 
   // Experimental Flags
   // These are currently defined separately from existing flags to avoid
@@ -216,30 +223,18 @@ inline constexpr AXMode kAXModeBasic(AXMode::kNativeAPIs |
 // not present.
 inline constexpr AXMode kAXModeWebContentsOnly(AXMode::kWebContents |
                                                AXMode::kInlineTextBoxes |
-                                               AXMode::kScreenReader |
-                                               AXMode::kHTML);
+                                               AXMode::kScreenReader);
 
 // Used when an AT that requires full accessibility access, such as a screen
 // reader, is present.
 inline constexpr AXMode kAXModeComplete(AXMode::kNativeAPIs |
                                         AXMode::kWebContents |
                                         AXMode::kInlineTextBoxes |
-                                        AXMode::kScreenReader | AXMode::kHTML);
+                                        AXMode::kScreenReader);
 
-// Similar to kAXModeComplete, used when an AT that requires full accessibility
-// access, but does not need all HTML properties or attributes.
-inline constexpr AXMode kAXModeCompleteNoHTML(AXMode::kNativeAPIs |
-                                              AXMode::kWebContents |
-                                              AXMode::kInlineTextBoxes |
-                                              AXMode::kScreenReader);
-
-// Used when only tools that only need autofill functionality are present.
-// Some third password managers require kHTML.
-// TODO (aldietz): investigate what is needed by password managers in kHTML and
-// see if that may be folded into kAXModeBasic.
+// Used when tools that only need autofill functionality are present.
 inline constexpr AXMode kAXModeFormControls(AXMode::kNativeAPIs |
-                                                AXMode::kWebContents |
-                                                AXMode::kHTML,
+                                                AXMode::kWebContents,
                                             AXMode::kExperimentalFormControls);
 
 // If adding a new named set of mode flags, please update BundleHistogramValue.

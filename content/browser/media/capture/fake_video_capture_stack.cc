@@ -292,7 +292,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     capture_stack_->SetStarted();
   }
 
-  void OnStartedUsingGpuDecode() override { NOTREACHED_IN_MIGRATION(); }
+  void OnStartedUsingGpuDecode() override { NOTREACHED(); }
 
   void OnStopped() override {}
 

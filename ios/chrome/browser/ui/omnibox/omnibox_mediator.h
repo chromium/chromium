@@ -29,7 +29,7 @@ class Tracker;
 
 - (instancetype)initWithIncognito:(BOOL)isIncognito
                           tracker:(feature_engagement::Tracker*)tracker
-    NS_DESIGNATED_INITIALIZER;
+                    isLensOverlay:(BOOL)isLensOverlay NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The templateURLService used by this mediator to extract whether the default

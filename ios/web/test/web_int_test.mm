@@ -50,9 +50,7 @@ class IntTestWebStateObserver : public WebStateObserver {
     page_loaded_ = true;
   }
 
-  void WebStateDestroyed(web::WebState* web_state) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
 
  private:
   GURL expected_url_;

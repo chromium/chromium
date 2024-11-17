@@ -273,9 +273,18 @@ message DeviceRegisterRequest {
     // is mandatory and should be token-based.
     FLAVOR_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED = 18;
     // Device state downloaded from the server indicated that initial
-    // token-based enrollment is mandatory, but it failed and we are doing
-    // fallback to manual enrollment.
+    // token-based enrollment is mandatory, but it failed and we are falling
+    // back to manual enrollment.
     FLAVOR_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK = 19;
+    // Operating system was remotely installed, and device state downloaded
+    // from the server indicated that initial token-based enrollment is
+    // mandatory.
+    FLAVOR_ENROLLMENT_REMOTE_DEPLOYMENT_SERVER_FORCED = 20;
+    // Operating system was remotely installed, and device state downloaded
+    // from the server indicated that initial token-based enrollment is
+    // mandatory, but enrollment failed and we are falling back to manual
+    // enrollment.
+    FLAVOR_ENROLLMENT_REMOTE_DEPLOYMENT_MANUAL_FALLBACK = 21;
   }
 
   // Indicates the registration flavor. This is passed to the server FYI when
@@ -639,12 +648,12 @@ message PolicyFetchRequest {
 
   // Encoded information from a policy invalidation notification. This is opaque
   // to the client and should be forwarded from the invalidation notification.
-  optional string policy_invalidation_info = 10;
+  optional string policy_invalidation_info = 10 [deprecated = true];
 
   // Whether or not the client only supports the new PolicyData invalidation
   // topics. If true, only the policy_invalidation_topic and
   // command_invalidation_topic fields will be set in the PolicyData response.
-  optional bool invalidation_topics_only = 11;
+  optional bool invalidation_topics_only = 11 [deprecated = true];
 
   // If this is an affiliated user, this is the device's DMToken.
   optional string device_dm_token = 12;
@@ -1055,7 +1064,7 @@ message DevicePolicyRequest {
     SCHEDULED = 16;
     // Policy fetch triggered by sign-in.
     SIGNIN = 17;
-    // A placeholder reason used for tests (should not occur in production).
+    // A placeholder reason used for tests.
     TEST = 18;
     // Policy fetched at browser start, e.g. device policies at Ash start.
     BROWSER_START = 19;
@@ -1065,6 +1074,12 @@ message DevicePolicyRequest {
     USER_REQUEST = 21;
     // Policy fetches triggered by the Chrome Remote Desktop policy watcher.
     CRD_HOST_POLICY_WATCHER = 22;
+    // Fetch policy request when we shouldn't.
+    UNNECESSARY = 100;
+    // Fetch policy request when we disconnect from cloud management.
+    UNNECESSARY_DISCONNECT = 101;
+    // Fetch policy request when schema is updated.
+    UNNECESSARY_SCHEMA_UPDATED = 102;
   }
   optional Reason reason = 4;
 }
@@ -3142,6 +3157,22 @@ message RemoteCommandResult {
 }
 
 message DeviceRemoteCommandRequest {
+  // Reason for the requesting remote commands, to help with monitoring and
+  // alerting (e.g. to detect a decrease in invalidation requests).
+  enum Reason {
+    REASON_UNSPECIFIED = 0;
+    // A placeholder reason used for tests.
+    REASON_TEST = 1;
+    // Fetch on browser startup.
+    REASON_STARTUP = 2;
+    // Fetch to upload results of executed commands
+    REASON_UPLOAD_EXECUTION_RESULTS = 3;
+    // User triggered fetch.
+    REASON_USER_REQUEST = 4;
+    // Fetch due to an invalidation.
+    REASON_INVALIDATION = 5;
+  }
+
   // The command ID of the last command received from the server until
   // now. Omitted if no commands have been received yet.
   optional int64 last_command_unique_id = 1;
@@ -3161,6 +3192,9 @@ message DeviceRemoteCommandRequest {
   // fetched. This type helps the server redirect the request to different
   // handlers.
   optional string type = 5;
+
+  // Fetch request triggering reason.
+  optional Reason reason = 6;
 }
 
 message DeviceRemoteCommandResponse {
@@ -4635,6 +4669,9 @@ message FmRegistrationTokenUploadRequest {
   // Token's expiration timestamp in milliseconds since Epoch in UTC timezone
   // (Java time).
   optional int64 expiration_timestamp_ms = 4;
+  // Project number used to regiester with FM and the token is associated with.
+  // go/device-cloud-gcp#fcm-related-projects
+  optional int64 project_number = 5;
 }
 
 // Response to `FmRegistrationTokenUploadRequest`.
@@ -4918,6 +4955,8 @@ message DeviceManagementRequest {
 //     indicate that a certificate has not been issued yet.
 // 413 Request payload too large.
 // 417 Consumer (non-dasher) account can not enroll with packaged license.
+// 418 Cannot enroll to kiosk with packaged license.
+// 419 Org unit enrollment limit exceeded.
 // 429 Too many requests.
 // 500 Internal Server Error: most likely a bug in DM server.
 // 503 Service Unavailable: most likely a backend error.

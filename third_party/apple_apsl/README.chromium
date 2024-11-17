@@ -1,19 +1,20 @@
-Name: Darwin
-URL: https://www.opensource.apple.com/
-Version: unknown
+Name: Darwin configd
+URL: https://github.com/apple-oss-distributions/configd
+Version: 453.19
 Security Critical: yes
 Shipped: yes
-License: Apple Public Source License 2.0
+License: APSL 2.0
 License File: LICENSE
 
 One file is excerpted here:
 
 dnsinfo.h from:
-https://www.opensource.apple.com/source/configd/configd-453.19/dnsinfo/dnsinfo.h
+https://github.com/apple-oss-distributions/configd/blob/rel/configd-453/dnsinfo/dnsinfo.h
 
+Description:
 Provides dns_config_t which is used by /net/dns/dns_config_service_posix.cc to
-obtain system DNS configuration on Mac OS X. This private header is also used by
+obtain system DNS configuration on macOS. This private header is also used by
 Apple's open source mDNSResponder.
 
-Modifications:
+Local Modifications:
 - Removed Availability.h and the corresponding macros.

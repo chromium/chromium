@@ -192,7 +192,8 @@ class CONTENT_EXPORT DownloadManagerImpl
  private:
   using DownloadSet = std::set<download::DownloadItem*>;
   using DownloadGuidMap =
-      std::unordered_map<std::string, download::DownloadItemImpl*>;
+      std::unordered_map<std::string,
+                         raw_ptr<download::DownloadItemImpl, CtnExperimental>>;
   using DownloadItemImplVector = std::vector<download::DownloadItemImpl*>;
 
   // For testing.

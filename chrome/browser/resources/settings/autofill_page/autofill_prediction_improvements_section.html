@@ -2,85 +2,113 @@
   .flex {
     flex: 1;
   }
+
   .item-label {
     font-size: 11px;
     line-height: 11px;
   }
-</style>
-<!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
-<settings-toggle-button
-    id="prefToggle"
-    no-extension-indicator label=" "
-    sub-label-with-link="$i18n{autofillPredictionImprovementsToggleSubLabel}"
-    on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
-    pref="{{prefs.autofill.prediction_improvements.enabled}}">
-</settings-toggle-button>
-<div class="settings-columned-section">
-  <div class="column">
-    <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
-    <ul class="icon-bulleted-list">
-      <li>
-        <cr-icon icon="settings20:edit-square"></cr-icon>
-        <div class="cr-secondary-text">
-          $i18n{autofillPredictionImprovementsWhenOnSavedInfo}
-        </div>
-      </li>
-      <li>
-        <cr-icon icon="settings20:history"></cr-icon>
-        <div class="cr-secondary-text">
-          $i18n{autofillPredictionImprovementsWhenOnAdapts}
-        </div>
-      </li>
-    </ul>
-  </div>
-  <div class="column">
-    <h3 class="description-header">
-      $i18n{columnHeadingConsider}
-    </h3>
-    <ul class="icon-bulleted-list">
-      <li>
-        <cr-icon icon="settings:devices"></cr-icon>
-        <div class="cr-secondary-text">
-          $i18n{autofillPredictionImprovementsToConsiderInfoLocal}
-        </div>
-      </li>
-      <li>
-        <cr-icon icon="settings20:data"></cr-icon>
-        <div class="cr-secondary-text">
-          $i18n{autofillPredictionImprovementsToConsiderDataUsage}
-        </div>
-      </li>
-    </ul>
-  </div>
-</div>
 
-<template is="dom-if"
-    if="[[prefs.autofill.prediction_improvements.enabled.value]]">
-  <div id="entriesHeader" class="cr-row">
-    <h2 class="flex">
-      $i18n{autofillPredictionImprovementsUserAnnotationsHeader}
-    </h2>
-    <cr-button id="deleteAllEntries" class="header-aligned-button"
-        on-click="onDeleteAllEntriesClick_"
-        disabled="[[!userAnnotationsEntries_.length]]">
-      $i18n{autofillPredictionImprovementsDeleteAllEntriesButtonLabel}
-    </cr-button>
-  </div>
-  <ul id="entries" class="list-frame vertical-list">
-    <template is="dom-repeat" items="[[userAnnotationsEntries_]]">
-      <li class="list-item">
-        <div class="start">
-          <div class="cr-secondary-text item-label">[[item.key]]</div>
-          [[item.value]]
-        </div>
-        <cr-icon-button iron-icon="cr20:delete"
-            on-click="onDeleteEntryCick_"
-            title="$i18n{autofillPredictionImprovementsDeleteEntryDialogTitle}">
-        </cr-icon-button>
-      </li>
-    </template>
-  </ul>
-</template>
+  #entries {
+    margin-block-end: 0;
+    margin-block-start: 0;
+  }
+
+  :host([disabled]) #topSection {
+    opacity: 50%;
+  }
+</style>
+<div id="topSection">
+   <!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
+   <settings-toggle-button
+       id="prefToggle" disabled$="[[disabled]]"
+       no-extension-indicator label=" "
+       sub-label-with-link="$i18n{autofillPredictionImprovementsToggleSubLabel}"
+       on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
+       on-settings-boolean-control-change="onPrefToggleChanged_"
+       pref="{{prefs.autofill.prediction_improvements.enabled}}">
+   </settings-toggle-button>
+   <div class="settings-columned-section">
+     <div class="column">
+       <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+       <ul class="icon-bulleted-list">
+         <li>
+           <cr-icon icon="settings20:sync-saved-locally"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillPredictionImprovementsWhenOnSavedInfo}
+           </div>
+         </li>
+         <li>
+           <cr-icon icon="settings20:text-analysis"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillPredictionImprovementsUseToFill}
+           </div>
+         </li>
+       </ul>
+     </div>
+     <div class="column">
+       <h3 class="description-header">
+         $i18n{columnHeadingConsider}
+       </h3>
+       <ul class="icon-bulleted-list">
+         <li>
+           <cr-icon icon="settings20:psychiatry"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillPredictionImprovementsNewFeature}
+           </div>
+         </li>
+         <li>
+           <cr-icon icon="settings20:googleg"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillPredictionImprovementsToConsiderDataUsage}
+           </div>
+         </li>
+         <li>
+           <cr-icon icon="settings20:file-save"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillPredictionImprovementsToConsiderDataStorage}
+           </div>
+         </li>
+         <li>
+           <cr-icon icon="settings20:account-box"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillPredictionImprovementsToConsiderDataImprovement}
+           </div>
+         </li>
+       </ul>
+     </div>
+   </div>
+ </div>
+
+<div id="entriesHeader" class="cr-row">
+  <h2 class="flex">
+    <span id="entriesHeaderTitle">
+      $i18n{autofillPredictionImprovementsUserAnnotationsHeader}</span>
+  </h2>
+  <cr-button id="deleteAllEntries" class="header-aligned-button"
+      on-click="onDeleteAllEntriesClick_"
+      disabled="[[!userAnnotationsEntries_.length]]">
+    $i18n{autofillPredictionImprovementsDeleteAllEntriesButtonLabel}
+  </cr-button>
+</div>
+<ul id="entries" class="list-frame vertical-list">
+  <template is="dom-repeat" items="[[userAnnotationsEntries_]]">
+    <li class="list-item">
+      <div class="start">
+        <div class="cr-secondary-text item-label">[[item.key]]</div>
+        [[item.value]]
+      </div>
+      <cr-icon-button iron-icon="cr20:delete"
+          on-click="onDeleteEntryCick_"
+          title="$i18n{autofillPredictionImprovementsDeleteEntryDialogTitle}">
+      </cr-icon-button>
+    </li>
+  </template>
+  <template is="dom-if" if="[[!userAnnotationsEntries_.length]]" restamp>
+    <li id="entriesNone" class="list-item">
+      $i18n{autofillPredictionImprovementsUserAnnotationsNone}
+    </li>
+  </template>
+</ul>
 
 <template is="dom-if" if="[[entryToDelete_]]" restamp>
   <settings-simple-confirmation-dialog id="deleteEntryDialog"

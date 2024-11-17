@@ -11,9 +11,9 @@
 #import "components/content_settings/core/browser/cookie_settings.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/signin/public/base/signin_client.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "net/cookies/cookie_change_dispatcher.h"
 
+class ProfileIOS;
 class WaitForNetworkCallbackHelperIOS;
 
 namespace version_info {
@@ -24,7 +24,7 @@ enum class Channel;
 class IOSChromeSigninClient : public SigninClient {
  public:
   IOSChromeSigninClient(
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       scoped_refptr<HostContentSettingsMap> host_content_settings_map);
 
@@ -60,8 +60,8 @@ class IOSChromeSigninClient : public SigninClient {
  private:
   // Helper to delay callbacks until connection becomes online again.
   std::unique_ptr<WaitForNetworkCallbackHelperIOS> network_callback_helper_;
-  // The browser state associated with this service.
-  raw_ptr<ChromeBrowserState> browser_state_;
+  // The profile associated with this service.
+  raw_ptr<ProfileIOS> profile_;
   // Used to check if sign in cookies are allowed.
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // Used to add and remove content settings observers.

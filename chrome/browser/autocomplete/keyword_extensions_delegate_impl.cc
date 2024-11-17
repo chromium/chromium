@@ -9,6 +9,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
+#include "chrome/browser/omnibox/omnibox_suggestions_watcher_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -28,7 +30,7 @@ KeywordExtensionsDelegateImpl::KeywordExtensionsDelegateImpl(
   current_input_id_ = 0;
 
   omnibox_input_observation_.Observe(
-      OmniboxInputWatcher::GetForBrowserContext(profile_));
+      OmniboxInputWatcherFactory::GetForBrowserContext(profile_));
 
   // TODO(crbug.com/40810217): The comment below is historic and maybe
   // misleading because extensions don't always "run" in the original profile.
@@ -38,7 +40,7 @@ KeywordExtensionsDelegateImpl::KeywordExtensionsDelegateImpl(
   // where extensions run. We use the input ID to distinguish whether the
   // suggestions are meant for us.
   omnibox_suggestions_observation_.Observe(
-      OmniboxSuggestionsWatcher::GetForBrowserContext(
+      OmniboxSuggestionsWatcherFactory::GetForBrowserContext(
           profile_->GetOriginalProfile()));
 }
 

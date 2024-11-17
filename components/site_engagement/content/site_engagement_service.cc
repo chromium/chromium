@@ -253,8 +253,7 @@ bool SiteEngagementService::IsEngagementAtLeast(
     case blink::mojom::EngagementLevel::MAX:
       return score == SiteEngagementScore::kMaxPoints;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 SiteEngagementService::SiteEngagementService(content::BrowserContext* context)

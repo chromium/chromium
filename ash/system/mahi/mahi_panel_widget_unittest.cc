@@ -50,7 +50,8 @@ class MahiPanelWidgetTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kMahi,
-                              chromeos::features::kFeatureManagementMahi},
+                              chromeos::features::kFeatureManagementMahi,
+                              chromeos::features::kMahiPanelResizable},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
 
@@ -101,6 +102,25 @@ TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedBottomSpace) {
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().bottom() -
           kPanelBoundsShelfPadding,
       widget->GetRestoredBounds().bottom());
+}
+
+TEST_F(MahiPanelWidgetTest, WidgetAfterResize) {
+  UpdateDisplay("800x700");
+
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(100, 100, 300, 300), &ui_controller_);
+
+  // Click on the top left of the panel and drag towards the top left of the
+  // screen to resize.
+  GetEventGenerator()->set_current_screen_location(
+      widget->GetWindowBoundsInScreen().origin());
+  constexpr gfx::Vector2d kDragOffset(-50, -70);
+  GetEventGenerator()->DragMouseBy(kDragOffset.x(), kDragOffset.y());
+
+  auto expected_bounds =
+      gfx::Rect(50, 30, kPanelDefaultWidth + 50, kPanelDefaultHeight + 70);
+  EXPECT_EQ(expected_bounds, widget->GetWindowBoundsInScreen());
 }
 
 TEST_F(MahiPanelWidgetTest, WidgetPositionAfterWorkAreaBoundsChange) {

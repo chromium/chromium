@@ -9,6 +9,13 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -18,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/actions/action_id.h"
 
 CastToolbarButtonController::CastToolbarButtonController(Profile* profile)
     : CastToolbarButtonController(
@@ -53,12 +61,12 @@ void CastToolbarButtonController::SetAlwaysShowActionPref(Profile* profile,
 void CastToolbarButtonController::OnIssue(const media_router::Issue& issue) {
   // Don't show the toolbar button if it receives a permission rejected issue.
   has_issue_ = !issue.is_permission_rejected_issue();
-  MaybeAddOrRemoveAction();
+  MaybeToggleIconVisibility();
 }
 
 void CastToolbarButtonController::OnIssuesCleared() {
   has_issue_ = false;
-  MaybeAddOrRemoveAction();
+  MaybeToggleIconVisibility();
 }
 
 void CastToolbarButtonController::OnRoutesUpdated(
@@ -86,12 +94,12 @@ void CastToolbarButtonController::OnRoutesUpdated(
             return route.media_source().IsTabMirroringSource() ||
                    route.media_source().IsDesktopMirroringSource();
           });
-  MaybeAddOrRemoveAction();
+  MaybeToggleIconVisibility();
 }
 
 void CastToolbarButtonController::OnDialogShown() {
   dialog_count_++;
-  MaybeAddOrRemoveAction();
+  MaybeToggleIconVisibility();
   for (Observer& observer : observers_)
     observer.ActivateIcon();
 }
@@ -103,11 +111,11 @@ void CastToolbarButtonController::OnDialogHidden() {
   if (dialog_count_ == 0) {
     for (Observer& observer : observers_)
       observer.DeactivateIcon();
-    // Call MaybeAddOrRemoveAction() asynchronously, so that the action icon
+    // Call MaybeToggleIconVisibility() asynchronously, so that the action icon
     // doesn't get hidden until we have a chance to show a context menu.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&CastToolbarButtonController::MaybeAddOrRemoveAction,
+        base::BindOnce(&CastToolbarButtonController::MaybeToggleIconVisibility,
                        weak_factory_.GetWeakPtr()));
   }
 }
@@ -118,24 +126,35 @@ void CastToolbarButtonController::OnContextMenuShown() {
   // Once the context menu is shown, we no longer need to keep track of the
   // mouse or touch press.
   keep_visible_for_right_click_or_hold_ = false;
-  MaybeAddOrRemoveAction();
+  MaybeToggleIconVisibility();
 }
 
 void CastToolbarButtonController::OnContextMenuHidden() {
   DCHECK(context_menu_shown_);
   context_menu_shown_ = false;
-  MaybeAddOrRemoveAction();
+  MaybeToggleIconVisibility();
+}
+
+void CastToolbarButtonController::UpdateIcon() {
+  // Non-ToolbarPinning path updates the icon via observers.
+  if (features::IsToolbarPinningEnabled()) {
+    for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+      browser->browser_window_features()
+          ->cast_browser_controller()
+          ->UpdateIcon();
+    }
+  }
 }
 
 void CastToolbarButtonController::KeepIconShownOnPressed() {
   DCHECK(!keep_visible_for_right_click_or_hold_);
   keep_visible_for_right_click_or_hold_ = true;
-  MaybeAddOrRemoveAction();
+  MaybeToggleIconVisibility();
 }
 
 void CastToolbarButtonController::MaybeHideIconOnReleased() {
   keep_visible_for_right_click_or_hold_ = false;
-  MaybeAddOrRemoveAction();
+  MaybeToggleIconVisibility();
 }
 
 void CastToolbarButtonController::AddObserver(Observer* observer) {
@@ -166,11 +185,25 @@ CastToolbarButtonController::CastToolbarButtonController(
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kShowCastIconInToolbar,
-      base::BindRepeating(&CastToolbarButtonController::MaybeAddOrRemoveAction,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &CastToolbarButtonController::MaybeToggleIconVisibility,
+          base::Unretained(this)));
 }
 
-void CastToolbarButtonController::MaybeAddOrRemoveAction() {
+void CastToolbarButtonController::MaybeToggleIconVisibility() {
+  if (features::IsToolbarPinningEnabled() &&
+      base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+    for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+      if (auto* container = BrowserView::GetBrowserViewForBrowser(browser)
+                                ->toolbar()
+                                ->pinned_toolbar_actions_container()) {
+        container->ShowActionEphemerallyInToolbar(kActionRouteMedia,
+                                                  ShouldEnableAction());
+      }
+    }
+    return;
+  }
+
   if (ShouldEnableAction()) {
     for (Observer& observer : observers_)
       observer.ShowIcon();

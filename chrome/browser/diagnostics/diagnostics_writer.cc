@@ -108,7 +108,7 @@ class WinConsole : public SimpleConsole {
       case DEFAULT:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return (TRUE == ::SetConsoleTextAttribute(std_out_, color_combo));
   }
@@ -174,7 +174,7 @@ class PosixConsole : public SimpleConsole {
       case DEFAULT:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     printf("%s", code);
     return true;

@@ -7,9 +7,11 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -56,12 +58,18 @@ class UserEducationInternalsPageHandlerImpl
   void LaunchWhatsNewStaging() override;
 
  private:
+  void OnFeaturePromoShowResult(user_education::FeaturePromoResult show_result);
+
   raw_ptr<content::WebUI> web_ui_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
 
   mojo::Receiver<
       mojom::user_education_internals::UserEducationInternalsPageHandler>
       receiver_;
+
+  ShowFeaturePromoCallback pending_callback_;
+  base::WeakPtrFactory<UserEducationInternalsPageHandlerImpl> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_USER_EDUCATION_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_

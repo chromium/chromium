@@ -17,11 +17,12 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"  // nogncheck https://crbug.com/1474984
+#include "chrome/browser/ui/web_applications/navigation_capturing_navigation_handle_user_data.h"  // nogncheck https://crbug.com/377760841
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -159,7 +160,7 @@ LinkCapturingNavigationThrottle::MaybeCreate(
     content::NavigationHandle* handle,
     std::unique_ptr<Delegate> delegate) {
   // If the reimplementation params of the link capturing feature flag is
-  // enabled, turn off the "old" link capturing behavior.
+  // enabled for all navigations, turn off the "old" link capturing behavior.
   if (features::IsNavigationCapturingReimplEnabled()) {
     return nullptr;
   }
@@ -268,6 +269,14 @@ bool LinkCapturingNavigationThrottle::ShouldOverrideUrlIfRedirected(
 ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   content::NavigationHandle* handle = navigation_handle();
 
+  // Exit early if the reimplementation data is attached, to avoid running two
+  // different throttles simultaneously. Note: this cannot be checked in
+  // `MaybeCreate()` since the data might get attached after it's executed.
+  if (web_app::NavigationCapturingNavigationHandleUserData::
+          GetForNavigationHandle(*handle)) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   // If the navigation will update the same document, don't consider as a
   // capturable link.
   if (handle->IsSameDocument()) {
@@ -296,8 +305,9 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::optional<LaunchCallback> launch_link_capture =
-      delegate_->CreateLinkCaptureLaunchClosure(profile, web_contents, url,
-                                                is_navigation_from_link);
+      delegate_->CreateLinkCaptureLaunchClosure(
+          profile, web_contents, url, is_navigation_from_link,
+          handle->GetRedirectChain().size());
   if (!launch_link_capture.has_value()) {
     return content::NavigationThrottle::PROCEED;
   }

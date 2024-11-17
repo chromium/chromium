@@ -13,8 +13,8 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.AttributeSet;
 import android.view.animation.Interpolator;
-import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 
 import org.chromium.ui.base.LocalizationUtils;
@@ -73,7 +73,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
     private boolean mIsCanceled;
 
     /** If the layout is RTL. */
-    private boolean mIsRtl;
+    private final boolean mIsRtl;
 
     /** The update listener for the animation. */
     private ProgressBarUpdateListener mListener;
@@ -85,7 +85,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
     private ValueAnimator mLastUpdatedAnimation;
 
     /** The ratio of px to dp. */
-    private float mDpToPx;
+    private final float mDpToPx;
 
     /** An animation update listener that moves an ImageView across the progress bar. */
     private class ProgressBarUpdateListener implements AnimatorUpdateListener {
@@ -99,11 +99,9 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
 
     /**
      * @param context The Context for this view.
-     * @param height The LayoutParams for this view.
      */
-    public ToolbarProgressBarAnimatingView(Context context, LayoutParams layoutParams) {
-        super(context);
-        setLayoutParams(layoutParams);
+    public ToolbarProgressBarAnimatingView(Context context, AttributeSet attrs) {
+        super(context, attrs);
         mIsCanceled = true;
         mIsRtl = LocalizationUtils.isLayoutRtl();
         mDpToPx = getResources().getDisplayMetrics().density;
@@ -152,7 +150,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
         if (mProgressWidth <= 0) return;
 
         // Total duration: logE(progress_dp) * 200 * 1.3
-        long totalDuration = (long) (Math.log(mProgressWidth / mDpToPx) / Math.log(Math.E)) * 260;
+        long totalDuration = (long) ((Math.log(mProgressWidth / mDpToPx) / Math.log(Math.E)) * 260);
         if (totalDuration <= 0) return;
 
         mSlowAnimation.setDuration((long) (totalDuration * SLOW_ANIMATION_FRACTION));

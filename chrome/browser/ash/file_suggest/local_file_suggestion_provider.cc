@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
 #include "chrome/browser/ash/app_list/search/util/mrfu_cache.h"
+#include "chrome/browser/ash/file_manager/file_tasks_notifier_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
@@ -87,7 +88,8 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   auto* notifier =
-      file_manager::file_tasks::FileTasksNotifier::GetForProfile(profile);
+      file_manager::file_tasks::FileTasksNotifierFactory::GetForProfile(
+          profile);
 
   if (notifier) {
     file_tasks_observer_.Observe(notifier);
@@ -137,8 +139,7 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
   // to enable unit tests to mock out the trash paths appropriately.
   if (trash_paths_.empty()) {
     auto enabled_trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile_, /*base_path=*/base::FilePath());
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile_);
     for (const auto& it : enabled_trash_locations) {
       trash_paths_.emplace_back(
           it.first.Append(it.second.relative_folder_path));
@@ -158,7 +159,7 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
 
 void LocalFileSuggestionProvider::MaybeUpdateItemSuggestCache(
     base::PassKey<FileSuggestKeyedService>) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LocalFileSuggestionProvider::OnFilesOpened(

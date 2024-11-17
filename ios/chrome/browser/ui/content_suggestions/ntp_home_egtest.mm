@@ -12,6 +12,7 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/features.h"
@@ -155,12 +156,14 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Disable search suggestions so that the omnibox popup does not appear.
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSearchSuggestEnabled];
 
-  [self closeAllTabs];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [self closeAllTabs];
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 }
 
 + (void)tearDown {
   [self closeAllTabs];
-
   [super tearDown];
 }
 
@@ -174,13 +177,20 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
   // Show doodle to make sure tests cover async callback logic updating logo.
-  config.additional_args.push_back(
-      std::string("-google-doodle-url=https://www.gstatic.com/chrome/ntp/"
-                  "doodle_test/ddljson_android0.json"));
+  // Note: This makes testPositionRestoredWithShiftingOffset and
+  // testPositionRestoredWithoutShiftingOffset flaky. Find a better way to hide
+  // the doodle for these tests, or wait for the doodle to display (which is the
+  // result of a real network request).
+  if (![self isRunningTest:@selector(testPositionRestoredWithShiftingOffset)] &&
+      ![self
+          isRunningTest:@selector(testPositionRestoredWithoutShiftingOffset)]) {
+    config.additional_args.push_back(
+        std::string("-google-doodle-url=https://www.gstatic.com/chrome/ntp/"
+                    "doodle_test/ddljson_android0.json"));
+  }
   config.features_disabled.push_back(kEnableFeedAblation);
-  // TODO(crbug.com/40251409): Scrolling issues when promo is enabled.
-  config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
-  config.features_disabled.push_back(kSafetyCheckMagicStack);
+  config.features_disabled.push_back(
+      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
 
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kIOSLargeFakebox);
@@ -205,6 +215,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 - (void)setUp {
   [super setUp];
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    [NTPHomeTestCase setUpHelper];
+  }
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kArticlesForYouEnabled];
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:feed::prefs::kArticlesListVisible];
@@ -213,13 +226,13 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [NewTabPageAppInterface disableSetUpList];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [SearchEnginesAppInterface setSearchEngineTo:self.defaultSearchEngine];
 
   [self resetCustomizationPrefs];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests
@@ -586,7 +599,15 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that rotating to landscape and scrolling into the feed, opening another
 // NTP, and then swtiching back retains the scroll position.
-- (void)testOpenMultipleTabsandChangeOrientation {
+// TODO(crbug.com/370968166): Test flaky on iphone-device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenMultipleTabsandChangeOrientation \
+  testOpenMultipleTabsandChangeOrientation
+#else
+#define MAYBE_testOpenMultipleTabsandChangeOrientation \
+  DISABLED_testOpenMultipleTabsandChangeOrientation
+#endif
+- (void)MAYBE_testOpenMultipleTabsandChangeOrientation {
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
   [self testNTPInitialPositionAndContent:collectionView];
 
@@ -1677,7 +1698,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Relaunch the app
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kEnableDiscoverFeedTopSyncPromo);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Scroll down a bit and check that the promo is visible.

@@ -2545,7 +2545,7 @@ void KcerTokenImpl::UpdateCacheWithCerts(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (certs.has_value()) {
-    cert_cache_ = CertCache(std::move(certs).value());
+    cert_cache_ = CertCache(certs.value());
   } else {
     LOG(ERROR) << "Failed to update cert cache, error: "
                << static_cast<uint32_t>(certs.error());

@@ -1,6 +1,6 @@
 # Help Bubbles
 
-[Help bubbles](./common/help_bubble.h) are the core visual component of both
+[Help bubbles](./common/help_bubble/help_bubble.h) are the core visual component of both
 [IPH](./feature-promos.md) and [Tutorials](./tutorials.md).
 
 A help bubble is tinted bubble (blue in the default theme) with the following
@@ -17,8 +17,8 @@ _anchor element_ - the UI element the bubble refers to. For example, a promo for
 a new button in the toolbar would have an arrow pointing to the button.
 
 Help bubbles can be created via a
-[HelpBubbleFactory](./common/help_bubble_factory.h) and a
-[HelpBubbleParams](./common/help_bubble_params.h) object, but in nearly all
+[HelpBubbleFactory](./common/help_bubble/help_bubble_factory.h) and a
+[HelpBubbleParams](./common/help_bubble/help_bubble_params.h) object, but in nearly all
 cases you should be using the IPH or Tutorial system (or even
 [ShowPromoInPage](/chrome/browser/ui/user_education/show_promo_in_page.h))
 to display help bubbles.
@@ -144,8 +144,8 @@ the anchor view.
 Some other platforms (e.g. ChromeOS) have created additional types of help
 bubbles for specific applications; creating a new help bubble implementation
 isn't particularly hard; see existing classes derived from
-[HelpBubble](./common/help_bubble.h) and
-[HelpBubbleFactory](./common/help_bubble_factory.h).
+[HelpBubble](./common/help_bubble/help_bubble.h) and
+[HelpBubbleFactory](./common/help_bubble/help_bubble_factory.h).
 
 The key takeaway is that in the vast majority of User Education code, the logic
 around help bubbles doesn't (and shouldn't!) care which factory or which help

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/optimization_guide/core/prediction_manager.h"
+
 #include <memory>
 
 #include "base/base64.h"
@@ -37,8 +39,8 @@
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
-#include "components/optimization_guide/core/prediction_manager.h"
 #include "components/optimization_guide/core/prediction_model_download_manager.h"
+#include "components/optimization_guide/core/prediction_model_override.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"

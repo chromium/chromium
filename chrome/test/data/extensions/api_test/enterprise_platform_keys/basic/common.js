@@ -629,7 +629,7 @@ function testHasSubtleCryptoMethods(subtleCrypto) {
 // https://www.w3.org/TR/WebCryptoAPI/#RsaHashedKeyGenParams-dictionary
 const RSA_GEN_ALGORITHM = {
   name: 'RSASSA-PKCS1-v1_5',
-  modulusLength: 512,
+  modulusLength: 2048,
   // Equivalent to 65537.
   publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
   hash: {
@@ -759,6 +759,28 @@ async function testGenerateRsaKeyAndSignOtherParams(subtleCrypto) {
   succeed();
 }
 
+// Call generate RSA key with unsupported algorithm name.
+async function testGenerateRsaKeyUnsupportedAlgorithmName(subtleCrypto) {
+  var algorithm = {
+    name: 'RSA-PSS',
+    modulusLength: 2048,
+    // Equivalent to 65537.
+    publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+    hash: {
+      name: 'SHA-1',
+    }
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, ['sign']);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('The algorithm is not supported', error.message);
+    succeed();
+  }
+}
+
 // Call generate RSA key with invalid algorithm param, missing modulusLength.
 async function testGenerateRsaKeyParamMissingModulusLength(subtleCrypto) {
   var algorithm = {
@@ -784,7 +806,7 @@ async function testGenerateRsaKeyParamMissingModulusLength(subtleCrypto) {
 async function testGenerateRsaKeyParamMissingPublicExponent(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
-    modulusLength: 512,
+    modulusLength: 1024,
     hash: {
       name: 'SHA-1',
     }
@@ -804,7 +826,7 @@ async function testGenerateRsaKeyParamMissingPublicExponent(subtleCrypto) {
 async function testGenerateRsaKeyParamMissingHash(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
-    modulusLength: 512,
+    modulusLength: 1024,
     // Equivalent to 65537.
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
   };
@@ -824,7 +846,7 @@ async function testGenerateRsaKeyParamMissingHash(subtleCrypto) {
 async function testGenerateRsaKeyParamUnsupportedPublicExponent(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
-    modulusLength: 512,
+    modulusLength: 2048,
     // Different from 65537.
     publicExponent: new Uint8Array([0x01, 0x01]),
   };
@@ -835,6 +857,22 @@ async function testGenerateRsaKeyParamUnsupportedPublicExponent(subtleCrypto) {
   } catch (error) {
     assertTrue(error instanceof Error);
     assertEq('A required parameter was missing or out-of-range', error.message);
+    succeed();
+  }
+}
+
+async function testGenerateEcKeyUnsupportedAlgorithmName(subtleCrypto) {
+  var algorithm = {
+    name: 'ECDH',
+    namedCurve: 'P-256',
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, ['sign']);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('The algorithm is not supported', error.message);
     succeed();
   }
 }
@@ -966,10 +1004,12 @@ function getTestsForSubtleCrypto(subtleCrypto, signMultipleTimes) {
   const tests = [
     testHasSubtleCryptoMethods,
     testGenerateRsaKeyAndSignOtherParams,
+    testGenerateRsaKeyUnsupportedAlgorithmName,
     testGenerateRsaKeyParamMissingModulusLength,
     testGenerateRsaKeyParamMissingPublicExponent,
     testGenerateRsaKeyParamMissingHash,
     testGenerateRsaKeyParamUnsupportedPublicExponent,
+    testGenerateEcKeyUnsupportedAlgorithmName,
     testGenerateEcKeyParamMissingNamedCurve,
     testGenerateEcKeyParamUnsupportedNamedCurve,
     testGenerateAesKey,

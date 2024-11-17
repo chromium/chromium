@@ -36,13 +36,11 @@ namespace push_notification_settings {
 class PushNotificationSettingsUtilTest : public PlatformTest {
  public:
   PushNotificationSettingsUtilTest() {
-    TestChromeBrowserState* test_chrome_browser_state =
-        profile_manager_.AddProfileWithBuilder(
-            TestChromeBrowserState::Builder());
+    TestProfileIOS* test_profile =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
 
-    const std::string profile_name =
-        test_chrome_browser_state->GetProfileName();
-    pref_service_ = test_chrome_browser_state->GetPrefs();
+    const std::string profile_name = test_profile->GetProfileName();
+    pref_service_ = test_profile->GetPrefs();
 
     manager_ = [[PushNotificationAccountContextManager alloc]
         initWithProfileManager:&profile_manager_];
@@ -82,7 +80,7 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
                              ProfileAttributesStorageIOS* storage,
                              const std::string& gaia_id,
                              const std::string profile_name) {
-    // Construct the BrowserStates with the given gaia id and add the gaia id
+    // Construct the Profiles with the given gaia id and add the gaia id
     // into the AccountContextManager.
     storage->UpdateAttributesForProfileWithName(
         profile_name,
@@ -113,7 +111,8 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
 // When 0 clients are enabled, the state is DISABLED.
 // When `enabled` >= 1 AND `disabled` >= 1, the state is INDETERMINANT
 // When `enabled` >=1 and `disabled` == 0, then state is ENABLED.
-TEST_F(PushNotificationSettingsUtilTest, TestPermissionState) {
+// TODO(crbug.com/370742354): re-enable
+TEST_F(PushNotificationSettingsUtilTest, DISABLED_TestPermissionState) {
   // Enable Notifications in random order.
   ClientPermissionState state = GetNotificationPermissionState(
       base::SysNSStringToUTF8(fake_id_.gaiaID), pref_service_);

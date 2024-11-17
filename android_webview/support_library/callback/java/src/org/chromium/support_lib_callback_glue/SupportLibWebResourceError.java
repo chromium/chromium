@@ -29,4 +29,3 @@ public class SupportLibWebResourceError implements WebResourceErrorBoundaryInter
         return mError.description;
     }
 }
-;

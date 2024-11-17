@@ -229,7 +229,7 @@ enum APIPermissionID {
   kVirtualKeyboard = 202,
   kDeleted_NetworkingCastPrivate = 203,
   kMediaPerceptionPrivate = 204,
-  kLockScreen = 205,
+  kDeleted_LockScreen = 205,
   kNewTabPageOverride = 206,
   kDeclarativeNetRequest = 207,
   kLockWindowFullscreenPrivate = 208,
@@ -283,6 +283,8 @@ enum APIPermissionID {
   kOdfsConfigPrivate = 256,
   kChromeOSManagementAudio = 257,
   kChromeOSDiagnosticsNetworkInfoForMlab = 258,
+  kAILanguageModelOriginTrial = 259,
+  kExperimentalAiData = 260,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in

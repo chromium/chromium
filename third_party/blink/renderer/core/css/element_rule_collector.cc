@@ -27,12 +27,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
 #include <utility>
@@ -86,13 +80,15 @@ struct ContextWithStyleScopeFrame {
   STACK_ALLOCATED();
 
  public:
-  ContextWithStyleScopeFrame(Element* element,
+  ContextWithStyleScopeFrame(const ElementResolveContext& element_context,
                              const MatchRequest& match_request,
                              StyleRequest* pseudo_style_request,
                              StyleScopeFrame* parent_frame)
-      : style_scope_frame(*element, parent_frame), context(element) {
-    context.style_scope_frame =
-        &style_scope_frame.GetParentFrameOrThis(*element);
+      : style_scope_frame(element_context.GetUltimateOriginatingElementOrSelf(),
+                          parent_frame),
+        context(element_context) {
+    context.style_scope_frame = &style_scope_frame.GetParentFrameOrThis(
+        element_context.GetUltimateOriginatingElementOrSelf());
     context.scope = match_request.Scope();
     context.pseudo_id = pseudo_style_request->pseudo_id;
     context.pseudo_argument = &pseudo_style_request->pseudo_argument;
@@ -108,8 +104,7 @@ struct ContextWithStyleScopeFrame {
         context.search_text_request_is_current = false;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -350,8 +345,12 @@ ElementRuleCollector::ElementRuleCollector(
       style_recalc_context_(style_recalc_context),
       selector_filter_(filter),
       mode_(SelectorChecker::kResolvingStyle),
-      can_use_fast_reject_(
-          selector_filter_.ParentStackIsConsistent(context.ParentElement())),
+      can_use_fast_reject_(selector_filter_.ParentStackIsConsistent(
+          context.GetElement().IsPseudoElement()
+              ? LayoutTreeBuilderTraversal::ParentElement(
+                    *To<PseudoElement>(context.GetElement())
+                         .UltimateOriginatingElement())
+              : context.ParentElement())),
       matching_ua_rules_(false),
       suppress_visited_(false),
       inside_link_(inside_link),
@@ -485,11 +484,8 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     const SelectorChecker& checker,
     SelectorChecker::SelectorCheckingContext& context,
     PartRequest* part_request) {
-  // If we are _not_ in initial style, or we are just collecting rules,
-  // we must skip all rules marked with @starting-style.
   bool reject_starting_styles = style_recalc_context_.is_ensuring_style ||
-                                style_recalc_context_.old_style ||
-                                mode_ != SelectorChecker::kResolvingStyle;
+                                style_recalc_context_.old_style;
 
   CascadeLayerSeeker layer_seeker(stop_at_first_match ? nullptr : context.scope,
                                   context.vtt_originating_element,
@@ -537,8 +533,21 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       continue;
     }
 
+    context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
+
+    // We cannot use easy selector matching for VTT elements.
+    // It is also not prepared to deal with the featurelessness
+    // of the host (see comment in SelectorChecker::CheckOne()).
+    // We also cannot use easy selector matching for real pseudo elements,
+    // as we need to match them against an array of ancestors.
+    bool can_use_easy_selector_matching =
+        !context.pseudo_element && context.vtt_originating_element == nullptr &&
+        !(context.scope &&
+          context.scope->OwnerShadowHost() == context.element) &&
+        !context.style_scope;
+
     SelectorChecker::MatchResult result;
-    if (context.vtt_originating_element == nullptr &&
+    if (can_use_easy_selector_matching &&
         rule_data.IsEntirelyCoveredByBucketing()) {
       // Just by seeing this rule, we know that its selector
       // matched, and that we don't get any flags or a match
@@ -547,20 +556,15 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         continue;
       }
 #if DCHECK_IS_ON()
-      context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
-      DCHECK(!context.style_scope);
       DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
                                         suppress_visited_, result.proximity));
 #endif
-    } else if (context.vtt_originating_element == nullptr &&
-               rule_data.SelectorIsEasy()) {
+    } else if (can_use_easy_selector_matching && rule_data.SelectorIsEasy()) {
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone) {
         continue;
       }
       bool easy_match = EasySelectorChecker::Match(&selector, context.element);
 #if DCHECK_IS_ON()
-      context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
-      DCHECK(!context.style_scope);
       DCHECK_EQ(easy_match, SlowMatchWithNoResultFlags(
                                 checker, context, selector, rule_data,
                                 suppress_visited_, result.proximity))
@@ -575,10 +579,22 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       context.match_visited =
           !suppress_visited_ &&
           rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
-      context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
       bool match = checker.Match(context, result);
       result_.AddFlags(result.flags);
       if (!match) {
+        continue;
+      }
+      // If matching was for pseudo element with ancestors vector,
+      // check that we really reached the end of it.
+      // E.g. for div::column::scroll-marker, matching for column pseudo,
+      // vector would be just [column], index would be 1 (meaning matching
+      // found pseudo style ::scroll-marker), and for rule div::column, index
+      // would be 0 (meaning matching found actual style).
+      // Anything else would mean no match.
+      if (context.pseudo_element &&
+          (result.pseudo_ancestor_index == kNotFound ||
+           result.pseudo_ancestor_index <
+               context.pseudo_element_ancestors.size() - 1)) {
         continue;
       }
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone &&
@@ -627,12 +643,13 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         // changes may cause pseudo elements to start being generated.
         bool selects_size = false;
         bool selects_style = false;
-        bool selects_sticky = false;
+        bool selects_scroll_state = false;
         for (const ContainerQuery* current = container_query; current;
              current = current->Parent()) {
           selects_size |= current->Selector().SelectsSizeContainers();
           selects_style |= current->Selector().SelectsStyleContainers();
-          selects_sticky |= current->Selector().SelectsStickyContainers();
+          selects_scroll_state |=
+              current->Selector().SelectsScrollStateContainers();
         }
         if (selects_size) {
           result_.SetDependsOnSizeContainerQueries();
@@ -640,8 +657,8 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         if (selects_style) {
           result_.SetDependsOnStyleContainerQueries();
         }
-        if (selects_sticky) {
-          result_.SetDependsOnStateContainerQueries();
+        if (selects_scroll_state) {
+          result_.SetDependsOnScrollStateContainerQueries();
         }
       }
     }
@@ -714,26 +731,28 @@ base::span<const Attribute> GetAttributes(const Element& element,
                                           bool need_style_synchronized) {
   if (need_style_synchronized) {
     const AttributeCollection collection = element.Attributes();
-    return {collection.data(), collection.size()};
+    return base::span(collection);
   } else {
     const AttributeCollection collection =
         element.AttributesWithoutStyleUpdate();
-    return {collection.data(), collection.size()};
+    return base::span(collection);
   }
 }
 
 }  // namespace
 
 void ElementRuleCollector::CollectMatchingRules(
-    const MatchRequest& match_request) {
-  CollectMatchingRulesInternal</*stop_at_first_match=*/false>(match_request);
+    const MatchRequest& match_request,
+    PartNames* part_names) {
+  CollectMatchingRulesInternal</*stop_at_first_match=*/false>(match_request,
+                                                              part_names);
 }
 
 DISABLE_CFI_PERF
 bool ElementRuleCollector::CheckIfAnyRuleMatches(
     const MatchRequest& match_request) {
   return CollectMatchingRulesInternal</*stop_at_first_match=*/true>(
-      match_request);
+      match_request, /*part_names*/ nullptr);
 }
 
 bool ElementRuleCollector::CanRejectScope(const StyleScope& style_scope) {
@@ -747,17 +766,17 @@ bool ElementRuleCollector::CanRejectScope(const StyleScope& style_scope) {
 
 template <bool stop_at_first_match>
 DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
-    const MatchRequest& match_request) {
+    const MatchRequest& match_request,
+    PartNames* part_names) {
   DCHECK(!match_request.IsEmpty());
 
-  SelectorChecker checker(nullptr, pseudo_style_request_, mode_,
+  SelectorChecker checker(part_names, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
-  ContextWithStyleScopeFrame context(&context_.GetElement(), match_request,
+  ContextWithStyleScopeFrame context(context_, match_request,
                                      &pseudo_style_request_,
                                      style_recalc_context_.style_scope_frame);
-
-  Element& element = context_.GetElement();
+  Element& element = *context.context.element;
   const AtomicString& pseudo_id = element.ShadowPseudoId();
   if (!pseudo_id.empty()) {
     DCHECK(element.IsStyledElement());
@@ -897,7 +916,7 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       }
 
       const AttributeCollection collection = element.AttributesWithoutUpdate();
-      attributes = {collection.data(), collection.size()};
+      attributes = base::span(collection);
     }
   }
 
@@ -984,7 +1003,7 @@ void ElementRuleCollector::CollectMatchingShadowHostRules(
   SelectorChecker checker(nullptr, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
-  ContextWithStyleScopeFrame context(&context_.GetElement(), match_request,
+  ContextWithStyleScopeFrame context(context_, match_request,
                                      &pseudo_style_request_,
                                      style_recalc_context_.style_scope_frame);
 
@@ -1005,7 +1024,7 @@ bool ElementRuleCollector::CheckIfAnyShadowHostRuleMatches(
   SelectorChecker checker(nullptr, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
-  ContextWithStyleScopeFrame context(&context_.GetElement(), match_request,
+  ContextWithStyleScopeFrame context(context_, match_request,
                                      &pseudo_style_request_,
                                      style_recalc_context_.style_scope_frame);
 
@@ -1030,7 +1049,7 @@ void ElementRuleCollector::CollectMatchingSlottedRules(
     const MatchRequest& match_request) {
   SelectorChecker checker(nullptr, pseudo_style_request_, mode_,
                           matching_ua_rules_);
-  ContextWithStyleScopeFrame context(&context_.GetElement(), match_request,
+  ContextWithStyleScopeFrame context(context_, match_request,
                                      &pseudo_style_request_,
                                      style_recalc_context_.style_scope_frame);
 
@@ -1049,7 +1068,7 @@ void ElementRuleCollector::CollectMatchingPartPseudoRules(
   SelectorChecker checker(part_names, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
-  ContextWithStyleScopeFrame context(&context_.GetElement(), match_request,
+  ContextWithStyleScopeFrame context(context_, match_request,
                                      &pseudo_style_request_,
                                      style_recalc_context_.style_scope_frame);
 
@@ -1199,8 +1218,8 @@ void ElementRuleCollector::DidMatchRule(
     const SelectorChecker::MatchResult& result,
     int style_sheet_index) {
   PseudoId dynamic_pseudo = result.dynamic_pseudo;
-  // If we're matching normal rules, set a pseudo bit if we really just matched
-  // a pseudo-element.
+  // If we're matching normal rules, set a pseudo bit if we really just
+  // matched a pseudo-element.
   if (dynamic_pseudo != kPseudoIdNone &&
       pseudo_style_request_.pseudo_id == kPseudoIdNone) {
     if (mode_ == SelectorChecker::kCollectingCSSRules ||
@@ -1210,8 +1229,10 @@ void ElementRuleCollector::DidMatchRule(
     if (dynamic_pseudo > kLastTrackedPublicPseudoId) {
       return;
     }
-    if ((dynamic_pseudo == kPseudoIdBefore ||
-         dynamic_pseudo == kPseudoIdAfter) &&
+    if ((dynamic_pseudo == kPseudoIdCheck ||
+         dynamic_pseudo == kPseudoIdBefore ||
+         dynamic_pseudo == kPseudoIdAfter ||
+         dynamic_pseudo == kPseudoIdSelectArrow) &&
         !rule_data->Rule()->Properties().HasProperty(CSSPropertyID::kContent)) {
       return;
     }

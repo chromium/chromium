@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -103,8 +105,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [BookmarkEarlGrey clearBookmarks];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   // Some tests change the value of this pref, so reset.
   [ChromeEarlGrey clearUserPrefWithName:prefs::kSigninAllowed];
   [BookmarkEarlGrey clearBookmarks];
@@ -114,12 +116,15 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  return config;
-}
-
-- (AppLaunchConfiguration)appConfigurationForManagedSignoutTestCase {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
+  if ([self
+          isRunningTest:@selector(testToggleAllowChromeSigninForManagedUser)]) {
+    // Enable the feature because the dialog uses a slightly different string if
+    // the feature is not enabled.
+    config.features_enabled.push_back(kIdentityDiscAccountMenu);
+  }
+  if ([self isRunningTest:@selector(testParcelTrackingSetting)]) {
+    config.features_disabled.push_back(kIOSDisableParcelTracking);
+  }
   return config;
 }
 
@@ -225,12 +230,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Similar to `testToggleAllowChromeSignin`, but also verifies that an
 // informational message about data loss will be added in the prompt.
 - (void)testToggleAllowChromeSigninForManagedUser {
-  // Restart the app to enable enable the
-  // `kClearDeviceDataOnSignOutForManagedUsers` feature on relaunch.
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:
-          [self appConfigurationForManagedSignoutTestCase]];
-
   // Sign in with a managed identity.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
@@ -250,7 +249,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [[EarlGrey
       selectElementWithMatcher:
           grey_text(l10n_util::GetNSString(
-              IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT))]
+              IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT))]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:ButtonWithAccessibilityLabelId(

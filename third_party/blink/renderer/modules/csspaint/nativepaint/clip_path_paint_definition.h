@@ -42,11 +42,6 @@ class MODULES_EXPORT ClipPathPaintDefinition final
                                     const gfx::SizeF& clip_area_size,
                                     const Node&,
                                     int worklet_id);
-  // The bounding rect for the entire animation, fitting the clip path at its
-  // largest extent
-  static gfx::RectF ClipAreaRect(const Node& node,
-                                 const gfx::RectF& reference_box,
-                                 float zoom);
   static Animation* GetAnimationIfCompositable(const Element* element);
   void Trace(Visitor* visitor) const override;
 };

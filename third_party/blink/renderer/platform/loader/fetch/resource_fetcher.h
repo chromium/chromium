@@ -278,7 +278,11 @@ class PLATFORM_EXPORT ResourceFetcher
                          uint32_t inflight_keepalive_bytes);
   blink::mojom::ControllerServiceWorkerMode IsControlledByServiceWorker() const;
 
-  String GetCacheIdentifier(const KURL& url) const;
+  // Returns a cache identifier for MemoryCache.
+  // `url` is used for finding a matching WebBundle.
+  // If `skip_service_worker` is true, the identifier won't be a ServiceWorker's
+  // identifier to keep the cache separated.
+  String GetCacheIdentifier(const KURL& url, bool skip_service_worker) const;
 
   // If `url` exists as a resource in a subresource bundle in this frame,
   // returns its UnguessableToken; otherwise, returns std::nullopt.
@@ -476,6 +480,9 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void MaybeSaveResourceToStrongReference(Resource* resource);
 
+  void MaybeStartSpeculativeImageDecode();
+  void SpeculativeImageDecodeFinished();
+
   enum class RevalidationPolicy {
     kUse,
     kRevalidate,
@@ -634,6 +641,7 @@ class PLATFORM_EXPORT ResourceFetcher
   // performance optimizations and might still contain images which are actually
   // loaded.
   HeapHashSet<WeakMember<Resource>> not_loaded_image_resources_;
+  HeapHashSet<WeakMember<Resource>> speculative_decode_candidate_images_;
 
   HeapHashMap<PreloadKey, Member<Resource>> preloads_;
   HeapVector<Member<Resource>> matched_preloads_;
@@ -689,6 +697,7 @@ class PLATFORM_EXPORT ResourceFetcher
   bool image_fetched_ : 1;
   bool stale_while_revalidate_enabled_ : 1;
   const bool transparent_image_optimization_enabled_ : 1;
+  bool speculative_decode_in_flight_ : 1;
 
   static constexpr uint32_t kKeepaliveInflightBytesQuota = 64 * 1024;
 

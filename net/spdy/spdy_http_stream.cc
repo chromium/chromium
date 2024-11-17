@@ -27,7 +27,7 @@
 #include "net/socket/next_proto.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_session.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -306,7 +306,8 @@ void SpdyHttpStream::OnHeadersReceived(
     return;
   }
 
-  response_info_->response_time = stream_->response_time();
+  response_info_->response_time = response_info_->original_response_time =
+      stream_->response_time();
   // Don't store the SSLInfo in the response here, HttpNetworkTransaction
   // will take care of that part.
   CHECK_EQ(stream_->GetNegotiatedProtocol(), kProtoHTTP2);

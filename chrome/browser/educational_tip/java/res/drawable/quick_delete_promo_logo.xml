@@ -8,10 +8,6 @@ found in the LICENSE file.
 <vector android:autoMirrored="true" android:height="72dp"
     android:viewportHeight="72" android:viewportWidth="72"
     android:width="72dp" xmlns:android="http://schemas.android.com/apk/res/android">
-    <path
-        android:pathData="M11.31,0L60.69,0A11.31,11.31 0,0 1,72 11.31L72,60.69A11.31,11.31 0,0 1,60.69 72L11.31,72A11.31,11.31 0,0 1,0 60.69L0,11.31A11.31,11.31 0,0 1,11.31 0z"
-        android:fillColor="@color/material_primary_95"
-        android:fillAlpha="0.05"/>
     <path android:fillColor="@color/material_primary_80" android:pathData="M31.9,61.291a7.309,12.076 66.624,1 0,22.17 -9.583a7.309,12.076 66.624,1 0,-22.17 9.583z"/>
     <path android:fillColor="@color/material_primary_90" android:fillType="evenOdd" android:pathData="M48,37.5H24L25.5,61.5C25.5,63.985 30.201,66 36,66C41.799,66 46.5,63.985 46.5,61.5L48,37.5Z"/>
     <group>

@@ -291,17 +291,6 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
 };
 
 class SyntheticMouseEventTest : public DevToolsProtocolTest {
- public:
-  SyntheticMouseEventTest() {
-// On Android, zoom level is set to 0 in
-// WebContentsImpl::GetPendingPageZoomLevel unless the kAccessibilityPageZoom
-// feature is enabled. We enable it to be able to test mouse events across all
-// platforms.
-#if BUILDFLAG(IS_ANDROID)
-    feature_list_.InitAndEnableFeature(features::kAccessibilityPageZoom);
-#endif
-  }
-
  protected:
   void SendMouseEvent(const std::string& type,
                       int x,
@@ -468,22 +457,18 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinatesWithZoom) {
 }
 
 namespace {
-bool DecodePNG(std::string base64_data, SkBitmap* bitmap) {
-  std::string png_data;
-  if (!base::Base64Decode(base64_data, &png_data))
-    return false;
-  return gfx::PNGCodec::Decode(
-      reinterpret_cast<unsigned const char*>(png_data.data()), png_data.size(),
-      bitmap);
+SkBitmap DecodePNG(std::string_view base64_data) {
+  std::optional<std::vector<uint8_t>> data = base::Base64Decode(base64_data);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(data.value());
+  CHECK(!bitmap.isNull());
+  return bitmap;
 }
 
-std::unique_ptr<SkBitmap> DecodeJPEG(std::string base64_data) {
-  std::string jpeg_data;
-  if (!base::Base64Decode(base64_data, &jpeg_data))
-    return nullptr;
-  return gfx::JPEGCodec::Decode(
-      reinterpret_cast<unsigned const char*>(jpeg_data.data()),
-      jpeg_data.size());
+SkBitmap DecodeJPEG(std::string_view base64_data) {
+  std::optional<std::vector<uint8_t>> data = base::Base64Decode(base64_data);
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(data.value());
+  CHECK(!bitmap.isNull());
+  return bitmap;
 }
 
 int ColorsSquareDiff(SkColor color1, SkColor color2) {
@@ -574,13 +559,12 @@ std::string EncodingEnumToString(ScreenshotEncoding encoding) {
 
 class CaptureScreenshotTest : public DevToolsProtocolTest {
  protected:
-  std::unique_ptr<SkBitmap> CaptureScreenshot(
-      ScreenshotEncoding encoding,
-      bool from_surface,
-      const gfx::RectF& clip = gfx::RectF(),
-      float clip_scale = 0,
-      bool capture_beyond_viewport = false,
-      bool expect_error = false) {
+  SkBitmap CaptureScreenshot(ScreenshotEncoding encoding,
+                             bool from_surface,
+                             const gfx::RectF& clip = gfx::RectF(),
+                             float clip_scale = 0,
+                             bool capture_beyond_viewport = false,
+                             bool expect_error = false) {
     base::Value::Dict params;
     params.Set("format", EncodingEnumToString(encoding));
     params.Set("quality", 100);
@@ -599,7 +583,6 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     }
     SendCommandSync("Page.captureScreenshot", std::move(params));
 
-    std::unique_ptr<SkBitmap> result_bitmap;
     if (expect_error && error()) {
       EXPECT_THAT(error()->FindInt("code"),
                   testing::Optional(
@@ -607,16 +590,14 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     } else {
       const std::string* base64 = result()->FindString("data");
       if (encoding == ScreenshotEncoding::PNG) {
-        result_bitmap = std::make_unique<SkBitmap>();
-        EXPECT_TRUE(DecodePNG(*base64, result_bitmap.get()));
+        return DecodePNG(*base64);
       } else if (encoding == ScreenshotEncoding::JPEG) {
-        result_bitmap = DecodeJPEG(*base64);
+        return DecodeJPEG(*base64);
       } else {
         // Decode not implemented.
       }
-      EXPECT_TRUE(result_bitmap);
     }
-    return result_bitmap;
+    return SkBitmap();
   }
 
   void CaptureScreenshotAndCompareTo(const SkBitmap& expected_bitmap,
@@ -626,7 +607,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
                                      const gfx::RectF& clip = gfx::RectF(),
                                      float clip_scale = 0,
                                      bool capture_beyond_viewport = false) {
-    std::unique_ptr<SkBitmap> result_bitmap = CaptureScreenshot(
+    SkBitmap result_bitmap = CaptureScreenshot(
         encoding, from_surface, clip, clip_scale, capture_beyond_viewport);
 
     gfx::Rect matching_mask(gfx::SkIRectToRect(expected_bitmap.bounds()));
@@ -643,7 +624,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     // reliably if all pixels have equal values.
     int max_collor_diff = 20;
 
-    EXPECT_TRUE(MatchesBitmap(expected_bitmap, *result_bitmap, matching_mask,
+    EXPECT_TRUE(MatchesBitmap(expected_bitmap, result_bitmap, matching_mask,
                               device_scale_factor, max_collor_diff));
   }
 
@@ -900,8 +881,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Capture a screenshot not "from surface", meaning without emulation and
   // without changing preferences, as-is.
-  std::unique_ptr<SkBitmap> expected_bitmap =
-      CaptureScreenshot(ScreenshotEncoding::PNG, false);
+  SkBitmap expected_bitmap =
+      CaptureScreenshot(ScreenshotEncoding::PNG, /*from_surface=*/false);
 
   float device_scale_factor =
       display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
@@ -910,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(
   // scrollbar magic happened, and verify it looks the same, meaning the
   // internal scrollbars are rendered.
   CaptureScreenshotAndCompareTo(
-      *expected_bitmap, ScreenshotEncoding::PNG, /*from_surface=*/true,
+      expected_bitmap, ScreenshotEncoding::PNG, /*from_surface=*/true,
       device_scale_factor,
       /*clip=*/gfx::RectF(0, 0, view_size.width(), view_size.height()),
       /*clip_scale=*/1, /*capture_beyond_viewport=*/true);
@@ -962,16 +943,16 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, MAYBE_LargeScreenshot) {
                                   gfx::RectF(0, 0, 1280, 8440), 1);
   SendCommandSync("Emulation.clearDeviceMetricsOverride");
 
-  EXPECT_EQ(1280, bitmap->width());
-  EXPECT_EQ(8440, bitmap->height());
+  EXPECT_EQ(1280, bitmap.width());
+  EXPECT_EQ(8440, bitmap.height());
 
   // Top-left is red-ish.
-  SkColor top_left = bitmap->getColor(0, 0);
+  SkColor top_left = bitmap.getColor(0, 0);
   EXPECT_GT(static_cast<int>(SkColorGetR(top_left)), 128);
   EXPECT_LT(static_cast<int>(SkColorGetB(top_left)), 128);
 
   // Bottom-left is blue-ish.
-  SkColor bottom_left = bitmap->getColor(0, 8339);
+  SkColor bottom_left = bitmap.getColor(0, 8339);
   EXPECT_LT(static_cast<int>(SkColorGetR(bottom_left)), 128);
   EXPECT_GT(static_cast<int>(SkColorGetB(bottom_left)), 128);
 }

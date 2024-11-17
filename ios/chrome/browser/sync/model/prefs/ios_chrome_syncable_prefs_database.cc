@@ -30,7 +30,7 @@ enum {
   kArticlesForYouEnabled = 200000,
   // kContextualSearchEnabled = 200001,  // deprecated
   kDefaultCharset = 200002,
-  kEnableDoNotTrack = 200003,
+  // kEnableDoNotTrack = 200003, // deprecated
   kIosHandoffToOtherDevices = 200004,
   kNetworkPredictionSetting = 200005,
   kNTPContentSuggestionsEnabled = 200006,
@@ -58,10 +58,6 @@ constexpr auto kIOSChromeSyncablePrefsAllowlist =
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kDefaultCharset,
          {syncable_prefs_ids::kDefaultCharset, syncer::PREFERENCES,
-          sync_preferences::PrefSensitivity::kNone,
-          sync_preferences::MergeBehavior::kNone}},
-        {prefs::kEnableDoNotTrackIos,
-         {syncable_prefs_ids::kEnableDoNotTrack, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kIosHandoffToOtherDevices,

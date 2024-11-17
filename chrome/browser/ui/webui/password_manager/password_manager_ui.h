@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PASSWORD_MANAGER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PASSWORD_MANAGER_UI_H_
 
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -19,6 +22,21 @@ class RefCountedMemory;
 namespace extensions {
 class PasswordsPrivateDelegate;
 }
+
+class PasswordManagerUI;
+
+class PasswordManagerUIConfig
+    : public content::DefaultWebUIConfig<PasswordManagerUI> {
+ public:
+  PasswordManagerUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           password_manager::kChromeUIPasswordManagerHost) {}
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 class PasswordManagerUI : public ui::MojoWebUIController,
                           public help_bubble::mojom::HelpBubbleHandlerFactory {

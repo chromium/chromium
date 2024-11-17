@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -25,6 +26,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
@@ -46,6 +48,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -305,15 +308,11 @@ TEST_F(SearchBoxViewTest, CloseButtonVisibleAfterTyping) {
   EXPECT_TRUE(view()->filter_and_close_button_container()->GetVisible());
 }
 
-// Tests that the filter button is not created if the image search feature is
+// Tests that the filter button is created even if the image search feature is
 // disabled.
-TEST_F(SearchBoxViewTest, FilterButtonNotCreatedWithDisabledImageSearch) {
+TEST_F(SearchBoxViewTest, FilterButtonCreatedWithDisabledImageSearch) {
   ASSERT_FALSE(features::IsProductivityLauncherImageSearchEnabled());
-  EXPECT_FALSE(view()->filter_button());
-
-  // The filter button is still not created after typing in the search box.
-  KeyPress(ui::VKEY_A);
-  EXPECT_FALSE(view()->filter_button());
+  EXPECT_TRUE(view()->filter_button());
 }
 
 // Tests that the close button is still visible after the search box is
@@ -1340,6 +1339,8 @@ class SunfishLauncherButtonTest : public AshTestBase,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::AutoReset<bool> ignore_sunfish_secret_key =
+      switches::SetIgnoreSunfishSecretKeyForTest();
 };
 
 INSTANTIATE_TEST_SUITE_P(All, SunfishLauncherButtonTest, testing::Bool());
@@ -1359,6 +1360,13 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
   ASSERT_EQ(IsSunfishEnabled(), !!sunfish_button);
 
   if (IsSunfishEnabled()) {
+    ASSERT_TRUE(sunfish_button->GetVisible());
+    // `SetShowSunfishButton` should control the visibility of the button.
+    GetSearchModel()->search_box()->SetShowSunfishButton(false);
+    EXPECT_FALSE(sunfish_button->GetVisible());
+    GetSearchModel()->search_box()->SetShowSunfishButton(true);
+    EXPECT_TRUE(sunfish_button->GetVisible());
+
     // The app list will contain the sunfish launcher button next to the search
     // field.
     LeftClickOn(sunfish_button);
@@ -1368,6 +1376,28 @@ TEST_P(SunfishLauncherButtonTest, ButtonVisibility) {
     ASSERT_EQ(BehaviorType::kSunfish,
               session->active_behavior()->behavior_type());
   }
+}
+
+TEST_P(SunfishLauncherButtonTest, TabletModeAppList) {
+  if (!IsSunfishEnabled()) {
+    // TODO(b/356877313): Consider unparametizing these tests.
+    GTEST_SKIP() << "skip if not enabled";
+  }
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+
+  // Add a number of apps.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+  auto* presenter = Shell::Get()->app_list_controller()->fullscreen_presenter();
+  ASSERT_TRUE(presenter);
+  EXPECT_TRUE(presenter->GetTargetVisibility());
+
+  // Press the launcher button. Test the app list remains visible.
+  auto* sunfish_button = helper->GetSearchBoxView()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+  GestureTapOn(sunfish_button);
+  EXPECT_TRUE(presenter->GetTargetVisibility());
 }
 
 }  // namespace

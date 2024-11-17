@@ -78,6 +78,9 @@ template("js2gtest") {
     }
 
     inputs = [ v8_shell_path ] + js2gtest_js_input_libraries
+    if (v8_use_external_startup_data) {
+      inputs += [ "$root_out_dir/snapshot_blob.bin" ]
+    }
     if (defined(invoker.deps_js)) {
       inputs += [ invoker.deps_js ]
     }
@@ -123,6 +126,9 @@ template("js2gtest") {
     ]
 
     deps = [ "//v8:v8_shell($v8_toolchain)" ]
+    if (v8_use_external_startup_data) {
+      deps += [ "//v8:run_mksnapshot_default" ]
+    }
 
     if (defined(invoker.deps)) {
       deps += invoker.deps

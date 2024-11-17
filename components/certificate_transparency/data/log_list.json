@@ -1,6 +1,6 @@
 {
-  "version": "45.18",
-  "log_list_timestamp": "2024-09-19T12:55:53Z",
+  "version": "50.6",
+  "log_list_timestamp": "2024-11-16T12:55:55Z",
   "operators": [
     {
       "name": "Google",
@@ -63,8 +63,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-22T16:44:26Z"
+            "usable": {
+              "timestamp": "2024-09-30T22:19:27Z"
             }
           },
           "temporal_interval": {
@@ -79,8 +79,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-22T16:44:26Z"
+            "usable": {
+              "timestamp": "2024-09-30T22:19:27Z"
             }
           },
           "temporal_interval": {
@@ -143,8 +143,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-22T16:44:26Z"
+            "usable": {
+              "timestamp": "2024-09-30T22:19:27Z"
             }
           },
           "temporal_interval": {
@@ -159,8 +159,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-22T16:44:26Z"
+            "usable": {
+              "timestamp": "2024-09-30T22:19:27Z"
             }
           },
           "temporal_interval": {
@@ -168,7 +168,8 @@
             "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "Cloudflare",
@@ -218,8 +219,8 @@
           "url": "https://ct.cloudflare.com/logs/nimbus2026/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-28T03:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T18:00:00Z"
             }
           },
           "temporal_interval": {
@@ -227,7 +228,8 @@
             "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "DigiCert",
@@ -354,8 +356,8 @@
           "url": "https://wyvern.ct.digicert.com/2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-26T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -370,8 +372,8 @@
           "url": "https://wyvern.ct.digicert.com/2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-26T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -434,8 +436,8 @@
           "url": "https://sphinx.ct.digicert.com/2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-26T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -450,8 +452,8 @@
           "url": "https://sphinx.ct.digicert.com/2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-26T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -459,7 +461,8 @@
             "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "Sectigo",
@@ -586,8 +589,8 @@
           "url": "https://mammoth2026h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-30T04:00:00Z"
+            "usable": {
+              "timestamp": "2024-10-14T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -602,8 +605,8 @@
           "url": "https://mammoth2026h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-30T04:00:00Z"
+            "usable": {
+              "timestamp": "2024-10-14T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -618,8 +621,8 @@
           "url": "https://sabre2026h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-30T04:00:00Z"
+            "usable": {
+              "timestamp": "2024-10-14T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -634,8 +637,8 @@
           "url": "https://sabre2026h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-30T04:00:00Z"
+            "usable": {
+              "timestamp": "2024-10-14T17:00:00Z"
             }
           },
           "temporal_interval": {
@@ -643,7 +646,8 @@
             "end_exclusive": "2027-01-01T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "Let's Encrypt",
@@ -706,8 +710,8 @@
           "url": "https://oak.ct.letsencrypt.org/2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-21T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-04T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -722,8 +726,8 @@
           "url": "https://oak.ct.letsencrypt.org/2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-21T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-04T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -731,7 +735,8 @@
             "end_exclusive": "2027-01-20T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     },
     {
       "name": "TrustAsia",
@@ -794,8 +799,8 @@
           "url": "https://ct2026-a.trustasia.com/log2026a/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-03T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-09-20T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -810,8 +815,8 @@
           "url": "https://ct2026-b.trustasia.com/log2026b/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-07-03T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-09-20T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -819,7 +824,8 @@
             "end_exclusive": "2027-01-08T00:00:00Z"
           }
         }
-      ]
+      ],
+      "tiled_logs": []
     }
   ]
 }

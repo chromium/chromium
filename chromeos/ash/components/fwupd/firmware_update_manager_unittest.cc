@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/files/file.h"
@@ -20,6 +22,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -28,6 +31,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
 #include "chromeos/ash/components/fwupd/histogram_util.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -53,6 +57,8 @@ const char kFakeDeviceIdForTesting[] = "Fake_Device_ID";
 const char kFakeInternalDeviceIdForTesting[] = "Fake_Internal_Device_ID";
 const char kFakeDeviceNameForTesting[] = "Fake Device Name";
 const char kFakeInternalDeviceNameForTesting[] = "Fake Internal Device Name";
+const bool kFakeDoesNeedReboot = true;
+const bool kFakeDoesNotNeedReboot = false;
 const char kFakeUpdateDescriptionForTesting[] =
     "This is a fake update for testing.";
 const uint32_t kFakeUpdatePriorityForTesting = 1;
@@ -84,6 +90,7 @@ const char kFirmwareUpdateNotificationId[] =
     "cros_firmware_update_notification_id";
 const char kFlagsKey[] = "Flags";
 const uint64_t kFakeFlagForTesting = 1;
+const uint64_t kFakeFlagWithRebootForTesting = 1llu << 8 | 1;
 const char kTrustFlagsKey[] = "TrustFlags";
 const uint64_t kFakeReportFlagForTesting = 1llu << 8;
 
@@ -292,6 +299,10 @@ class FirmwareUpdateManagerTest : public testing::Test {
     dbus_responses_.pop_front();
   }
 
+  void EnableFeatureFlag(const base::Feature& feature) {
+    scoped_feature_list_.InitAndEnableFeature(feature);
+  }
+
  protected:
   void SetUp() override {
     // Default behaviour is RefreshRemote will always be called
@@ -325,6 +336,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
     auto update = firmware_update::mojom::FirmwareUpdate::New();
     update->device_id = "id";
     update->device_name = base::UTF8ToUTF16(std::string("name"));
+    update->needs_reboot = false;
     update->device_version = "version";
     update->device_description = base::UTF8ToUTF16(std::string("description"));
     update->priority = firmware_update::mojom::UpdatePriority::kMedium;
@@ -407,7 +419,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
     return response;
   }
 
-  std::unique_ptr<dbus::Response> CreateInternalDeviceResponse() {
+  std::unique_ptr<dbus::Response> CreateInternalDeviceResponse(
+      bool needs_reboot = false) {
     auto response = dbus::Response::CreateEmpty();
 
     dbus::MessageWriter response_writer(response.get());
@@ -432,7 +445,11 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
     device_array_writer.OpenDictEntry(&dict_writer);
     dict_writer.AppendString(kFlagsKey);
-    dict_writer.AppendVariantOfUint64(kFakeFlagForTesting);
+    if (needs_reboot) {
+      dict_writer.AppendVariantOfUint64(kFakeFlagWithRebootForTesting);
+    } else {
+      dict_writer.AppendVariantOfUint64(kFakeFlagForTesting);
+    }
     device_array_writer.CloseContainer(&dict_writer);
 
     device_array_writer.OpenDictEntry(&dict_writer);
@@ -756,6 +773,9 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
   // Fake responses.
   std::deque<std::unique_ptr<dbus::Response>> dbus_responses_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ash::ScopedStubInstallAttributes test_install_attributes_;
 };
 
 TEST_F(FirmwareUpdateManagerTest, CorrectMockInstance) {
@@ -800,6 +820,36 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
   EXPECT_EQ(kFakeDeviceIdForTesting, updates[0]->device_id);
   EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeDeviceNameForTesting)),
             updates[0]->device_name);
+  EXPECT_EQ(kFakeDoesNotNeedReboot, updates[0]->needs_reboot);
+  EXPECT_EQ(kFakeUpdateVersionForTesting, updates[0]->device_version);
+  EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeUpdateDescriptionForTesting)),
+            updates[0]->device_description);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdatePriority(
+                kFakeUpdatePriorityForTesting),
+            updates[0]->priority);
+  EXPECT_EQ(kFakeUpdateUriForTesting, updates[0]->filepath.value());
+}
+
+TEST_F(FirmwareUpdateManagerTest, RequestFlexDeviceWithReboot) {
+  // Enable Flex firmware updates.
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitch(switches::kRevenBranding);
+  EnableFeatureFlag(features::kFlexFirmwareUpdate);
+
+  dbus_responses_.push_back(CreateInternalDeviceResponse(true));
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
+      update_observer.updates();
+
+  ASSERT_EQ(1U, updates.size());
+  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
+  EXPECT_EQ(kFakeInternalDeviceIdForTesting, updates[0]->device_id);
+  EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeInternalDeviceNameForTesting)),
+            updates[0]->device_name);
+  EXPECT_EQ(kFakeDoesNeedReboot, updates[0]->needs_reboot);
   EXPECT_EQ(kFakeUpdateVersionForTesting, updates[0]->device_version);
   EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeUpdateDescriptionForTesting)),
             updates[0]->device_description);
@@ -848,6 +898,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
   EXPECT_EQ(std::string(kFakeDeviceIdForTesting) + "1", updates[0]->device_id);
   EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeDeviceNameForTesting) + "1"),
             updates[0]->device_name);
+  EXPECT_EQ(kFakeDoesNotNeedReboot, updates[0]->needs_reboot);
   EXPECT_EQ(kFakeUpdateVersionForTesting, updates[0]->device_version);
   EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeUpdateDescriptionForTesting)),
             updates[0]->device_description);

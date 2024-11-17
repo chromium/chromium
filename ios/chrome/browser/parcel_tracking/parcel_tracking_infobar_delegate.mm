@@ -25,7 +25,7 @@ ParcelTrackingInfobarDelegate::ParcelTrackingInfobarDelegate(
       parcel_list_(parcel_list),
       application_commands_handler_(application_commands_handler),
       parcel_tracking_commands_handler_(parcel_tracking_commands_handler) {
-  shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
+  shopping_service_ = commerce::ShoppingServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 }
 

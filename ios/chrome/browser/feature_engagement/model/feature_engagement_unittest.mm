@@ -17,10 +17,6 @@ namespace {
 // List Badge to be shown.
 const int kMinChromeOpensRequiredForReadingList = 5;
 
-// The minimum number of times url must be opened in order for the New Tab IPH
-// to be displayed.
-const int kMinURLOpensRequiredForNewTabIPH = 2;
-
 // The minimum number of times url must be opened in order for the History IPH
 // to be displayed.
 const int kMinURLOpensRequiredForHistoryOnOverflowMenuIPH = 2;
@@ -114,18 +110,6 @@ class FeatureEngagementTest : public PlatformTest {
     return params;
   }
 
-  std::map<std::string, std::string> IPHiOSTabGridToolbarItemParams() {
-    std::map<std::string, std::string> params;
-    params["event_trigger"] = "name:iph_tab_grid_toolbar_item_trigger;"
-                              "comparator:==0;window:7;storage:"
-                              "7";
-    params["event_used"] =
-        "name:tab_grid_toolbar_item_used;comparator:==0;window:365;storage:365";
-    params["session_rate"] = "==0";
-    params["availability"] = "any";
-    return params;
-  }
-
   std::map<std::string, std::string> IPHiOSHistoryOnOverflowMenuParams() {
     std::map<std::string, std::string> params;
     params["event_1"] =
@@ -135,18 +119,6 @@ class FeatureEngagementTest : public PlatformTest {
                               "7";
     params["event_used"] = "name:history_on_overflow_menu_used;comparator:==0;"
                            "window:365;storage:365";
-    params["session_rate"] = "==0";
-    params["availability"] = "any";
-    return params;
-  }
-
-  std::map<std::string, std::string> IPHiOSShareParams() {
-    std::map<std::string, std::string> params;
-    params["event_trigger"] = "name:share_toolbar_item_trigger;"
-                              "comparator:==0;window:7;storage:"
-                              "7";
-    params["event_used"] =
-        "name:share_toolbar_item_used;comparator:==0;window:365;storage:365";
     params["session_rate"] = "==0";
     params["availability"] = "any";
     return params;
@@ -336,92 +308,6 @@ TEST_F(FeatureEngagementTest, TestBadgedTranslateManualTriggerShouldShowOnce) {
   // The IPH should not trigger the second time
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHBadgedTranslateManualTriggerFeature));
-}
-
-// Verifies that the New Tab IPH is triggered after the proper conditions
-// are met.
-TEST_F(FeatureEngagementTest, TestNewTabToolbarItemIPHShouldShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSNewTabToolbarItemFeature,
-        IPHiOSNewTabToolbarItemParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  // Ensure that url has been opened enough times to meet the trigger
-  // condition.
-  for (int index = 0; index < kMinURLOpensRequiredForNewTabIPH; index++) {
-    tracker->NotifyEvent(feature_engagement::events::kOpenUrlFromOmnibox);
-  }
-
-  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSNewTabToolbarItemFeature));
-}
-
-// Verifies that the New Tab IPH is not triggered.
-TEST_F(FeatureEngagementTest, TestNewTabToolbarItemIPHShouldNotShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSNewTabToolbarItemFeature,
-        IPHiOSNewTabToolbarItemParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  for (int index = 0; index < kMinURLOpensRequiredForNewTabIPH; index++) {
-    tracker->NotifyEvent(feature_engagement::events::kOpenUrlFromOmnibox);
-  }
-
-  // The kNewTabToolbarItemUsed event will prevent the trigger.
-  tracker->NotifyEvent(feature_engagement::events::kNewTabToolbarItemUsed);
-
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSNewTabToolbarItemFeature));
-}
-
-// Verifies that the Tab Grid IPH is triggered after the proper conditions
-// are met.
-TEST_F(FeatureEngagementTest, TestTabGridToolbarItemIPHShouldShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSTabGridToolbarItemFeature,
-        IPHiOSTabGridToolbarItemParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSTabGridToolbarItemFeature));
-}
-
-// Verifies that the Tab Grid IPH is not triggered due to being used already.
-TEST_F(FeatureEngagementTest, TestTabGridToolbarItemIPHShouldNotShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSTabGridToolbarItemFeature,
-        IPHiOSTabGridToolbarItemParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  // Ensure that the tab grid item has been used to prevent triggering.
-  tracker->NotifyEvent(feature_engagement::events::kTabGridToolbarItemUsed);
-
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSTabGridToolbarItemFeature));
 }
 
 // Verifies that the pull down to refresh IPH is not triggered
@@ -783,44 +669,6 @@ TEST_F(FeatureEngagementTest,
 
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature));
-}
-
-// Verifies that the Share IPH is triggered after the proper conditions
-// are met.
-TEST_F(FeatureEngagementTest, TestShareToolbarItemIPHShouldShow) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSShareToolbarItemFeature,
-        IPHiOSShareParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSShareToolbarItemFeature));
-}
-
-// Verifies that the Share IPH is not triggered due to being used already.
-TEST_F(FeatureEngagementTest, TestShareToolbarItemIPHShouldNotShowDueToUsage) {
-  feature_engagement::test::ScopedIphFeatureList list;
-  list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHiOSShareToolbarItemFeature,
-        IPHiOSShareParams()}});
-
-  std::unique_ptr<feature_engagement::Tracker> tracker =
-      feature_engagement::CreateTestTracker();
-  // Make sure tracker is initialized.
-  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
-  run_loop_.Run();
-
-  // Ensure that the share has been used to prevent triggering the IPH.
-  tracker->NotifyEvent(feature_engagement::events::kShareToolbarItemUsed);
-
-  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSShareToolbarItemFeature));
 }
 
 // Verifies that the bottom toolbar tip triggers.

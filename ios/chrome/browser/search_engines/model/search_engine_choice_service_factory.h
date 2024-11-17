@@ -7,7 +7,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace search_engines {
 class SearchEngineChoiceService;
@@ -18,10 +19,6 @@ namespace ios {
 class SearchEngineChoiceServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static search_engines::SearchEngineChoiceService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static search_engines::SearchEngineChoiceService* GetForProfile(
       ProfileIOS* profile);
   static SearchEngineChoiceServiceFactory* GetInstance();

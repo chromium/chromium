@@ -96,7 +96,7 @@ struct FormParsingResult {
       UsernameDetectionMethod username_detection_method,
       bool is_new_password_reliable,
       std::vector<autofill::FieldRendererId> suggestion_banned_fields,
-      const autofill::FormFieldData* manual_generation_enabled_field);
+      std::vector<autofill::FieldRendererId> manual_generation_enabled_field);
   FormParsingResult(FormParsingResult&& other);
   ~FormParsingResult();
 
@@ -117,9 +117,12 @@ struct FormParsingResult {
   // List of fields that should have no Password Manager filling suggestions.
   std::vector<autofill::FieldRendererId> suggestion_banned_fields;
 
-  // If the parsed form has new password server prediction on the text field,
-  // the field will be stored here.
-  autofill::FieldRendererId manual_generation_enabled_field;
+  // List of the fields that have a signal that password generation should be
+  // allowed on the field. The signals are as follows:
+  // 1) Currently has type password or has been a type password at some point.
+  // 2) id/name attribute has a word "password" or its variations/translations.
+  // 3) Field has a new password server prediction.
+  std::vector<autofill::FieldRendererId> manual_generation_enabled_fields;
 };
 
 // This class takes care of parsing FormData into PasswordForm and managing
@@ -164,13 +167,15 @@ class FormDataParser {
 
   ~FormDataParser();
 
-  void set_predictions(FormPredictions predictions) {
-    predictions_ = std::move(predictions);
+  void set_server_predictions(FormPredictions predictions) {
+    server_predictions_ = std::move(predictions);
   }
 
-  void reset_predictions() { predictions_.reset(); }
+  void reset_server_predictions() { server_predictions_.reset(); }
 
-  const std::optional<FormPredictions>& predictions() { return predictions_; }
+  const std::optional<FormPredictions>& server_predictions() {
+    return server_predictions_;
+  }
 
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }
 
@@ -192,9 +197,8 @@ class FormDataParser {
       const base::flat_set<std::u16string>& stored_usernames);
 
  private:
-  // Predictions are an optional source of server-side information about field
-  // types.
-  std::optional<FormPredictions> predictions_;
+  // Server predictions are an optional source of information about field types.
+  std::optional<FormPredictions> server_predictions_;
 
   // Records whether readonly password fields were seen during the last call to
   // Parse().
@@ -213,6 +217,11 @@ const autofill::FormFieldData* FindUsernameInPredictions(
     const std::vector<autofill::FieldRendererId>& username_predictions,
     const std::vector<ProcessedField>& processed_fields,
     Interactability username_max);
+
+// Returns the heuristics predictions for `renderer_form`.
+autofill::PasswordFormClassification ClassifyAsPasswordForm(
+    const autofill::FormData& renderer_form,
+    const FormPredictions& form_predictions);
 
 }  // namespace password_manager
 

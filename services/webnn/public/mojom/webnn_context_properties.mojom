@@ -32,6 +32,8 @@ struct SupportedDataTypes {
   bool uint64;
   bool int8;
   bool uint8;
+  bool int4;
+  bool uint4;
 };
 
 // Represents the data type limits exposed through
@@ -73,6 +75,9 @@ struct DataTypeLimits {
   SupportedDataTypes greater_or_equal_input;
   SupportedDataTypes lesser_input;
   SupportedDataTypes lesser_or_equal_input;
+  SupportedDataTypes logical_and_input;
+  SupportedDataTypes logical_or_input;
+  SupportedDataTypes logical_xor_input;
   SupportedDataTypes logical_not_input;
   SupportedDataTypes logical_output;
 
@@ -148,6 +153,10 @@ struct DataTypeLimits {
   SupportedDataTypes relu_input;
   SupportedDataTypes resample2d_input;
   SupportedDataTypes reshape_input;
+
+  // ScatterElements.
+  SupportedDataTypes scatter_elements_input;
+  SupportedDataTypes scatter_elements_indices;
 
   // ScatterND.
   SupportedDataTypes scatter_nd_input;

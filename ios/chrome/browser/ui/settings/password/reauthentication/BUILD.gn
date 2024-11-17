@@ -21,6 +21,7 @@ source_set("reauthentication") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/reauthentication",
@@ -40,10 +41,10 @@ source_set("reauthentication_ui") {
   deps = [
     ":reauthentication_constants",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/settings/password:title_view",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]

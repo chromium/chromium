@@ -1,0 +1,66 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+ #promoContainer {
+    background-color: var(--color-new-tab-page-module-background);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    height: 111px;
+    padding: 12px;
+    width: 271px;
+  }
+
+  #titleAndDismissContainer {
+    align-items: center;
+    display: flex;
+    height: 24px;
+    justify-content: space-between;
+  }
+
+  #title {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  #dismissButton {
+    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
+    color: var(--color-new-tab-page-primary-foreground);
+    --cr-icon-button-icon-size: 18px;
+    --cr-icon-button-margin-end: 0px;
+    --cr-icon-button-size: 24px;
+  }
+
+  #descriptionAndQrCodeContainer {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+  }
+
+  #description {
+    color: var(--color-new-tab-page-secondary-foreground);
+    line-height: 18px;
+    height: 54px;
+    width: 185px;
+  }
+
+  #qrCode {
+    border: 1px solid var(--color-new-tab-page-most-visited-tile-background);
+    border-radius: 8px;
+    box-sizing: border-box;
+    height: 78px;
+    width: 78px;
+  }

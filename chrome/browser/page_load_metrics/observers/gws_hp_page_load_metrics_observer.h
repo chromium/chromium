@@ -52,7 +52,7 @@ class GWSHpPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
-  std::string AddHistogramSuffix(const std::string histogram_name);
+  std::string AddHistogramSuffix(const std::string& histogram_name);
 
   bool is_first_navigation_;
 };

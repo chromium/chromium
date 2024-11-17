@@ -14,7 +14,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -76,12 +75,12 @@ void AppendJsonJS(const base::Value::Dict& json,
     output->append("import {loadTimeData} from ");
     output->append("'//resources/js/load_time_data.js';\n");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Imported for the side effect of setting the |window.loadTimeData| global,
     // which is relied on by ChromeOS Ash Tast Tests and some browser tests.
     // See https://www.crbug.com/1395148.
     output->append("import '//resources/ash/common/load_time_data.m.js';\n");
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   std::string jstext;

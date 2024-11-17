@@ -65,6 +65,7 @@ PageContainerLayoutAlgorithm::PageContainerLayoutAlgorithm(
     wtf_size_t total_page_count,
     const AtomicString& page_name,
     const BlockNode& content_node,
+    const CountersAttachmentContext& counters_context,
     const PageAreaLayoutParams& page_area_params,
     bool ignore_author_page_style,
     const PhysicalBoxFragment* existing_page_container)
@@ -73,6 +74,7 @@ PageContainerLayoutAlgorithm::PageContainerLayoutAlgorithm(
       total_page_count_(total_page_count),
       page_name_(page_name),
       content_node_(content_node),
+      counters_context_(counters_context.DeepClone()),
       page_area_params_(page_area_params),
       ignore_author_page_style_(ignore_author_page_style),
       existing_page_container_(existing_page_container) {}
@@ -166,6 +168,8 @@ const LayoutResult* PageContainerLayoutAlgorithm::Layout() {
   LogicalOffset target_offset =
       converter.ToLogical(border_box_physical_rect).offset;
 
+  counters_context_.EnterObject(*Node().GetLayoutBox(), /*is_page_box=*/true);
+
   LayoutPageBorderBox(containing_block_size, target_offset);
 
   // Paper fitting may require margins to be reduced. If contents are scaled
@@ -175,6 +179,8 @@ const LayoutResult* PageContainerLayoutAlgorithm::Layout() {
   margins.Intersect(minimal_margins);
 
   LayoutAllMarginBoxes(margins);
+
+  counters_context_.LeaveObject(*Node().GetLayoutBox(), /*is_page_box=*/true);
 
   return container_builder_.ToBoxFragment();
 }
@@ -409,6 +415,8 @@ BlockNode PageContainerLayoutAlgorithm::CreateBlockNodeIfNeeded(
       document.View()->GetPaginationState()->CreateAnonymousPageLayoutObject(
           document, *page_margin_style);
 
+  counters_context_.EnterObject(*margin_layout_box);
+
   int quote_depth = 0;
   for (; content; content = content->Next()) {
     if (content->IsAltText() || content->IsNone()) {
@@ -434,11 +442,10 @@ BlockNode PageContainerLayoutAlgorithm::CreateBlockNodeIfNeeded(
             needs_total_page_count_ = true;
           }
           values.push_back(total_page_count_);
-        } else if (counter_data->Identifier() == "page") {
-          values.push_back(page_index_ + 1);
         } else {
-          // TODO(mstensho): Implement counters, apart from "page" and "pages".
-          values.push_back(0);
+          values = counters_context_.GetCounterValues(
+              *Node().GetLayoutBox(), counter->Identifier(),
+              counter->Separator().IsNull());
         }
         counter->UpdateCounter(std::move(values));
       }
@@ -446,6 +453,8 @@ BlockNode PageContainerLayoutAlgorithm::CreateBlockNodeIfNeeded(
       child->Destroy();
     }
   }
+
+  counters_context_.LeaveObject(*margin_layout_box);
 
   if (!margin_layout_box->FirstChild()) {
     // No content was added.

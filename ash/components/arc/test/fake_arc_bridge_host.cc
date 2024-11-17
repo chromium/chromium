@@ -17,6 +17,7 @@
 #include "ash/components/arc/mojom/camera.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
+#include "ash/components/arc/mojom/crosh.mojom.h"
 #include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
 #include "ash/components/arc/mojom/error_notification.mojom.h"
@@ -24,7 +25,6 @@
 #include "ash/components/arc/mojom/ime.mojom.h"
 #include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "ash/components/arc/mojom/keymint.mojom.h"
 #include "ash/components/arc/mojom/media_session.mojom.h"
@@ -36,6 +36,7 @@
 #include "ash/components/arc/mojom/notifications.mojom.h"
 #include "ash/components/arc/mojom/obb_mounter.mojom.h"
 #include "ash/components/arc/mojom/oemcrypto.mojom.h"
+#include "ash/components/arc/mojom/on_device_safety.mojom.h"
 #include "ash/components/arc/mojom/pip.mojom.h"
 #include "ash/components/arc/mojom/policy.mojom.h"
 #include "ash/components/arc/mojom/power.mojom.h"
@@ -78,6 +79,10 @@ void FakeArcBridgeHost::OnAppPermissionsInstanceReady(
 
 void FakeArcBridgeHost::OnAppfuseInstanceReady(
     mojo::PendingRemote<mojom::AppfuseInstance> app_remote) {}
+
+void FakeArcBridgeHost::OnArcShellExecutionInstanceReady(
+    mojo::PendingRemote<mojom::ArcShellExecutionInstance>
+        arc_shell_execution_remote) {}
 
 void FakeArcBridgeHost::OnArcWifiInstanceReady(
     mojo::PendingRemote<mojom::ArcWifiInstance> arc_wifi_remote) {}
@@ -144,10 +149,6 @@ void FakeArcBridgeHost::OnInputMethodManagerInstanceReady(
 void FakeArcBridgeHost::OnIntentHelperInstanceReady(
     mojo::PendingRemote<mojom::IntentHelperInstance> intent_helper_remote) {}
 
-void FakeArcBridgeHost::OnKeyboardShortcutInstanceReady(
-    mojo::PendingRemote<mojom::KeyboardShortcutInstance>
-        keyboard_shortcut_remote) {}
-
 void FakeArcBridgeHost::OnKeymasterInstanceReady(
     mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) {}
 
@@ -180,6 +181,10 @@ void FakeArcBridgeHost::OnObbMounterInstanceReady(
 
 void FakeArcBridgeHost::OnOemCryptoInstanceReady(
     mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) {}
+
+void FakeArcBridgeHost::OnOnDeviceSafetyInstanceReady(
+    mojo::PendingRemote<mojom::OnDeviceSafetyInstance>
+        on_device_safety_remote) {}
 
 void FakeArcBridgeHost::OnPaymentAppInstanceReady(
     mojo::PendingRemote<chromeos::payments::mojom::PaymentAppInstance>

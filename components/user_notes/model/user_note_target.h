@@ -18,7 +18,7 @@ class UserNoteTarget {
 
   UserNoteTarget(TargetType type,
                  const std::u16string& original_text,
-                 GURL target_page,
+                 const GURL& target_page,
                  const std::string& selector);
   ~UserNoteTarget();
   UserNoteTarget(const UserNoteTarget&) = delete;

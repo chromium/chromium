@@ -23,7 +23,6 @@ import android.graphics.drawable.Drawable;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -36,7 +35,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -64,8 +62,6 @@ import org.chromium.url.GURL;
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustBottomSheetMediatorTest {
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock private WebContents mMockWebContents;
 
@@ -146,8 +142,8 @@ public class MerchantTrustBottomSheetMediatorTest {
                         anyInt(),
                         any(FaviconImageCallback.class));
 
-        mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
-        mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateMocks);
+        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
+        SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
 
         mMediator =
                 new MerchantTrustBottomSheetMediator(

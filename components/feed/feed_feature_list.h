@@ -46,12 +46,6 @@ BASE_DECLARE_FEATURE(kFeedLoadingPlaceholder);
 // percentage of the maximum size calculated for the device.
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// When enabled, causes the server to restrig the Sync Promo Banner for the
-// bottom of Feed to a Signin Promo.
-BASE_DECLARE_FEATURE(kFeedBottomSyncStringRemoval);
-#endif
-
 // Feature that enables StAMP cards in the feed.
 BASE_DECLARE_FEATURE(kFeedStamp);
 
@@ -106,6 +100,9 @@ BASE_DECLARE_FEATURE(kFeedContainment);
 
 // Kill-switch for the web feed feature.
 BASE_DECLARE_FEATURE(kWebFeedKillSwitch);
+
+// Feature that enables feed low-memory improvement.
+BASE_DECLARE_FEATURE(kFeedLowMemoryImprovement);
 
 bool IsWebFeedEnabledForLocale(const std::string& country);
 

@@ -48,7 +48,6 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
                               protected ash::CiceroneClient::Observer,
                               public KeyedService {
  public:
-  static GuestOsSessionTracker* GetForProfile(Profile* profile);
   explicit GuestOsSessionTracker(std::string owner_id);
   ~GuestOsSessionTracker() override;
 

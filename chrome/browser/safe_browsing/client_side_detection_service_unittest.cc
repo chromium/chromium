@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
 #include <stdint.h>
 
@@ -16,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -26,12 +26,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -52,11 +52,11 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #endif
 
+using content::BrowserThread;
+using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::StrictMock;
-using ::testing::_;
-using content::BrowserThread;
 
 namespace safe_browsing {
 
@@ -133,8 +133,6 @@ class ClientSideDetectionServiceTest
             &test_url_loader_factory_);
     model_observer_tracker_ =
         std::make_unique<ClientSidePhishingModelObserverTracker>();
-    background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   }
 
   void TearDown() override {
@@ -266,8 +264,8 @@ class ClientSideDetectionServiceTest
     // While 3 elements remain, only the first and the fourth are actually
     // valid.
     bool is_phishing;
-    EXPECT_TRUE(csd_service_->GetValidCachedResult(
-        GURL("http://first.url.com"), &is_phishing));
+    EXPECT_TRUE(csd_service_->GetValidCachedResult(GURL("http://first.url.com"),
+                                                   &is_phishing));
     EXPECT_FALSE(is_phishing);
     EXPECT_FALSE(csd_service_->GetValidCachedResult(
         GURL("http://third.url.com"), &is_phishing));
@@ -288,7 +286,6 @@ class ClientSideDetectionServiceTest
 
   std::unique_ptr<ClientSidePhishingModelObserverTracker>
       model_observer_tracker_;
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
  private:
   void SendRequestDone(base::OnceClosure continuation_callback,
@@ -311,7 +308,7 @@ INSTANTIATE_TEST_SUITE_P(All, ClientSideDetectionServiceTest, testing::Bool());
 TEST_P(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
+      model_observer_tracker_.get());
   ReadModelAndTfLiteFiles();
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   EXPECT_NE(csd_service_.get(), nullptr);
@@ -326,8 +323,8 @@ TEST_P(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
 TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
-    ReadModelAndTfLiteFiles();
+      model_observer_tracker_.get());
+  ReadModelAndTfLiteFiles();
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
 
   GURL url("http://a.com/");
@@ -406,8 +403,8 @@ TEST_P(ClientSideDetectionServiceTest,
        SendClientReportPhishingRequestWithToken) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
-    ReadModelAndTfLiteFiles();
+      model_observer_tracker_.get());
+  ReadModelAndTfLiteFiles();
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
@@ -434,8 +431,8 @@ TEST_P(ClientSideDetectionServiceTest,
        SendClientReportPhishingRequestWithoutToken) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
-    ReadModelAndTfLiteFiles();
+      model_observer_tracker_.get());
+  ReadModelAndTfLiteFiles();
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
@@ -461,8 +458,8 @@ TEST_P(ClientSideDetectionServiceTest,
 TEST_P(ClientSideDetectionServiceTest, GetNumReportTest) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
-    ReadModelAndTfLiteFiles();
+      model_observer_tracker_.get());
+  ReadModelAndTfLiteFiles();
 
   base::Time now = base::Time::Now();
   base::TimeDelta twenty_five_hours = base::Hours(25);
@@ -476,12 +473,6 @@ TEST_P(ClientSideDetectionServiceTest, GetNumReportTest) {
 
   EXPECT_TRUE(csd_service_->AddPhishingReport(now));
   EXPECT_EQ(3, csd_service_->GetPhishingNumReports());
-  EXPECT_TRUE(AtPhishingReportLimit());
-}
-
-TEST_P(ClientSideDetectionServiceTest, GetNumReportAtLimitWhenProfileIsNull) {
-  csd_service_ = std::make_unique<ClientSideDetectionService>(
-      nullptr, model_observer_tracker_.get(), background_task_runner_);
   EXPECT_TRUE(AtPhishingReportLimit());
 }
 
@@ -499,7 +490,7 @@ TEST_P(ClientSideDetectionServiceTest,
 
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
+      model_observer_tracker_.get());
   EXPECT_TRUE(AtPhishingReportLimit());
 }
 
@@ -516,15 +507,15 @@ TEST_P(ClientSideDetectionServiceTest,
 
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
+      model_observer_tracker_.get());
   EXPECT_FALSE(AtPhishingReportLimit());
 }
 
 TEST_P(ClientSideDetectionServiceTest, GetNumReportTestESB) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
-    ReadModelAndTfLiteFiles();
+      model_observer_tracker_.get());
+  ReadModelAndTfLiteFiles();
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
 
@@ -578,8 +569,8 @@ TEST_P(ClientSideDetectionServiceTest, GetNumReportTestESB) {
 TEST_P(ClientSideDetectionServiceTest, CacheTest) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
-    ReadModelAndTfLiteFiles();
+      model_observer_tracker_.get());
+  ReadModelAndTfLiteFiles();
 
   TestCache();
 }
@@ -587,7 +578,7 @@ TEST_P(ClientSideDetectionServiceTest, CacheTest) {
 TEST_P(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
+      model_observer_tracker_.get());
 
   net::IPAddress address;
   EXPECT_TRUE(address.AssignFromIPLiteral("10.1.2.3"));
@@ -633,7 +624,7 @@ TEST_P(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
 TEST_P(ClientSideDetectionServiceTest, IsLocalResource) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
+      model_observer_tracker_.get());
 
   net::IPAddress address;
   EXPECT_TRUE(csd_service_->IsLocalResource(address));
@@ -654,7 +645,7 @@ TEST_P(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
+      model_observer_tracker_.get());
 
   // Safe Browsing is not enabled.
   EXPECT_FALSE(csd_service_->enabled());
@@ -670,7 +661,7 @@ TEST_P(ClientSideDetectionServiceTest,
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get(), background_task_runner_);
+      model_observer_tracker_.get());
 
   EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
 

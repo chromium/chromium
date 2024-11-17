@@ -62,4 +62,4 @@ ResolvedSearchTerm::ResolvedSearchTerm(
       coca_card_tag(coca_card_tag),
       related_searches_json(related_searches_json) {}
 
-ResolvedSearchTerm::~ResolvedSearchTerm() {}
+ResolvedSearchTerm::~ResolvedSearchTerm() = default;

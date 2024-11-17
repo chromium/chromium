@@ -54,8 +54,7 @@ bool MaybeReturnCachedStatus(
     return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsReauthRequired(const TokenHandleUtil::Status& status,
@@ -71,8 +70,7 @@ bool IsReauthRequired(const TokenHandleUtil::Status& status,
       // only if the user is using their Gaia password for logging in.
       return user_has_gaia_password;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void FinishWithStatus(TokenHandleUtil::TokenValidationCallback callback,
@@ -176,6 +174,16 @@ void TokenHandleUtil::IsReauthRequired(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TokenValidationCallback callback) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+
+  if (!user) {
+    DUMP_WILL_BE_NOTREACHED() << "Invalid user";
+    std::move(callback).Run(account_id, std::string(),
+                            /*reauth_required=*/false);
+    return;
+  }
+
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string* token =
       known_user.FindStringPath(account_id, kTokenHandlePref);

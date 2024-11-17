@@ -79,6 +79,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     /** Time at which onPause is called. */
     private long mOnPauseTimestampMs;
 
+    /** Time at which onStart is called. */
+    private long mOnStartTimestampMs;
+
     /**
      * Time at which onPause is called before the activity is recreated due to unfolding. The
      * timestamp is captured only if recreation starts when the activity is not in stopped state.
@@ -171,6 +174,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     protected void performPreInflationStartup() {
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(this);
         mHadWarmStart = LibraryLoader.getInstance().isInitialized();
+        SimpleStartupForegroundSessionDetector.onTransitionToForeground();
         // TODO(crbug.com/40621278): Dispatch in #preInflationStartup instead so that
         // subclass's #performPreInflationStartup has executed before observers are notified.
         mLifecycleDispatcher.dispatchPreInflationStartup();
@@ -244,6 +248,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             TraceEvent.begin("maybePreconnect");
             Intent intent = getIntent();
             if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) return;
+            // TODO(https://crbug.com/372710946): Clean this up if CCTEarlyNav doesn't ship.
+            if (intent.getBooleanExtra(IntentHandler.EXTRA_SKIP_PRECONNECT, false)) return;
             String url = IntentHandler.getUrlFromIntent(intent);
             if (url == null) return;
             // Blocking pre-connect for all off-the-record profiles.
@@ -483,6 +489,13 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     }
 
     /**
+     * @return The timestamp for the activity OnStart event in ms.
+     */
+    protected long getOnStartTimestampMs() {
+        return mOnStartTimestampMs;
+    }
+
+    /**
      * @return The timestamp for OnPause event before activity restarts due to unfolding in ms.
      */
     protected long getOnPauseBeforeFoldRecreateTimestampMs() {
@@ -518,6 +531,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @CallSuper
     @Override
     public void onStart() {
+        mOnStartTimestampMs = SystemClock.uptimeMillis();
         super.onStart();
         mNativeInitializationController.onStart();
 
@@ -538,11 +552,15 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public void onResume() {
         super.onResume();
 
+        if (!mFirstResumePending) {
+            // The foreground transition for the first onResume() is handled in
+            // #performPreInflationStartup().
+            SimpleStartupForegroundSessionDetector.onTransitionToForeground();
+        }
         // Start by setting the launch as cold or warm. It will be used in some resume handlers.
         mIsWarmOnResume = !mFirstResumePending || hadWarmStart();
         mFirstResumePending = false;
 
-        SimpleStartupForegroundSessionDetector.onTransitionToForeground();
         mNativeInitializationController.onResume();
     }
 

@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "build/buildflag.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -28,6 +29,7 @@ namespace signin {
 class IdentityManager;
 }
 
+struct AccountInfo;
 class PrefService;
 class PrefRegistrySimple;
 class OAuth2AccessTokenConsumer;
@@ -127,11 +129,12 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
       OAuth2AccessTokenManager::Consumer* consumer);
 
   // Try to get refresh token from delegate. If it is accessible (i.e. not
-  // empty), return it directly, otherwise start request to get access token.
+  // empty), return it directly (possibly after asynchronously signing
+  // `token_binding_challenge`), otherwise start request to get access token.
   // Used for getting tokens to send to Gaia Multilogin endpoint.
-  std::unique_ptr<OAuth2AccessTokenManager::Request> StartRequestForMultilogin(
-      const CoreAccountId& account_id,
-      OAuth2AccessTokenManager::Consumer* consumer);
+  void StartRequestForMultilogin(
+      signin::OAuthMultiloginTokenRequest& request,
+      const std::string& token_binding_challenge = std::string());
 
   // This method does the same as |StartRequest| except it uses |client_id| and
   // |client_secret| to identify OAuth client app instead of using
@@ -238,11 +241,19 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   }
 
   // Lists account IDs of all accounts with a refresh token maintained by this
-  // instance.
+  // instance, i.e. the accounts available in this profile.
   // Note: For each account returned by |GetAccounts|, |RefreshTokenIsAvailable|
   // will return true.
   // Note: If tokens have not been fully loaded yet, an empty list is returned.
+  // TODO(crbug.com/368409110): Rename to GetAccountsInProfile(), to distinguish
+  // from GetAccountsOnDevice().
   std::vector<CoreAccountId> GetAccounts() const;
+
+#if BUILDFLAG(IS_IOS)
+  // Returns a list of accounts that exist on the device, including those that
+  // are assigned to different profiles.
+  std::vector<AccountInfo> GetAccountsOnDevice() const;
+#endif  // BUILDFLAG(IS_IOS)
 
   // Returns true if a refresh token exists for |account_id|. If false, calls to
   // |StartRequest| will result in a Consumer::OnGetTokenFailure callback.

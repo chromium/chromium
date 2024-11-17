@@ -40,16 +40,20 @@ build_webui("build") {
     "privacy_sandbox_dialog_browser_proxy.ts",
     "privacy_sandbox_dialog_resize_mixin.ts",
     "privacy_sandbox_dialog_mixin.ts",
+    "privacy_sandbox_privacy_policy_dialog.html.ts",
+    "privacy_sandbox_privacy_policy_dialog.ts",
   ]
 
   css_files = [
     "shared_style.css",
     "shared_vars.css",
+    "privacy_sandbox_privacy_policy_dialog.css",
   ]
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

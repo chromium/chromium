@@ -166,7 +166,8 @@ def _do_configure(config_name):
     if _CONFIGURE_FOR_TESTING:
         # Copy the files necessary for building/running tests back
         #into the source directory.
-        files = ['Makefile', 'config.h', 'libtool']
+        files = ['Makefile', 'sqlite_cfg.h', 'libtool']
+
         for file_name in files:
             copyfile(
                 os.path.join(_TEMP_CONFIG_DIR, file_name),

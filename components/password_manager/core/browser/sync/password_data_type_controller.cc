@@ -107,7 +107,7 @@ void PasswordDataTypeController::OnAccountsInCookieUpdated(
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // If the account information is stale, do nothing for now - wait until there
   // is fresh information.
-  if (!accounts_in_cookie_jar_info.accounts_are_fresh) {
+  if (!accounts_in_cookie_jar_info.AreAccountsFresh()) {
     return;
   }
   // Keep any account-storage settings only for known accounts.

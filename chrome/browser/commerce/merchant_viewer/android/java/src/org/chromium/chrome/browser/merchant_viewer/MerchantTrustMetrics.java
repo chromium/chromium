@@ -145,7 +145,7 @@ public class MerchantTrustMetrics {
             long durationPrepared =
                     (System.nanoTime() - mMessagePreparedNanoseconds)
                             / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "MerchantTrust.Message.DurationPrepared", durationPrepared);
         }
     }
@@ -162,7 +162,7 @@ public class MerchantTrustMetrics {
             long durationShow =
                     (System.nanoTime() - mMessageVisibleNanoseconds)
                             / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "MerchantTrust.Message.DurationShown", durationShow);
         }
     }
@@ -245,7 +245,7 @@ public class MerchantTrustMetrics {
             long durationPeeking =
                     (System.nanoTime() - mBottomSheetPeekedNanoseconds)
                             / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "MerchantTrust.BottomSheet.DurationPeeked", durationPeeking);
         }
     }
@@ -264,7 +264,7 @@ public class MerchantTrustMetrics {
             long durationOpened =
                     (System.nanoTime() - mBottomSheetHalfOpenedNanoseconds)
                             / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "MerchantTrust.BottomSheet.DurationHalfOpened", durationOpened);
         }
     }
@@ -285,7 +285,7 @@ public class MerchantTrustMetrics {
             long durationOpened =
                     (System.nanoTime() - mBottomSheetFullyOpenedNanoseconds)
                             / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "MerchantTrust.BottomSheet.DurationFullyOpened", durationOpened);
         }
     }
@@ -405,8 +405,7 @@ public class MerchantTrustMetrics {
     private void recordBooleanUkm(
             @Nullable WebContents webContents, String eventName, String metricsName) {
         if (webContents != null) {
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(webContents, eventName, metricsName);
+            new UkmRecorder(webContents, eventName).addBooleanMetric(metricsName).record();
         }
     }
 }

@@ -10,11 +10,21 @@ import re
 import shutil
 import subprocess
 import sys
+import time
+import traceback
 
 import iossim_util
 import mac_util
 import test_runner
 import test_runner_errors
+
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.extend([
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')),
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/'))
+])
+import measures
 
 LOGGER = logging.getLogger(__name__)
 XcodeIOSSimulatorDefaultRuntimeFilename = 'iOS.simruntime'
@@ -28,6 +38,9 @@ XcodeIOSSimulatorRuntimeDMGCipdPath = 'infra_internal/ios/xcode/ios_runtime_dmg'
 
 # TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
 IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
+
+IOS_DMG_ADD_MAX_RETRIES = 2
+IOS_DMG_ADD_RETRY_DELAY = 5  # seconds
 
 
 def describe_cipd_ref(pkg_path, ref):
@@ -433,8 +446,23 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
       runtime_build_to_install) is None:
     _install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
                          xcode_build_version)
-    output = iossim_util.add_simulator_runtime(
-        get_runtime_dmg_name(runtime_cache_folder))
+    runtime_dmg_name = get_runtime_dmg_name(runtime_cache_folder)
+
+    # crbug.com/370036129: sometimes the dmg add command fails with
+    # exit status 5 for unknown reasons. Attempt to retry if it fails.
+    attempt_count = measures.count('add_runtime_attempts')
+    for attempt in range(IOS_DMG_ADD_MAX_RETRIES + 1):
+      attempt_count.record()
+      try:
+        output = iossim_util.add_simulator_runtime(runtime_dmg_name)
+        break
+      except Exception as e:
+        if attempt < IOS_DMG_ADD_MAX_RETRIES and e.returncode == 5:
+          logging.warning(
+              'Adding iOS runtime failed with exit code 5. Retrying...')
+          time.sleep(IOS_DMG_ADD_RETRY_DELAY)
+        else:
+          raise
     iossim_util.override_default_iphonesim_runtime(output, ios_version)
   else:
     LOGGER.debug(
@@ -551,6 +579,7 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
   except subprocess.CalledProcessError as e:
     # Flush buffers to ensure correct output ordering.
     sys.stdout.flush()
+    sys.stderr.write(traceback.format_exc())
     sys.stderr.write('Xcode build version %s failed to install: %s\n' %
                      (xcode_build_version, e))
     sys.stderr.flush()

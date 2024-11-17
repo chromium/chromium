@@ -67,6 +67,63 @@
 
 namespace blink {
 
+namespace {
+
+SkFontTableTag kCpalTag = SkSetFourByteTag('C', 'P', 'A', 'L');
+SkFontTableTag kColrTag = SkSetFourByteTag('C', 'O', 'L', 'R');
+SkFontTableTag kSbixTag = SkSetFourByteTag('s', 'b', 'i', 'x');
+SkFontTableTag kCbdtTag = SkSetFourByteTag('C', 'B', 'D', 'T');
+SkFontTableTag kCblcTag = SkSetFourByteTag('C', 'B', 'L', 'C');
+
+bool TypefaceHasAnySupportedColorTable(const SkTypeface* typeface) {
+  if (!typeface) {
+    return false;
+  }
+  const int num_tags = typeface->countTables();
+  if (!num_tags) {
+    return false;
+  }
+  std::unique_ptr<SkFontTableTag[]> tags(new SkFontTableTag[num_tags]);
+  const int returned_tags = typeface->getTableTags(tags.get());
+  if (!returned_tags) {
+    return false;
+  }
+  bool has_cpal = false;
+  bool has_colr = false;
+  bool has_cbdt = false;
+  bool has_cblc = false;
+  for (int i = 0; i < returned_tags; i++) {
+    SkFontTableTag tag = tags[i];
+    if (tag == kSbixTag) {
+      return true;
+    }
+    if (tag == kCpalTag) {
+      if (has_colr) {
+        return true;
+      }
+      has_cpal = true;
+    } else if (tag == kColrTag) {
+      if (has_cpal) {
+        return true;
+      }
+      has_colr = true;
+    } else if (tag == kCbdtTag) {
+      if (has_cblc) {
+        return true;
+      }
+      has_cbdt = true;
+    } else if (tag == kCblcTag) {
+      if (has_cbdt) {
+        return true;
+      }
+      has_cblc = true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 HarfBuzzFace::HarfBuzzFace(const FontPlatformData* platform_data,
                            uint64_t unique_id)
     : platform_data_(platform_data),
@@ -99,22 +156,6 @@ void HarfBuzzFace::SetVariationSelectorMode(VariationSelectorMode value) {
   GetIgnoreVariationSelectorModeRef() = value;
 }
 
-bool& GetIsSystemFallbackStageRef() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(WTF::ThreadSpecific<bool>,
-                                  is_system_fallback_stage, ());
-  return *is_system_fallback_stage;
-}
-
-bool HarfBuzzFace::GetIsSystemFallbackStage() {
-  DCHECK(RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled());
-  return GetIsSystemFallbackStageRef();
-}
-
-void HarfBuzzFace::SetIsSystemFallbackStage(bool value) {
-  DCHECK(RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled());
-  GetIsSystemFallbackStageRef() = value;
-}
-
 static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
                                   void* font_data,
                                   hb_codepoint_t unicode,
@@ -143,27 +184,19 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
 
   bool consider_variation_selector = false;
   bool is_variation_sequence = false;
-  bool ignore_vs_for_emoji_system_fallback = false;
 
-// Emoji System Fonts on Mac, Win and Android either do not have cmap 14
-// subtable or it does not include all emojis from their cmap table. We use
-// cmap 14 subtable to identify whether there is a colored (emoji
-// presentation) or a monochromatic (text presentation) glyph in the font.
-// This may lead to the cases when we will not be able to get the glyph ID
-// for the requested variation sequence using fallback system font and will
-// continue the second shaping fallback list pass ignoring variation
-// selectors and may end up using web font with wrong emoji presentation instead
-// of using system font with the correct presentation. To prevent that once we
-// reached system fallback fonts, we can ignore emoji variation selectors since
-// we will get the font with the correct presentation relying on
-// FontFallbackPriority in `FontCache::PlatformFallbackFontForCharacter`.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
-      HarfBuzzFace::GetIsSystemFallbackStage()) {
-    ignore_vs_for_emoji_system_fallback = true;
-  }
-#endif
-
+  // Emoji System Fonts on Mac, Win and Android either do not have cmap 14
+  // subtable or it does not include all emojis from their cmap table. We use
+  // cmap 14 subtable to identify whether there is a colored (emoji
+  // presentation) or a monochromatic (text presentation) glyph in the font.
+  // This may lead to the cases when we will not be able to get the glyph ID
+  // for the requested variation sequence using fallback system font and will
+  // continue the second shaping fallback list pass ignoring variation
+  // selectors and may end up using web font with wrong emoji presentation
+  // instead of using system font with the correct presentation. To prevent that
+  // once we reached system fallback fonts, we can ignore emoji variation
+  // selectors since we will get the font with the correct presentation relying
+  // on FontFallbackPriority in `FontCache::PlatformFallbackFontForCharacter`.
   VariationSelectorMode variation_selector_mode =
       HarfBuzzFace::GetVariationSelectorMode();
   if (RuntimeEnabledFeatures::FontVariationSequencesEnabled()) {
@@ -171,19 +204,16 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
         Character::IsUnicodeVariationSelector(variation_selector) &&
         Character::IsVariationSequence(unicode, variation_selector)) {
       is_variation_sequence = true;
-      // We only want to ignore emoji variation sectors for system fallback
-      // fonts, standardized and ideographic variation selectors should be still
-      // considered.
-      ignore_vs_for_emoji_system_fallback =
-          Character::IsUnicodeEmojiVariationSelector(variation_selector) &&
-          ignore_vs_for_emoji_system_fallback;
-      consider_variation_selector = !ignore_vs_for_emoji_system_fallback;
+      consider_variation_selector = true;
     } else if (RuntimeEnabledFeatures::FontVariantEmojiEnabled() &&
                UseFontVariantEmojiVariationSelector(variation_selector_mode) &&
                Character::IsEmoji(unicode)) {
-      consider_variation_selector = !ignore_vs_for_emoji_system_fallback;
+      consider_variation_selector = true;
     }
   }
+
+  bool text_presentation_requested = false;
+  bool emoji_presentation_requested = false;
 
   // Variation sequences are a special case because we want to distinguish
   // between the cases when we found a glyph for the whole variation sequence in
@@ -202,6 +232,12 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
         variation_selector = kVariationSelector16Character;
       }
     }
+
+    text_presentation_requested =
+        (variation_selector == kVariationSelector15Character);
+    emoji_presentation_requested =
+        (variation_selector == kVariationSelector16Character);
+
     hb_bool_t hb_has_vs_glyph = hb_font_get_variation_glyph(
         hb_font_get_parent(hb_font), unicode, variation_selector, glyph);
     if (hb_has_vs_glyph) {
@@ -220,7 +256,25 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   if (consider_variation_selector && hb_has_base_glyph) {
     // Unable to find a glyph for variation sequence, but found a glyph for
     // the base character from variation sequence ignoring variation selector.
-    *glyph = kUnmatchedVSGlyphId;
+    // We use `TypefaceHasAnySupportedColorTable` to check whether a typeface
+    // has colored table and based on that we make an assumption whether a font
+    // has a colored or monochromatic glyph for base character from variation
+    // sequence. We set `glyph` to `kUnmatchedVSGlyphId` only when font has a
+    // wrong presentation for base character.
+    if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
+        (text_presentation_requested || emoji_presentation_requested)) {
+      SkTypeface* typeface = hb_font_data->font_.getTypeface();
+      // TODO(https://bugs.skia.org/374078818): Ideally we also want to check
+      // weather the base codepoint is present in the found color table,
+      // requested API from Skia.
+      bool has_color_table = TypefaceHasAnySupportedColorTable(typeface);
+      if ((has_color_table && text_presentation_requested) ||
+          (!has_color_table && emoji_presentation_requested)) {
+        *glyph = kUnmatchedVSGlyphId;
+      }
+    } else {
+      *glyph = kUnmatchedVSGlyphId;
+    }
   }
 
 // MacOS CoreText API synthesizes GlyphID for several unicode codepoints,

@@ -859,7 +859,7 @@ public class CrashesListFragmentTest {
             crashInfo[i] =
                     createCrashInfoForTesting(
                             "abcd" + Integer.toString(i),
-                            systemTime + i * 2000,
+                            systemTime + i * 2000L,
                             null,
                             -1,
                             FAKE_APP_PACKAGE_NAME,

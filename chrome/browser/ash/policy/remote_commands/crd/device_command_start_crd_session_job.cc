@@ -392,8 +392,7 @@ bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
       return true;
 
     case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 
@@ -424,8 +423,7 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
       return true;
 
     case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 

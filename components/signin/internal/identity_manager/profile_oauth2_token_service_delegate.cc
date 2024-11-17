@@ -70,6 +70,12 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
     case SourceForRefreshTokenOperation::
         kAccountReconcilor_RevokeTokensNotInCookies:
       return "AccountReconcilor::RevokeTokensNotInCookies";
+    case SourceForRefreshTokenOperation::
+        kEnterpriseForcedProfileCreation_UserDecline:
+      return "DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult";
+    case SourceForRefreshTokenOperation::
+        kEnterprisePolicy_AccountNotAllowedInContentArea:
+      return "AccountsPolicyManager::RemoveUnallowedAccounts";
   }
 }
 
@@ -224,6 +230,13 @@ std::vector<CoreAccountId> ProfileOAuth2TokenServiceDelegate::GetAccounts()
   return std::vector<CoreAccountId>();
 }
 
+#if BUILDFLAG(IS_IOS)
+std::vector<AccountInfo>
+ProfileOAuth2TokenServiceDelegate::GetAccountsOnDevice() const {
+  return std::vector<AccountInfo>();
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 const net::BackoffEntry* ProfileOAuth2TokenServiceDelegate::BackoffEntry()
     const {
   return backoff_entry_.get();
@@ -253,7 +266,7 @@ void ProfileOAuth2TokenServiceDelegate::ExtractCredentials(
 void ProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
     ProfileOAuth2TokenService* to_service,
     const CoreAccountId& account_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProfileOAuth2TokenServiceDelegate::RevokeAllCredentials(
@@ -368,10 +381,8 @@ GoogleServiceAuthError ProfileOAuth2TokenServiceDelegate::BackOffError() const {
 
 void ProfileOAuth2TokenServiceDelegate::ResetBackOffEntry() {
   if (!backoff_entry_) {
-    NOTREACHED_IN_MIGRATION()
-        << "Should be called only if `use_backoff` was true in the "
-           "constructor.";
-    return;
+    NOTREACHED() << "Should be called only if `use_backoff` was true in the "
+                    "constructor.";
   }
   backoff_entry_->Reset();
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
@@ -472,9 +467,10 @@ XRJointPose* XRFrame::getJointPose(XRJointSpace* joint,
                                            radius);
 }
 
-bool XRFrame::fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
-                             NotShared<DOMFloat32Array> radii,
-                             ExceptionState& exception_state) const {
+bool XRFrame::fillJointRadii(
+    const HeapVector<Member<XRJointSpace>>& jointSpaces,
+    NotShared<DOMFloat32Array> radii,
+    ExceptionState& exception_state) const {
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);
@@ -494,24 +490,25 @@ bool XRFrame::fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
 
   bool all_valid = true;
 
+  auto radii_data = radii->AsSpan();
   for (unsigned offset = 0; offset < jointSpaces.size(); offset++) {
     const XRJointSpace* joint_space = jointSpaces[offset];
     if (joint_space->handHasMissingPoses()) {
-      radii->Data()[offset] = NAN;
+      radii_data[offset] = NAN;
       all_valid = false;
     } else {
-      radii->Data()[offset] = joint_space->radius();
+      radii_data[offset] = joint_space->radius();
     }
   }
 
   return all_valid;
 }
 
-bool XRFrame::fillPoses(HeapVector<Member<XRSpace>>& spaces,
-                        XRSpace* baseSpace,
+bool XRFrame::fillPoses(const HeapVector<Member<XRSpace>>& spaces,
+                        XRSpace* base_space,
                         NotShared<DOMFloat32Array> transforms,
                         ExceptionState& exception_state) const {
-  const unsigned floats_per_transform = 16;
+  constexpr unsigned kFloatsPerTransform = 16;
 
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -525,11 +522,11 @@ bool XRFrame::fillPoses(HeapVector<Member<XRSpace>>& spaces,
     }
   }
 
-  if (!IsSameSession(baseSpace->session(), exception_state)) {
+  if (!IsSameSession(base_space->session(), exception_state)) {
     return false;
   }
 
-  if (spaces.size() * floats_per_transform > transforms->length()) {
+  if (spaces.size() * kFloatsPerTransform > transforms->length()) {
     exception_state.ThrowTypeError(kSpacesSequenceTooLarge);
     return false;
   }
@@ -539,26 +536,21 @@ bool XRFrame::fillPoses(HeapVector<Member<XRSpace>>& spaces,
     return false;
   }
 
-  bool allValid = true;
-  unsigned offset = 0;
+  bool all_valid = true;
+  auto transforms_data = transforms->AsSpan();
   for (const auto& space : spaces) {
-    const XRPose* pose = space->getPose(baseSpace);
-    if (!pose) {
-      for (unsigned i = 0; i < floats_per_transform; i++) {
-        transforms->Data()[offset + i] = NAN;
-      }
-      allValid = false;
+    auto [current_transform, remaining] =
+        transforms_data.split_at(kFloatsPerTransform);
+    if (const XRPose* pose = space->getPose(base_space)) {
+      current_transform.copy_from(pose->transform()->matrix()->AsSpan());
     } else {
-      const float* const poseMatrix = pose->transform()->matrix()->Data();
-      for (unsigned i = 0; i < floats_per_transform; i++) {
-        transforms->Data()[offset + i] = poseMatrix[i];
-      }
+      std::ranges::fill(current_transform, NAN);
+      all_valid = false;
     }
-
-    offset += floats_per_transform;
+    transforms_data = remaining;
   }
 
-  return allValid;
+  return all_valid;
 }
 
 void XRFrame::Trace(Visitor* visitor) const {

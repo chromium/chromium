@@ -75,10 +75,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _browser = browser;
-    ChromeBrowserState* browserState = self.browser->GetBrowserState();
+    ProfileIOS* profile = self.browser->GetProfile();
     self.title = l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_TITLE);
     syncer::SyncService* syncService =
-        SyncServiceFactory::GetForBrowserState(browserState);
+        SyncServiceFactory::GetForProfile(profile);
     _isUsingExplicitPassphrase =
         syncService->IsEngineInitialized() &&
         syncService->GetUserSettings()->IsUsingExplicitPassphrase();
@@ -175,14 +175,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch (item.type) {
     case ItemTypePassphrase: {
       DCHECK(syncer::IsSyncAllowedByFlag());
-      ChromeBrowserState* browserState = self.browser->GetBrowserState();
-      syncer::SyncService* service =
-          SyncServiceFactory::GetForBrowserState(browserState);
+      ProfileIOS* profile = self.browser->GetProfile();
+      syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
       if (service->IsEngineInitialized() &&
           !service->GetUserSettings()->IsUsingExplicitPassphrase()) {
         SyncCreatePassphraseTableViewController* controller =
             [[SyncCreatePassphraseTableViewController alloc]
                 initWithBrowser:self.browser];
+        // Loading the Sync Create Passphrase view will start a UIBlocker with
+        // the current scene as target. There is no need to check whether it is
+        // possible to in order for the Sync Encryption view to be displayed, a
+        // UIBlocker is already started with the current target.
+
         [self configureHandlersForRootViewController:controller];
         [self.navigationController pushViewController:controller animated:YES];
       }
@@ -229,9 +233,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)onSyncStateChanged {
   DCHECK(!_settingsAreDismissed)
       << "onSyncStateChanged called after -settingsWillBeDismissed";
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  syncer::SyncService* service =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
   BOOL isNowUsingExplicitPassphrase =
       service->IsEngineInitialized() &&
       service->GetUserSettings()->IsUsingExplicitPassphrase();

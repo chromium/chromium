@@ -19,13 +19,20 @@ namespace {
 
 const char kUmaPrefix[] = "Media.EME.CdmStorageManager.";
 
-const char kGetSizeForFileError[] = "GetSizeForFileError";
-const char kGetSizeForStorageKeyError[] = "GetSizeForStorageKeyError";
-const char kGetSizeForTimeFrameError[] = "GetSizeForTimeFrameError";
+const char kGetSizeForFileError[] = "GetSizeForFileError.";
+const char kGetSizeForStorageKeyError[] = "GetSizeForStorageKeyError.";
+const char kGetSizeForTimeFrameError[] = "GetSizeForTimeFrameError.";
 const char kWriteFileError[] = "WriteFileError.";
 const char kReadFileError[] = "ReadFileError.";
 const char kDatabaseOpenErrorNoPeriod[] = "DatabaseOpenError";
 const char kDatabaseOpenError[] = "DatabaseOpenError.";
+const char kDatabaseSizeName[] = "CurrentDatabaseUsageKB.";
+
+constexpr uint64_t kBytesPerKB = 1024;
+constexpr int kMinDatabaseSizeKB = 0;
+// Used for histogram reporting, the max size of the database we expect in KB.
+constexpr uint64_t kMaxDatabaseSizeKB = 512000 * 10;
+constexpr int kSizeKBBuckets = 1000;
 
 // Creates a task runner suitable for running SQLite database operations.
 scoped_refptr<base::SequencedTaskRunner> CreateDatabaseTaskRunner() {
@@ -249,6 +256,13 @@ void CdmStorageManager::DidReadFile(
       GetCdmStorageManagerHistogramName(kReadFileError, in_memory()),
       !data.has_value());
 
+  if (!database_size_reported_) {
+    db_.AsyncCall(&CdmStorageDatabase::GetDatabaseSize)
+        .Then(base::BindOnce(&CdmStorageManager::DidGetDatabaseSize,
+                             weak_factory_.GetWeakPtr()));
+    database_size_reported_ = true;
+  }
+
   std::move(callback).Run(data);
 }
 
@@ -273,6 +287,14 @@ void CdmStorageManager::DidGetSize(base::OnceCallback<void(uint64_t)> callback,
       !size.has_value());
 
   std::move(callback).Run(size.value_or(0));
+}
+
+void CdmStorageManager::DidGetDatabaseSize(const uint64_t size) {
+  // One time report DatabaseSize.
+  base::UmaHistogramCustomCounts(
+      GetCdmStorageManagerHistogramName(kDatabaseSizeName, in_memory()),
+      size / kBytesPerKB, kMinDatabaseSizeKB, kMaxDatabaseSizeKB,
+      kSizeKBBuckets);
 }
 
 // TODO(crbug.com/40272342) Investigate if we can propagate the SQL errors.

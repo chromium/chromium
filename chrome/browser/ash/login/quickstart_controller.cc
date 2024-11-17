@@ -134,11 +134,7 @@ QuickStartMetrics::ScreenName ScreenNameFromUiState(
     case QuickStartController::UiState::FALLBACK_URL_FLOW:
       return QuickStartMetrics::ScreenName::kQSFallbackURL;
     case QuickStartController::UiState::CONNECTING_TO_PHONE:
-      if (controller_state == QuickStartController::ControllerState::
-                                  WAITING_TO_RESUME_AFTER_UPDATE) {
-        return QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate;
-      }
-      [[fallthrough]];
+      return QuickStartMetrics::ScreenName::kQSConnectingToPhone;
     case QuickStartController::UiState::EXIT_SCREEN:
       [[fallthrough]];
     case QuickStartController::UiState::SHOWING_BLUETOOTH_DIALOG:
@@ -613,6 +609,14 @@ void QuickStartController::OnOAuthTokenReceived(
 void QuickStartController::StartObservingScreenTransitions() {
   CHECK(LoginDisplayHost::default_host()) << "Missing LoginDisplayHost";
   CHECK(LoginDisplayHost::default_host()->GetOobeUI()) << "Missing Oobe UI";
+
+  // Do not observe transitions when the OOBE overlay debugger is enabled since
+  // the debugger 'forces' the screen for each state and this breaks the logic.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kShowOobeDevOverlay)) {
+    return;
+  }
+
   observation_.Observe(LoginDisplayHost::default_host()->GetOobeUI());
 }
 
@@ -649,7 +653,8 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     StartAdvertising();
   } else if (controller_state_ ==
              ControllerState::WAITING_TO_RESUME_AFTER_UPDATE) {
-    exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
+    exit_point_ = EntryPoint::GAIA_INFO_SCREEN;
+    QuickStartMetrics::RecordEntryPoint(EntryPoint::AUTO_RESUME_AFTER_UPDATE);
 
     // It's possible the local state still needs to be cleared if an update was
     // initiated but cancelled. We can't check/clear the state immediately upon
@@ -675,6 +680,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
       UpdateUiState(UiState::SETUP_COMPLETE);
       SavePhoneInstanceID();
       bootstrap_controller_->OnSetupComplete();
+      QuickStartMetrics::RecordSetupComplete();
       return;
     }
 

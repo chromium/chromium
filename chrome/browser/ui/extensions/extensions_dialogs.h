@@ -19,13 +19,11 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-#error "Extensions must be enabled"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/safe_base_name.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
 class Browser;
 class SettingsOverriddenDialogController;
@@ -46,6 +44,9 @@ class ChooserController;
 namespace extensions {
 
 class Extension;
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogOkButtonElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
 
 void ShowConstrainedDeviceChooserDialog(
     content::WebContents* web_contents,
@@ -124,8 +125,6 @@ enum class ExtensionInstalledBlockedByParentDialogAction {
   kAdd,     // The user attempted to add the extension.
   kEnable,  // The user attempted to enable the extension.
 };
-
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
 
 // Displays a dialog to notify the user that the extension installation is
 // blocked by a parent

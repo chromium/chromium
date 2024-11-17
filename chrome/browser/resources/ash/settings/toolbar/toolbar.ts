@@ -12,7 +12,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_f
 import '../os_settings_search_box/os_settings_search_box.js';
 import '../settings_shared.css.js';
 
-import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import type {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';

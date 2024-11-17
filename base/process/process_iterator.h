@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
@@ -50,7 +51,7 @@ struct BASE_EXPORT ProcessEntry {
   ProcessId parent_pid() const { return ppid_; }
   ProcessId gid() const { return gid_; }
   const char* exe_file() const { return exe_file_.c_str(); }
-  const std::vector<std::string>& cmd_line_args() const {
+  const std::vector<std::string>& cmd_line_args() const LIFETIME_BOUND {
     return cmd_line_args_;
   }
 
@@ -100,7 +101,7 @@ class BASE_EXPORT ProcessIterator {
 
  protected:
   virtual bool IncludeEntry();
-  const ProcessEntry& entry() { return entry_; }
+  const ProcessEntry& entry() const LIFETIME_BOUND { return entry_; }
 
  private:
   // Determines whether there's another process (regardless of executable)

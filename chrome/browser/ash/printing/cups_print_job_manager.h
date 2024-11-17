@@ -54,7 +54,7 @@ class CupsPrintJobManager : public KeyedService {
     ~Observer() override {}
   };
 
-  static CupsPrintJobManager* CreateInstance(Profile* profile);
+  static std::unique_ptr<CupsPrintJobManager> CreateInstance(Profile* profile);
 
   explicit CupsPrintJobManager(Profile* profile);
   CupsPrintJobManager(const CupsPrintJobManager&) = delete;

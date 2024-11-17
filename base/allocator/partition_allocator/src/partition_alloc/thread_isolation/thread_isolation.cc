@@ -18,7 +18,8 @@
 
 namespace partition_alloc::internal {
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+    PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 PA_CONSTINIT ThreadIsolationSettings ThreadIsolationSettings::settings;
 #endif
 

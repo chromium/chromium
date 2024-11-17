@@ -8,7 +8,10 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
+
+class Browser;
 
 // Client for handling send tab notifications.
 class SendTabPushNotificationClient : public PushNotificationClient {
@@ -21,6 +24,13 @@ class SendTabPushNotificationClient : public PushNotificationClient {
   std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
+
+ private:
+  // Handles the completion of URL loads.
+  void OnURLLoadedInNewTab(std::string guid, Browser* browser);
+
+  // Weak pointer factory.
+  base::WeakPtrFactory<SendTabPushNotificationClient> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_SEND_TAB_PUSH_NOTIFICATION_CLIENT_H_

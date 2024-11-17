@@ -14,7 +14,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Perform navigation for share target with POST request. */
 public class WebApkPostShareTargetNavigator {
-    public boolean navigateIfPostShareTarget(
+    public static boolean navigateIfPostShareTarget(
             String url, WebApkShareTarget target, ShareData data, WebContents webContents) {
         WebApkShareTargetUtil.PostData postData =
                 WebApkShareTargetUtil.computePostData(target, data);

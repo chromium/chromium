@@ -151,13 +151,6 @@ void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
                                    std::move(process_user_choice_callback)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ProfilePickerSignedInFlowController::SwitchToLacrosIntro(
-    signin::SigninChoiceCallback proceed_callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-#endif
-
 void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
     const base::FilePath& profile_path) {
   DCHECK(IsInitialized());
@@ -240,11 +233,16 @@ void ProfilePickerSignedInFlowController::
   // `managed_user_profile_notice_ui` is controlled by this class.
   managed_user_profile_notice_ui->Initialize(
       /*browser=*/nullptr, type,
-      IdentityManagerFactory::GetForProfile(profile_)
-          ->FindExtendedAccountInfoByEmailAddress(email_),
-      /*profile_creation_required_by_policy=*/false,
-      /*show_link_data_option=*/false, std::move(process_user_choice_callback),
-      /*done_callback=*/base::OnceClosure());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          IdentityManagerFactory::GetForProfile(profile_)
+              ->FindExtendedAccountInfoByEmailAddress(email_),
+          /*is_oidc_account=*/type ==
+              ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          std::move(process_user_choice_callback),
+          /*done_callback=*/base::OnceClosure()));
 }
 
 bool ProfilePickerSignedInFlowController::IsInitialized() const {

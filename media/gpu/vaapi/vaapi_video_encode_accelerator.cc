@@ -396,9 +396,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported codec type " << GetCodecName(output_codec_);
-      return;
+      NOTREACHED() << "Unsupported codec type " << GetCodecName(output_codec_);
   }
 
   if (!vaapi_wrapper_->GetVAEncMaxNumOfRefFrames(

@@ -75,7 +75,8 @@
           "builder": "mac-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac Release (Intel)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

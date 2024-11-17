@@ -32,7 +32,7 @@ enum class PasswordCheckReferrer;
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // `navigationController`: Handles user movement to check subpages.
-// `browser`: browser state for preferences and password check.
+// `browser`: profile for preferences and password check.
 // `referrer`: Where in the app the Safety Check is being requested from.
 - (instancetype)
     initWithBaseNavigationController:

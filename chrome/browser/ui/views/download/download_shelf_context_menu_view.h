@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_shelf_context_menu.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class DownloadItemView;
 
@@ -45,7 +45,7 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   // The menu will be positioned above or below but not overlapping |rect|.
   void Run(views::Widget* parent_widget,
            const gfx::Rect& rect,
-           ui::MenuSourceType source_type,
+           ui::mojom::MenuSourceType source_type,
            base::RepeatingClosure on_menu_closed_callback);
 
   void SetOnMenuWillShowCallback(base::OnceClosure on_menu_will_show_callback);

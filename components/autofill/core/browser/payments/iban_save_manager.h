@@ -11,6 +11,8 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/signatures.h"
@@ -180,6 +182,12 @@ class IbanSaveManager {
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message);
 
+  // Add `risk_data` to `UploadIbanRequestDetails` and send upload IBAN request
+  // if the user has accepted the save prompt.
+  void OnDidGetUploadRiskData(bool show_save_prompt,
+                              const Iban& import_candidate,
+                              const std::string& risk_data);
+
   // Construct `UploadIbanRequestDetails` and send upload IBAN request via
   // PaymentsNetworkInterface.
   void SendUploadRequest(const Iban& import_candidate, bool show_save_prompt);
@@ -201,6 +209,11 @@ class IbanSaveManager {
 
   // The context token returned from GetIbanUploadDetails.
   std::u16string context_token_;
+
+  payments::UploadIbanRequestDetails upload_request_details_;
+
+  // `true` if the user has opted to upload save the IBAN to Google Payments.
+  bool user_did_accept_upload_prompt_ = false;
 
   // May be null.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;

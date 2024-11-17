@@ -70,23 +70,26 @@ Response TargetHandler::CreateTarget(const std::string& url,
               height.value_or(browser_->options()->window_size.height())))
           .SetEnableBeginFrameControl(
               enable_begin_frame_control.value_or(false))
-          .SetUseTabTarget(for_tab.value_or(false))
           .Build());
 
-  *out_target_id = web_contents_impl->GetDevToolsAgentHostId();
+  content::WebContents* wc = web_contents_impl->web_contents();
+  auto devtools_agent_host =
+      for_tab.value_or(false)
+          ? content::DevToolsAgentHost::GetOrCreateForTab(wc)
+          : content::DevToolsAgentHost::GetOrCreateFor(wc);
+  *out_target_id = devtools_agent_host->GetId();
   return Response::Success();
 }
 
 Response TargetHandler::CloseTarget(const std::string& target_id,
                                     bool* out_success) {
-  HeadlessWebContents* web_contents =
-      browser_->GetWebContentsForDevToolsAgentHostId(target_id);
-  *out_success = false;
-  if (web_contents) {
-    web_contents->Close();
-    *out_success = true;
+  auto agent_host = content::DevToolsAgentHost::GetForId(target_id);
+  if (!agent_host) {
+    return Response::InvalidParams("No target found for targetId");
   }
+  *out_success = agent_host->Close();
   return Response::Success();
 }
+
 }  // namespace protocol
 }  // namespace headless

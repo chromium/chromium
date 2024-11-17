@@ -6,18 +6,23 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -50,6 +55,212 @@ using blink::IndexedDBKeyPath;
 
 namespace content::indexed_db {
 
+namespace {
+constexpr int64_t kTestObjectStoreId = 1001;
+constexpr int64_t kTestIndexId = 2002;
+
+// Contains a record's keys and value that tests use to populate the database.
+struct TestIDBRecord {
+  IndexedDBKey primary_key;
+  IndexedDBValue value;
+  // Optional. Tests may skip index creation.
+  std::optional<IndexedDBKey> index_key;
+};
+
+// Contains the options used to create an object store.  Initializes members
+// to reasonable defaults that tests may override.
+struct TestObjectStoreParameters {
+  int64_t object_store_id = 0;
+  std::u16string name{u"store"};
+  IndexedDBKeyPath key_path;
+  bool auto_increment = false;
+};
+
+// Contains the options used to create an index.  Optional.  Test setup skips
+// index creation when `index_id` is `kInvalidId`. Initializes members to
+// reasonable defaults that tests may override.
+struct TestIndexParameters {
+  int64_t index_id = blink::IndexedDBIndexMetadata::kInvalidId;
+  std::u16string name{u"index"};
+  bool unique = false;
+  bool multi_entry = false;
+  IndexedDBKeyPath key_path;
+  bool auto_increment = false;
+};
+
+// Describes how test setup should create and populate an object store and
+// optionally an index.
+struct TestDatabaseParameters {
+  TestObjectStoreParameters object_store_parameters;
+  TestIndexParameters index_parameters;
+  std::vector<TestIDBRecord> records;
+};
+
+// Contains the arguments needed to call `Database::GetAllOperation`.
+// Initializes members to reasonable defaults that tests may override.
+struct TestGetAllParameters {
+  blink::mojom::IDBGetAllResultType result_type =
+      blink::mojom::IDBGetAllResultType::Keys;
+
+  blink::IndexedDBKeyRange key_range;
+
+  int64_t max_count = std::numeric_limits<int64_t>::max();
+
+  blink::mojom::IDBCursorDirection direction =
+      blink::mojom::IDBCursorDirection::Next;
+};
+
+// `Database::GetAllOperation` streams record results to a sink.  This fake
+// implementation enables test to wait for all the results and inspect them.
+class FakeGetAllResultSink final
+    : public blink::mojom::IDBDatabaseGetAllResultSink {
+ public:
+  FakeGetAllResultSink() = default;
+
+  ~FakeGetAllResultSink() final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  FakeGetAllResultSink(const FakeGetAllResultSink&) = delete;
+  FakeGetAllResultSink& operator=(const FakeGetAllResultSink&) = delete;
+
+  blink::mojom::IDBError* GetError() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(is_done_);
+    return error_.get();
+  }
+
+  const std::vector<blink::mojom::IDBRecordPtr>& GetResults() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(is_done_);
+    return records_;
+  }
+
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<blink::mojom::IDBDatabaseGetAllResultSink>
+          receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(!is_done_);
+    receiver_.Bind(std::move(receiver));
+  }
+
+  void WaitForResults() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    run_loop_.Run();
+    CHECK(is_done_);
+  }
+
+ private:
+  void ReceiveResults(std::vector<blink::mojom::IDBRecordPtr> records,
+                      bool done) final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(!is_done_);
+
+    if (records_.empty()) {
+      records_ = std::move(records);
+    } else {
+      records_.reserve(records_.size() + records.size());
+      for (auto& record : records) {
+        records_.emplace_back(std::move(record));
+      }
+    }
+
+    if (done) {
+      is_done_ = true;
+      run_loop_.Quit();
+    }
+  }
+
+  void OnError(blink::mojom::IDBErrorPtr error) final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(!is_done_);
+
+    error_ = std::move(error);
+    is_done_ = true;
+    run_loop_.Quit();
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  mojo::AssociatedReceiver<blink::mojom::IDBDatabaseGetAllResultSink> receiver_{
+      this};
+
+  // Used to wait until all results have been received.
+  base::RunLoop run_loop_;
+  bool is_done_ = false;
+
+  // Store results and error for later inspection.  Must not be accessed until
+  // `is_done_` is true.
+  std::vector<blink::mojom::IDBRecordPtr> records_;
+  blink::mojom::IDBErrorPtr error_;
+};
+
+void ExpectEqualsIndexedDBKey(const IndexedDBKey& expected_primary_key,
+                              const IndexedDBKey& actual_primary_key) {
+  ASSERT_EQ(actual_primary_key.IsValid(), expected_primary_key.IsValid());
+
+  if (expected_primary_key.IsValid()) {
+    EXPECT_TRUE(actual_primary_key.Equals(expected_primary_key))
+        << "Expected " << expected_primary_key.DebugString() << " but got "
+        << actual_primary_key.DebugString();
+  }
+}
+
+void ExpectEqualsOptionalIndexedDBKey(
+    const std::optional<IndexedDBKey>& expected_primary_key,
+    const std::optional<IndexedDBKey>& actual_primary_key) {
+  ASSERT_EQ(actual_primary_key.has_value(), expected_primary_key.has_value());
+
+  if (expected_primary_key.has_value()) {
+    ASSERT_NO_FATAL_FAILURE(
+        ExpectEqualsIndexedDBKey(*expected_primary_key, *actual_primary_key));
+  }
+}
+
+void ExpectEqualsIDBReturnValuePtr(
+    const blink::mojom::IDBReturnValuePtr& expected_return_value,
+    const blink::mojom::IDBReturnValuePtr& actual_return_value) {
+  ASSERT_EQ(actual_return_value.is_null(), expected_return_value.is_null());
+
+  if (!expected_return_value.is_null()) {
+    // Verify the value bits.
+    ASSERT_EQ(actual_return_value->value.is_null(),
+              expected_return_value->value.is_null());
+
+    if (!expected_return_value->value.is_null()) {
+      EXPECT_EQ(actual_return_value->value->bits,
+                expected_return_value->value->bits);
+
+      // Verify the external objects.
+      EXPECT_EQ(actual_return_value->value->external_objects.size(),
+                expected_return_value->value->external_objects.size());
+    }
+
+    // Verify the return value primary key and key path.
+    ASSERT_NO_FATAL_FAILURE(ExpectEqualsIndexedDBKey(
+        actual_return_value->primary_key, expected_return_value->primary_key));
+
+    EXPECT_EQ(expected_return_value->key_path, actual_return_value->key_path);
+  }
+}
+
+// Creates a `IDBReturnValuePtr` with the given bits. `primary_key`,
+// `key_path` are optional, required only for object stores that generate keys.
+// `external_objects` is not set and remains empty.
+blink::mojom::IDBReturnValuePtr CreateIDBReturnValuePtr(
+    const std::string& bits,
+    IndexedDBKey primary_key = {},
+    IndexedDBKeyPath key_path = {}) {
+  blink::mojom::IDBReturnValuePtr result = blink::mojom::IDBReturnValue::New();
+  result->value = blink::mojom::IDBValue::New();
+  result->value->bits.assign(bits.begin(), bits.end());
+  result->primary_key = std::move(primary_key);
+  result->key_path = std::move(key_path);
+  return result;
+}
+
+}  // namespace
+
 class DatabaseTest : public ::testing::Test {
  public:
   DatabaseTest() = default;
@@ -72,10 +283,10 @@ class DatabaseTest : public ::testing::Test {
 
     bucket_context_ = std::make_unique<BucketContext>(
         storage::BucketInfo(), temp_dir_.GetPath(), std::move(delegate),
+        scoped_refptr<base::UpdateableSequencedTaskRunner>(),
         quota_manager_proxy_,
-        /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
+        /*file_system_access_context=*/mojo::NullRemote());
 
     bucket_context_->InitBackingStoreIfNeeded(true);
     db_ = bucket_context_->AddDatabase(
@@ -428,14 +639,13 @@ TEST_F(DatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   run_loop.Run();
 }
 
-leveldb::Status DummyOperation(Transaction* transaction) {
-  return leveldb::Status::OK();
+Status DummyOperation(Transaction* transaction) {
+  return Status::OK();
 }
 
 class DatabaseOperationTest : public DatabaseTest {
  public:
-  DatabaseOperationTest() : commit_success_(leveldb::Status::OK()) {}
-
+  DatabaseOperationTest() = default;
   DatabaseOperationTest(const DatabaseOperationTest&) = delete;
   DatabaseOperationTest& operator=(const DatabaseOperationTest&) = delete;
 
@@ -475,6 +685,121 @@ class DatabaseOperationTest : public DatabaseTest {
     RunPostedTasks();
   }
 
+  // Populates an object store and optionally an index with `database_records`.
+  // After setup, calls `Database::GetAllOperation` with `get_all_parameters`.
+  // Verifies that the results match `expected_results`.
+  void TestGetAll(
+      const TestDatabaseParameters& database_parameters,
+      const TestGetAllParameters& get_all_parameters,
+      base::span<const blink::mojom::IDBRecordPtr> expected_results) {
+    // Create the object store.
+    ASSERT_EQ(0u, db_->metadata().object_stores.size());
+    const auto& object_store_parameters =
+        database_parameters.object_store_parameters;
+    const int64_t store_id = object_store_parameters.object_store_id;
+    Status status = db_->CreateObjectStoreOperation(
+        store_id, object_store_parameters.name,
+        object_store_parameters.key_path,
+        object_store_parameters.auto_increment, transaction_);
+    EXPECT_TRUE(status.ok()) << status.ToString();
+    EXPECT_EQ(1u, db_->metadata().object_stores.size());
+
+    // Optionally, create an index when the test provides a valid index id.
+    const auto& index_parameters = database_parameters.index_parameters;
+    const int64_t index_id = index_parameters.index_id;
+    const bool has_index =
+        (index_id != blink::IndexedDBIndexMetadata::kInvalidId);
+    if (has_index) {
+      status = db_->CreateIndexOperation(
+          store_id, index_parameters.index_id, index_parameters.name,
+          index_parameters.key_path, index_parameters.unique,
+          index_parameters.multi_entry, transaction_);
+    }
+    EXPECT_TRUE(status.ok()) << status.ToString();
+
+    // Populate the object store and optionally the index with the provided
+    // records.
+    for (const TestIDBRecord& record : database_parameters.records) {
+      std::vector<IndexedDBIndexKeys> index_keys;
+      ASSERT_EQ(record.index_key.has_value(), has_index);
+      if (has_index) {
+        IndexedDBIndexKeys index_key{index_id, {*record.index_key}};
+        index_keys.emplace_back(std::move(index_key));
+      }
+
+      testing::NiceMock<
+          base::MockCallback<blink::mojom::IDBTransaction::PutCallback>>
+          callback;
+
+      // Set in-flight memory to a reasonably large number to prevent underflow
+      // in `PutOperation`
+      transaction_->in_flight_memory() += 1000;
+
+      auto put_params = std::make_unique<Database::PutOperationParams>();
+      put_params->object_store_id = store_id;
+      put_params->value = record.value;
+      put_params->key = std::make_unique<IndexedDBKey>(record.primary_key);
+      put_params->put_mode = blink::mojom::IDBPutMode::AddOnly;
+      put_params->callback = callback.Get();
+      put_params->index_keys = std::move(index_keys);
+      status = db_->PutOperation(std::move(put_params), transaction_);
+      EXPECT_TRUE(status.ok()) << status.ToString();
+    }
+
+    // Call `Database::GetAllOperation` with the provided parameters.
+    FakeGetAllResultSink result_sink;
+    blink::mojom::IDBDatabase::GetAllCallback get_all_callback = base::BindOnce(
+        &FakeGetAllResultSink::BindReceiver, base::Unretained(&result_sink));
+
+    std::unique_ptr<Database::GetAllResultSinkWrapper> result_sink_wrapper =
+        std::make_unique<Database::GetAllResultSinkWrapper>(
+            transaction_->AsWeakPtr(), std::move(get_all_callback));
+    result_sink_wrapper->UseDedicatedReceiverForTesting();
+
+    std::unique_ptr<blink::IndexedDBKeyRange> key_range =
+        std::make_unique<blink::IndexedDBKeyRange>(
+            get_all_parameters.key_range);
+
+    status = db_->GetAllOperation(store_id, index_id, std::move(key_range),
+                                  get_all_parameters.result_type,
+                                  get_all_parameters.max_count,
+                                  get_all_parameters.direction,
+                                  std::move(result_sink_wrapper), transaction_);
+    EXPECT_TRUE(status.ok()) << status.ToString();
+
+    result_sink.WaitForResults();
+    EXPECT_EQ(result_sink.GetError(), nullptr);
+
+    // Verify that the actual results match the expected results.
+    const std::vector<blink::mojom::IDBRecordPtr>& actual_results =
+        result_sink.GetResults();
+    ASSERT_EQ(actual_results.size(), expected_results.size());
+
+    for (size_t i = 0u; i < expected_results.size(); ++i) {
+      ASSERT_FALSE(actual_results[i].is_null());
+
+      // Verify the primary key.
+      ASSERT_NO_FATAL_FAILURE(ExpectEqualsOptionalIndexedDBKey(
+          expected_results[i]->primary_key, actual_results[i]->primary_key));
+
+      // Verify the record value.
+      ASSERT_NO_FATAL_FAILURE(ExpectEqualsIDBReturnValuePtr(
+          expected_results[i]->return_value, actual_results[i]->return_value));
+
+      // Verify the index key.
+      ASSERT_NO_FATAL_FAILURE(ExpectEqualsOptionalIndexedDBKey(
+          expected_results[i]->index_key, actual_results[i]->index_key));
+    }
+
+    // Perform cleanup.
+    transaction_->SetCommitFlag();
+    transaction_ = nullptr;
+    RunPostedTasks();
+
+    // A transaction error would have resulted in a deleted db.
+    EXPECT_FALSE(bucket_context_->GetDatabasesForTesting().empty());
+  }
+
  protected:
   MockFactoryClient request_;
 
@@ -482,13 +807,13 @@ class DatabaseOperationTest : public DatabaseTest {
   // to be committed must manually reset this to null to avoid triggering
   // dangling pointer warnings.
   raw_ptr<Transaction> transaction_ = nullptr;
-  leveldb::Status commit_success_;
+  Status commit_success_;
 };
 
 TEST_F(DatabaseOperationTest, CreateObjectStore) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
-  leveldb::Status s =
+  Status s =
       db_->CreateObjectStoreOperation(store_id, u"store", IndexedDBKeyPath(),
                                       /*auto_increment=*/false, transaction_);
   EXPECT_TRUE(s.ok());
@@ -502,7 +827,7 @@ TEST_F(DatabaseOperationTest, CreateObjectStore) {
 TEST_F(DatabaseOperationTest, CreateIndex) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
-  leveldb::Status s =
+  Status s =
       db_->CreateObjectStoreOperation(store_id, u"store", IndexedDBKeyPath(),
                                       /*auto_increment=*/false, transaction_);
   EXPECT_TRUE(s.ok());
@@ -528,7 +853,7 @@ TEST_F(DatabaseOperationTest, CreateIndex) {
 class DatabaseOperationAbortTest : public DatabaseOperationTest {
  public:
   DatabaseOperationAbortTest() {
-    commit_success_ = leveldb::Status::NotFound("Bummer.");
+    commit_success_ = Status::NotFound("Bummer.");
   }
 
   DatabaseOperationAbortTest(const DatabaseOperationAbortTest&) = delete;
@@ -539,7 +864,7 @@ class DatabaseOperationAbortTest : public DatabaseOperationTest {
 TEST_F(DatabaseOperationAbortTest, CreateObjectStore) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
-  leveldb::Status s =
+  Status s =
       db_->CreateObjectStoreOperation(store_id, u"store", IndexedDBKeyPath(),
                                       /*auto_increment=*/false, transaction_);
   EXPECT_TRUE(s.ok());
@@ -554,7 +879,7 @@ TEST_F(DatabaseOperationAbortTest, CreateObjectStore) {
 TEST_F(DatabaseOperationAbortTest, CreateIndex) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
-  leveldb::Status s =
+  Status s =
       db_->CreateObjectStoreOperation(store_id, u"store", IndexedDBKeyPath(),
                                       /*auto_increment=*/false, transaction_);
   EXPECT_TRUE(s.ok());
@@ -578,7 +903,7 @@ TEST_F(DatabaseOperationTest, CreatePutDelete) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
   const int64_t store_id = 1001;
 
-  leveldb::Status s =
+  Status s =
       db_->CreateObjectStoreOperation(store_id, u"store", IndexedDBKeyPath(),
                                       /*auto_increment=*/false, transaction_);
   EXPECT_TRUE(s.ok());
@@ -614,6 +939,901 @@ TEST_F(DatabaseOperationTest, CreatePutDelete) {
   // A transaction error would have resulted in a deleted db.
   EXPECT_FALSE(bucket_context_->GetDatabasesForTesting().empty());
   EXPECT_TRUE(s.ok());
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWhenEmpty) {
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          /*database_records=*/{},
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Keys,
+      },
+      /*expected_results=*/{}));
+}
+
+TEST_F(DatabaseOperationTest, IndexGetAllValuesWhenEmpty) {
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/
+          {
+              .index_id = kTestIndexId,
+          },
+          /*database_records=*/{},
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Values,
+      },
+      /*expected_results=*/{}));
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeys) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key3"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Keys,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllValues) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(
+          /*primary_key=*/std::nullopt,
+          /*value=*/CreateIDBReturnValuePtr("value1"),
+          /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(
+          /*primary_key=*/std::nullopt,
+          /*value=*/CreateIDBReturnValuePtr("value2"),
+          /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(
+          /*primary_key=*/std::nullopt,
+          /*value=*/CreateIDBReturnValuePtr("value3"),
+          /*index_key=*/std::nullopt),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Values,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllRecords) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
+                                   /*value=*/CreateIDBReturnValuePtr("value1"),
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
+                                   /*value=*/CreateIDBReturnValuePtr("value2"),
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key3"},
+                                   /*value=*/CreateIDBReturnValuePtr("value3"),
+                                   /*index_key=*/std::nullopt),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Records,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, IndexGetAllKeys) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key3"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/
+          {
+              .index_id = kTestIndexId,
+          },
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  IndexedDBKey("index_key2"),
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  IndexedDBKey("index_key1"),
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Keys,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, IndexGetAllValues) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(
+          /*primary_key=*/std::nullopt,
+          /*value=*/CreateIDBReturnValuePtr("value3"),
+          /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(
+          /*primary_key=*/std::nullopt,
+          /*value=*/CreateIDBReturnValuePtr("value2"),
+          /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(
+          /*primary_key=*/std::nullopt,
+          /*value=*/CreateIDBReturnValuePtr("value1"),
+          /*index_key=*/std::nullopt),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/
+          {
+              .index_id = kTestIndexId,
+          },
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  IndexedDBKey("index_key2"),
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  IndexedDBKey("index_key1"),
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Values,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, IndexGetAllRecords) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key3"},
+                                   /*value=*/CreateIDBReturnValuePtr("value3"),
+                                   IndexedDBKey{"index_key1"}),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
+                                   /*value=*/CreateIDBReturnValuePtr("value2"),
+                                   IndexedDBKey{"index_key2"}),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
+                                   /*value=*/CreateIDBReturnValuePtr("value1"),
+                                   IndexedDBKey{"index_key3"}),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/
+          {
+              .index_id = kTestIndexId,
+          },
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  IndexedDBKey("index_key2"),
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  IndexedDBKey("index_key1"),
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Records,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithRange) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key3"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Keys,
+          .key_range =
+              {
+                  IndexedDBKey("key2"),
+                  IndexedDBKey("key9"),
+                  /*lower_open=*/false,
+                  /*upper_open=*/false,
+              },
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithRangeThatDoesNotExist) {
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Keys,
+          .key_range =
+              {
+                  IndexedDBKey("key7"),
+                  IndexedDBKey("key9"),
+                  /*lower_open=*/false,
+                  /*upper_open=*/false,
+              },
+      },
+      /*expected_results=*/{}));
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithInvalidRange) {
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Keys,
+          .key_range =
+              {
+                  IndexedDBKey("key9"),
+                  IndexedDBKey("key7"),
+                  /*lower_open=*/false,
+                  /*upper_open=*/false,
+              },
+      },
+      /*expected_results=*/{}));
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithMaxCount) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
+                                   /*value=*/nullptr,
+                                   /*index_key=*/std::nullopt),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Keys,
+          .max_count = 2,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllRecordsWithPrevDirection) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key3"},
+                                   /*value=*/CreateIDBReturnValuePtr("value3"),
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
+                                   /*value=*/CreateIDBReturnValuePtr("value2"),
+                                   /*index_key=*/std::nullopt),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
+                                   /*value=*/CreateIDBReturnValuePtr("value1"),
+                                   /*index_key=*/std::nullopt),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  /*index_key=*/std::nullopt,
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Records,
+          .direction = blink::mojom::IDBCursorDirection::Prev,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithNextNoDuplicateDirection) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
+                                   /*value=*/CreateIDBReturnValuePtr("value1"),
+                                   IndexedDBKey{"index_key1"}),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
+                                   /*value=*/CreateIDBReturnValuePtr("value2"),
+                                   IndexedDBKey{"index_key2"}),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key4"},
+                                   /*value=*/CreateIDBReturnValuePtr("value4"),
+                                   IndexedDBKey{"index_key3"}),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/
+          {
+              .index_id = kTestIndexId,
+          },
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  IndexedDBKey("index_key1"),
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  IndexedDBKey("index_key2"),
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  IndexedDBKey("index_key2"),
+              },
+              {
+                  IndexedDBKey{"key4"},
+                  {"value4", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+              {
+                  IndexedDBKey{"key5"},
+                  {"value5", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+              {
+                  IndexedDBKey{"key6"},
+                  {"value6", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Records,
+          .direction = blink::mojom::IDBCursorDirection::NextNoDuplicate,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithPrevNoDuplicateDirection) {
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key4"},
+                                   /*value=*/CreateIDBReturnValuePtr("value4"),
+                                   IndexedDBKey{"index_key3"}),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key2"},
+                                   /*value=*/CreateIDBReturnValuePtr("value2"),
+                                   IndexedDBKey{"index_key2"}),
+      blink::mojom::IDBRecord::New(IndexedDBKey{"key1"},
+                                   /*value=*/CreateIDBReturnValuePtr("value1"),
+                                   IndexedDBKey{"index_key1"}),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/
+          {
+              .index_id = kTestIndexId,
+          },
+          /*database_records=*/
+          {
+              {
+                  IndexedDBKey{"key1"},
+                  {"value1", /*external_objects=*/{}},
+                  IndexedDBKey("index_key1"),
+              },
+              {
+                  IndexedDBKey{"key2"},
+                  {"value2", /*external_objects=*/{}},
+                  IndexedDBKey("index_key2"),
+              },
+              {
+                  IndexedDBKey{"key3"},
+                  {"value3", /*external_objects=*/{}},
+                  IndexedDBKey("index_key2"),
+              },
+              {
+                  IndexedDBKey{"key4"},
+                  {"value4", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+              {
+                  IndexedDBKey{"key5"},
+                  {"value5", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+              {
+                  IndexedDBKey{"key6"},
+                  {"value6", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Records,
+          .direction = blink::mojom::IDBCursorDirection::PrevNoDuplicate,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithInvalidObjectStoreId) {
+  ASSERT_EQ(0u, db_->metadata().object_stores.size());
+
+  // Call `Database::GetAllOperation` with an invalid object store id, which
+  // must fail with an invalid argument status.
+  FakeGetAllResultSink result_sink;
+  blink::mojom::IDBDatabase::GetAllCallback get_all_callback = base::BindOnce(
+      &FakeGetAllResultSink::BindReceiver, base::Unretained(&result_sink));
+
+  std::unique_ptr<Database::GetAllResultSinkWrapper> result_sink_wrapper =
+      std::make_unique<Database::GetAllResultSinkWrapper>(
+          transaction_->AsWeakPtr(), std::move(get_all_callback));
+  result_sink_wrapper->UseDedicatedReceiverForTesting();
+
+  TestGetAllParameters get_all_parameters;
+
+  std::unique_ptr<blink::IndexedDBKeyRange> key_range =
+      std::make_unique<blink::IndexedDBKeyRange>(get_all_parameters.key_range);
+
+  Status status = db_->GetAllOperation(
+      kTestObjectStoreId,
+      /*index_id=*/blink::IndexedDBIndexMetadata::kInvalidId,
+      std::move(key_range), get_all_parameters.result_type,
+      get_all_parameters.max_count, get_all_parameters.direction,
+      std::move(result_sink_wrapper), transaction_);
+  ASSERT_TRUE(status.IsInvalidArgument()) << status.ToString();
+
+  // Verify that the result sink received an error.
+  result_sink.WaitForResults();
+  ASSERT_NE(result_sink.GetError(), nullptr);
+  EXPECT_EQ(result_sink.GetError()->error_code,
+            blink::mojom::IDBException::kUnknownError);
+
+  // Perform cleanup.
+  transaction_->SetCommitFlag();
+  transaction_ = nullptr;
+  RunPostedTasks();
+}
+
+TEST_F(DatabaseOperationTest, IndexGetAllKeysWithInvalidIndexId) {
+  // Create an object store.
+  ASSERT_EQ(0u, db_->metadata().object_stores.size());
+  Status status = db_->CreateObjectStoreOperation(
+      kTestObjectStoreId, u"store", IndexedDBKeyPath(),
+      /*auto_increment=*/false, transaction_);
+  ASSERT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(1u, db_->metadata().object_stores.size());
+
+  // Call `Database::GetAllOperation` with an invalid index id, which must fail
+  // with an invalid argument status.
+  FakeGetAllResultSink result_sink;
+  blink::mojom::IDBDatabase::GetAllCallback get_all_callback = base::BindOnce(
+      &FakeGetAllResultSink::BindReceiver, base::Unretained(&result_sink));
+
+  std::unique_ptr<Database::GetAllResultSinkWrapper> result_sink_wrapper =
+      std::make_unique<Database::GetAllResultSinkWrapper>(
+          transaction_->AsWeakPtr(), std::move(get_all_callback));
+  result_sink_wrapper->UseDedicatedReceiverForTesting();
+
+  TestGetAllParameters get_all_parameters;
+
+  std::unique_ptr<blink::IndexedDBKeyRange> key_range =
+      std::make_unique<blink::IndexedDBKeyRange>(get_all_parameters.key_range);
+
+  status = db_->GetAllOperation(
+      kTestObjectStoreId, kTestIndexId, std::move(key_range),
+      get_all_parameters.result_type, get_all_parameters.max_count,
+      get_all_parameters.direction, std::move(result_sink_wrapper),
+      transaction_);
+  ASSERT_TRUE(status.IsInvalidArgument()) << status.ToString();
+
+  // Verify that the result sink received an error.
+  result_sink.WaitForResults();
+  ASSERT_NE(result_sink.GetError(), nullptr);
+  EXPECT_EQ(result_sink.GetError()->error_code,
+            blink::mojom::IDBException::kUnknownError);
+
+  // Perform cleanup.
+  transaction_->SetCommitFlag();
+  transaction_ = nullptr;
+  RunPostedTasks();
+}
+
+TEST_F(DatabaseOperationTest,
+       ObjectStoreGetAllRecordsWithMultipleResultChunks) {
+  // Generate 2.5 chunks of results.
+  const size_t record_count = (blink::mojom::kIDBGetAllChunkSize * 2) +
+                              (blink::mojom::kIDBGetAllChunkSize / 2);
+
+  std::vector<TestIDBRecord> database_records;
+  std::vector<blink::mojom::IDBRecordPtr> expected_results;
+
+  for (size_t i = 0u; i < record_count; ++i) {
+    const std::string primary_key = base::StringPrintf("key%zu", i);
+    const std::string value = base::StringPrintf("value%zu", i);
+
+    database_records.push_back({IndexedDBKey{primary_key},
+                                {value, /*external_objects=*/{}},
+                                /*index_key=*/std::nullopt});
+
+    expected_results.emplace_back(
+        blink::mojom::IDBRecord::New(IndexedDBKey{primary_key},
+                                     /*value=*/CreateIDBReturnValuePtr(value),
+                                     /*index_key=*/std::nullopt));
+  }
+
+  // Sort the expected results by primary key.
+  std::sort(expected_results.begin(), expected_results.end(),
+            [](const blink::mojom::IDBRecordPtr& left,
+               const blink::mojom::IDBRecordPtr& right) {
+              return left->primary_key->IsLessThan(*right->primary_key);
+            });
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+          },
+          /*index_parameters=*/{},
+          std::move(database_records),
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Records,
+      },
+      expected_results));
+}
+
+TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithAutoIncrementingKeys) {
+  const IndexedDBKeyPath object_store_key_path{u"id"};
+
+  const IndexedDBKey expected_generated_keys[] = {
+      IndexedDBKey(1.0, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(2.0, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(3.0, blink::mojom::IDBKeyType::Number),
+  };
+
+  const blink::mojom::IDBRecordPtr expected_results[] = {
+      blink::mojom::IDBRecord::New(
+          /*primary_key=*/expected_generated_keys[2],
+          /*value=*/
+          CreateIDBReturnValuePtr("value3", expected_generated_keys[2],
+                                  object_store_key_path),
+          /*index_key=*/IndexedDBKey{"index_key1"}),
+      blink::mojom::IDBRecord::New(
+          /*primary_key=*/expected_generated_keys[1],
+          /*value=*/
+          CreateIDBReturnValuePtr("value2", expected_generated_keys[1],
+                                  object_store_key_path),
+          /*index_key=*/IndexedDBKey{"index_key2"}),
+      blink::mojom::IDBRecord::New(
+          /*primary_key=*/expected_generated_keys[0],
+          /*value=*/
+          CreateIDBReturnValuePtr("value1", expected_generated_keys[0],
+                                  object_store_key_path),
+          /*index_key=*/IndexedDBKey{"index_key3"}),
+  };
+
+  ASSERT_NO_FATAL_FAILURE(TestGetAll(
+      /*database_parameters=*/
+      {
+          /*object_store_parameters=*/
+          {
+              .object_store_id = kTestObjectStoreId,
+              .key_path = object_store_key_path,
+              .auto_increment = true,
+          },
+          /*index_parameters=*/
+          {
+              .index_id = kTestIndexId,
+          },
+          /*database_records=*/
+          {
+              {
+                  /*primary_key (generated)=*/IndexedDBKey(),
+                  {"value1", /*external_objects=*/{}},
+                  IndexedDBKey("index_key3"),
+              },
+              {
+                  /*primary_key (generated)=*/IndexedDBKey(),
+                  {"value2", /*external_objects=*/{}},
+                  IndexedDBKey("index_key2"),
+              },
+              {
+                  /*primary_key (generated)=*/IndexedDBKey(),
+                  {"value3", /*external_objects=*/{}},
+                  IndexedDBKey("index_key1"),
+              },
+          },
+      },
+      /*get_all_parameters=*/
+      {
+          .result_type = blink::mojom::IDBGetAllResultType::Records,
+      },
+      expected_results));
 }
 
 }  // namespace content::indexed_db

@@ -58,6 +58,7 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
 
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE;
 
     case user_manager::UserType::kGuest:
@@ -66,8 +67,7 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
       // This method should only be called for disallowed user types.
-      NOTREACHED_IN_MIGRATION();
-      return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
+      NOTREACHED();
   }
 }
 

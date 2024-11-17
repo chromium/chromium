@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/timer/timer.h"
-#include "components/page_load_metrics/browser/observers/assert_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/core/unstarted_page_paint_observer.h"
@@ -33,44 +32,37 @@ PageLoadMetricsEmbedderBase::PageLoadMetricsEmbedderBase(
 
 PageLoadMetricsEmbedderBase::~PageLoadMetricsEmbedderBase() = default;
 
-void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
-  // Register observers used by all embedders
-#if DCHECK_IS_ON()
-  // Link Preview doesn't emit activation event yet and assertion of event
-  // orders fail.
-  //
-  // TODO(b:302999778): Reenable it.
-  if (!tracker->GetWebContents()->IsInPreviewMode()) {
-    tracker->AddObserver(std::make_unique<AssertPageLoadMetricsObserver>());
-  }
-#endif
+void PageLoadMetricsEmbedderBase::RegisterObservers(
+    PageLoadTracker* tracker,
+    content::NavigationHandle* navigation_handle) {
+  RegisterCommonObservers(tracker);
+}
 
-  if (!IsNoStatePrefetch(web_contents()) && !IsSidePanel(web_contents()) &&
-      !IsNonTabWebUI()) {
-    tracker->AddObserver(
-        std::make_unique<BackForwardCachePageLoadMetricsObserver>());
-    tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
-    tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
-    tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
-    tracker->AddObserver(
-        std::make_unique<FencedFramesPageLoadMetricsObserver>());
-    tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
-    tracker->AddObserver(std::make_unique<SameOriginPageLoadMetricsObserver>());
-    tracker->AddObserver(
-        std::make_unique<CrossOriginPageLoadMetricsObserver>());
-    if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-      tracker->AddObserver(
-          std::make_unique<SharedStoragePageLoadMetricsObserver>());
-    }
-    tracker->AddObserver(
-        std::make_unique<PrivacySandboxAdsPageLoadMetricsObserver>());
-    tracker->AddObserver(
-        std::make_unique<UmaFileAndDataPageLoadMetricsObserver>());
-    tracker->AddObserver(std::make_unique<PerformanceManagerMetricsObserver>());
-    tracker->AddObserver(std::make_unique<UnstartedPagePaintObserver>());
+void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
+    PageLoadTracker* tracker) {
+  if (IsNoStatePrefetch(web_contents())) {
+    return;
   }
-  // Allow the embedder to register any embedder-specific observers
-  RegisterEmbedderObservers(tracker);
+
+  tracker->AddObserver(
+      std::make_unique<BackForwardCachePageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<FencedFramesPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<SameOriginPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<CrossOriginPageLoadMetricsObserver>());
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    tracker->AddObserver(
+        std::make_unique<SharedStoragePageLoadMetricsObserver>());
+  }
+  tracker->AddObserver(
+      std::make_unique<PrivacySandboxAdsPageLoadMetricsObserver>());
+  tracker->AddObserver(
+      std::make_unique<UmaFileAndDataPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<PerformanceManagerMetricsObserver>());
+  tracker->AddObserver(std::make_unique<UnstartedPagePaintObserver>());
 }
 
 std::unique_ptr<base::OneShotTimer> PageLoadMetricsEmbedderBase::CreateTimer() {

@@ -114,7 +114,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
         mToolbar.initializeSearchView(
                 mSearchDelegate, R.string.download_manager_search, R.id.search_menu_id);
 
-        ToolbarUtils.setupTrackerForDownloadSettingsIPH(tracker, mToolbar);
+        ToolbarUtils.setupTrackerForDownloadSettingsIph(tracker, mToolbar);
 
         mShadow.init(context.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 

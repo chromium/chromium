@@ -17,7 +17,7 @@ namespace sequence_manager {
 MockTimeMessagePump::MockTimeMessagePump(SimpleTestTickClock* clock)
     : clock_(clock) {}
 
-MockTimeMessagePump::~MockTimeMessagePump() {}
+MockTimeMessagePump::~MockTimeMessagePump() = default;
 
 bool MockTimeMessagePump::MaybeAdvanceTime(TimeTicks target_time) {
   auto now = clock_->NowTicks();

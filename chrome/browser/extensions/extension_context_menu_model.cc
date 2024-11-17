@@ -178,8 +178,7 @@ PermissionsManager::UserSiteAccess CommandIdToSiteAccess(int command_id) {
     case ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_ALL_SITES:
       return PermissionsManager::UserSiteAccess::kOnAllSites;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PermissionsManager::UserSiteAccess::kOnClick;
+  NOTREACHED();
 }
 
 // Logs a user action when an option is selected in the page access section of
@@ -207,8 +206,7 @@ void LogPageAccessAction(int command_id) {
           "Extensions.ContextMenu.Hosts.LearnMoreClicked"));
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown option: " << command_id;
-      break;
+      NOTREACHED() << "Unknown option: " << command_id;
   }
 }
 
@@ -268,6 +266,9 @@ class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
 };
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
+                                      kToggleVisibilityMenuItem);
 
 ExtensionContextMenuModel::ExtensionContextMenuModel(
     const Extension* extension,
@@ -393,9 +394,8 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
     case VIEW_WEB_PERMISSIONS:
       return true;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown command" << command_id;
+      NOTREACHED() << "Unknown command" << command_id;
   }
-  return true;
 }
 
 void ExtensionContextMenuModel::ExecuteCommand(int command_id,
@@ -510,8 +510,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
 
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown option";
-      break;
+      NOTREACHED() << "Unknown option";
   }
 }
 
@@ -572,10 +571,11 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
   bool has_policy_entry = !is_component_ && is_required_by_policy;
   bool policy_entry_in_subpage = false;
 
-  // Show section only when the extension requests host permissions.
+  // Show section only when the extension requests host permissions or has
+  // activeTab permission.
   auto* permissions_manager = PermissionsManager::Get(profile_);
-  if (permissions_manager->ExtensionRequestsHostPermissionsOrActiveTab(
-          *extension)) {
+  if (permissions_manager->HasRequestedHostPermissions(*extension) ||
+      permissions_manager->HasRequestedActiveTab(*extension)) {
     content::WebContents* web_contents = GetActiveWebContents();
     const GURL& url = web_contents->GetLastCommittedURL();
     auto site_setting = permissions_manager->GetUserSiteSetting(origin_);
@@ -682,6 +682,8 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
                            : IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR;
       AddItemWithStringId(TOGGLE_VISIBILITY, message_id);
     }
+    SetElementIdentifierAt(GetIndexOfCommandId(TOGGLE_VISIBILITY).value(),
+                           kToggleVisibilityMenuItem);
   }
 
   if (has_options_page) {

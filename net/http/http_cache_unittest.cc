@@ -693,14 +693,12 @@ class FakeWebSocketHandshakeStreamCreateHelper
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
       std::set<std::string> dns_aliases) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
       std::set<std::string> dns_aliases) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 };
 
@@ -11196,6 +11194,12 @@ TEST_F(HttpCacheTest, UpdatesRequestResponseTimeOn304) {
 
   kNetResponse1.AssignTo(&mock_network_response);
 
+  base::Time request_time1 = base::Time() + base::Hours(1232);
+  base::Time response_time1 = base::Time() + base::Hours(1233);
+
+  mock_network_response.request_time = request_time1;
+  mock_network_response.response_time = response_time1;
+
   RunTransactionTest(cache.http_cache(), request);
 
   // Request |kUrl| again, this time validating the cache and getting
@@ -11208,20 +11212,21 @@ TEST_F(HttpCacheTest, UpdatesRequestResponseTimeOn304) {
 
   kNetResponse2.AssignTo(&mock_network_response);
 
-  base::Time request_time = base::Time() + base::Hours(1234);
-  base::Time response_time = base::Time() + base::Hours(1235);
+  base::Time request_time2 = base::Time() + base::Hours(1234);
+  base::Time response_time2 = base::Time() + base::Hours(1235);
 
-  mock_network_response.request_time = request_time;
-  mock_network_response.response_time = response_time;
+  mock_network_response.request_time = request_time2;
+  mock_network_response.response_time = response_time2;
 
   HttpResponseInfo response;
   RunTransactionTestWithResponseInfo(cache.http_cache(), request, &response);
 
   // The request and response times should have been updated.
-  EXPECT_EQ(request_time.ToInternalValue(),
-            response.request_time.ToInternalValue());
-  EXPECT_EQ(response_time.ToInternalValue(),
-            response.response_time.ToInternalValue());
+  EXPECT_EQ(request_time2, response.request_time);
+  EXPECT_EQ(response_time2, response.response_time);
+
+  // The original response time should still be the same.
+  EXPECT_EQ(response.original_response_time, response_time1);
 
   EXPECT_EQ(
       "HTTP/1.1 200 OK\n"
@@ -11492,7 +11497,7 @@ TEST_P(HttpCacheTestSplitCacheFeature, SplitCache) {
   subframe_document_trans_info.is_subframe_document_resource = true;
   switch (GetParam()) {
     case SplitCacheTestCase::kDisabled:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case SplitCacheTestCase::kEnabledTripleKeyed:
     case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
     case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
@@ -14093,12 +14098,11 @@ TEST_F(HttpCacheTest, SecurityHeadersAreCopiedToConditionalizedResponse) {
                                      &response);
 
   // Verify that the CORP header was carried over to the response.
-  std::string response_corp_header;
-  response.headers->GetNormalizedHeader("Cross-Origin-Resource-Policy",
-                                        &response_corp_header);
+  EXPECT_EQ(
+      response.headers->GetNormalizedHeader("Cross-Origin-Resource-Policy"),
+      "cross-origin");
 
   EXPECT_EQ(304, response.headers->response_code());
-  EXPECT_EQ("cross-origin", response_corp_header);
 }
 
 }  // namespace net

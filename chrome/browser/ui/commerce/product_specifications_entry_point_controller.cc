@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,12 +21,16 @@
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
+#include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace {
 
@@ -74,6 +79,39 @@ bool IsNavigationEligibleForEntryPoint(
       kEligibleWindowUrlCountForNavigationTriggering);
 }
 
+void LogClusterUKM(const TabStripModel* tab_strip_model,
+                   std::vector<GURL> urls,
+                   std::optional<commerce::EntryPointInfo> entry_point_info) {
+  // If there's no active index, it's likely that the tabstrip is in startup or
+  // shutdown.
+  if (!tab_strip_model ||
+      tab_strip_model->active_index() == TabStripModel::kNoTab) {
+    return;
+  }
+  // Create an event id to tie the UKM rows together.
+  base::Time event_time = base::Time::Now();
+  int64_t tab_strip_event_id =
+      event_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+
+  for (int tab_index = 0; tab_index < tab_strip_model->count(); tab_index++) {
+    content::WebContents* contents =
+        tab_strip_model->GetWebContentsAt(tab_index);
+    const GURL& current_url = contents->GetLastCommittedURL();
+    if (!base::Contains(urls, current_url)) {
+      continue;
+    }
+    bool comparable_by_server =
+        entry_point_info.has_value() &&
+        base::Contains(entry_point_info->similar_candidate_products,
+                       current_url);
+    ukm::builders::Shopping_Compare_ClusterIdenfitiedByClient(
+        contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
+        .SetCompareEventID(tab_strip_event_id)
+        .SetComparableByServer(comparable_by_server)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
 }  // namespace
 
 namespace commerce {
@@ -83,9 +121,7 @@ ProductSpecificationsEntryPointController::
     ProductSpecificationsEntryPointController(BrowserWindowInterface* browser)
     : browser_(browser) {
   CHECK(browser_);
-  if (browser_->GetProfile()->IsRegularProfile()) {
-    browser_->GetTabStripModel()->AddObserver(this);
-  }
+  browser_->GetTabStripModel()->AddObserver(this);
   shopping_service_ =
       ShoppingServiceFactory::GetForBrowserContext(browser_->GetProfile());
   if (shopping_service_) {
@@ -131,18 +167,6 @@ void ProductSpecificationsEntryPointController::OnTabStripModelChanged(
                      weak_ptr_factory_.GetWeakPtr(), old_url, new_url));
 }
 
-void ProductSpecificationsEntryPointController::TabChangedAt(
-    content::WebContents* contents,
-    int index,
-    TabChangeType change_type) {
-  if (change_type == TabChangeType::kAll) {
-    // TODO(b/343109556): Instead of hiding, sometimes we'll need to update
-    // the showing entry point.
-    MaybeHideEntryPoint();
-    ProductSpecificationsDisclosureDialog::CloseDialog();
-  }
-}
-
 void ProductSpecificationsEntryPointController::AddObserver(
     Observer* observer) {
   observers_.AddObserver(observer);
@@ -173,9 +197,9 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
   // If user has not accepted the latest disclosure, show the disclosure dialog
   // first.
   if (prefs->GetInteger(kProductSpecificationsAcceptedDisclosureVersion) !=
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kV1)) {
+      static_cast<int>(product_specifications::mojom::DisclosureVersion::kV1)) {
     DialogArgs dialog_args(urls_in_set, current_entry_point_info_->title,
+                           /*set_id=*/"",
                            /*in_new_tab=*/true);
     ProductSpecificationsDisclosureDialog::ShowDialog(
         browser_->GetProfile(),
@@ -243,12 +267,17 @@ bool ProductSpecificationsEntryPointController::ShouldExecuteEntryPointShow() {
 
 void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
     const GURL& url) {
-  // Cluster finished for a navigation that didn't happen in this window, or the
-  // clustering took so long to finish that the user has navigated away.
-  GURL current_url = browser_->GetTabStripModel()
-                         ->GetActiveWebContents()
-                         ->GetLastCommittedURL();
-  if (current_url != url || !cluster_manager_) {
+  // Cluster finished for a navigation that didn't happen in this window.
+  bool in_window = false;
+  for (int i = 0; i < browser_->GetTabStripModel()->count(); i++) {
+    if (browser_->GetTabStripModel()
+            ->GetWebContentsAt(i)
+            ->GetLastCommittedURL() == url) {
+      in_window = true;
+      break;
+    }
+  }
+  if (!in_window) {
     return;
   }
 
@@ -256,6 +285,16 @@ void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
       url, base::BindOnce(&ProductSpecificationsEntryPointController::
                               CheckEntryPointInfoForNavigation,
                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProductSpecificationsEntryPointController::DidFinishNavigation(
+    content::WebContents* contents) {
+  // TODO(b/343109556): Instead of hiding, sometimes we'll need to update
+  // the showing entry point.
+  MaybeHideEntryPoint();
+  if (contents == browser_->GetTabStripModel()->GetActiveWebContents()) {
+    ProductSpecificationsDisclosureDialog::CloseDialog();
+  }
 }
 
 void ProductSpecificationsEntryPointController::CheckEntryPointInfoForSelection(
@@ -296,6 +335,8 @@ void ProductSpecificationsEntryPointController::
         const GURL old_url,
         const GURL new_url,
         std::optional<EntryPointInfo> entry_point_info) {
+  LogClusterUKM(browser_->GetTabStripModel(), {old_url, new_url},
+                entry_point_info);
   if (!entry_point_info.has_value()) {
     base::RecordAction(
         base::UserMetricsAction("Commerce.Compare.CandidateClusterRejected"));
@@ -330,11 +371,15 @@ void ProductSpecificationsEntryPointController::
   if (kProductSpecificationsUseServerClustering.Get()) {
     // TODO(qinmin): we should check whether tabstrips have changed while
     // waiting for the callback.
+    std::vector<GURL> cluster_urls;
+    for (const auto& pair : entry_point_info->similar_candidate_products) {
+      cluster_urls.push_back(pair.first);
+    }
     cluster_manager_->GetComparableProducts(
         entry_point_info.value(),
         base::BindOnce(&ProductSpecificationsEntryPointController::
                            ShowEntryPointWithTitleForNavigation,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), cluster_urls));
   } else {
     ShowEntryPointWithTitle(std::move(entry_point_info));
   }
@@ -342,7 +387,9 @@ void ProductSpecificationsEntryPointController::
 
 void ProductSpecificationsEntryPointController::
     ShowEntryPointWithTitleForNavigation(
+        std::vector<GURL> urls,
         std::optional<EntryPointInfo> entry_point_info) {
+  LogClusterUKM(browser_->GetTabStripModel(), urls, entry_point_info);
   if (!entry_point_info.has_value()) {
     base::RecordAction(
         base::UserMetricsAction("Commerce.Compare.CandidateClusterRejected"));
@@ -365,11 +412,6 @@ void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
   // offer the entry point.
   if (!CanFetchProductSpecificationsData(
           shopping_service_->GetAccountChecker())) {
-    return;
-  }
-
-  // Entry point should never show for windows with non-regular profile.
-  if (!browser_->GetProfile()->IsRegularProfile()) {
     return;
   }
 

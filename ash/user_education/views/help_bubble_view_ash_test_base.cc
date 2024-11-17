@@ -15,7 +15,7 @@
 #include "ash/user_education/views/help_bubble_view_ash.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -201,6 +202,10 @@ class DeviceStatusCollector : public StatusCollector,
 
   // The total number of hardware resource usage samples cached internally.
   static const unsigned int kMaxResourceUsageSamples = 10;
+
+  EnterpriseActivityStorage& GetActivityStorageForTesting() {
+    return CHECK_DEREF(activity_storage_.get());
+  }
 
  protected:
   using PowerStatusCallback = base::OnceCallback<void(

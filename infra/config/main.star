@@ -331,6 +331,11 @@ exec("//generators/sort-consoles.star")
 exec("//validators/builder-group-triggers.star")
 exec("//validators/builders-in-consoles.star")
 
+# Notify findit about completed builds for code coverage purposes
+luci.buildbucket_notification_topic(
+    name = "projects/findit-for-me/topics/buildbucket_notification",
+)
+
 # Execute this file last so that any configuration changes needed for handling
 # outages gets final say
 exec("//outages/outages.star")

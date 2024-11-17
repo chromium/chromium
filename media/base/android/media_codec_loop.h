@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -114,8 +115,8 @@ class MEDIA_EXPORT MediaCodecLoop {
     InputData(const InputData&);
     ~InputData();
 
-    raw_ptr<const uint8_t> memory = nullptr;
-    size_t length = 0;
+    // TODO(367764863) Rewrite to base::raw_span.
+    RAW_PTR_EXCLUSION base::span<const uint8_t> memory;
 
     std::string key_id;
     std::string iv;

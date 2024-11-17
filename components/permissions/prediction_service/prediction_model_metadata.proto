@@ -104,3 +104,13 @@ message WebPermissionPredictionsModelMetadata {
   // Thresholds used to discretized the NOT_GRANT likelihood scores.
   optional LikelihoodThresholds not_grant_thresholds = 5;
 }
+
+// This message is used to provide the backend info about the Chrome client. The
+// backend can use this information to select a model which needs to be sent to
+// the client.
+message WebPermissionPredictionsClientInfo {
+  // The chrome milestone version.
+  // For example a Chrome client with version 128.0.6613.115 will have 128 as
+  // the milestone.
+  optional int32 milestone = 1;
+}

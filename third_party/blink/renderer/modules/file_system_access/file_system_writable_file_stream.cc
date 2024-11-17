@@ -43,15 +43,13 @@ FileSystemWritableFileStream* FileSystemWritableFileStream::Create(
   ScriptValue strategy_value = ScriptValue::From(script_state, strategy);
 
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                 "FileSystemWritableFileStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   stream->InitInternal(script_state, underlying_sink_value, strategy_value,
-                       exception_state);
+                       PassThroughException(isolate));
 
-  if (exception_state.HadException()) {
+  if (isolate->HasPendingException()) {
     return nullptr;
   }
 

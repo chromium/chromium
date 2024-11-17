@@ -25,7 +25,7 @@ enum class TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA {
 // numeric values should never be reused.
 // LINT.IfChange(TrustedVaultDeviceRegistrationState)
 enum class TrustedVaultDeviceRegistrationStateForUMA {
-  kAlreadyRegisteredV0 = 0,
+  kAlreadyRegisteredV0 = 0,  // Used only on iOS.
   kLocalKeysAreStale = 1,
   kThrottledClientSide = 2,
   kAttemptingRegistrationWithNewKeyPair = 3,
@@ -36,7 +36,7 @@ enum class TrustedVaultDeviceRegistrationStateForUMA {
   kAlreadyRegisteredV1 = 6,
   kMaxValue = kAlreadyRegisteredV1,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDeviceRegistrationState)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultDeviceRegistrationState)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -52,7 +52,7 @@ enum class TrustedVaultDeviceRegistrationOutcomeForUMA {
   kOtherError = 7,
   kMaxValue = kOtherError,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultDeviceRegistrationOutcome)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultDeviceRegistrationOutcome)
 
 // Used to provide UMA metric breakdowns.
 enum class TrustedVaultURLFetchReasonForUMA {
@@ -109,16 +109,23 @@ enum class TrustedVaultFileReadStatusForUMA {
   kDataProtoDeserializationFailed = 5,
   kMaxValue = kDataProtoDeserializationFailed
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TrustedVaultFileReadStatus)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultFileReadStatus)
 
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason);
 
+// TODO(crbug.com/369980730): this is used in internals, replace usages with the
+// version below and delete this one.
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state);
 
+void RecordTrustedVaultDeviceRegistrationState(
+    SecurityDomainId security_domain_id,
+    TrustedVaultDeviceRegistrationStateForUMA registration_state);
+
 void RecordTrustedVaultDeviceRegistrationOutcome(
+    SecurityDomainId security_domain_id,
     TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome);
 
 // Records url fetch response status (combined http and net error code) for
@@ -140,14 +147,11 @@ void RecordRecoveryKeyStoreURLFetchResponse(
     int net_error);
 
 // Records the outcome of trying to download keys from the server.
-// |also_log_with_v1_suffix| allows the caller to determine whether the local
-// device's registration is a V1 registration (that is, more reliable), which
-// causes a second histogram to be logged as well.
 void RecordTrustedVaultDownloadKeysStatus(
-    TrustedVaultDownloadKeysStatusForUMA status,
-    bool also_log_with_v1_suffix);
+    TrustedVaultDownloadKeysStatusForUMA status);
 
-void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status);
+void RecordTrustedVaultFileReadStatus(SecurityDomainId security_domain_id,
+                                      TrustedVaultFileReadStatusForUMA status);
 
 enum class IsOffTheRecord { kNo, kYes };
 

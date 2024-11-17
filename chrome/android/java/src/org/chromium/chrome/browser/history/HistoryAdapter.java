@@ -47,7 +47,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     // Headers
     private TextView mPrivacyDisclaimerTextView;
     private View mPrivacyDisclaimerBottomSpace;
-    private Button mHistoryOpenInChromeButton;
     private Button mClearBrowsingDataButton;
     private HeaderItem mPrivacyDisclaimerHeaderItem;
     private HeaderItem mClearBrowsingDataButtonHeaderItem;
@@ -266,8 +265,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             clear(true);
             mClearOnNextQueryComplete = false;
         }
-        if (!mAreHeadersInitialized && items.size() > 0 && !mIsSearching
-                || mIsSearching && mShowAppFilter) {
+        if ((!mAreHeadersInitialized && items.size() > 0 && !mIsSearching)
+                || (mIsSearching && mShowAppFilter)) {
             setHeaders();
             mAreHeadersInitialized = true;
         }
@@ -373,9 +372,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             ViewGroup historyOpenInChromeButtonContainer = getCctOpenInChromeButtonContainer(null);
 
             mHistoryOpenInChromeHeaderItem = new HeaderItem(1, historyOpenInChromeButtonContainer);
-            mHistoryOpenInChromeButton =
-                    historyOpenInChromeButtonContainer.findViewById(
-                            R.id.open_full_chrome_history_button);
         }
 
         updateClearBrowsingDataButtonVisibility();
@@ -465,7 +461,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                     int res = R.string.android_app_history_open_full_other_forms;
                     text = getPrivacyDisclaimerClickableSpanString(context, res);
                 } else {
-                    text = context.getResources().getString(R.string.android_app_history_open_full);
+                    text = context.getString(R.string.android_app_history_open_full);
                 }
             } else if (mManager.showAppFilter()) { // History UI in BrApp
                 if (hasPrivacyDisclaimers()) {
@@ -473,7 +469,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                     text = getPrivacyDisclaimerClickableSpanString(context, res);
                 } else {
                     int res = R.string.android_history_from_other_apps;
-                    text = context.getResources().getString(res);
+                    text = context.getString(res);
                 }
             }
         }
@@ -487,7 +483,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     private CharSequence getPrivacyDisclaimerClickableSpanString(
             Context context, @StringRes int resId) {
-        var s = context.getResources().getString(resId);
+        var s = context.getString(resId);
         var link =
                 new NoUnderlineClickableSpan(
                         context, (v) -> mManager.onPrivacyDisclaimerLinkClicked());

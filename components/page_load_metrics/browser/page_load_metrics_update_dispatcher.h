@@ -118,7 +118,7 @@ class PageLoadMetricsUpdateDispatcher {
   // changed. Typically it owns the dispatcher.
   class Client {
    public:
-    virtual ~Client() {}
+    virtual ~Client() = default;
 
     virtual PrerenderingState GetPrerenderingState() const = 0;
     virtual bool IsPageMainFrame(content::RenderFrameHost* rfh) const = 0;

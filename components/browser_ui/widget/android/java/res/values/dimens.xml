@@ -83,6 +83,7 @@ found in the LICENSE file.
     <!-- Promo cards dimensions -->
     <dimen name="promo_image_size">24dp</dimen>
     <dimen name="promo_between_text_margin">8dp</dimen>
+    <dimen name="promo_close_button_size">48dp</dimen>
 
     <dimen name="promo_compact_padding">12dp</dimen>
     <dimen name="promo_compact_padding_bottom">7dp</dimen>
@@ -92,9 +93,10 @@ found in the LICENSE file.
     <dimen name="promo_slim_button_max_width">84dp</dimen>
     <dimen name="promo_slim_padding_vertical">10dp</dimen>
 
-    <dimen name="promo_large_padding_vertical">8dp</dimen>
+    <dimen name="promo_large_image_size">48dp</dimen>
+    <dimen name="promo_large_padding_vertical">16dp</dimen>
     <dimen name="promo_large_padding_horizontal">24dp</dimen>
-    <dimen name="promo_large_illustration_margin_bottom">16dp</dimen>
+    <dimen name="promo_large_illustration_margin">12dp</dimen>
     <dimen name="promo_large_text_group_bottom_margin">10dp</dimen>
 
     <!-- TextBubble dimensions -->

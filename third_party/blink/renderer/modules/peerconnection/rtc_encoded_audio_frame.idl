@@ -10,7 +10,7 @@
 ] interface RTCEncodedAudioFrame {
     [Measure, RaisesException]
     constructor (RTCEncodedAudioFrame originalFrame, optional RTCEncodedAudioFrameOptions options = {});
-    readonly attribute unsigned long timestamp;  // RTP timestamp.
+    [Measure] readonly attribute unsigned long timestamp;  // RTP timestamp.
     [CallWith=ExecutionContext] attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();
     [CallWith=ExecutionContext] stringifier;

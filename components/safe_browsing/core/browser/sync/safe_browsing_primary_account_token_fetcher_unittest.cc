@@ -15,7 +15,7 @@ namespace safe_browsing {
 
 class SafeBrowsingPrimaryAccountTokenFetcherTest : public ::testing::Test {
  public:
-  SafeBrowsingPrimaryAccountTokenFetcherTest() {}
+  SafeBrowsingPrimaryAccountTokenFetcherTest() = default;
 
  protected:
   base::test::TaskEnvironment task_environment_{

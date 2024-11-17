@@ -18,13 +18,19 @@ build_webui("build") {
     "transaction_table.ts",
   ]
   html_to_wrapper_template = "native"
-  non_web_component_files = [ "indexeddb_internals.ts" ]
+  non_web_component_files = [
+    "indexeddb_internals.ts",
+    "indexeddb_list.html.ts",
+    "mojo_utils.ts",
+  ]
 
   ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+
   webui_context_type = "trusted"
 
   indexeddb_internal_folder = "content/browser/indexed_db"

@@ -36,21 +36,6 @@
 
 namespace ipcz {
 
-namespace {
-
-template <typename T>
-FragmentRef<T> MaybeAdoptFragmentRef(NodeLinkMemory& memory,
-                                     const FragmentDescriptor& descriptor) {
-  if (descriptor.is_null() || descriptor.size() < sizeof(T) ||
-      descriptor.offset() % 8 != 0) {
-    return {};
-  }
-
-  return memory.AdoptFragmentRef<T>(memory.GetFragment(descriptor));
-}
-
-}  // namespace
-
 // static
 Ref<NodeLink> NodeLink::CreateActive(Ref<Node> node,
                                      LinkSide link_side,
@@ -613,6 +598,7 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
   parcel->set_num_subparcels(num_subparcels);
   parcel->set_subparcel_index(subparcel_index);
   parcel->SetObjects(std::move(objects));
+  parcel->SetEnvelope(accept.TakeEnvelope());
   if (!parcel_valid) {
     return false;
   }
@@ -714,8 +700,8 @@ bool NodeLink::OnAcceptBypassLink(msg::AcceptBypassLink& accept) {
     return true;
   }
 
-  auto link_state = MaybeAdoptFragmentRef<RouterLinkState>(
-      memory(), accept.v0()->new_link_state_fragment);
+  auto link_state = memory().AdoptFragmentRefIfValid<RouterLinkState>(
+      accept.v0()->new_link_state_fragment);
   if (link_state.is_null()) {
     // Bypass links must always come with a valid fragment for their
     // RouterLinkState. If one has not been provided, that's a validation
@@ -753,8 +739,8 @@ bool NodeLink::OnBypassPeerWithLink(msg::BypassPeerWithLink& bypass) {
     return true;
   }
 
-  auto link_state = MaybeAdoptFragmentRef<RouterLinkState>(
-      memory(), bypass.v0()->new_link_state_fragment);
+  auto link_state = memory().AdoptFragmentRefIfValid<RouterLinkState>(
+      bypass.v0()->new_link_state_fragment);
   if (link_state.is_null()) {
     return false;
   }
@@ -834,9 +820,13 @@ void NodeLink::OnTransportError() {
 
 void NodeLink::HandleTransportError() {
   SublinkMap sublinks;
+  SubparcelTrackerMap subparcel_trackers;
+  ReferralCallbackMap pending_referrals;
   {
     absl::MutexLock lock(&mutex_);
     sublinks.swap(sublinks_);
+    subparcel_trackers.swap(subparcel_trackers_);
+    pending_referrals.swap(pending_referrals_);
   }
 
   for (auto& [id, sublink] : sublinks) {
@@ -846,8 +836,13 @@ void NodeLink::HandleTransportError() {
     sublink.receiver->NotifyLinkDisconnected(*sublink.router_link);
   }
 
+  for (auto& [id, callback] : pending_referrals) {
+    callback(/*link=*/nullptr, /*num_portals=*/0);
+  }
+
   Ref<NodeLink> self = WrapRefCounted(this);
   node_->DropConnection(*this);
+  memory_->NotifyLinkDisconnected();
 }
 
 void NodeLink::WaitForParcelFragmentToResolve(

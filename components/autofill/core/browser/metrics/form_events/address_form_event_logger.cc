@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -46,13 +47,9 @@ CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
 }  // namespace
 
 AddressFormEventLogger::AddressFormEventLogger(
-    bool is_in_any_main_frame,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     AutofillClient* client)
-    : FormEventLoggerBase("Address",
-                          is_in_any_main_frame,
-                          form_interactions_ukm_logger,
-                          client) {}
+    : FormEventLoggerBase("Address", form_interactions_ukm_logger, client) {}
 
 AddressFormEventLogger::~AddressFormEventLogger() = default;
 
@@ -161,7 +158,9 @@ bool AddressFormEventLogger::HasLoggedDataToFillAvailable() const {
 
 DenseSet<FormTypeNameForLogging>
 AddressFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
-  return {FormTypeNameForLogging::kAddressForm};
+  return {FormTypeNameForLogging::kAddressForm,
+          FormTypeNameForLogging::kEmailOnlyForm,
+          FormTypeNameForLogging::kPostalAddressForm};
 }
 
 DenseSet<FormTypeNameForLogging> AddressFormEventLogger::GetFormTypesForLogging(

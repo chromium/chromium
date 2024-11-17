@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" class="reftest-wait">
+<meta charset="utf-8" />
+<title>CSS Pseudo-Elements Test: set custom color for ::search-text dynamically</title>
+<link rel="author" title="Rob Buis" href="mailto:rbuis@igalia.com">
+<meta name="assert" content="Verify that a color can be dynamically changed for ::search-text.">
+<link rel="match" href="search-text-color-dynamic-001-ref.html">
+<link rel="stylesheet" href="support/highlights.css">
+<script src="/common/reftest-wait.js"></script>
+<script src="../support/markers.js"></script>
+<style>
+  ::search-text {
+    color: red;
+  }
+</style>
+<div class="highlight_reftest" id="target">The quick brown fox jumps over the lazy dog.</div>
+<script>
+  addSearchTextMarker(target, 0, 3, true);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.styleSheets[1].cssRules[0].style.color = "green";
+    takeScreenshot();
+  }));
+</script>
+</html>

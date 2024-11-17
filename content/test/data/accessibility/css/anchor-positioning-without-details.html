@@ -1,0 +1,102 @@
+<!--
+@BLINK-ALLOW:details*
+-->
+<html>
+<head><style>
+#tooltip-anchor {
+  anchor-name: --anchor-tooltip;
+  position: absolute;
+}
+#tooltip-target {
+  position: absolute;
+  top: anchor(--anchor-tooltip bottom);
+}
+#labelledby-anchor {
+  anchor-name: --anchor-labelledby;
+  position: absolute;
+}
+#labelledby-target {
+  position: absolute;
+  top: anchor(--anchor-labelledby bottom);
+}
+#describedby-anchor {
+  anchor-name: --anchor-describedby;
+  position: absolute;
+}
+#describedby-target {
+  position: absolute;
+  top: anchor(--anchor-describedby bottom);
+}
+#controls-anchor {
+  anchor-name: --anchor-controls;
+  position: absolute;
+}
+#controls-target {
+  position: absolute;
+  top: anchor(--anchor-controls bottom);
+}
+#owns-anchor {
+  anchor-name: --anchor-owns;
+  position: absolute;
+}
+#owns-target {
+  position: absolute;
+  top: anchor(--anchor-owns bottom);
+}
+#multiple-anchor-1 {
+  anchor-name: --anchor-multiple-1;
+  position: absolute;
+}
+#multiple-anchor-2 {
+  anchor-name: --anchor-multiple-2;
+  position: absolute;
+}
+#multiple-target {
+  position: absolute;
+  top: anchor(--anchor-multiple-1 bottom);
+  bottom: anchor(--anchor-multiple-2 bottom);
+}
+#dom-siblings-anchor {
+  anchor-name: --anchor-sibling;
+  position: absolute;
+}
+#dom-siblings-target {
+  position: absolute;
+  top: anchor(--anchor-sibling bottom);
+}
+</style></head>
+<body>
+  <!-- No aria-details relationship should exist in the following examples. -->
+  <p id="tooltip-anchor">
+    tooltip-anchor
+  </p>
+  <p aria-labelledby="labelledby-target" id="labelledby-anchor">
+    labelledby-anchor
+  </p>
+  <p aria-describedby="describedby-target" id="describedby-anchor">
+    describedby-anchor
+  </p>
+  <p aria-controls="controls-target" id="controls-anchor">
+    controls-anchor
+  </p>
+  <p aria-owns="owns-target" id="owns-anchor">
+    owns-anchor
+  </p>
+  <p id="multiple-anchor-1">
+    multiple-anchor-1
+  </p>
+  <p id="multiple-anchor-2">
+    multiple-anchor-2
+  </p>
+  <p id="dom-siblings-anchor">
+    sibling-anchor
+  </p>
+  <div id="dom-siblings-example-target">positioned element (dom sibling of anchor)</div>
+  <div role="tooltip" id="tooltip-example-target">positioned element (tooltip)</div>
+  <div id="labelledby-target">positioned element (labelledby)</div>
+  <div id="describedby-target">positioned element (describedby)</div>
+  <div id="controls-target">positioned element (aria-controls)</div>
+  <div id="owns-target">positioned element (aria-owns)</div>
+  <div id="multiple-target">positioned element (with multiple anchors)</div>
+</body>
+</html>

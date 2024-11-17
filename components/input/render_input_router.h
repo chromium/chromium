@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 
 namespace content {
 class MockRenderInputRouter;
@@ -152,7 +153,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   // |point| specifies the location in RenderWidget's coordinates for invoking
   // the context menu.
   void ShowContextMenuAtPoint(const gfx::Point& point,
-                              const ui::MenuSourceType source_type);
+                              const ui::mojom::MenuSourceType source_type);
 
   void SendGestureEventWithLatencyInfo(
       const GestureEventWithLatencyInfo& gesture_with_latency);

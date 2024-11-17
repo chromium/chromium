@@ -17,6 +17,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "language_menu.ts",
+    "language_toast.ts",
     "read_anything_toolbar.ts",
     "voice_selection_menu.ts",
     "menus/simple_action_menu.ts",
@@ -33,10 +34,12 @@ build_webui("build") {
     "voice_language_util.ts",
     "app_style_updater.ts",
     "menus/menu_util.ts",
+    "voice_notification_manager.ts",
   ]
   css_files = [
     "app.css",
     "language_menu.css",
+    "language_toast.css",
     "voice_selection_menu.css",
     "read_anything_toolbar.css",
   ]

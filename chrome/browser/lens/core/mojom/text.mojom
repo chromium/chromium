@@ -123,6 +123,9 @@ struct TranslatedParagraph {
   // struct.
   array<TranslatedLine> lines;
 
+  // Size of the resized screenshot in pixels.
+  gfx.mojom.Size resized_bitmap_size;
+
   // Optional. The alignment of the text in the paragraph.
   Alignment? alignment;
 

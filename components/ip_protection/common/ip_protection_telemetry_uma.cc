@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
@@ -34,7 +35,7 @@ ProxyChainId ChainIdToEnum(int chain_id) {
   static_assert(net::ProxyChain::kMaxIpProtectionChainId ==
                     static_cast<int>(ProxyChainId::kMaxValue),
                 "maximum `chain_id` must match between `net::ProxyChain` and "
-                "`ip_protection::ProxyChainId`");
+                "`ProxyChainId`");
   CHECK(chain_id >= static_cast<int>(ProxyChainId::kUnknown) &&
         chain_id <= static_cast<int>(ProxyChainId::kMaxValue));
   return static_cast<ProxyChainId>(chain_id);
@@ -42,9 +43,9 @@ ProxyChainId ChainIdToEnum(int chain_id) {
 
 std::string ProxyLayerToString(ProxyLayer proxy_layer) {
   switch (proxy_layer) {
-    case ip_protection::ProxyLayer::kProxyA:
+    case ProxyLayer::kProxyA:
       return "ProxyA";
-    case ip_protection::ProxyLayer::kProxyB:
+    case ProxyLayer::kProxyB:
       return "ProxyB";
   }
 }
@@ -95,23 +96,66 @@ void IpProtectionTelemetryUma::EmptyTokenCache(ProxyLayer value) {
                                 value);
 }
 
-void IpProtectionTelemetryUma::RequestIsEligibleForProtection(
-    ProtectionEligibility value) {
-  base::UmaHistogramEnumeration(
-      "NetworkService.IpProtection.RequestIsEligibleForProtection", value);
-}
+void IpProtectionTelemetryUma::ProxyResolution(ProxyResolutionResult result) {
+  base::UmaHistogramEnumeration("NetworkService.IpProtection.ProxyResolution",
+                                result);
 
-void IpProtectionTelemetryUma::ProtectionIsAvailableForRequest(
-    bool are_auth_tokens_available,
-    bool is_proxy_list_available) {
-  base::UmaHistogramBoolean(
-      "NetworkService.IpProtection.AreAuthTokensAvailable",
-      are_auth_tokens_available);
-  base::UmaHistogramBoolean("NetworkService.IpProtection.IsProxyListAvailable",
-                            is_proxy_list_available);
-  base::UmaHistogramBoolean(
-      "NetworkService.IpProtection.ProtectionIsAvailableForRequest",
-      are_auth_tokens_available && is_proxy_list_available);
+  // Translate the result into eligibility and availability values.
+  ProtectionEligibility eligibility;
+  auto record_availability = [](bool are_auth_tokens_available,
+                                bool is_proxy_list_available) {
+    base::UmaHistogramBoolean(
+        "NetworkService.IpProtection.AreAuthTokensAvailable",
+        are_auth_tokens_available);
+    base::UmaHistogramBoolean(
+        "NetworkService.IpProtection.IsProxyListAvailable",
+        is_proxy_list_available);
+    base::UmaHistogramBoolean(
+        "NetworkService.IpProtection.ProtectionIsAvailableForRequest",
+        are_auth_tokens_available && is_proxy_list_available);
+  };
+
+  switch (result) {
+    case ProxyResolutionResult::kMdlNotPopulated:
+      eligibility = ProtectionEligibility::kUnknown;
+      break;
+    case ProxyResolutionResult::kNoMdlMatch:
+      eligibility = ProtectionEligibility::kIneligible;
+      break;
+    case ProxyResolutionResult::kFeatureDisabled:
+      eligibility = ProtectionEligibility::kEligible;
+      break;
+    case ProxyResolutionResult::kSettingDisabled:
+      eligibility = ProtectionEligibility::kEligible;
+      break;
+    case ProxyResolutionResult::kProxyListNotAvailable:
+      eligibility = ProtectionEligibility::kEligible;
+      record_availability(
+          /*are_auth_tokens_available=*/false,
+          /*is_proxy_list_available=*/false);
+      break;
+    case ProxyResolutionResult::kTokensNeverAvailable:
+      // fall through to the same as exhausted tokens for the purpose of this
+      // metric.
+    case ProxyResolutionResult::kTokensExhausted:
+      eligibility = ProtectionEligibility::kEligible;
+      record_availability(
+          /*are_auth_tokens_available=*/false,
+          /*is_proxy_list_available=*/true);
+      break;
+    case ProxyResolutionResult::kAttemptProxy:
+      eligibility = ProtectionEligibility::kEligible;
+      record_availability(
+          /*are_auth_tokens_available=*/true,
+          /*is_proxy_list_available=*/true);
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  base::UmaHistogramEnumeration(
+      "NetworkService.IpProtection.RequestIsEligibleForProtection",
+      eligibility);
 }
 
 void IpProtectionTelemetryUma::GetAuthTokenResultForGeo(

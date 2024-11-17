@@ -32,6 +32,8 @@ static_library("internal") {
     "group_data_proto_utils.h",
     "group_data_store.cc",
     "group_data_store.h",
+    "partial_failure_sdk_delegate_wrapper.cc",
+    "partial_failure_sdk_delegate_wrapper.h",
     "preview_server_proxy.cc",
     "preview_server_proxy.h",
   ]
@@ -70,7 +72,7 @@ static_library("internal") {
 
     deps += [
       ":jni_headers",
-      "//components/data_sharing/public:jni_headers",
+      "//components/data_sharing/public:android_utils",
     ]
   }
 }
@@ -88,6 +90,7 @@ source_set("unit_tests") {
     "group_data_model_unittest.cc",
     "group_data_proto_utils_unittest.cc",
     "group_data_store_unittest.cc",
+    "partial_failure_sdk_delegate_wrapper_unittest.cc",
     "preview_server_proxy_unittest.cc",
   ]
 
@@ -132,10 +135,7 @@ if (is_android) {
       "//components:*",
       "//components/data_sharing/internal:native_test_helper_java",
     ]
-    srcjar_deps = [
-      ":jni_headers",
-      "//components/data_sharing/public:jni_headers",
-    ]
+    srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingConversionBridge.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImpl.java",

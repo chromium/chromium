@@ -11,6 +11,7 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
+  "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/crosapi",
   "+chrome/browser/chromeos/extensions/odfs_config_private",
   "+chrome/browser/chromeos/upload_office_to_cloud",
@@ -18,5 +19,7 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
+  "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
+  "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/common",
 ]

@@ -37,6 +37,7 @@ using UkmEntry = ukm::builders::PasswordManager_LeakWarningDialog;
 
 constexpr char kUrl[] = "https://www.example.co.uk";
 constexpr char16_t kUsername[] = u"Jane";
+constexpr char16_t kPassword[] = u"pa$$word";
 
 class MockCredentialLeakPrompt : public CredentialLeakPrompt {
  public:
@@ -57,7 +58,10 @@ class CredentialLeakDialogControllerTest : public testing::Test {
     // Set sampling rate to 100% for UKM metrics.
     recorder->SetSamplingRateForTesting(1.0);
     controller_ = std::make_unique<CredentialLeakDialogControllerImpl>(
-        &ui_controller_mock_, leak_type, GURL(kUrl), kUsername,
+        &ui_controller_mock_,
+        password_manager::LeakedPasswordDetails(leak_type, GURL(kUrl),
+                                                kUsername, kPassword,
+                                                /*in_account_store=*/false),
         std::move(recorder));
   }
 

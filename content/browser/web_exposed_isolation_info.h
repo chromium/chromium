@@ -115,18 +115,18 @@ CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
                                         const WebExposedIsolationInfo& info);
 
 // Disable these operators, AreCompatible() functions should be used instead.
-CONTENT_EXPORT bool operator==(const std::optional<WebExposedIsolationInfo>& a,
-                               const std::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator==(const WebExposedIsolationInfo& a,
-                               const std::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator==(const std::optional<WebExposedIsolationInfo>& a,
-                               const WebExposedIsolationInfo& b);
-CONTENT_EXPORT bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
-                               const std::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator!=(const WebExposedIsolationInfo& a,
-                               const std::optional<WebExposedIsolationInfo>& b);
-CONTENT_EXPORT bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
-                               const WebExposedIsolationInfo& b);
+bool operator==(const std::optional<WebExposedIsolationInfo>& a,
+                const std::optional<WebExposedIsolationInfo>& b) = delete;
+bool operator==(const WebExposedIsolationInfo& a,
+                const std::optional<WebExposedIsolationInfo>& b) = delete;
+bool operator==(const std::optional<WebExposedIsolationInfo>& a,
+                const WebExposedIsolationInfo& b) = delete;
+bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
+                const std::optional<WebExposedIsolationInfo>& b) = delete;
+bool operator!=(const WebExposedIsolationInfo& a,
+                const std::optional<WebExposedIsolationInfo>& b) = delete;
+bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
+                const WebExposedIsolationInfo& b) = delete;
 
 }  // namespace content
 

@@ -5,17 +5,26 @@
 #ifndef COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_RENDERER_RENDERER_AGENT_H_
 #define COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_RENDERER_RENDERER_AGENT_H_
 
+#include <memory>
+#include <optional>
+#include <string_view>
+#include <vector>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
+#include "components/fingerprinting_protection_filter/renderer/renderer_url_loader_throttle.h"
+#include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "components/url_pattern_index/proto/rules.pb.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "url/gurl.h"
 
@@ -23,14 +32,9 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
-namespace subresource_filter {
-class WebDocumentSubresourceFilterImpl;
-}  // namespace subresource_filter
-
 namespace fingerprinting_protection_filter {
 
 class UnverifiedRulesetDealer;
-class RendererURLLoaderThrottle;
 
 // Orchestrates the interface between the browser-side
 // Fingerprinting Protection Filter classes and a single `RenderFrame`. Deals
@@ -42,6 +46,12 @@ class RendererAgent
     : public content::RenderFrameObserver,
       public content::RenderFrameObserverTracker<RendererAgent> {
  public:
+  using ActivationCallback = base::OnceCallback<void(
+      const subresource_filter::mojom::ActivationState&)>;
+
+  using FilterCallback =
+      base::OnceCallback<void(subresource_filter::LoadPolicy)>;
+
   // The `ruleset_dealer` must not be null and must outlive this instance.
   RendererAgent(content::RenderFrame* render_frame,
                 UnverifiedRulesetDealer* ruleset_dealer);
@@ -61,35 +71,37 @@ class RendererAgent
 
   void DidFailProvisionalLoad() override;
 
-  void WillDetach(blink::DetachReason detach_reason) override;
+  void DidFinishLoad() override;
 
+  // Used to delete `this` to avoid memory leaks and ensure `render_frame()` is
+  // always valid.
   void OnDestruct() override;
 
-  // Functions to keep track of active throttles. `AddThrottle()` should be
-  // called whenever a new `RendererURLLoaderThrottle` is created and
-  // `DeleteThrottle()` should be called in its destructor.
-  void AddThrottle(RendererURLLoaderThrottle* throttle);
-
-  void DeleteThrottle(RendererURLLoaderThrottle* throttle);
+  base::WeakPtr<RendererAgent> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
   // Used to signal to the remote host that a subresource load has been
-  // disallowed. Virtual to allow mocking in tests.
-  virtual void OnSubresourceDisallowed();
-
-  // Returns the current host mojo pipe endpoint or attempts to initialize it
-  // from the `RenderFrame` if there is none.
-  mojom::FingerprintingProtectionHost* GetFingerprintingProtectionHost();
+  // disallowed; must be run on the main thread. Virtual to allow mocking in
+  // tests.
+  virtual void OnSubresourceDisallowed(std::string_view subresource_url);
 
   // Callback for when activation returns from the browser after calling
   // `CheckActivation()`;
   void OnActivationComputed(
       subresource_filter::mojom::ActivationStatePtr activation_state);
 
-  bool IsPendingActivation() { return pending_activation_; }
+  // Called by `RendererURLLoaderThrottles` to get activation state, with a
+  // callback bound to the throttle's task runner to provide the result. Must be
+  // run on the main thread.
+  void GetActivationState(ActivationCallback callback);
 
-  subresource_filter::mojom::ActivationState GetActivationState() {
-    return activation_state_;
-  }
+  // Called by `RendererURLLoaderThrottles` to check a URL against the filter,
+  // with a callback bound to the throttle's task runner to provide the result.
+  // Must be run on the main thread.
+  void CheckURL(const GURL& url,
+                url_pattern_index::proto::ElementType element_type,
+                FilterCallback callback);
 
  protected:
   // The below methods are protected virtual so they can be mocked out in tests.
@@ -101,29 +113,42 @@ class RendererAgent
   // `Page`.
   virtual bool IsTopLevelMainFrame();
 
+  // Returns whether the current frame has an opener in a process-local frame
+  // that it can attempt to inherit activation from.
+  virtual bool HasValidOpener();
+
+  // Returns the current host mojo pipe endpoint or attempts to initialize it
+  // from the `RenderFrame` if there is none.
+  virtual mojom::FingerprintingProtectionHost*
+  GetFingerprintingProtectionHost();
+
+  // Returns the activation state for the `render_frame` to inherit, or nullopt
+  // if there is none. Root frames inherit from their opener frames, and child
+  // frames inherit from their parent frames. Assumes that the parent/opener is
+  // in a local frame relative to this one, upon construction.
+  virtual std::optional<subresource_filter::mojom::ActivationState>
+  GetInheritedActivationState();
+
   // Initiates the process of getting the activation state for the current
   // state. In prod, this involves communicating with the browser process.
   virtual void RequestActivationState();
 
-  // Injects the provided filter into the current `DocumentLoader`.
-  virtual void SetFilterForCurrentDocument(
-      std::unique_ptr<blink::WebDocumentSubresourceFilter> filter);
+  // Stores a `DocumentSubresourceFilter` to be used for filtering future
+  // resource loads.
+  virtual void SetFilter(
+      std::unique_ptr<subresource_filter::DocumentSubresourceFilter> filter);
+
+  // Sends statistics about the `DocumentSubresourceFilter`s work to the
+  // browser.
+  virtual void SendDocumentLoadStatistics(
+      const subresource_filter::mojom::DocumentLoadStatistics& statistics);
 
  private:
-  // Returns the activation state for the `render_frame` to inherit. Root frames
-  // inherit from their opener frames, and child frames inherit from their
-  // parent frames. Assumes that the parent/opener is in a local frame relative
-  // to this one, upon construction.
-  static subresource_filter::mojom::ActivationState GetInheritedActivationState(
-      content::RenderFrame* render_frame);
-
   // Initializes `filter_`. Assumes that activation has been computed.
   void MaybeCreateNewFilter();
 
-  // Removes all throttle pointers from `throttles_`. Called in response to the
-  // `RendererAgent` being destroyed or the frame being reset (i.e. when a new
-  // document is created).
-  void DeleteAllThrottles();
+  void RecordHistogramsOnFilterCreation(
+      const subresource_filter::mojom::ActivationState& activation_state);
 
   // Remote used to pass messages to the browser-side `ThrottleManager`.
   mojo::AssociatedRemote<mojom::FingerprintingProtectionHost>
@@ -133,15 +158,26 @@ class RendererAgent
 
   bool pending_activation_ = true;
 
+  // Whether the browser has already been notified that a resource was
+  // disallowed for the current `RenderFrame`. Needed on the browser for metrics
+  // collection.
+  bool notified_disallow_ = false;
+
   GURL current_document_url_;
 
   raw_ptr<UnverifiedRulesetDealer> ruleset_dealer_;
 
-  base::WeakPtr<subresource_filter::WebDocumentSubresourceFilterImpl> filter_;
+  // Will be conditionally initialized once the activation state is retrieved
+  // from the browser.
+  std::unique_ptr<subresource_filter::DocumentSubresourceFilter> filter_;
 
-  // The set of all ongoing URLLoaderThrottles for filtering subresources on
-  // the current renderer.
-  base::flat_set<raw_ptr<RendererURLLoaderThrottle>> throttles_;
+  // The set of callbacks that the agent has received from
+  // `RendererURLLoaderThrottles` before activation was received from the
+  // browser. All callbacks will be run once activation is computed, at which
+  // point they will no longer accumulate.
+  std::vector<ActivationCallback> pending_activation_callbacks_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<RendererAgent> weak_factory_{this};
 };

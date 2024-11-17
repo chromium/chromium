@@ -14,8 +14,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldShowTitleInSidePanelHeaderKey, true)
 
 SidePanelEntry::SidePanelEntry(
     Id id,
-    base::RepeatingCallback<std::unique_ptr<views::View>()>
-        create_content_callback,
+    CreateContentCallback create_content_callback,
     std::optional<base::RepeatingCallback<GURL()>> open_in_new_tab_url_callback,
     std::optional<base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>>
         more_info_callback)
@@ -26,22 +25,21 @@ SidePanelEntry::SidePanelEntry(
       base::NullCallbackAs<std::unique_ptr<ui::MenuModel>()>());
 }
 
-SidePanelEntry::SidePanelEntry(
-    Key key,
-    base::RepeatingCallback<std::unique_ptr<views::View>()>
-        create_content_callback)
-    : key_(key),
-      create_content_callback_(std::move(create_content_callback)) {
+SidePanelEntry::SidePanelEntry(Key key,
+                               CreateContentCallback create_content_callback)
+    : key_(key), create_content_callback_(std::move(create_content_callback)) {
   DCHECK(create_content_callback_);
 }
 
 SidePanelEntry::~SidePanelEntry() = default;
 
 std::unique_ptr<views::View> SidePanelEntry::GetContent() {
-  if (content_view_)
+  CHECK(scope_);
+  if (content_view_) {
     return std::move(content_view_);
+  }
   entry_show_triggered_timestamp_ = base::TimeTicks::Now();
-  return create_content_callback_.Run();
+  return create_content_callback_.Run(*scope_);
 }
 
 void SidePanelEntry::CacheView(std::unique_ptr<views::View> view) {
@@ -60,20 +58,16 @@ void SidePanelEntry::OnEntryShown() {
   // timestamp so we don't keep recording this entry after its selected from the
   // combobox.
   ResetLoadTimestamp();
-  for (SidePanelEntryObserver& observer : observers_)
-    observer.OnEntryShown(this);
+  observers_.Notify(&SidePanelEntryObserver::OnEntryShown, this);
 }
 
 void SidePanelEntry::OnEntryWillHide(SidePanelEntryHideReason reason) {
-  for (SidePanelEntryObserver& observer : observers_) {
-    observer.OnEntryWillHide(this, reason);
-  }
+  observers_.Notify(&SidePanelEntryObserver::OnEntryWillHide, this, reason);
 }
 
 void SidePanelEntry::OnEntryHidden() {
   SidePanelUtil::RecordEntryHiddenMetrics(key_.id(), entry_shown_timestamp_);
-  for (SidePanelEntryObserver& observer : observers_)
-    observer.OnEntryHidden(this);
+  observers_.Notify(&SidePanelEntryObserver::OnEntryHidden, this);
 }
 
 void SidePanelEntry::AddObserver(SidePanelEntryObserver* observer) {

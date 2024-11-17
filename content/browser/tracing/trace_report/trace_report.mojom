@@ -26,6 +26,7 @@ enum SkipUploadReason {
   kNotAnonymized = 2,
   kScenarioQuotaExceeded = 3,
   kUploadTimedOut = 4,
+  kLocalScenario = 5,
 };
 
 // Information about a single trace to display
@@ -103,6 +104,14 @@ interface PageHandler {
 
   // Set the tracing scenario hashes for local tracing.
   SetEnabledScenarios(array<string> new_config) => (bool success);
+
+  // Get the user-controlled pref to enable privacy filter on local
+  // traces.
+  GetPrivacyFilterEnabled() => (bool enabled);
+
+  // Saves user-controlled pref to enable privacy filter on local
+  // traces.
+  SetPrivacyFilterEnabled(bool enable);
 };
 
 // WebUI-side handler for requests from the browser.

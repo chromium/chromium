@@ -5,11 +5,13 @@
 #include "components/autofill/core/browser/address_suggestion_generator.h"
 
 #include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
@@ -236,48 +238,48 @@ std::u16string GetProfileSuggestionMainText(const AutofillProfile& profile,
   return profile.GetInfo(trigger_field_type, app_locale);
 }
 
-Suggestion GetEditAddressProfileSuggestion(Suggestion::BackendId backend_id) {
+Suggestion GetEditAddressProfileSuggestion(Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.type = SuggestionType::kEditAddressProfile;
   suggestion.icon = Suggestion::Icon::kEdit;
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
   return suggestion;
 }
 
 // Creates the suggestion that will open the delete address profile dialog.
-Suggestion GetDeleteAddressProfileSuggestion(Suggestion::BackendId backend_id) {
+Suggestion GetDeleteAddressProfileSuggestion(Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.type = SuggestionType::kDeleteAddressProfile;
   suggestion.icon = Suggestion::Icon::kDelete;
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
   return suggestion;
 }
 
 // Creates the suggestion that will fill all address related fields.
-Suggestion GetFillFullAddressSuggestion(Suggestion::BackendId backend_id) {
+Suggestion GetFillFullAddressSuggestion(Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED));
   suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestion.type = SuggestionType::kFillFullAddress;
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED);
   return suggestion;
 }
 
 // Creates the suggestion that will fill all name related fields.
-Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
+Suggestion GetFillFullNameSuggestion(Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED));
   suggestion.type = SuggestionType::kFillFullName;
   suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_NAME_GROUP_POPUP_OPTION_SELECTED);
 
@@ -286,7 +288,7 @@ Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
 
 // Creates the suggestion that will fill the whole form for the profile.
 Suggestion GetFillEverythingFromAddressProfileSuggestion(
-    Suggestion::BackendId backend_id) {
+    Suggestion::Payload payload) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.type = SuggestionType::kFillEverythingFromAddressProfile;
@@ -300,7 +302,7 @@ Suggestion GetFillEverythingFromAddressProfileSuggestion(
     // suggestions.
     suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   }
-  suggestion.payload = backend_id;
+  suggestion.payload = std::move(payload);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
   return suggestion;
@@ -315,7 +317,8 @@ bool AddAddressFieldByFieldSuggestions(
     const std::vector<FieldType>& field_types,
     const AutofillProfile& profile,
     const std::string& app_locale,
-    std::vector<Suggestion>& suggestions) {
+    std::vector<Suggestion>& suggestions,
+    const Suggestion::Payload& payload) {
   bool any_suggestion_added = false;
   for (auto field_type : field_types) {
     // Field-by-field suggestions are never generated for
@@ -333,7 +336,7 @@ bool AddAddressFieldByFieldSuggestions(
                                SuggestionType::kAddressFieldByFieldFilling);
       suggestions.back().field_by_field_filling_type_used =
           std::optional(field_type);
-      suggestions.back().payload = Suggestion::Guid(profile.guid());
+      suggestions.back().payload = payload;
       any_suggestion_added = true;
     }
   }
@@ -363,16 +366,16 @@ bool CheckIfTypeContainsSubtype(FieldType type,
 void AddNameChildSuggestions(FieldTypeGroup trigger_field_type_group,
                              const AutofillProfile& profile,
                              const std::string& app_locale,
-                             Suggestion& suggestion) {
+                             Suggestion& suggestion,
+                             const Suggestion::Payload& payload) {
   if (trigger_field_type_group == FieldTypeGroup::kName) {
     // Note that this suggestion can only be added if name infos exist in the
     // profile.
-    suggestion.children.push_back(
-        GetFillFullNameSuggestion(Suggestion::Guid(profile.guid())));
+    suggestion.children.push_back(GetFillFullNameSuggestion(payload));
   }
   if (AddAddressFieldByFieldSuggestions({NAME_FIRST, NAME_MIDDLE, NAME_LAST},
                                         profile, app_locale,
-                                        suggestion.children)) {
+                                        suggestion.children, payload)) {
     suggestion.children.push_back(CreateSeparator());
   };
 }
@@ -384,20 +387,21 @@ void AddNameChildSuggestions(FieldTypeGroup trigger_field_type_group,
 // least one suggestion was appended to `suggestions.children`.
 bool AddAddressLineChildSuggestions(const AutofillProfile& profile,
                                     const std::string& app_locale,
-                                    std::vector<Suggestion>& suggestions) {
+                                    std::vector<Suggestion>& suggestions,
+                                    const Suggestion::Payload& payload) {
   auto add_address_line = [&](FieldType type) -> bool {
     CHECK(type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2);
 
     if (!AddAddressFieldByFieldSuggestions({type}, profile, app_locale,
-                                           suggestions)) {
+                                           suggestions, payload)) {
       return false;
     }
 
     if (CheckIfTypeContainsSubtype(type, ADDRESS_HOME_HOUSE_NUMBER, profile,
                                    app_locale) &&
-        AddAddressFieldByFieldSuggestions({ADDRESS_HOME_HOUSE_NUMBER}, profile,
-                                          app_locale,
-                                          suggestions.back().children)) {
+        AddAddressFieldByFieldSuggestions(
+            {ADDRESS_HOME_HOUSE_NUMBER}, profile, app_locale,
+            suggestions.back().children, payload)) {
       Suggestion& address_line_suggestion = suggestions.back().children.back();
       address_line_suggestion.labels = {
           {Suggestion::Text(l10n_util::GetStringUTF16(
@@ -408,9 +412,9 @@ bool AddAddressLineChildSuggestions(const AutofillProfile& profile,
     }
     if (CheckIfTypeContainsSubtype(type, ADDRESS_HOME_STREET_NAME, profile,
                                    app_locale) &&
-        AddAddressFieldByFieldSuggestions({ADDRESS_HOME_STREET_NAME}, profile,
-                                          app_locale,
-                                          suggestions.back().children)) {
+        AddAddressFieldByFieldSuggestions(
+            {ADDRESS_HOME_STREET_NAME}, profile, app_locale,
+            suggestions.back().children, payload)) {
       Suggestion& address_line_suggestion = suggestions.back().children.back();
       address_line_suggestion.labels = {
           {Suggestion::Text(l10n_util::GetStringUTF16(
@@ -435,23 +439,23 @@ bool AddAddressLineChildSuggestions(const AutofillProfile& profile,
 void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,
-                                Suggestion& suggestion) {
+                                Suggestion& suggestion,
+                                const Suggestion::Payload& payload) {
   if (trigger_field_type_group == FieldTypeGroup::kAddress ||
       trigger_field_type_group == FieldTypeGroup::kCompany) {
     // Note that this suggestion can only be added if address infos exist in the
     // profile.
-    suggestion.children.push_back(
-        GetFillFullAddressSuggestion(Suggestion::Guid(profile.guid())));
+    suggestion.children.push_back(GetFillFullAddressSuggestion(payload));
   }
 
   bool added_company = AddAddressFieldByFieldSuggestions(
-      {COMPANY_NAME}, profile, app_locale, suggestion.children);
-  bool added_any_address_line =
-      AddAddressLineChildSuggestions(profile, app_locale, suggestion.children);
+      {COMPANY_NAME}, profile, app_locale, suggestion.children, payload);
+  bool added_any_address_line = AddAddressLineChildSuggestions(
+      profile, app_locale, suggestion.children, payload);
   bool added_city = AddAddressFieldByFieldSuggestions(
-      {ADDRESS_HOME_CITY}, profile, app_locale, suggestion.children);
+      {ADDRESS_HOME_CITY}, profile, app_locale, suggestion.children, payload);
   bool added_zip = AddAddressFieldByFieldSuggestions(
-      {ADDRESS_HOME_ZIP}, profile, app_locale, suggestion.children);
+      {ADDRESS_HOME_ZIP}, profile, app_locale, suggestion.children, payload);
   if (added_company || added_any_address_line || added_zip || added_city) {
     suggestion.children.push_back(CreateSeparator());
   }
@@ -471,7 +475,8 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
 void AddContactChildSuggestions(FieldType trigger_field_type,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,
-                                Suggestion& suggestion) {
+                                Suggestion& suggestion,
+                                const Suggestion::Payload& payload) {
   const FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
 
@@ -487,12 +492,13 @@ void AddContactChildSuggestions(FieldType trigger_field_type,
           SuggestionType::kFillFullPhoneNumber);
       // `SuggestionType::kAddressFieldByFieldFilling` suggestions do not use
       // profile, therefore only set the backend id in the group filling case.
-      phone_number_suggestion.payload = Suggestion::Guid(profile.guid());
+      phone_number_suggestion.payload = payload;
       suggestion.children.push_back(std::move(phone_number_suggestion));
       phone_number_suggestion_added = true;
     } else {
       phone_number_suggestion_added = AddAddressFieldByFieldSuggestions(
-          {PHONE_HOME_WHOLE_NUMBER}, profile, app_locale, suggestion.children);
+          {PHONE_HOME_WHOLE_NUMBER}, profile, app_locale, suggestion.children,
+          payload);
     }
   }
 
@@ -506,12 +512,12 @@ void AddContactChildSuggestions(FieldType trigger_field_type,
           SuggestionType::kFillFullEmail);
       // `SuggestionType::kAddressFieldByFieldFilling` suggestions do not use
       // profile, therefore only set the backend id in the group filling case.
-      email_address_suggestion.payload = Suggestion::Guid(profile.guid());
+      email_address_suggestion.payload = payload;
       suggestion.children.push_back(std::move(email_address_suggestion));
       email_address_suggestion_added = true;
     } else {
       email_address_suggestion_added = AddAddressFieldByFieldSuggestions(
-          {EMAIL_ADDRESS}, profile, app_locale, suggestion.children);
+          {EMAIL_ADDRESS}, profile, app_locale, suggestion.children, payload);
     }
   }
 
@@ -526,7 +532,8 @@ void AddContactChildSuggestions(FieldType trigger_field_type,
 void AddFooterChildSuggestions(const AutofillProfile& profile,
                                FieldType trigger_field_type,
                                bool is_off_the_record,
-                               Suggestion& suggestion) {
+                               Suggestion& suggestion,
+                               const Suggestion::Payload& payload) {
   // If the trigger field is not classified as an address field, then the
   // filling was triggered from the context menu. In this scenario, the user
   // should not be able to fill everything.
@@ -539,8 +546,8 @@ void AddFooterChildSuggestions(const AutofillProfile& profile,
       features::
           kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
               .Get()) {
-    suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
-        Suggestion::Guid(profile.guid())));
+    suggestion.children.push_back(
+        GetFillEverythingFromAddressProfileSuggestion(payload));
   }
   if (!is_off_the_record) {
     suggestion.children.push_back(
@@ -609,8 +616,7 @@ int GetNumberOfMinimalFieldsToShow(FieldType trigger_field_type,
 // used as a secondary text in the corresponding suggestion bubble.
 // `field_types` the types of the fields that will be filled by the suggestion.
 std::vector<std::u16string> GetProfileSuggestionLabels(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    const std::vector<AutofillProfile>& profiles,
     const FieldTypeSet& field_types,
     FieldType trigger_field_type,
     SuggestionType suggestion_type,
@@ -619,11 +625,17 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
   std::vector<std::u16string> differentiating_labels;
   const bool is_in_full_form_filling_mode =
       suggestion_type == SuggestionType::kAddressEntry;
+  auto profile_ptrs =
+      base::ToVector(profiles,
+                     [](const AutofillProfile& profile)
+                         -> raw_ptr<const AutofillProfile, VectorExperimental> {
+                       return &profile;
+                     });
   if (!IsAddressType(trigger_field_type) &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
     differentiating_labels =
-        GetProfileSuggestionLabelForNonAddressField(profiles, app_locale);
+        GetProfileSuggestionLabelForNonAddressField(profile_ptrs, app_locale);
   } else if ((!is_in_full_form_filling_mode ||
               features::kAutofillGranularFillingAvailableWithImprovedLabelsParam
                   .Get()) &&
@@ -634,14 +646,14 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     // the feature is enabled.
     // All other granular filling modes should always use this flow.
     AutofillProfile::CreateInferredLabels(
-        profiles, /*suggested_fields=*/std::nullopt, trigger_field_type,
+        profile_ptrs, /*suggested_fields=*/std::nullopt, trigger_field_type,
         {trigger_field_type},
         GetNumberOfMinimalFieldsToShow(trigger_field_type, suggestion_type),
         app_locale, &differentiating_labels,
         /*use_improved_labels_order=*/true);
   } else {
     AutofillProfile::CreateInferredLabels(
-        profiles, field_types, /*triggering_field_type=*/std::nullopt,
+        profile_ptrs, field_types, /*triggering_field_type=*/std::nullopt,
         {trigger_field_type},
         /*minimal_fields_shown=*/1, app_locale, &differentiating_labels);
   }
@@ -655,8 +667,7 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
 // is not unique.
 std::vector<std::vector<Suggestion::Text>>
 CreateSuggestionLabelsWithGranularFillingDetails(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    const std::vector<AutofillProfile>& profiles,
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
@@ -772,19 +783,20 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
                         SuggestionType::kDevtoolsTestAddresses);
   suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestion.icon = Suggestion::Icon::kCode;
-  suggestion.is_acceptable = false;
+  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   suggestion.children.emplace_back(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_TEST_ADDRESS_BY_COUNTRY),
       SuggestionType::kDevtoolsTestAddressByCountry);
-  suggestion.children.back().is_acceptable = false;
-  suggestion.children.back().apply_deactivated_style = true;
+  suggestion.children.back().acceptability =
+      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
   suggestion.children.emplace_back(SuggestionType::kSeparator);
   for (const AutofillProfile& test_address : test_addresses) {
     const std::u16string test_address_country =
         test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
     suggestion.children.emplace_back(test_address_country,
                                      SuggestionType::kDevtoolsTestAddressEntry);
-    suggestion.children.back().payload = Suggestion::Guid(test_address.guid());
+    suggestion.children.back().payload = Suggestion::AutofillProfilePayload(
+        Suggestion::Guid(test_address.guid()));
     suggestion.children.back().acceptance_a11y_announcement =
         l10n_util::GetStringFUTF16(IDS_AUTOFILL_TEST_ADDRESS_SELECTED_A11Y_HINT,
                                    test_address_country);
@@ -908,6 +920,9 @@ GetPrefixMatchedProfiles(const std::vector<const AutofillProfile*>& profiles,
 // relative ordering of `profiles` is maintained.
 void RemoveDisusedSuggestions(
     std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>& profiles) {
+  if (profiles.empty()) {
+    return;
+  }
   const base::Time min_last_used =
       AutofillClock::Now() - kDisusedDataModelTimeDelta;
   auto is_profile_disused =
@@ -915,22 +930,12 @@ void RemoveDisusedSuggestions(
           const raw_ptr<const AutofillProfile, VectorExperimental>& profile) {
         return profile->use_date() <= min_last_used;
       };
-  if (base::ranges::count_if(profiles, is_profile_disused) == 0) {
-    AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(0);
-    return;
-  }
   const size_t original_size = profiles.size();
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillChangeDisusedAddressSuggestionTreatment)) {
-    profiles.erase(
-        std::remove_if(profiles.begin() +
-                           std::min(features::kNumberOfIgnoredSuggestions.Get(),
-                                    static_cast<int>(profiles.size())),
-                       profiles.end(), is_profile_disused),
-        profiles.end());
-  } else {
-    std::erase_if(profiles, is_profile_disused);
-  }
+  // Exclude the first address from the list of potentially removed ones so that
+  // this strategy never results in a non empty list becoming empty.
+  profiles.erase(
+      std::remove_if(profiles.begin() + 1, profiles.end(), is_profile_disused),
+      profiles.end());
   AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(original_size -
                                                            profiles.size());
 }
@@ -939,11 +944,13 @@ void RemoveDisusedSuggestions(
 // information. Uses `trigger_field_type` to define what group filling
 // suggestion to add (name, address or phone). The existence of child
 // suggestions defines whether the autofill popup will have submenus.
-void AddAddressGranularFillingChildSuggestions(FieldType trigger_field_type,
-                                               const AutofillProfile& profile,
-                                               Suggestion& suggestion,
-                                               bool is_off_the_record,
-                                               const std::string& app_locale) {
+void AddAddressGranularFillingChildSuggestions(
+    FieldType trigger_field_type,
+    const AutofillProfile& profile,
+    Suggestion& suggestion,
+    bool is_off_the_record,
+    const std::string& app_locale,
+    const Suggestion::Payload& payload) {
   const FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
   // The "Fill everything" suggestion is added at the top (even if the filling
@@ -960,18 +967,18 @@ void AddAddressGranularFillingChildSuggestions(FieldType trigger_field_type,
       !features::
            kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
                .Get()) {
-    suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
-        Suggestion::Guid(profile.guid())));
+    suggestion.children.push_back(
+        GetFillEverythingFromAddressProfileSuggestion(payload));
     suggestion.children.push_back(CreateSeparator());
   }
   AddNameChildSuggestions(trigger_field_type_group, profile, app_locale,
-                          suggestion);
+                          suggestion, payload);
   AddAddressChildSuggestions(trigger_field_type_group, profile, app_locale,
-                             suggestion);
+                             suggestion, payload);
   AddContactChildSuggestions(trigger_field_type, profile, app_locale,
-                             suggestion);
+                             suggestion, payload);
   AddFooterChildSuggestions(profile, trigger_field_type, is_off_the_record,
-                            suggestion);
+                            suggestion, payload);
   // In incognito mode we do not have edit and deleting options. In this
   // situation there is a chance that no footer suggestions exist, which could
   // lead to a leading `kSeparator` suggestion.
@@ -1046,13 +1053,13 @@ ProfilesToSuggestOptions GetProfilesToSuggestOptions(
 // `field_types`, which are the relevant types for the current suggestion.
 // `options` defines what strategies to follow by the function in order to
 // filter the list or returned profiles.
-std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-GetProfilesToSuggest(const AddressDataManager& address_data,
-                     FieldType trigger_field_type,
-                     const std::u16string& field_contents,
-                     bool field_is_autofilled,
-                     const FieldTypeSet& field_types,
-                     ProfilesToSuggestOptions options) {
+std::vector<AutofillProfile> GetProfilesToSuggest(
+    const AddressDataManager& address_data,
+    FieldType trigger_field_type,
+    const std::u16string& field_contents,
+    bool field_is_autofilled,
+    const FieldTypeSet& field_types,
+    ProfilesToSuggestOptions options) {
   // Get the profiles to suggest, which are already sorted.
   std::vector<const AutofillProfile*> sorted_profiles =
       address_data.GetProfilesToSuggest();
@@ -1087,7 +1094,9 @@ GetProfilesToSuggest(const AddressDataManager& address_data,
   if (profiles_to_suggest.size() > kMaxDisplayedAddressSuggestions) {
     profiles_to_suggest.resize(kMaxDisplayedAddressSuggestions);
   }
-  return profiles_to_suggest;
+  return base::ToVector(
+      profiles_to_suggest,
+      [](const AutofillProfile* profile) { return *profile; });
 }
 
 // Returns a list of Suggestion objects, each representing an element in
@@ -1096,12 +1105,13 @@ GetProfilesToSuggest(const AddressDataManager& address_data,
 // The profiles passed to this function should already have been matched on
 // `trigger_field_contents_canon` and deduplicated.
 std::vector<Suggestion> CreateSuggestionsFromProfiles(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    std::vector<AutofillProfile> profiles,
+    const std::string& gaia_email,
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
     uint64_t trigger_field_max_length,
+    std::optional<std::string> plus_address_email_override,
     bool is_off_the_record,
     const std::string& app_locale) {
   // TODO(crbug.com/40274514): Remove when launching
@@ -1109,6 +1119,26 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
   if (profiles.empty()) {
     return {};
   }
+
+  std::vector<Suggestion::AutofillProfilePayload> payloads;
+  payloads.reserve(profiles.size());
+  for (AutofillProfile& profile : profiles) {
+    std::u16string email_override;
+    // If the following conditions are met:
+    // - A plus address override is available
+    // - The profile's email address is the same as the user's Google Account
+    // email.
+    // Then the profile's email address will be replaced with the plus
+    // address in order to show the updated email on the suggestion label.
+    if (plus_address_email_override && profile.HasInfo(EMAIL_ADDRESS) &&
+        base::UTF16ToUTF8(profile.GetRawInfo(EMAIL_ADDRESS)) == gaia_email) {
+      email_override = base::UTF8ToUTF16(*plus_address_email_override);
+      profile.SetRawInfo(EMAIL_ADDRESS, email_override);
+    }
+    payloads.emplace_back(Suggestion::Guid(profile.guid()),
+                          std::move(email_override));
+  }
+
   std::vector<Suggestion> suggestions;
   std::vector<std::vector<Suggestion::Text>> labels =
       CreateSuggestionLabelsWithGranularFillingDetails(
@@ -1143,24 +1173,26 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
           : trigger_field_type;
   const bool is_filling_address_form = IsAddressType(trigger_field_type);
   for (size_t i = 0; i < profiles.size(); ++i) {
-    const AutofillProfile* const profile = profiles[i];
+    const AutofillProfile& profile = profiles[i];
     // Compute the main text to be displayed in the suggestion bubble.
-    std::u16string main_text = GetProfileSuggestionMainText(
-        *profile, app_locale, main_text_field_type);
+    std::u16string main_text =
+        GetProfileSuggestionMainText(profile, app_locale, main_text_field_type);
     if (trigger_field_type_group == FieldTypeGroup::kPhone) {
       main_text = GetFormattedPhoneNumber(
-          *profile, app_locale,
+          profile, app_locale,
           ShouldUseNationalFormatPhoneNumber(trigger_field_type));
     }
     Suggestion& suggestion = suggestions.emplace_back(main_text);
     if (!labels[i].empty()) {
       suggestion.labels.emplace_back(std::move(labels[i]));
     }
-    suggestion.payload = Suggestion::Guid(profile->guid());
+    suggestion.payload = std::move(payloads[i]);
     suggestion.acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
     suggestion.type = suggestion_type;
-    suggestion.is_acceptable = is_filling_address_form;
+    suggestion.acceptability = is_filling_address_form
+                                   ? Suggestion::Acceptability::kAcceptable
+                                   : Suggestion::Acceptability::kUnacceptable;
     if (suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
       suggestion.field_by_field_filling_type_used =
           std::optional(trigger_field_type);
@@ -1184,15 +1216,14 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
         suggestion.icon = Suggestion::Icon::kAccount;
       }
     }
-    // This is intentionally not using `profile->IsAccountProfile()` because the
+    // This is intentionally not using `profile.IsAccountProfile()` because the
     // IPH should only be shown for non-H/W profiles.
-    if (profile &&
-        profile->record_type() == AutofillProfile::RecordType::kAccount &&
-        profile->initial_creator_id() !=
+    if (profile.record_type() == AutofillProfile::RecordType::kAccount &&
+        profile.initial_creator_id() !=
             AutofillProfile::kInitialCreatorOrModifierChrome) {
-      suggestion.feature_for_iph =
+      suggestion.iph_metadata = Suggestion::IPHMetadata(
           &feature_engagement::
-              kIPHAutofillExternalAccountProfileSuggestionFeature;
+              kIPHAutofillExternalAccountProfileSuggestionFeature);
     }
     const bool should_offer_manual_fallback_on_unclassified_fields =
         !IsAddressType(trigger_field_type) &&
@@ -1203,9 +1234,9 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
             features::kAutofillGranularFillingAvailable)) {
       // TODO(crbug.com/40942505): Make the granular filling options vary
       // depending on the locale.
-      AddAddressGranularFillingChildSuggestions(trigger_field_type, *profile,
+      AddAddressGranularFillingChildSuggestions(trigger_field_type, profile,
                                                 suggestion, is_off_the_record,
-                                                app_locale);
+                                                app_locale, suggestion.payload);
     }
   }
   return suggestions;
@@ -1219,15 +1250,15 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     SuggestionType suggestion_type,
-    AutofillSuggestionTriggerSource trigger_source) {
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-      profiles_to_suggest = GetProfilesToSuggest(
-          client.GetPersonalDataManager()->address_data_manager(),
-          trigger_field_type, trigger_field.value(),
-          trigger_field.is_autofilled(), field_types,
-          GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
-                                      trigger_field.is_autofilled(),
-                                      trigger_source));
+    AutofillSuggestionTriggerSource trigger_source,
+    std::optional<std::string> plus_address_email_override) {
+  std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
+      client.GetPersonalDataManager()->address_data_manager(),
+      trigger_field_type, trigger_field.value(), trigger_field.is_autofilled(),
+      field_types,
+      GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
+                                  trigger_field.is_autofilled(),
+                                  trigger_source));
   // If autofill for addresses is triggered from the context menu on an address
   // field and no suggestions can be shown (i.e. if a user has only addresses
   // without emails and then triggers autofill from the context menu on an email
@@ -1243,13 +1274,20 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
           AutofillSuggestionTriggerSource::kManualFallbackAddress &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
-    return GetSuggestionsForProfiles(client, {UNKNOWN_TYPE}, trigger_field,
-                                     UNKNOWN_TYPE, suggestion_type,
-                                     trigger_source);
+    return GetSuggestionsForProfiles(
+        client, {UNKNOWN_TYPE}, trigger_field, UNKNOWN_TYPE, suggestion_type,
+        trigger_source, std::move(plus_address_email_override));
   }
+
+  const std::string gaia_email =
+      client.GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email;
+
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
-      profiles_to_suggest, field_types, suggestion_type, trigger_field_type,
-      trigger_field.max_length(), client.IsOffTheRecord(),
+      std::move(profiles_to_suggest), gaia_email, field_types, suggestion_type,
+      trigger_field_type, trigger_field.max_length(),
+      std::move(plus_address_email_override), client.IsOffTheRecord(),
       client.GetPersonalDataManager()->address_data_manager().app_locale());
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
@@ -1279,13 +1317,13 @@ Suggestion CreateManageAddressesSuggestion() {
   return suggestion;
 }
 
-std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-GetProfilesToSuggestForTest(const AddressDataManager& address_data,
-                            FieldType trigger_field_type,
-                            const std::u16string& field_contents,
-                            bool field_is_autofilled,
-                            const FieldTypeSet& field_types,
-                            AutofillSuggestionTriggerSource trigger_source) {
+std::vector<AutofillProfile> GetProfilesToSuggestForTest(
+    const AddressDataManager& address_data,
+    FieldType trigger_field_type,
+    const std::u16string& field_contents,
+    bool field_is_autofilled,
+    const FieldTypeSet& field_types,
+    AutofillSuggestionTriggerSource trigger_source) {
   return GetProfilesToSuggest(
       address_data, trigger_field_type, field_contents, field_is_autofilled,
       field_types,
@@ -1294,17 +1332,19 @@ GetProfilesToSuggestForTest(const AddressDataManager& address_data,
 }
 
 std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    std::vector<AutofillProfile> profiles,
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
     uint64_t trigger_field_max_length,
     bool is_off_the_record,
-    const std::string& app_locale) {
+    const std::string& app_locale,
+    std::optional<std::string> plus_address_email_override,
+    const std::string& gaia_email) {
   return CreateSuggestionsFromProfiles(
-      profiles, field_types, suggestion_type, trigger_field_type,
-      trigger_field_max_length, is_off_the_record, app_locale);
+      std::move(profiles), gaia_email, field_types, suggestion_type,
+      trigger_field_type, trigger_field_max_length, plus_address_email_override,
+      is_off_the_record, app_locale);
 }
 
 }  // namespace autofill

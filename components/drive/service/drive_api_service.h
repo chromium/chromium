@@ -65,6 +65,7 @@ class BatchRequestConfigurator : public BatchRequestConfiguratorInterface {
   // BatchRequestConfiguratorInterface overrides.
   google_apis::CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
+      std::optional<std::string_view> converted_mime_type,
       int64_t content_length,
       const std::string& parent_resource_id,
       const std::string& title,
@@ -242,6 +243,7 @@ class DriveAPIService : public DriveServiceInterface,
       google_apis::drive::UploadRangeCallback callback) override;
   google_apis::CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
+      std::optional<std::string_view> converted_mime_type,
       int64_t content_length,
       const std::string& parent_resource_id,
       const std::string& title,

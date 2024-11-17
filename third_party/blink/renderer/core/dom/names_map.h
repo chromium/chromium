@@ -44,7 +44,7 @@ class CORE_EXPORT NamesMap : public GarbageCollected<NamesMap> {
 
  private:
   template <typename CharacterType>
-  void Set(const AtomicString&, const CharacterType*);
+  void Set(base::span<const CharacterType>);
 
   HeapHashMap<AtomicString, Member<SpaceSplitStringWrapper>> data_;
 };

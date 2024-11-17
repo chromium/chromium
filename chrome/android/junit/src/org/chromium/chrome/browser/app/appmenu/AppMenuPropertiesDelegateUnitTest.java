@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -38,7 +39,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -57,15 +57,14 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
@@ -82,9 +81,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
@@ -100,6 +99,8 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -130,8 +131,6 @@ import java.util.Optional;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AppMenuPropertiesDelegateUnitTest {
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
@@ -147,8 +146,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock private TabModelFilter mTabModelFilter;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock public BookmarkModel mBookmarkModel;
     @Mock private IdentityManager mIdentityManagerMock;
@@ -157,6 +156,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private IncognitoReauthController mIncognitoReauthControllerMock;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
@@ -196,11 +197,13 @@ public class AppMenuPropertiesDelegateUnitTest {
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getModel(false)).thenReturn((mTabModel));
-        when(mTabModelSelector.getModel(true)).thenReturn((mIncognitoTabModel));
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
+                .thenReturn(mTabGroupModelFilter);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
         PageZoomCoordinator.setShouldShowMenuItemForTesting(false);
@@ -209,25 +212,25 @@ public class AppMenuPropertiesDelegateUnitTest {
         mMenuUiState = new MenuUiState();
         doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
 
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         WebappRegistry.refreshSharedPrefsForTesting();
 
-        mJniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
+        ManagedBrowserUtilsJni.setInstanceForTesting(mManagedBrowserUtilsJniMock);
         Mockito.when(mManagedBrowserUtilsJniMock.isBrowserManaged(mProfile)).thenReturn(false);
         Mockito.when(mManagedBrowserUtilsJniMock.getTitle(mProfile)).thenReturn("title");
 
-        mJniMocker.mock(AppBannerManagerJni.TEST_HOOKS, mAppBannerManagerJniMock);
+        AppBannerManagerJni.setInstanceForTesting(mAppBannerManagerJniMock);
         Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
                 .thenReturn(null);
 
-        mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mTranslateBridgeJniMock);
+        TranslateBridgeJni.setInstanceForTesting(mTranslateBridgeJniMock);
         Mockito.when(mTranslateBridgeJniMock.canManuallyTranslate(any(), anyBoolean()))
                 .thenReturn(false);
 
-        mJniMocker.mock(IncognitoUtilsJni.TEST_HOOKS, mIncognitoUtilsJniMock);
+        IncognitoUtilsJni.setInstanceForTesting(mIncognitoUtilsJniMock);
 
         mBookmarkModelSupplier.set(mBookmarkModel);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
@@ -246,7 +249,9 @@ public class AppMenuPropertiesDelegateUnitTest {
                                 mIncognitoReauthControllerSupplier,
                                 mReadAloudControllerSupplier));
 
-        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+        ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
+        doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
         BuildConfig.IS_DESKTOP_ANDROID = false;
         ResettersForTesting.register(() -> BuildConfig.IS_DESKTOP_ANDROID = false);
     }
@@ -258,12 +263,11 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setupFeatureDefaults() {
         setShoppingListEligible(false);
-        setShoppingListEligible(false);
         FeatureList.setTestValues(mTestValues);
     }
 
     private void setShoppingListEligible(boolean enabled) {
-        ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
+        doReturn(enabled).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         FeatureList.setTestValues(mTestValues);
     }
 
@@ -737,7 +741,7 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .thenReturn(false);
 
         // Test specific setup
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         AccessibilityState.setIsScreenReaderEnabledForTesting(true);
 
         Menu menu = createTestMenu();
@@ -799,17 +803,17 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /* fromCCT= */ false);
+                bookmarkMenuItemShortcut, mTab, /* fromCct= */ false);
         verify(bookmarkMenuItemShortcut).setEnabled(true);
     }
 
     @Test
-    public void updateBookmarkMenuItemShortcut_fromCCT() {
+    public void updateBookmarkMenuItemShortcut_fromCct() {
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /* fromCCT= */ true);
+                bookmarkMenuItemShortcut, mTab, /* fromCct= */ true);
         verify(bookmarkMenuItemShortcut).setEnabled(true);
     }
 
@@ -817,7 +821,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void updateBookmarkMenuItemShortcut_NullTab() {
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, null, /* fromCCT= */ false);
+                bookmarkMenuItemShortcut, null, /* fromCct= */ false);
         verify(bookmarkMenuItemShortcut).setEnabled(false);
     }
 
@@ -827,7 +831,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
-                bookmarkMenuItemShortcut, mTab, /* fromCCT= */ false);
+                bookmarkMenuItemShortcut, mTab, /* fromCct= */ false);
         verify(bookmarkMenuItemShortcut).setEnabled(false);
     }
 
@@ -1094,8 +1098,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void testSelectTabsOption_IsEnabledOneTab_InRegularMode_IndependentOfIncognitoReauth() {
         setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
         when(mTabModel.getCount()).thenReturn(1);
         Tab mockTab1 = mock(Tab.class);
         when(mTabModel.getTabAt(0)).thenReturn(mockTab1);
@@ -1738,12 +1742,12 @@ public class AppMenuPropertiesDelegateUnitTest {
     private void verifyManagedByMenuItem(boolean chromeManagementPageEnabled) {}
 
     /**
-     * Preparation to mock the "final" method TabModelFilter#getTabsWithNoOtherRelatedTabs which
-     * plays a part to enable group tabs.
+     * Preparation to mock the "final" method TabGroupModelFilter#getTabsWithNoOtherRelatedTabs
+     * which plays a part to enable group tabs.
      */
     private void prepareMocksForGroupTabsOnTabModel(@NonNull TabModel tabmodel) {
-        when(mTabModelFilter.getTabModel()).thenReturn(tabmodel);
-        when(mTabModelFilter.getCount()).thenReturn(2);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(tabmodel);
+        when(mTabGroupModelFilter.getCount()).thenReturn(2);
         when(tabmodel.getCount()).thenReturn(2);
         Tab mockTab1 = mock(Tab.class);
         Tab mockTab2 = mock(Tab.class);

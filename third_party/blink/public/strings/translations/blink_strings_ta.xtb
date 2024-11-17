@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">இயல்பு</translation>
 <translation id="1591562245178063882">இந்த மாதம்</translation>
 <translation id="1637811476055996098">ஃபைல்களைத் தேர்வுசெய்க</translation>
-<translation id="1680090928918677457">கேமராவைப் பயன்படுத்து</translation>
 <translation id="1729654308190250600">காலி அல்லாத மின்னஞ்சல் முகவரியை உள்ளிடவும்.</translation>
 <translation id="1758486001363313524">மற்றவை…</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">இந்த உரையை <ph name="MAX_CHARACTERS" /> எழுத்துக்குறிகள் அல்லது அதற்கும் குறைவாக சுருக்கிடுங்கள் (நீங்கள் தற்போது <ph name="CURRENT_LENGTH" /> எழுத்துக்குறிகளைப் பயன்படுத்துகிறீர்கள்).</translation>
 <translation id="2247351761944213033">வாரம் <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">டிராக் <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">கேமராவும் மைக்ரோஃபோனும் அனுமதிக்கப்பட்டன</translation>
 <translation id="2507943997699731163">இந்தப் புலத்தை நிரப்புக.</translation>
 <translation id="2613802280814924224">சரியான மதிப்பை உள்ளிடவும்.  <ph name="VALID_VALUE" /> என்பது நெருக்கமாக உள்ள சரியான மதிப்பாகும்.</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">இந்த உரையை <ph name="MIN_CHARACTERS" /> எழுத்துக்குறிகள் அல்லது அதற்கும் அதிகமாக (தற்போது <ph name="CURRENT_LENGTH" /> எழுத்துக்குறிகளைப் பயன்படுத்துகிறீர்கள்) நீட்டிக்கவும்.</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ஐத் தொடர்ந்து வரும் பகுதியில் '<ph name="INVALIDCHARACTER" />' சின்னம் இருக்கக்கூடாது.</translation>
 <translation id="3846214748874656680">முழுத்திரை வேண்டாம்</translation>
-<translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
 <translation id="4360991593054037559">சரியான மதிப்பை உள்ளிடவும். <ph name="VALID_VALUE_LOW" /> மற்றும் <ph name="VALID_VALUE_HIGHER" /> ஆகியவை மிக நெருக்கமான சரியான இரண்டு மதிப்புகளாகும்.</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
-<translation id="4663373278480897665">கேமரா அனுமதிக்கப்பட்டது</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ஐத் தொடரும் பகுதியில், '<ph name="INVALIDCHARACTER" />' சின்னம் இருக்கக்கூடாது.</translation>
 <translation id="4718048029184481307">’பிக்ச்சர்-இன்-பிக்ச்சர்' பயன்முறையில் பிளே ஆகிறது</translation>
-<translation id="4792862212177489858">இருப்பிடத்தைப் பகிர்</translation>
 <translation id="4812940957355064477">எண்ணை உள்ளிடுக.</translation>
-<translation id="49269513399674318">மைக்ரோஃபோனைப் பயன்படுத்து</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="4992066212339426712">ஒலி இயக்கு</translation>
 <translation id="49969490063480558">'<ph name="ATSIGN" />' ஐத் தொடர்ந்து ஒரு பகுதியை உள்ளிடவும். '<ph name="INVALIDADDRESS" />' முழுமைப்பெறாமல் உள்ளது.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">செருகுநிரல் ஏற்றப்படவில்லை.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">இந்த உரையில் <ph name="MIN_CHARACTERS" /> அல்லது அதற்கு மேற்பட்ட எழுத்துக்குறிகளைப் பயன்படுத்தவும் (தற்போது 1 எழுத்துக்குறியைப் பயன்படுத்துகிறீர்கள்).</translation>
-<translation id="7080893216867146095">இருப்பிடப் பகிர்வு அனுமதிக்கப்பட்டுள்ளது</translation>
 <translation id="709897737746224366">கோரிய வடிவமைப்பில் தருக.</translation>
-<translation id="7134810312945846184">மைக்ரோஃபோனையும் கேமராவையும் பயன்படுத்து</translation>
 <translation id="7263440858009898357">பட்டியலிலிருந்து ஒரு உருப்படியைத் தேர்ந்தெடுங்கள்.</translation>
 <translation id="7364796246159120393">ஃபைலைத் தேர்வு செய்க</translation>
 <translation id="739024184232394898">மற்றவை…</translation>

@@ -133,6 +133,7 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR));
+  GetViewAccessibility().SetKeyShortcuts("Alt+Shift+A");
 }
 
 InfoBarView::~InfoBarView() {
@@ -166,11 +167,6 @@ void InfoBarView::Layout(PassKey) {
     // For accessibility reasons, the close button should come last.
     DCHECK_EQ(close_button_, close_button_->parent()->children().back());
   }
-}
-
-void InfoBarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
-                                "Alt+Shift+A");
 }
 
 gfx::Size InfoBarView::CalculatePreferredSize(

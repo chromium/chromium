@@ -20,11 +20,8 @@ class InlineItem;
 class LineInfo;
 class LogicalLineContainer;
 class LogicalLineItems;
-class PhysicalBoxFragment;
-class ShapeResultView;
 struct InlineItemResult;
 struct LogicalRubyColumn;
-struct PhysicalRect;
 
 struct RubyItemIndexes {
   // Points a kOpenRubyColumn item.
@@ -42,22 +39,13 @@ struct RubyItemIndexes {
 RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
                                        wtf_size_t start_item_index);
 
-// Adjust the specified |rect| of a text fragment for 'em' height.
-// This is called on computing scrollable overflow with kEmHeight.
-PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
-                                       const ComputedStyle& style,
-                                       const ShapeResultView* shape_view,
-                                       WritingMode writing_mode);
-
-PhysicalRect ComputeRubyEmHeightBox(const PhysicalBoxFragment& box_fragment);
-
 struct AnnotationOverhang {
   LayoutUnit start;
   LayoutUnit end;
 };
 
 // Returns overhang values of the specified InlineItemResult representing
-// LayoutRubyColumn.
+// a ruby column.
 //
 // This is used by LineBreaker.
 AnnotationOverhang GetOverhang(const InlineItemResult& item);

@@ -187,13 +187,11 @@ class CORE_EXPORT CanvasRenderingContext
   // TODO(fserb): remove AsV8RenderingContext and AsV8OffscreenRenderingContext.
   virtual V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext*
   AsV8RenderingContext() {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   virtual V8UnionGPUCanvasContextOrImageBitmapRenderingContextOrOffscreenCanvasRenderingContext2DOrWebGL2RenderingContextOrWebGLRenderingContext*
   AsV8OffscreenRenderingContext() {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   virtual bool IsPaintable() const = 0;
   void DidDraw(CanvasPerformanceMonitor::DrawType draw_type) {
@@ -206,11 +204,6 @@ class CORE_EXPORT CanvasRenderingContext
 
   // Return true if the content is updated.
   virtual bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) {
-    return false;
-  }
-
-  virtual bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
-                                                     SourceDrawingBuffer) {
     return false;
   }
 
@@ -259,7 +252,7 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const {}
   virtual void Reset() {}
   virtual void ClearRect(double x, double y, double width, double height) {}
-  virtual void DidSetSurfaceSize() {}
+  virtual void RestoreProviderAndContextIfPossible() {}
   virtual void SetShouldAntialias(bool) {}
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}
@@ -267,30 +260,21 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void ResetUsageTracking() {}
   virtual int LayerCount() const { return 0; }
 
-  virtual void setFontForTesting(const String&) { NOTREACHED_IN_MIGRATION(); }
+  virtual void setFontForTesting(const String&) { NOTREACHED(); }
 
   // WebGL-specific interface
   virtual bool UsingSwapChain() const { return false; }
-  virtual void MarkLayerComposited() { NOTREACHED_IN_MIGRATION(); }
+  virtual void MarkLayerComposited() { NOTREACHED(); }
   virtual sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
-  virtual gfx::Size DrawingBufferSize() const {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::Size(0, 0);
-  }
+  virtual gfx::Size DrawingBufferSize() const { NOTREACHED(); }
 
   // WebGL & WebGPU-specific interface
   virtual void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {}
-  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) {
-    NOTREACHED_IN_MIGRATION();
-  }
+  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) { NOTREACHED(); }
   virtual void Reshape(int width, int height) {}
-  virtual int ExternallyAllocatedBufferCountPerPixel() {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  virtual int ExternallyAllocatedBufferCountPerPixel() { NOTREACHED(); }
 
   // OffscreenCanvas-specific methods.
   virtual bool PushFrame() { return false; }

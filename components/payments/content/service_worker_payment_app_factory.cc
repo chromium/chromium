@@ -37,7 +37,7 @@ class ServiceWorkerPaymentAppCreator {
   ServiceWorkerPaymentAppCreator& operator=(
       const ServiceWorkerPaymentAppCreator&) = delete;
 
-  ~ServiceWorkerPaymentAppCreator() {}
+  ~ServiceWorkerPaymentAppCreator() = default;
 
   void CreatePaymentApps(
       content::InstalledPaymentAppsFinder::PaymentApps apps,
@@ -166,7 +166,7 @@ class ServiceWorkerPaymentAppCreator {
 ServiceWorkerPaymentAppFactory::ServiceWorkerPaymentAppFactory()
     : PaymentAppFactory(PaymentApp::Type::SERVICE_WORKER_APP) {}
 
-ServiceWorkerPaymentAppFactory::~ServiceWorkerPaymentAppFactory() {}
+ServiceWorkerPaymentAppFactory::~ServiceWorkerPaymentAppFactory() = default;
 
 void ServiceWorkerPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
   auto* rfh = delegate->GetInitiatorRenderFrameHost();

@@ -149,8 +149,7 @@ bool IsMorePermissive(ContentSetting a, ContentSetting b) {
     if (setting == a)
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 // Currently only mojom::SessionModel::DURABLE constraints need to be persistent
@@ -255,6 +254,7 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
   static base::NoDestructor<const std::vector<ContentSettingsType>> types{{
 #if !BUILDFLAG(IS_ANDROID)
       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+      ContentSettingsType::CAPTURED_SURFACE_CONTROL,
 #endif
       ContentSettingsType::KEYBOARD_LOCK,
       ContentSettingsType::GEOLOCATION,
@@ -270,6 +270,7 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm() {
   static base::NoDestructor<const std::vector<ContentSettingsType>> types{{
 #if !BUILDFLAG(IS_ANDROID)
       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+      ContentSettingsType::CAPTURED_SURFACE_CONTROL,
 #endif
       ContentSettingsType::KEYBOARD_LOCK,
       ContentSettingsType::GEOLOCATION,

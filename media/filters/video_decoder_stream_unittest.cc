@@ -458,8 +458,7 @@ class VideoDecoderStreamTest
         break;
 
       case NOT_PENDING:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -477,8 +476,7 @@ class VideoDecoderStreamTest
       // This is only interesting to test during VideoDecoderStream destruction.
       // There's no need to satisfy a callback.
       case DECRYPTOR_NO_KEY:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
 
       case DECODER_REINIT:
         decoder_->SatisfyInit();
@@ -493,8 +491,7 @@ class VideoDecoderStreamTest
         break;
 
       case NOT_PENDING:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     base::RunLoop().RunUntilIdle();
@@ -698,6 +695,38 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
 
   // We should remain on a hardware decoder.
   EXPECT_TRUE(decoder_->IsPlatformDecoder());
+}
+
+// Tests that the decoder stream will remain on the same decoder when elided
+// EOS processing is enabled.
+TEST_P(VideoDecoderStreamTest, ConfigChangeElidedEOS) {
+  if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
+      GetParam().parallel_decoding != 1) {
+    // Fake demuxer allows reading over different configs when batch decoding is
+    // enabled, so we need to skip this test.
+    return;
+  }
+  EnablePlatformDecoders({1});
+
+  // Create a demuxer stream with a config that increases in size
+  auto const size_delta =
+      TestVideoConfig::LargeCodedSize() - TestVideoConfig::NormalCodedSize();
+  auto const width_delta = size_delta.width() / (kNumConfigs - 1);
+  auto const height_delta = size_delta.height() / (kNumConfigs - 1);
+  CreateDemuxerStream(TestVideoConfig::NormalCodedSize(),
+                      gfx::Vector2dF(width_delta, height_delta));
+  auto base_config = demuxer_stream_->video_decoder_config();
+  Initialize();
+
+  auto initial_decoder = decoder_;
+  decoder_->enable_eliding_eos();
+  EXPECT_TRUE(decoder_);
+
+  ReadAllFrames();
+
+  // Ensure no matter how the config changes we stay on the same decoder.
+  EXPECT_EQ(initial_decoder, decoder_);
+  EXPECT_FALSE(decoder_->eos_next_configs().empty());
 }
 
 TEST_P(VideoDecoderStreamTest, Read_ProperMetadata) {

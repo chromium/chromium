@@ -147,7 +147,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private static boolean isA11yStateEnabled() {
         // Drag and drop is disabled when gesture related a11y service is enabled.
         // See https://crbug.com/1250067.
-        return AccessibilityState.isAnyAccessibilityServiceEnabled();
+        return AccessibilityState.isTouchExplorationEnabled()
+                || AccessibilityState.isPerformGesturesEnabled();
     }
 
     private boolean startDragAndDropInternal(
@@ -155,7 +156,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             @NonNull DragShadowBuilder dragShadowBuilder,
             @NonNull DropDataAndroid dropData) {
         ClipData clipdata = buildClipData(dropData);
-        if (clipdata == null) {
+        if (clipdata == null
+                && !UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_EMPTY)) {
             return false;
         }
 
@@ -432,7 +434,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 "Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip", dropDistance, 51);
 
         long dropDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration", dropDuration);
     }
 
@@ -455,7 +457,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         // Only record metrics when drop does not happen for ContentView.
         if (!mIsDropOnView) {
             assert mDragStartSystemElapsedTime > 0;
-            assert mDragTargetType != DragTargetType.INVALID;
+            assert mDragTargetType != DragTargetType.INVALID
+                    || UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_EMPTY);
             long dragDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
             recordDragDurationAndResult(dragDuration, dragResult);
             recordDragTargetType(mDragTargetType);
@@ -510,7 +513,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private void recordDragDurationAndResult(long duration, boolean result) {
         String histogramPrefix = "Android.DragDrop.FromWebContent.Duration.";
         String suffix = result ? "Success" : "Canceled";
-        RecordHistogram.recordMediumTimesHistogram(histogramPrefix + suffix, duration);
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(histogramPrefix + suffix, duration);
     }
 
     @VisibleForTesting

@@ -32,7 +32,7 @@ class InitOnce : public blink::Platform {
     mojo::core::Init();
     blink::Platform::CreateMainThreadAndInitialize(this);
   }
-  ~InitOnce() override {}
+  ~InitOnce() override = default;
 
  private:
   base::SingleThreadTaskExecutor main_thread_task_executor_;

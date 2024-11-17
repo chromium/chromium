@@ -20,7 +20,7 @@ namespace history {
 class FakeBookmarkDatabase
     : public base::RefCountedThreadSafe<FakeBookmarkDatabase> {
  public:
-  FakeBookmarkDatabase() {}
+  FakeBookmarkDatabase() = default;
 
   FakeBookmarkDatabase(const FakeBookmarkDatabase&) = delete;
   FakeBookmarkDatabase& operator=(const FakeBookmarkDatabase&) = delete;
@@ -35,7 +35,7 @@ class FakeBookmarkDatabase
  private:
   friend class base::RefCountedThreadSafe<FakeBookmarkDatabase>;
 
-  ~FakeBookmarkDatabase() {}
+  ~FakeBookmarkDatabase() = default;
 
   base::Lock lock_;
   std::map<GURL, std::u16string> bookmarks_;

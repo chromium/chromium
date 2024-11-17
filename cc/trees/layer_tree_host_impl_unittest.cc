@@ -26,14 +26,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/base/features.h"
-#include "cc/base/histograms.h"
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -314,7 +312,9 @@ class LayerTreeHostImplTestBase : public testing::Test,
   void SetHasActiveThreadedScroll(bool is_scrolling) override {}
   void SetWaitingForScrollEvent(bool waiting_for_scroll_event) override {}
   size_t CommitDurationSampleCountForTesting() const override { return 0; }
-  void NotifyTransitionRequestFinished(uint32_t sequence_id) override {}
+  void NotifyTransitionRequestFinished(
+      uint32_t sequence_id,
+      const viz::ViewTransitionElementResourceRects&) override {}
   void set_reduce_memory_result(bool reduce_memory_result) {
     reduce_memory_result_ = reduce_memory_result;
   }
@@ -1432,7 +1432,7 @@ TEST_P(LayerTreeHostImplTest, TargetMainThreadScroller) {
   }
 
   // Now add a main-thread repaint reason. ScrollBegin should still succeed.
-  host_impl_->OuterViewportScrollNode()->main_thread_scrolling_reasons =
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
       MainThreadScrollingReason::kPreferNonCompositedScrolling;
 
   {
@@ -1443,7 +1443,7 @@ TEST_P(LayerTreeHostImplTest, TargetMainThreadScroller) {
               status.main_thread_hit_test_reasons);
     EXPECT_EQ(
         MainThreadScrollingReason::kPreferNonCompositedScrolling,
-        host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
+        host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
   }
 }
 
@@ -1757,7 +1757,7 @@ TEST_P(LayerTreeHostImplTest, ScrollBlocksOnTouchEventHandlers) {
 
 TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
   SetupViewportLayersOuterScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
-  host_impl_->OuterViewportScrollNode()->main_thread_scrolling_reasons =
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
       MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   DrawFrame();
 
@@ -1771,9 +1771,8 @@ TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
             status.main_thread_repaint_reasons);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_hit_test_reasons);
-  EXPECT_EQ(
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
+  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+            host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
 
   status = GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(), gfx::Vector2d(0, 10),
@@ -1785,9 +1784,8 @@ TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
             status.main_thread_repaint_reasons);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_hit_test_reasons);
-  EXPECT_EQ(
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
+  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+            host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
 }
 
 TEST_P(LayerTreeHostImplTest, ScrollWithOverlappingNonScrollableLayer) {
@@ -2703,7 +2701,8 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapOnX) {
   GetInputHandler().ScrollEnd(true);
 
   // Snap target should not be set until the end of the animation.
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -2714,7 +2713,8 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapOnX) {
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(1000));
 
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_POINTF_EQ(gfx::PointF(50, 0), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId()),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
@@ -2746,7 +2746,8 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapOnY) {
   GetInputHandler().ScrollEnd(true);
 
   // Snap target should not be set until the end of the animation.
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -2757,7 +2758,8 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapOnY) {
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(1000));
 
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_POINTF_EQ(gfx::PointF(0, 50), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(), ElementId(10)),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
@@ -2789,7 +2791,8 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapOnBoth) {
   GetInputHandler().ScrollEnd(true);
 
   // Snap target should not be set until the end of the animation.
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -2800,7 +2803,8 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapOnBoth) {
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(1000));
 
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_POINTF_EQ(gfx::PointF(50, 50), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId(10)),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
@@ -2853,7 +2857,8 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapAfterAnimatedScroll) {
   // Animating for the wheel scroll.
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(50));
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   gfx::PointF current_offset = CurrentScrollOffset(overflow);
   EXPECT_LT(0, current_offset.x());
   EXPECT_GT(20, current_offset.x());
@@ -2867,7 +2872,8 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapAfterAnimatedScroll) {
                            start_time + base::Milliseconds(1000));
 
   // The snap target should not be set until the end of the animation.
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -2875,12 +2881,22 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapAfterAnimatedScroll) {
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(1500));
   EXPECT_POINTF_EQ(gfx::PointF(50, 50), CurrentScrollOffset(overflow));
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId(10)),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
 
 TEST_P(LayerTreeHostImplTest, SnapAnimationTargetUpdated) {
+  // If MultiImplOnlyScrollAnimations is enabled this test is not valid because
+  // that flag makes InputHandler forget the latched ScrollNode at the beginning
+  // of the snap animation rather than at the end. And so, processing a
+  // ScrollUpdate (without a corresponding ScrollBegin) after the snap animation
+  // has kicked off is invalid.
+  // TODO(crbug.com/372627916): remove this test when deleting this flag.
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    return;
+  }
   LayerImpl* overflow = CreateLayerForSnapping();
 
   gfx::Point pointer_position(10, 10);
@@ -2896,7 +2912,8 @@ TEST_P(LayerTreeHostImplTest, SnapAnimationTargetUpdated) {
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, y_delta, ui::ScrollInputType::kWheel));
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
 
   viz::BeginFrameArgs begin_frame_args =
       viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1);
@@ -2907,7 +2924,8 @@ TEST_P(LayerTreeHostImplTest, SnapAnimationTargetUpdated) {
   // Finish smooth wheel scroll animation which starts a snap animation.
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(100));
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -2920,7 +2938,8 @@ TEST_P(LayerTreeHostImplTest, SnapAnimationTargetUpdated) {
   // animation.
   GetInputHandler().ScrollUpdate(
       AnimatedUpdateState(gfx::Point(10, 10), gfx::Vector2dF(0, -10)));
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   // Finish the smooth scroll animation for wheel.
   const int scroll_animation_duration_ms =
       features::IsImpulseScrollAnimationEnabled() ? 300 : 150;
@@ -2930,13 +2949,15 @@ TEST_P(LayerTreeHostImplTest, SnapAnimationTargetUpdated) {
 
   // At the end of the previous scroll animation, a new animation for the
   // snapping should have started.
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
 
   // Finish the snap animation.
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(1000));
 
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   // At the end of snap animation we should have updated the
   // TargetSnapAreaElementIds.
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(), ElementId(10)),
@@ -2960,7 +2981,8 @@ TEST_P(LayerTreeHostImplTest, SnapAnimationCancelledByScroll) {
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, x_delta, ui::ScrollInputType::kWheel));
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
 
   viz::BeginFrameArgs begin_frame_args =
       viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1);
@@ -2971,7 +2993,8 @@ TEST_P(LayerTreeHostImplTest, SnapAnimationCancelledByScroll) {
   // Animating for the snap.
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(100));
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -2989,7 +3012,8 @@ TEST_P(LayerTreeHostImplTest, SnapAnimationCancelledByScroll) {
             GetInputHandler()
                 .ScrollBegin(begin_state.get(), ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -3022,14 +3046,16 @@ TEST_P(LayerTreeHostImplTest,
   // There is a snap target at 50, scroll to it directly.
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, x_delta, ui::ScrollInputType::kWheel));
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
 
   viz::BeginFrameArgs begin_frame_args =
       viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1);
   GetInputHandler().ScrollEnd(true);
 
   // No animation is created, but the snap target should be updated.
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId()),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -3037,13 +3063,15 @@ TEST_P(LayerTreeHostImplTest,
   BeginImplFrameAndAnimate(begin_frame_args, start_time);
 
   // We are already at a snap target so we should not animate for snap.
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
 
   // Verify that we are not actually animating by running one frame and ensuring
   // scroll offset has not changed.
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(100));
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_POINTF_EQ(gfx::PointF(50, 0), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId()),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
@@ -3077,7 +3105,8 @@ TEST_P(LayerTreeHostImplTest,
   EXPECT_TRUE(GetInputHandler().GetSnapFlingInfoAndSetAnimatingSnapTarget(
       gfx::Vector2dF(1, 1), gfx::Vector2dF(10, 10), &initial_offset,
       &target_offset));
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_POINTF_EQ(gfx::PointF(4, 4), initial_offset);
   EXPECT_POINTF_EQ(gfx::PointF(10, 10), target_offset);
   // Snap targets shouldn't be set until the fling animation is complete.
@@ -3087,7 +3116,8 @@ TEST_P(LayerTreeHostImplTest,
   GetInputHandler().ScrollUpdate(UpdateState(
       pointer_position, gfx::Vector2dF(6, 6), ui::ScrollInputType::kWheel));
   GetInputHandler().ScrollEndForSnapFling(true /* did_finish */);
-  EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_FALSE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId(10)),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
@@ -3119,7 +3149,8 @@ TEST_P(LayerTreeHostImplTest, SnapFlingAnimationEndWithoutFinishing) {
   EXPECT_TRUE(GetInputHandler().GetSnapFlingInfoAndSetAnimatingSnapTarget(
       gfx::Vector2dF(1, 1), gfx::Vector2dF(10, 10), &initial_offset,
       &target_offset));
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_POINTF_EQ(gfx::PointF(4, 4), initial_offset);
   EXPECT_POINTF_EQ(gfx::PointF(10, 10), target_offset);
   // Snap targets shouldn't be set until the fling animation is complete.
@@ -3128,15 +3159,13 @@ TEST_P(LayerTreeHostImplTest, SnapFlingAnimationEndWithoutFinishing) {
 
   // The snap targets should not be set if the snap fling did not finish.
   GetInputHandler().ScrollEndForSnapFling(false /* did_finish */);
-  EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
+  EXPECT_TRUE(
+      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
 
 TEST_P(LayerTreeHostImplTest, NativeFlingInSnapArea) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kScrollSnapCoveringUseNativeFling);
   gfx::Size view_size(100, 100);
   gfx::Size overflow_size(100, 1000);
   gfx::RectF snap_area_1(0, 0, 100, 700);
@@ -3172,7 +3201,7 @@ TEST_P(LayerTreeHostImplTest, NativeFlingInSnapArea) {
   EXPECT_FALSE(handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
       gfx::Vector2dF(0, 10), gfx::Vector2dF(0, 400), &initial_offset,
       &target_offset));
-  EXPECT_FALSE(handler.animating_for_snap_for_testing());
+  EXPECT_FALSE(handler.animating_for_snap_for_testing(overflow->element_id()));
 
   handler.ScrollUpdate(UpdateState(position, gfx::Vector2dF(0, 450), type));
   EXPECT_POINTF_EQ(gfx::PointF(0, 550), CurrentScrollOffset(overflow));
@@ -3183,7 +3212,7 @@ TEST_P(LayerTreeHostImplTest, NativeFlingInSnapArea) {
   EXPECT_TRUE(handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
       gfx::Vector2dF(0, 100), gfx::Vector2dF(0, 4000), &initial_offset,
       &target_offset));
-  EXPECT_TRUE(handler.animating_for_snap_for_testing());
+  EXPECT_TRUE(handler.animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_POINTF_EQ(gfx::PointF(0, 550), initial_offset);
   EXPECT_POINTF_EQ(gfx::PointF(0, 600), target_offset);
 
@@ -3198,7 +3227,7 @@ TEST_P(LayerTreeHostImplTest, NativeFlingInSnapArea) {
   EXPECT_TRUE(handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
       gfx::Vector2dF(0, 10), gfx::Vector2dF(0, 400), &initial_offset,
       &target_offset));
-  EXPECT_TRUE(handler.animating_for_snap_for_testing());
+  EXPECT_TRUE(handler.animating_for_snap_for_testing(overflow->element_id()));
   EXPECT_POINTF_EQ(gfx::PointF(0, 550), initial_offset);
   EXPECT_POINTF_EQ(gfx::PointF(0, 700), target_offset);
 }
@@ -3697,22 +3726,88 @@ TEST_P(LayerTreeHostImplTest, AnimationSchedulingOnLayerDestruction) {
   EXPECT_FALSE(did_request_next_frame_);
 }
 
-class MissingTilesLayer : public LayerImpl {
+class IncompleteRecordingLayer : public LayerImpl {
  public:
-  static std::unique_ptr<MissingTilesLayer> Create(LayerTreeImpl* tree_impl,
-                                                   int id) {
-    return base::WrapUnique(new MissingTilesLayer(tree_impl, id));
+  static std::unique_ptr<IncompleteRecordingLayer> Create(
+      LayerTreeImpl* tree_impl,
+      int id) {
+    return base::WrapUnique(new IncompleteRecordingLayer(tree_impl, id));
   }
-  MissingTilesLayer(LayerTreeImpl* layer_tree_impl, int id)
+  IncompleteRecordingLayer(LayerTreeImpl* layer_tree_impl, int id)
       : LayerImpl(layer_tree_impl, id) {}
 
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
-    append_quads_data->num_missing_tiles += 10;
-    append_quads_data->checkerboarded_needs_record_content_area += 200;
+    append_quads_data->checkerboarded_needs_record = true;
     append_quads_data->visible_layer_area += 200;
   }
 };
+
+TEST_P(LayerTreeHostImplTest, ScrollCheckerboardsIncompleteRecording) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kNewContentForCheckerboardedScrolls);
+  LayerTreeSettings settings = DefaultSettings();
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  host_impl_->active_tree()->PushPageScaleFromMainThread(1, 0.25f, 4);
+
+  const gfx::Size content_size(1000, 1000);
+  const gfx::Size viewport_size(500, 500);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+
+  LayerImpl* outer_scroll_layer = OuterViewportScrollLayer();
+  outer_scroll_layer->SetDrawsContent(true);
+  LayerImpl* inner_scroll_layer = InnerViewportScrollLayer();
+  inner_scroll_layer->SetDrawsContent(true);
+
+  // Add layer that draws content and has checkerboarded areas.
+  auto* scroll_layer =
+      AddLayer<IncompleteRecordingLayer>(host_impl_->active_tree());
+  CopyProperties(inner_scroll_layer, scroll_layer);
+  scroll_layer->SetBounds(gfx::Size(500, 500));
+  scroll_layer->SetDrawsContent(true);
+  scroll_layer->SetHitTestOpaqueness(HitTestOpaqueness::kTransparent);
+  host_impl_->active_tree()->SetElementIdsForTesting();
+
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  DrawFrame();
+
+  // No scroll has taken place so this should be false.
+  EXPECT_FALSE(host_impl_->ScrollCheckerboardsIncompleteRecording());
+
+  // Send scroll begin.
+  GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(250, 250), gfx::Vector2dF(),
+                 ui::ScrollInputType::kTouchscreen)
+          .get(),
+      ui::ScrollInputType::kTouchscreen);
+
+  DrawFrame();
+
+  // Even though a ScrollBegin has been processed, we still don't consider the
+  // interaction to be "actively scrolling". Expect this to be false.
+  EXPECT_FALSE(host_impl_->ScrollCheckerboardsIncompleteRecording());
+
+  gfx::Vector2dF scroll_delta(0, 10);
+
+  // Send scroll update.
+  GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(10, 10), scroll_delta,
+                                             ui::ScrollInputType::kWheel));
+
+  host_impl_->SetFullViewportDamage();
+  DrawFrame();
+
+  // Now that a scroll update has been processed and the latest
+  // CalculateRenderPasses run has computed significant visible checkerboarding,
+  // expect this flag to be true.
+  EXPECT_TRUE(host_impl_->ScrollCheckerboardsIncompleteRecording());
+
+  GetInputHandler().ScrollEnd();
+
+  // Expect state to be reset after a scroll end.
+  EXPECT_FALSE(host_impl_->ScrollCheckerboardsIncompleteRecording());
+}
 
 TEST_P(LayerTreeHostImplTest, ImplPinchZoom) {
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
@@ -5158,7 +5253,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedGranularityCausesSmoothScroll) {
     update_state.data()->delta_granularity =
         ui::ScrollGranularity::kScrollByPixel;
 
-    ASSERT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    ASSERT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
     // Perform a scrollbar-like scroll (one injected by the
     // ScrollbarController). It should cause an animation to be created.
@@ -5168,13 +5263,14 @@ TEST_P(LayerTreeHostImplTest, AnimatedGranularityCausesSmoothScroll) {
                 host_impl_->OuterViewportScrollNode());
 
       GetInputHandler().ScrollUpdate(update_state);
-      EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+      EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
       GetInputHandler().ScrollEnd();
     }
 
-    GetImplAnimationHost()->ScrollAnimationAbort();
-    ASSERT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    GetImplAnimationHost()->ScrollAnimationAbort(
+        host_impl_->OuterViewportScrollNode()->element_id);
+    ASSERT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
     // Perform a scrollbar-like scroll (one injected by the
     // ScrollbarController). This time we change the granularity to precise (as
@@ -5190,7 +5286,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedGranularityCausesSmoothScroll) {
                 host_impl_->OuterViewportScrollNode());
 
       GetInputHandler().ScrollUpdate(update_state);
-      EXPECT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+      EXPECT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
       GetInputHandler().ScrollEnd();
     }
@@ -5225,7 +5321,7 @@ TEST_P(LayerTreeHostImplTest, NonAnimatedGranularityCausesInstantScroll) {
     update_state.data()->delta_granularity =
         ui::ScrollGranularity::kScrollByPixel;
 
-    ASSERT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    ASSERT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
     // Perform a scrollbar-like scroll (one injected by the
     // ScrollbarController). It should cause an animation to be created.
@@ -5235,7 +5331,7 @@ TEST_P(LayerTreeHostImplTest, NonAnimatedGranularityCausesInstantScroll) {
                 host_impl_->OuterViewportScrollNode());
 
       GetInputHandler().ScrollUpdate(update_state);
-      EXPECT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+      EXPECT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
       GetInputHandler().ScrollEnd();
     }
@@ -6683,10 +6779,11 @@ class MissingTextureAnimatingLayer : public DidDrawCheckLayer {
                    AppendQuadsData* append_quads_data) override {
     LayerImpl::AppendQuads(render_pass, append_quads_data);
     if (had_incomplete_tile_) {
-      append_quads_data->num_incompletely_rastered_tiles++;
+      append_quads_data->checkerboarded_needs_raster = true;
     }
     if (tile_missing_) {
       append_quads_data->num_missing_tiles++;
+      append_quads_data->checkerboarded_needs_raster = true;
     }
   }
 
@@ -7232,7 +7329,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   // The fling constraint should take us to 550, which aligns with the bottom of
   // snap_area_1 using the expanded viewport size of 100x150 from hiding browser
   // controls, even though SnapContainerData is still based on 100x100 viewport.
-  EXPECT_TRUE(handler.animating_for_snap_for_testing());
+  EXPECT_TRUE(handler.animating_for_snap_for_testing(
+      host_impl_->OuterViewportScrollNode()->element_id));
   EXPECT_POINTF_EQ(gfx::PointF(0, 400), initial_offset);
   EXPECT_POINTF_EQ(gfx::PointF(0, 550), target_offset);
 
@@ -8317,7 +8415,7 @@ TEST_P(LayerTreeHostImplTest, ScrollLayerWithMainThreadReason) {
       AddScrollableLayer(root, scroll_container_size, surface_size);
   LayerImpl* content_layer =
       AddScrollableLayer(scroll_layer, scroll_container_size, surface_size);
-  GetScrollNode(content_layer)->main_thread_scrolling_reasons =
+  GetScrollNode(content_layer)->main_thread_repaint_reasons =
       MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   DrawFrame();
 
@@ -8329,9 +8427,8 @@ TEST_P(LayerTreeHostImplTest, ScrollLayerWithMainThreadReason) {
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_hit_test_reasons);
-  EXPECT_EQ(
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      host_impl_->CurrentlyScrollingNode()->main_thread_scrolling_reasons);
+  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+            host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
   EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
             status.main_thread_repaint_reasons);
 }
@@ -10528,7 +10625,7 @@ TEST_P(LayerTreeHostImplTest, OverscrollOnImplThread) {
   LayerImpl* scroll_layer = InnerViewportScrollLayer();
   ScrollNode* scroll_node = GetScrollNode(scroll_layer);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            scroll_node->main_thread_scrolling_reasons);
+            scroll_node->main_thread_repaint_reasons);
 
   DrawFrame();
 
@@ -13504,14 +13601,14 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedLatching) {
     host_impl_->DidFinishImplFrame(begin_frame_args);
 
     EXPECT_NE(gfx::PointF(), CurrentScrollOffset(outer_scroll));
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
   }
 
   // End the scroll gesture. We should still be latched to the scroll layer
   // since the animation is still in progress.
   {
     GetInputHandler().ScrollEnd();
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
     EXPECT_EQ(outer_scroll->scroll_tree_index(),
               host_impl_->CurrentlyScrollingNode()->id);
 
@@ -13522,7 +13619,7 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedLatching) {
     host_impl_->UpdateAnimationState(true);
     host_impl_->DidFinishImplFrame(begin_frame_args);
 
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
     EXPECT_EQ(outer_scroll->scroll_tree_index(),
               host_impl_->CurrentlyScrollingNode()->id);
   }
@@ -13552,7 +13649,7 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedLatching) {
     host_impl_->UpdateAnimationState(true);
     host_impl_->DidFinishImplFrame(begin_frame_args);
 
-    EXPECT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
     EXPECT_EQ(outer_scroll->scroll_tree_index(),
               host_impl_->CurrentlyScrollingNode()->id);
   }
@@ -13679,8 +13776,8 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedUpdateInnerViewport) {
 
     // However, the animating scroll node should be the inner viewport.
     ASSERT_TRUE(InnerViewportScrollLayer()->element_id());
-    EXPECT_EQ(InnerViewportScrollLayer()->element_id(),
-              GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->ElementHasImplOnlyScrollAnimation(
+        InnerViewportScrollLayer()->element_id()));
   }
 
   base::TimeTicks start_time = base::TimeTicks() + base::Milliseconds(100);
@@ -14744,7 +14841,7 @@ TEST_P(LayerTreeHostImplTest, AbortAnimatedScrollBeforeStartingAutoscroll) {
     EXPECT_TRUE(GetInputHandler()
                     .scrollbar_controller_for_testing()
                     ->ScrollbarScrollIsActive());
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
   }
 
   {
@@ -14763,7 +14860,7 @@ TEST_P(LayerTreeHostImplTest, AbortAnimatedScrollBeforeStartingAutoscroll) {
         ->autoscroll_state_->pressed_scrollbar_part =
         ScrollbarPart::kForwardTrack;
     GetInputHandler().scrollbar_controller_for_testing()->StartAutoScroll();
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
   }
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.
@@ -14833,7 +14930,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollYielding) {
     EXPECT_TRUE(GetInputHandler()
                     .scrollbar_controller_for_testing()
                     ->ScrollbarScrollIsActive());
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
   }
 
   {
@@ -14860,12 +14957,12 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollYielding) {
                   .thread);
 
     // Autoscroll animation should be aborted at this point.
-    EXPECT_FALSE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_FALSE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
     GetInputHandler().ScrollUpdate(
         AnimatedUpdateState(gfx::Point(350, 560), gfx::Vector2d(0, 40)));
 
     // Mousewheel animation should be active.
-    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+    EXPECT_TRUE(GetImplAnimationHost()->HasImplOnlyScrollAnimatingElement());
 
     // This should not trigger any DCHECKs and will be a no-op.
     GetInputHandler().scrollbar_controller_for_testing()->WillBeginImplFrame();
@@ -15016,10 +15113,10 @@ TEST_P(LayerTreeHostImplTest, MainThreadFallback) {
                                   /*jump_key_modifier*/ false);
   GetInputHandler().MouseUp(gfx::PointF(350, 500));
   EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(), 525u);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_scrolling_reasons);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
 
   // Assign a main_thread_scrolling_reason to the scroll node.
-  GetScrollNode(scroll_layer)->main_thread_scrolling_reasons =
+  GetScrollNode(scroll_layer)->main_thread_repaint_reasons =
       MainThreadScrollingReason::kPreferNonCompositedScrolling;
   compositor_threaded_scrolling_result = GetInputHandler().MouseDown(
       gfx::PointF(350, 500), /*jump_key_modifier*/ false);
@@ -16159,7 +16256,7 @@ void LayerTreeHostImplTestBase::SetupMouseMoveAtTestScrollbarStates(
   LayerImpl* root_scroll = OuterViewportScrollLayer();
 
   if (main_thread_scrolling) {
-    GetScrollNode(root_scroll)->main_thread_scrolling_reasons =
+    GetScrollNode(root_scroll)->main_thread_repaint_reasons =
         MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   }
 
@@ -16265,7 +16362,7 @@ void LayerTreeHostImplTestBase::SetupMouseMoveAtTestScrollbarStates(
       AddScrollableLayer(root_scroll, gfx::Size(100, 100), child_layer_size);
   child->SetOffsetToTransformParent(gfx::Vector2dF(50, 50));
   if (main_thread_scrolling) {
-    GetScrollNode(child)->main_thread_scrolling_reasons =
+    GetScrollNode(child)->main_thread_repaint_reasons =
         MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   }
 
@@ -17668,7 +17765,7 @@ TEST_P(LayerTreeHostImplTest, PercentBasedScrollbarDeltasDSF3) {
   GetInputHandler().MouseUp(gfx::PointF(190, 490));
 
   EXPECT_EQ(scroll_result.scroll_delta.y(), expected_delta);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_scrolling_reasons);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
 
   // Test with DSF = 1. As the scrollable layers aren't rescaled by the DSF,
   // neither the scroll offset, the same result for DSF = 3 is expected.
@@ -17679,7 +17776,7 @@ TEST_P(LayerTreeHostImplTest, PercentBasedScrollbarDeltasDSF3) {
   GetInputHandler().MouseUp(gfx::PointF(190, 490));
 
   EXPECT_EQ(scroll_with_dsf_1.scroll_delta.y(), expected_delta);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_scrolling_reasons);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.
   host_impl_->ReleaseLayerTreeFrameSink();
@@ -17774,7 +17871,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   }
 
   void CreateScroller(
-      uint32_t main_thread_scrolling_reasons,
+      uint32_t main_thread_repaint_reasons,
       HitTestOpaqueness hit_test_opaqueness = HitTestOpaqueness::kOpaque) {
     // Creates a regular composited scroller that comes with a ScrollNode and
     // Layer.
@@ -17786,8 +17883,8 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
                            scrollable_content_bounds);
     layer->SetHitTestOpaqueness(hit_test_opaqueness);
     scroller_layer_ = layer;
-    GetScrollNode(layer)->main_thread_scrolling_reasons =
-        main_thread_scrolling_reasons;
+    GetScrollNode(layer)->main_thread_repaint_reasons =
+        main_thread_repaint_reasons;
     GetScrollNode(layer)->is_composited = true;
 
     UpdateDrawProperties(host_impl_->active_tree());
@@ -18305,7 +18402,8 @@ void UnifiedScrollingTest::TestNonCompositedScrollingState(
     did_request_commit_ = false;
 
     AnimatedScrollUpdate(gfx::Vector2d(0, 10));
-    ASSERT_TRUE(host_impl_->mutator_host()->ImplOnlyScrollAnimatingElement());
+    ASSERT_TRUE(
+        host_impl_->mutator_host()->HasImplOnlyScrollAnimatingElement());
     ASSERT_EQ(gfx::PointF(0, 10), ScrollerOffset());
 
     StartAnimation();
@@ -18343,7 +18441,7 @@ TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
 
   TestNonCompositedScrollingState(/*mutates_transform_tree=*/false);
 
-  ASSERT_EQ(ScrollerNode()->main_thread_scrolling_reasons,
+  ASSERT_EQ(ScrollerNode()->main_thread_repaint_reasons,
             MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
   TransformTree& tree = GetPropertyTrees()->transform_tree_mutable();
   TransformNode* transform_node = tree.Node(ScrollerNode()->transform_id);
@@ -18351,7 +18449,7 @@ TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
   // Removing the main thread reason bit should start mutating the transform
   // tree.
   {
-    ScrollerNode()->main_thread_scrolling_reasons =
+    ScrollerNode()->main_thread_repaint_reasons =
         MainThreadScrollingReason::kNotScrollingOnMain;
     UpdateDrawProperties(host_impl_->active_tree());
     host_impl_->active_tree()->DidBecomeActive();
@@ -18978,6 +19076,12 @@ TEST_P(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
             initial_offset);
   EXPECT_EQ(handler.snap_strategy_for_testing()->intended_position(),
             target_offset);
+
+  // Test that a new snap strategy is created at the end of an inertial scroll.
+  const auto* old_snap_strategy = handler.snap_strategy_for_testing().get();
+  handler.ScrollEndForSnapFling(true);
+  EXPECT_TRUE(handler.snap_strategy_for_testing().get());
+  EXPECT_NE(handler.snap_strategy_for_testing().get(), old_snap_strategy);
 }
 
 namespace {
@@ -19013,6 +19117,288 @@ TEST_P(LayerTreeHostImplTest, VisbilityUpdateToLayers) {
 
   host_impl_->SetVisible(false);
   EXPECT_TRUE(layer->has_been_in_invisible_layer_tree());
+}
+
+class ConcurrentImplOnlyScrollAnimationsTest : public LayerTreeHostImplTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kMultipleImplOnlyScrollAnimations);
+    LayerTreeHostImplTest::SetUp();
+  }
+  gfx::PointF CreateAndTickScrollAnimations();
+  void CompleteScrollAnimations();
+
+ protected:
+  gfx::PointF current_offset1_ = gfx::PointF(0., 1.);
+  gfx::PointF current_offset2_ = gfx::PointF(0., 3.);
+  gfx::PointF target_offset1_ = gfx::PointF(0., 2.);
+  gfx::PointF target_offset2_ = gfx::PointF(0., 4.);
+  raw_ptr<LayerImpl> scroller1_;
+  raw_ptr<LayerImpl> scroller2_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_COMMIT_TO_TREE_TEST_P(ConcurrentImplOnlyScrollAnimationsTest);
+
+gfx::PointF
+ConcurrentImplOnlyScrollAnimationsTest::CreateAndTickScrollAnimations() {
+  gfx::Size content_size = gfx::Size(360, 600);
+  gfx::Size scroll_content_size = gfx::Size(3600, 3800);
+
+  SetupViewportLayersNoScrolls(content_size);
+  scroller1_ = AddScrollableLayer(OuterViewportScrollLayer(), content_size,
+                                  scroll_content_size);
+  scroller2_ = AddScrollableLayer(OuterViewportScrollLayer(), content_size,
+                                  scroll_content_size);
+
+  AnimationHost* animation_host = GetImplAnimationHost();
+  animation_host->ImplOnlyScrollAnimationCreate(
+      scroller1_->element_id(), target_offset1_, current_offset1_,
+      base::TimeDelta(), base::TimeDelta());
+  animation_host->ImplOnlyScrollAnimationCreate(
+      scroller2_->element_id(), target_offset2_, current_offset2_,
+      base::TimeDelta(), base::TimeDelta());
+
+  // Bring the animations to their initial values (current_offset).
+  animation_host->TickAnimations(base::TimeTicks() + base::Milliseconds(200),
+                                 host_impl_->GetScrollTree(), true);
+  EXPECT_EQ(host_impl_->GetScrollTree().current_scroll_offset(
+                scroller1_->element_id()),
+            current_offset1_);
+  EXPECT_EQ(host_impl_->GetScrollTree().current_scroll_offset(
+                scroller2_->element_id()),
+            current_offset2_);
+
+  // Promote the animations from STARTING to RUNNING.
+  animation_host->UpdateAnimationState(true, nullptr);
+
+  // Bring the animations to intermediate values.
+  animation_host->TickAnimations(base::TimeTicks() + base::Milliseconds(300),
+                                 host_impl_->GetScrollTree(), true);
+  EXPECT_GT(host_impl_->GetScrollTree()
+                .current_scroll_offset(scroller1_->element_id())
+                .y(),
+            current_offset1_.y());
+  // Store the scroller2's intermediate value which might be its final value.
+  gfx::PointF intermediate_scroller2_offset =
+      host_impl_->GetScrollTree().current_scroll_offset(
+          scroller2_->element_id());
+  EXPECT_GT(intermediate_scroller2_offset.y(), current_offset2_.y());
+  return intermediate_scroller2_offset;
+}
+
+void ConcurrentImplOnlyScrollAnimationsTest::CompleteScrollAnimations() {
+  AnimationHost* animation_host = GetImplAnimationHost();
+  // Bring the animations to their final values.
+  animation_host->TickAnimations(base::TimeTicks() + base::Milliseconds(600),
+                                 host_impl_->GetScrollTree(), true);
+  // Bring the animations to a FINISHED state.
+  animation_host->UpdateAnimationState(true, nullptr);
+
+  EXPECT_FALSE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller1_->element_id()));
+  EXPECT_FALSE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller2_->element_id()));
+
+  EXPECT_EQ(host_impl_->GetScrollTree().current_scroll_offset(
+                scroller1_->element_id()),
+            target_offset1_);
+
+  EXPECT_EQ(host_impl_->GetScrollTree().current_scroll_offset(
+                scroller2_->element_id()),
+            target_offset2_);
+}
+
+TEST_P(ConcurrentImplOnlyScrollAnimationsTest, Create) {
+  CreateAndTickScrollAnimations();
+  CompleteScrollAnimations();
+}
+
+TEST_P(ConcurrentImplOnlyScrollAnimationsTest, Update) {
+  CreateAndTickScrollAnimations();
+  AnimationHost* animation_host = GetImplAnimationHost();
+  gfx::Vector2dF update_delta1(1., 1.);
+  gfx::Vector2dF update_delta2(2., 2.);
+  // Update the target offsets the test should verify against.
+  target_offset1_ += update_delta1;
+  target_offset2_ += update_delta2;
+  // Update the animations' targets.
+  animation_host->ImplOnlyScrollAnimationUpdateTarget(
+      update_delta1, gfx::PointF(1000., 1000.),
+      base::TimeTicks() + base::Milliseconds(400), base::TimeDelta(),
+      scroller1_->element_id());
+  animation_host->ImplOnlyScrollAnimationUpdateTarget(
+      update_delta2, gfx::PointF(1000., 1000.),
+      base::TimeTicks() + base::Milliseconds(400), base::TimeDelta(),
+      scroller2_->element_id());
+  EXPECT_TRUE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller1_->element_id()));
+  EXPECT_TRUE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller2_->element_id()));
+  CompleteScrollAnimations();
+}
+
+TEST_P(ConcurrentImplOnlyScrollAnimationsTest, Abort) {
+  target_offset2_ = CreateAndTickScrollAnimations();
+  AnimationHost* animation_host = GetImplAnimationHost();
+  // Abort the animation on scroller2 targets.
+  animation_host->ScrollAnimationAbort(scroller2_->element_id());
+  EXPECT_TRUE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller1_->element_id()));
+  EXPECT_FALSE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller2_->element_id()));
+  CompleteScrollAnimations();
+}
+
+TEST_P(ConcurrentImplOnlyScrollAnimationsTest, RemovedByCommit) {
+  target_offset2_ = CreateAndTickScrollAnimations();
+  AnimationHost* animation_host = GetImplAnimationHost();
+  // Remove scroller2 from the property trees.
+  host_impl_->active_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .RemoveNodes(1);
+  host_impl_->active_tree()
+      ->property_trees()
+      ->transform_tree_mutable()
+      .RemoveNodes(1);
+  animation_host->HandleRemovedScrollAnimatingElements(true);
+  EXPECT_TRUE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller1_->element_id()));
+  EXPECT_FALSE(animation_host->ElementHasImplOnlyScrollAnimation(
+      scroller2_->element_id()));
+  CompleteScrollAnimations();
+}
+
+class ConcurrentSnapAnimationsTest : public LayerTreeHostImplTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kMultipleImplOnlyScrollAnimations);
+    LayerTreeHostImplTest::SetUp();
+    gfx::Size viewport_size(100, 100);
+    gfx::Size content_size(100, 5000);
+
+    gfx::RectF snap_area_1(0, 0, 50, 50);
+    gfx::RectF snap_area_2(0, 1200, 50, 50);
+
+    SetupViewportLayersInnerScrolls(viewport_size, viewport_size);
+
+    // Create 2 scroll-snap containers.
+    snapping_layer1_ = AddScrollableLayer(OuterViewportScrollLayer(),
+                                          viewport_size, content_size);
+
+    snapping_layer2_ = AddScrollableLayer(OuterViewportScrollLayer(),
+                                          viewport_size, content_size);
+    SnapContainerData container1(
+        ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+        gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 4900));
+    SnapContainerData container2(
+        ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+        gfx::RectF(100, 100, 100, 100), gfx::PointF(0, 4900));
+
+    // Add snap areas to both snap containers.
+    ScrollSnapAlign start_alignment = ScrollSnapAlign(SnapAlignment::kStart);
+    container1.AddSnapAreaData(SnapAreaData(start_alignment, snap_area_1, false,
+                                            false, ElementId(10)));
+    container1.AddSnapAreaData(SnapAreaData(start_alignment, snap_area_2, false,
+                                            false, ElementId(20)));
+    container2.AddSnapAreaData(SnapAreaData(start_alignment, snap_area_1, false,
+                                            false, ElementId(30)));
+    container2.AddSnapAreaData(SnapAreaData(start_alignment, snap_area_2, false,
+                                            false, ElementId(40)));
+
+    scroll_node1_ = GetScrollNode(snapping_layer1_.get());
+    scroll_node2_ = GetScrollNode(snapping_layer2_.get());
+    container1_id_ = scroll_node1_->element_id;
+    container2_id_ = scroll_node2_->element_id;
+    scroll_node1_->snap_container_data.emplace(container1);
+    scroll_node2_->snap_container_data.emplace(container2);
+
+    DrawFrame();
+  }
+
+  raw_ptr<LayerImpl> snapping_layer1_ = nullptr;
+  raw_ptr<LayerImpl> snapping_layer2_ = nullptr;
+  raw_ptr<ScrollNode> scroll_node1_ = nullptr;
+  raw_ptr<ScrollNode> scroll_node2_ = nullptr;
+  ElementId container1_id_;
+  ElementId container2_id_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_COMMIT_TO_TREE_TEST_P(ConcurrentSnapAnimationsTest);
+
+TEST_P(ConcurrentSnapAnimationsTest, TrackAnimatingSnapTargetIds) {
+  auto& handler = GetInputHandler();
+
+  gfx::Point position(50, 50);
+  ui::ScrollInputType type = ui::ScrollInputType::kTouchscreen;
+  base::flat_map<ElementId, InputHandler::SnapAnimationData>& snap_state_map =
+      handler.get_snap_animation_data_map_for_testing();
+  EXPECT_FALSE(snap_state_map.contains(container1_id_));
+  EXPECT_FALSE(snap_state_map.contains(container2_id_));
+
+  handler.ScrollBegin(BeginState(position, gfx::Vector2dF(0, 150), type).get(),
+                      type);
+  // Manually latch onto scroll_node1.
+  host_impl_->GetScrollTree().set_currently_scrolling_node(scroll_node1_->id);
+  EXPECT_FALSE(snap_state_map.contains(container1_id_));
+  EXPECT_FALSE(snap_state_map.contains(container2_id_));
+
+  handler.ScrollUpdate(UpdateState(position, gfx::Vector2dF(0, 150), type));
+  EXPECT_FALSE(snap_state_map.contains(container1_id_));
+  EXPECT_FALSE(snap_state_map.contains(container2_id_));
+
+  handler.ScrollEnd(true);
+  EXPECT_TRUE(snap_state_map.contains(container1_id_));
+  EXPECT_EQ(snap_state_map.at(container1_id_).animating_snap_target_ids_.y,
+            ElementId(10));
+  EXPECT_FALSE(snap_state_map.contains(container2_id_));
+
+  handler.ScrollBegin(BeginState(position, gfx::Vector2dF(0, 150), type).get(),
+                      type);
+  // Manually latch on to |scroll_node2|.
+  host_impl_->GetScrollTree().set_currently_scrolling_node(scroll_node2_->id);
+
+  handler.ScrollUpdate(UpdateState(position, gfx::Vector2dF(0, 150), type));
+  EXPECT_TRUE(snap_state_map.contains(container1_id_));
+  EXPECT_EQ(snap_state_map.at(container1_id_).animating_snap_target_ids_.y,
+            ElementId(10));
+  EXPECT_FALSE(snap_state_map.contains(container2_id_));
+
+  handler.ScrollEnd(true);
+  EXPECT_TRUE(snap_state_map.contains(container1_id_));
+  EXPECT_EQ(snap_state_map.at(container1_id_).animating_snap_target_ids_.y,
+            ElementId(10));
+
+  EXPECT_TRUE(snap_state_map.contains(container2_id_));
+  EXPECT_EQ(snap_state_map.at(container2_id_).animating_snap_target_ids_.y,
+            ElementId(30));
+
+  // Tick snap animations to completion to avoid violating deferred_scroll_end_
+  // DCHECK in InputHandler::ScrollEnd.
+  AnimationHost* animation_host = GetImplAnimationHost();
+  int t = 1;
+  while (animation_host->HasImplOnlyScrollAnimatingElement()) {
+    animation_host->TickAnimations(
+        base::TimeTicks() + base::Milliseconds(t++ * 100),
+        host_impl_->GetScrollTree(), true);
+    animation_host->UpdateAnimationState(true, nullptr);
+  }
+
+  // Finish the snap animation for scroll_node1.
+  handler.ScrollOffsetAnimationFinished(container1_id_);
+  EXPECT_FALSE(snap_state_map.contains(container1_id_));
+  EXPECT_TRUE(snap_state_map.contains(container2_id_));
+  EXPECT_EQ(snap_state_map.at(container2_id_).animating_snap_target_ids_.y,
+            ElementId(30));
+
+  // Finish the snap animation for scroll_node2.
+  handler.ScrollOffsetAnimationFinished(container2_id_);
+  EXPECT_FALSE(snap_state_map.contains(container1_id_));
+  EXPECT_FALSE(snap_state_map.contains(container2_id_));
 }
 
 }  // namespace cc

@@ -215,9 +215,8 @@ MessagePumpForIO* CurrentIOThread::GetMessagePumpForIO() const {
 #if !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_WIN)
-HRESULT CurrentIOThread::RegisterIOHandler(
-    HANDLE file,
-    MessagePumpForIO::IOHandler* handler) {
+bool CurrentIOThread::RegisterIOHandler(HANDLE file,
+                                        MessagePumpForIO::IOHandler* handler) {
   DCHECK(current_->IsBoundToCurrentThread());
   return GetMessagePumpForIO()->RegisterIOHandler(file, handler);
 }

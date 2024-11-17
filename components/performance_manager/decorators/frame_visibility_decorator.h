@@ -66,7 +66,7 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
   void OnFrameNodeInitializing(const FrameNode* frame_node) override;
   void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
                              const FrameNode* current_frame_node) override;
-  void OnViewportIntersectionStateChanged(const FrameNode* frame_node) override;
+  void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
 
  private:
   // Handles changes in the user visibility of pages.
@@ -78,7 +78,7 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
 
   // Returns true if the page node is visible to the user in some capacity,
   // taking into account if the page is being mirrored.
-  bool IsPageUserVisible(const PageNode* page_node);
+  static bool IsPageUserVisible(const PageNode* page_node);
 };
 
 }  // namespace performance_manager

@@ -123,6 +123,10 @@ class WEBDATA_EXPORT WebDatabaseService
   // be stored or called.
   void RegisterDBErrorCallback(DBLoadErrorCallback callback);
 
+  // API to verify if the database is stored in-memory only, as opposed to
+  // on-disk storage. Used for metric logging purposes only.
+  bool UsesInMemoryDatabaseForMetrics() const;
+
  private:
   class BackendDelegate;
   friend class BackendDelegate;

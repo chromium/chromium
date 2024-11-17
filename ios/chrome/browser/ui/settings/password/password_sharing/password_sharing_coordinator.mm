@@ -98,15 +98,14 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)start {
   [super start];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   self.mediator = [[PasswordSharingMediator alloc]
              initWithDelegate:self
-       sharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()
-              identityManager:IdentityManagerFactory::GetForProfile(
-                                  browserState)
+       sharedURLLoaderFactory:profile->GetSharedURLLoaderFactory()
+              identityManager:IdentityManagerFactory::GetForProfile(profile)
       savedPasswordsPresenter:_savedPasswordsPresenter
         passwordSenderService:IOSChromePasswordSenderServiceFactory::
-                                  GetForBrowserState(browserState)];
+                                  GetForProfile(profile)];
 
   // With more than 1 credential an additional UI will be presented to select
   // which one should be shared.

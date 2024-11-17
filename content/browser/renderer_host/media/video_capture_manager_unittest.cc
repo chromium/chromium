@@ -30,9 +30,9 @@
 #include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
-#include "content/common/buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -405,7 +405,9 @@ class VideoCaptureManagerTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
-  std::map<VideoCaptureControllerID, VideoCaptureController*> controllers_;
+  std::map<VideoCaptureControllerID,
+           raw_ptr<VideoCaptureController, CtnExperimental>>
+      controllers_;
   scoped_refptr<VideoCaptureManager> vcm_;
   std::unique_ptr<MockMediaStreamProviderListener> listener_;
   std::unique_ptr<MockFrameObserver> frame_observer_;
@@ -898,16 +900,19 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeClient) {
   // Test pause/resume when only one client is present.
   EXPECT_CALL(*video_capture_device_factory_, WillSuspendDevice()).Times(1);
   PauseClient(client_id);
-  EXPECT_CALL(*video_capture_device_factory_, WillResumeDevice()).Times(1);
+  EXPECT_CALL(*video_capture_device_factory_, WillResumeDevice()).Times(2);
   ResumeClient(video_session_id, client_id);
 
-  // Attempting to resume the client a second time should not cause any calls to
-  // VideoCaptureDevice::Resume().
+  // Attempting to resume the same client a second time should not cause any
+  // calls to VideoCaptureDevice::Resume() because VideoCaptureManager will
+  // not attempt to resume the device if the client is not paused.
   ResumeClient(video_session_id, client_id);
 
   // Add a second client that is never paused, then pause/resume the first
-  // client, and no calls to VideoCaptureDevice::MaybeSuspend() or Resume() are
-  // made.
+  // client, and no calls to VideoCaptureDevice::MaybeSuspend() is made.
+  // However, a call to VideoCaptureDevice::Resume() is still made because
+  // VideoCaptureManager will attempt to resume the device if the client is
+  // paused.
   EXPECT_CALL(*frame_observer_, OnStarted(_));
   const VideoCaptureControllerID client_id2 =
       StartClient(video_session_id, true);

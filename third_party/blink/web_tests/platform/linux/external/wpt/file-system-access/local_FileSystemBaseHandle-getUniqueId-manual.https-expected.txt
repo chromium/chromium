@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] unique ID of a file handle does not change after writes
-  promise_test: Unhandled rejection with value: object "ReferenceError: cleanup_writable is not defined"
-Harness: the test ran to completion.
-

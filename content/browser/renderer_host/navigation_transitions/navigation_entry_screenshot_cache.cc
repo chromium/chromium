@@ -10,12 +10,19 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
 namespace {
+
+const base::FeatureParam<bool> kDumpWithoutCrashNavigationEntryScreenshotCache{
+    &blink::features::kBackForwardTransitions,
+    "dump-without-crash-navigation-entry-screenshot-cache", false};
 
 NavigationEntryScreenshotCache::CompressedCallback& GetTestCallback() {
   static base::NoDestructor<NavigationEntryScreenshotCache::CompressedCallback>
@@ -76,6 +83,17 @@ void NavigationEntryScreenshotCache::OnNavigationFinished(
     const NavigationRequest& navigation_request) {
   auto it = pending_screenshots_.find(navigation_request.GetNavigationId());
   if (it == pending_screenshots_.end()) {
+    if (!navigation_request.HasCommitted()) {
+      // crbug.com/369200379: If the navigation fails to commit and the
+      // screenshot hasn't arrived at the browser yet, we need to increment the
+      // copy output request sequence on the screenshot destination entry to
+      // prevent the the screenshot eventually being stashed. Since the
+      // navigation never commits, it's erroneous to stash this screenshot into
+      // the last committed entry.
+      nav_controller_->GetLastCommittedEntry()
+          ->navigation_transition_data()
+          .increment_copy_output_request_sequence();
+    }
     return;
   }
 
@@ -109,8 +127,10 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
     bool is_copied_from_embedder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  NavigationEntryImpl* entry =
-      nav_controller_->GetEntryWithUniqueID(screenshot->navigation_entry_id());
+  int index =
+      NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+          nav_controller_, screenshot->unique_id());
+  NavigationEntryImpl* entry = nav_controller_->GetEntryAtIndex(index);
   if (!entry) {
     // The entry was deleted by the time we received the bitmap from the GPU.
     // This can happen by clearing the session history, or when the
@@ -118,29 +138,43 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
     return;
   }
 
+  // Should never capture the last committed entry.
+  if (entry == nav_controller_->GetLastCommittedEntry()) {
+    if (kDumpWithoutCrashNavigationEntryScreenshotCache.Get()) {
+      SCOPED_CRASH_KEY_BOOL("dnt", "is_copied_from_embedder",
+                            is_copied_from_embedder);
+      base::debug::DumpWithoutCrashing();
+    }
+    return;
+  }
+
   // A navigation entry without a screenshot will be removed from the cache
   // first (thus not tracked). Impossible to overwrite for a cached entry.
-  CHECK(!entry->GetUserData(NavigationEntryScreenshot::kUserDataKey));
-  CHECK(cached_screenshots_.find(entry->GetUniqueID()) ==
+  // TODO(crbug.com/373893401): Find out why this happens.
+  if (entry->GetUserData(NavigationEntryScreenshot::kUserDataKey)) {
+    if (kDumpWithoutCrashNavigationEntryScreenshotCache.Get()) {
+      base::debug::DumpWithoutCrashing();
+    }
+    RemoveScreenshot(entry);
+  }
+
+  auto& transition_data = entry->navigation_transition_data();
+  CHECK(cached_screenshots_.find(transition_data.unique_id()) ==
         cached_screenshots_.end());
   CHECK(!screenshot->is_cached());
   const size_t size = screenshot->SetCache(this);
 
   entry->SetUserData(NavigationEntryScreenshot::kUserDataKey,
                      std::move(screenshot));
-  entry->navigation_transition_data().set_is_copied_from_embedder(
-      is_copied_from_embedder);
-  entry->navigation_transition_data()
-      .SetSameDocumentNavigationEntryScreenshotToken(std::nullopt);
-  entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+  transition_data.set_is_copied_from_embedder(is_copied_from_embedder);
+  transition_data.SetSameDocumentNavigationEntryScreenshotToken(std::nullopt);
+  transition_data.set_cache_hit_or_miss_reason(
       NavigationTransitionData::CacheHitOrMissReason::kCacheHit);
+  // Tentative fix for crbug.com/373893401.
+  transition_data.increment_copy_output_request_sequence();
 
-  cached_screenshots_[entry->GetUniqueID()] = size;
+  cached_screenshots_[transition_data.unique_id()] = size;
   manager_->OnScreenshotCached(this, size);
-
-  if (new_screenshot_cached_callback_) {
-    std::move(new_screenshot_cached_callback_).Run(entry->GetUniqueID());
-  }
 }
 
 std::unique_ptr<NavigationEntryScreenshot>
@@ -148,8 +182,10 @@ NavigationEntryScreenshotCache::RemoveScreenshot(
     NavigationEntry* navigation_entry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(navigation_entry);
-  const int navigation_entry_id = navigation_entry->GetUniqueID();
-  auto it = cached_screenshots_.find(navigation_entry_id);
+  auto it = cached_screenshots_.find(
+      static_cast<NavigationEntryImpl*>(navigation_entry)
+          ->navigation_transition_data()
+          .unique_id());
   // `CHECK_NE` is not compatible with `base::flat_set`.
   CHECK(it != cached_screenshots_.end());
 
@@ -166,9 +202,9 @@ NavigationEntryScreenshotCache::RemoveScreenshot(
 }
 
 void NavigationEntryScreenshotCache::OnNavigationEntryGone(
-    int navigation_entry_id) {
+    NavigationTransitionData::UniqueId screenshot_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto it = cached_screenshots_.find(navigation_entry_id);
+  auto it = cached_screenshots_.find(screenshot_id);
   CHECK(it != cached_screenshots_.end());
 
   const size_t size = it->second;
@@ -177,19 +213,22 @@ void NavigationEntryScreenshotCache::OnNavigationEntryGone(
 }
 
 void NavigationEntryScreenshotCache::OnScreenshotCompressed(
-    int navigation_entry_id,
+    NavigationTransitionData::UniqueId screenshot_id,
     size_t new_size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto it = cached_screenshots_.find(navigation_entry_id);
+  auto it = cached_screenshots_.find(screenshot_id);
   CHECK(it != cached_screenshots_.end());
 
   const size_t old_size = it->second;
   it->second = new_size;
   manager_->OnScreenshotCompressed(this, old_size, new_size);
 
+  int index =
+      NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+          nav_controller_, screenshot_id);
+
   if (GetTestCallback()) {
-    std::move(GetTestCallback())
-        .Run(nav_controller_->GetEntryIndexWithUniqueID(navigation_entry_id));
+    std::move(GetTestCallback()).Run(index);
   }
 }
 
@@ -200,11 +239,13 @@ void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
 
   CHECK_GT(manager_->GetCurrentCacheSize(), manager_->GetMaxCacheSize());
 
-  const int current_index = nav_controller_->GetCurrentEntryIndex();
-  const int current_entry_id =
-      nav_controller_->GetEntryAtIndex(current_index)->GetUniqueID();
+  const int current_index = nav_controller_->GetLastCommittedEntryIndex();
+  NavigationTransitionData::UniqueId screenshot_id =
+      nav_controller_->GetEntryAtIndex(current_index)
+          ->navigation_transition_data()
+          .unique_id();
   // It's impossible to have a screenshot for the current entry.
-  CHECK(!cached_screenshots_.contains(current_entry_id));
+  CHECK(!cached_screenshots_.contains(screenshot_id));
   // Impossible to have just one entry (the current entry).
   CHECK_GT(nav_controller_->GetEntryCount(), 1);
 
@@ -228,26 +269,30 @@ void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
   //
   while (manager_->GetCurrentCacheSize() > manager_->GetMaxCacheSize() &&
          !IsEmpty()) {
-    int candidate_nav_entry_id = -1;
+    auto candidate_screenshot_id = NavigationTransitionData::kInvalidId;
     CHECK(distance_to_leftmost > 0 || distance_to_rightmost > 0);
     if (distance_to_leftmost > distance_to_rightmost) {
-      candidate_nav_entry_id =
+      candidate_screenshot_id =
           nav_controller_->GetEntryAtIndex(current_index - distance_to_leftmost)
-              ->GetUniqueID();
+              ->navigation_transition_data()
+              .unique_id();
       --distance_to_leftmost;
     } else {
-      candidate_nav_entry_id =
+      candidate_screenshot_id =
           nav_controller_
               ->GetEntryAtIndex(current_index + distance_to_rightmost)
-              ->GetUniqueID();
+              ->navigation_transition_data()
+              .unique_id();
       --distance_to_rightmost;
     }
     // Check whether this candidate entry has a screenshot to remove, or
     // continue to move closer to the current entry.
-    auto* candidate_entry =
-        nav_controller_->GetEntryWithUniqueID(candidate_nav_entry_id);
+    int candidate_index =
+        NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+            nav_controller_, candidate_screenshot_id);
+    auto* candidate_entry = nav_controller_->GetEntryAtIndex(candidate_index);
     CHECK(candidate_entry);
-    if (auto it = cached_screenshots_.find(candidate_nav_entry_id);
+    if (auto it = cached_screenshots_.find(candidate_screenshot_id);
         it != cached_screenshots_.end()) {
       std::unique_ptr<NavigationEntryScreenshot> evicted_screenshot =
           RemoveScreenshotFromEntry(candidate_entry);
@@ -273,7 +318,10 @@ void NavigationEntryScreenshotCache::PurgeInternal(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = cached_screenshots_.begin();
   while (!IsEmpty()) {
-    auto* evicted_entry = nav_controller_->GetEntryWithUniqueID(it->first);
+    int evicted_index =
+        NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+            nav_controller_, it->first);
+    auto* evicted_entry = nav_controller_->GetEntryAtIndex(evicted_index);
     CHECK(evicted_entry);
     auto purged = RemoveScreenshotFromEntry(evicted_entry);
     const size_t size = it->second;
@@ -313,12 +361,6 @@ bool NavigationEntryScreenshotCache::IsEmpty() const {
 std::optional<base::TimeTicks>
 NavigationEntryScreenshotCache::GetLastVisibleTime() const {
   return last_visible_timestamp_;
-}
-
-void NavigationEntryScreenshotCache::SetNewScreenshotCachedCallbackForTesting(
-    NewScreenshotCachedCallbackForTesting callback) {
-  CHECK(!new_screenshot_cached_callback_);
-  new_screenshot_cached_callback_ = std::move(callback);
 }
 
 NavigationEntryScreenshotCache::PendingScreenshot::PendingScreenshot() =

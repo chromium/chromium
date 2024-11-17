@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_CAMERA_APP_CAMERA_SYSTEM_WEB_APP_INFO_H_
 
 #include <memory>
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
@@ -26,6 +26,8 @@ class CameraSystemAppDelegate : public ash::SystemWebAppDelegate {
   gfx::Size GetMinimumWindowSize() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
   bool UseSystemThemeColor() const override;
+  base::FilePath GetLaunchDirectory(
+      const apps::AppLaunchParams& params) const override;
 };
 
 // Return a WebAppInstallInfo used to install the app.

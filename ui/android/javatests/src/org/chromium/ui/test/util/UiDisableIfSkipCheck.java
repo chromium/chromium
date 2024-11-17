@@ -12,8 +12,8 @@ import org.chromium.base.test.util.DisableIfSkipCheck;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
- * Checks for conditional disables. Currently only includes checks against
- * a few device form factor values.
+ * Checks for conditional disables. Currently only includes checks against a few device form factor
+ * values.
  */
 public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
     private final Context mTargetContext;
@@ -24,21 +24,16 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
 
     @Override
     protected boolean deviceTypeApplies(String type) {
-        final boolean phoneOnly = TextUtils.equals(type, UiDisableIf.PHONE);
-        final boolean tabletOnly = TextUtils.equals(type, UiDisableIf.TABLET);
-        final boolean largeTabletOnly = TextUtils.equals(type, UiDisableIf.LARGETABLET);
-        if (!phoneOnly && !tabletOnly && !largeTabletOnly) {
+        final boolean phoneOnly = TextUtils.equals(type, DeviceFormFactor.PHONE);
+        final boolean tabletOnly = TextUtils.equals(type, DeviceFormFactor.TABLET);
+        if (!phoneOnly && !tabletOnly) {
             return false;
         }
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean isTablet =
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTargetContext);
-                    return phoneOnly && !isTablet
-                            || tabletOnly && isTablet
-                            || largeTabletOnly
-                                    && DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(
-                                            mTargetContext);
+                    return (phoneOnly && !isTablet) || (tabletOnly && isTablet);
                 });
     }
 }

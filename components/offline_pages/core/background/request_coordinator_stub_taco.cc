@@ -22,7 +22,7 @@ namespace {
 
 class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
  public:
-  ~ActiveTabInfo() override {}
+  ~ActiveTabInfo() override = default;
   bool DoesActiveTabMatch(const GURL&) override { return false; }
 };
 

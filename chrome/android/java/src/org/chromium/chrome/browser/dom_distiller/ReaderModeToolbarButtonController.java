@@ -14,7 +14,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -60,9 +60,9 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
     }
 
     @Override
-    protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
-        IPHCommandBuilder iphCommandBuilder =
-                new IPHCommandBuilder(
+    protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
+        IphCommandBuilder iphCommandBuilder =
+                new IphCommandBuilder(
                         tab.getContext().getResources(),
                         FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
                         /* stringId= */ R.string.reader_mode_message_title,

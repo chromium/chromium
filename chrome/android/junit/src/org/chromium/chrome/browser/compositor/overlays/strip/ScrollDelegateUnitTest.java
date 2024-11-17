@@ -12,10 +12,12 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -24,6 +26,8 @@ import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 /** Tests for {@link ScrollDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ScrollDelegateUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final float STRIP_WIDTH = 150.f;
     private static final float LEFT_MARGIN = 5.f;
     private static final float RIGHT_MARGIN = 5.f;
@@ -47,7 +51,6 @@ public class ScrollDelegateUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mScrollDelegate.onContextChanged(mContext);
         mScrollDelegate.setMinScrollOffsetForTesting(TEST_MIN_SCROLL_OFFSET);
     }
@@ -138,6 +141,7 @@ public class ScrollDelegateUnitTest {
         // viewsWidth = 3*(viewWidth(110) - overlapWidth(10)) + overlapWidth(10) = 310
         // marginsWidth = trailingMarginWidth(10) + reorderStartMargin(10) = 20
         // expectedMinScrollOffset = viewsWidth(310) + marginsWidth(20) - stripWidth(140) = -190
+        mScrollDelegate.setReorderStartMargin(REORDER_START_MARGIN);
         mScrollDelegate.updateScrollOffsetLimits(
                 mViews,
                 STRIP_WIDTH,
@@ -145,9 +149,7 @@ public class ScrollDelegateUnitTest {
                 RIGHT_MARGIN,
                 VIEW_WIDTH,
                 VIEW_OVERLAP_WIDTH,
-                VIEW_OVERLAP_WIDTH,
-                REORDER_START_MARGIN,
-                /* shouldShowTrailingMargins= */ true);
+                VIEW_OVERLAP_WIDTH);
         float expectedMinScrollOffset = -190.f;
         assertEquals(
                 /* message= */ "minScrollOffset was not as calculated.",

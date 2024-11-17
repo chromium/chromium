@@ -291,7 +291,9 @@ class PasswordFormMetricsRecorder
     // No credentials exist and the user has ignored the save bubble too often,
     // meaning that they won't be asked to save credentials anymore.
     kNoSavedCredentialsAndBlocklistedBySmartBubble = 8,
-    kMaxValue = kNoSavedCredentialsAndBlocklistedBySmartBubble,
+    // Whether the user used manual fallback to fill a form.
+    kManualFallbackUsed = 9,
+    kMaxValue = kManualFallbackUsed,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -319,7 +321,9 @@ class PasswordFormMetricsRecorder
     kNoSavedCredentialsAndBlocklistedBySmartBubble = 6,
     // Neither user input nor filling.
     kNoUserInputNoFillingOfUsername = 7,
-    kMaxValue = kNoUserInputNoFillingOfUsername,
+    // Whether the user used manual fallback to fill a form.
+    kManualFallbackUsed = 9,
+    kMaxValue = kManualFallbackUsed,
   };
 
   // Records which store(s) a filled password came from.
@@ -373,6 +377,27 @@ class PasswordFormMetricsRecorder
     // Both username and password parsing is inconsistent.
     kUsernameAndPasswordDiff = 3,
     kMaxValue = kUsernameAndPasswordDiff,
+  };
+
+  // Type of a field ina  password form.
+  enum class PasswordFieldType {
+    kUsername = 0,
+    kCurrentPassword = 1,
+    kNewPassword = 2,
+    kConfirmationPassword = 3,
+    kMaxvalue = kConfirmationPassword,
+  };
+
+  // Whether user actions confirm that password manager classification is
+  // correct.
+  //
+  // Do not reorder and keep in sync with
+  // PasswordManagerClassificationCorrectness in enums.xml.
+  enum class ClassificationCorrectness {
+    kUnknown = 0,
+    kCorrect = 1,
+    kWrong = 2,
+    kMaxValue = kWrong,
   };
 
   // Called if the user could generate a password for this form.
@@ -460,6 +485,13 @@ class PasswordFormMetricsRecorder
       features_util::PasswordAccountStorageUsageLevel
           account_storage_usage_level);
 
+  // Calculates whether user actions confirm or disprove the password form
+  // classification.
+  void CalculateClassificationCorrectnessMetric(
+      const autofill::FormData& submitted_form,
+      const std::vector<std::u16string>& saved_usernames,
+      const std::vector<std::u16string>& saved_passwords);
+
   // Calculates whether all field values in |submitted_form| came from
   // JavaScript. The result is stored in |js_only_input_|.
   void CalculateJsOnlyInput(const autofill::FormData& submitted_form);
@@ -527,6 +559,15 @@ class PasswordFormMetricsRecorder
           saved_usernames,
       bool is_blocklisted,
       const std::vector<InteractionsStats>& interactions_stats);
+
+  // Caches whether user actions confirm or disprove the classification
+  // for fields used to login (username and current password) based on
+  // previously saved values.
+  void SetClassificationCorrectnessForLoginField(
+      const autofill::FormData& submitted_form,
+      PasswordFieldType field_type,
+      const std::vector<std::u16string>& saved_values,
+      autofill::FieldRendererId field_id);
 
   // Enum to track which password bubble is currently being displayed.
   enum class CurrentBubbleOfInterest {
@@ -631,10 +672,10 @@ class PasswordFormMetricsRecorder
 
   // Renderer ids of key password form elements, saved on form filling.
   // Needed to measure the difference in form parsing on filling and saving.
-  autofill::FieldRendererId username_rendered_id_;
-  autofill::FieldRendererId password_rendered_id_;
-  autofill::FieldRendererId new_password_rendered_id_;
-  autofill::FieldRendererId confirmation_password_rendered_id_;
+  autofill::FieldRendererId username_renderer_id_;
+  autofill::FieldRendererId password_renderer_id_;
+  autofill::FieldRendererId new_password_renderer_id_;
+  autofill::FieldRendererId confirmation_password_renderer_id_;
 
   std::optional<ParsingDifference> parsing_diff_on_filling_and_saving_;
 
@@ -648,6 +689,12 @@ class PasswordFormMetricsRecorder
   // form submission and avoid duplicate samples.
   bool form_submission_reached_ = false;
 #endif
+
+  // Record if the form parsing result can be confirmed or disproven by user
+  // actions.
+  base::small_map<
+      std::unordered_map<PasswordFieldType, ClassificationCorrectness>>
+      classification_correctness_;
 };
 
 }  // namespace password_manager

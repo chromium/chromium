@@ -172,12 +172,6 @@ NSAttributedString* TextForTabCount(int count, CGFloat font_size);
 // trailing view of a group cell with the correct font.
 NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size);
 
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-// Adds `item` to the global Edit Menu configuration (UIMenuController). No-op
-// if a UIMenuItem with the same selector as `item` has already been registered.
-void RegisterEditMenuItem(UIMenuItem* item);
-#endif
-
 // Finds the root of `view`'s view hierarchy -- its window if it has one, or
 // the first (recursive) superview with no superview.
 UIView* ViewHierarchyRootForView(UIView* view);

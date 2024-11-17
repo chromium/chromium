@@ -31,8 +31,7 @@ const char* SyncOperationTypeToString(SyncOperationType type) {
     case SYNC_OPERATION_FAIL:
       return "FAIL";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "UNKNOWN";
+  NOTREACHED();
 }
 
 }  // namespace sync_file_system

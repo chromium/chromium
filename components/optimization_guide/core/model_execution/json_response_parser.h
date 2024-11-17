@@ -26,8 +26,11 @@ class JsonResponseParser final : public ResponseParser {
   void ParseAsync(const std::string& redacted_output,
                   ResultCallback result_callback) const override;
 
+  bool SuppressParsingIncompleteResponse() const override;
+
  private:
   std::string proto_type_;
+  proto::OnDeviceModelExecutionOutputConfig config_;
 };
 
 // Constructs JsonResponseParsers based on a config.

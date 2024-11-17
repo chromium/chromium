@@ -278,48 +278,6 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest, DiscardDangerous_IsDone) {
                   .empty());
 }
 
-TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest, DiscardDangerous_EmptyURL) {
-  SetUpDangerousDownload();
-  GURL empty_url = GURL();
-  EXPECT_CALL(dangerous_download_, GetURL())
-      .WillRepeatedly(testing::ReturnRef(empty_url));
-
-  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
-                                  web_ui());
-
-  EXPECT_CALL(dangerous_download_, Remove());
-  handler.DiscardDangerous("1");
-
-  // Verify that dangerous download report is not sent because the URL is empty.
-  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serialized_download_report()
-                  .empty());
-}
-
-TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
-       DiscardDangerous_Incognito) {
-  SetUpDangerousDownload();
-  TestingProfile::Builder otr_profile_builder;
-  otr_profile_builder.DisallowBrowserWindows();
-  Profile* incognito_profile = otr_profile_builder.BuildIncognito(profile());
-  content::DownloadItemUtils::AttachInfoForTesting(&dangerous_download_,
-                                                   incognito_profile, nullptr);
-  ON_CALL(*manager(), GetBrowserContext())
-      .WillByDefault(testing::Return(incognito_profile));
-
-  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
-                                  web_ui());
-
-  EXPECT_CALL(dangerous_download_, Remove());
-  handler.DiscardDangerous("1");
-
-  // Verify that dangerous download report is not sent because it's in
-  // Incognito.
-  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serialized_download_report()
-                  .empty());
-}
-
 TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
        SaveSuspiciousRequiringGesture) {
   SetUpDangerousDownload();

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -28,8 +29,9 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
@@ -95,7 +97,7 @@ void PwaInstallView::OnTabStripModelChanged(
   bool web_content_replaced =
       change.type() == TabStripModelChange::Type::kReplaced;
   if ((active_tab_changed || web_content_replaced)) {
-    browser_->window()->CloseFeaturePromo(
+    browser_->window()->AbortFeaturePromo(
         feature_engagement::kIPHDesktopPwaInstallFeature);
   }
 }
@@ -160,13 +162,20 @@ void PwaInstallView::UpdateImpl() {
         &PwaInstallView::OnIphClosed, weak_ptr_factory_.GetWeakPtr(), *data);
     params.body_params =
         webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
-    const user_education::FeaturePromoResult iph_result =
-        browser_->window()->MaybeShowFeaturePromo(std::move(params));
-    if (iph_result) {
-      // Reset the iph flag when it's shown again.
-      install_icon_clicked_after_iph_shown_ = false;
-      SetHighlighted(true);
-    }
+    params.show_promo_result_callback = base::BindOnce(
+        &PwaInstallView::OnIphShown, weak_ptr_factory_.GetWeakPtr());
+    browser_->window()->MaybeShowFeaturePromo(std::move(params));
+    iph_pending_ = true;
+  }
+}
+
+void PwaInstallView::OnIphShown(user_education::FeaturePromoResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  iph_pending_ = false;
+  // Reset the IPH flag when it's shown.
+  if (result) {
+    install_icon_clicked_after_iph_shown_ = false;
+    SetHighlighted(true);
   }
 }
 
@@ -199,8 +208,10 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
   // Close PWA install IPH if it is showing.
   web_app::PwaInProductHelpState iph_state =
       web_app::PwaInProductHelpState::kNotShown;
-  install_icon_clicked_after_iph_shown_ = browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHDesktopPwaInstallFeature);
+  install_icon_clicked_after_iph_shown_ =
+      browser_->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHDesktopPwaInstallFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   if (install_icon_clicked_after_iph_shown_) {
     iph_state = web_app::PwaInProductHelpState::kShown;
   }
@@ -248,6 +259,9 @@ const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
 
 bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
                                    const webapps::WebAppBannerData& data) {
+  if (iph_pending_) {
+    return false;
+  }
   if (blink::IsEmptyManifest(data.manifest()) || !data.manifest_id.is_valid()) {
     return false;
   }

@@ -54,12 +54,6 @@ class ContentIndex final : public ScriptWrappable {
   void DidGetIcons(ScriptPromiseResolver<IDLUndefined>* resolver,
                    mojom::blink::ContentDescriptionPtr description,
                    Vector<SkBitmap> icons);
-  void DidCheckOfflineCapability(
-      KURL launch_url,
-      mojom::blink::ContentDescriptionPtr description,
-      Vector<SkBitmap> icons,
-      ScriptPromiseResolver<IDLUndefined>* resolver,
-      bool is_offline_capable);
   static void DidAdd(ScriptPromiseResolver<IDLUndefined>* resolver,
                      mojom::blink::ContentIndexError error);
   static void DidDeleteDescription(

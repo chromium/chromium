@@ -75,6 +75,7 @@ class MockClient : public VideoCaptureDevice::Client {
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp,
                               std::optional<base::TimeTicks> capture_begin_time,
+                              const std::optional<VideoFrameMetadata>& metadata,
                               int frame_feedback_id) override {}
 
   void OnIncomingCapturedGfxBuffer(
@@ -84,6 +85,7 @@ class MockClient : public VideoCaptureDevice::Client {
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_time,
+      const std::optional<VideoFrameMetadata>& metadata,
       int frame_feedback_id) override {}
 
   void OnIncomingCapturedExternalBuffer(
@@ -91,7 +93,8 @@ class MockClient : public VideoCaptureDevice::Client {
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_time,
-      const gfx::Rect& visible_rect) override {}
+      const gfx::Rect& visible_rect,
+      const std::optional<VideoFrameMetadata>& metadata) override {}
 
   MOCK_METHOD6(ReserveOutputBuffer,
                ReserveResult(const gfx::Size&,
@@ -106,7 +109,8 @@ class MockClient : public VideoCaptureDevice::Client {
       const VideoCaptureFormat& format,
       base::TimeTicks reference_,
       base::TimeDelta timestamp,
-      std::optional<base::TimeTicks> capture_begin_time) override {}
+      std::optional<base::TimeTicks> capture_begin_time,
+      const std::optional<VideoFrameMetadata>& metadata) override {}
 
   MOCK_METHOD8(OnIncomingCapturedBufferExt,
                void(Buffer,
@@ -116,7 +120,7 @@ class MockClient : public VideoCaptureDevice::Client {
                     base::TimeDelta,
                     std::optional<base::TimeTicks>,
                     gfx::Rect,
-                    const VideoFrameMetadata&));
+                    const std::optional<VideoFrameMetadata>&));
 
   MOCK_METHOD3(OnError,
                void(VideoCaptureError,
@@ -2266,7 +2270,7 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
                           const VideoCaptureFormat&, const gfx::ColorSpace&,
                           base::TimeTicks, base::TimeDelta,
                           std::optional<base::TimeTicks>, gfx::Rect,
-                          const VideoFrameMetadata&) {
+                          const std::optional<VideoFrameMetadata>&) {
         gfx::GpuMemoryBufferHandle gmb_handle =
             buffer.handle_provider->GetGpuMemoryBufferHandle();
         EXPECT_EQ(gmb_handle.type,

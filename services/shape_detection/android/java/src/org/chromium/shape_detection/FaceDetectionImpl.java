@@ -27,11 +27,9 @@ import org.chromium.shape_detection.mojom.Landmark;
 public class FaceDetectionImpl implements FaceDetection {
     private static final String TAG = "FaceDetectionImpl";
     private static final int MAX_FACES = 32;
-    private final boolean mFastMode;
     private final int mMaxFaces;
 
     FaceDetectionImpl(FaceDetectorOptions options) {
-        mFastMode = options.fastMode;
         mMaxFaces = Math.min(options.maxDetectedFaces, MAX_FACES);
     }
 

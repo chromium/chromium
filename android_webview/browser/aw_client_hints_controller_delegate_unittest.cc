@@ -103,13 +103,6 @@ TEST_F(AwClientHintsControllerDelegateTest, IsJavaScriptAllowed) {
       GURL("https://example.com/"), nullptr));
 }
 
-TEST_F(AwClientHintsControllerDelegateTest, AreThirdPartyCookiesBlocked) {
-  EXPECT_FALSE(client_hints_controller_delegate_->AreThirdPartyCookiesBlocked(
-      GURL(""), nullptr));
-  EXPECT_FALSE(client_hints_controller_delegate_->AreThirdPartyCookiesBlocked(
-      GURL("https://example.com"), nullptr));
-}
-
 TEST_F(AwClientHintsControllerDelegateTest, GetUserAgentMetadata) {
   auto metadata = client_hints_controller_delegate_->GetUserAgentMetadata();
 

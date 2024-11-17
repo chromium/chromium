@@ -10,10 +10,7 @@ assert(is_chromeos_ash)
 mojom("mojom") {
   disable_variants = true
 
-  sources = [
-    "assistant_volume_control.mojom",
-    "tray_action.mojom",
-  ]
+  sources = [ "assistant_volume_control.mojom" ]
 
   public_deps = [
     ":accelerator_actions",

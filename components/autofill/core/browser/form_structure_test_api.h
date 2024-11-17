@@ -71,10 +71,6 @@ class FormStructureTestApi {
 
   void AssignSections() { autofill::AssignSections(form_structure_->fields_); }
 
-  bool phone_rationalized(const Section& section) const {
-    return base::Contains(form_structure_->phone_rationalized_, section);
-  }
-
   FieldCandidatesMap ParseFieldTypesWithPatterns(
       ParsingContext& context) const {
     return form_structure_->ParseFieldTypesWithPatterns(context);

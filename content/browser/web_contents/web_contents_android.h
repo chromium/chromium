@@ -98,8 +98,6 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void ResumeLoadingCreatedWebContents(JNIEnv* env);
 
-  void OnHide(JNIEnv* env);
-  void OnShow(JNIEnv* env);
   void SetImportance(JNIEnv* env, jint importance);
   void SuspendAllMediaPlayers(JNIEnv* env);
   void SetAudioMuted(JNIEnv* env, jboolean mute);
@@ -192,9 +190,6 @@ class CONTENT_EXPORT WebContentsAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateEventForwarder(
       JNIEnv* env);
 
-  void SetMediaSession(
-      const base::android::ScopedJavaLocalRef<jobject>& j_media_session);
-
   void SendOrientationChangeEvent(JNIEnv* env, jint orientation);
 
   void OnScaleFactorChanged(JNIEnv* env);
@@ -217,7 +212,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   jint GetVisibility(JNIEnv* env);
 
-  void UpdateWebContentsVisibility(JNIEnv* env, jint visibiity);
+  void UpdateWebContentsVisibility(JNIEnv* env, jint visibility);
 
   void NotifyControlsConstraintsChanged(
       JNIEnv* env,

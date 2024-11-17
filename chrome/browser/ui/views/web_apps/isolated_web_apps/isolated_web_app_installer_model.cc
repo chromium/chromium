@@ -42,9 +42,7 @@ IsolatedWebAppInstallerModel::~IsolatedWebAppInstallerModel() = default;
 void IsolatedWebAppInstallerModel::SetStep(Step step) {
   step_ = step;
 
-  for (Observer& observer : observers_) {
-    observer.OnStepChanged();
-  }
+  observers_.Notify(&Observer::OnStepChanged);
 }
 
 void IsolatedWebAppInstallerModel::SetSignedWebBundleMetadata(
@@ -55,9 +53,7 @@ void IsolatedWebAppInstallerModel::SetSignedWebBundleMetadata(
 void IsolatedWebAppInstallerModel::SetDialog(std::optional<Dialog> dialog) {
   dialog_ = dialog;
 
-  for (Observer& observer : observers_) {
-    observer.OnChildDialogChanged();
-  }
+  observers_.Notify(&Observer::OnChildDialogChanged);
 }
 
 }  // namespace web_app

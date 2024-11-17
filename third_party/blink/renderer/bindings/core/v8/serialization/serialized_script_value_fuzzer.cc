@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
@@ -46,6 +47,7 @@ int LLVMFuzzerInitialize(int* argc, char*** argv) {
   v8::V8::SetFlagsFromString(kExposeGC, sizeof(kExposeGC));
   static BlinkFuzzerTestSupport fuzzer_support =
       BlinkFuzzerTestSupport(*argc, *argv);
+  base::test::AllowCheckIsTestForTesting();
   return 0;
 }
 
@@ -65,10 +67,11 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
     return 0;
 
   // Truncate the input.
-  wtf_size_t size = base::saturated_cast<wtf_size_t>(data_size);
+  auto data_span =
+      base::make_span(data, base::saturated_cast<wtf_size_t>(data_size));
 
   // Used to control what kind of extra data is provided to the deserializer.
-  unsigned hash = StringHasher::HashMemory(data, size);
+  unsigned hash = StringHasher::HashMemory(data_span);
 
   SerializedScriptValue::DeserializeOptions options;
 
@@ -98,7 +101,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
 
   // Deserialize.
   scoped_refptr<SerializedScriptValue> serialized_script_value =
-      SerializedScriptValue::Create(base::make_span(data, size));
+      SerializedScriptValue::Create(data_span);
   serialized_script_value->Deserialize(isolate, options);
   CHECK(!try_catch.HasCaught())
       << "deserialize() should return null rather than throwing an exception.";

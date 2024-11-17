@@ -31,6 +31,12 @@ class BirchChipButtonBase : public views::Button {
 
   // Shut down the chip while destroying the bar view.
   virtual void Shutdown() = 0;
+
+ protected:
+  // Updates all the UI that will be affected by rounded corner change (border,
+  // background, focus ring). This depends on whether the selection widget is
+  // visible, which only the birch coral chip has.
+  void UpdateRoundedCorners(bool selection_widget_visible);
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButtonBase, views::Button)

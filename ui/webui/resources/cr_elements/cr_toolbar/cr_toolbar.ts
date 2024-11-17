@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../cr_icon_button/cr_icon_button.js';
-import '../icons_lit.html.js';
+import '../icons.html.js';
 import './cr_toolbar_search_field.js';
 
 import {assert} from '//resources/js/assert.js';

@@ -80,8 +80,7 @@ const AtomicString& TouchEventNameForPointerEventType(
     case WebInputEvent::Type::kPointerMove:
       return event_type_names::kTouchmove;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_atom;
+      NOTREACHED();
   }
 }
 
@@ -100,8 +99,7 @@ WebTouchPoint::State TouchPointStateFromPointerEventType(
     case WebInputEvent::Type::kPointerMove:
       return WebTouchPoint::State::kStateMoved;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return WebTouchPoint::State::kStateUndefined;
+      NOTREACHED();
   }
 }
 

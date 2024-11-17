@@ -9,8 +9,8 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 class SafeBrowsingClient;
 
 // Singleton that owns all SafeBrowsingClients and associates them with
@@ -18,9 +18,6 @@ class SafeBrowsingClient;
 class SafeBrowsingClientFactory : public BrowserStateKeyedServiceFactory {
  public:
   static SafeBrowsingClient* GetForProfile(ProfileIOS* profile);
-
-  // Deprecated: use GetForProfile(...).
-  static SafeBrowsingClient* GetForBrowserState(ProfileIOS* profile);
   static SafeBrowsingClientFactory* GetInstance();
 
   SafeBrowsingClientFactory(const SafeBrowsingClientFactory&) = delete;

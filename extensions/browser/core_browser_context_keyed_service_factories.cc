@@ -4,6 +4,7 @@
 
 #include "extensions/browser/core_browser_context_keyed_service_factories.h"
 
+#include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_function.h"
@@ -11,6 +12,7 @@
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/image_loader_factory.h"
+#include "extensions/browser/message_tracker.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
@@ -59,6 +61,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   UserScriptWorldConfigurationManager::GetFactory();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   WebRequestEventRouterFactory::GetInstance();
+  MessageTracker::GetFactory();
 #endif
 }
 

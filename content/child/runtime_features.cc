@@ -46,6 +46,7 @@
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/native_theme_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -169,7 +170,7 @@ void SetRuntimeFeatureFromChromiumFeature(const base::Feature& chromium_feature,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -186,10 +187,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
       blinkFeatureToBaseFeatureMapping[] = {
           {wf::EnableAccessibilityAriaVirtualContent,
            raw_ref(features::kEnableAccessibilityAriaVirtualContent)},
-#if BUILDFLAG(IS_ANDROID)
-          {wf::EnableAccessibilityPageZoom,
-           raw_ref(features::kAccessibilityPageZoom)},
-#endif
           {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
            raw_ref(features::kUseAXPositionForDocumentMarkers)},
           {wf::EnableAOMAriaRelationshipProperties,
@@ -214,7 +211,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableFedCm, raw_ref(features::kFedCm), kSetOnlyIfOverridden},
           {wf::EnableFedCmButtonMode, raw_ref(features::kFedCmButtonMode),
            kSetOnlyIfOverridden},
-          {wf::EnableFedCmAuthz, raw_ref(features::kFedCmAuthz), kDefault},
+          {wf::EnableFedCmAuthz, raw_ref(features::kFedCmAuthz),
+           kSetOnlyIfOverridden},
           {wf::EnableFedCmIdPRegistration,
            raw_ref(features::kFedCmIdPRegistration), kDefault},
           {wf::EnableFedCmIdpSigninStatus,
@@ -270,8 +268,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kPeriodicBackgroundSync)},
           {wf::EnablePushMessagingSubscriptionChange,
            raw_ref(features::kPushSubscriptionChangeEvent)},
-          {wf::EnableRestrictGamepadAccess,
-           raw_ref(features::kRestrictGamepadAccess)},
           {wf::EnableSecurePaymentConfirmation,
            raw_ref(features::kSecurePaymentConfirmation)},
           {wf::EnableSecurePaymentConfirmationDebug,
@@ -304,6 +300,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableWebIdentityDigitalCredentials,
            raw_ref(features::kWebIdentityDigitalCredentials),
            kSetOnlyIfOverridden},
+          {wf::EnableWebIdentityDigitalCredentialsCreation,
+           raw_ref(features::kWebIdentityDigitalCredentialsCreation),
+           kSetOnlyIfOverridden},
           {wf::EnableWebOTP, raw_ref(features::kWebOTP), kSetOnlyIfOverridden},
           {wf::EnableWebOTPAssertionFeaturePolicy,
            raw_ref(features::kWebOTPAssertionFeaturePolicy),
@@ -315,6 +314,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(device::features::kWebXrIncubations)},
           {wf::EnableWebXRFrameRate,
            raw_ref(device::features::kWebXrIncubations)},
+          {wf::EnableWebXRGPUBinding,
+           raw_ref(device::features::kWebXrWebGpuBinding)},
           {wf::EnableWebXRHandInput,
            raw_ref(device::features::kWebXrHandInput)},
           {wf::EnableWebXRImageTracking,
@@ -409,8 +410,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kTouchTextEditingRedesign)},
           {"TrustedTypesFromLiteral",
            raw_ref(features::kTrustedTypesFromLiteral)},
-          {"WebSerialBluetooth",
-           raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
           {"MediaStreamTrackTransfer",
            raw_ref(features::kMediaStreamTrackTransfer)},
           {"PrivateNetworkAccessPermissionPrompt",
@@ -484,6 +483,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
        blink::switches::kDisableStandardizedBrowserZoom, false},
       {wrf::EnableCSSCustomStateDeprecatedSyntax,
        blink::switches::kCSSCustomStateDeprecatedSyntaxEnabled, true},
+      {wrf::EnableSelectParserRelaxation,
+       blink::switches::kDisableSelectParserRelaxation, false},
       {wrf::EnableTextFragmentIdentifiers,
        switches::kDisableScrollToTextFragment, false},
       {wrf::EnableWebAuthenticationRemoteDesktopSupport,
@@ -496,6 +497,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
        switches::kEnableWebGPUDeveloperFeatures, true},
       {wrf::EnableWebGPUExperimentalFeatures, switches::kEnableUnsafeWebGPU,
        true},
+      {wrf::EnableWebAudioBypassOutputBufferingOptOut,
+       blink::switches::kWebAudioBypassOutputBufferingOptOut, true},
   };
 
   for (const auto& mapping : switchToFeatureMapping) {
@@ -520,24 +523,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       WebRuntimeFeatures::EnableAutomationControlled(true);
     }
   }
-
-  // Enable or disable BeforeunloadEventCancelByPreventDefault for Enterprise
-  // Policy. This overrides any existing settings via base::Feature.
-  if (command_line.HasSwitch(
-          blink::switches::kBeforeunloadEventCancelByPreventDefaultPolicy)) {
-    const std::string value = command_line.GetSwitchValueASCII(
-        blink::switches::kBeforeunloadEventCancelByPreventDefaultPolicy);
-    if (value ==
-        blink::switches::
-            kBeforeunloadEventCancelByPreventDefaultPolicy_ForceEnable) {
-      WebRuntimeFeatures::EnableBeforeunloadEventCancelByPreventDefault(true);
-    }
-    if (value ==
-        blink::switches::
-            kBeforeunloadEventCancelByPreventDefaultPolicy_ForceDisable) {
-      WebRuntimeFeatures::EnableBeforeunloadEventCancelByPreventDefault(false);
-    }
-  }
 }
 
 // Sets blink runtime features that depend on a combination
@@ -552,7 +537,9 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
 
   // These checks are custom wrappers around base::FeatureList::IsEnabled
   // They're moved here to distinguish them from actual base checks
+#if !BUILDFLAG(IS_CHROMEOS)
   WebRuntimeFeatures::EnableOverlayScrollbars(ui::IsOverlayScrollbarEnabled());
+#endif
   WebRuntimeFeatures::EnableFluentScrollbars(ui::IsFluentScrollbarEnabled());
   WebRuntimeFeatures::EnableFluentOverlayScrollbars(
       ui::IsFluentOverlayScrollbarEnabled());
@@ -711,7 +698,8 @@ void ResolveInvalidConfigurations() {
   }
 
   if (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsAdInterestGroupAPIEnabled())
+    LOG_IF(WARNING,
+           WebRuntimeFeatures::IsAdInterestGroupAPIEnabledByRuntimeFlag())
         << "AdInterestGroupAPI cannot be enabled in this "
            "configuration. Use --"
         << switches::kEnableFeatures << "="
@@ -735,7 +723,8 @@ void ResolveInvalidConfigurations() {
   // PermissionElement cannot be enabled without the support of the
   // browser process.
   if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsPermissionElementEnabled())
+    LOG_IF(WARNING,
+           WebRuntimeFeatures::IsPermissionElementEnabledByRuntimeFlag())
         << "PermissionElement cannot be enabled in this configuration. Use --"
         << switches::kEnableFeatures << "="
         << blink::features::kPermissionElement.name << " instead.";

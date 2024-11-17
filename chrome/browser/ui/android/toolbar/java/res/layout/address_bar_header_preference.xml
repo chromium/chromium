@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:focusable="false" >
+
+    <ImageView
+        android:id="@+id/toolbar_on_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp"
+        android:contentDescription="@string/address_bar_settings"
+        android:scaleType="center"
+        app:srcCompat="@drawable/toolbar_on_top"/>
+
+    <ImageView
+        android:id="@+id/toolbar_on_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp"
+        android:contentDescription="@string/address_bar_settings"
+        android:scaleType="center"
+        app:srcCompat="@drawable/toolbar_on_bottom"/>
+
+</RelativeLayout>

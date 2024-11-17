@@ -11,8 +11,6 @@
 
 namespace extensions {
 
-BASE_DECLARE_FEATURE(kAllowlistedAiDataExtensions);
-
 // Collects data from the user for a private AI extension.
 class ExperimentalAiDataGetAiDataFunction : public ExtensionFunction {
  public:

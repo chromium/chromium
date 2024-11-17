@@ -32,6 +32,7 @@ class BackForwardCacheCommitDeferringCondition
   ~BackForwardCacheCommitDeferringCondition() override;
 
   Result WillCommitNavigation(base::OnceClosure resume) override;
+  const char* TraceEventName() const override;
 
  private:
   explicit BackForwardCacheCommitDeferringCondition(

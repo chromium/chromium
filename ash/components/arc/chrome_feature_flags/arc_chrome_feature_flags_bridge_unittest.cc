@@ -70,18 +70,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly) {
   EXPECT_TRUE(instance()->flags_called_value()->jelly_colors);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyTouchscreenEmulation_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(kTouchscreenEmulation);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->touchscreen_emulation);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyTouchscreenEmulation_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(kTouchscreenEmulation);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->touchscreen_emulation);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(kRoundedWindowCompat);
   Connect();
@@ -146,18 +134,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Disabled) {
       ash::features::kPipDoubleTapToResize);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->enable_pip_double_tap);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyGameDashboard_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(ash::features::kGameDashboard);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->game_dashboard);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyGameDashboard_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(ash::features::kGameDashboard);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->game_dashboard);
 }
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Enabled) {

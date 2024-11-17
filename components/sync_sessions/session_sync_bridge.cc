@@ -143,8 +143,6 @@ std::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(
   DCHECK(!syncing_);
   DCHECK(change_processor()->IsTrackingMetadata());
 
-  store_->mutable_tracker()->SetLocalSessionStartTime(base::Time::Now());
-
   StartLocalSessionEventHandler(/*is_new_session=*/true);
 
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
@@ -306,7 +304,12 @@ void SessionSyncBridge::ApplyDisableSyncChanges(
   DCHECK(store_);
 
   local_session_event_router_->Stop();
-  store_->DeleteAllDataAndMetadata();
+
+  syncing_.reset();
+
+  recreate_empty_store_callback_ =
+      SessionStore::DeleteAllDataAndMetadata(std::move(store_));
+  CHECK(recreate_empty_store_callback_);
 
   // Ensure that we clear on-demand favicons that were downloaded using user
   // synced history data, especially by HistoryUiFaviconRequestHandler. We do
@@ -314,7 +317,6 @@ void SessionSyncBridge::ApplyDisableSyncChanges(
   // checked inside that layer to allow downloads (sessions sync enabled).
   sessions_client_->ClearAllOnDemandFavicons();
 
-  syncing_.reset();
   notify_foreign_session_updated_cb_.Run();
 }
 
@@ -361,21 +363,40 @@ void SessionSyncBridge::OnSyncStarting(
     const syncer::DataTypeActivationRequest& request) {
   DCHECK(!syncing_);
 
-  // |store_| may be already initialized if sync was previously started and
-  // then stopped.
+  // There are a few different scenarios to consider here:
+  // 1. This is browser startup, and sessions sync was previously enabled. The
+  //    store hasn't been created yet, and data will be read from it.
+  // 2. The user just enabled sessions sync.
+  //    a) Sessions sync wasn't previously enabled in this browser run, and the
+  //       store has not been created yet (and it should be empty).
+  //    b) Sessions sync was previously enabled, but has since been turned off.
+  //       The store was previously created, but has since been cleared and
+  //       destroyed.
+  // 3. Sessions sync was previously enabled, but then paused. The store still
+  //    exists and should be reused. Initial sync may or may not have been
+  //    finished previously.
+
   if (store_) {
-    // If initial sync was already done, MergeFullSyncData() will never be
-    // called so we need to start syncing local changes.
+    CHECK(!recreate_empty_store_callback_);
+    // Case 3: Store still exists.
     if (change_processor()->IsTrackingMetadata()) {
+      // Initial sync has been finished previously; restart the event handler
+      // immediately.
       StartLocalSessionEventHandler(/*is_new_session=*/false);
     }
-    return;
+    // Else: Initial sync has *not* been finished before, so MergeFullSyncData()
+    // will be called later and start the event handler.
+  } else if (recreate_empty_store_callback_) {
+    // Case 2b: Recreate an empty store.
+    store_ = std::move(recreate_empty_store_callback_)
+                 .Run(request.cache_guid, sessions_client_);
+    CHECK(store_);
+  } else {
+    // Cases 1 and 2a: Open the store and read state from disk if it exists.
+    SessionStore::Open(request.cache_guid, sessions_client_,
+                       base::BindOnce(&SessionSyncBridge::OnStoreInitialized,
+                                      weak_ptr_factory_.GetWeakPtr()));
   }
-
-  // Open the store and read state from disk if it exists.
-  SessionStore::Open(request.cache_guid, sessions_client_,
-                     base::BindOnce(&SessionSyncBridge::OnStoreInitialized,
-                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SessionSyncBridge::OnStoreInitialized(

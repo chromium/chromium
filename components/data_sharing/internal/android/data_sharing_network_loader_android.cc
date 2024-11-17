@@ -12,12 +12,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/data_sharing/public/android/conversion_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/data_sharing/internal/jni_headers/DataSharingNetworkLoaderImpl_jni.h"
-#include "components/data_sharing/public/jni_headers/DataSharingNetworkResult_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
@@ -46,7 +46,7 @@ void DataSharingNetworkLoaderAndroid::LoadUrl(
     const JavaRef<jobject>& j_url,
     const JavaRef<jobjectArray>& j_scopes,
     const JavaRef<jbyteArray>& j_post_data,
-    jint j_network_annotation_hash_code,
+    jint j_data_sharing_request_type,
     const JavaRef<jobject>& j_callback) {
   if (!data_sharing_network_loader_) {
     OnResponseAvailable(ScopedJavaGlobalRef<jobject>(j_callback), nullptr);
@@ -62,8 +62,8 @@ void DataSharingNetworkLoaderAndroid::LoadUrl(
 
   data_sharing_network_loader_->LoadUrl(
       url, scopes, post_body,
-      net::NetworkTrafficAnnotationTag::FromJavaAnnotation(
-          j_network_annotation_hash_code),
+      static_cast<DataSharingNetworkLoader::DataSharingRequestType>(
+          j_data_sharing_request_type),
       base::BindOnce(&DataSharingNetworkLoaderAndroid::OnResponseAvailable,
                      weak_ptr_factory_.GetWeakPtr(),
                      ScopedJavaGlobalRef<jobject>(j_callback)));
@@ -78,12 +78,7 @@ void DataSharingNetworkLoaderAndroid::OnResponseAvailable(
     std::unique_ptr<DataSharingNetworkLoader::LoadResult> response) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
-      Java_DataSharingNetworkResult_createDataSharingNetworkResult(
-          env,
-          ToJavaByteArray(env,
-                          std::vector<uint8_t>(response->result_bytes.begin(),
-                                               response->result_bytes.end())),
-          static_cast<int>(response->status));
+      conversion::CreateDataSharingNetworkResult(env, response.get());
 
   base::android::RunObjectCallbackAndroid(j_callback, result);
 }

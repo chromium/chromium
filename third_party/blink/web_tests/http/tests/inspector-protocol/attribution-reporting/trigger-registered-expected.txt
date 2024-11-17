@@ -57,6 +57,7 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
                 ]
             }
         ]
+        debugKey : 3
         debugReporting : true
         eventTriggerData : [
             [0] : {

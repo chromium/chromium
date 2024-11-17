@@ -442,6 +442,19 @@ TEST_F(ArcMetricsServiceTest, ReportArcKeyMintError_SomeErrorReported) {
                             static_cast<base::HistogramBase::Sample>(2), 1);
 }
 
+TEST_F(ArcMetricsServiceTest,
+       ReportArcKeyMintErrorForOperation_GenerateCertificateRequest) {
+  base::HistogramTester tester;
+  service()->ReportArcKeyMintErrorForOperation(
+      arc::mojom::ArcKeyMintError::kUnknownError,
+      arc::mojom::ArcKeyMintLoggedOperation::kGenerateCertificateRequest);
+  service()->OnArcSessionStopped();
+
+  tester.ExpectUniqueSample(
+      "Arc.KeyMint.KeyMintError.GenerateCertificateRequest",
+      static_cast<int>(arc::mojom::ArcKeyMintError::kUnknownError), 1);
+}
+
 TEST_F(ArcMetricsServiceTest, ReportVpnServiceBuilderCompatApiUsage) {
   base::HistogramTester tester;
 

@@ -9,28 +9,36 @@
 
 namespace blink {
 
+class GPUDevice;
 class XRGPUBinding;
-class XRGPULayerTextureSwapChain;
+class XRGPUSwapChain;
 
 class XRGPUProjectionLayer final : public XRProjectionLayer {
  public:
   XRGPUProjectionLayer(XRGPUBinding*,
-                       XRGPULayerTextureSwapChain* color_swap_chain,
-                       XRGPULayerTextureSwapChain* depth_stencil_swap_chain_);
+                       XRGPUSwapChain* color_swap_chain,
+                       XRGPUSwapChain* depth_stencil_swap_chain);
   ~XRGPUProjectionLayer() override = default;
 
-  XRGPULayerTextureSwapChain* color_swap_chain() {
-    return color_swap_chain_.Get();
-  }
-  XRGPULayerTextureSwapChain* depth_stencil_swap_chain() {
+  uint16_t textureWidth() const override;
+  uint16_t textureHeight() const override;
+  uint16_t textureArrayLength() const override;
+
+  void OnFrameStart() override;
+  void OnFrameEnd() override;
+  void OnResize() override;
+
+  XRGPUSwapChain* color_swap_chain() { return color_swap_chain_.Get(); }
+  XRGPUSwapChain* depth_stencil_swap_chain() {
     return depth_stencil_swap_chain_.Get();
   }
 
   void Trace(Visitor*) const override;
 
  private:
-  Member<XRGPULayerTextureSwapChain> color_swap_chain_;
-  Member<XRGPULayerTextureSwapChain> depth_stencil_swap_chain_;
+  Member<GPUDevice> device_;
+  Member<XRGPUSwapChain> color_swap_chain_;
+  Member<XRGPUSwapChain> depth_stencil_swap_chain_;
 };
 
 }  // namespace blink

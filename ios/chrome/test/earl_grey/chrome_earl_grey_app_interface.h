@@ -328,10 +328,6 @@ enum class TipsNotificationType;
 // from the cache even if the Cache-Control response header says otherwise.
 + (NSError*)purgeCachedWebViewPages;
 
-// Returns YES if the current WebState's navigation manager is currently
-// restoring session state.
-+ (BOOL)isRestoreSessionInProgress;
-
 // Returns YES if the current WebState's web view uses the content inset to
 // correctly align the top of the content with the bottom of the top bar.
 + (BOOL)webStateWebViewUsesContentInset;
@@ -566,11 +562,11 @@ enum class TipsNotificationType;
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the
-// original browser state.
+// original profile.
 + (ContentSetting)popupPrefValue;
 
 // Sets the popup content setting preference to the given value for the original
-// browser state.
+// profile.
 + (void)setPopupPrefValue:(ContentSetting)value;
 
 // Resets the desktop content setting to its default value.
@@ -601,37 +597,37 @@ enum class TipsNotificationType;
 
 // Sets the integer value for the local state pref with `prefName`. `value`
 // can be either a casted enum or any other numerical value. Local State
-// contains the preferences that are shared between all browser states.
+// contains the preferences that are shared between all profiles.
 + (void)setIntegerValue:(int)value forLocalStatePref:(NSString*)prefName;
 
 // Sets the time value for the local state pref with `prefName`. Local State
-// contains the preferences that are shared between all browser states.
+// contains the preferences that are shared between all profiles.
 + (void)setTimeValue:(base::Time)value forLocalStatePref:(NSString*)prefName;
 
 // Sets the time value for the user pref with `prefName` in the original
-// browser state.
+// profile.
 + (void)setTimeValue:(base::Time)value forUserPref:(NSString*)prefName;
 
 // Sets the string value for the local state pref with `prefName`. Local State
-// contains the preferences that are shared between all browser states.
+// contains the preferences that are shared between all profiles.
 + (void)setStringValue:(NSString*)value forLocalStatePref:(NSString*)prefName;
 
-// Sets the value of a string user pref in the original browser state.
+// Sets the value of a string user pref in the original profile.
 + (void)setStringValue:(NSString*)value forUserPref:(NSString*)prefName;
 
 // Sets the bool value for the local state pref with `prefName`. Local State
-// contains the preferences that are shared between all browser states.
+// contains the preferences that are shared between all profiles.
 + (void)setBoolValue:(BOOL)value forLocalStatePref:(NSString*)prefName;
 
-// Gets the value of a user pref in the original browser state. Returns a
+// Gets the value of a user pref in the original profile. Returns a
 // base::Value encoded as a JSON string. If the pref was not registered,
 // returns a Value of type NONE.
 + (NSString*)userPrefValue:(NSString*)prefName;
 
-// Sets the value of a boolean user pref in the original browser state.
+// Sets the value of a boolean user pref in the original profile.
 + (void)setBoolValue:(BOOL)value forUserPref:(NSString*)prefName;
 
-// Sets the value of a integer user pref in the original browser state.
+// Sets the value of a integer user pref in the original profile.
 + (void)setIntegerValue:(int)value forUserPref:(NSString*)prefName;
 
 // Returns true if the LocalState Preference is currently using its default

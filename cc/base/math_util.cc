@@ -35,15 +35,17 @@ static HomogeneousCoordinate ProjectHomogeneousPoint(
   // ray (point p and z-axis direction) that we are trying to project. This
   // happens when the layer is rotated so that it is infinitesimally thin, or
   // when it is co-planar with the camera origin -- i.e. when the layer is
-  // invisible anyway.
-  if (!std::isnormal(m22))
-    return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
+  // invisible anyway. Return an invalid point.
+  if (!std::isnormal(m22)) {
+    return HomogeneousCoordinate(0.0, 0.0, 0.0, 0.0);
+  }
   SkScalar z = -(transform.rc(2, 0) * p.x() + transform.rc(2, 1) * p.y() +
                  transform.rc(2, 3)) /
                m22;
   // Same underlying condition as the previous early return.
-  if (!std::isfinite(z))
-    return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
+  if (!std::isfinite(z)) {
+    return HomogeneousCoordinate(0.0, 0.0, 0.0, 0.0);
+  }
 
   HomogeneousCoordinate result(p.x(), p.y(), z, 1.0);
   transform.TransformVector4(result.vec.data());
@@ -245,14 +247,18 @@ static inline void AddVertexToClippedQuad3d(
     base::span<gfx::Point3F, 6> clipped_quad,
     int* num_vertices_in_clipped_quad,
     bool* need_to_clamp) {
+  CHECK(num_vertices_in_clipped_quad);
+  CHECK_GE(*num_vertices_in_clipped_quad, 0);
   if (*num_vertices_in_clipped_quad > 0 &&
-      IsNearlyTheSame(clipped_quad[*num_vertices_in_clipped_quad - 1],
-                      new_vertex))
+      IsNearlyTheSame(
+          clipped_quad[static_cast<size_t>(*num_vertices_in_clipped_quad - 1)],
+          new_vertex)) {
     return;
+  }
 
-  DCHECK_LT(*num_vertices_in_clipped_quad, 6);
-  clipped_quad[*num_vertices_in_clipped_quad] = new_vertex;
-  (*num_vertices_in_clipped_quad)++;
+  CHECK_LT(*num_vertices_in_clipped_quad, 6);
+  clipped_quad[static_cast<size_t>(*num_vertices_in_clipped_quad)] = new_vertex;
+  ++*num_vertices_in_clipped_quad;
   if (new_vertex.x() < -HomogeneousCoordinate::kInfiniteCoordinate ||
       new_vertex.x() > HomogeneousCoordinate::kInfiniteCoordinate ||
       new_vertex.y() < -HomogeneousCoordinate::kInfiniteCoordinate ||
@@ -434,8 +440,10 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
 
   if (*num_vertices_in_clipped_quad > 2 &&
       IsNearlyTheSame(clipped_quad[0],
-                      clipped_quad[*num_vertices_in_clipped_quad - 1]))
-    *num_vertices_in_clipped_quad -= 1;
+                      clipped_quad[static_cast<size_t>(
+                          *num_vertices_in_clipped_quad - 1)])) {
+    --*num_vertices_in_clipped_quad;
+  }
 
   if (need_to_clamp) {
     // Some of the values need to be clamped, but we need to keep them
@@ -446,9 +454,11 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
     gfx::Vector3dF normal(0.0f, 0.0f, 0.0f);
     if (*num_vertices_in_clipped_quad > 2) {
       gfx::Vector3dF loop_vector =
-          clipped_quad[0] - clipped_quad[*num_vertices_in_clipped_quad - 1];
+          clipped_quad[0] -
+          clipped_quad[static_cast<size_t>(*num_vertices_in_clipped_quad - 1)];
       gfx::Vector3dF prev_vector(loop_vector);
-      for (int i = 1; i < *num_vertices_in_clipped_quad; ++i) {
+      for (size_t i = 1; i < static_cast<size_t>(*num_vertices_in_clipped_quad);
+           ++i) {
         gfx::Vector3dF cur_vector = clipped_quad[i] - clipped_quad[i - 1];
         normal += CrossProduct(prev_vector, cur_vector);
         prev_vector = cur_vector;
@@ -505,7 +515,8 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
           } else {
             z_delta = -max_distance - z_at_xy_zero;
           }
-          for (int i = 0; i < *num_vertices_in_clipped_quad; ++i) {
+          for (size_t i = 0;
+               i < static_cast<size_t>(*num_vertices_in_clipped_quad); ++i) {
             clipped_quad[i].set_z(clipped_quad[i].z() + z_delta);
           }
           z_at_xy_zero += z_delta;
@@ -513,7 +524,8 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
 
         // Move all the points towards (0, 0, z_at_xy_zero) until all
         // their coordinates are less than kInfiniteCoordinate.
-        for (int i = 0; i < *num_vertices_in_clipped_quad; ++i) {
+        for (size_t i = 0;
+             i < static_cast<size_t>(*num_vertices_in_clipped_quad); ++i) {
           gfx::Point3F& point = clipped_quad[i];
           float t = 1.0f;
 
@@ -563,7 +575,8 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
     if (clamp_by_points) {
       // Just clamp each point separately in each axis, just like we do
       // for 2D.
-      for (int i = 0; i < *num_vertices_in_clipped_quad; ++i) {
+      for (size_t i = 0; i < static_cast<size_t>(*num_vertices_in_clipped_quad);
+           ++i) {
         gfx::Point3F& point = clipped_quad[i];
         point.set_x(
             std::clamp(point.x(), -HomogeneousCoordinate::kInfiniteCoordinate,
@@ -579,7 +592,7 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
   }
 
   DCHECK_LE(*num_vertices_in_clipped_quad, 6);
-  return (*num_vertices_in_clipped_quad >= 4);
+  return *num_vertices_in_clipped_quad >= 4;
 }
 
 gfx::RectF MathUtil::ComputeEnclosingRectOfVertices(
@@ -731,15 +744,6 @@ gfx::PointF MathUtil::ProjectPoint(const gfx::Transform& transform,
   // and (2) this behavior is more consistent with existing behavior of WebKit
   // transforms if the user really does not ignore the return value.
   return h.CartesianPoint2d();
-}
-
-gfx::Point3F MathUtil::ProjectPoint3D(const gfx::Transform& transform,
-                                      const gfx::PointF& p,
-                                      bool* clipped) {
-  HomogeneousCoordinate h = ProjectHomogeneousPoint(transform, p, clipped);
-  if (!h.w())
-    return gfx::Point3F();
-  return h.CartesianPoint3d();
 }
 
 gfx::RectF MathUtil::ScaleRectProportional(const gfx::RectF& input_outer_rect,

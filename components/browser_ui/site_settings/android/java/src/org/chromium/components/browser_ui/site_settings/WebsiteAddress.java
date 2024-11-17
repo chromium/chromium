@@ -213,6 +213,6 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     }
 
     private static String trimTrailingBackslash(String origin) {
-        return (origin.endsWith("/")) ? origin.substring(0, origin.length() - 1) : origin;
+        return origin.endsWith("/") ? origin.substring(0, origin.length() - 1) : origin;
     }
 }

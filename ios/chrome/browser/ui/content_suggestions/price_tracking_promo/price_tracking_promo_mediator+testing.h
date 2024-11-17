@@ -7,24 +7,55 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator.h"
 
+class AuthenticationService;
+@class MDCSnackbarMessage;
+class NotificationsSettingsObserver;
+class PrefService;
 @class PriceTrackingPromoItem;
+class PushNotificationService;
+
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
 
 namespace commerce {
 class ShoppingService;
 }  // namespace commerce
 
-@class MDCSnackbarMessage;
+namespace image_fetcher {
+class ImageDataFetcher;
+}  // namespace image_fetcher
 
 // Category for exposing internal state for testing.
 @interface PriceTrackingPromoMediator (ForTesting)
 
 - (commerce::ShoppingService*)shoppingServiceForTesting;
 
+- (bookmarks::BookmarkModel*)bookmarkModelForTesting;
+
+- (PrefService*)prefServiceForTesting;
+
+- (PushNotificationService*)pushNotificationServiceForTesting;
+
+- (AuthenticationService*)authenticationServiceForTesting;
+
+- (image_fetcher::ImageDataFetcher*)imageFetcherForTesting;
+
 - (PriceTrackingPromoItem*)priceTrackingPromoItemForTesting;
 
 - (MDCSnackbarMessage*)snackbarMessageForTesting;
 
+- (NotificationsSettingsObserver*)notificationsSettingsObserverForTesting;
+
+- (FaviconLoader*)faviconLoaderForTesting;
+
 - (void)enablePriceTrackingNotificationsSettingsForTesting;
+
+- (void)setPriceTrackingPromoItemForTesting:(PriceTrackingPromoItem*)item;
+
+- (void)requestPushNotificationDoneWithGrantedForTesting:(BOOL)granted
+                                             promptShown:(BOOL)promptShown
+                                                   error:(NSError*)error;
 
 @end
 

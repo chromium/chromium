@@ -9,31 +9,28 @@
 import {loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
-import {driveDescriptor} from './drive/module.js';
 import type {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
+import {microsoftAuthModuleDescriptor} from './v2/authentication/microsoft_auth_module.js';
 import {googleCalendarDescriptor} from './v2/calendar/google_calendar_module.js';
 import {outlookCalendarDescriptor} from './v2/calendar/outlook_calendar_module.js';
 // <if expr="not is_official_build">
 import {dummyV2Descriptor} from './v2/dummy/module.js';
 // </if>
-import {fileSuggestionDescriptor} from './v2/file_suggestion/module.js';
+import {driveModuleV2Descriptor} from './v2/file_suggestion/drive_module.js';
+import {sharepointModuleDescriptor} from './v2/file_suggestion/sharepoint_module.js';
 import {mostRelevantTabResumptionDescriptor} from './v2/most_relevant_tab_resumption/module.js';
 
-const modulesRedesignedEnabled: boolean =
-    loadTimeData.getBoolean('modulesRedesignedEnabled');
 export const descriptors: ModuleDescriptor[] = [];
-descriptors.push(
-    modulesRedesignedEnabled ? fileSuggestionDescriptor : driveDescriptor);
-
 descriptors.push(mostRelevantTabResumptionDescriptor);
+descriptors.push(driveModuleV2Descriptor);
 descriptors.push(googleCalendarDescriptor);
+descriptors.push(microsoftAuthModuleDescriptor);
 descriptors.push(outlookCalendarDescriptor);
+descriptors.push(sharepointModuleDescriptor);
 
 // <if expr="not is_official_build">
-if (modulesRedesignedEnabled) {
-  descriptors.push(dummyV2Descriptor);
-}
+descriptors.push(dummyV2Descriptor);
 // </if>
 
 export async function counterfactualLoad() {

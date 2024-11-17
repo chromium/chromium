@@ -53,7 +53,7 @@
 </template>
 <template is="dom-if" if="[[cardBenefitsFlagEnabled_]]">
   <settings-toggle-button id="cardBenefitsToggle"
-      no-extension-indicator label="$i18n{cardBenefitsToggleLabel}"
+      no-extension-indicator label="$i18n{cardBenefitsLabel}"
       sub-label-with-link="[[cardBenefitsSublabel_]]"
       on-sub-label-link-clicked="onCardBenefitsSublabelLinkClick_"
       disabled="[[!prefs.autofill.credit_card_enabled.value]]"

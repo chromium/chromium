@@ -164,6 +164,19 @@ class DiceWebSigninInterceptor : public KeyedService,
     return state_->is_interception_in_progress_;
   }
 
+  content::WebContents* web_contents() const {
+    return state_->web_contents_.get();
+  }
+
+  const std::optional<policy::ProfileSeparationPolicies>
+  intercepted_account_profile_separation_policies() const {
+    return state_->intercepted_account_profile_separation_policies_;
+  }
+
+  bool managed_profile_creation_required_by_policy() const;
+
+  AccountInfo intercepted_account_info() const;
+
   void SetInterceptedAccountProfileSeparationPoliciesForTesting(
       std::optional<policy::ProfileSeparationPolicies> value) {
     intercepted_account_profile_separation_policies_response_for_testing_ =
@@ -209,6 +222,8 @@ class DiceWebSigninInterceptor : public KeyedService,
       DiceWebSigninInterceptorTest,
       ForcedEnterpriseInterceptionTestNoForcedInterception);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, StateResetTest);
+  FRIEND_TEST_ALL_PREFIXES(ManagedProfileRequiredNavigationThrottleTest,
+                           CancelsWithInterstitialWhenForcedInterception);
 
   // Profile presets that will be passed from the previous profile to the newly
   // created one during sign in intercept.

@@ -199,3 +199,7 @@ img.logo {
 #moreButton {
   border-radius: 100px;
 }
+
+.learn-more-bullet-description {
+  margin-bottom: 1rem;
+}

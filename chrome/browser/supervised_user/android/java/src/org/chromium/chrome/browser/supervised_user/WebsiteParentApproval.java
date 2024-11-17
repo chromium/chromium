@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -62,12 +63,11 @@ class WebsiteParentApproval {
     /**
      * Whether or not local (i.e. on-device) approval is supported.
      *
-     * This method should be called before {@link requestLocalApproval()}.
+     * <p>This method should be called before {@link requestLocalApproval()}.
      */
     @CalledByNative
     private static boolean isLocalApprovalSupported() {
-        ParentAuthDelegate delegate = new ParentAuthDelegateImpl();
-        return delegate.isLocalAuthSupported();
+        return ParentAuthDelegateProvider.getInstance() != null;
     }
 
     /**
@@ -86,6 +86,7 @@ class WebsiteParentApproval {
             WindowAndroid windowAndroid, GURL url, Profile profile) {
         // First ask the parent to authenticate.
         ParentAuthDelegate delegate = ParentAuthDelegateProvider.getInstance();
+        assert delegate != null;
         FaviconHelper faviconHelper = new FaviconHelper();
         delegate.requestLocalAuth(
                 windowAndroid,
@@ -106,6 +107,7 @@ class WebsiteParentApproval {
                         url,
                         FAVICON_MIN_SOURCE_SIZE_PIXEL,
                         desiredFaviconWidthPx,
+                        profile,
                         (Bitmap favicon) -> faviconHelper.setFavicon(favicon));
         faviconHelper.setFallbackIcon(
                 createFaviconFallback(windowAndroid.getContext().get().getResources(), url));
@@ -168,6 +170,7 @@ class WebsiteParentApproval {
                 GURL url,
                 int minSourceSizePixel,
                 int desiredSizePixel,
+                @JniType("Profile*") Profile profile,
                 Callback<Bitmap> onFaviconFetched);
     }
 }

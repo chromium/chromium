@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/policy/annotations/annotation_control.h"
@@ -35,6 +37,8 @@ bool NetworkAnnotationBlocklistHandler::CheckPolicySettings(
 void NetworkAnnotationBlocklistHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   base::Value::Dict blocklist_prefs = base::Value::Dict();
 
   for (auto const& [hash_code, control] :
@@ -46,6 +50,10 @@ void NetworkAnnotationBlocklistHandler::ApplyPolicySettings(
 
   prefs->SetValue(prefs::kNetworkAnnotationBlocklist,
                   base::Value(std::move(blocklist_prefs)));
+
+  // Publish time metric for this handler.
+  UMA_HISTOGRAM_TIMES("ChromeOS.Regmon.PolicyHandlerTime",
+                      base::TimeTicks::Now() - start_time);
 }
 
 void NetworkAnnotationBlocklistHandler::RegisterPrefs(

@@ -318,8 +318,7 @@ SafeBrowsingJavaThreatType SBThreatTypeToSafeBrowsingApiJavaThreatType(
     case SB_THREAT_TYPE_BILLING:
       return SafeBrowsingJavaThreatType::BILLING;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return SafeBrowsingJavaThreatType::NO_THREAT;
+      NOTREACHED();
   }
 }
 
@@ -523,8 +522,8 @@ void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(JNIEnv* env,
 //
 // SafeBrowsingApiHandlerBridge
 //
-SafeBrowsingApiHandlerBridge::SafeBrowsingApiHandlerBridge() {}
-SafeBrowsingApiHandlerBridge::~SafeBrowsingApiHandlerBridge() {}
+SafeBrowsingApiHandlerBridge::SafeBrowsingApiHandlerBridge() = default;
+SafeBrowsingApiHandlerBridge::~SafeBrowsingApiHandlerBridge() = default;
 
 void SafeBrowsingApiHandlerBridge::ClearArtificialDatabase() {
   artificially_marked_phishing_urls_.clear();

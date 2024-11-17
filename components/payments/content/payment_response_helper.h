@@ -26,7 +26,7 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     virtual void OnPaymentResponseReady(
         mojom::PaymentResponsePtr payment_response) = 0;

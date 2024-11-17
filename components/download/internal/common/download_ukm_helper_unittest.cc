@@ -35,7 +35,7 @@ class DownloadUkmHelperTest : public testing::Test {
     test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
-  void ExpectUkmMetrics(const std::string_view entry_name,
+  void ExpectUkmMetrics(std::string_view entry_name,
                         const std::vector<std::string_view>& keys,
                         const std::vector<int>& values) {
     const auto& entries = test_recorder_->GetEntriesByName(entry_name);

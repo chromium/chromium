@@ -134,14 +134,6 @@
       reset_on_new_style: true,
       custom_compare: true,
     },
-    // A non-inherited property references a variable or @apply is used
-    {
-      name: "HasVariableReferenceFromNonInheritedProperty",
-      field_template: "monotonic_flag",
-      default_value: "false",
-      reset_on_new_style: true,
-      custom_compare: true,
-    },
     // A property references a variable that needs to be resolved
     {
       name: "HasVariableReference",
@@ -152,6 +144,14 @@
     // A property which value consists of a custom property declaration.
     {
       name: "HasVariableDeclaration",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
+    // True when at least one env() was resolved when producing
+    // this ComputedStyle.
+    {
+      name: "HasEnv",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
@@ -240,7 +240,7 @@
     {
       name: "PseudoElementStyles",
       field_template: "primitive",
-      field_size: 19,
+      field_size: 21,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       reset_on_new_style: true,
@@ -441,8 +441,11 @@
       computed_style_custom_functions: ["getter"],
       invalidate: ["layout", "paint"],
     },
+    // Though will-change is not itself an inherited property, the intent
+    // expressed by 'will-change: contents' includes descendants.
     {
       name: "SubtreeWillChangeContents",
+      inherited: true,
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",
@@ -1142,7 +1145,7 @@
       default_value: "false",
     },
     {
-      name: "DependsOnStateContainerQueries",
+      name: "DependsOnScrollStateContainerQueries",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
@@ -1311,6 +1314,14 @@
       type_name: "bool",
       default_value: "false",
       inherited: false,
+    },
+    {
+      name: "InBaseSelectAppearance",
+      inherited: true,
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
     },
   ],
 }

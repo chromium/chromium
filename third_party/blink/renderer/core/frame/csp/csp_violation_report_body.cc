@@ -14,7 +14,7 @@ void CSPViolationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("effectiveDirective", effectiveDirective());
   builder.AddString("originalPolicy", originalPolicy());
   builder.AddStringOrNull("sample", sample());
-  builder.AddString("disposition", disposition());
+  builder.AddString("disposition", disposition().AsString());
   builder.AddNumber("statusCode", statusCode());
 }
 

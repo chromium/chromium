@@ -42,6 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/print_backend_service_manager.h"
@@ -52,27 +53,14 @@
 #include "ui/base/ui_base_types.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/test/gmock_callback_support.h"
-#include "chrome/test/chromeos/printing/mock_local_printer_chromeos.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#endif
-
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-using testing::_;
-using testing::AtMost;
-using testing::NiceMock;
-#endif
 
 struct PDFExtensionPrintingTestPassToString {
   std::string operator()(
@@ -82,8 +70,7 @@ struct PDFExtensionPrintingTestPassToString {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
     content::BrowserContext* context) {
   return std::make_unique<ash::TestCupsPrintJobManager>(
@@ -101,7 +88,6 @@ void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
   ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&BuildFakeCupsPrintersManager));
 }
-
 #endif
 
 }  // namespace
@@ -153,7 +139,7 @@ class PDFExtensionPrintingTest
 #endif
     PDFExtensionTestBase::SetUpOnMainThread();
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUpInProcessBrowserTestFixture() override {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -161,25 +147,7 @@ class PDFExtensionPrintingTest
                 base::BindRepeating(&OnWillCreateBrowserContextServices));
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    PDFExtensionTestBase::CreatedBrowserMainParts(browser_main_parts);
-    chromeos::LacrosService::Get()->InjectRemoteForTesting(
-        local_printer_receiver_.BindNewPipeAndPassRemote());
 
-    EXPECT_CALL(local_printer(), AddPrintServerObserver(_, _))
-        .Times(AtMost(1))
-        .WillOnce(base::test::RunOnceCallback<1>());
-    EXPECT_CALL(local_printer(), GetPolicies(_))
-        .Times(AtMost(1))
-        .WillOnce(
-            base::test::RunOnceCallback<0>(crosapi::mojom::Policies::New()));
-    EXPECT_CALL(local_printer(), GetEulaUrl(_, _))
-        .Times(AtMost(1))
-        .WillOnce(base::test::RunOnceCallback<1>(GURL()));
-  }
-#endif
   void TearDownOnMainThread() override {
     PDFExtensionTestBase::TearDownOnMainThread();
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -254,10 +222,6 @@ class PDFExtensionPrintingTest
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NiceMock<MockLocalPrinter>& local_printer() { return local_printer_; }
-#endif
-
  private:
   bool UseService() const { return std::get<0>(GetParam()); }
 
@@ -276,14 +240,8 @@ class PDFExtensionPrintingTest
     print_job_destroyed_ = true;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::CallbackListSubscription create_services_subscription_;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NiceMock<MockLocalPrinter> local_printer_;
-  mojo::Receiver<crosapi::mojom::LocalPrinter> local_printer_receiver_{
-      &local_printer_};
 #endif
 
   scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
@@ -300,12 +258,6 @@ class PDFExtensionPrintingTest
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, BasicPrintCommand) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Acknowledge print job creation so that the mojo callback doesn't hang.
-  EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>());
-#endif
-
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   content::RenderFrameHost* plugin_frame =
       pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
@@ -394,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
   SetInputFocusOnPlugin(extension_host, embedder_web_contents);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+      {1, 1}, ui::mojom::MenuSourceType::kMouse);
   print_observer.WaitUntilPreviewIsReady();
   menu_interceptor.Wait();
 }
@@ -423,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
   SetInputFocusOnPlugin(extension_host, embedder_web_contents);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+      {1, 1}, ui::mojom::MenuSourceType::kMouse);
   print_observer.WaitUntilPreviewIsReady();
   menu_interceptor.Wait();
 }
@@ -477,12 +429,6 @@ class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
 #endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
                        MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Acknowledge print job creation so that the mojo callback doesn't hang.
-  EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>());
-#endif
-
   content::RenderFrameHost* extension_host =
       LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);

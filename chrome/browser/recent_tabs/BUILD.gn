@@ -57,8 +57,10 @@ android_library_factory("factory_java") {
 
   deps = [
     ":java",
+    "//base:supplier_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//components/browser_ui/bottomsheet/android:java",
   ]
 }

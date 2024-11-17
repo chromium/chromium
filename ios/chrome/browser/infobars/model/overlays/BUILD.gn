@@ -29,6 +29,7 @@ source_set("overlays") {
     ":util",
     "//base",
     "//components/infobars/core",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/translate/core/browser",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
@@ -39,6 +40,10 @@ source_set("overlays") {
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
     "//ios/chrome/browser/passwords/model:infobar_delegates",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tips_manager/model:factory",
+    "//ios/chrome/browser/tips_manager/model:tips_manager",
     "//ios/web/common",
     "//ios/web/public",
   ]

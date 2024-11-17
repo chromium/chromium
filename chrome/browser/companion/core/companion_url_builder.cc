@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_permission_utils.h"
-#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/companion/core/signin_delegate.h"
@@ -17,12 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
-
-// Need to BUILDFLAG these lines because kSidePanelCompanionEntryPinnedToToolbar
-// does not exist on Android and will break try-bots
-#if (!BUILDFLAG(IS_ANDROID))
-#include "chrome/common/companion/visual_query/features.h"
-#endif
 
 namespace companion {
 namespace {
@@ -132,31 +125,19 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
 // Need to BUILDFLAG these lines because kSidePanelCompanionEntryPinnedToToolbar
 // and kVisualQuerySuggestions do not exist on Android and will break try-bots
 #if (!BUILDFLAG(IS_ANDROID))
-  bool is_entry_point_default_pinned =
-      pref_service_ &&
-      pref_service_
-          ->GetDefaultPrefValue(prefs::kSidePanelCompanionEntryPinnedToToolbar)
-          ->GetBool();
-  url_params.set_is_entrypoint_pinned_by_default(is_entry_point_default_pinned);
-  url_params.set_is_vqs_enabled_on_chrome(base::FeatureList::IsEnabled(
-      visual_query::features::kVisualQuerySuggestions));
+  url_params.set_is_entrypoint_pinned_by_default(false);
+  url_params.set_is_vqs_enabled_on_chrome(false);
   url_params.set_is_upload_dialog_supported(true);
   url_params.set_is_hard_refresh_supported(true);
 #endif
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
-  promo_state->set_signin_promo_denial_count(
-      pref_service_->GetInteger(kSigninPromoDeclinedCountPref));
-  promo_state->set_msbb_promo_denial_count(
-      pref_service_->GetInteger(kMsbbPromoDeclinedCountPref));
-  promo_state->set_exps_promo_denial_count(
-      pref_service_->GetInteger(kExpsPromoDeclinedCountPref));
-  promo_state->set_exps_promo_shown_count(
-      pref_service_->GetInteger(kExpsPromoShownCountPref));
-  promo_state->set_pco_promo_shown_count(
-      pref_service_->GetInteger(kPcoPromoShownCountPref));
-  promo_state->set_pco_promo_denial_count(
-      pref_service_->GetInteger(kPcoPromoDeclinedCountPref));
+  promo_state->set_signin_promo_denial_count(0);
+  promo_state->set_msbb_promo_denial_count(0);
+  promo_state->set_exps_promo_denial_count(0);
+  promo_state->set_exps_promo_shown_count(0);
+  promo_state->set_pco_promo_shown_count(0);
+  promo_state->set_pco_promo_denial_count(0);
 
   // Set region search IPH state.
   promo_state->set_should_show_region_search_iph(

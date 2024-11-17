@@ -100,13 +100,11 @@ void SVGFEDiffuseLightingElement::SvgAttributeChanged(
   if (attr_name == svg_names::kSurfaceScaleAttr ||
       attr_name == svg_names::kDiffuseConstantAttr ||
       attr_name == svg_names::kLightingColorAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
   if (attr_name == svg_names::kInAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

@@ -29,6 +29,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/aggregation_service/parsing_utils.h"
+#include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -83,7 +84,7 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
   out << "0x";
   out.setf(out.hex, out.basefield);
   out << value;
-  return out.str();
+  return std::move(out).str();
 }
 
 base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
@@ -210,9 +211,17 @@ ParseAggregationCoordinator(const base::Value::Dict& dict) {
     return base::unexpected(ParseError());
   }
   auto aggregation_coordinator_origin =
-      SuitableOrigin::Create(*aggregation_coordinator);
+      SuitableOrigin::Create(*std::move(aggregation_coordinator));
   CHECK(aggregation_coordinator_origin.has_value());
   return *std::move(aggregation_coordinator_origin);
+}
+
+base::expected<int, ParseError> ParseAggregatableValue(const base::Value& v) {
+  ASSIGN_OR_RETURN(int value, ParseInt(v));
+  if (!IsAggregatableValueInRange(value)) {
+    return base::unexpected(ParseError());
+  }
+  return value;
 }
 
 void SerializeUint64(base::Value::Dict& dict,

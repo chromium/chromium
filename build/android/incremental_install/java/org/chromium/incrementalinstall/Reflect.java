@@ -154,8 +154,8 @@ final class Reflect {
         Class<?> rightClazz = right.getClass();
         if (left.isPrimitive()) {
             // TODO(agrieve): Fill in the rest as needed.
-            return left == boolean.class && rightClazz == Boolean.class
-                    || left == int.class && rightClazz == Integer.class;
+            return (left == boolean.class && rightClazz == Boolean.class)
+                    || (left == int.class && rightClazz == Integer.class);
         }
         return left.isAssignableFrom(rightClazz);
     }

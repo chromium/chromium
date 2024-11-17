@@ -17,9 +17,9 @@ namespace autofill {
 //
 // Currently, the available heuristic sources are the ML model and regexes.
 // If the model predictions are disabled, then only regexes are used. If model
-// predictions are enabled, `kMachineLearning` is also considered. Depending on
-// `kAutofillModelPredictionsAreActive`, use  `kMachineLearning`
-// as the active heuristic source.
+// predictions are enabled, `kAutofillMachineLearning` is also considered.
+// Depending on `kAutofillModelPredictionsAreActive`, use
+// `kAutofillMachineLearning` as the active heuristic source.
 
 struct HeuristicSourceParams {
   std::optional<bool> model_predictions_feature;
@@ -51,7 +51,13 @@ class HeuristicSourceTest
   base::test::ScopedFeatureList features_;
 };
 
-TEST_P(HeuristicSourceTest, HeuristicSourceParams) {
+// TODO(crbug.com/373902907): Flaky on ios bots.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_HeuristicSourceParams DISABLED_HeuristicSourceParams
+#else
+#define MAYBE_HeuristicSourceParams HeuristicSourceParams
+#endif
+TEST_P(HeuristicSourceTest, MAYBE_HeuristicSourceParams) {
   const HeuristicSourceParams& test_case = GetParam();
   EXPECT_EQ(GetActiveHeuristicSource(), test_case.expected_active_source);
 }
@@ -66,17 +72,17 @@ INSTANTIATE_TEST_SUITE_P(
         HeuristicSourceParams{
             .expected_active_source = HeuristicSource::kLegacyRegexes},
 
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .expected_active_source = HeuristicSource::kMachineLearning},
+        HeuristicSourceParams{.model_predictions_feature = true,
+                              .expected_active_source =
+                                  HeuristicSource::kAutofillMachineLearning},
 
         HeuristicSourceParams{
             .model_predictions_feature = false,
             .expected_active_source = HeuristicSource::kLegacyRegexes}
 #else
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .expected_active_source = HeuristicSource::kMachineLearning},
+        HeuristicSourceParams{.model_predictions_feature = true,
+                              .expected_active_source =
+                                  HeuristicSource::kAutofillMachineLearning},
 
         HeuristicSourceParams{
             .model_predictions_feature = false,

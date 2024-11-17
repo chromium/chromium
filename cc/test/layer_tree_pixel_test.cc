@@ -96,7 +96,7 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
         worker_ri_type = viz::TestContextType::kSoftwareRaster;
         break;
       case TestRasterType::kBitmap:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     worker_context_provider =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(

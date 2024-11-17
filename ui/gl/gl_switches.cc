@@ -54,6 +54,7 @@ const char kCmdDecoderPassthroughName[] = "passthrough";
 const char kSwapChainFormatNV12[] = "nv12";
 const char kSwapChainFormatYUY2[] = "yuy2";
 const char kSwapChainFormatBGRA[] = "bgra";
+const char kSwapChainFormatP010[] = "p010";
 
 }  // namespace gl
 

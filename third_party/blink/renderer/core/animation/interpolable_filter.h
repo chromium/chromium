@@ -55,11 +55,8 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
                    const double progress,
                    InterpolableValue& result) const final;
   bool IsFilter() const final { return true; }
-  bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
-  void Scale(double scale) final { NOTREACHED_IN_MIGRATION(); }
+  bool Equals(const InterpolableValue& other) const final { NOTREACHED(); }
+  void Scale(double scale) final { NOTREACHED(); }
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 

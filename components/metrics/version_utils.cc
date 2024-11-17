@@ -44,8 +44,7 @@ SystemProfileProto::Channel AsProtobufChannel(version_info::Channel channel) {
     case version_info::Channel::STABLE:
       return SystemProfileProto::CHANNEL_STABLE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SystemProfileProto::CHANNEL_UNKNOWN;
+  NOTREACHED();
 }
 
 std::string GetAppPackageName() {

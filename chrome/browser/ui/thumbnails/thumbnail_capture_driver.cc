@@ -85,7 +85,7 @@ void ThumbnailCaptureDriver::UpdateCaptureState() {
     // it can no longer capture. Reset our state to re-request capture
     // later.
     capture_state_ = CaptureState::kCaptureRequested;
-    cooldown_timer_.AbandonAndStop();
+    cooldown_timer_.Stop();
     return;
   }
 

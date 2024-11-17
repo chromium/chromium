@@ -37,8 +37,8 @@ import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SearchUtils;
-import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -64,7 +64,7 @@ import java.util.Set;
  */
 @UsedByReflection("all_site_preferences.xml")
 public class AllSiteSettings extends BaseSiteSettingsFragment
-        implements SettingsPage,
+        implements EmbeddableSettingsPage,
                 PreferenceManager.OnPreferenceTreeClickListener,
                 View.OnClickListener,
                 CustomDividerFragment {
@@ -245,7 +245,10 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                                         .getString(
                                                 R.string
                                                         .site_settings_clear_all_zoom_levels_warning))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.clear)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
+                                R.string.delete)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources,

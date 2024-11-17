@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "chromecast/metrics/metrics_recorder.h"
 #include "chromecast/metrics/timed_event_recorder.h"
@@ -29,7 +30,7 @@ class MetricsRecorderBase : public MetricsRecorder {
   explicit MetricsRecorderBase(const base::TickClock* tick_clock = nullptr);
 
  private:
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
   TimedEventRecorder timed_event_recorder_{this};
 };
 

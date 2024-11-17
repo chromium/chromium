@@ -16,17 +16,19 @@ import './customize_button_row.js';
 import './key_combination_input_dialog.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ReorderButtonEvent, ShowKeyCustomizationDialogEvent, ShowRenamingDialogEvent} from './customize_button_row.js';
+import type {ReorderButtonEvent, ShowKeyCustomizationDialogEvent, ShowRenamingDialogEvent} from './customize_button_row.js';
 import {getTemplate} from './customize_buttons_subsection.html.js';
-import {DragAndDropManager, OnDropCallback} from './drag_and_drop_manager.js';
-import {ActionChoice, ButtonRemapping, MetaKey} from './input_device_settings_types.js';
-import {KeyCombinationInputDialogElement} from './key_combination_input_dialog.js';
+import type {OnDropCallback} from './drag_and_drop_manager.js';
+import {DragAndDropManager} from './drag_and_drop_manager.js';
+import type {ActionChoice, ButtonRemapping} from './input_device_settings_types.js';
+import {MetaKey} from './input_device_settings_types.js';
+import type {KeyCombinationInputDialogElement} from './key_combination_input_dialog.js';
 
 const MAX_INPUT_LENGTH = 32;
 

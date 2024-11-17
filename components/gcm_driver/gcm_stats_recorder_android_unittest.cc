@@ -21,7 +21,7 @@ class GCMStatsRecorderAndroidTest : public ::testing::Test,
  public:
   GCMStatsRecorderAndroidTest()
       : activity_recorded_calls_(0) {}
-  ~GCMStatsRecorderAndroidTest() override {}
+  ~GCMStatsRecorderAndroidTest() override = default;
 
   // GCMStatsRecorderAndroid::Delegate implementation.
   void OnActivityRecorded() override {

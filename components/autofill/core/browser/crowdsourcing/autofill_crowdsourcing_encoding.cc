@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/server_prediction_overrides.h"
@@ -363,7 +364,7 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
   }
 }
 
-void EncodeFormForQuery(const autofill::FormStructure& form,
+void EncodeFormForQuery(const FormStructure& form,
                         AutofillPageQueryRequest& query,
                         std::vector<FormSignature>& queried_form_signatures,
                         std::set<FormSignature>& processed_forms) {
@@ -708,7 +709,7 @@ EncodeAutofillPageQueryRequest(
   // considered for field signatures; (2) for dynamic forms we will hold on to
   // the original form signature.
   std::set<FormSignature> processed_forms;
-  for (const autofill::FormStructure* form : forms) {
+  for (const FormStructure* form : forms) {
     if (base::Contains(processed_forms, form->form_signature())) {
       continue;
     }
@@ -727,7 +728,6 @@ void ParseServerPredictionsQueryResponse(
     std::string_view payload,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   AutofillMetrics::LogServerQueryMetric(
       AutofillMetrics::QUERY_RESPONSE_RECEIVED);
@@ -747,16 +747,14 @@ void ParseServerPredictionsQueryResponse(
   VLOG(1) << "Autofill query response from API was successfully parsed: "
           << response;
 
-  ProcessServerPredictionsQueryResponse(
-      response, forms, queried_form_signatures, form_interactions_ukm_logger,
-      log_manager);
+  ProcessServerPredictionsQueryResponse(response, forms,
+                                        queried_form_signatures, log_manager);
 }
 
 void ProcessServerPredictionsQueryResponse(
     const AutofillQueryResponse& response,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
   LOG_AF(log_manager) << LoggingScope::kParsing
@@ -831,14 +829,15 @@ void ProcessServerPredictionsQueryResponse(
         &AutofillField::server_type));
 
     form->UpdateAutofillCount();
-    form->RationalizeFormStructure(form_interactions_ukm_logger, log_manager);
+    form->RationalizeFormStructure(log_manager);
 
     AssignSections(form->fields());
-    // Metrics are intentionally only emitted after the sever response, not when
-    // determining heuristic types. This is done to reduce noise in the metrics,
-    // since generally only this sectioning result is used.
-    LogSectioningMetrics(form->form_signature(), form->fields(),
-                         form_interactions_ukm_logger);
+
+    // Since this step requires the sections to be available, it is done after
+    // the sectioning logic is ran. Note that since this step doesn't change the
+    // types of the individual field, this should not break any assumption that
+    // was made to compute the sections.
+    form->RationalizePhoneNumberFieldsForFilling();
 
     // Log the field type predicted by rationalization.
     // The sections are mapped to consecutive natural numbers starting at 1.

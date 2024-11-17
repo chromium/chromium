@@ -61,10 +61,10 @@ id<GREYMatcher> BottomAddressBarOptionSelected() {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Resets the address bar position preference to be on top.
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that when we select the bottom address bar view. It becomes selected

@@ -5,10 +5,11 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=/signin_shared.css.js
- * #import=./signin_vars.css.js
- * #import=/tangible_sync_style_shared_lit.css.js
+ * #import=/signin_vars.css.js
+ * #import=/tangible_sync_style_shared.css.js
+ * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
  * #scheme=relative
- * #include=signin-shared tangible-sync-style-shared-lit
+ * #include=signin-shared tangible-sync-style-shared cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
 /* TODO look at UI with inspector to see which lines are overridden by the
@@ -60,7 +61,7 @@
   width: 100%;
 }
 
-paper-spinner-lite {
+.spinner {
   margin: auto 0;
 }
 

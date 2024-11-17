@@ -5,7 +5,7 @@
 #include "ash/shell_tab_handler.h"
 
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"

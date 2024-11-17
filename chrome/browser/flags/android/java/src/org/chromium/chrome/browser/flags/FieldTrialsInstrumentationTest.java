@@ -7,28 +7,30 @@ package org.chromium.chrome.browser.flags;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
-import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.DoubleCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.DoubleCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.StringCachedFieldTrialParameter;
 
 /** Integration tests for {@link org.chromium.base.test.util.FieldTrials}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@DoNotBatch(
+        reason =
+                "Test flag configurations in isolation for predictability and control of native"
+                        + " being loaded or not.")
 public final class FieldTrialsInstrumentationTest {
     private static final String FEATURE_1 = ChromeFeatureList.TEST_DEFAULT_DISABLED;
     private static final String FEATURE_2 = ChromeFeatureList.TEST_DEFAULT_ENABLED;
@@ -47,9 +49,84 @@ public final class FieldTrialsInstrumentationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Before
-    public void setup() {
+    @Test
+    @SmallTest
+    @EnableFeatures(FEATURE_1 + ":a1/b1/a2/b2")
+    public void testJava_EnableWithParams() {
+        Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
+        Assert.assertEquals("b2", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a2"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(FEATURE_1 + ":a1/b1/a2/b2")
+    public void testNative_EnableWithParams() {
+        // @Param overrides as Java level, but should also override at native level. Remove the
+        // override at Java level to check the override at native level.
+        FeatureList.setTestValues(null);
         mActivityTestRule.startMainActivityOnBlankPage();
+
+        Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
+        Assert.assertEquals("b2", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a2"));
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add("enable-features=" + FEATURE_1 + ":a1/b1/a2/b2")
+    public void testJava_CommandLine_EnableWithParams() {
+        Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
+        Assert.assertEquals("b2", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a2"));
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add("enable-features=" + FEATURE_1 + ":a1/b1/a2/b2")
+    public void testNative_CommandLine_EnableWithParams() {
+        // @CommandLine overrides as Java level, but should also override at native level. Remove
+        // the override at Java level to check the override at native level.
+        mActivityTestRule.startMainActivityOnBlankPage();
+        FeatureList.setTestValues(null);
+
+        Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
+        Assert.assertEquals("b2", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a2"));
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add(
+            "enable-features=" + FEATURE_1 + ":param-with-escaped-characters/%25%3A%2F%2E%2C")
+    public void testJava_ParamValueIsUnescaped_CommandLine_EnableWithParams() {
+        Assert.assertEquals(
+                "%:/.,",
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        FEATURE_1, "param-with-escaped-characters"));
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add(
+            "enable-features=" + FEATURE_1 + ":param-with-escaped-characters/%25%3A%2F%2E%2C")
+    public void testNative_ParamValueIsUnescaped_CommandLine_EnableWithParams() {
+        // @CommandLine overrides as Java level, but should also override at native level. Remove
+        // the override at Java level to check the override at native level.
+        mActivityTestRule.startMainActivityOnBlankPage();
+        FeatureList.setTestValues(null);
+
+        Assert.assertEquals(
+                "%:/.,",
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        FEATURE_1, "param-with-escaped-characters"));
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({
+        "enable-features=" + FEATURE_1 + "<Study",
+        "force-fieldtrials=Study/Group"
+    })
+    public void testJava_FeatureWithoutParams_CommandLine_EnableAndFieldTrial() {
+        Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));
+        Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
     }
 
     @Test
@@ -59,7 +136,7 @@ public final class FieldTrialsInstrumentationTest {
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:a1/b1"
     })
-    public void testOneFeatureTrialGroup() {
+    public void testJava_OneFeatureTrialGroup_CommandLine_FieldTrialParams() {
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
 
@@ -76,7 +153,7 @@ public final class FieldTrialsInstrumentationTest {
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:a1/b1/a2/b2"
     })
-    public void testTwoFeaturesWithSameTrialGroup() {
+    public void testJava_TwoFeaturesWithSameTrialGroup_CommandLine_FieldTrialParams() {
         Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
         Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));
@@ -112,7 +189,8 @@ public final class FieldTrialsInstrumentationTest {
         "force-fieldtrials=Study1/Group1/Study2/Group2",
         "force-fieldtrial-params=Study1.Group1:a1/0.5/a2/100,Study2.Group2:a3/true"
     })
-    public void testTwoFeaturesWithDifferentTrialGroupsAndMutipleTypesOfValues() {
+    public void
+            testJava_TwoFeaturesWithDifferentTrialGroupsAndMutipleTypesOfValues_CommandLine_FieldTrialParams() {
         Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));
         Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_2));
         Assert.assertEquals("0.5", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
@@ -136,34 +214,8 @@ public final class FieldTrialsInstrumentationTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=" + FEATURE_1 + "<Study",
-        "force-fieldtrials=Study/Group"
-    })
-    public void testFeatureWithoutParams() {
-        Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));
-        Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=" + FEATURE_2 + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:101/x/y/99"
-    })
-    public void testAllCachedFieldTrialParameters() {
-        AllCachedFieldTrialParameters parameters =
-                new AllCachedFieldTrialParameters(FEATURE_MAP, FEATURE_2);
-        Map<String, String> expectedFeatures = new HashMap<>();
-        expectedFeatures.put("101", "x");
-        expectedFeatures.put("y", "99");
-        Assert.assertEquals(expectedFeatures, parameters.getParams());
-    }
-
-    @Test
-    @SmallTest
     public void testGetLastUpdateFromNativeTimeMillis() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         Assert.assertNotEquals(0, ChromeCachedFlags.getLastCachedMinimalBrowserFlagsTimeMillis());
     }
 }

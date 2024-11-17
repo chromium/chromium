@@ -10,6 +10,7 @@
 #include "ash/wm/tablet_mode/internal_input_devices_event_blocker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 
 namespace ash {
 
@@ -38,6 +39,7 @@ class TabletModeControllerTestApi {
   // Called to attach an external mouse/touchpad. If we're currently in tablet
   // mode, tablet mode will be ended because of this.
   void AttachExternalMouse();
+  void AttachBluetoothMouse(device::MockBluetoothAdapter* bluetooth_adapter);
   void AttachExternalTouchpad();
 
   // Called in association with the above to remove all mice/touchpads.

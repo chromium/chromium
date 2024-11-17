@@ -117,9 +117,8 @@ GLenum GLFormatToStorageFormat(GLenum format) {
     case GL_RED:
       return GL_R8;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return 0;
 }
 
 void GenerateTextureData(const gfx::Size& size,
@@ -167,7 +166,7 @@ bool CompareBufferToRGBABuffer(GLenum format,
           memcpy(expected, &pixels[pixels_index], 4);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
       if (memcmp(&rgba[rgba_index], expected, 4)) {
         return false;

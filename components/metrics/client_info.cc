@@ -8,6 +8,6 @@ namespace metrics {
 
 ClientInfo::ClientInfo() : installation_date(0), reporting_enabled_date(0) {}
 
-ClientInfo::~ClientInfo() {}
+ClientInfo::~ClientInfo() = default;
 
 }  // namespace metrics

@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.Origin;
@@ -51,45 +50,36 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     private final Lazy<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Lazy<CustomTabBottomBarDelegate> mBottomBarDelegate;
     private final CustomTabIntentHandler mIntentHandler;
-    private final CustomTabsConnection mConnection;
-    private final SessionDataHolder mSessionDataHolder;
     private final Activity mActivity;
 
     @Inject
     public CustomTabSessionHandler(
-            BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabActivityTabProvider tabProvider,
             Lazy<CustomTabToolbarCoordinator> toolbarCoordinator,
             Lazy<CustomTabBottomBarDelegate> bottomBarDelegate,
             CustomTabIntentHandler intentHandler,
-            CustomTabsConnection connection,
-            Activity activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            SessionDataHolder sessionDataHolder) {
-        mIntentDataProvider = intentDataProvider;
-        mTabProvider = tabProvider;
+            BaseCustomTabActivity activity) {
+        mIntentDataProvider = activity.getIntentDataProvider();
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mToolbarCoordinator = toolbarCoordinator;
         mBottomBarDelegate = bottomBarDelegate;
         mIntentHandler = intentHandler;
-        mConnection = connection;
         mActivity = activity;
-        mSessionDataHolder = sessionDataHolder;
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
 
         // The active handler will also get set in onStartWithNative, but since native may take some
         // time to initialize, we eagerly set it here to catch any messages the Custom Tabs Client
         // sends our way before that triggers.
-        mSessionDataHolder.setActiveHandler(this);
+        SessionDataHolder.getInstance().setActiveHandler(this);
     }
 
     @Override
     public void onStartWithNative() {
-        mSessionDataHolder.setActiveHandler(this);
+        SessionDataHolder.getInstance().setActiveHandler(this);
     }
 
     @Override
     public void onStopWithNative() {
-        mSessionDataHolder.removeActiveHandler(this);
+        SessionDataHolder.getInstance().removeActiveHandler(this);
     }
 
     @Override
@@ -168,7 +158,8 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     @Override
     public boolean canUseReferrer(Uri referrer) {
         CustomTabsSessionToken session = mIntentDataProvider.getSession();
-        String packageName = mConnection.getClientPackageNameForSession(session);
+        String packageName =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
         if (TextUtils.isEmpty(packageName)) return false;
         Origin origin = Origin.create(referrer);
         if (origin == null) return false;

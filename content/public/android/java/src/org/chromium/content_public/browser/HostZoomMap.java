@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.content.browser.HostZoomMapImpl;
 
@@ -132,5 +133,15 @@ public class HostZoomMap {
      */
     public static double getDefaultZoomLevel(BrowserContextHandle context) {
         return HostZoomMapImpl.getDefaultZoomLevel(context);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void setSystemFontScaleForTesting(float systemFontScale) {
+        HostZoomMapImpl.setSystemFontScaleForTesting(systemFontScale);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void setShouldAdjustForOSLevelForTesting(boolean shouldAdjustForOSLevel) {
+        HostZoomMapImpl.setShouldAdjustForOSLevelForTesting(shouldAdjustForOSLevel);
     }
 }

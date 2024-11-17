@@ -112,7 +112,6 @@ class PeerConnectionTrackerHost
   void WebRtcEventLogWrite(int lid,
                            const std::vector<uint8_t>& output) override;
   void AddStandardStats(int lid, base::Value::List value) override;
-  void AddLegacyStats(int lid, base::Value::List value) override;
 
   GlobalRenderFrameHostId frame_id_;
   base::ProcessId peer_pid_;

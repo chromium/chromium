@@ -41,15 +41,12 @@ std::vector<T> All() {
 
 void IncludeRevampSectionsOnly(std::vector<mojom::Section>& sections) {
   std::erase_if(sections, [](mojom::Section section) {
-    // TODO(b/292678609) Gradually add checks here to filter out old Sections
-    // from the set of available Sections. An old Section can be filtered out
-    // once it has been fully incorporated into the new revamp Section.
-    return section == mojom::Section::kDateAndTime ||
-           section == mojom::Section::kCrostini ||
+    //  An old Section can be filtered out once it has been fully incorporated
+    // into the new revamp Section.
+    return section == mojom::Section::kCrostini ||
            section == mojom::Section::kFiles ||
            section == mojom::Section::kLanguagesAndInput ||
            section == mojom::Section::kPrinting ||
-           section == mojom::Section::kReset ||
            section == mojom::Section::kSearchAndAssistant;
   });
 }

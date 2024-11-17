@@ -20,12 +20,14 @@ suite('SidePanelResultsFrame', () => {
   let testBrowserProxy: TestLensSidePanelBrowserProxy;
   let lensSidePanelElement: LensSidePanelAppElement;
 
-  setup(() => {
+  setup(async () => {
     testBrowserProxy = new TestLensSidePanelBrowserProxy();
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
+    // Side panel should call getIsContextualSearchbox on construction.
+    await testBrowserProxy.handler.whenCalled('getIsContextualSearchbox');
     document.body.appendChild(lensSidePanelElement);
   });
 

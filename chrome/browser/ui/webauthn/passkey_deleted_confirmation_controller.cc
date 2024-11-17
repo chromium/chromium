@@ -25,19 +25,6 @@ std::u16string PasskeyDeletedConfirmationController::GetTitle() const {
       IDS_WEBAUTHN_GPM_PASSKEY_UPDATE_NEEDED_TITLE);
 }
 
-void PasskeyDeletedConfirmationController::OnGotItButtonClicked() {
-  dismissal_reason_ = password_manager::metrics_util::CLICKED_GOT_IT;
-}
-
-void PasskeyDeletedConfirmationController::OnManagePasskeysButtonClicked() {
-  dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
-  if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(
-        password_manager::ManagePasswordsReferrer::
-            kPasskeyDeletedConfirmationBubble);
-  }
-}
-
 void PasskeyDeletedConfirmationController::ReportInteractions() {
   password_manager::metrics_util::LogGeneralUIDismissalReason(
       dismissal_reason_);

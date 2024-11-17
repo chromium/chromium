@@ -195,7 +195,7 @@ NSString* GetOverridenReason(
   // The owning Browser.
   raw_ptr<Browser> _browser;
   raw_ptr<PrefService> _localState;
-  raw_ptr<PrefService> _browserStatePrefs;
+  raw_ptr<PrefService> _profilePrefs;
   SceneState* _sceneState;
   // Loads favicons.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -237,16 +237,16 @@ NSString* GetOverridenReason(
   if (self) {
     CHECK(IsTabResumptionEnabled());
     _localState = localState;
-    _browserStatePrefs = prefService;
+    _profilePrefs = prefService;
     _browser = browser;
     _tabId = SessionID::InvalidValue();
     _sceneState = _browser->GetSceneState();
     _webStateList = _browser->GetWebStateList();
-    _isOffTheRecord = _browser->GetBrowserState()->IsOffTheRecord();
+    _isOffTheRecord = _browser->GetProfile()->IsOffTheRecord();
 
     if (IsHomeCustomizationEnabled()) {
       _tabResumptionDisabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:_browserStatePrefs
+          initWithPrefService:_profilePrefs
                      prefName:
                          prefs::
                              kHomeCustomizationMagicStackTabResumptionEnabled];
@@ -258,12 +258,10 @@ NSString* GetOverridenReason(
       [_tabResumptionDisabled setObserver:self];
     }
 
-    ChromeBrowserState* browserState = _browser->GetBrowserState();
-    _sessionSyncService =
-        SessionSyncServiceFactory::GetForBrowserState(browserState);
-    _syncService = SyncServiceFactory::GetForBrowserState(browserState);
-    _faviconLoader =
-        IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+    ProfileIOS* profile = _browser->GetProfile();
+    _sessionSyncService = SessionSyncServiceFactory::GetForProfile(profile);
+    _syncService = SyncServiceFactory::GetForProfile(profile);
+    _faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
     _recentTabBrowserAgent =
         StartSurfaceRecentTabBrowserAgent::FromBrowser(_browser);
     _URLLoadingBrowserAgent = UrlLoadingBrowserAgent::FromBrowser(_browser);
@@ -272,15 +270,14 @@ NSString* GetOverridenReason(
     StartSurfaceRecentTabBrowserAgent::FromBrowser(_browser)->AddObserver(
         _startSurfaceObserver.get());
     if (IsTabResumption1_5Enabled()) {
-      _pageImageService =
-          PageImageServiceFactory::GetForBrowserState(browserState);
+      _pageImageService = PageImageServiceFactory::GetForProfile(profile);
     }
     _imageFetcher = std::make_unique<image_fetcher::ImageDataFetcher>(
-        browserState->GetSharedURLLoaderFactory());
+        profile->GetSharedURLLoaderFactory());
 
     if (IsTabResumption2_0Enabled()) {
       _visitedURLRankingService =
-          VisitedURLRankingServiceFactory::GetForProfile(browserState);
+          VisitedURLRankingServiceFactory::GetForProfile(profile);
     }
 
     if (IsTabResumption2_0Enabled() ||
@@ -318,7 +315,7 @@ NSString* GetOverridenReason(
 - (void)openTabResumptionItem:(TabResumptionItem*)item {
   [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
   tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(item.tabURL,
-                                                         _browserStatePrefs);
+                                                         _profilePrefs);
   [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                                     kTabResumption];
 
@@ -350,13 +347,13 @@ NSString* GetOverridenReason(
 }
 
 - (void)openDistantTab:(TabResumptionItem*)item {
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ProfileIOS* profile = _browser->GetProfile();
   sync_sessions::OpenTabsUIDelegate* openTabsDelegate =
-      SessionSyncServiceFactory::GetForBrowserState(browserState)
+      SessionSyncServiceFactory::GetForProfile(profile)
           ->GetOpenTabsUIDelegate();
   const sessions::SessionTab* sessionTab = nullptr;
-  if (openTabsDelegate->GetForeignTab(_sessionTag, _tabId.value(),
-                                      &sessionTab)) {
+  if (openTabsDelegate && openTabsDelegate->GetForeignTab(
+                              _sessionTag, _tabId.value(), &sessionTab)) {
     bool isNTP = _webStateList->GetActiveWebState()->GetVisibleURL() ==
                  kChromeUINewTabURL;
     new_tab_page_uma::RecordNTPAction(
@@ -365,7 +362,7 @@ NSString* GetOverridenReason(
 
     std::unique_ptr<web::WebState> webState =
         session_util::CreateWebStateWithNavigationEntries(
-            browserState, sessionTab->current_navigation_index,
+            profile, sessionTab->current_navigation_index,
             sessionTab->navigations);
     _webStateList->ReplaceWebStateAt(_webStateList->active_index(),
                                      std::move(webState));
@@ -380,7 +377,7 @@ NSString* GetOverridenReason(
 
 - (void)disableModule {
   tab_resumption_prefs::DisableTabResumption(
-      IsHomeCustomizationEnabled() ? _browserStatePrefs : _localState);
+      IsHomeCustomizationEnabled() ? _profilePrefs : _localState);
 }
 
 - (void)setDelegate:(id<TabResumptionHelperDelegate>)delegate {
@@ -477,7 +474,7 @@ NSString* GetOverridenReason(
 // Fetches the item to display from the model.
 - (void)fetchLastTabResumptionItem {
   if (tab_resumption_prefs::IsTabResumptionDisabled(
-          IsHomeCustomizationEnabled() ? _browserStatePrefs : _localState)) {
+          IsHomeCustomizationEnabled() ? _profilePrefs : _localState)) {
     return;
   }
   if (_visitedURLRankingService && IsTabResumption2_0Enabled()) {
@@ -487,8 +484,11 @@ NSString* GetOverridenReason(
             CreateDefaultFetchOptionsForTabResumption(),
         base::BindOnce(
             ^(visited_url_ranking::ResultStatus status,
+              visited_url_ranking::URLVisitsMetadata url_visits_metadata,
               std::vector<visited_url_ranking::URLVisitAggregate> urls) {
-              [weakSelf onURLFetched:std::move(urls) withStatus:status];
+              [weakSelf onURLFetched:std::move(urls)
+                        withMetadata:url_visits_metadata
+                          withStatus:status];
             }));
     return;
   }
@@ -573,11 +573,11 @@ NSString* GetOverridenReason(
 
 // Fetches the snapshot of the tab showing `item`.
 - (void)fetchSnapshotForItem:(TabResumptionItem*)item {
-  if (!IsTabResumption1_5ThumbnailsImageEnabled()) {
+  if (!IsTabResumptionImagesThumbnailsEnabled()) {
     return [self fetchSalientImageForItem:item];
   }
   BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browser->GetBrowserState());
+      BrowserListFactory::GetForProfile(_browser->GetProfile());
   for (Browser* browser : browserList->BrowsersOfType(
            BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* const webStateList = browser->GetWebStateList();
@@ -611,7 +611,7 @@ NSString* GetOverridenReason(
 
 // Fetches the salient image for `item`.
 - (void)fetchSalientImageForItem:(TabResumptionItem*)item {
-  if (!IsTabResumption1_5SalientImageEnabled() || !_pageImageService ||
+  if (!IsTabResumptionImagesSalientEnabled() || !_pageImageService ||
       !base::FeatureList::IsEnabled(page_image_service::kImageService)) {
     return;
   }
@@ -759,6 +759,7 @@ NSString* GetOverridenReason(
 // Called when the URLs have been fetched from the different fetcher.
 // This method just forwards the URLs to the ranker.
 - (void)onURLFetched:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
+        withMetadata:(const visited_url_ranking::URLVisitsMetadata&)metadata
           withStatus:(visited_url_ranking::ResultStatus)status {
   if (status != visited_url_ranking::ResultStatus::kSuccess) {
     return;
@@ -769,20 +770,25 @@ NSString* GetOverridenReason(
   _visitedURLRankingService->RankURLVisitAggregates(
       config, std::move(URLs),
       base::BindOnce(
-          ^(visited_url_ranking::ResultStatus rankStatus,
+          ^(visited_url_ranking::URLVisitsMetadata local_metadata,
+            visited_url_ranking::ResultStatus rankStatus,
             std::vector<visited_url_ranking::URLVisitAggregate> rankedURLs) {
-            [weakSelf onURLRanked:std::move(rankedURLs) withStatus:rankStatus];
-          }));
+            [weakSelf onURLRanked:std::move(rankedURLs)
+                     withMetadata:local_metadata
+                       withStatus:rankStatus];
+          },
+          metadata));
 }
 
 // Called when the URLs have been ranked. Select the first one and decorate it.
 - (void)onURLRanked:(std::vector<visited_url_ranking::URLVisitAggregate>)URLs
+       withMetadata:(const visited_url_ranking::URLVisitsMetadata&)metadata
          withStatus:(visited_url_ranking::ResultStatus)status {
   if (status != visited_url_ranking::ResultStatus::kSuccess ||
       URLs.size() == 0) {
     return;
   }
-  if (!IsTabResumption2BubbleEnabled()) {
+  if (!IsTabResumption2ReasonEnabled()) {
     return [self onURLDecorated:std::move(URLs) withStatus:status];
   }
 
@@ -802,7 +808,7 @@ NSString* GetOverridenReason(
 
   __weak __typeof(self) weakSelf = self;
   _visitedURLRankingService->DecorateURLVisitAggregates(
-      {}, std::move(selectedURLs),
+      {}, metadata, std::move(selectedURLs),
       base::BindOnce(
           ^(visited_url_ranking::ResultStatus decorateStatus,
             std::vector<visited_url_ranking::URLVisitAggregate> decoratedURLs) {
@@ -859,7 +865,7 @@ NSString* GetOverridenReason(
   }
   item.commandHandler = self;
   item.delegate = self;
-  if (IsTabResumption2BubbleEnabled()) {
+  if (IsTabResumption2ReasonEnabled()) {
     NSString* overridenReason = GetOverridenReason(*URLAggregate);
     if (overridenReason) {
       item.reason = overridenReason;

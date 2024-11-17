@@ -985,6 +985,17 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
 #endif
   gpu_info_ = gpu_info;
   RecordDiscreteGpuHistograms(gpu_info_);
+#if BUILDFLAG(ENABLE_VULKAN)
+  // Remember the initial hardware_supports_vulkan value so it doesn't change
+  // if GPU process restarts as Vulkan might get disabled by GPU mode fallback.
+  if (fixed_gpu_info_.hardware_supports_vulkan.has_value()) {
+    gpu_info_.hardware_supports_vulkan =
+        *fixed_gpu_info_.hardware_supports_vulkan;
+  } else {
+    fixed_gpu_info_.hardware_supports_vulkan =
+        gpu_info.hardware_supports_vulkan;
+  }
+#endif
 #if BUILDFLAG(IS_WIN)
   if (d3d12_feature_level != 0) {
     gpu_info_.d3d12_feature_level = d3d12_feature_level;
@@ -1140,13 +1151,16 @@ void GpuDataManagerImplPrivate::TerminateInfoCollectionGpuProcess() {
 #endif
 
 void GpuDataManagerImplPrivate::PostCreateThreads() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // Launch the info collection GPU process to collect Dawn info.
   // Not to affect Chrome startup, this is done in a delayed mode, i.e., 120
   // seconds after Chrome startup.
-  RequestDawnInfo(/*delayed=*/true, /*collect_metrics=*/true);
+  bool delay_dawn_collection =
+      !command_line->HasSwitch(switches::kCollectDawnInfoEagerly);
+  RequestDawnInfo(/*delayed=*/delay_dawn_collection,
+                  /*collect_metrics=*/true);
 
 #if BUILDFLAG(IS_WIN)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
     // This is for the info collection test of the gpu integration tests.
     RequestDx12VulkanVideoGpuInfoIfNeeded(

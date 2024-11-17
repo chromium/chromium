@@ -467,6 +467,7 @@ if (!is_android) {
 
       deps += [
         ":vr_common",
+        "//chrome/browser/content_settings:content_settings_factory",
         "//components/content_settings/core/browser",
         "//device/vr:directx_helpers",
         "//device/vr:openxr_data",

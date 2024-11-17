@@ -32,6 +32,7 @@ tby@chromium.org
 jimmyxgong@chromium.org
 yulunwu@chromium.org
 michelefan@chromium.org
+junis@google.com
 # ash_growth
 wutao@chromium.com
 # assistant
@@ -224,7 +225,6 @@ nyquist@chromium.org
 tby@chromium.org
 # login
 jorgelo@chromium.org
-alemate@chromium.org
 # mac
 bur@google.com
 mek@chromium.org
@@ -289,7 +289,6 @@ jdonnelly@chromium.org
 manukh@chromium.org
 toyoshim@chromium.org
 # oobe
-alemate@chromium.org
 bohdanty@google.com
 ziegltrum@google.com
 # optimization
@@ -304,9 +303,9 @@ johnidel@chromium.org
 jonross@chromium.org
 dullweber@chromium.org
 olivierli@chromium.org
-alemate@chromium.org
 bzielinski@google.com
 orrb@google.com
+junis@google.com
 # page
 csharrison@chromium.org
 iclelland@chromium.org
@@ -430,6 +429,7 @@ dmurph@chromium.org
 # signin
 alexilin@chromium.org
 bsazonov@chromium.org
+myuu@google.com
 rsult@google.com
 # simple
 wanderview@chromium.org
@@ -451,13 +451,14 @@ johnidel@chromium.org
 tbansal@chromium.org
 # sync
 rushans@google.com
-victorvianna@google.com
 # tab
 ckitagawa@chromium.org
 joenotcharles@google.com
 olivierli@chromium.org
 dfried@chromium.org
 dljames@chromium.org
+#toasts
+agale@chromium.org
 # translate
 perrier@chromium.org
 curranmax@chromium.org
@@ -497,3 +498,4 @@ alcooper@chromium.org
 # Custom: not in any subdirectory
 lyf@chromium.org
 pwnall@chromium.org
+victorvianna@google.com

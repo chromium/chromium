@@ -81,7 +81,7 @@ suite('onboardingChooseWpDisableMethodPageTest', function() {
 
     const expectedPromise = new PromiseResolver<{stateResult: StateResult}>();
     assert(service);
-    service.chooseManuallyDisableWriteProtect = () => expectedPromise.promise;
+    service.setManuallyDisableWriteProtect = () => expectedPromise.promise;
 
     assert(component);
     const manualDisableComponent =
@@ -98,7 +98,7 @@ suite('onboardingChooseWpDisableMethodPageTest', function() {
 
     const expectedPromise = new PromiseResolver<{stateResult: StateResult}>();
     assert(service);
-    service.chooseRsuDisableWriteProtect = () => expectedPromise.promise;
+    service.setRsuDisableWriteProtect = () => expectedPromise.promise;
 
     assert(component);
     const rsuDisableComponent =

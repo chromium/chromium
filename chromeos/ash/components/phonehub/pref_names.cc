@@ -4,9 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/pref_names.h"
 
-namespace ash {
-namespace phonehub {
-namespace prefs {
+namespace ash::phonehub::prefs {
 
 // The last provided camera roll access status provided by the phone. This pref
 // stores the numerical value associated with the
@@ -86,6 +84,4 @@ const char kChromebookPseudonymousId[] =
 const char kPseudonymousIdRotationDate[] =
     "cros.phonehub.pseudonymous_id_rotation_date";
 
-}  // namespace prefs
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub::prefs

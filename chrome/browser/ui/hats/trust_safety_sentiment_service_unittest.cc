@@ -8,7 +8,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
-#include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -21,6 +20,7 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -65,16 +65,14 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string privacy_settings_trigger_id = "privacy-settings-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
     std::string transactions_trigger_id = "transactions-test";
-    std::string privacy_sandbox_4_consent_accept_trigger_id =
-        "privacy-sandbox-4-consent-accept";
-    std::string privacy_sandbox_4_consent_decline_trigger_id =
-        "privacy-sandbox-4-consent-decline";
-    std::string privacy_sandbox_4_notice_ok_trigger_id =
-        "privacy-sandbox-4-notice-ok";
-    std::string privacy_sandbox_4_notice_settings_trigger_id =
-        "privacy-sandbox-4-notice-settings";
     std::string transactions_password_manager_time = "20s";
   };
+
+  // Skip deprecated PrivacySandbox3 and 4 values.
+  bool IsDeprecatedFeatureArea(int enum_value) {
+    return ((enum_value >= 4 && enum_value <= 9) ||
+            (enum_value >= 15 && enum_value <= 18));
+  }
 
   void SetupFeatureParameters(FeatureParams params) {
     feature_list()->InitAndEnableFeatureWithParameters(
@@ -89,25 +87,9 @@ class TrustSafetySentimentServiceTest : public testing::Test {
              params.privacy_settings_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
             {"transactions-probability", params.transactions_probability},
-            {"privacy-sandbox-4-consent-accept-probability",
-             params.privacy_sandbox_4_consent_accept_probability},
-            {"privacy-sandbox-4-consent-decline-probability",
-             params.privacy_sandbox_4_consent_decline_probability},
-            {"privacy-sandbox-4-notice-ok-probability",
-             params.privacy_sandbox_4_notice_ok_probability},
-            {"privacy-sandbox-4-notice-settings-probability",
-             params.privacy_sandbox_4_notice_settings_probability},
             {"privacy-settings-trigger-id", params.privacy_settings_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
             {"transactions-trigger-id", params.transactions_trigger_id},
-            {"privacy-sandbox-4-consent-accept-trigger-id",
-             params.privacy_sandbox_4_consent_accept_trigger_id},
-            {"privacy-sandbox-4-consent-decline-trigger-id",
-             params.privacy_sandbox_4_consent_decline_trigger_id},
-            {"privacy-sandbox-4-notice-ok-trigger-id",
-             params.privacy_sandbox_4_notice_ok_trigger_id},
-            {"privacy-sandbox-4-notice-settings-trigger-id",
-             params.privacy_sandbox_4_notice_settings_trigger_id},
             {"transactions-password-manager-time",
              params.transactions_password_manager_time},
         });
@@ -144,14 +126,6 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string safety_check_trigger_id = "safety-check-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
     std::string privacy_guide_trigger_id = "privacy-guide-test";
-    std::string privacy_sandbox_4_consent_accept_trigger_id =
-        "privacy-sandbox-4-consent-accept";
-    std::string privacy_sandbox_4_consent_decline_trigger_id =
-        "privacy-sandbox-4-consent-decline";
-    std::string privacy_sandbox_4_notice_ok_trigger_id =
-        "privacy-sandbox-4-notice-ok";
-    std::string privacy_sandbox_4_notice_settings_trigger_id =
-        "privacy-sandbox-4-notice-settings";
     std::string safe_browsing_interstitial_trigger_id =
         "safe-browsing-interstitial";
   };
@@ -180,14 +154,6 @@ class TrustSafetySentimentServiceTest : public testing::Test {
              params.safety_hub_interaction_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
             {"privacy-guide-probability", params.privacy_guide_probability},
-            {"privacy-sandbox-4-consent-accept-probability",
-             params.privacy_sandbox_4_consent_accept_probability},
-            {"privacy-sandbox-4-consent-decline-probability",
-             params.privacy_sandbox_4_consent_decline_probability},
-            {"privacy-sandbox-4-notice-ok-probability",
-             params.privacy_sandbox_4_notice_ok_probability},
-            {"privacy-sandbox-4-notice-settings-probability",
-             params.privacy_sandbox_4_notice_settings_probability},
             {"safe-browsing-interstitial-probability",
              params.safe_browsing_interstitial_probability},
             {"browsing-data-trigger-id", params.browsing_data_trigger_id},
@@ -200,14 +166,6 @@ class TrustSafetySentimentServiceTest : public testing::Test {
             {"safety-check-trigger-id", params.safety_check_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
             {"privacy-guide-trigger-id", params.privacy_guide_trigger_id},
-            {"privacy-sandbox-4-consent-accept-trigger-id",
-             params.privacy_sandbox_4_consent_accept_trigger_id},
-            {"privacy-sandbox-4-consent-decline-trigger-id",
-             params.privacy_sandbox_4_consent_decline_trigger_id},
-            {"privacy-sandbox-4-notice-ok-trigger-id",
-             params.privacy_sandbox_4_notice_ok_trigger_id},
-            {"privacy-sandbox-4-notice-settings-trigger-id",
-             params.privacy_sandbox_4_notice_settings_trigger_id},
             {"safe-browsing-interstitial-trigger-id",
              params.safe_browsing_interstitial_trigger_id},
         });
@@ -571,84 +529,6 @@ TEST_F(TrustSafetySentimentServiceTest, SavedCard) {
   service()->OpenedNewTabPage();
 }
 
-TEST_F(TrustSafetySentimentServiceTest,
-       InteractedWithPrivacySandbox4ConsentAccept) {
-  // Accepting Privacy Sandbox 4 consent is considered a trigger, and should
-  // make a user eligible to receive a survey.
-  FeatureParams params;
-  params.privacy_sandbox_4_consent_accept_probability = "1.0";
-  params.min_time_to_prompt = "0s";
-  params.ntp_visits_min_range = "0";
-  params.ntp_visits_max_range = "0";
-  SetupFeatureParameters(params);
-
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept, _,
-                   _, _, _));
-  service()->InteractedWithPrivacySandbox4(
-      TrustSafetySentimentService::FeatureArea::kPrivacySandbox4ConsentAccept);
-  service()->OpenedNewTabPage();
-}
-
-TEST_F(TrustSafetySentimentServiceTest,
-       InteractedWithPrivacySandbox4ConsentDecline) {
-  // Declining Privacy Sandbox 4 consent is considered a trigger, and should
-  // make a user eligible to receive a survey.
-  FeatureParams params;
-  params.privacy_sandbox_4_consent_decline_probability = "1.0";
-  params.min_time_to_prompt = "0s";
-  params.ntp_visits_min_range = "0";
-  params.ntp_visits_max_range = "0";
-  SetupFeatureParameters(params);
-
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline,
-                   _, _, _, _));
-  service()->InteractedWithPrivacySandbox4(
-      TrustSafetySentimentService::FeatureArea::kPrivacySandbox4ConsentDecline);
-  service()->OpenedNewTabPage();
-}
-
-TEST_F(TrustSafetySentimentServiceTest, InteractedWithPrivacySandbox4NoticeOk) {
-  // Acknowledging the Privacy Sandbox 4 notice is considered a trigger, and
-  // should make a user eligible to receive a survey.
-  FeatureParams params;
-  params.privacy_sandbox_4_notice_ok_probability = "1.0";
-  params.min_time_to_prompt = "0s";
-  params.ntp_visits_min_range = "0";
-  params.ntp_visits_max_range = "0";
-  SetupFeatureParameters(params);
-
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeOk,
-                           _, _, _, _));
-  service()->InteractedWithPrivacySandbox4(
-      TrustSafetySentimentService::FeatureArea::kPrivacySandbox4NoticeOk);
-  service()->OpenedNewTabPage();
-}
-
-TEST_F(TrustSafetySentimentServiceTest,
-       InteractedWithPrivacySandbox4NoticeSettings) {
-  // Going to settings from the Privacy Sandbox 4 notice is considered a
-  // trigger, and should make a user eligible to receive a survey.
-  FeatureParams params;
-  params.privacy_sandbox_4_notice_settings_probability = "1.0";
-  params.min_time_to_prompt = "0s";
-  params.ntp_visits_min_range = "0";
-  params.ntp_visits_max_range = "0";
-  SetupFeatureParameters(params);
-
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeSettings,
-                   _, _, _, _));
-  service()->InteractedWithPrivacySandbox4(
-      TrustSafetySentimentService::FeatureArea::kPrivacySandbox4NoticeSettings);
-  service()->OpenedNewTabPage();
-}
-
 TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   // Check the product specific data accompanying surveys for the Privacy
   // Settings feature area correctly records whether the user has a non default
@@ -854,8 +734,7 @@ TEST_F(TrustSafetySentimentServiceTest, AllFeatureAreasHaveTriggers) {
        enum_value <=
        static_cast<int>(TrustSafetySentimentService::FeatureArea::kMaxValue);
        ++enum_value) {
-    // Skip deprecated PrivacySandbox3 values.
-    if (enum_value >= 4 && enum_value <= 9) {
+    if (IsDeprecatedFeatureArea(enum_value)) {
       continue;
     }
     auto feature_area =
@@ -876,8 +755,7 @@ TEST_F(TrustSafetySentimentServiceTest, V2_AllFeatureAreasHaveTriggers) {
        enum_value <=
        static_cast<int>(TrustSafetySentimentService::FeatureArea::kMaxValue);
        ++enum_value) {
-    // Skip deprecated PrivacySandbox3 values.
-    if (enum_value >= 4 && enum_value <= 9) {
+    if (IsDeprecatedFeatureArea(enum_value)) {
       continue;
     }
     auto feature_area =
@@ -906,8 +784,7 @@ TEST_F(TrustSafetySentimentServiceTest, AllFeatureAreasHaveProbabilities) {
        enum_value <=
        static_cast<int>(TrustSafetySentimentService::FeatureArea::kMaxValue);
        ++enum_value) {
-    // Skip deprecated PrivacySandbox3 values.
-    if (enum_value >= 4 && enum_value <= 9) {
+    if (IsDeprecatedFeatureArea(enum_value)) {
       continue;
     }
     auto feature_area =
@@ -944,8 +821,7 @@ TEST_F(TrustSafetySentimentServiceTest, V2_AllFeatureAreasHaveProbabilities) {
        enum_value <=
        static_cast<int>(TrustSafetySentimentService::FeatureArea::kMaxValue);
        ++enum_value) {
-    // Skip deprecated PrivacySandbox3 values.
-    if (enum_value >= 4 && enum_value <= 9) {
+    if (IsDeprecatedFeatureArea(enum_value)) {
       continue;
     }
     auto feature_area =
@@ -1217,82 +1093,6 @@ TEST_F(TrustSafetySentimentServiceTest, V2_ControlGroup) {
   task_environment()->AdvanceClock(base::Seconds(40));
   session_end = base::TimeTicks::Now();
   service()->OnSessionEnded(session_end - session_start, session_end);
-  service()->OpenedNewTabPage();
-}
-
-TEST_F(TrustSafetySentimentServiceTest, V2_PrivacySandbox4ConsentAccept) {
-  // Accepting Privacy Sandbox 4 consent is considered a trigger, and should
-  // make a user eligible to receive a survey.
-  FeatureParamsV2 params;
-  params.privacy_sandbox_4_consent_accept_probability = "1.0";
-  params.min_time_to_prompt = "0s";
-  params.ntp_visits_min_range = "0";
-  params.ntp_visits_max_range = "0";
-  SetupFeatureParametersV2(params);
-
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentAccept,
-                   _, _, _, _));
-  service()->InteractedWithPrivacySandbox4(
-      TrustSafetySentimentService::FeatureArea::kPrivacySandbox4ConsentAccept);
-  service()->OpenedNewTabPage();
-}
-
-TEST_F(TrustSafetySentimentServiceTest, V2_PrivacySandbox4ConsentDecline) {
-  // Declining Privacy Sandbox 4 consent is considered a trigger, and should
-  // make a user eligible to receive a survey.
-  FeatureParamsV2 params;
-  params.privacy_sandbox_4_consent_decline_probability = "1.0";
-  params.min_time_to_prompt = "0s";
-  params.ntp_visits_min_range = "0";
-  params.ntp_visits_max_range = "0";
-  SetupFeatureParametersV2(params);
-
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentDecline,
-                   _, _, _, _));
-  service()->InteractedWithPrivacySandbox4(
-      TrustSafetySentimentService::FeatureArea::kPrivacySandbox4ConsentDecline);
-  service()->OpenedNewTabPage();
-}
-
-TEST_F(TrustSafetySentimentServiceTest, V2_PrivacySandbox4NoticeOk) {
-  // Acknowledging the Privacy Sandbox 4 notice is considered a trigger, and
-  // should make a user eligible to receive a survey.
-  FeatureParamsV2 params;
-  params.privacy_sandbox_4_notice_ok_probability = "1.0";
-  params.min_time_to_prompt = "0s";
-  params.ntp_visits_min_range = "0";
-  params.ntp_visits_max_range = "0";
-  SetupFeatureParametersV2(params);
-
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk, _, _,
-                   _, _));
-  service()->InteractedWithPrivacySandbox4(
-      TrustSafetySentimentService::FeatureArea::kPrivacySandbox4NoticeOk);
-  service()->OpenedNewTabPage();
-}
-
-TEST_F(TrustSafetySentimentServiceTest, V2_PrivacySandbox4NoticeSettings) {
-  // Going to settings from the Privacy Sandbox 4 notice is considered a
-  // trigger, and should make a user eligible to receive a survey.
-  FeatureParamsV2 params;
-  params.privacy_sandbox_4_notice_settings_probability = "1.0";
-  params.min_time_to_prompt = "0s";
-  params.ntp_visits_min_range = "0";
-  params.ntp_visits_max_range = "0";
-  SetupFeatureParametersV2(params);
-
-  EXPECT_CALL(
-      *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings,
-                   _, _, _, _));
-  service()->InteractedWithPrivacySandbox4(
-      TrustSafetySentimentService::FeatureArea::kPrivacySandbox4NoticeSettings);
   service()->OpenedNewTabPage();
 }
 

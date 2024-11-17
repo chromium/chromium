@@ -36,6 +36,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     private final SigninManager mSigninManager;
     private final SyncService mSyncService;
     private final ProfileDataCache mProfileDataCache;
+    private final HistorySyncConfig mConfig;
     private final @SigninAccessPoint int mAccessPoint;
     private final boolean mShouldSignOutOnDecline;
     private final HistorySyncHelper mHistorySyncHelper;
@@ -44,6 +45,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
             Context context,
             HistorySyncCoordinator.HistorySyncDelegate delegate,
             Profile profile,
+            HistorySyncConfig config,
             @SigninAccessPoint int accessPoint,
             boolean showEmailInFooter,
             boolean shouldSignOutOnDecline,
@@ -57,6 +59,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mHistorySyncHelper = HistorySyncHelper.getForProfile(profile);
         mProfileDataCache.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
+        mConfig = config;
         mAccountEmail =
                 CoreAccountInfo.getEmailFrom(
                         mSigninManager
@@ -76,6 +79,8 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                         profileData,
                         this::onAcceptClicked,
                         this::onDeclineClicked,
+                        mConfig.titleId,
+                        mConfig.subtitleId,
                         footerString,
                         mUseLandscapeLayout);
     }
@@ -96,7 +101,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     public void onSignedOut() {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.HistorySyncOptIn.Aborted", mAccessPoint, SigninAccessPoint.MAX);
-        mDelegate.dismissHistorySync();
+        mDelegate.dismissHistorySync(/* isHistorySyncAccepted= */ false);
     }
 
     void destroy() {
@@ -130,7 +135,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ true);
         mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ true);
         mHistorySyncHelper.clearHistorySyncDeclinedPrefs();
-        mDelegate.dismissHistorySync();
+        mDelegate.dismissHistorySync(/* isHistorySyncAccepted= */ true);
     }
 
     private void onDeclineClicked(View view) {
@@ -157,7 +162,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                     SignoutReason.USER_DECLINED_HISTORY_SYNC_AFTER_DEDICATED_SIGN_IN);
         }
         mHistorySyncHelper.recordHistorySyncDeclinedPrefs();
-        mDelegate.dismissHistorySync();
+        mDelegate.dismissHistorySync(/* isHistorySyncAccepted= */ false);
     }
 
     /**

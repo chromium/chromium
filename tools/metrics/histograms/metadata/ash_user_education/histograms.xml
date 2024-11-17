@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WelcomeTour.Aborted.Duration" units="ms"
     expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
     Records the duration of the Welcome Tour when it has been aborted, starting
@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WelcomeTour.Aborted.Reason"
     enum="WelcomeTourAbortedReason" expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
     Records the reason that the Welcome Tour was aborted after starting.
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WelcomeTour.Completed.Duration" units="ms"
     expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
     Records the duration of the Welcome Tour when it has been completed,
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WelcomeTour.Interaction.Count"
     enum="WelcomeTourInteraction" expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
     Records each time the user performs the given interaction when the tour was
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WelcomeTour.Interaction.FirstTime.{Interaction}"
     units="ms" expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
     Records the time it took the user to interact with {Interaction}, when the
@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WelcomeTour.Interaction.FirstTimeBucket.{Interaction}"
     enum="TimeBucket" expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
     Records the time it took the user to interact with {Interaction}, when the
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WelcomeTour.Prevented.Reason"
     enum="WelcomeTourPreventedReason" expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
     Records the reason that the Welcome Tour was prevented from starting. Only
@@ -150,14 +150,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WelcomeTour.Step.Aborted" enum="WelcomeTourStep"
     expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>Records that the Welcome Tour was aborted on a given step.</summary>
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Duration.{Step}" units="ms"
     expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
     Records the duration of the {Step} step of the Welcome Tour.
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
     expires_after="2025-07-01">
-  <owner>dmblack@google.com</owner>
+  <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
     Records that a step of the Welcome Tour was shown. Each step should be

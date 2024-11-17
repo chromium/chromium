@@ -68,7 +68,7 @@ class PhoneFieldParserTest : public testing::Test {
   // Creates a `FormFieldData` object with the provided properties, assigns a
   // unique renderer id and appends it to `list_`. The `FieldGlobalId` of the
   // object is returned.
-  autofill::FieldGlobalId AppendField(const TestFieldData& field_data);
+  FieldGlobalId AppendField(const TestFieldData& field_data);
 
   // Clears the state, creates fields as specified in `fields` and tries to
   // parse it.
@@ -98,7 +98,7 @@ void PhoneFieldParserTest::CheckField(const FieldGlobalId id,
   EXPECT_EQ(expected_type, it->second.BestHeuristicType());
 }
 
-autofill::FieldGlobalId PhoneFieldParserTest::AppendField(
+FieldGlobalId PhoneFieldParserTest::AppendField(
     const TestFieldData& field_data) {
   FormFieldData field;
   field.set_form_control_type(field_data.type);
@@ -121,7 +121,7 @@ void PhoneFieldParserTest::RunParsingTest(
   Clear();
 
   // Construct all the test fields.
-  std::vector<autofill::FieldGlobalId> global_ids;
+  std::vector<FieldGlobalId> global_ids;
   for (const TestFieldData& field : fields) {
     global_ids.push_back(AppendField(field));
   }

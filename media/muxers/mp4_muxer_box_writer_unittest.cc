@@ -100,11 +100,11 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
   void CreateContext(std::vector<uint8_t>& written_data) {
     auto tracker = std::make_unique<OutputPositionTracker>(base::BindRepeating(
         [&](base::OnceClosure run_loop_quit, std::vector<uint8_t>* written_data,
-            std::string_view mp4_data_string) {
+            base::span<const uint8_t> mp4_data_string) {
           // Callback is called per box output.
 
-          std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                    std::back_inserter(*written_data));
+          base::ranges::copy(mp4_data_string,
+                             std::back_inserter(*written_data));
           std::move(run_loop_quit).Run();
         },
         run_loop_.QuitClosure(), &written_data));
@@ -773,6 +773,45 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
   EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, adts_channel_layout);
   EXPECT_EQ(1024, sample_count);
   EXPECT_FALSE(metadata_frame);
+}
+#endif
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieHEVCDecoderConfigurationRecord) {
+  // Tests `hvc1` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::HEVCDecoderConfiguration hevc = {};
+  std::vector<uint8_t> test_data{
+      0x01, 0x01, 0x60, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x3c, 0xf0, 0x00, 0xfc, 0xfd, 0xf8, 0xf8, 0x00, 0x00, 0x0f, 0x03, 0x20,
+      0x00, 0x01, 0x00, 0x18, 0x40, 0x01, 0x0c, 0x01, 0xff, 0xff, 0x01, 0x60,
+      0x00, 0x00, 0x03, 0x00, 0x80, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00,
+      0x3c, 0x95, 0xc0, 0x90, 0x21, 0x00, 0x01, 0x00, 0x27, 0x42, 0x01, 0x01,
+      0x01, 0x60, 0x00, 0x00, 0x03, 0x00, 0x80, 0x00, 0x00, 0x03, 0x00, 0x00,
+      0x03, 0x00, 0x3c, 0xa0, 0x0a, 0x08, 0x0b, 0x9f, 0x79, 0x65, 0x79, 0x24,
+      0xca, 0xe0, 0x10, 0x00, 0x00, 0x06, 0x40, 0x00, 0x00, 0xbb, 0x50, 0x80,
+      0x22, 0x00, 0x01, 0x00, 0x06, 0x44, 0x01, 0xc1, 0x73, 0xd1, 0x89};
+  EXPECT_TRUE(
+      hevc.hevc_config_record.Parse(test_data.data(), test_data.size()));
+
+  Mp4MovieHEVCDecoderConfigurationBoxWriter box_writer(*context(), hevc);
+  FlushAndWait(&box_writer);
+
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  EXPECT_TRUE(box_reader->ScanChildren());
+
+  mp4::HEVCDecoderConfigurationRecord hevc_config_reader;
+
+  EXPECT_TRUE(box_reader->ReadChild(&hevc_config_reader));
+  std::vector<uint8_t> output;
+  hevc_config_reader.Serialize(output);
+
+  EXPECT_TRUE(test_data == output);
 }
 #endif
 

@@ -124,8 +124,7 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
         extension_count_++;
       }
       if (management_policy_ &&
-          !management_policy_->UserMayLoad(extension.get(),
-                                           nullptr /*=ignore error */)) {
+          !management_policy_->UserMayLoad(extension.get())) {
         item_blocked_by_policy_exists_ = true;
       }
     }
@@ -138,8 +137,7 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
     // |item_blocked_by_policy_exists_| may also need to be updated.
     if (management_policy_) {
       for (const auto& extension : delegate_->GetBlocklistedExtensions()) {
-        if (!management_policy_->UserMayLoad(extension.get(),
-                                             nullptr /*=ignore error */)) {
+        if (!management_policy_->UserMayLoad(extension.get())) {
           item_blocked_by_policy_exists_ = true;
           break;
         }
@@ -151,17 +149,11 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   // GlobalError overrides:
   bool HasMenuItem() override { return false; }
 
-  int MenuItemCommandID() override {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
-  }
+  int MenuItemCommandID() override { NOTREACHED(); }
 
-  std::u16string MenuItemLabel() override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
-  }
+  std::u16string MenuItemLabel() override { NOTREACHED(); }
 
-  void ExecuteMenuItem(Browser* browser) override { NOTREACHED_IN_MIGRATION(); }
+  void ExecuteMenuItem(Browser* browser) override { NOTREACHED(); }
 
   std::u16string GetBubbleViewTitle() override {
     return GenerateTitle(delegate_->GetBlocklistedExtensions(),

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils_chromeos.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
@@ -13,11 +13,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/login/auth/password_visibility_utils.h"
 #include "components/user_manager/user.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsOsReauthAllowedAsh(Profile* profile,
                           base::TimeDelta auth_token_lifetime) {
   const bool user_cannot_manually_enter_password =
@@ -37,6 +37,6 @@ bool IsOsReauthAllowedAsh(Profile* profile,
 
   return auth_token->GetAge() <= auth_token_lifetime;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

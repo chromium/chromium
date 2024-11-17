@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hanguli ahnmatae</translation>
 <translation id="1155759005174418845">katalaani keel</translation>
 <translation id="1168100932582989117">Google'i nimeserverid</translation>
+<translation id="1170788066030116158">Jäädvustamiskuupäev</translation>
 <translation id="1172970565351728681">Jäänud on ligikaudu <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Muuda nime</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, telefoni aku: <ph name="BATTERY_STATUS" />%, üksikasjad</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Autentimissertifikaat lükati kaugühenduse kaudu tagasi</translation>
 <translation id="4394214039309501350">Väline link</translation>
 <translation id="4394980935660306080">Varem sellel nädalal</translation>
+<translation id="4397435965699247285">OneDrive pole ilma võrguühenduseta saadaval</translation>
 <translation id="4398096759193130964">Taastage üksused või lohistage need prügikastist välja uude kausta</translation>
 <translation id="4401287888955153199">Ekstrakti kõik</translation>
 <translation id="4410695710508688828">Ekstraktimistoiming nurjus. <ph name="ERROR_MESSAGE" /></translation>

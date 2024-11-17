@@ -281,6 +281,7 @@ int ResourceRequestSender::SendAsync(
   }
 #endif
   if (code_cache_host) {
+    used_code_cache_fetcher_ = true;
     code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
         *request, *code_cache_host,
         WTF::BindOnce(&ResourceRequestSender::DidReceiveCachedCode,
@@ -480,6 +481,7 @@ void ResourceRequestSender::OnReceivedResponse(
   }
 
   if (ShouldDeferTask()) {
+    latency_critical_operation_deferred_ = true;
     pending_tasks_.push_back(WTF::BindOnce(
         &ResourceRequestSender::OnReceivedResponse, weak_factory_.GetWeakPtr(),
         std::move(response_head), std::move(body), std::move(cached_metadata),
@@ -525,6 +527,7 @@ void ResourceRequestSender::OnReceivedRedirect(
     network::mojom::URLResponseHeadPtr response_head,
     base::TimeTicks redirect_ipc_arrival_time) {
   if (ShouldDeferTask()) {
+    latency_critical_operation_deferred_ = true;
     pending_tasks_.emplace_back(WTF::BindOnce(
         &ResourceRequestSender::OnReceivedRedirect, weak_factory_.GetWeakPtr(),
         redirect_info, std::move(response_head), redirect_ipc_arrival_time));
@@ -598,6 +601,7 @@ void ResourceRequestSender::OnRequestComplete(
     const network::URLLoaderCompletionStatus& status,
     base::TimeTicks complete_ipc_arrival_time) {
   if (ShouldDeferTask()) {
+    latency_critical_operation_deferred_ = true;
     pending_tasks_.emplace_back(WTF::BindOnce(
         &ResourceRequestSender::OnRequestComplete, weak_factory_.GetWeakPtr(),
         status, complete_ipc_arrival_time));
@@ -650,6 +654,12 @@ void ResourceRequestSender::OnRequestComplete(
           "Blink.ResourceRequest.CompletionDelay2",
           complete_ipc_arrival_time - renderer_status.completion_time);
     }
+  }
+
+  if (used_code_cache_fetcher_) {
+    base::UmaHistogramBoolean(
+        "Blink.ResourceRequest.DeferedRequestWaitingOnCodeCache",
+        latency_critical_operation_deferred_);
   }
   // The request ID will be removed from our pending list in the destructor.
   // Normally, dispatching this message causes the reference-counted request to

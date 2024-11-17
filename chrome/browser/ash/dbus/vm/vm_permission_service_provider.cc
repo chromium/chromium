@@ -351,7 +351,7 @@ void VmPermissionServiceProvider::UpdateVmPermissions(VmInfo* vm) {
       UpdateBruschettaPermissions(vm);
       break;
     case VmInfo::CrostiniVm:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -79,28 +79,13 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
       std::unique_ptr<EncodeOutput> encode_output,
       std::unique_ptr<VTVideoEncodeAccelerator::BitstreamBufferRef> buffer_ref);
 
-  // Get the supported H.264 profiles.
-  SupportedProfiles GetSupportedH264Profiles();
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  // Get the supported HEVC profiles.
-  SupportedProfiles GetSupportedHEVCProfiles();
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-
-  // Reset the encoder's compression session by destroying the existing one
-  // using DestroyCompressionSession() and creating a new one. The new session
-  // is configured using ConfigureCompressionSession().
-  bool ResetCompressionSession(VideoCodec codec);
-
-  // Create a compression session.
-  bool CreateCompressionSession(VideoCodec codec, const gfx::Size& input_size);
+  // Reset the encoder's compression session by destroying the existing one and
+  // creating a new one. The new session is configured using
+  // ConfigureCompressionSession().
+  bool ResetCompressionSession();
 
   // Configure the current compression session using current encoder settings.
   bool ConfigureCompressionSession(VideoCodec codec);
-
-  // Destroy the current compression session if any. Blocks until all pending
-  // frames have been flushed out (similar to EmitFrames without doing any
-  // encoding work).
-  void DestroyCompressionSession();
 
   // Flushes the encoder. The flush callback won't be run until all pending
   // encodes have been completed.
@@ -112,7 +97,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
 
   base::TimeDelta AssignMonotonicTimestamp();
 
-  base::apple::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
+  video_toolbox::ScopedVTCompressionSessionRef compression_session_;
 
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_ = 0;

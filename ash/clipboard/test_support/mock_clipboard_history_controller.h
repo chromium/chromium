@@ -12,6 +12,7 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/scoped_clipboard_history_pause.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace crosapi::mojom {
 enum class ClipboardHistoryControllerShowSource;
@@ -20,10 +21,6 @@ enum class ClipboardHistoryControllerShowSource;
 namespace gfx {
 class Rect;
 }  // namespace gfx
-
-namespace ui {
-enum MenuSourceType;
-}  // namespace ui
 
 namespace ash {
 
@@ -42,13 +39,13 @@ class MockClipboardHistoryController : public ClipboardHistoryController {
   MOCK_METHOD(bool,
               ShowMenu,
               (const gfx::Rect&,
-               ui::MenuSourceType,
+               ui::mojom::MenuSourceType,
                crosapi::mojom::ClipboardHistoryControllerShowSource),
               (override));
   MOCK_METHOD(bool,
               ShowMenu,
               (const gfx::Rect&,
-               ui::MenuSourceType,
+               ui::mojom::MenuSourceType,
                crosapi::mojom::ClipboardHistoryControllerShowSource,
                OnMenuClosingCallback),
               (override));

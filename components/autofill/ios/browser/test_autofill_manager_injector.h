@@ -35,7 +35,7 @@ namespace autofill {
 //   class MockAutofillManager : BrowserAutofillManager {
 //    public:
 //     explicit MockAutofillManager(AutofillDriverIOS* driver)
-//         : BrowserAutofillManager(driver, "en-US") {}
+//         : BrowserAutofillManager(driver) {}
 //     MOCK_METHOD(...);
 //     ...
 //   };

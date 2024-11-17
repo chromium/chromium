@@ -38,7 +38,9 @@ class FloatingAccessibilityBubbleView : public TrayBubbleView {
   bool IsAnchoredToStatusArea() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // views::View:
+  void AdjustAccessibleName(std::u16string& new_name,
+                            ax::mojom::NameFrom& name_from) override;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
@@ -75,6 +77,8 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
     // When the layout of the view changes and we may need to reposition
     // ourselves.
     virtual void OnLayoutChanged() {}
+    virtual void OnFocused() {}
+    virtual void OnBlurred() {}
     virtual ~Delegate() = default;
   };
 
@@ -102,6 +106,8 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
+  void OnViewFocused(views::View* view) override;
+  void OnViewBlurred(views::View* view) override;
 
   // KeyboardControllerObserver:
   void OnKeyboardVisibilityChanged(bool visible) override;

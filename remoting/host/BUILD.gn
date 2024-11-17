@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/util/process_version.gni")
@@ -50,7 +51,12 @@ group("all") {
 
 process_version("remoting_version") {
   template_file = "//remoting/host/version.h.in"
-  sources = [ branding_path ]
+  sources = [
+    branding_path,
+
+    # This is the Chrome branding, which includes "MAC_TEAM_ID".
+    branding_file_path,
+  ]
   output = "$target_gen_dir/version.h"
 }
 
@@ -241,6 +247,29 @@ if (is_linux) {
   }
 }
 
+source_set("mojo_caller_security_checker") {
+  sources = [
+    "mojo_caller_security_checker.cc",
+    "mojo_caller_security_checker.h",
+  ]
+  deps = [
+    ":remoting_version",
+    "//base",
+    "//components/named_mojo_ipc_server",
+    "//remoting/host/base",
+  ]
+  if (is_mac) {
+    deps += [ "//remoting/host/mac:constants" ]
+    frameworks = [
+      "Security.framework",
+      "Carbon.framework",
+    ]
+  }
+  if (is_win) {
+    deps += [ "//remoting/host/win:trust_util" ]
+  }
+}
+
 # This must be a static library instead of a source set because
 # remoting_unittests requires that remoting_me2me_host.cc not be pulled in,
 # which in turn depends on remoting_me2me_host_static which isn't part of that
@@ -373,8 +402,6 @@ static_library("common") {
     "keyboard_layout_monitor.h",
     "me2me_heartbeat_service_client.cc",
     "me2me_heartbeat_service_client.h",
-    "mojo_caller_security_checker.cc",
-    "mojo_caller_security_checker.h",
     "mojo_video_capturer.cc",
     "mojo_video_capturer.h",
     "mojo_video_capturer_list.cc",
@@ -487,6 +514,7 @@ static_library("common") {
     ":common_headers",
     ":enterprise_params",
     ":host_extension",
+    ":mojo_caller_security_checker",
     "//ipc",
     "//remoting/host/base",
     "//remoting/proto",
@@ -725,7 +753,7 @@ static_library("common") {
       "//media",
       "//media/gpu:gpu",
       "//mojo/core/embedder:embedder",
-      "//remoting/base:breakpad",
+      "//remoting/base/crash",
       "//remoting/host/crash:crash_uploader",
       "//remoting/host/win",
       "//remoting/host/win:messages",
@@ -758,6 +786,7 @@ if (is_linux && (ozone_platform_x11 || remoting_use_x11)) {
       "//build/config/linux/gtk",
       "//remoting/base:logging",
       "//remoting/host/linux:x11",
+      "//remoting/host/linux/dbus_interfaces:interface_headers",
       "//third_party/webrtc_overrides:webrtc_component",
       "//ui/base",
       "//ui/base/x",
@@ -847,7 +876,6 @@ source_set("unit_tests") {
     "it2me/it2me_confirmation_dialog_proxy_unittest.cc",
     "it2me/it2me_host_unittest.cc",
     "it2me/it2me_native_messaging_host_unittest.cc",
-    "it2me_desktop_environment_unittest.cc",
     "mojo_video_capturer_list_unittest.cc",
     "mouse_cursor_monitor_proxy_unittest.cc",
     "mouse_shape_pump_unittest.cc",
@@ -886,6 +914,7 @@ source_set("unit_tests") {
     "//components/named_mojo_ipc_server",
     "//components/named_mojo_ipc_server:test_support",
     "//net:test_support",
+    "//remoting/base:errors",
     "//remoting/base:session_policies",
     "//remoting/codec:encoder",
     "//remoting/host/base",
@@ -914,6 +943,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/accessibility:test_support",
     "//ui/base",
     "//ui/events",
   ]
@@ -943,6 +973,10 @@ source_set("unit_tests") {
   if (is_linux) {
     sources += [ "pairing_registry_delegate_linux_unittest.cc" ]
     deps += [ "//remoting/host/linux:unit_tests" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//remoting/host/mac:unit_tests" ]
   }
 
   if (remoting_use_x11) {
@@ -1142,6 +1176,7 @@ if (enable_me2me_host) {
       "//net",
       "//remoting/base",
       "//remoting/base:authorization",
+      "//remoting/base:errors",
       "//remoting/base:session_policies",
       "//remoting/host",
       "//remoting/host/base",
@@ -1188,7 +1223,10 @@ if (enable_me2me_host) {
     }
 
     if (is_mac) {
-      deps += [ "//remoting/host/mac:permission_checking" ]
+      deps += [
+        "//remoting/host/mac:agent_process_broker_client",
+        "//remoting/host/mac:permission_checking",
+      ]
     }
   }
 
@@ -1207,7 +1245,7 @@ if (enable_me2me_host) {
       "//base:debugging_buildflags",
       "//mojo/core/embedder:embedder",
       "//remoting/base",
-      "//remoting/base:breakpad",
+      "//remoting/base/crash",
       "//remoting/host/base",
       "//remoting/host/setup:common",
     ]

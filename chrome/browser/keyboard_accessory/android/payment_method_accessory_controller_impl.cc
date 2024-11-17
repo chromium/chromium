@@ -15,7 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
+#include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
@@ -56,8 +56,12 @@ std::u16string GetTitle(bool has_suggestions) {
                    IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE);
 }
 
-void AddSimpleField(std::u16string data, UserInfo* user_info, bool enabled) {
+void AddSimpleField(std::u16string data,
+                    UserInfo* user_info,
+                    AccessorySuggestionType suggestion_type,
+                    bool enabled) {
   user_info->add_field(AccessorySheetField::Builder()
+                           .SetSuggestionType(suggestion_type)
                            .SetDisplayText(std::move(data))
                            .SetSelectable(enabled)
                            .Build());
@@ -68,19 +72,28 @@ void AddCardDetailsToUserInfo(const CreditCard& card,
                               std::u16string cvc,
                               bool enabled) {
   if (card.HasValidExpirationDate()) {
-    AddSimpleField(card.Expiration2DigitMonthAsString(), user_info, enabled);
-    AddSimpleField(card.Expiration4DigitYearAsString(), user_info, enabled);
+    AddSimpleField(card.Expiration2DigitMonthAsString(), user_info,
+                   AccessorySuggestionType::kCreditCardExpirationMonth,
+                   enabled);
+    AddSimpleField(card.Expiration4DigitYearAsString(), user_info,
+                   AccessorySuggestionType::kCreditCardExpirationYear, enabled);
   } else {
-    AddSimpleField(std::u16string(), user_info, enabled);
-    AddSimpleField(std::u16string(), user_info, enabled);
+    AddSimpleField(std::u16string(), user_info,
+                   AccessorySuggestionType::kCreditCardExpirationMonth,
+                   enabled);
+    AddSimpleField(std::u16string(), user_info,
+                   AccessorySuggestionType::kCreditCardExpirationYear, enabled);
   }
 
   if (card.HasNameOnCard()) {
-    AddSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL), user_info, enabled);
+    AddSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL), user_info,
+                   AccessorySuggestionType::kCreditCardNameFull, enabled);
   } else {
-    AddSimpleField(std::u16string(), user_info, enabled);
+    AddSimpleField(std::u16string(), user_info,
+                   AccessorySuggestionType::kCreditCardNameFull, enabled);
   }
-  AddSimpleField(cvc, user_info, enabled);
+  AddSimpleField(cvc, user_info, AccessorySuggestionType::kCreditCardCvc,
+                 enabled);
 }
 
 UserInfo TranslateCard(const CreditCard* data, bool enabled) {
@@ -93,11 +106,13 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   // The `text_to_fill` field is set to an empty string as we're populating the
   // `id` of the `UserInfoField` which would be used to determine the type of
   // the card and fill the form accordingly.
-  user_info.add_field(AccessorySheetField::Builder()
-                          .SetDisplayText(obfuscated_number)
-                          .SetId(data->guid())
-                          .SetSelectable(enabled)
-                          .Build());
+  user_info.add_field(
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
+          .SetDisplayText(obfuscated_number)
+          .SetId(data->guid())
+          .SetSelectable(enabled)
+          .Build());
   AddCardDetailsToUserInfo(*data, &user_info, std::u16string(), enabled);
 
   return user_info;
@@ -109,12 +124,14 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
   const CreditCard& card = data->card;
   UserInfo user_info(card.network(), GetCardArtUrl(card));
   std::u16string card_number = card.GetRawInfo(CREDIT_CARD_NUMBER);
-  user_info.add_field(AccessorySheetField::Builder()
-                          .SetDisplayText(card.FullDigitsForDisplay())
-                          .SetTextToFill(card_number)
-                          .SetA11yDescription(card_number)
-                          .SetSelectable(enabled)
-                          .Build());
+  user_info.add_field(
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
+          .SetDisplayText(card.FullDigitsForDisplay())
+          .SetTextToFill(card_number)
+          .SetA11yDescription(card_number)
+          .SetSelectable(enabled)
+          .Build());
   AddCardDetailsToUserInfo(card, &user_info, data->cvc, enabled);
 
   return user_info;
@@ -274,15 +291,15 @@ void PaymentMethodAccessoryControllerImpl::OnOptionSelected(
     ShowAutofillCreditCardSettings(&GetWebContents());
     return;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unhandled selected action: " << static_cast<int>(selected_action);
+  NOTREACHED() << "Unhandled selected action: "
+               << static_cast<int>(selected_action);
 }
 
 void PaymentMethodAccessoryControllerImpl::OnToggleChanged(
     AccessoryAction toggled_action,
     bool enabled) {
-  NOTREACHED_IN_MIGRATION()
-      << "Unhandled toggled action: " << static_cast<int>(toggled_action);
+  NOTREACHED() << "Unhandled toggled action: "
+               << static_cast<int>(toggled_action);
 }
 
 // static
@@ -530,14 +547,13 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfIban(
     return false;
   }
 
-  Suggestion::BackendId backend_id = Suggestion::BackendId(
-      Suggestion::InstrumentId((*iban_iter).instrument_id()));
+  Suggestion::InstrumentId instrument_id(iban_iter->instrument_id());
   GetAutofillManager()
       ->client()
       .GetPaymentsAutofillClient()
       ->GetIbanAccessManager()
       ->FetchValue(
-          backend_id,
+          instrument_id,
           base::BindOnce(&PaymentMethodAccessoryControllerImpl::ApplyToField,
                          weak_ptr_factory_.GetWeakPtr()));
   return true;

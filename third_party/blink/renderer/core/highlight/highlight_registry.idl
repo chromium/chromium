@@ -6,4 +6,14 @@
   Exposed=Window
 ] interface HighlightRegistry {
   maplike<DOMString, Highlight>;
+
+  // Returns the sequence of highlights that intersect with the specified
+  // coordinates, ordered by priority. It also returns highlights inside
+  // shadow trees if the shadow root is passed in as part of the |options|
+  // parameter.
+  [RuntimeEnabled=HighlightsFromPoint]
+  sequence<Highlight> highlightsFromPoint(
+      float x,
+      float y,
+      optional HighlightsFromPointOptions options = {});
 };

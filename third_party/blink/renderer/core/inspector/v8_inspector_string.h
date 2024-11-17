@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -40,10 +42,7 @@ class CORE_EXPORT StringUtil {
   STATIC_ONLY(StringUtil);
 
  public:
-  static String fromUTF8(const uint8_t* data, size_t length) {
-    return String::FromUTF8(reinterpret_cast<const char*>(data), length);
-  }
-
+  static String fromUTF8(const uint8_t* data, size_t length);
   static String fromUTF16LE(const uint16_t* data, size_t length);
 
   static const uint8_t* CharactersLatin1(const String& s) {
@@ -65,10 +64,26 @@ class CORE_EXPORT Binary : public crdtp::Serializable {
  public:
   class Impl : public RefCounted<Impl> {
    public:
+    using iterator = base::CheckedContiguousIterator<const uint8_t>;
+
     Impl() = default;
     virtual ~Impl() = default;
+
     virtual const uint8_t* data() const = 0;
     virtual size_t size() const = 0;
+
+    // Iterators, so this type meets the requirements of
+    // `std::ranges::contiguous_range`.
+    iterator begin() const {
+      // SAFETY: `data()` points to at least `size()` valid bytes, so the
+      // computed value here is no further than just-past-the-end of the
+      // allocation.
+      return UNSAFE_BUFFERS(iterator(data(), data() + size()));
+    }
+    iterator end() const {
+      // SAFETY: As in `begin()` above.
+      return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
+    }
   };
 
   Binary() = default;
@@ -119,12 +134,12 @@ struct ProtocolTypeTraits<blink::protocol::Binary> {
 namespace detail {
 template <>
 struct MaybeTypedef<WTF::String> {
-  typedef ValueMaybe<WTF::String> type;
+  using type = std::optional<WTF::String>;
 };
 
 template <>
 struct MaybeTypedef<blink::protocol::Binary> {
-  typedef ValueMaybe<blink::protocol::Binary> type;
+  using type = std::optional<blink::protocol::Binary>;
 };
 
 }  // namespace detail

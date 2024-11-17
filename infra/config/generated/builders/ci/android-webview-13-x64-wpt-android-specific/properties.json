@@ -47,7 +47,8 @@
           "builder": "android-webview-13-x64-wpt-android-specific",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-webview-13-x64-wpt-android-specific/targets"
     }
   },
   "$build/reclient": {

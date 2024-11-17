@@ -85,6 +85,14 @@ enum IDBTransactionDurability {
   Relaxed,
 };
 
+// Differentiates between get all operations, which include: `getAllKeys()`,
+// `getAll()` and `getAllRecords()`.
+enum IDBGetAllResultType {
+  Keys,
+  Values,
+  Records,
+};
+
 union IDBKey {
   array<IDBKey> key_array;
   array<uint8> binary;
@@ -202,7 +210,6 @@ struct IDBFileInfo {
 
 struct IDBBlobInfo {
   pending_remote<blink.mojom.Blob> blob;
-  string uuid;
   mojo_base.mojom.String16 mime_type;
   int64 size;
   IDBFileInfo? file;
@@ -222,6 +229,20 @@ struct IDBReturnValue {
   IDBValue value;
   IDBKey primary_key;
   IDBKeyPath key_path;
+};
+
+// The results for `getAllKeys()`, `getAll()` and `getAllRecords()` provide an
+// array of `IDBRecord` values.  Each type of `getAll` set only the necessary
+// properties.  For example, `getAllKeys()` provides an array of `IDBRecord`
+// values with the `primary_key` set only. `return_value` and `index_key` remain
+// null.
+struct IDBRecord {
+  IDBKey? primary_key;
+  IDBReturnValue? return_value;
+
+  // Optional.  Set by `IDBIndex::getAllRecords()` only.  `null` for
+  // `IDBObjectStore::getAllRecords()`.
+  IDBKey? index_key;
 };
 
 // The IDBFactoryClient interface is used to return results for requests to open or
@@ -312,17 +333,13 @@ union IDBDatabaseGetResult {
 
 // Result receiver type for GetAll to incrementally receive chunks of results.
 interface IDBDatabaseGetAllResultSink {
-  // Incrementally receive some values. If `done` is true, then all keys have
-  // been sent. Otherwise, `ReceiveValues` or `OnError` will be called again
-  // later.
-  ReceiveValues(array<IDBReturnValue> values, bool done);
-
-  // Incrementally receive some keys. If `done` is true, then all keys have been
-  // sent. Otherwise, `ReceiveValues` or `OnError` will be called again later.
-  ReceiveKeys(array<IDBKey> keys, bool done);
+  // Incrementally receive some records. If `done` is true, then all records
+  // have been sent. Otherwise, `ReceiveResults` or `OnError` will be called
+  // again later.
+  ReceiveResults(array<IDBRecord> records, bool done);
 
   // If any error occurs, call this function.  Once this function has been
-  // called, ReceiveValues/ReceiveKeys should not be called again and
+  // called, `ReceiveResults` should not be called again and
   // the entire result should be considered an error.
   OnError(IDBError error);
 };
@@ -359,12 +376,21 @@ interface IDBDatabase {
       IDBKeyRange key_range,
       bool key_only)
     => (IDBDatabaseGetResult result);
+  // Reads the results for a `getAllKeys()`, `getAll()` or `getAllRecords()`
+  // request from either an `IDBObjectStore` or an `IDBIndex`. `index_id` must
+  // be `IndexedDBIndexMetadata::kInvalidId` to read from an `IDBObjectStore`.
+  // To to return results, `GetAll()` streams an array of `IDBRecord` values in
+  // batches to the `IDBDatabaseGetAllResultSink` receiver until the request
+  // completes.  Each `IDBRecord` result contains necessary properties only.
+  // For example, the `IDBRecord` result for `getAllKeys()` contains
+  // `primary_key` only.
   GetAll(int64 transaction_id,
          int64 object_store_id,
          int64 index_id,
          IDBKeyRange key_range,
-         bool key_only,
-         int64 max_count)
+         IDBGetAllResultType result_type,
+         int64 max_count,
+         IDBCursorDirection direction)
     => (pending_associated_receiver<IDBDatabaseGetAllResultSink> receiver);
   SetIndexKeys(int64 transaction_id,
                int64 object_store_id,

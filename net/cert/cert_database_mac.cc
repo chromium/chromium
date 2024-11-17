@@ -56,8 +56,7 @@ OSStatus Notifier::KeychainCallback(SecKeychainEvent keychain_event,
                                     SecKeychainCallbackInfo* info,
                                     void* context) {
   if (info->version > SEC_KEYCHAIN_SETTINGS_VERS1) {
-    NOTREACHED_IN_MIGRATION();
-    return errSecWrongSecVersion;
+    NOTREACHED();
   }
 
   if (info->pid == base::GetCurrentProcId()) {

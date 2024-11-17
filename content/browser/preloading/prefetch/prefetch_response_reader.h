@@ -45,7 +45,12 @@ class CONTENT_EXPORT PrefetchResponseReader final
     : public network::mojom::URLLoader,
       public base::RefCounted<PrefetchResponseReader> {
  public:
-  PrefetchResponseReader();
+  // TODO(crbug.com/373553133): Stop using two different constructors once we
+  // find how we enable `is_reusable_` path.
+  explicit PrefetchResponseReader(bool is_reusable);
+  // For
+  // //content/browser/preloading/prefetch/prefetch_streaming_url_loader_unittest.cc
+  explicit PrefetchResponseReader();
 
   void SetStreamingURLLoader(
       base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader);
@@ -108,6 +113,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  bool is_reusable() const { return is_reusable_; }
+
  private:
   // Identifies a client in `serving_url_loader_clients_`.
   using ServingUrlLoaderClientId = mojo::RemoteSetElementId;
@@ -162,6 +169,9 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // stored into `head_` (for non-redirect responses) or `event_queue_` (or
   // redirect responses).
   void StoreInfoFromResponseHead(const network::mojom::URLResponseHead& head);
+
+  // If true, the body is reusable with help of `PrefetchDataPipeTee`.
+  const bool is_reusable_;
 
   // All URLLoader events are queued up here.
   std::vector<base::RepeatingCallback<void(ServingUrlLoaderClientId)>>
@@ -243,9 +253,9 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   // The prefetched data and metadata. Not set for a redirect response.
   network::mojom::URLResponseHeadPtr head_;
-  // `body_` is set/used only when `features::kPrefetchReusable` is disabled.
+  // `body_` is set/used only when `!is_reusable_`.
   mojo::ScopedDataPipeConsumerHandle body_;
-  // `body_tee_` is set/used only when `features::kPrefetchReusable` is enabled.
+  // `body_tee_` is set/used only when `is_reusable_`.
   scoped_refptr<PrefetchDataPipeTee> body_tee_;
   std::optional<network::URLLoaderCompletionStatus> completion_status_;
   // Recorded on `OnComplete` and used to check if the prefetch data is still

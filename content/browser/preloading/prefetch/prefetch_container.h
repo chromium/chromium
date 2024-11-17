@@ -17,13 +17,15 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/prefetch_browser_callbacks.h"
+#include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "net/http/http_no_vary_search_data.h"
+#include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -105,12 +107,12 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr);
 
   // Ctor used for browser-initiated prefetch.
   // We can pass the referring origin of prefetches via `referring_origin` if
-  // necessary. When `std::nullopt` is passed, the referring origin will be
-  // opaque.
+  // necessary.
   PrefetchContainer(
       WebContents& referring_web_contents,
       const GURL& url,
@@ -118,12 +120,13 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
-      base::WeakPtr<PreloadingAttempt> attempt = nullptr);
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr,
+      std::optional<PreloadingHoldbackStatus> holdback_status_override =
+          std::nullopt);
 
   // Ctor used for browser-initiated prefetch that doesn't depend on web
   // contents. We can pass the referring origin of prefetches via
-  // `referrer_origin` if necessary. When `std::nullopt` is passed, the
-  // referring origin will be opaque.
+  // `referrer_origin` if necessary.
   PrefetchContainer(
       BrowserContext* browser_context,
       const GURL& url,
@@ -133,8 +136,9 @@ class CONTENT_EXPORT PrefetchContainer {
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
-      std::optional<PrefetchBrowserCallback> prefetch_browser_callback =
-          std::nullopt);
+      const net::HttpRequestHeaders& additional_headers = {},
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
+          nullptr);
 
   ~PrefetchContainer();
 
@@ -174,7 +178,11 @@ class CONTENT_EXPORT PrefetchContainer {
     Key(std::optional<blink::DocumentToken> referring_document_token, GURL url);
     ~Key();
 
-    Key(const Key&);
+    // Movable and copyable.
+    Key(Key&& other);
+    Key& operator=(Key&& other);
+    Key(const Key& other);
+    Key& operator=(const Key& other);
 
     bool operator==(const Key& rhs) const = default;
     bool operator<(const Key& rhs) const {
@@ -202,10 +210,9 @@ class CONTENT_EXPORT PrefetchContainer {
     friend CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
                                                    const Key& prefetch_key);
 
-    const absl::variant<std::optional<blink::DocumentToken>,
-                        net::NetworkIsolationKey>
+    absl::variant<std::optional<blink::DocumentToken>, net::NetworkIsolationKey>
         referring_document_token_or_nik_;
-    const GURL url_;
+    GURL url_;
   };
 
   // Observer interface to listen to lifecycle events of `PrefetchContainer`.
@@ -224,6 +231,9 @@ class CONTENT_EXPORT PrefetchContainer {
     // TODO(crbug.com/356314759): Update the description to "Called just
     // before dtor is called."
     virtual void OnWillBeDestroyed(PrefetchContainer& prefetch_container) = 0;
+    // Called when initial eligibility is got.
+    virtual void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
+                                         PreloadingEligibility eligibility) = 0;
     // Called if non-redirect header of prefetch response is determined, i.e.
     // successfully received or fetch requests including redirects failed.
     // Callers can check success/failure by `GetNonRedirectHead()`.
@@ -258,7 +268,9 @@ class CONTENT_EXPORT PrefetchContainer {
   bool IsRendererInitiated() const;
 
   // The origin and that initiates the prefetch request.
-  const url::Origin& GetReferringOrigin() const { return referring_origin_; }
+  const std::optional<url::Origin> GetReferringOrigin() const {
+    return referring_origin_;
+  }
 
   // Whether or not an isolated network context is required to the next
   // prefetch.
@@ -300,6 +312,17 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchStatus GetPrefetchStatus() const;
+
+  // These are intended to be called on
+  // PrefetchService::CheckAndSetPrefetchHoldbackStatus() to set this overridden
+  // prefetch status to `attempt_`.
+  bool HasOverriddenHoldbackStatus() const {
+    return holdback_status_override_.has_value();
+  }
+  PreloadingHoldbackStatus GetOverriddenHoldbackStatus() const {
+    CHECK(holdback_status_override_);
+    return holdback_status_override_.value();
+  }
 
   // The state enum of the current prefetch, to replace `PrefetchStatus`.
   // https://crbug.com/1494771
@@ -362,6 +385,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // response, and not serve any prefetched resources.
   void SetIsDecoy(bool is_decoy) { is_decoy_ = is_decoy; }
   bool IsDecoy() const { return is_decoy_; }
+
+  // Whether the prefetch request is cross-site/cross-origin for given origin.
+  bool IsCrossSiteRequest(const url::Origin& origin) const;
+  bool IsCrossOriginRequest(const url::Origin& origin) const;
 
   // Whether this prefetch is potentially contaminated by cross-site state.
   // If so, it may need special handling for privacy.
@@ -430,16 +457,37 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnPrefetchComplete(
       const network::URLLoaderCompletionStatus& completion_status);
 
+  // TODO(crbug.com/372186548): Revisit the shape of ServableState.
+  //
+  // See also https://crrev.com/c/5831122
   enum class ServableState {
-    // Not servable nor should block until head received.
-    kNotServable,
+    // `PrefetchService` is checking eligibility of the prefetch or waiting load
+    // start after eligibility check.
+    //
+    // Prefetch matching process should block until eligibility is got (and load
+    // start)
+    // not to fall back normal navigation without waiting prefetch ahead of
+    // prerender and send a duplicated fetch request.
+    //
+    // This state occurs only if `kPrerender2FallbackPrefetchSpecRules` is
+    // enabled. Otherwise, `kNotServable` is returned for this period.
+    kShouldBlockUntilEligibilityGot,
 
-    // Servable.
+    // The load is started but non redirect header is not received yet.
+    //
+    // Prefetch matching process should block until the head of this is received
+    // on a navigation to a matching URL, as a server can send a response header
+    // including NoVarySearch header that contradicts NoVarySearch hint.
+    kShouldBlockUntilHeadReceived,
+
+    // This received non redirect header and is not expired.
+    //
+    // Note that it needs more checks to serve, e.g. cookie check. See also e.g.
+    // `PrefetchMatchResolver2::OnDeterminedHead()`.
     kServable,
 
-    // |PrefetchService| should block until the head of |this| is
-    // received on a navigation to a matching URL.
-    kShouldBlockUntilHeadReceived,
+    // Not other states.
+    kNotServable,
   };
 
   // Note: Even if this returns `kServable`, `CreateRequestHandler()` can still
@@ -516,6 +564,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // |SimulateAttemptAtRequestStartForTest| but also marks the prefetch as
   // completed.
   void SimulateAttemptAtInterceptorForTest();
+  // Simulates a prefetch container that failed at the eligibility check.
+  void SimulateEligibilityCheckFailedForTest(PreloadingEligibility eligibility);
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
@@ -657,6 +707,12 @@ class CONTENT_EXPORT PrefetchContainer {
 
   bool IsExactMatch(const GURL& url) const;
   bool IsNoVarySearchHeaderMatch(const GURL& url) const;
+  // Checks that the URL matches to the NoVarySearch hint with a precondition.
+  //
+  // The precondition is that a non redirect header is not received, as
+  // NoVarySearch hint is a mechanism to wait prefetches that is expected to
+  // receive NoVarySearch header.
+  bool ShouldWaitForNoVarySearchHeader(const GURL& url) const;
 
   // Records metrics when serving result is determined.
   //
@@ -670,6 +726,40 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnUnregisterCandidate(const GURL& navigated_url,
                              bool is_served,
                              std::optional<base::TimeDelta> blocked_duration);
+
+  // TODO(crbug.com/372186548): Revisit the semantics of
+  // `IsLikelyAheadOfPrerender()`.
+  //
+  // Returns true iff this prefetch was triggered for ahead of prerender or was
+  // migrated with such ones.
+  //
+  // Currently, we (`PrerendererImpl`) start a prefetch ahead of prerender just
+  // before starting a prerender and make them race 1. to reduce fetch request
+  // even if prerender failed and fell back to normal navigation, 2. to buy time
+  // for renderer process initialization of prerender.
+  //
+  // This flag is to indicate it's likely there is a such concurrent-ish
+  // prerender request that wants to claim this prefetch even if it is not
+  // started to avoid duplicated network requests, and thus if this is true, we
+  // go through `kBlockUntilHeadUntilEligibilityGot` code path.
+  //
+  // - This flag is set if `max_preloading_type` is `PreloadingType::kPrerender`
+  //   on `PrefetchContainer::ctor`.
+  // - This flag is updated with prefetch migration `MigrateNewlyAdded()`: If we
+  //   replace existing `PrefetchContainer` with such prerender-initiated
+  //   `PrefetchContainer` with the same `PrefetchContainer::Key`, then we also
+  //   transitively set the flag for the existing `PrefetchContainer` as well,
+  //   because we'll still anticipate the prerendering request to hit the
+  //   existing `PrefetchContainer` as it has the same key.
+  bool IsLikelyAheadOfPrerender() const {
+    return is_likely_ahead_of_prerender_;
+  }
+  // TODO(crbug.com/372186548): Revisit for right naming.
+  //
+  // Migrate newly added `PrefetchContainer` into this as keys are conflicted.
+  //
+  // See also `PrefetchService::AddPrefetchContainerWithoutStartingPrefetch()`.
+  void MigrateNewlyAdded(std::unique_ptr<PrefetchContainer> added);
 
   bool is_in_dtor() const { return is_in_dtor_; }
 
@@ -685,7 +775,7 @@ class CONTENT_EXPORT PrefetchContainer {
  private:
   PrefetchContainer(
       const GlobalRenderFrameHostId& referring_render_frame_host_id,
-      const url::Origin& referring_origin,
+      const std::optional<url::Origin>& referring_origin,
       const std::optional<size_t>& referring_url_hash,
       const PrefetchContainer::Key& key,
       const PrefetchType& prefetch_type,
@@ -694,15 +784,23 @@ class CONTENT_EXPORT PrefetchContainer {
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
       base::WeakPtr<BrowserContext> browser_context,
       ukm::SourceId ukm_source_id,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
+      std::optional<PreloadingHoldbackStatus> holdback_status_override,
       std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
-      std::optional<PrefetchBrowserCallback> prefetch_browser_callback,
+      const net::HttpRequestHeaders& additional_headers,
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       bool is_javascript_enabled);
 
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.
   void SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
       PrefetchStatus prefetch_status);
+
+  // Updates `attempt_`'s outcome and failure reason based on
+  // `new_prefetch_status`.
+  void SetTriggeringOutcomeAndFailureReasonFromStatus(
+      PrefetchStatus new_prefetch_status);
 
   // Add client hints headers to a request bound for |origin|.
   void AddClientHintsHeaders(const url::Origin& origin,
@@ -724,6 +822,17 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
   const char* GetSecPurposeHeaderValue(const GURL& request_url) const;
 
+  // Called when a prefetch request could not be started because of eligibility
+  // reasons. Should only be called for the initial prefetch request and not
+  // redirects.
+  void OnInitialPrefetchFailedIneligible(PreloadingEligibility eligibility);
+
+  // Record `prefetch_status` to UMA if it hasn't already been recorded for this
+  // container.
+  // Note: We use a parameter instead of just `prefetch_status_` as it may not
+  // be updated to the latest value when this method is called.
+  void MaybeRecordPrefetchStatusToUMA(PrefetchStatus prefetch_status);
+
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
@@ -731,8 +840,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // The origin and URL that initiates the prefetch request.
   // For renderer-initiated prefetch, this is calculated by referring
   // RenderFrameHost's LastCommittedOrigin. For browser-initiated prefetch, this
-  // is sometimes explicitly passed via ctor, otherwise opaque origin.
-  const url::Origin referring_origin_;
+  // is sometimes explicitly passed via ctor.
+  const std::optional<url::Origin> referring_origin_;
   // Used by metrics for equality checks, only works for renderer-initiated
   // triggers.
   const std::optional<size_t> referring_url_hash_;
@@ -777,6 +886,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // TODO(crbug.com/40075414): Use `load_state_` instead for non-metrics
   // purpose.
   std::optional<PrefetchStatus> prefetch_status_;
+  bool prefetch_status_recorded_to_uma_ = false;
 
   // True iff `PrefetchStatus` was set to `kPrefetchNotUsedCookiesChanged` once.
   //
@@ -816,10 +926,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // The sizes information of the prefetched response.
   std::optional<PrefetchResponseSizes> prefetch_response_sizes_;
 
-  // The amount  of time it took for the prefetch to complete.
+  // The amount of time it took for the prefetch to complete.
   std::optional<base::TimeDelta> fetch_duration_;
 
-  // The amount  of time it took for the headers to be received.
+  // The amount of time it took for the headers to be received.
   std::optional<base::TimeDelta> header_latency_;
 
   // Whether or not a navigation to this prefetch occurred.
@@ -844,6 +954,31 @@ class CONTENT_EXPORT PrefetchContainer {
   // Weak pointer to DevTools observer
   base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer_;
 
+  // Information of preload pipeline that this prefetch belongs/is related to.
+  //
+  // If a prerender triggers a prefetch ahead of prerender, it needs to get to
+  // know information of the prefetch, e.g eligibility, to judge to abort
+  // prerender when prefetch failed. Unfortunately we can't pass the information
+  // at the prefetch matching process, as prefetch may fail before it and other
+  // `NavigationLoaderInterceptor` e.g. one of service worker can intercept.
+  //
+  // So, we pass such information via pipeline infos.
+  //
+  // - `redirect_chain_[0].eligibility_`
+  // - `prefetch_status_`
+  //
+  // The values must be synchronized both when these fields are updated and when
+  // a new pipeline info added to `inherited_preload_pipeline_infos_`.
+  //
+  // A new pipeline info added when another prefetch is migrated into it. See
+  // `MigrateNewlyAdded()`.
+  //
+  // Note that we distinguish the primary one and inherited ones because we send
+  // CDP events with id of `preload_pipeline_info_`.
+  scoped_refptr<PreloadPipelineInfo> preload_pipeline_info_;
+  std::vector<scoped_refptr<PreloadPipelineInfo>>
+      inherited_preload_pipeline_infos_;
+
   // `PreloadingAttempt` is used to track the lifecycle of the preloading event,
   // and reports various statuses to UKM dashboard. It is initialised along with
   // `this`, and destroyed when `WCO::DidFinishNavigation` is fired.
@@ -851,6 +986,12 @@ class CONTENT_EXPORT PrefetchContainer {
   // holdback status, triggering outcome and failure reason are set in
   // `SetPrefetchStatus`.
   base::WeakPtr<PreloadingAttempt> attempt_;
+
+  // If set, this value is used to override holdback status derived by the
+  // normal process. It is set to `attempt_` on
+  // PrefetchService::CheckAndSetPrefetchHoldbackStatus().
+  std::optional<PreloadingHoldbackStatus> holdback_status_override_ =
+      std::nullopt;
 
   // A DevTools token used to identify initiator document if the prefetch is
   // triggered by SpeculationRules.
@@ -871,8 +1012,14 @@ class CONTENT_EXPORT PrefetchContainer {
   base::OnceCallback<void(PrefetchContainer&)>
       on_maybe_determined_head_callback_;
 
-  // Browser callbacks.
-  std::optional<PrefetchBrowserCallback> prefetch_browser_callback_;
+  // Additional headers for WebView initiated prefetch.
+  // This must be empty for non-WebView initiated prefetches.
+  // TODO(crbug.com/369859822): Revisit the semantics if needed.
+  const net::HttpRequestHeaders additional_headers_;
+
+  // Listener of prefetch request. Currently used for WebView initiated
+  // prefetch.
+  std::unique_ptr<PrefetchRequestStatusListener> request_status_listener_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
@@ -886,6 +1033,8 @@ class CONTENT_EXPORT PrefetchContainer {
   bool is_in_dtor_ = false;
 
   base::ObserverList<Observer> observers_;
+
+  bool is_likely_ahead_of_prerender_ = false;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

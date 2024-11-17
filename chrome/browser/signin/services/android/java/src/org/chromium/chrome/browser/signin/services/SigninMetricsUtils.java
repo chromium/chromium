@@ -29,6 +29,8 @@ public class SigninMetricsUtils {
         State.FAILED,
         State.CANCELLED,
         State.NULL_ACCOUNT_NAME,
+        State.ACTIVITY_DESTROYED,
+        State.ACTIVITY_SURVIVED,
         State.NUM_STATES
     })
     public @interface State {
@@ -38,7 +40,9 @@ public class SigninMetricsUtils {
         int FAILED = 3;
         int CANCELLED = 4;
         int NULL_ACCOUNT_NAME = 5;
-        int NUM_STATES = 6;
+        int ACTIVITY_DESTROYED = 6;
+        int ACTIVITY_SURVIVED = 7;
+        int NUM_STATES = 8;
     }
 
     /**

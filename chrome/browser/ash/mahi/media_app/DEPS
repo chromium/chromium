@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "mahi_media_app_client_unittest\.cc": [
-    "+chrome/browser/chromeos/mahi/test",
-  ],
-}

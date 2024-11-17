@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -84,7 +85,7 @@ class FramePermissionController {
   // to ASK for specific origins.
   PermissionSet GetEffectivePermissionsForOrigin(const url::Origin& origin);
 
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   base::flat_map<url::Origin, PermissionSet> per_origin_permissions_;
   PermissionSet default_permissions_{blink::mojom::PermissionStatus::DENIED};

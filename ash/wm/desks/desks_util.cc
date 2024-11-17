@@ -122,13 +122,21 @@ aura::Window* GetActiveDeskContainerForRoot(aura::Window* root) {
 }
 
 ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window) {
+  auto* controller = DesksController::Get();
+  DCHECK(controller);
+
+  return BelongsToDesk(window, controller->active_desk());
+}
+
+ASH_EXPORT bool BelongsToDesk(aura::Window* window, const Desk* desk) {
   DCHECK(window);
 
   // This function may be called early on during window construction. If there
   // is no parent, then it's not part of any desk yet. See b/260851890 for more
   // details.
-  if (!window->parent())
+  if (!window->parent()) {
     return false;
+  }
 
   auto* window_state = WindowState::Get(window);
   // A floated window may be associated with a desk, but they would be parented
@@ -139,15 +147,14 @@ ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window) {
     // exists.
     // Note: in above case, `window` still belongs to desk container and
     // can be checked in statements below.
-    if (auto* desk =
+    if (auto* associated_desk =
             Shell::Get()->float_controller()->FindDeskOfFloatedWindow(window)) {
-      return desk->is_active();
+      return associated_desk->container_id() == desk->container_id();
     }
   }
 
-  const int active_desk_id = GetActiveDeskContainerId();
   aura::Window* desk_container = GetDeskContainerForContext(window);
-  return desk_container && desk_container->GetId() == active_desk_id;
+  return desk_container && desk_container->GetId() == desk->container_id();
 }
 
 std::optional<uint64_t> GetActiveDeskLacrosProfileId() {

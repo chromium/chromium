@@ -36,6 +36,8 @@ class NET_EXPORT HttpRequestHeaders {
     HeaderKeyValuePair(std::string_view key, const char* value)
         : HeaderKeyValuePair(key, std::string_view(value)) {}
 
+    bool operator==(const HeaderKeyValuePair& other) const = default;
+
     std::string key;
     std::string value;
   };
@@ -100,7 +102,6 @@ class NET_EXPORT HttpRequestHeaders {
   static const char kProxyConnection[];
   static const char kRange[];
   static const char kReferer[];
-  static const char kSecFetchStorageAccess[];
   static const char kTransferEncoding[];
   static const char kUserAgent[];
 

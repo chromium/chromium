@@ -428,8 +428,7 @@ static bool SniffForOfficeDocs(std::string_view content,
         *result = "application/vnd.ms-powerpoint";
         return true;
       case DOC_TYPE_NONE:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
   } else if (office_version == "OOXML") {
     switch (type) {
@@ -446,13 +445,11 @@ static bool SniffForOfficeDocs(std::string_view content,
                   "presentationml.presentation";
         return true;
       case DOC_TYPE_NONE:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static bool IsOfficeType(const std::string& type_hint) {

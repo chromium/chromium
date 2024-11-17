@@ -54,7 +54,7 @@ function makeRequest(params) {
  *     This is tested against expectations in the browsertest.
  */
 async function buy(params) {
-  let request = makeRequest(params || {});
+  const request = makeRequest(params || {});
   const result = await request.show()
                      .then((response) => {
                        response.complete();

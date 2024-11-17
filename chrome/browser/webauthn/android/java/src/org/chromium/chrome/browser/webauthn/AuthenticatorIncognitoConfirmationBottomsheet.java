@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -100,8 +101,9 @@ class AuthenticatorIncognitoConfirmationBottomsheet {
                 }
 
                 @Override
-                public int getSheetContentDescriptionStringId() {
-                    return R.string.webauthn_incognito_confirmation_sheet_description;
+                public @NonNull String getSheetContentDescription(Context context) {
+                    return context.getString(
+                            R.string.webauthn_incognito_confirmation_sheet_description);
                 }
 
                 @Override

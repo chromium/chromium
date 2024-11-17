@@ -1451,7 +1451,7 @@ InterpolationQuality ComputedStyle::GetInterpolationQuality() const {
     return kInterpolationLow;
   }
 
-  return kInterpolationDefault;
+  return GetDefaultInterpolationQuality();
 }
 
 void ComputedStyle::LoadDeferredImages(Document& document) const {
@@ -1902,8 +1902,9 @@ const AtomicString& ComputedStyle::HyphenString() const {
 
   // FIXME: This should depend on locale.
   DEFINE_STATIC_LOCAL(AtomicString, hyphen_minus_string,
-                      (&kHyphenMinusCharacter, 1));
-  DEFINE_STATIC_LOCAL(AtomicString, hyphen_string, (&kHyphenCharacter, 1));
+                      (base::span_from_ref(kHyphenMinusCharacter)));
+  DEFINE_STATIC_LOCAL(AtomicString, hyphen_string,
+                      (base::span_from_ref(kHyphenCharacter)));
   const SimpleFontData* primary_font = GetFont().PrimaryFont();
   DCHECK(primary_font);
   return primary_font && primary_font->GlyphForCharacter(kHyphenCharacter)
@@ -1939,8 +1940,7 @@ ETextAlign ComputedStyle::GetTextAlign(bool is_last_line) const {
       }
       return text_align;
   }
-  NOTREACHED_IN_MIGRATION();
-  return GetTextAlign();
+  NOTREACHED();
 }
 
 // Unicode 11 introduced Georgian capital letters (U+1C90 - U+1CBA,
@@ -2019,7 +2019,7 @@ String ComputedStyle::ApplyTextTransform(const String& text,
     case ETextTransform::kMathAuto:
       return ApplyMathAutoTransform(text, offset_map);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
@@ -2030,56 +2030,56 @@ const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
       return TextEmphasisCustomMark();
     case TextEmphasisMark::kDot: {
       DEFINE_STATIC_LOCAL(AtomicString, filled_dot_string,
-                          (&kBulletCharacter, 1));
+                          (base::span_from_ref(kBulletCharacter)));
       DEFINE_STATIC_LOCAL(AtomicString, open_dot_string,
-                          (&kWhiteBulletCharacter, 1));
+                          (base::span_from_ref(kWhiteBulletCharacter)));
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
                  ? filled_dot_string
                  : open_dot_string;
     }
     case TextEmphasisMark::kCircle: {
       DEFINE_STATIC_LOCAL(AtomicString, filled_circle_string,
-                          (&kBlackCircleCharacter, 1));
+                          (base::span_from_ref(kBlackCircleCharacter)));
       DEFINE_STATIC_LOCAL(AtomicString, open_circle_string,
-                          (&kWhiteCircleCharacter, 1));
+                          (base::span_from_ref(kWhiteCircleCharacter)));
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
                  ? filled_circle_string
                  : open_circle_string;
     }
     case TextEmphasisMark::kDoubleCircle: {
       DEFINE_STATIC_LOCAL(AtomicString, filled_double_circle_string,
-                          (&kFisheyeCharacter, 1));
+                          (base::span_from_ref(kFisheyeCharacter)));
       DEFINE_STATIC_LOCAL(AtomicString, open_double_circle_string,
-                          (&kBullseyeCharacter, 1));
+                          (base::span_from_ref(kBullseyeCharacter)));
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
                  ? filled_double_circle_string
                  : open_double_circle_string;
     }
     case TextEmphasisMark::kTriangle: {
-      DEFINE_STATIC_LOCAL(AtomicString, filled_triangle_string,
-                          (&kBlackUpPointingTriangleCharacter, 1));
-      DEFINE_STATIC_LOCAL(AtomicString, open_triangle_string,
-                          (&kWhiteUpPointingTriangleCharacter, 1));
+      DEFINE_STATIC_LOCAL(
+          AtomicString, filled_triangle_string,
+          (base::span_from_ref(kBlackUpPointingTriangleCharacter)));
+      DEFINE_STATIC_LOCAL(
+          AtomicString, open_triangle_string,
+          (base::span_from_ref(kWhiteUpPointingTriangleCharacter)));
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
                  ? filled_triangle_string
                  : open_triangle_string;
     }
     case TextEmphasisMark::kSesame: {
       DEFINE_STATIC_LOCAL(AtomicString, filled_sesame_string,
-                          (&kSesameDotCharacter, 1));
+                          (base::span_from_ref(kSesameDotCharacter)));
       DEFINE_STATIC_LOCAL(AtomicString, open_sesame_string,
-                          (&kWhiteSesameDotCharacter, 1));
+                          (base::span_from_ref(kWhiteSesameDotCharacter)));
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
                  ? filled_sesame_string
                  : open_sesame_string;
     }
     case TextEmphasisMark::kAuto:
-      NOTREACHED_IN_MIGRATION();
-      return g_null_atom;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return g_null_atom;
+  NOTREACHED();
 }
 
 LineLogicalSide ComputedStyle::GetTextEmphasisLineLogicalSide() const {
@@ -2120,8 +2120,7 @@ FontBaseline ComputedStyle::GetFontBaseline() const {
     case EDominantBaseline::kUseScript:
     case EDominantBaseline::kNoChange:
     case EDominantBaseline::kResetSize:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Vertical flow (except 'text-orientation: sideways') uses ideographic
@@ -2982,8 +2981,7 @@ FontOrientation ComputedStyleBuilder::ComputeFontOrientation() const {
     case ETextOrientation::kSideways:
       return FontOrientation::kVerticalRotated;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return FontOrientation::kVerticalMixed;
+      NOTREACHED();
   }
 }
 

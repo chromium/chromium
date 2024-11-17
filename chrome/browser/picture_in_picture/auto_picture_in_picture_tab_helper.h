@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -38,6 +39,12 @@ class AutoPictureInPictureTabHelper
       public media_session::mojom::AudioFocusObserver,
       public media_session::mojom::MediaSessionObserver {
  public:
+  // Delay used by `AutoPictureInPictureSafeBrowsingCheckerClient` to check
+  // URL safety. If a check takes longer than `kSafeBrowsingCheckDelay`, the URL
+  // will be considered not safe and enter AutoPiP requests will be denied.
+  static constexpr base::TimeDelta kSafeBrowsingCheckDelay =
+      base::Milliseconds(500);
+
   ~AutoPictureInPictureTabHelper() override;
   AutoPictureInPictureTabHelper(const AutoPictureInPictureTabHelper&) = delete;
   AutoPictureInPictureTabHelper& operator=(
@@ -124,7 +131,6 @@ class AutoPictureInPictureTabHelper
   std::unique_ptr<AutoPipSettingOverlayView>
   CreateOverlayPermissionViewIfNeeded(
       base::OnceClosure close_pip_cb,
-      const gfx::Rect& browser_view_overridden_bounds,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
 
@@ -132,34 +138,42 @@ class AutoPictureInPictureTabHelper
   // can keep the auto-pip setting embargo up to date.
   void OnUserClosedWindow();
 
+  // Notification that our tab became active.  This is our signal to close up
+  // any auto-pip window we have open, though there might also not be one.
+  void OnTabBecameActive();
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
   FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureTabHelperBrowserTest,
                            CannotAutopipViaHttp);
 
-  enum class HasSufficientlyVisibleVideo {
-    kNo,
-    kYes,
-  };
-
   void MaybeEnterAutoPictureInPicture();
 
-  void EnterAutoPictureInPicture();
+  // If needed, schedules the asynchronous tasks that get the video visibility
+  // and/or URL safety. When async tasks complete there may be a call to
+  // `MaybeEnterAutoPictureInPicture`. This method can safely be called multiple
+  // times.
+  void MaybeScheduleAsyncTasks();
+
+  // Stops any pending get video visibility and/or URL safety tasks. Also reset
+  // relevant member variables: `has_sufficiently_visible_video_` and
+  // `has_safe_url_`.
+  void StopAndResetAsyncTasks();
 
   void MaybeExitAutoPictureInPicture();
 
   void MaybeStartOrStopObservingTabStrip();
 
-  bool IsEligibleForAutoPictureInPicture(
-      HasSufficientlyVisibleVideo has_sufficiently_visible_video =
-          HasSufficientlyVisibleVideo::kNo);
+  bool IsEligibleForAutoPictureInPicture();
 
-  // Returns true if the tab is currently playing unmuted playback, and
-  // MediaSession reports that there exists a sufficiently visible video.
-  bool MeetsVideoPlaybackConditions(
-      HasSufficientlyVisibleVideo has_sufficiently_visible_video =
-          HasSufficientlyVisibleVideo::kNo) const;
+  // Returns true if the tab:
+  //   * Has audio focus
+  //   * Is playing unmuted playback
+  //   * MediaSession reports that there exists a sufficiently visible video
+  //   * Has a safe URL as reported by
+  //   `AutoPictureInPictureSafeBrowsingCheckerClient`
+  bool MeetsVideoPlaybackConditions() const;
 
   // Returns true if the tab is currently using the camera or microphone.
   bool IsUsingCameraOrMicrophone() const;
@@ -174,7 +188,7 @@ class AutoPictureInPictureTabHelper
 
   // Asks MediaSession to `GetVisibility`, if there exists a media session and
   // we are not currently in picture in picture.
-  void MaybeGetVisibility();
+  void ScheduleAsyncVisibilityCheck();
 
   // Gets the video visibility, and enters picture in picture if MediaSession
   // reports that there exists a sufficiently visible video.
@@ -182,7 +196,15 @@ class AutoPictureInPictureTabHelper
   // For a video to be considered sufficiently visible, it must meet the video
   // visibility threshold defined by `HTMLVideoElement` (kVisibilityThreshold)
   // and tracked by the `MediaVideoVisibilityTracker`.
-  void GetVideoVisibility(bool has_sufficiently_visible_video);
+  void OnVideoVisibilityResult(bool has_sufficiently_visible_video);
+
+  // Called when the result of checking URL safety is known.
+  // `MaybeEnterAutoPictureInPicture` will be called if the URL is safe.
+  void OnUrlSafetyResult(bool has_safe_url);
+
+  // Schedules a URL safety check. Before scheduling a URL safety check,
+  // initializes the `safe_browsing_checker_client_` if needed.
+  void ScheduleUrlSafetyCheck();
 
   // Creates the `auto_pip_setting_helper_` if it does not already exist.
   void EnsureAutoPipSettingHelper();
@@ -236,6 +258,17 @@ class AutoPictureInPictureTabHelper
   // picture-in-picture. It only resets on navigation.
   bool has_ever_registered_for_auto_picture_in_picture_ = false;
 
+  // TODO(crbug.com/40250017): Reword to reference the "MediaSession routed
+  // frame last committed URL".
+  //
+  // True if the observed WebContents last committed URL is safe, as reported by
+  // `AutoPictureInPictureSafeBrowsingCheckerClient`.
+  bool has_safe_url_ = false;
+
+  // True if the media session associated with the observed WebContents has a
+  // sufficiently visible video.
+  bool has_sufficiently_visible_video_ = false;
+
   // Connections with the media session service to listen for audio focus
   // updates and control media sessions.
   mojo::Receiver<media_session::mojom::AudioFocusObserver>
@@ -246,12 +279,22 @@ class AutoPictureInPictureTabHelper
   // If non-null, this is the setting helper for the permission setting UI.
   std::unique_ptr<AutoPipSettingHelper> auto_pip_setting_helper_;
 
+  // Implementation of the Safe Browsing client, used to check and report URL
+  // safety.
+  std::unique_ptr<AutoPictureInPictureSafeBrowsingCheckerClient>
+      safe_browsing_checker_client_;
+
   // WeakPtrFactory used only for requesting video visibility. This weak ptr
   // factory is invalidated before sending any new visibility requests to the
   // `MediaSession`, and at the beginning of `MaybeExitAutoPictureInPicture`
   // calls.
   base::WeakPtrFactory<AutoPictureInPictureTabHelper>
       get_visibility_weak_factory_{this};
+
+  // WeakPtrFactory used for requesting video visibility and URL safety. This
+  // weak ptr factory is invalidated during calls to `StopAndResetAsyncTasks`.
+  base::WeakPtrFactory<AutoPictureInPictureTabHelper> async_tasks_weak_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

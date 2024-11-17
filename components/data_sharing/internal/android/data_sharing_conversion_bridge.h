@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
-#include "components/data_sharing/public/service_status.h"
 
 using base::android::ScopedJavaLocalRef;
 
@@ -20,31 +19,6 @@ namespace data_sharing {
 // Utility for JNI conversion of the data types used by the service.
 class DataSharingConversionBridge {
  public:
-  // Creates an object of org.chromium.components.data_sharing.GroupMember.
-  static ScopedJavaLocalRef<jobject> CreateJavaGroupMember(
-      JNIEnv* env,
-      const GroupMember& member);
-
-  // Creates an object of org.chromium.components.data_sharing.GroupToken.
-  static ScopedJavaLocalRef<jobject> CreateJavaGroupToken(
-      JNIEnv* env,
-      const GroupToken& token);
-
-  // Creates an object of org.chromium.components.data_sharing.GroupData.
-  static ScopedJavaLocalRef<jobject> CreateJavaGroupData(
-      JNIEnv* env,
-      const GroupData& result);
-
-  // Creates an object of org.chromium.components.data_sharing.ServiceStatus.
-  static ScopedJavaLocalRef<jobject> CreateJavaServiceStatus(
-      JNIEnv* env,
-      const ServiceStatus& status);
-
-  // Creates an object of org.chromium.components.data_sharing.SharedEntity.
-  static ScopedJavaLocalRef<jobject> CreateJavaSharedEntity(
-      JNIEnv* env,
-      const SharedEntity& entity);
-
   // Creates an object of
   // org.chromium.components.data_sharing.DataSharingService.
   //   GroupDataOrFailureOutcome.
@@ -66,10 +40,10 @@ class DataSharingConversionBridge {
                                                                     int value);
 
   // Creates an object of
-  // org.chromium.components.data_sharing.DataSharingService.ParseURLResult.
-  static ScopedJavaLocalRef<jobject> CreateParseURLResult(
+  // org.chromium.components.data_sharing.DataSharingService.ParseUrlResult.
+  static ScopedJavaLocalRef<jobject> CreateParseUrlResult(
       JNIEnv* env,
-      const DataSharingService::ParseURLResult& data);
+      const DataSharingService::ParseUrlResult& data);
 
   // Creates an object of
   // org.chromium.components.data_sharing.DataSharingService.

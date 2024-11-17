@@ -358,6 +358,9 @@ ExtensionFunction::ResponseAction SocketsTcpSendFunction::Work() {
       sockets_tcp::Send::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   size_t io_buffer_size = params->data.size();
+  if (!TakeWriteQuota(io_buffer_size)) {
+    return RespondNow(Error(kExceedWriteQuotaError));
+  }
 
   auto io_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(params->data.size());
@@ -374,6 +377,8 @@ ExtensionFunction::ResponseAction SocketsTcpSendFunction::Work() {
 }
 
 void SocketsTcpSendFunction::OnCompleted(int net_result) {
+  ReturnWriteQuota();
+
   if (net_result >= net::OK) {
     SetSendResult(net::OK, net_result);
   } else {

@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -83,7 +84,7 @@ bool IsSubDomainOrEqual(std::string_view sub_domain, std::string_view domain) {
 //  (2) The right-most domain label, which is defined as the empty string if
 //      |domain| is empty or ends in a dot.
 std::tuple<std::optional<std::string_view>, std::string_view>
-SplitDomainOnLastDot(const std::string_view domain) {
+SplitDomainOnLastDot(std::string_view domain) {
   size_t index_of_last_dot = domain.rfind('.');
   if (index_of_last_dot == std::string_view::npos) {
     return std::make_tuple(std::nullopt, domain);
@@ -265,8 +266,13 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
 
   // Canonicalize the host part.
   url::CanonHostInfo host_info;
-  std::string canonicalized_host(
-      net::CanonicalizeHost(parts->host, &host_info));
+  std::string canonicalized_host;
+  if (parts->scheme == url::kFileScheme) {
+    canonicalized_host = net::CanonicalizeFileHost(parts->host, &host_info);
+  } else {
+    canonicalized_host = net::CanonicalizeHost(parts->host, &host_info);
+  }
+
   if (host_info.IsIPAddress() && parts->has_domain_wildcard)
     return false;
 
@@ -306,8 +312,7 @@ bool ContentSettingsPattern::Builder::Validate(const PatternParts& parts) {
   if ((parts.is_scheme_wildcard && !parts.scheme.empty()) ||
       (parts.is_port_wildcard && !parts.port.empty()) ||
       (parts.is_path_wildcard && !parts.path.empty())) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // file:// URL patterns have an empty host and port.
@@ -681,6 +686,49 @@ const std::string& ContentSettingsPattern::GetHost() const {
   return parts_.host;
 }
 
+ContentSettingsPattern::Scope ContentSettingsPattern::GetScope() const {
+  if (parts_.host.empty() && parts_.has_domain_wildcard &&
+      parts_.is_port_wildcard && parts_.is_scheme_wildcard) {
+    return Scope::kFullWildcard;
+  }
+
+  if (parts_.scheme == url::kFileScheme && !parts_.is_path_wildcard) {
+    return Scope::kFilePath;
+  }
+
+  if (parts_.host.empty()) {
+    return Scope::kCustomScope;
+  }
+
+  if (parts_.has_domain_wildcard) {
+    if (parts_.is_port_wildcard && parts_.is_scheme_wildcard) {
+      return Scope::kWithDomainAndSchemeAndPortWildcard;
+    }
+    if (parts_.is_port_wildcard) {
+      return Scope::kWithDomainAndPortWildcard;
+    }
+    if (parts_.is_scheme_wildcard) {
+      return Scope::kWithDomainAndSchemeWildcard;
+    }
+    return Scope::kWithDomainWildcard;
+  }
+
+  // Origin is set and there is no domain wildcard.
+  if (parts_.is_port_wildcard && parts_.is_scheme_wildcard) {
+    return Scope::kWithSchemeAndPortWildcard;
+  }
+  if (parts_.is_port_wildcard) {
+    return Scope::kWithPortWildcard;
+  }
+  if (parts_.is_scheme_wildcard) {
+    return Scope::kWithSchemeWildcard;
+  }
+
+  DCHECK(!parts_.host.empty() && !parts_.has_domain_wildcard &&
+         !parts_.is_port_wildcard && !parts_.is_scheme_wildcard);
+  return Scope::kOriginScoped;
+}
+
 ContentSettingsPattern::Relation ContentSettingsPattern::Compare(
     const ContentSettingsPattern& other) const {
   // Two invalid patterns are identical in the way they behave. They don't match
@@ -841,8 +889,7 @@ ContentSettingsPattern::Relation ContentSettingsPattern::CompareHost(
     return ContentSettingsPattern::DISJOINT_ORDER_POST;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ContentSettingsPattern::IDENTITY;
+  NOTREACHED();
 }
 
 // static

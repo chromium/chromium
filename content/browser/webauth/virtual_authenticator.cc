@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/uuid.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -19,8 +20,10 @@
 
 namespace content {
 
-VirtualAuthenticator::VirtualAuthenticator(
-    const blink::test::mojom::VirtualAuthenticatorOptions& options)
+VirtualAuthenticator::Options::Options() = default;
+VirtualAuthenticator::Options::~Options() = default;
+
+VirtualAuthenticator::VirtualAuthenticator(const Options& options)
     : protocol_(options.protocol),
       ctap2_version_(options.ctap2_version),
       attachment_(options.attachment),
@@ -48,11 +51,6 @@ VirtualAuthenticator::~VirtualAuthenticator() {
   }
 }
 
-void VirtualAuthenticator::AddReceiver(
-    mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticator> receiver) {
-  receiver_set_.Add(this, std::move(receiver));
-}
-
 bool VirtualAuthenticator::AddRegistration(
     std::vector<uint8_t> key_handle,
     const std::string& rp_id,
@@ -61,8 +59,9 @@ bool VirtualAuthenticator::AddRegistration(
   std::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
           device::VirtualFidoDevice::PrivateKey::FromPKCS8(private_key);
-  if (!fido_private_key)
+  if (!fido_private_key) {
     return false;
+  }
 
   return state_->registrations
       .emplace(
@@ -78,27 +77,56 @@ bool VirtualAuthenticator::AddResidentRegistration(
     std::string rp_id,
     base::span<const uint8_t> private_key,
     int32_t counter,
-    std::vector<uint8_t> user_handle) {
+    std::vector<uint8_t> user_handle,
+    std::optional<std::string> user_name,
+    std::optional<std::string> user_display_name) {
   std::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
           device::VirtualFidoDevice::PrivateKey::FromPKCS8(private_key);
-  if (!fido_private_key)
+  if (!fido_private_key) {
     return false;
+  }
 
   return state_->InjectResidentKey(
       std::move(key_handle),
       device::PublicKeyCredentialRpEntity(std::move(rp_id)),
-      device::PublicKeyCredentialUserEntity(std::move(user_handle)), counter,
-      std::move(*fido_private_key));
+      device::PublicKeyCredentialUserEntity(std::move(user_handle),
+                                            std::move(user_name),
+                                            std::move(user_display_name)),
+      counter, std::move(*fido_private_key));
 }
 
 void VirtualAuthenticator::ClearRegistrations() {
-  state_->registrations.clear();
+  device::VirtualFidoDevice::State::RegistrationsMap erased;
+  state_->registrations.swap(erased);
+  for (const auto& registration : erased) {
+    state_->NotifyCredentialDeleted(registration.first);
+  }
 }
 
 bool VirtualAuthenticator::RemoveRegistration(
     const std::vector<uint8_t>& key_handle) {
-  return state_->registrations.erase(key_handle) != 0;
+  bool removed = state_->registrations.erase(key_handle) != 0;
+  if (removed) {
+    state_->NotifyCredentialDeleted(key_handle);
+  }
+  return removed;
+}
+
+void VirtualAuthenticator::UpdateUserDetails(std::string_view relying_party_id,
+                                             base::span<const uint8_t> user_id,
+                                             std::string_view name,
+                                             std::string_view display_name) {
+  for (auto& registration : state_->registrations) {
+    if (registration.second.user && registration.second.rp &&
+        registration.second.rp->id == relying_party_id &&
+        registration.second.user->id == user_id) {
+      registration.second.user->name = name;
+      registration.second.user->display_name = display_name;
+      state_->NotifyCredentialUpdated(
+          std::make_pair(registration.first, &registration.second));
+    }
+  }
 }
 
 void VirtualAuthenticator::SetUserPresence(bool is_user_present) {
@@ -158,8 +186,7 @@ VirtualAuthenticator::ConstructDevice() {
       return std::make_unique<device::VirtualCtap2Device>(state_, config);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::make_unique<device::VirtualU2fDevice>(state_);
+      NOTREACHED();
   }
 }
 
@@ -215,57 +242,27 @@ void VirtualAuthenticator::SetLargeBlob(const std::vector<uint8_t>& key_handle,
                            std::move(callback)));
 }
 
-void VirtualAuthenticator::GetUniqueId(GetUniqueIdCallback callback) {
-  std::move(callback).Run(unique_id_);
-}
-
-void VirtualAuthenticator::GetRegistrations(GetRegistrationsCallback callback) {
-  std::vector<blink::test::mojom::RegisteredKeyPtr> mojo_registered_keys;
-  for (const auto& registration : state_->registrations) {
-    auto mojo_registered_key = blink::test::mojom::RegisteredKey::New();
-    mojo_registered_key->key_handle = registration.first;
-    mojo_registered_key->counter = registration.second.counter;
-    mojo_registered_key->rp_id =
-        registration.second.rp ? registration.second.rp->id : "";
-    mojo_registered_key->private_key =
-        registration.second.private_key->GetPKCS8PrivateKey();
-    mojo_registered_keys.push_back(std::move(mojo_registered_key));
-  }
-  std::move(callback).Run(std::move(mojo_registered_keys));
-}
-
-void VirtualAuthenticator::AddRegistration(
-    blink::test::mojom::RegisteredKeyPtr registration,
-    AddRegistrationCallback callback) {
-  std::move(callback).Run(AddRegistration(
-      std::move(registration->key_handle), std::move(registration->rp_id),
-      registration->private_key, registration->counter));
-}
-
-void VirtualAuthenticator::ClearRegistrations(
-    ClearRegistrationsCallback callback) {
-  ClearRegistrations();
-  std::move(callback).Run();
-}
-
-void VirtualAuthenticator::RemoveRegistration(
-    const std::vector<uint8_t>& key_handle,
-    RemoveRegistrationCallback callback) {
-  std::move(callback).Run(RemoveRegistration(std::move(key_handle)));
-}
-
-void VirtualAuthenticator::SetUserVerified(bool verified,
-                                           SetUserVerifiedCallback callback) {
-  is_user_verified_ = verified;
-  std::move(callback).Run();
-}
-
 void VirtualAuthenticator::OnCredentialCreated(
     const device::VirtualFidoDevice::Credential& credential) {
   for (Observer& observer : observers_) {
     observer.OnCredentialCreated(this, credential);
   }
 }
+
+void VirtualAuthenticator::OnCredentialDeleted(
+    base::span<const uint8_t> credential_id) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialDeleted(this, credential_id);
+  }
+}
+
+void VirtualAuthenticator::OnCredentialUpdated(
+    const device::VirtualFidoDevice::Credential& credential) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialUpdated(this, credential);
+  }
+}
+
 void VirtualAuthenticator::OnAssertion(
     const device::VirtualFidoDevice::Credential& credential) {
   for (Observer& observer : observers_) {

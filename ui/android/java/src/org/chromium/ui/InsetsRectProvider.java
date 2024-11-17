@@ -61,17 +61,20 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
      * @param insetObserver {@link InsetObserver} that's attached to the root view.
      * @param insetType {@link InsetsType} this provider is observing.
      * @param initialInsets The initial window insets that will be used to read the bounding rects.
+     * @param insetConsumerSource The {@link InsetConsumerSource} of inset observation and
+     *     consumption.
      */
     public InsetsRectProvider(
             @NonNull InsetObserver insetObserver,
             @InsetsType int insetType,
-            WindowInsetsCompat initialInsets) {
+            WindowInsetsCompat initialInsets,
+            @InsetConsumerSource int insetConsumerSource) {
         mInsetType = insetType;
         mBoundingRects = List.of();
         mInsetObserver = insetObserver;
 
         assert VERSION.SDK_INT >= VERSION_CODES.R;
-        mInsetObserver.addInsetsConsumer(this);
+        mInsetObserver.addInsetsConsumer(this, insetConsumerSource);
         if (initialInsets != null) {
             maybeUpdateWidestUnoccludedRect(initialInsets);
         }

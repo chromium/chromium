@@ -26,9 +26,9 @@
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_session_initialized_waiter.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -397,6 +398,11 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NewPopupBrowserInKioskAllowedByPolicy) {
   EXPECT_FALSE(DidSessionCloseNewWindow(session));
   ASSERT_NE(new_popup_browser, nullptr);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+
+  EXPECT_FALSE(initial_browser->GetBrowserView().CanUserEnterFullscreen());
+  EXPECT_FALSE(new_popup_browser->GetBrowserView().CanUserEnterFullscreen());
+  EXPECT_TRUE(initial_browser->GetBrowserView().IsFullscreen());
+  EXPECT_TRUE(new_popup_browser->GetBrowserView().IsFullscreen());
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskTest,

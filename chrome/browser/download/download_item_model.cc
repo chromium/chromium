@@ -169,44 +169,15 @@ DownloadItemModelData* DownloadItemModelData::GetOrCreate(
 DownloadItemModelData::DownloadItemModelData() = default;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-bool ShouldSendDownloadReport(download::DownloadDangerType danger_type) {
-  switch (danger_type) {
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
-    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
-    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
-    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
-      return true;
-    default:
-      return false;
-  }
-}
-
-void MaybeSendDownloadReport(const GURL& url,
-                             download::DownloadDangerType danger_type,
-                             bool did_proceed,
-                             Profile* profile,
+void MaybeSendDownloadReport(bool did_proceed,
                              download::DownloadItem* download) {
-  // Only sends dangerous download report if :
-  // 1. FULL_SAFE_BROWSING is enabled, and
-  // 2. Download verdict is one of the dangerous types, and
-  // 3. Download URL is not empty, and
-  // 4. User is not in incognito mode.
-  if (ShouldSendDownloadReport(danger_type) && !url.is_empty() &&
-      !profile->IsOffTheRecord()) {
-    safe_browsing::SafeBrowsingService* sb_service =
-        g_browser_process->safe_browsing_service();
-    if (sb_service) {
-      sb_service->SendDownloadReport(
-          download,
-          safe_browsing::ClientSafeBrowsingReportRequest::
-              DANGEROUS_DOWNLOAD_WARNING,
-          did_proceed, /*show_download_in_folder=*/std::nullopt);
-    }
+  if (safe_browsing::SafeBrowsingService* sb_service =
+          g_browser_process->safe_browsing_service()) {
+    sb_service->SendDownloadReport(
+        download,
+        safe_browsing::ClientSafeBrowsingReportRequest::
+            DANGEROUS_DOWNLOAD_WARNING,
+        did_proceed, /*show_download_in_folder=*/std::nullopt);
   }
 }
 
@@ -364,8 +335,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_MAX:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
       // We shouldn't get any of these due to the MightBeMalicious() test above.
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
@@ -380,8 +350,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool DownloadItemModel::IsInsecure() const {
@@ -418,11 +387,10 @@ bool DownloadItemModel::ShouldRemoveFromShelfWhenComplete() const {
       return false;
 
     case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool DownloadItemModel::ShouldShowDownloadStartedAnimation() const {
@@ -714,7 +682,7 @@ DownloadItemModel::MaybeGetMediaAppAction() const {
 
 void DownloadItemModel::OpenUsingMediaApp() {
   ash::SystemAppLaunchParams params;
-  params.launch_paths.push_back(GetTargetFilePath());
+  params.launch_paths.push_back(GetFullPath());
   ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA, params);
 
   RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_MEDIA_APP, GetMimeType());
@@ -776,8 +744,7 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::CANCEL_DEEP_SCAN:
       return DownloadUIModel::IsCommandEnabled(download_commands, command);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool DownloadItemModel::IsCommandChecked(
@@ -882,15 +849,13 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       }
       DCHECK(IsDangerous());
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-      MaybeSendDownloadReport(GetURL(), GetDangerType(), /*did_proceed=*/true,
-                              profile(), download_);
+      MaybeSendDownloadReport(/*did_proceed=*/true, download_);
 #endif
       download_->ValidateDangerousDownload();
       break;
     case DownloadCommands::DISCARD:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-      MaybeSendDownloadReport(GetURL(), GetDangerType(), /*did_proceed=*/false,
-                              profile(), download_);
+      MaybeSendDownloadReport(/*did_proceed=*/false, download_);
       if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         LogDeepScanEvent(download_, safe_browsing::DeepScanEvent::kScanDeleted);
       }
@@ -908,11 +873,11 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       if (protection_service)
         protection_service->ShowDetailsForDownload(
             download_, download_commands->GetBrowser());
+      break;
 #else
       // Should only be getting invoked if we are using safe browsing.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
 #endif
-      break;
     }
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::CANCEL:
@@ -1046,8 +1011,7 @@ DangerUiPattern DownloadItemModel::GetDangerUiPattern() const {
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
       break;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return DangerUiPattern::kNormal;

@@ -16,7 +16,9 @@ class ControlCameraAppDelegate {
   // Launches the camera app from Android camera intent with the intent
   // information as url |queries|. |task_id| represents the id of the caller
   // task in ARC.
-  virtual void LaunchCameraApp(const std::string& queries, int32_t task_id) = 0;
+  virtual void LaunchCameraApp(const std::string& queries,
+                               bool launch_in_dialog,
+                               int32_t task_id) = 0;
 
   // Closes the camera app.
   virtual void CloseCameraApp() = 0;

@@ -192,9 +192,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SettingsAppInterface resetSearchEngine];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [SettingsAppInterface resetSearchEngine];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
+#include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -94,7 +95,7 @@ class ViewTransitionTest : public testing::Test,
     UpdateAllLifecyclePhasesForTest();
     for (auto& callback :
          LayerTreeHost()->TakeViewTransitionCallbacksForTesting()) {
-      std::move(callback).Run();
+      std::move(callback).Run({});
     }
   }
 
@@ -222,8 +223,8 @@ TEST_P(ViewTransitionTest, LayoutShift) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -269,10 +270,10 @@ TEST_P(ViewTransitionTest, TransitionCreatesNewObject) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* first_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
-  auto* second_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* first_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
+  auto* second_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* first_transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), first_callback,
@@ -295,8 +296,8 @@ TEST_P(ViewTransitionTest, TransitionReadyPromiseResolves) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -342,8 +343,8 @@ TEST_P(ViewTransitionTest, PrepareTransitionElementsWantToBeComposited) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -477,8 +478,8 @@ TEST_P(ViewTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -508,8 +509,8 @@ TEST_P(ViewTransitionTest, RenderingPausedTest) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -548,8 +549,8 @@ TEST_P(ViewTransitionTest, Abandon) {
   ScriptState::Scope scope(script_state);
 
   MockFunctionScope funcs(script_state);
-  auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback,
@@ -703,6 +704,100 @@ TEST_P(ViewTransitionTest, ViewTransitionElementInvalidation) {
   EXPECT_TRUE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
+}
+
+namespace {
+void AssertOnlyViewTransitionElementsInvalidated(
+    PaintArtifactCompositor* compositor) {
+  const char kViewTransition[] = "view-transition";
+  const char kLayoutViewTransition[] = "ViewTransition";
+  compositor->ForAllContentLayersForTesting(
+      [&](ContentLayerClientImpl* client) {
+        if (::testing::Matcher<std::string>(
+                ::testing::ContainsRegex(kViewTransition))
+                .Matches(client->Layer().DebugName())) {
+          return;
+        }
+        if (::testing::Matcher<std::string>(
+                ::testing::ContainsRegex(kLayoutViewTransition))
+                .Matches(client->Layer().DebugName())) {
+          return;
+        }
+        auto* tracking = client->GetRasterInvalidator().GetTracking();
+        EXPECT_FALSE(tracking->HasInvalidations())
+            << client->Layer().DebugName();
+        for (const auto& invalidation : tracking->Invalidations()) {
+          LOG(ERROR) << "Invalidation " << invalidation;
+        }
+      });
+}
+}  // namespace
+
+TEST_P(ViewTransitionTest, NoInvalidationOnRoot) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
+      html { view-transition-name: root; backgrond: grey; }
+      #element {
+        width: 100px;
+        height: 100px;
+        view-transition-name: shared;
+        will-change: transform;
+      }
+    </style>
+
+    <div id=element></div>
+    <div>test</div>
+  )HTML");
+
+  // Run all lifecycle phases to ensure paint is clean.
+  UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+
+  // This callback sets the elements for the start phase of the transition.
+  auto start_setup_callback =
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+
+  auto* compositor = GetLocalFrameView()->GetPaintArtifactCompositor();
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(),
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+  {
+    SCOPED_TRACE("old dom capture");
+    AssertOnlyViewTransitionElementsInvalidated(compositor);
+  }
+
+  // Finish the prepare phase, mutate the DOM and start the animation.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+
+  // The start phase should generate pseudo elements for rendering new live
+  // content.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  {
+    SCOPED_TRACE("animation started");
+    AssertOnlyViewTransitionElementsInvalidated(compositor);
+  }
+
+  // Finish the animations which should remove the pseudo element tree.
+  FinishTransition();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  {
+    SCOPED_TRACE("transition finished");
+    AssertOnlyViewTransitionElementsInvalidated(compositor);
+  }
 }
 
 TEST_P(ViewTransitionTest, InspectorStyleResolver) {

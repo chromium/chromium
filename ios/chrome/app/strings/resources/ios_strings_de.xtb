@@ -3,6 +3,7 @@
 <translationbundle lang="de">
 <translation id="1005023885865154304">Passworteinstellungen für Autofill öffnen</translation>
 <translation id="1005230401424685968">JJJJ</translation>
+<translation id="1010225406377140704">Bitte den Absender um einen neuen Link</translation>
 <translation id="1012067394176927315">Inhalte siehst du, wenn du im Menü „Aktivieren“ auswählst</translation>
 <translation id="1013952917065545813">Hier kannst du kürzlich geschlossene Tabs wieder öffnen</translation>
 <translation id="1016495303386450659">Element aktualisiert</translation>
@@ -18,10 +19,12 @@
 <translation id="1053651653201045802">Abgemeldet. Melde dich wieder an, um die Lesezeichen, Passwörter und sonstigen Informationen in deinem Konto zu verwenden.</translation>
 <translation id="1054745118061919935">Wenn du fortfährst, akzeptierst du damit die <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nie speichern für…</translation>
+<translation id="1062138828266376352">Deine PIN wurde nicht geändert. Prüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="1066060668811609597">Synchronisierung verwalten</translation>
 <translation id="1076421457278169141">Code gescannt</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} Tab}other{{count} Tabs}}</translation>
 <translation id="1084365883616172403">Facebook-Beitrag gepostet</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> konnte nicht geöffnet werden</translation>
 <translation id="1096992026380844478">Deine Synchronisierungseinstellungen werden auf Grundlage deiner letzten Sicherung wiederhergestellt. <ph name="BEGIN_LINK" />Hier siehst du, was du synchronisieren kannst.<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="1108938384783527433">Verlauf synchronisieren</translation>
@@ -41,17 +44,18 @@
 <translation id="1172898394251786223">Nächstes Feld</translation>
 <translation id="1179890706672152411">Dein Speicher ist voll</translation>
 <translation id="1181037720776840403">Entfernen</translation>
+<translation id="1190609913194133056">Benachrichtigungscenter</translation>
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1204075260022434100">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{{count} Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
 <translation id="120431140543679678">Folgen</translation>
 <translation id="1207493287814084192">17:30 Uhr</translation>
-<translation id="1209206284964581585">Vorerst ausblenden</translation>
 <translation id="1217294226280635614">Geteilte Ansicht</translation>
 <translation id="1219674500290482172">Internetverbindung kann nicht hergestellt werden.</translation>
 <translation id="1227113644794103810">Inaktive Tabs</translation>
 <translation id="1231733316453485619">Synchronisierung aktivieren?</translation>
 <translation id="1253032109800629289">„Benachrichtigungen zum Preis-Tracking erhalten“ ausblenden</translation>
 <translation id="1258491128795710625">Neue Funktionen</translation>
+<translation id="1262724000444746916">„Zu Lesezeichen hinzufügen“ ausblenden</translation>
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1263433075299269530">Zuletzt geöffneter Tab</translation>
 <translation id="1264156759663453185">Der ausgewählte Text ist für eine teilweise Übersetzung zu lang.</translation>
@@ -75,13 +79,16 @@
 <translation id="132683371494960526">Tippe hier doppelt, um den übergeordneten Ordner zu ändern.</translation>
 <translation id="1333455942675373522">Tastatur</translation>
 <translation id="1334485477792811969">Webdienste</translation>
+<translation id="1335767868357998043">Position der Adressleiste auswählen</translation>
 <translation id="1347468774581902829">Aktivitäten verwalten</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1358214951266274152">Kopierten Link aufrufen</translation>
 <translation id="1360432990279830238">Abmelden &amp; Synchronisierung deaktivieren?</translation>
 <translation id="1363028406613469049">Verfolgen</translation>
 <translation id="1364367057792633742">Neuer Tab</translation>
 <translation id="1365106417372288489">Dein iPhone wurde vor Kurzem wiederhergestellt. Möglicherweise hat sich dadurch dein Standardbrowser geändert.</translation>
 <translation id="1366297852155605523">Für mich freigegeben</translation>
+<translation id="1369286077209859800">Alle Tabs in Tabgruppe anzeigen</translation>
 <translation id="136942498637440594">Du kannst nach Bildern und dem, was du siehst, suchen.</translation>
 <translation id="1377508275003315939">Passwörter</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} von {count} Adresse}other{{position} von {count} Adressen}}</translation>
@@ -97,8 +104,8 @@
 <translation id="1436671784520050284">Einrichtung fortsetzen</translation>
 <translation id="143681031165817424">Die Adresse wird nur auf diesem Gerät gespeichert</translation>
 <translation id="1445276840641906250">Alle deine Tabs in einem Browser</translation>
-<translation id="1446895492767488343">„Mobile Website anfordern“ ausblenden</translation>
 <translation id="1450170672351507823">Standardschutz ist aktiviert. Der erweiterte Schutz bietet noch mehr Sicherheit.</translation>
+<translation id="1455660774629812862">Nicht ausblenden</translation>
 <translation id="1460751212339734034">Zeit sparen, weniger tippen</translation>
 <translation id="1466035273550360103">Keine geöffneten Tabs</translation>
 <translation id="1469381646033328562">Dein Konto wird von deinen Eltern verwaltet.
@@ -111,8 +118,9 @@
 <translation id="1492417797159476138">Du hast diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1497590942294823549">Menü → Passwortmanager</translation>
 <translation id="1498283581832036924">Dein <ph name="WEBSITE" />-Konto wird nicht gelöscht.</translation>
-<translation id="1501480321619201731">Gruppe löschen</translation>
+<translation id="1506061864768559482">Suchmaschine</translation>
 <translation id="1506063256525392513">Dadurch kannst du Fotos aufnehmen und hochladen und QR-Codes scannen</translation>
+<translation id="1508263560970797965">Im Inkognitomodus fortfahren</translation>
 <translation id="1509486075633541495">Auf der Website anmelden</translation>
 <translation id="1509960214886564027">Funktionen auf vielen Websites funktionieren möglicherweise nicht mehr</translation>
 <translation id="1513858653616922153">Passwort löschen</translation>
@@ -123,6 +131,10 @@
 <translation id="1531038290222364269">Tabs anzeigen</translation>
 <translation id="1536390784834419204">Seite übersetzen</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
+<translation id="154312949627292154">Tabs, die du von anderen Geräten erhalten hast, vom Sperrbildschirm aus öffnen.</translation>
+<translation id="1545749641540134597">QR-Code scannen</translation>
+<translation id="1554477036522844996">Neues Fenster</translation>
+<translation id="1558391695376153246">Inkognitotabs schließen</translation>
 <translation id="1571780780926010134">Inkognitotabs</translation>
 <translation id="1580715474678097352">Schutz vor gefährlichen Websites</translation>
 <translation id="1580783302095112590">E-Mail gesendet</translation>
@@ -131,6 +143,7 @@
 <translation id="1598751033135758830">In App öffnen…</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 Adresse}other{# Adressen}}</translation>
 <translation id="1605405588277479165">Aus – Nicht empfohlen</translation>
+<translation id="1605658421715042784">Bild kopieren</translation>
 <translation id="1612642630650745968">Verfolgung des Pakets aufgehoben</translation>
 <translation id="1612754831519568745">Safe Browsing ist derzeit deaktiviert. Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -148,15 +161,16 @@
 <translation id="1654232554734641711">Mikrofonzugriff gewährt</translation>
 <translation id="16554782717487656">Einheiten erkennen</translation>
 <translation id="1657011748321897393">Fehler beim Teilen, weil keine Netzwerkverbindung besteht</translation>
+<translation id="1668001730617725852">In neuer Tabgruppe öffnen</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1689333818294560261">Alias</translation>
 <translation id="169048873465870056">Tab entfernen und Gruppe löschen?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ausgewählt</translation>
 <translation id="1709916727352927457">Passkey löschen</translation>
-<translation id="1713541401465507417">Alle Tabs und Gruppen schließen</translation>
 <translation id="1713777106376424209">Geliefert von</translation>
 <translation id="1715515772563243997">Wenn du <ph name="SITE" /> vertraust, kannst du ein gespeichertes Passwort zur Anmeldung verwenden.</translation>
 <translation id="1728549374069268714">Einfügen und los</translation>
+<translation id="1732468323901456775">Benachrichtigungen für „<ph name="MODULE_NAME" />“ aktivieren</translation>
 <translation id="1740468249224277719">Tippe hier doppelt, um die Installation zu starten.</translation>
 <translation id="1740650426894359238">Zu einem anderen Profil wechseln</translation>
 <translation id="1743244221910283364">Änderungen verwerfen</translation>
@@ -167,6 +181,7 @@
 <translation id="1767766085187034454">Google Übersetzer</translation>
 <translation id="1771016937398045251">Menü „Tools“</translation>
 <translation id="1779354709911146450">Authentifizierungsfehler</translation>
+<translation id="1780152987505130652">Gruppe schließen</translation>
 <translation id="178400879184240105">Deine Passwörter sind eindeutig</translation>
 <translation id="1807893857950749072">Benachrichtigungen zum Preis-Tracking erlauben…</translation>
 <translation id="1810976980198522421">Abbrechen</translation>
@@ -177,13 +192,13 @@
 <translation id="1822994441903263130">FedEx</translation>
 <translation id="1824490729233982311">Du wirst benachrichtigt, wenn Tabs von deinen anderen Geräten übertragen werden.</translation>
 <translation id="1827529786398596735">Halte den Startbildschirm gedrückt</translation>
-<translation id="1829244130665387512">Auf Seite suchen</translation>
 <translation id="1832848789136765277">Bestätige deine Identität, damit du jederzeit auf deine synchronisierten Daten zugreifen kannst</translation>
 <translation id="1836891464494477513">{count,plural, =1{Das Lesezeichen wurde in deinem Google-Konto ({email}) gespeichert}other{Die Lesezeichen wurden in deinem Google-Konto ({email}) gespeichert}}</translation>
 <translation id="183878838231635348">Auf dieser Karte werden alle Datenschutz- oder Sicherheitsprobleme angezeigt, die der Sicherheitscheck automatisch erkennt.</translation>
-<translation id="1853236860984942211">Auf die Leseliste setzen</translation>
 <translation id="1854463785401910334">In geöffneten Tabs suchen</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} von {count} Passwort}other{{position} von {count} Passwörtern}}</translation>
+<translation id="1861262398884155592">Dieser Ordner ist leer</translation>
+<translation id="1864266050569350424">Tippe auf einer Website, für die du ein Passwort gespeichert hast, auf das Feld für das Anmeldepasswort.</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Familienmitglieder einladen</translation>
@@ -194,17 +209,19 @@
 <translation id="1890237935065108104">Diese Einstellung ist nicht verfügbar.</translation>
 <translation id="1894023287452300670">Hier den Preis beobachten</translation>
 <translation id="189531189292803889">Dein iPad wurde vor Kurzem wiederhergestellt. Möglicherweise hat sich dadurch dein Standardbrowser geändert.</translation>
+<translation id="1901366738768303267">Wie verwende ich diese Funktion?</translation>
+<translation id="1901600657316773839">Auswahl beibehalten</translation>
 <translation id="1904580727789512086">Die von dir besuchten URLs werden in deinem Google-Konto gespeichert</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
 <translation id="1923342640370224680">Letzte Stunde</translation>
 <translation id="1941314575388338491">Tippe zum Kopieren hier doppelt.</translation>
 <translation id="1943478190258551035">Menü → Einstellungen</translation>
-<translation id="194449685234099560">Hier findest du alle deine geöffneten Tabs.</translation>
 <translation id="1952728750904661634">Mit verwaltetem Konto anmelden</translation>
 <translation id="1955773397805078763">Zahlungsmethode hinzufügen</translation>
 <translation id="1956138802718275401">Passwörter vom Startbildschirm aus aufrufen</translation>
 <translation id="1959441496380398824">Halte ein Datum gedrückt.</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> hat ein Passwort für <ph name="WEBSITE" /> mit dir geteilt</translation>
+<translation id="1962969542251276847">Gesperrter Bildschirm</translation>
 <translation id="1963976881984600709">Standardschutz</translation>
 <translation id="1966313166384086081">Websitedaten</translation>
 <translation id="1967461193809857427">{count,plural, =1{Möchtest du den Tab auf deinem Android-Gerät aufrufen?}other{Möchtest du die Tabs auf deinem Android-Gerät aufrufen?}}</translation>
@@ -235,7 +252,6 @@
 <translation id="2067852168641682340">Immer in diesem Konto speichern</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 Tab}other{{count} Tabs}}</translation>
 <translation id="2074131957428911366">Du kannst in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was du synchronisieren möchtest.</translation>
-<translation id="2074527029802029717">Tab loslösen</translation>
 <translation id="2078437078822043850">Du kannst nach rechts scrollen, um im Inkognitomodus zu surfen.</translation>
 <translation id="2079545284768500474">Rückgängig</translation>
 <translation id="2082906935540894275">Die relevantesten Funktionen zu verschiedenen Zeiten.</translation>
@@ -243,11 +259,15 @@
 <translation id="2096239473850415494">Fehler beim Download</translation>
 <translation id="2103075008456228677">history.google.com öffnen</translation>
 <translation id="2104436223719117661">Trends bei Suchanfragen</translation>
+<translation id="21133533946938348">Tab anpinnen</translation>
 <translation id="2119636449201577317">Öffnen in…</translation>
 <translation id="2122754583996902531">Dein Browser wird verwaltet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="2139867232736819575">Nach von dir kopiertem Text suchen</translation>
 <translation id="2147127444698817042">Nur für iPhone</translation>
 <translation id="2148716181193084225">Heute</translation>
+<translation id="2148799636999124959">Du kannst dich mit deinen gespeicherten Passwörtern schnell auf Websites und in Apps anmelden.</translation>
 <translation id="2149968176347646218">Verbindung ist nicht sicher</translation>
+<translation id="2149973817440762519">Lesezeichen bearbeiten</translation>
 <translation id="2161446265348023004">Zu offenem Fenster wechseln</translation>
 <translation id="2164946989711475905">Anmelden…</translation>
 <translation id="2175927920773552910">QR-Code</translation>
@@ -257,13 +277,13 @@
 <translation id="2202084845446535117">Keine E‑Mail-Konten</translation>
 <translation id="2214453882118345682">Nutze deine Kamera zum Einkaufen, Übersetzen und um herauszufinden, was du siehst.</translation>
 <translation id="2220529011494928058">Problem melden</translation>
+<translation id="2223461067862937305">QR‑Code erstellen</translation>
 <translation id="2230173723195178503">Webseite geladen</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
 <translation id="2240256190924001613">Konfigurationsprofil verfügbar</translation>
 <translation id="2245007488813216650">Wird übersetzt…</translation>
 <translation id="2249119578464404734">Oben auf dem Bildschirm auf das Suchsymbol tippen</translation>
 <translation id="2251686759395008410">Menü → Verlauf</translation>
-<translation id="2252674110805316998">Websuche</translation>
 <translation id="2252749852083403809">Wird in Google Drive für <ph name="USER_EMAIL" /> gespeichert.</translation>
 <translation id="2256933947031277845">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu.</translation>
 <translation id="2257567812274161158">Synchronisierung funktioniert nicht.</translation>
@@ -271,19 +291,22 @@
 <translation id="225943865679747347">Fehlercode: <ph name="ERROR_CODE" /></translation>
 <translation id="2259659629660284697">Passwörter exportieren…</translation>
 <translation id="2265069324308685684">Browserdaten werden gelöscht…</translation>
+<translation id="2267753748892043616">Konto hinzufügen</translation>
 <translation id="2268044343513325586">Verfeinern</translation>
 <translation id="2271452184061378400">Hier werden deine Tabgruppen gespeichert</translation>
 <translation id="2273327106802955778">Menü "Mehr"</translation>
-<translation id="227432585807186192">In Tabgruppe öffnen</translation>
 <translation id="2274800392139890332">Paket nicht mehr verfolgen</translation>
 <translation id="2287614783861766820">{count,plural, =1{Diese Adresse wird von diesem Gerät gelöscht.}other{Diese Adressen werden von diesem Gerät gelöscht.}}</translation>
 <translation id="2297989278479054870">Nach der Abmeldung werden Lesezeichen, Passwörter und weitere Daten in deinem Google-Konto von diesem Gerät entfernt.</translation>
 <translation id="2299218006564889602">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Nr. <ph name="PARCEL_IDENTIFIER" /></translation>
+<translation id="2309265394777270359">Tab schließen</translation>
 <translation id="230956208401264723">In diesem Karussell kannst du dir alle deine verfolgten Pakete ansehen</translation>
+<translation id="2311077293164383652">Angepinnten Tab schließen</translation>
 <translation id="2316129865977710310">Nein danke</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
 <translation id="2321086116217818302">Passwörter werden zum Exportieren vorbereitet…</translation>
+<translation id="2323697864063408084">Du kannst Benachrichtigungen auf dem Sperrbildschirm und als Banner erhalten, um nichts Wichtiges zu verpassen</translation>
 <translation id="2326302612031521902">Auswahl der Einheit</translation>
 <translation id="2330607597130465898">Kein Safe Browsing</translation>
 <translation id="233375395665273385">Löschen und abmelden</translation>
@@ -294,14 +317,15 @@
 <translation id="235789365079050412">Datenschutzerklärung von Google</translation>
 <translation id="2359043044084662842">Übersetzen</translation>
 <translation id="2359808026110333948">Weiter</translation>
+<translation id="2360196772093551345">Mobile Version anfordern</translation>
 <translation id="2362083820973145409">Angemeldet als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
 <translation id="236977714248711277">Websites können keine Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben.
 
 Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="2377336083033403521">Tabs suchen…</translation>
 <translation id="2381405137052800939">Grundeinstellungen</translation>
+<translation id="2384692388811649784">Inkognitotabs ausblenden</translation>
 <translation id="2386793615875593361">1 ausgewählt</translation>
-<translation id="2387703759148866940">Autofill-Passwörter</translation>
 <translation id="2390457533592708044">„<ph name="MODULE_NAME" />“ ausblenden</translation>
 <translation id="2403129868389095715">Paket kann nicht zugestellt werden</translation>
 <translation id="2410754283952462441">Konto auswählen</translation>
@@ -314,18 +338,21 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2461070143328828326">Passworteinstellungen</translation>
 <translation id="2462736546165239215">Hier findest du deinen gesamten Browserverlauf.</translation>
+<translation id="2466518891828668184">Du kannst deine Passwörter speichern, um dich einfacher auf Websites und in Apps anzumelden.</translation>
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Dein Browser sieht sicher aus</translation>
 <translation id="2473876017985765807">Du hast bereits ein Passwort für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2484459871750294497">Wie aktiviere ich diese Funktion?</translation>
+<translation id="2493269659028026145">Sofort mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> sperren</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2497852260688568942">Die Synchronisierung wurde von deinem Administrator deaktiviert</translation>
 <translation id="2499505845365628575">Über die Schaltfläche „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“ kannst du deinen gesamten Browserverlauf aufrufen.</translation>
 <translation id="2511117522375201202">Du nutzt <ph name="NUMBER_OF_PASSWORDS" /> kompromittierte Passwörter, die deine Sicherheit gefährden könnten.</translation>
 <translation id="2513103768503127042">Hier werden deine Tabgruppen angezeigt</translation>
 <translation id="251837347827266434">Du wirst abgemeldet, Tabs werden geschlossen und Browserdaten gelöscht</translation>
+<translation id="2529021024822217800">Alle öffnen</translation>
 <translation id="2536991091671391962">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="2538103551183528357">Ausgeblendetes Passwort</translation>
 <translation id="2539748786028143624">Erweiterten Schutz aktivieren…</translation>
@@ -356,8 +383,10 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2664621323652615289">Beenden</translation>
 <translation id="2666092431469916601">Oben</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
+<translation id="2671423594960767771">Gruppe teilen</translation>
 <translation id="2673508731173059946">Kopierten Link aufrufen</translation>
 <translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
+<translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">Kamera wird verwendet</translation>
 <translation id="2691653761409724435">Nicht offline verfügbar</translation>
 <translation id="2696180352517415858">Du wirst nicht von deinem Google-Konto abgemeldet. <ph name="BEGIN_LINK" />Andere Arten von Aktivitäten<ph name="END_LINK" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.
@@ -371,7 +400,6 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="271033894570825754">Neu</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2721190673959776287">Beispiel für ein umfassendes Infofeld im Kontextmenü, das mehrmals täglich angezeigt wird.</translation>
-<translation id="2723020285498840769">„Text zoomen“ ausblenden</translation>
 <translation id="2747003861858887689">Vorheriges Feld</translation>
 <translation id="2749231692441336879">Du folgst <ph name="CHANNEL_NAME" /></translation>
 <translation id="2755595981383829244">Du erhältst jetzt Benachrichtigungen zu Inhalten</translation>
@@ -381,12 +409,14 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2773344962924806829">E‑Mail-Benachrichtigungen</translation>
 <translation id="2781331604911854368">An</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783161812871838616">Desktopwebsite anfordern</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Passwort in deinem Google-Konto ({EMAIL}) gespeichert}other{Passwörter in deinem Google-Konto ({EMAIL}) gespeichert}}</translation>
 <translation id="2791174088547598693">Passwort hinzufügen…</translation>
 <translation id="2797302972324086597">Ländercode</translation>
 <translation id="2816489851009559785">„Menü“ → Einstellungen → „Standardbrowser“</translation>
 <translation id="2818821771744632548">Du wurdest beim Zurücksetzen deines iPhones von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="2819667972867209401">Wenn diese Option aktiviert ist, werden Daten in deinem Google-Konto gespeichert. Ist sie deaktiviert, werden die Daten nur auf diesem Gerät gespeichert und gelöscht, wenn du dich abmeldest.</translation>
+<translation id="2829172210806130158">Auf dem Bildschirm suchen</translation>
 <translation id="2834399722155632105">3. Tippe auf „Passwortoptionen“</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="284581348330507117">Erstelle unterschiedliche Passwörter</translation>
@@ -396,25 +426,26 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2870560284913253234">Website</translation>
 <translation id="2876369937070532032">URLs einiger von mir besuchter Seiten an Google senden, wenn meine Sicherheit gefährdet ist</translation>
 <translation id="2883151425485251736">Hier kannst du Themen sehen und bearbeiten, die du in deinem Konto ausgeblendet hast</translation>
+<translation id="288655811176831528">Tab schließen</translation>
 <translation id="2888631381369839306">Benachrichtigungen zum Preis-Tracking aktiviert</translation>
 <translation id="288902476966286676">Zurück an Absender</translation>
+<translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
 <translation id="2905479111267140204">Du nutzt <ph name="NUMBER_OF_PASSWORDS" /> wiederverwendete Passwörter, die deine Sicherheit gefährden könnten.</translation>
-<translation id="2908238736374560183">{count,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="291754862089661335">Positioniere den QR-Code oder Barcode in diesem Bereich</translation>
+<translation id="2918688092312652908">Als ungelesen markieren</translation>
 <translation id="2920866371965792875">Wenn du Neuigkeiten von dieser Website sehen möchtest, klicke hier, um ihr zu folgen.</translation>
 <translation id="2922210239002704889">Rufe die Startseite oder Tastatur auf</translation>
 <translation id="2924940770243654951">In neuem Inkognitotab öffnen</translation>
 <translation id="2931440415625410757">Anleitung einblenden</translation>
+<translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2962516096219646456">Alle Autofill-Daten ansehen</translation>
 <translation id="2963044753825419640">Websites und Apps können vorhandene Konten automatisch auf die Verwendung von Passkeys umstellen, wenn diese Option verfügbar ist</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
-<translation id="2977480621796371840">Aus Gruppe entfernen</translation>
-<translation id="2979639724566107830">In neuem Fenster öffnen</translation>
 <translation id="2989523299700148168">Kürzlich besucht</translation>
+<translation id="2989805286512600854">In neuem Tab öffnen</translation>
 <translation id="2990025507101398383">Keine Inkognitotabs</translation>
 <translation id="2996291259634659425">Passphrase erstellen</translation>
-<translation id="2999340291133730">Offlineversion öffnen</translation>
 <translation id="3000900718786961632">{COUNT,plural, =1{Neues Paket verfolgt}other{Neue Pakete verfolgt}}</translation>
 <translation id="3010025794097054078">So kannst du dich bestmöglich vor Bedrohungen wie Datenpannen, unsicheren Websites und mehr schützen.</translation>
 <translation id="301080557829842765">Datenschutz-Leitfaden</translation>
@@ -434,7 +465,6 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deiner Suchmaschine.</translation>
 <translation id="3080525922482950719">Du kannst Seiten speichern, um sie später oder offline zu lesen</translation>
 <translation id="3081338492074632642">Das Passwort, das du speicherst, muss mit dem Passwort für <ph name="WEBSITE" /> übereinstimmen</translation>
-<translation id="30842332047348094">Kreditkarten</translation>
 <translation id="3087734570205094154">Unten</translation>
 <translation id="309710370695886264">Du nutzt 1 mehrfach verwendetes Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
 <translation id="3102139268911534961">Nutze die Vorteile des beliebten mobilen Browsers auf deinem iPhone.</translation>
@@ -445,8 +475,10 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3119874402040566234">Du wirst abgemeldet und Browserdaten werden gelöscht</translation>
 <translation id="3130863904455712965">Verlauf und mehr</translation>
 <translation id="313283613037595347">Neuen Inkognitotab erstellen.</translation>
+<translation id="3138611310073113613">Auswahl verwerfen</translation>
 <translation id="3143515551205905069">Synchronisierung abbrechen</translation>
 <translation id="314837624430314508">Bleib mit den neuesten Nachrichten, Updates zum Preis-Tracking und mehr auf dem Laufenden.</translation>
+<translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="315778507796115851">Verlauf</translation>
 <translation id="31652791196570636">Schließen</translation>
 <translation id="3167868116600277716">Discover-Feed</translation>
@@ -485,16 +517,18 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3371831930909698441">Übersetzer ist verfügbar. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="3377063233124932127">Deine gespeicherten Lesezeichen, Passwörter und mehr werden jetzt oben angezeigt.</translation>
 <translation id="3380352560400387991">Diese Website versucht, eine App zu öffnen. Dadurch verlässt du den Inkognitomodus.</translation>
-<translation id="3383954226298202851">Preis beobachten</translation>
 <translation id="3404232721752787413">In Google Fotos speichern</translation>
 <translation id="3404744938087714423">Durch die Abmeldung wird die Synchronisierung deaktiviert.</translation>
 <translation id="3406506285180498376">Seite teilen…</translation>
+<translation id="340669334496430859">Zuletzt geändert</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25. Okt. 2023</translation>
-<translation id="3419398945326849444">Inkognitosuche</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="3443810440409579745">Tab erhalten.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344589138074534176">Weitere Informationen zu Google Lens</translation>
+<translation id="3447332786336558089">Nachdem du dich abmeldest, werden Tabs geschlossen und nicht gespeicherte Kontodaten von diesem Gerät gelöscht. Dazu gehören beispielsweise Passwörter und der Verlauf.</translation>
+<translation id="3449016921756175697">Hilfreiche Vorschläge, die das Surfen verbessern und vereinfachen.</translation>
 <translation id="345348365500626747">Adresse gefunden</translation>
 <translation id="3464194322481586217">Preis kann nicht beobachtet werden.</translation>
 <translation id="3469117812148449995">Optionen zum Speichern von Passwörtern</translation>
@@ -506,20 +540,17 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3504377992102007712">Einstellungen</translation>
 <translation id="35083190962747987">${url} öffnen</translation>
 <translation id="3511519535430890904">Browsing-Schutz hinzufügen</translation>
-<translation id="3513276283366825110">Menü anpassen</translation>
 <translation id="3517216995152707259">Durch das Löschen deiner Browserdaten wirst du nicht von deinem Google-Konto abgemeldet. Wenn du dich von deinem Google-Konto abmelden möchtest, <ph name="BEGIN_LINK" />melde dich von Chrome ab<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Öffnet einen Tab zum Surfen im Web</translation>
-<translation id="3519519192193787760">„Lesezeichen bearbeiten“ ausblenden</translation>
 <translation id="3519905498307021260">{count,plural, =1{Tab öffnen}other{{count} Tabs öffnen}}</translation>
 <translation id="3523789730715594198">Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="3527085408025491307">Ordner</translation>
 <translation id="3529024052484145543">Nicht sicher</translation>
 <translation id="3530206579861815432">Auf deinen synchronisierten Geräten siehst du schnell deine geöffneten und kürzlich geschlossenen Tabs.</translation>
 <translation id="3530767473765895035">Konten auf diesem Gerät verwalten…</translation>
+<translation id="3533436815740441613">Neuer Tab</translation>
 <translation id="3547356470684043247">Kundenbewertungen und ‑rezensionen zu Produkten, Dienstleistungen oder Angeboten lesen, um fundiertere Entscheidungen zu treffen</translation>
 <translation id="3549391962818677448">Zustellung versucht. Versuch wird wiederholt.</translation>
-<translation id="3551148497083524451">Auf Seite suchen…</translation>
-<translation id="3551602038921373325">Text zoomen…</translation>
 <translation id="3557336313807607643">Zu Kontakten hinzufügen</translation>
 <translation id="355765753469272474">Rückgängig</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> von <ph name="NUMBER_OF_TABS" />.</translation>
@@ -528,13 +559,12 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3575234738189584619">Mit Lens suchen</translation>
 <translation id="3575426792457739946">Diese Liste enthält alle geladenen Profile.</translation>
 <translation id="3581564640715911333">Übersetzung für Seiten in andere Sprachen anbieten</translation>
-<translation id="3582976576569261467">Dein Lieblingsbrowser – jetzt auf iPadOS</translation>
 <translation id="3587885837929752825">Deine Organisation legt fest, was du in deinem Google-Konto speichern kannst.</translation>
+<translation id="3588820906588687999">Bild in neuem Tab öffnen</translation>
 <translation id="3591006724568464696">„Letzte Tabs“ ist nicht verfügbar</translation>
 <translation id="3595252146048399851">In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="3596414637720633074">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="3602260545951981695">Wähle „Erweiterter Schutz“ aus</translation>
-<translation id="3606746615845065096">Tab schließen</translation>
 <translation id="3622175633937495219">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
 <translation id="3625008969091706597">Du kannst über den Rand wischen, um zurückzugehen.</translation>
 <translation id="362709345066740529">Hier kannst du deine Karten, deinen Feed und mehr anpassen</translation>
@@ -580,6 +610,8 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3851938967634752633">Passwörter für <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> und <ph name="NUMBER_OF_ACCOUNTS" /> weitere werden gelöscht. Deine Konten werden nicht gelöscht.</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3861908220442487587">Diese Adresse wird nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, verschiebe sie in dein Google-Konto <ph name="USER_EMAIL" />.</translation>
+<translation id="3868495844258915202">Vollständige URL anzeigen</translation>
+<translation id="3875783148670536197">Zeigen</translation>
 <translation id="3876833929577368454">Jedesmal fragen</translation>
 <translation id="3885587018298784481">Einer Familiengruppe beitreten</translation>
 <translation id="3888863481921783344">Dadurch werden dir Personen angezeigt, die du zu deinem Termin einladen kannst.</translation>
@@ -604,23 +636,26 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3982893814825393515">Problem melden…</translation>
 <translation id="398604237578616937">Angemeldet als <ph name="USER_EMAIL" />. Öffne das Kontomenü.</translation>
-<translation id="3987993985790029246">Link kopieren</translation>
+<translation id="3986739045730058129">Zum Tab</translation>
 <translation id="3992684624889376114">Über diese Seite</translation>
 <translation id="3994422733891749358">Benachrichtigungen auswählen, die du erhalten möchtest</translation>
+<translation id="3994522032746736727">Als <ph name="EMAIL" /> anmelden</translation>
 <translation id="3995521777587992544">Statusanzeige für den Seitenaufbau, <ph name="EMAIL" /> geladen.</translation>
 <translation id="3997522473364371632">Das Teilen von Passwörtern wurde von deinem Administrator deaktiviert.</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Passwörter werden in deinem Google-Konto gespeichert, sodass du sie auf jedem Gerät verwenden kannst.</translation>
+<translation id="4011489366247192265">Ausgangssprache</translation>
+<translation id="4018440314314549819">Gespeicherte Passwörter automatisch ausfüllen lassen</translation>
 <translation id="4021447724486050609">Browser aktualisieren</translation>
 <translation id="4021931095789478915">${url} zur Leseliste hinzufügen</translation>
 <translation id="4028871427853484857">In Konto speichern…</translation>
 <translation id="4038354071007134711">Keine App zum Öffnen der Datei auf diesem Gerät</translation>
+<translation id="4042870976416480368">Auf Seite suchen</translation>
 <translation id="4045648459118332842">Deine gespeicherten Passwörter in allen Apps mit einmal tippen abrufen</translation>
 <translation id="4049419681095579435">Paket wird bereits verfolgt</translation>
 <translation id="4049507953662678203">Überprüfe deiner Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="4054572406751135230">Über Nachrichten, Sport und mehr auf dem Laufenden bleiben.</translation>
 <translation id="4070132839822635162">Nicht anmelden</translation>
-<translation id="4078089558472488816">Desktopwebsite anfordern</translation>
 <translation id="4094361089640885693">Beobachte Preise und lass dir Preisinformationen anzeigen.</translation>
 <translation id="4108998448622696017">Erkennt schädliche Ereignisse, sobald diese passieren, und warnt dich entsprechend.</translation>
 <translation id="4111985840824673503">Alle als gelesen markieren</translation>
@@ -631,6 +666,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4113957097611235433">Passwörter ändern</translation>
 <translation id="4120936477286528673">Diese Website versucht wiederholt, eine andere App zu öffnen.</translation>
 <translation id="4121993058175073134">Zum Senden von Exportdaten E-Mail-Konto in App "Einstellungen" konfigurieren</translation>
+<translation id="4133139945030148655">Einrichtung abgeschlossen</translation>
 <translation id="4133265950310064865">Erweitertes Safe Browsing</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -642,19 +678,19 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4169535189173047238">Nicht zulassen</translation>
 <translation id="4172051516777682613">Immer anzeigen</translation>
 <translation id="417273154673973994">{count,plural, =1{1 Tabgruppe geschlossen und gespeichert}other{{count} Tabgruppen geschlossen und gespeichert}}</translation>
+<translation id="417612446554534067">An meine Geräte senden</translation>
 <translation id="4180726336228139707">Nur auf diesem Gerät</translation>
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4183350924949589798">Mehr Sicherheit?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} schwaches Passwort}other{{count} schwache Passwörter}}</translation>
-<translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} Element ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {email}.}other{{count} Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
 <translation id="421070604241073551">Wenn diese Option aktiviert ist, werden Daten in deinem Google-Konto gespeichert. Ist sie deaktiviert, werden die Daten nur auf diesem Gerät gespeichert.</translation>
 <translation id="4224534474590365556">Über 99 inaktive Tabs schließen?</translation>
 <translation id="422474357428465195">Es gibt mehrere Probleme mit Passwörtern, die deine Sicherheit gefährden könnten.</translation>
+<translation id="422477017457571619">KI-basierter Schutz in Echtzeit vor gefährlichen Websites, Downloads und Erweiterungen auf der Grundlage deiner Browserdaten, die an Google gesendet werden</translation>
 <translation id="4231395118547300571">Sicherheitscheck-Benachrichtigungen aktiviert</translation>
 <translation id="4237377247299956313">Tippe auf <ph name="BEGIN_BOLD" />Standard-Browser-App<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
-<translation id="4248717096351188227">QR‑Code erstellen</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} Tabs öffnen}=1{{count} Tab öffnen}other{{count} Tabs öffnen}}</translation>
 <translation id="4251531167342733205">Hol das Beste aus deinem Lieblingsbrowser heraus.</translation>
 <translation id="4253168017788158739">Notiz</translation>
@@ -664,19 +700,20 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4272631900155121838">Um einen QR-Code zu scannen, aktiviere in den Einstellungen die Kamera</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4279431713294750185">Du kannst über den Rand wischen, um weiterzugehen.</translation>
-<translation id="427987768447457592">Neue Tabgruppe</translation>
 <translation id="4282944936010261425">Es wurden keine Sicherheitsprobleme gefunden, die behoben werden müssen.</translation>
 <translation id="4286718549648564014">Die Adresse wurde in dein Konto <ph name="USER_EMAIL" /> verschoben</translation>
 <translation id="4287172530684295552">Als gelesen markieren</translation>
 <translation id="428768789042547925">Neuheiten</translation>
-<translation id="4293080268407233932">Suchen</translation>
+<translation id="429074084062258019">{count,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="4302061870579014542">Positionieren</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
 <translation id="4309403553630140242">Für weitere Informationen doppeltippen</translation>
+<translation id="4320848494125124980">Zuletzt verwendet</translation>
+<translation id="4322394346347055525">Andere Tabs schließen</translation>
 <translation id="4324735664183300693">Benachrichtigungen aktivieren</translation>
+<translation id="4326912346867677256">Tippe auf „Passwort verwenden“, um dich sicher anzumelden.</translation>
 <translation id="4328843285884395590">Meine Ablage</translation>
 <translation id="4331177082088332784">Du kannst diese Option in den BEGIN_LINK Inhaltseinstellungen END_LINK verwalten</translation>
-<translation id="4333100555184633720">Browserdaten löschen</translation>
 <translation id="4334428914252001502">1 ungelesener Artikel.</translation>
 <translation id="4338258232580025606">Anmelden nicht möglich</translation>
 <translation id="4338650699862464074">URLs der von dir besuchten Seiten werden an Google gesendet.</translation>
@@ -684,7 +721,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4342946437867096381">Du hast bereits ein Passwort für diese Website in deinem Google-Konto gespeichert. Google kann für dich das neueste Passwort auswählen.</translation>
 <translation id="4365121137632832185">Tabgruppe. Maximiert.</translation>
 <translation id="4367971618859387374">Anzeigename</translation>
-<translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4375772272517383391">Alle Tabs schließen</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Zum Ändern der Sprache hier tippen.</translation>
@@ -693,14 +729,18 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4405320213589929829">Du kannst Adressen auf Webseiten verwenden, um lokale Informationen und Wegbeschreibungen zu erhalten.</translation>
 <translation id="441218095371040430">Tastatur verwenden</translation>
 <translation id="4415276339145661267">Google-Konto verwalten</translation>
+<translation id="4430277756566635951">Aktuell ausgewählt: <ph name="EMAIL" />. Wähle ein Konto aus.</translation>
 <translation id="4431224949908513835">Wähle eine Zahlungsmethode für das automatische Ausfüllen aus.</translation>
 <translation id="4442550905108052454">Öffne die <ph name="BEGIN_BOLD" />Einstellungen<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Weitere Optionen für „<ph name="CELL_ACCESSIBILITY_LABEL" />“</translation>
 <translation id="4455710003856931944">Du kannst über den Rand wischen, um zurück- oder weiterzugehen.</translation>
 <translation id="4460014764210899310">Gruppierung aufheben</translation>
+<translation id="446314443268698477">Du kannst ganz einfach einkaufen, übersetzen und identifizieren, was du mit deiner Kamera oder in Fotos siehst.</translation>
 <translation id="4469324811108161144">Notizen können bis zu <ph name="CHARACTER_LIMIT" /> Zeichen enthalten.</translation>
 <translation id="4469834037720363704">Sendungsnummer</translation>
 <translation id="4471472356135655769">Passwörter können nicht exportiert werden</translation>
+<translation id="4473608001744970767">„Preis beobachten“ ausblenden</translation>
+<translation id="4474142134969976028">Keine passenden Ergebnisse</translation>
 <translation id="4474494258097106883">Für dein iPhone entwickelt</translation>
 <translation id="4488754974567924717">Wenn deine Passwörter gehackt werden, informieren wir dich darüber</translation>
 <translation id="4489536976005181779">{count,plural, =1{Die Seite wurde der Leseliste in deinem Konto {email} hinzugefügt}other{Die Seiten wurden der Leseliste in deinem Konto {email} hinzugefügt}}</translation>
@@ -709,7 +749,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4495516234578759322">Weitersuchen</translation>
 <translation id="4502423230170890588">Von diesem Gerät entfernen</translation>
 <translation id="4508750114462689118">Anmeldeangebot schließen</translation>
-<translation id="4511669830082467224">Bild mit Google suchen</translation>
 <translation id="4520798012560649652">Weitere Informationen zum Inkognitomodus</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} Lesezeichen}other{{count} Lesezeichen}}</translation>
 <translation id="4525629404718770519">Linkvorschau anzeigen</translation>
@@ -725,14 +764,13 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Seite wurde deiner Leseliste hinzugefügt}other{{count} Seiten wurden deiner Leseliste hinzugefügt}}</translation>
 <translation id="459644946100970322">Benachrichtigungen zu Preisaktualisierungen aktivieren?</translation>
+<translation id="4597892826846980979">Tab-Benachrichtigungen erhalten</translation>
 <translation id="4601095002996233687">Umfangreiche Scans für verdächtige Downloads.</translation>
 <translation id="4606247758155004938">Dein Browser wird von deiner Organisation verwaltet.</translation>
 <translation id="4611811151908969241">„<ph name="DOMAIN_NAME" /> nicht mehr folgen“ ausblenden</translation>
 <translation id="461440297010471931">Mit Google suchen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4619615317237390068">Tabs von anderen Geräten</translation>
-<translation id="4620446472171153485">Mobile Website anfordern</translation>
-<translation id="4620845369664293551">Du kannst diese Seite hier teilen.</translation>
 <translation id="4624080227980645783">Neues Inkognitofenster</translation>
 <translation id="4630212057753624203">Beispiel-Bubble</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
@@ -744,6 +782,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4647758699119474035">Angemeldet als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fehler bei Google-Konto. Öffne das Kontomenü.</translation>
 <translation id="4650125387981512669">Weiter als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Nach 1 Minute ausblenden}other{Nach {count} Minuten ausblenden}}</translation>
 <translation id="4652817563047461855">Prüfe, ob deine Passwörter sicher sind, finde heraus, ob sie kompromittiert wurden, und informiere dich darüber, wie du dich im Internet besser schützen kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Speichern</translation>
 <translation id="4668929960204016307">,</translation>
@@ -756,16 +795,16 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4717844083556844785">Aktuelle Webseite ist im Inkognitomodus</translation>
 <translation id="4719927025381752090">Übersetzung anbieten</translation>
+<translation id="4720530280568305198">Deine Auswahl wurde in einem neuen Tab geöffnet</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4742407542027196863">Passwörter verwalten…</translation>
-<translation id="4742897645503301228">„Preis beobachten“ ausblenden</translation>
 <translation id="4744428388659507035">Um auf all deinen Geräten auf deine Lesezeichen zugreifen zu können, musst du in den Einstellungen die Option „Lesezeichen“ aktivieren.</translation>
 <translation id="4746926359847517643">Du kannst sie jederzeit im Verlauf wiederherstellen.</translation>
+<translation id="4751645464639803239">Neuer Inkognitotab</translation>
 <translation id="4752348350801431746">Sicherheitscheck-Benachrichtigungen deaktivieren…</translation>
 <translation id="4764612367328936189">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover &amp; Folgen</translation>
 <translation id="4769198578611055647">Mit dieser PIN kannst du von jedem Gerät auf deine gespeicherten Passkeys zugreifen</translation>
-<translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4777866634702576038">Tabgruppe löschen?</translation>
 <translation id="4787190926964898499">{COUNT,plural, =1{Geöffnete Tabs, die einen Tag oder länger nicht verwendet wurden, werden in die inaktiven Tabs verschoben. So kannst du dich besser auf die Tabs konzentrieren, die du am häufigsten verwendest. Du kannst dies jederzeit in den Einstellungen ändern.}other{Geöffnete Tabs, die {COUNT} Tage oder länger nicht verwendet wurden, werden in die inaktiven Tabs verschoben. So kannst du dich besser auf die Tabs konzentrieren, die du am häufigsten verwendest. Du kannst dies jederzeit in den Einstellungen ändern.}}</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -773,6 +812,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4792385443586519711">Unternehmen</translation>
 <translation id="479628432297359449">Download beenden?</translation>
 <translation id="4796496140132859135">Tabgruppe. Minimiert.</translation>
+<translation id="4802185666270672526">„Desktopwebsite anfordern“ ausblenden</translation>
 <translation id="4803185665210547709">Von deiner Organisation verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Name auf Karte</translation>
@@ -788,17 +828,19 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4840495572919996524">Deine Lesezeichen, der Verlauf, deine Passwörter und andere Einstellungen werden nicht mehr mit deinem Google-Konto synchronisiert.</translation>
 <translation id="484280513275854557">Du wurdest abgemeldet und Browserdaten wurden gelöscht</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
-<translation id="4852871795239756651">„Zur Leseliste hinzufügen“ ausblenden</translation>
 <translation id="4860895144060829044">Anrufen</translation>
 <translation id="4869146460927742717">Position der Adressleiste</translation>
 <translation id="4870911314065352661">Alle Tabs schließen?</translation>
-<translation id="4871719318659334896">Gruppe schließen</translation>
 <translation id="4872664437015695612">Downloadordner öffnen</translation>
 <translation id="4876305945144899064">Kein Nutzername</translation>
+<translation id="4876665338492917862">Geöffnet: <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Später erinnern</translation>
 <translation id="4881695831933465202">Öffnen</translation>
+<translation id="488785315393301722">Details ansehen</translation>
 <translation id="4889521386764567563">Aktuelles Profil</translation>
+<translation id="4893713555726946316">„Auf Seite suchen“ ausblenden</translation>
 <translation id="4894963374040315706">Dadurch kannst du per Spracheingabe suchen</translation>
+<translation id="4895540042460820904">Zuletzt geöffnet</translation>
 <translation id="4896467949657706481">Tabs wurden geschlossen und du wurdest abgemeldet</translation>
 <translation id="490709372351071121">Paketstatus wird abgerufen</translation>
 <translation id="4908869848243824489">Discover von Google</translation>
@@ -807,14 +849,16 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4936354130727646074">Nie verschieben</translation>
 <translation id="4937410517508563815">Die Passwörter werden im Konto gespeichert</translation>
 <translation id="4938338714234463591">So kannst du Sprachbefehle für bestimmte Funktionen auf Websites verwenden.</translation>
+<translation id="4938716880833771969">Deine Benachrichtigungen sind lautlos</translation>
 <translation id="4941089862236492464">Beim Teilen ist ein Fehler aufgetreten.</translation>
+<translation id="4944543191714094452">Auf Seite suchen…</translation>
 <translation id="4945756290001680296">Auf Passworteinstellungen zugreifen</translation>
 <translation id="4949302115427722371">Einstellungen verwalten…</translation>
 <translation id="4958444002117714549">Liste einblenden</translation>
 <translation id="496392417432935267">Woanders geöffnet</translation>
 <translation id="4971735654804503942">Schnellerer und dynamischerer Schutz gegen schädliche Websites, Downloads und Erweiterungen. Warnt dich im Fall von Datenpannen, bei denen Passwörter preisgegeben werden. Hierfür müssen Browserdaten an Google gesendet werden.</translation>
-<translation id="497576524745133089">Mobile Website anfordern</translation>
 <translation id="4979397965658815378">Melde dich mit deinem Google-Konto an, um deine Lesezeichen, deine Passwörter, den Verlauf und deine anderen Einstellungen auf allen Geräten abrufen zu können</translation>
+<translation id="498624032394115435">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten.</translation>
 <translation id="4989065233040279145">Speicherort für <ph name="FILENAME" /> auswählen</translation>
 <translation id="4992255726304765516">Farbe der Tabgruppe: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
@@ -854,19 +898,19 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5174591196806162275">Aus Lens kopiertes Bild</translation>
 <translation id="5176312250994681348">Letztes Passwort beibehalten</translation>
 <translation id="5177141896043341906">Du nutzt <ph name="NUMBER_OF_PASSWORDS" /> schwache Passwörter, die deine Sicherheit gefährden könnten.</translation>
-<translation id="5179471839166060416">„Browserdaten löschen“ ausblenden</translation>
 <translation id="5181140330217080051">Download wird ausgeführt...</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">Deine Cookie-Einstellung gilt für alle Tabs. Wenn du eine neue Einstellung auf einen geöffneten Tab anwenden möchtest, aktualisiere den Tab.</translation>
 <translation id="518997337573684769">Absturzbericht wird gesendet…</translation>
 <translation id="519530786644929958">Der Download ist fehlgeschlagen und kann nicht wiederholt werden.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5200226585829185758">„Zu Lesezeichen hinzufügen“ ausblenden</translation>
 <translation id="5200894869889836319">Optionen zum Festlegen von Berechtigungen</translation>
+<translation id="5203051773066903947">Eingabetaste</translation>
 <translation id="5206453674369664567">Abmelden und Daten löschen</translation>
 <translation id="5210365745912300556">Schließen</translation>
 <translation id="5211488077761630279">Zulassen, dass „<ph name="SITE_NAME" />“ <ph name="PERMISSION" /> verwendet?</translation>
 <translation id="5217245356412073535">Du kannst in den Einstellungen &gt; den Inhaltseinstellungen die Desktop-Ansicht als Standardeinstellung festlegen</translation>
+<translation id="5217329997012062137">Wenn du Google Lens verwendest, wird ein Screenshot der Seite an Google gesendet.</translation>
 <translation id="5220945116117011963">Kalendertermine anhand von Datumsangaben erstellen</translation>
 <translation id="5222676887888702881">Abmelden</translation>
 <translation id="5228579091201413441">Synchronisierung aktivieren</translation>
@@ -884,6 +928,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5295239312320826323">Konto <ph name="USER_EMAIL" /> entfernen?</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5311061401280561833">Kamera- und Mikrofonzugriff gewährt</translation>
+<translation id="531209241254508943">Tabgruppe</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> von <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318298563956633672">Du beobachtest dieses Produkt bereits.</translation>
@@ -891,7 +936,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5329451663851195956">Zum Aktualisieren nach unten ziehen.</translation>
 <translation id="5338512273860059533">Anmeldung läuft.</translation>
 <translation id="5343472494710226394">Nachrichten, Sport und Inhalte, die deinen Interessen entsprechen.</translation>
-<translation id="5348775987281903912">Du kannst diese Seite hier über die Schaltfläche „Teilen“ teilen.</translation>
 <translation id="5352128922772839949">Datei speichern</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="5356332698539508708">Löschen und wechseln</translation>
@@ -900,6 +944,9 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="541276233349960923">Passwörter auf allen deinen Geräten verwenden</translation>
 <translation id="5414763847370083940">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt.</translation>
 <translation id="5415289094036440596">Passkeys können nicht geteilt werden</translation>
+<translation id="5416455648658732408">In Tabgruppe verschieben</translation>
+<translation id="542659109038405424">Zielsprache</translation>
+<translation id="5429624150850059322">Wenn du zurückkehrst, werden die Tabs unkenntlich gemacht, bis du zum Fortfahren tippst</translation>
 <translation id="5431239785743546285">Seiten, die du gelesen hast</translation>
 <translation id="5431252637281434233">Du wirst abgemeldet</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
@@ -909,7 +956,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5452354193031718372">Starkes Passwort verwenden:</translation>
 <translation id="5454211924362324495">Wenn du verhindern möchtest, dass andere dein Passwort verwenden, <ph name="BEGIN_LINK" />ändere es auf <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Deiner Suche hinzufügen</translation>
-<translation id="5470555063139385235">An mein Gerät senden</translation>
+<translation id="5457226814769348910">Offlineversion öffnen</translation>
 <translation id="5478327362747197944">Du kannst Kalendertermine durch Klicken auf ein Datum auf einer Webseite direkt erstellen.</translation>
 <translation id="5482922178977937393">Möchtest du auf deine Interessen abgestimmte Benachrichtigungen zu aktuellen Nachrichten, Sport und mehr erhalten?</translation>
 <translation id="5483838506518938965">Fertig!</translation>
@@ -939,7 +986,6 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5585019845078534178">Karten</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
-<translation id="5602586420788540146">In neuer Tabgruppe öffnen</translation>
 <translation id="560322036295180549">Von deiner Organisation deaktiviert</translation>
 <translation id="5611107723541161735">Verknüpfungen zu Websites, die du zuletzt auf diesem Gerät besucht hast.</translation>
 <translation id="5611398002774823980">In Konto speichern</translation>
@@ -949,7 +995,6 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5624120631404540903">Passwörter verwalten</translation>
 <translation id="5624637933505983014">Synchronisierung nicht aktivieren</translation>
 <translation id="5626245204502895507">Die Datei kann momentan nicht heruntergeladen werden.</translation>
-<translation id="5627356199445503927">Tab schließen</translation>
 <translation id="562753339521713441">Sicherheitscheck starten</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} Seite in deiner Leseliste}other{{count} Seiten in deiner Leseliste}}</translation>
 <translation id="5632485077360054581">Zeigen</translation>
@@ -962,6 +1007,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5652623411397330904">Hier werden die von dir beobachteten Produkte angezeigt.</translation>
 <translation id="5657156137487675418">Alle Cookies zulassen</translation>
 <translation id="5659593005791499971">E-Mail</translation>
+<translation id="5666313630530585305">Melde dich auf einer Website an.</translation>
 <translation id="5669335982068190158">Du wurdest beim Zurücksetzen deines iPhones abgemeldet. Tippe unten auf „Weiter“, um dich anzumelden.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
@@ -1001,7 +1047,6 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Wird synchronisiert…</translation>
 <translation id="5844284118433003733">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, wie beispielsweise nach einem Sicherheitsvorfall in Gmail.</translation>
-<translation id="5846482154967366008">Suchmaschine</translation>
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
 <translation id="5857770089550859117">Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
 <translation id="5859715514067755465">Weiter</translation>
@@ -1010,6 +1055,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Von deiner Organisation verwaltet.</translation>
 <translation id="5888889603768021126">Angemeldet mit</translation>
+<translation id="5889333064153755823">Browserdaten löschen</translation>
 <translation id="5896576662943111387">Entwickelt für iOS</translation>
 <translation id="5897749768294722429">Synchronisiere Tabs und Verlauf, um bereits besuchte Websites schnell wieder aufzurufen.</translation>
 <translation id="5898848375214731122">Gewicht (Masse)</translation>
@@ -1023,7 +1069,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="594324569139756587">Drittanbieter-Cookies blockieren</translation>
 <translation id="5944869793365969636">QR-Code scannen</translation>
 <translation id="5948291296578561264">Dadurch kannst du Fotos in der Fotogalerie speichern.</translation>
-<translation id="5954322191260787920">Lesezeichen bearbeiten</translation>
+<translation id="5952641243319721872">Möchtest du deine Auswahl wirklich verwerfen?</translation>
 <translation id="5956112131836209882">Tabgruppen-Tab. <ph name="TAB_INDEX_IN_GROUP" /> von <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Mit <ph name="SEARCH_PROVIDER" /> suchen</translation>
 <translation id="5963939892571022323">Zum markierten Text kann kein Link erstellt werden.</translation>
@@ -1054,6 +1100,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6074656473835429958">Benachrichtigungen erhalten</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) konnte nicht hochgeladen werden</translation>
 <translation id="6077126322656614846">Kamerazugriff gewährt</translation>
+<translation id="6084848228346514841">Tabs auswählen</translation>
 <translation id="6089212833343035912">PIN für Google Passwortmanager</translation>
 <translation id="6090760257419195752">Geschlossene Warnungen</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> gefunden</translation>
@@ -1069,6 +1116,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6140948187512243695">Details ansehen</translation>
 <translation id="6144589619057374135">${url} im Inkognitomodus öffnen</translation>
 <translation id="6151006591088192882">Inkognitotabs mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
+<translation id="6152340033632117531">Inaktiv</translation>
 <translation id="6152406514676263192">Aktiviere die Synchronisierung, um die relevantesten Inhalte zu erhalten, die deinen Interessen entsprechen.</translation>
 <translation id="6159839020698489198">optional</translation>
 <translation id="6160780110287872296">Datei herunterladen?</translation>
@@ -1089,6 +1137,8 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6225572914528673855">Adressleiste</translation>
 <translation id="6227126502342367214">Lens-Kamerasuche</translation>
 <translation id="6231782223312638214">Vorgeschlagen</translation>
+<translation id="6232329973559504466">Inkognitosuche</translation>
+<translation id="6234310016144827337">Verbindung prüfen und noch einmal versuchen</translation>
 <translation id="6234438496206735891">Downloads anzeigen</translation>
 <translation id="6236952928980352967">Warnung wiederherstellen</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
@@ -1096,6 +1146,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6254066287920239840">Links in der App statt im Browser öffnen.</translation>
 <translation id="6266039999629596120">Maßnahme erforderlich</translation>
 <translation id="6268773951964630964">Nach kopiertem Bild suchen</translation>
+<translation id="6271462272606946663">„Mobile Website anfordern“ ausblenden</translation>
 <translation id="6271824294945464304">Passwort teilen</translation>
 <translation id="628251768213143684">Du kannst jederzeit festlegen, was in deinem Google-Konto gespeichert werden soll</translation>
 <translation id="6284652193729350524">Übersetzung für <ph name="LANGUAGE" /> anbieten</translation>
@@ -1106,6 +1157,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6301104306974789820">Benachrichtigungen zum Preis-Tracking erhalten</translation>
 <translation id="6303969859164067831">Abmelden und die Synchronisierung ausschalten</translation>
 <translation id="6310451064941005489">Passwortoptionen</translation>
+<translation id="6316141353357700666">Wähle das gewünschte Passwort aus der angezeigten Liste aus.</translation>
 <translation id="6321526113093607004">Zu Lesezeichen hinzufügen</translation>
 <translation id="6337234675334993532">Verschlüsselung</translation>
 <translation id="633809752005859102">Es ist ein schwerwiegendes Problem aufgetreten. Wir arbeiten daran.</translation>
@@ -1120,6 +1172,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6355820205320395730">Schwache Passwörter sind einfach zu erraten. Erstelle deshalb am besten starke Passwörter. <ph name="BEGIN_LINK" />Weitere Sicherheitstipps ansehen.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> folgen</translation>
 <translation id="6368038301482806847">Wählen Sie die Suchmaschine aus der Liste.</translation>
+<translation id="6374469231428023295">Erneut versuchen</translation>
 <translation id="6387994324662817823">Passwörter werden nur auf diesem Gerät im Google Passwortmanager gespeichert.</translation>
 <translation id="6404422529625928907">In Google Drive öffnen</translation>
 <translation id="6404511346730675251">Lesezeichen bearbeiten</translation>
@@ -1131,6 +1184,8 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6418346271604475326">PDF wird vorbereitet</translation>
 <translation id="6429213933892582367">Öffne „Passwortoptionen“</translation>
 <translation id="6434591244308415567">Ein Fehler ist aufgetreten. Bitte versuche es später noch einmal.</translation>
+<translation id="6436318499800111867">Für mich freigegeben: <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442697326824312960">Tab loslösen</translation>
 <translation id="6443118737398455446">Ungültiges Ablaufdatum</translation>
 <translation id="6444435711855078002">Weitere Optionen</translation>
 <translation id="6445051938772793705">Land</translation>
@@ -1147,14 +1202,12 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
 <translation id="6476800141292307438">Die Seite wird in die Sprache <ph name="LANGUAGE" /> übersetzt. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="647867789226964031">Passwörter ändern</translation>
-<translation id="6489017415570962672">Websiteinformationen</translation>
 <translation id="6494931198667773526">Ende</translation>
-<translation id="6496122455598515335">Als ungelesen markieren</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Paket nicht mehr verfolgen}other{Keine Pakete mehr verfolgen}}</translation>
 <translation id="6503077044568424649">Meistbesucht</translation>
 <translation id="6503763061813913607">Sicherheitscheck-Benachrichtigungen</translation>
 <translation id="6505334220040167806">Tabgruppe minimieren.</translation>
-<translation id="6505432801953153174">Nach kopiertem Bild suchen</translation>
+<translation id="6506996418997555004">Tabgruppe „<ph name="GROUP_NAME" />“ teilen</translation>
 <translation id="6507973708545996744">Melde dich an, um deine Lesezeichen auf allen deinen Geräten abrufen zu können.</translation>
 <translation id="6518133107902771759">Bestätigen</translation>
 <translation id="6523575793810663688">Anleitung</translation>
@@ -1162,7 +1215,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6532106788206463496">Änderungen speichern</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> geöffnet, Gruppe mit <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
-<translation id="6537746030088321027">example.com</translation>
+<translation id="6537746030088321027">beispiel.de</translation>
 <translation id="6550675742724504774">Optionen</translation>
 <translation id="6550891580932862748">Schützt dich nicht vor gefährlichen Websites, Downloads und Erweiterungen. Deine Safe Browsing-Einstellungen in anderen Google-Produkten sind davon nicht betroffen.</translation>
 <translation id="6559301491397835130">{count,plural, =1{Lesezeichen unter „{title}“ gespeichert. Es wird nur auf diesem Gerät gespeichert.}other{Lesezeichen unter „{title}“ gespeichert. Sie werden nur auf diesem Gerät gespeichert.}}</translation>
@@ -1174,6 +1227,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6583087784430677195">Öffne zum Deaktivieren die <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> und gehe zu „Passwörter automatisch ausfüllen“.</translation>
 <translation id="6585048665672348661">Browserdaten löschen…</translation>
 <translation id="6585618849026997638">Du kannst Lesezeichen setzen, damit du zu Seiten zurückfindest, die für dich interessant sind</translation>
+<translation id="6596481460663245319">Google-Suche anhand des Bildes</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 Passwort}other{# Passwörter}}</translation>
 <translation id="6601302169302852717">Bild für <ph name="USER_EMAIL" /> in Google Fotos gespeichert</translation>
 <translation id="6603393121510733479">Deine Organisation hat das private Surfen deaktiviert.
@@ -1181,12 +1235,14 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6606914854592108404">Sicherheitscheck wird ausgeführt…</translation>
 <translation id="6609890790934458793">Passwörter für <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> und <ph name="THIRD_WEBSITE" /> werden gelöscht. Deine Konten werden nicht gelöscht.</translation>
 <translation id="661266467055912436">Verbessert die Sicherheit für dich und alle im Internet.</translation>
+<translation id="6612912757320004438">Tab-Benachrichtigungen zulassen…</translation>
 <translation id="6617761071025228250">Text löschen</translation>
 <translation id="6620279676667515405">Abbrechen</translation>
 <translation id="6624219055418309072">Im Inkognitomodus blockieren</translation>
 <translation id="6625830436658400045">Deine Synchronisierungseinstellungen werden auf Grundlage deiner letzten Sicherung wiederhergestellt. In den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> kannst du auswählen, was synchronisiert werden soll.</translation>
 <translation id="6627583120233659107">Ordner bearbeiten</translation>
 <translation id="6634432609054530164">Deine Organisation hat den Inkognitomodus deaktiviert</translation>
+<translation id="6638511529934826365">Text zoomen…</translation>
 <translation id="6640268266988685324">Geöffneter Tab</translation>
 <translation id="6641465290890659327">Kopie meines Passworts teilen</translation>
 <translation id="6642362222295953972">Zu vorhandenem Tab wechseln</translation>
@@ -1196,37 +1252,38 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659660757330712663">Du kannst über die Symbolleiste wischen, um zwischen den Tabs zu wechseln.</translation>
 <translation id="6663529247339810546">Speichern nicht möglich</translation>
-<translation id="6671495933530132209">Bild kopieren</translation>
+<translation id="6668619169535738264">Lesezeichen bearbeiten</translation>
+<translation id="6671294218820966278">Als gelesen markieren</translation>
 <translation id="6672241253012342409">Websites können Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben.
 
 Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen.</translation>
 <translation id="6672697278890207089">Passphrase eingeben</translation>
 <translation id="6674571176963658787">Gib deine Passphrase ein, um die Synchronisierung zu starten</translation>
 <translation id="667999046851023355">Dokument</translation>
+<translation id="6680416467695217368">Menü anpassen</translation>
 <translation id="6681586159478273915">Sprachsuche</translation>
 <translation id="6685259053455152195">Verknüpfungen zum schnellen Anpassen der Einstellungen oder Zugreifen auf Funktionen über die Adressleiste.</translation>
 <translation id="6689685206615181381">Nur der Inkognitomodus ist verfügbar</translation>
 <translation id="6709964700841491574">Sperrmodus</translation>
 <translation id="6710079714193676716">Von deiner Organisation verwaltet. Einige Funktionen sind möglicherweise nicht verfügbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Zum Feed</translation>
+<translation id="6713676799463473249">Geändert: <ph name="LAST_MODIFICATION_DATE" /></translation>
+<translation id="6717862474255265991">Preis beobachten</translation>
+<translation id="6722623263381062480">Erhaltene Tabs</translation>
 <translation id="6723740634201835758">Im Google-Konto</translation>
 <translation id="672735642903863329">Lesezeichen, Passwörter und andere Daten auf allen deinen Geräten aufrufen.</translation>
 <translation id="6732087373923685049">Kamera</translation>
 <translation id="6746338529702829275">Kontodaten prüfen</translation>
-<translation id="6748108480210050150">Von</translation>
 <translation id="6755200887046212842">Konten verwalten</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Deine Browserdaten werden gelöscht</translation>
 <translation id="6790502149545262384">Bald wirst du beim Öffnen eines neuen Tabs „<ph name="CHANNEL_NAME" />“-Artikel sehen.</translation>
-<translation id="6797178503433441669">Kopierten Link aufrufen</translation>
-<translation id="6800349425672670802">Über den Tab-Wechsler kannst du auf alle geöffneten Tabs zugreifen.</translation>
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="6825078212112407882">{count,plural, =1{Lesezeichen in deinem Google-Konto ({email}) gespeichert}other{{count} Lesezeichen in deinem Google-Konto {email} gespeichert}}</translation>
 <translation id="6830728435402077660">Nicht sicher</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
-<translation id="6832861194202253171">In Tabgruppe verschieben</translation>
 <translation id="6842136130964845393">Bestätige deine Identität, damit du jederzeit auf deine gespeicherten Passwörter zugreifen kannst</translation>
-<translation id="68541483639528434">Andere Tabs schließen</translation>
+<translation id="6851516051005285358">Desktop-Version</translation>
 <translation id="6858718102216837409">Sprache hinzufügen…</translation>
 <translation id="6858855187367714033">Gescannt</translation>
 <translation id="6859944681507688231">Wenn du einen QR-Code oder eine Kreditkarte scannen möchtest, aktiviere zuerst in den Einstellungen die Kamera.</translation>
@@ -1248,14 +1305,17 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6906448540340261898">Achte darauf, dass du die Passwörter in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="6908734251759299256">Browser aktualisieren</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Nur auf diesem Gerät.</translation>
+<translation id="6914583639806229067">Nach dem kopierten Bild suchen</translation>
 <translation id="6914783257214138813">Deine Passwörter sind für jeden zugänglich, der die exportierte Passwortdatei aufrufen kann.</translation>
+<translation id="6924299883035848912">„Browserdaten löschen“ ausblenden</translation>
 <translation id="6930162026494574854">Übersetzungseinstellungen zurücksetzen</translation>
 <translation id="6930799952781667037">Zum Ändern in diese Sprache tippen.</translation>
-<translation id="693165111545149627">An meine Geräte senden</translation>
 <translation id="693761253105515415">Sicherheitscode einrichten</translation>
 <translation id="6943681254152031826">{COUNT,plural, =1{Dieses Paket verfolgen?}other{{COUNT} Pakete verfolgen?}}</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="6950522403736391608">Ausgeblendet</translation>
+<translation id="6964300328304469089">Aktuell ausgewählt: <ph name="NAME" />, <ph name="EMAIL" />. Wähle ein Konto aus.</translation>
+<translation id="6964760285928603117">Aus Gruppe entfernen</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6973630695168034713">Ordner</translation>
 <translation id="69739764870135975">Wenn Google als Standardsuchmaschine festgelegt ist, siehst du bessere und relevantere Vorschläge</translation>
@@ -1263,10 +1323,9 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6979737339423435258">Gesamte Zeit</translation>
 <translation id="6983306615164277634">Alternativ kannst du auch die Adressleiste gedrückt halten, um die Position zu ändern.</translation>
 <translation id="6990519590575500580">FaceTime</translation>
-<translation id="6998989275928107238">An</translation>
 <translation id="7004032350256606903">Deine Organisation verlangt, dass du im privaten Modus surfst.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="7005768247344091502">In den Einstellungen als Standardbrowser festlegen…</translation>
+<translation id="7005768247344091502">Zu den Einstellungen</translation>
 <translation id="7015418667643980944">Geteilte Ansicht</translation>
 <translation id="7016070607649558507">Du nutzt 1 schwaches Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
 <translation id="7016958933495968912">Optionen für Discover</translation>
@@ -1294,7 +1353,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="714291438898585119">Markiert</translation>
 <translation id="7146301801400584641">Kalenderdatei verfügbar</translation>
 <translation id="7149893636342594995">Letzte 24 Stunden</translation>
-<translation id="716059570521443369">Nach von dir kopiertem Text suchen</translation>
 <translation id="7161230316646448869">Lesezeichen, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="7173114856073700355">Einstellungen öffnen</translation>
 <translation id="7173721738069475737">{count,plural, =1{Lesezeichen gespeichert}other{{count} Lesezeichen gespeichert}}</translation>
@@ -1309,10 +1367,12 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7218491361283758048">Postleitzahl</translation>
 <translation id="7221173315674413369">Entdecke unter „Neue Funktionen“ Tipps und neue Funktionen</translation>
 <translation id="722339453342442311">Jetzt prüfen</translation>
+<translation id="7227235818314667565">Freigaben verwalten</translation>
 <translation id="7233006041370588369">Wähle ein Passwort für das automatische Ausfüllen aus.</translation>
 <translation id="7241135764990439166">Inkognitomodus ist nicht verfügbar</translation>
 <translation id="7248046129087111453">Der <ph name="BEGIN_LINK" />Suchverlauf<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />andere Arten von Aktivitäten<ph name="END_LINK" /> können in deinem Google-Konto gespeichert werden.</translation>
 <translation id="7253951228444156601">Passwörter werden geprüft…</translation>
+<translation id="7261217796641151584">Gruppe teilen</translation>
 <translation id="7271220006028561438">Automatische Passkey-Upgrades zulassen</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
@@ -1339,6 +1399,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ungelesene Artikel.</translation>
 <translation id="7412027924265291969">Weiter</translation>
 <translation id="741204030948306876">Ja, bitte</translation>
+<translation id="7417689656810783109">Gruppe umbenennen</translation>
 <translation id="7419565702166471774">Immer verschlüsselte Verbindungen verwenden</translation>
 <translation id="7425053386765766120">Zahlungsmethode hinzufügen…</translation>
 <translation id="7425346204213733349">Änderungen an deinen Lesezeichen, dem Verlauf, deinen Passwörtern und anderen Einstellungen werden nicht mehr mit deinem Google-Konto synchronisiert. Deine vorhandenen Daten bleiben aber in deinem Google-Konto gespeichert.</translation>
@@ -1350,8 +1411,10 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7454057999980797137">Bundesland/Landkr.</translation>
 <translation id="7458706065921255639">Personalisierung &amp; Verknüpfung</translation>
 <translation id="745899714366929493">Ganztägig</translation>
+<translation id="7460698861522306757">Mobile Website anfordern</translation>
 <translation id="7465351360025415755">Inhalte erhalten, die dich interessieren</translation>
 <translation id="7468373585447318060">Du wirst über Preissenkungen für alle Produkte informiert, die du beobachtest.</translation>
+<translation id="746872191028309255">Du kannst ganz einfach kaufen, was du mit deiner Kamera oder in der Fotogalerie siehst.</translation>
 <translation id="7471557245617580330">Neuen Tab erstellen</translation>
 <translation id="747956641630879526">Wenn du diese Karte ausblendest, wird die Paketverfolgung deaktiviert und alle deine Daten werden entfernt</translation>
 <translation id="7484645889979462775">Für diese Website niemals</translation>
@@ -1359,25 +1422,26 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7488874549363591659">Zugestellt</translation>
 <translation id="7491131399623468277">Zu den Einstellungen…</translation>
 <translation id="7498234416455752244">Weiter bearbeiten</translation>
-<translation id="749854780843431406">Über die Schaltfläche „<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />“ kannst du einen neuen Tab öffnen.</translation>
 <translation id="7500244509706269886">Autofill-Formular</translation>
 <translation id="750493650310597496">0 ausgewählt</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Wenn du deine Inkognitotabs sperren möchtest, richte zuerst Touch ID, Face ID oder einen Sicherheitscode ein.</translation>
+<translation id="7512075701202892785">Dein Lieblingsbrowser – jetzt auf iOS</translation>
 <translation id="7512909159512473473">Passphrase eingeben…</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7521117365186708026">Du erhältst Tipps für die Einrichtung, mit denen du Chrome noch besser nutzen kannst.</translation>
 <translation id="7524055474074101597">App-übergreifend auf Passwörter und mehr zugreifen.</translation>
+<translation id="75362970626182391">Neue Tabgruppe</translation>
 <translation id="7537586195939242955">Dein Pass kann derzeit nicht in Passbook installiert werden.</translation>
 <translation id="754655535278952384">Zuletzt geprüft: <ph name="TIME" /></translation>
 <translation id="755255281989213264">Menü anpassen</translation>
 <translation id="7553234618121028547">Öffne zum Deaktivieren <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> und gehe zu „Passwortoptionen“.</translation>
 <translation id="7557508262441527045">Abgemeldet</translation>
 <translation id="7561196759112975576">Immer</translation>
-<translation id="7561417064797856920">Lens Overlay</translation>
 <translation id="7561982940498449837">Menü schließen</translation>
 <translation id="7567579665882069209">Lesezeichen sind ausgeblendet</translation>
 <translation id="7577900504646297215">Interessen verwalten</translation>
+<translation id="7582666837709186351">Du kannst Text auf deinen Fotos oder in deiner Umgebung mithilfe deiner Kamera übersetzen lassen.</translation>
 <translation id="7582857256643797524">Diese Einstellung ist auf deinem Gerät aktiviert</translation>
 <translation id="7583004045319035904">Nutze <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, um deine Inkognitotabs zu entsperren.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} inaktiven Tab schließen?}other{{COUNT} inaktive Tabs schließen?}}</translation>
@@ -1388,7 +1452,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7605594153474022051">Synchronisierung funktioniert nicht</translation>
 <translation id="760667371114328991">Sicherheitscheck-Benachrichtigungen deaktivieren</translation>
 <translation id="7612619742409846846">Bei Google angemeldet als</translation>
-<translation id="7622357910031310733">Angepinnten Tab schließen</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Gehackte Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
 <translation id="7640669552036055091">Tabs von Android</translation>
@@ -1397,6 +1460,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="764827086632467055">Tippe auf „Standard-Browser-App“</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7662316065255305764">Websitein­formationen</translation>
 <translation id="7665369617277396874">Konto hinzufügen</translation>
 <translation id="7666861622396822790">Du kannst dies in den <ph name="BEGIN_LINK" />Inhaltseinstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="7669493687462784703">Herunterladen eines Konfigurationsprofils von <ph name="WEBSITE" /> fortsetzen?</translation>
@@ -1404,6 +1468,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7679915578945954324">Webadressen kopiert</translation>
 <translation id="769134787192530091">Tabs werden synchronisiert…</translation>
 <translation id="7696316012653762532">Optionen zum Übersetzen der Seite</translation>
+<translation id="7700527812567437847">Mit Google Lens auf dem Bildschirm suchen</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7711440461521638739">Du verwendest keine Passwörter mehrfach</translation>
 <translation id="7712361583414030698">Offlineversion wird angezeigt</translation>
@@ -1413,7 +1478,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7730973429297233609">Wähle das Konto aus, mit dem du <ph name="FILENAME" /> – <ph name="FILESIZE" /> speichern möchtest</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Nur auf diesem Gerät.</translation>
 <translation id="7744192722284567281">Bei Datenpanne gefunden</translation>
-<translation id="7746165521091043703">Öffne die Autofill-Passworteinstellungen</translation>
 <translation id="7749790401023484470">Du hast keinen Text ausgewählt.</translation>
 <translation id="7757015014239760147">Kein Nutzername ••••••••</translation>
 <translation id="775755486779745798"><ph name="MONTH" /> als Ablaufmonat automatisch ausfüllen</translation>
@@ -1423,7 +1487,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="777637629667389858">Wenn du angemeldet bist, bist du in allen Google-Diensten besser geschützt.</translation>
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7788868432173225918">Erweiterte Ansicht schließen</translation>
-<translation id="7790954908631836016">„Desktopwebsite anfordern“ ausblenden</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7801064017114765401">Computer</translation>
 <translation id="7802239711290932774">Vorgeschlagenes Passwort verwenden:</translation>
@@ -1431,7 +1494,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7807060072011926525">Von Google bereitgestellt</translation>
 <translation id="7812377703891978671">Du kannst auf deinen gesamten Browserverlauf zugreifen, indem du „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“ auswählst.</translation>
 <translation id="78146569776629510">Downloads</translation>
-<translation id="7818164453519941565">Neuer Inkognitotab</translation>
+<translation id="7815852444315004084">Vorerst ausblenden</translation>
 <translation id="7839994177130598711">Deine Familienmitglieder können jetzt deinen Nutzernamen und dein Passwort verwenden, um sich über den Google Passwortmanager auf <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> anzumelden.</translation>
 <translation id="7840771868269352570">Die ausgewählten Elemente werden entfernt.</translation>
 <translation id="7841180087127694526">Nach kopiertem Text suchen</translation>
@@ -1443,7 +1506,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7859988229622350291">Nie übersetzen</translation>
 <translation id="7863211248337747225">App herunterladen</translation>
 <translation id="7865127013871431856">Übersetzungsoptionen</translation>
-<translation id="7865811152374876731">Neues Fenster</translation>
 <translation id="7866501058614003444">Die Verfolgung dieses Pakets wurde erfolgreich aufgehoben.</translation>
 <translation id="7866872729285243843">Wenn du deine Leseliste auf allen deinen Geräten sehen möchtest, aktiviere in den Einstellungen die Option „Leseliste“.</translation>
 <translation id="7874107544081154809">Formular mit <ph name="CELL_ACCESSIBILITY_LABEL" /> automatisch ausfüllen</translation>
@@ -1453,7 +1515,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7889910613639381518">Einfacher und sicherer Zugriff mit dem Google Passwortmanager-Widget.</translation>
 <translation id="7899199123054742721">Alle als ungelesen markieren</translation>
 <translation id="7911190106180361398">Deine Organisation lässt nicht zu, dass du alles synchronisierst.</translation>
-<translation id="7920949005883349320">Datenschutz und Sicherheit</translation>
 <translation id="792357691529995513">Keine Probleme gefunden</translation>
 <translation id="7925108652071887026">AutoFill-Daten</translation>
 <translation id="7926975587469166629">Kartenalias</translation>
@@ -1473,7 +1534,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="7975036700432177008">Testen</translation>
 <translation id="797588153137233716">„Menü“ → „Verlauf“ → „Browserdaten löschen“</translation>
 <translation id="7977451675950311423">Warnt dich, wenn du ein Passwort verwendest, das bei einer Datenpanne gehackt wurde.</translation>
-<translation id="7978018860671536736">3. Tippe auf „Passwörter automatisch ausfüllen lassen“</translation>
 <translation id="797824194429476746">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird endgültig gelöscht.</translation>
 <translation id="7982789257301363584">Netzwerk</translation>
 <translation id="7987685713885608670">Für zusätzliche Sicherheit kannst du Passwörter auf deinem Gerät verschlüsseln lassen, bevor sie im Google Passwortmanager gespeichert werden.</translation>
@@ -1485,6 +1545,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8023878949384262191">Maximiert den Abschnitt</translation>
+<translation id="8027581147000338959">In neuem Fenster öffnen</translation>
 <translation id="8032569120109842252">Folge ich</translation>
 <translation id="8035133914807600019">Neuer Ordner…</translation>
 <translation id="8035412398498507358">Fotos</translation>
@@ -1496,17 +1557,15 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8059533439631660104">Abschnitt minimieren</translation>
 <translation id="8061584726507121204">Verlauf</translation>
 <translation id="8069394452933076548">Lege fest, wann Tabs, die länger nicht verwendet wurden, in den Bereich „Inaktive Tabs“ verschoben werden sollen.</translation>
-<translation id="8071979093798117528">Gruppe umbenennen</translation>
-<translation id="8073388330009372546">Bild in neuem Tab öffnen</translation>
 <translation id="8073670137947914548">Download abgeschlossen</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8079530767338315840">Wiederholen</translation>
 <translation id="8079602123447022758">Diese Einstellung wird verwaltet – für weitere Informationen doppeltippen</translation>
+<translation id="8080028325999236607">Alle Tabs schließen</translation>
 <translation id="8084285576995584326">Google-Kontodaten verwalten</translation>
 <translation id="809543534949702122">Suchverlauf</translation>
 <translation id="8101409298456377967">Hier kannst du Passwörter erstellen, speichern und verwalten, damit du dich einfacher auf Websites und in Apps anmelden kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
-<translation id="8114502941341617322">Neuer Tab</translation>
 <translation id="8114753159095730575">Dateidownload verfügbar. Optionen stehen unten auf dem Bildschirm zur Verfügung.</translation>
 <translation id="8123502380991596210">„Das ist neu“ ausblenden</translation>
 <translation id="8123953306357309250">Synchronisierung abbrechen? Du kannst die Synchronisierung jederzeit in den Einstellungen aktivieren.</translation>
@@ -1515,14 +1574,13 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8132598642024322408">Jetzt: <ph name="PRICE" /> – zuvor: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Verwende unterschiedliche Passwörter für jede Website oder App. Falls jemand Zugriff auf ein mehrfach verwendetes Passwort erlangt, kann die Person sich damit auch in deinen anderen Konten anmelden. Klicke hier, um die Website zu öffnen und deine Passwörter zu ändern.</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 weiteres Element}other{# weitere Elemente}}</translation>
-<translation id="8146443796605935558">Desktopwebsite anfordern</translation>
 <translation id="8150167929304790980">Vollständiger Name</translation>
 <translation id="8152331954420209374">Zu Lens</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> Konten</translation>
 <translation id="8161614462829037225">Mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="8173034266693057059">Länge</translation>
-<translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8182037667962849780">{count,plural, =1{Für {website_1}}=2{Für {website_1} und {website_2}}=3{Für {website_1}, {website_2} und 1 weitere}other{Für {website_1}, {website_2} und {more_count} weitere}}</translation>
+<translation id="8189615296021678665">Tippe auf „Speichern“, um bei der nächsten Anmeldung einfach auf dieses Passwort zuzugreifen.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Passwort hinzufügen</translation>
 <translation id="8202744799033457229">Verlauf anzeigen</translation>
@@ -1536,9 +1594,10 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8219424187226230983">Offlineversion in einem neuen Tab ansehen</translation>
 <translation id="8230355548492839438">Vorherige suchen</translation>
 <translation id="8232956427053453090">Daten aufbewahren</translation>
-<translation id="8236097722223016103">Zu Lesezeichen hinzufügen</translation>
+<translation id="8242644458318193141">Zum Schutz deiner Organisation werden Tabs geschlossen und nicht gespeicherte Kontodaten von diesem Gerät gelöscht. Dazu gehören beispielsweise Passwörter und der Verlauf.</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="82619448491672958">Andere Tabs anzeigen</translation>
+<translation id="8263228331881858381">Passkey gespeichert</translation>
 <translation id="8263809106706527890">Möglicherweise wurden deine Einstellungen für den Standardbrowser geändert. Das kannst du in den Einstellungen prüfen.</translation>
 <translation id="8264966119170358612">Einige deiner gespeicherten Passwörter wurden durch eine Datenpanne (nicht bei Google) preisgegeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du wurdest beim Zurücksetzen deines iPads von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
@@ -1547,13 +1606,17 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8278488584187265939">Startseite anpassen</translation>
 <translation id="8281781826761538115">Standard: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Überspringen</translation>
+<translation id="8282657446819506217">In Tabgruppe öffnen</translation>
+<translation id="828291969289324795">{count,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>
 <translation id="8283172974887967105">Festlegen…</translation>
 <translation id="8289930144142009940">Benachrichtigungen für „<ph name="FEATURE_NAME" />“ deaktiviert</translation>
 <translation id="8299417921174340354">Du musst zuerst einen Sicherheitscode auf deinem Gerät einrichten, um Passwörter zu verwenden.</translation>
 <translation id="8299613349954694191">Öffnet einen Inkognitotab zum anonymen Surfen im Web.</translation>
 <translation id="8307481894409578819">Diese Datei konnte nicht hochgeladen werden</translation>
+<translation id="8319076807703933069">Neue Suche</translation>
 <translation id="8343993175958086504">Du kannst deine Inhalte sichern und auf jedem Gerät verwenden.</translation>
 <translation id="8349305172487531364">Lesezeichenleiste</translation>
+<translation id="8364563001733875155">Wenn du deine PIN ändern möchtest, musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
 <translation id="8366466717204352506">Sicherheitscheck wurde noch nie durchgeführt</translation>
 <translation id="8368001212524806591">Preis beobachten</translation>
 <translation id="8370406443343902172">Zu den Einstellungen…</translation>
@@ -1567,13 +1630,13 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8402673309244746971">Zu „Folge ich“</translation>
 <translation id="8407669440184693619">Keine Passwörter für diese Website gefunden</translation>
 <translation id="8407831512155324054">Deine Passwörter sind stark</translation>
-<translation id="842523302461531262">In den Einstellungen als Standardbrowser festlegen…</translation>
+<translation id="842523302461531262">Zu den Einstellungen</translation>
 <translation id="8428045167754449968">Stadt/Ort</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8428634594422941299">Ok</translation>
 <translation id="8430694217306051839">Speicherort für <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) auswählen</translation>
-<translation id="8431534975995791748">Als gelesen markieren</translation>
 <translation id="8438566539970814960">Suchanfragen und das Surfen verbessern</translation>
+<translation id="8439758443371991593">„Zur Leseliste hinzufügen“ ausblenden</translation>
 <translation id="8449869326050867919">Passwort geteilt</translation>
 <translation id="8453847087068411809">Pakete nie automatisch erkennen</translation>
 <translation id="846158969830690371">Du erfährst, ob du die sichersten Einstellungen verwendest oder etwas überprüfen musst.</translation>
@@ -1600,7 +1663,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8535368836838588657">Passwort einblenden</translation>
 <translation id="8545276357312221485">Einstellungen für Standardbrowser prüfen</translation>
 <translation id="854938212724803178">Du hast 1 kompromittiertes Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
-<translation id="855081842937141170">Anpinnen</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du hast {count} Warnung geschlossen}other{Du hast {count} Warnungen geschlossen}}</translation>
 <translation id="8560253818350321773">Häufig verwendete Elemente zuerst anzeigen</translation>
 <translation id="8564894539416715395">Seite „Neuer Tab“</translation>
@@ -1609,17 +1671,19 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8577056989960190117"><ph name="YEAR" /> als Ablaufjahr automatisch ausfüllen</translation>
 <translation id="8588404856427128947">Aus</translation>
 <translation id="8590286732816598906">Tabgruppe, <ph name="GROUP_TITLE" />, Menü.</translation>
-<translation id="8593565399399144771">Hier kannst du einen neuen Tab öffnen.</translation>
 <translation id="8600272508328041907">Zur Übersetzung der ganzen Seite wechseln</translation>
 <translation id="860043288473659153">Name des Karteninhabers</translation>
+<translation id="8601611099293226919">Mit Google Lens auf dem Bildschirm suchen</translation>
 <translation id="8605219856220328675">Tab schließen.</translation>
 <translation id="8609743333007776886">${url} zu Lesezeichen hinzufügen</translation>
+<translation id="8611922158252451755">Alle Nutzer mit dem Link können alle Tabs bearbeiten. Überlege dir also gut, wem du den Link sendest. Der Link läuft in 48 Stunden ab.</translation>
 <translation id="8620640915598389714">Bearbeiten</translation>
 <translation id="8625706492572042370">Startbildschirm bearbeiten</translation>
+<translation id="8633025649649592204">Letzte Aktivität</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
 <translation id="8637431369725868556">Schütze dich bestmöglich vor gefährlichen Websites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Keine kompromittierten Passwörter}=1{{COUNT} kompromittiertes Passwort}other{{COUNT} kompromittierte Passwörter}}</translation>
-<translation id="8640575194957831802">Zuletzt geöffnet</translation>
+<translation id="8643403533759285912">Gruppe löschen</translation>
 <translation id="8647280737650867362">Tracking des Preises konnte nicht beendet werden.</translation>
 <translation id="8654802032646794042">Abbrechen</translation>
 <translation id="8660600697590740984">Aus Lens kopiertes Bild</translation>
@@ -1630,17 +1694,22 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8672733398999596205">Alle aktivieren</translation>
 <translation id="8672993423386237345">Hilfe anzeigen</translation>
 <translation id="8674716540979958118">Du nutzt kompromittierte Passwörter.</translation>
+<translation id="8679900250380464358">Zur Leseliste hinzufügen</translation>
 <translation id="8680786875305615692">Dabei helfen, das Web für alle sicherer zu machen</translation>
 <translation id="8680787084697685621">Die Anmeldeinformationen für dieses Konto sind veraltet.</translation>
 <translation id="8683563711222071415">Adresse in Konto verschieben</translation>
 <translation id="8692689525339542358">Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>
 <translation id="8694281486652655615">Dieses Element wird angezeigt</translation>
+<translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="8697136149718343437">Adressleiste nach unten verschieben</translation>
+<translation id="8703372953981978786">Dieser Link funktioniert nicht</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8709409604518538305">Tabs wurden geschlossen</translation>
 <translation id="8712534545803964353">Auf Seite suchen…</translation>
 <translation id="8712637175834984815">Ok</translation>
+<translation id="8717864919010420084">Link kopieren</translation>
 <translation id="8722229818691036192">Konten auf diesem Gerät</translation>
+<translation id="8722649775263832315">Markiere einen beliebigen Bereich oder tippe darauf, um mit Google Lens zu suchen</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8728922029615312208">Alle schließen</translation>
 <translation id="8730621377337864115">Fertig</translation>
@@ -1654,6 +1723,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> nicht mehr folgen</translation>
 <translation id="8766790350274092814">Passwörter für <ph name="WEBSITE" /> und <ph name="SECOND_WEBSITE" /> werden gelöscht. Deine Konten werden nicht gelöscht.</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
+<translation id="8781834595282316166">Neuer Tab in Gruppe</translation>
 <translation id="8786100550345425552">Berechtigungen bearbeiten</translation>
 <translation id="8792626944327216835">Mikrofon</translation>
 <translation id="8803526663383843427">Wenn aktiviert</translation>
@@ -1681,6 +1751,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8871974300055371298">Inhaltseinstellungen</translation>
 <translation id="8879604564928138696">Doppeltippen, um es auszuprobieren</translation>
 <translation id="8879952635974818770">Personalisierter Inhalt</translation>
+<translation id="8887595428614802520">Alle Tabs und Gruppen schließen</translation>
 <translation id="8893208530912252670">Videos</translation>
 <translation id="8898822736010347272">URLs einiger von dir besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte werden an Google gesendet, um die Erkennung neuer Bedrohungen zu verbessern und Nutzer im Internet zu schützen.</translation>
 <translation id="890565330728586731">Zurück</translation>
@@ -1697,9 +1768,9 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8943780400130412484">Neuen Download starten?</translation>
 <translation id="8944844131570002190">Ort öffnen…</translation>
 <translation id="8953046091948372197">Hier werden deine Passwörter angezeigt</translation>
+<translation id="895541991026785598">Problem melden</translation>
 <translation id="8960979149015305">Download schließen</translation>
 <translation id="8961092256396236619">Erweiterter Schutz ist deaktiviert</translation>
-<translation id="8967427617812342790">Zur Leseliste hinzufügen</translation>
 <translation id="8968766641738584599">Karte speichern</translation>
 <translation id="8974714402877957201">1. Öffne die iPad-Einstellungen</translation>
 <translation id="8975015774710126284">Browserdaten wurden gelöscht</translation>
@@ -1718,14 +1789,17 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9032405509996909363">Löschen der Browserdaten bestätigen</translation>
 <translation id="9034759925968272072">Du wirst nicht von deinem Google-Konto abgemeldet. Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> weitere Arten von Browserverlaufsdaten für dein Google-Konto.</translation>
 <translation id="9039373489628511875">Bandbreite</translation>
-<translation id="9050743386845294615">„Auf Seite suchen“ ausblenden</translation>
+<translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
+<translation id="9057030985451135243">Informationen zu geteilten Tabgruppen</translation>
 <translation id="9057972802061533987">Folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
+<translation id="9066097352053395362">„Lesezeichen bearbeiten“ ausblenden</translation>
 <translation id="9070824521421603770">Du wirst abgemeldet und Tabs werden geschlossen</translation>
 <translation id="9072837124205571418">Tabgruppen von allen Geräten</translation>
 <translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
 <translation id="9083838294503912307">Aktiviere die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Du nutzt {count} schwaches Passwort, das deine Sicherheit gefährden könnte. Ändere es jetzt, um dich bestmöglich zu schützen.}other{Du nutzt {count} schwache Passwörter, die deine Sicherheit gefährden könnten. Ändere sie jetzt, um dich bestmöglich zu schützen.}}</translation>
+<translation id="9084369964545892485">Neuer Inkognitotab in Gruppe</translation>
 <translation id="9087339162317338348">Es wird nach Möglichkeit HTTPS verwendet und du erhältst eine Warnung, bevor Websites geladen werden, die das Protokoll nicht unterstützen.</translation>
 <translation id="9090979472668095374">Per Stimme antworten</translation>
 <translation id="9094033019050270033">Passwort aktualisieren</translation>
@@ -1733,10 +1807,11 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> Passwörter löschen?</translation>
 <translation id="9099233023029360602">Jedes Mal nachfragen, welches Konto verwendet werden soll</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
+<translation id="91023216973987714">Zahlungsmethoden</translation>
 <translation id="9106655997975673326">Von „<ph name="SOURCE_DEVICE" />“</translation>
 <translation id="9107664647686727385">Auf kompromittierte Passwörter prüfen</translation>
-<translation id="9116465289595958864">Zuletzt geändert</translation>
 <translation id="9124387962554796433">Mithilfe deines Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren.</translation>
+<translation id="9130317582644834675">„Text zoomen“ ausblenden</translation>
 <translation id="913036870884277353">Links ganz einfach in anderen Apps öffnen.</translation>
 <translation id="9137013805542155359">Original anzeigen</translation>
 <translation id="914781932147356857">Alle markieren…</translation>
@@ -1745,7 +1820,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9162432979321511934">Aktiviere die Option zum automatischen Ausfüllen von Passwörtern</translation>
 <translation id="9165320910061267720">Wenn du Benachrichtigungen zu Preisnachlässen erhalten möchtest, musst du Benachrichtigungen in den iOS-Einstellungen aktivieren.</translation>
 <translation id="9179151630575358778">Blendet dieses Element aus</translation>
-<translation id="918129721713827015">Tabs in Gruppe anzeigen</translation>
 <translation id="9183733013282108610">Inkognitosuche</translation>
 <translation id="9186762474139509529">Protokollierung starten</translation>
 <translation id="9191031968346938109">Hinzufügen zu…</translation>
@@ -1755,7 +1829,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9205189991633470489">Inkognitosperre</translation>
 <translation id="9206887540681440657">Geschwindigkeit</translation>
 <translation id="9223358826628549784">Absturzbericht wurde gesendet.</translation>
-<translation id="926058026105978593">{count,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>
 <translation id="929748059769569925">Markierter Text</translation>
 <translation id="932305336591073205">{count,plural, =1{Tab schließen}other{Tabs schließen}}</translation>
 <translation id="939472100615258482">Aktuelle Website</translation>
@@ -1763,7 +1836,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Hier siehst du, was du synchronisieren kannst<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">Feedback geben</translation>
-<translation id="947861518682912388">Neue Suche</translation>
 <translation id="952704832371081537">Abbrechen</translation>
 <translation id="954667170699278022">Leseliste</translation>
 <translation id="959066944189734975">Du folgst <ph name="CHANNEL_NAME" /></translation>
@@ -1774,10 +1846,8 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="973493300226275298">Du kannst den Preis eines Produkts in Onlineshops beobachten. Du wirst benachrichtigt, wenn der Preis sinkt.</translation>
 <translation id="976392601789283511">Zuletzt geschlossenen Tab öffnen</translation>
 <translation id="981498610235328462">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet.</translation>
-<translation id="983192555821071799">Alle Tabs schließen</translation>
 <translation id="984275831282074731">Zahlungsmethoden</translation>
 <translation id="985379595344853742">Alle Inkognitotabs schließen</translation>
 <translation id="988141524645182168">Andere Geräte</translation>
-<translation id="989697783705943787">Websitesicherheit</translation>
 <translation id="999768147936949692">Derzeit kannst du Passwörter nur mit Familienmitgliedern teilen. <ph name="BEGIN_LINK" />Lade Familienmitglieder in deine Gruppe ein<ph name="END_LINK" />, damit ihr eure Google-Produkte und ‑Abos gemeinsam nutzen könnt.</translation>
 </translationbundle>

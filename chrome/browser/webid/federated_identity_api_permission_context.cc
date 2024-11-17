@@ -49,8 +49,7 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
     case CONTENT_SETTING_BLOCK:
       return PermissionStatus::BLOCKED_SETTINGS;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return PermissionStatus::BLOCKED_SETTINGS;
+      NOTREACHED();
   }
 
   if (permission_autoblocker_->IsEmbargoed(

@@ -51,7 +51,7 @@ void CookieControlsServiceBridge::SendCookieControlsUIChanges() {
   CookieControlsEnforcement enforcement =
       service_->GetCookieControlsEnforcement();
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_CookieControlsServiceBridge_sendCookieControlsUIChanges(
+  Java_CookieControlsServiceBridge_sendCookieControlsUiChanges(
       env, jobject_, checked, static_cast<int>(enforcement));
 }
 

@@ -16,10 +16,12 @@
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/public/cpp/tab_strip_delegate.h"
+#include "ash/public/cpp/test/test_coral_delegate.h"
 #include "ash/public/cpp/test/test_desk_profiles_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/public/cpp/test/test_tab_strip_delegate.h"
+#include "ash/scanner/fake_scanner_delegate.h"
 #include "ash/system/focus_mode/test/test_focus_mode_delegate.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/test_system_sounds_delegate.h"
@@ -54,7 +56,7 @@ TestShellDelegate::CreateClipboardHistoryControllerDelegate() const {
 }
 
 std::unique_ptr<CoralDelegate> TestShellDelegate::CreateCoralDelegate() const {
-  return nullptr;
+  return std::make_unique<TestCoralDelegate>();
 }
 
 std::unique_ptr<GameDashboardDelegate>
@@ -120,9 +122,9 @@ TestShellDelegate::CreateUserEducationDelegate() const {
              : std::make_unique<testing::NiceMock<MockUserEducationDelegate>>();
 }
 
-std::unique_ptr<ash::ScannerDelegate> TestShellDelegate::CreateScannerDelegate()
+std::unique_ptr<ScannerDelegate> TestShellDelegate::CreateScannerDelegate()
     const {
-  return nullptr;
+  return std::make_unique<FakeScannerDelegate>();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

@@ -49,13 +49,18 @@ constexpr std::array<nearby_share::mojom::Visibility, 3> kVisibilities = {
     nearby_share::mojom::Visibility::kYourDevices};
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Keep in sync with the
+// NearbyShareCertificateManagerGetDecryptedPublicCertificateResult UMA enum
+// defined in //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyShareCertificateManagerGetDecryptedPublicCertificateResult)
 enum GetDecryptedPublicCertificateResult {
   kSuccess = 0,
   kNoMatch = 1,
   kStorageFailure = 2,
   kMaxValue = kStorageFailure
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyShareCertificateManagerGetDecryptedPublicCertificateResult)
 
 // Check for a command-line override for number of certificates, otherwise
 // return the default |kNearbyShareNumPrivateCertificates|.

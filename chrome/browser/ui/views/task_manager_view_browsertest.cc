@@ -63,11 +63,7 @@ using browsertest_util::WaitForTaskManagerRows;
 
 class TaskManagerViewTest : public InProcessBrowserTest {
  public:
-  TaskManagerViewTest() {
-#if BUILDFLAG(IS_MAC)
-    feature_list_.InitAndEnableFeature(features::kViewsTaskManager);
-#endif
-  }
+  TaskManagerViewTest() = default;
 
   TaskManagerViewTest(const TaskManagerViewTest&) = delete;
   TaskManagerViewTest& operator=(const TaskManagerViewTest&) = delete;

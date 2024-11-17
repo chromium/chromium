@@ -11,6 +11,11 @@ declare_args() {
   # Temporarily disable for rollout -- see crbug.com/1412190 for details.
   ios_partition_alloc_enabled = true
 
+  # Control whether PartitionAlloc for iOS builds has extra checks for
+  # metadata corruption issue investigation.
+  # TODO(crbug.com/371135823): Remove upon completion of the investigation.
+  ios_partition_alloc_corruption_hardening_enabled = false
+
   # Control whether //ios/chrome and //ios/web targets are build. This
   # is used by bots from projects based on top of Chromium that want to
   # only reuse shared code (//ios/net, //remoting/ios, ...).

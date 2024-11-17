@@ -69,6 +69,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::TILE_REPEATABLE_QUERY:
     case AutocompleteMatchType::HISTORY_EMBEDDINGS:
     case AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH:
+    case AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER:
       DUMP_WILL_BE_NOTREACHED();
       return OmniboxSuggestionIconType::kDefaultFavicon;
   }
@@ -113,12 +114,10 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
                  ? LocationBarSecurityIconType::SECURE
                  : LocationBarSecurityIconType::NONE;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "SECURE_WITH_POLICY_INSTALLED_CERT is used only on ChromeOS";
-      return LocationBarSecurityIconType::NONE;
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return LocationBarSecurityIconType::LOCATION_BAR_SECURITY_ICON_TYPE_COUNT;
+      NOTREACHED();
   }
 }
 

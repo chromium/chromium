@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<body>
+  <div id="grandparent">
+    <div id="parent">
+      <permission id="camera" type="camera">
+    </div>
+  </div>
+  <script>
+    function logEventToConsole(prefix, event) {
+      console.log(prefix + event.target.id + '-' + event.type);
+      console.log(prefix + event.target.id + '-cancelable-' + event.cancelable);
+      console.log(prefix + event.target.id + '-bubbles-' + event.bubbles);
+    }
+    document.getElementById('parent').addEventListener('resolve', (event) => {
+      logEventToConsole("parent-", event);
+    });
+    document.getElementById('parent').addEventListener('dismiss', (event) => {
+      logEventToConsole("parent-", event);
+    });
+    document.getElementById('grandparent').addEventListener('resolve', (event) => {
+      logEventToConsole("grandparent-", event);
+    });
+    document.getElementById('grandparent').addEventListener('dismiss', (event) => {
+      logEventToConsole("grandparent-", event);
+    });
+
+    function clickById(element_id) {
+      click(document.getElementById(element_id));
+    }
+
+    function click(element) {
+      element.click();
+    }
+  </script>
+</body>
+</html>

@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
@@ -46,7 +46,7 @@ public final class DownloadInfo {
     private final boolean mIsResumable;
     private final boolean mIsPaused;
     private final boolean mIsOffTheRecord;
-    private final OTRProfileID mOTRProfileId;
+    private final OtrProfileId mOtrProfileId;
     private final boolean mIsOfflinePage;
     private final int mState;
     private final long mLastAccessTime;
@@ -83,7 +83,7 @@ public final class DownloadInfo {
         mIsResumable = builder.mIsResumable;
         mIsPaused = builder.mIsPaused;
         mIsOffTheRecord = builder.mIsOffTheRecord;
-        mOTRProfileId = builder.mOTRProfileId;
+        mOtrProfileId = builder.mOtrProfileId;
         mIsOfflinePage = builder.mIsOfflinePage;
         mState = builder.mState;
         mLastAccessTime = builder.mLastAccessTime;
@@ -186,8 +186,8 @@ public final class DownloadInfo {
         return mIsOffTheRecord;
     }
 
-    public OTRProfileID getOTRProfileId() {
-        return mOTRProfileId;
+    public OtrProfileId getOtrProfileId() {
+        return mOtrProfileId;
     }
 
     public boolean isOfflinePage() {
@@ -291,7 +291,7 @@ public final class DownloadInfo {
                 .setMimeType(item.mimeType)
                 .setUrl(item.url)
                 .setOriginalUrl(item.originalUrl)
-                .setOTRProfileId(OTRProfileID.deserialize(item.otrProfileId))
+                .setOtrProfileId(OtrProfileId.deserialize(item.otrProfileId))
                 .setState(state)
                 .setIsPaused(item.state == OfflineItemState.PAUSED)
                 .setIsResumable(item.isResumable)
@@ -329,7 +329,7 @@ public final class DownloadInfo {
         private boolean mIsResumable = true;
         private boolean mIsPaused;
         private boolean mIsOffTheRecord;
-        private OTRProfileID mOTRProfileId;
+        private OtrProfileId mOtrProfileId;
         private boolean mIsOfflinePage;
         private int mState = DownloadState.IN_PROGRESS;
         private long mLastAccessTime;
@@ -438,9 +438,9 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setOTRProfileId(OTRProfileID otrProfileId) {
-            mOTRProfileId = otrProfileId;
-            mIsOffTheRecord = OTRProfileID.isOffTheRecord(otrProfileId);
+        public Builder setOtrProfileId(OtrProfileId otrProfileId) {
+            mOtrProfileId = otrProfileId;
+            mIsOffTheRecord = OtrProfileId.isOffTheRecord(otrProfileId);
             return this;
         }
 
@@ -535,7 +535,7 @@ public final class DownloadInfo {
                     .setIsDangerous(downloadInfo.getIsDangerous())
                     .setIsResumable(downloadInfo.isResumable())
                     .setIsPaused(downloadInfo.isPaused())
-                    .setOTRProfileId(downloadInfo.getOTRProfileId())
+                    .setOtrProfileId(downloadInfo.getOtrProfileId())
                     .setIsOfflinePage(downloadInfo.isOfflinePage())
                     .setState(downloadInfo.state())
                     .setLastAccessTime(downloadInfo.getLastAccessTime())
@@ -558,7 +558,7 @@ public final class DownloadInfo {
             @JniType("std::string") String mimeType,
             long bytesReceived,
             long bytesTotalSize,
-            OTRProfileID otrProfileId,
+            OtrProfileId otrProfileId,
             int state,
             int percentCompleted,
             boolean isPaused,
@@ -570,7 +570,8 @@ public final class DownloadInfo {
             long timeRemainingInMs,
             long lastAccessTime,
             boolean isDangerous,
-            @FailState int failState) {
+            @FailState int failState,
+            boolean isTransient) {
         String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url.getSpec(), fileName);
 
         Progress progress =
@@ -586,7 +587,7 @@ public final class DownloadInfo {
                 .setFileName(fileName)
                 .setFilePath(filePath)
                 .setHasUserGesture(hasUserGesture)
-                .setOTRProfileId(otrProfileId)
+                .setOtrProfileId(otrProfileId)
                 .setIsPaused(isPaused)
                 .setIsResumable(isResumable)
                 .setIsParallelDownload(isParallelDownload)
@@ -600,6 +601,7 @@ public final class DownloadInfo {
                 .setIsDangerous(isDangerous)
                 .setUrl(url)
                 .setFailState(failState)
+                .setIsTransient(isTransient)
                 .build();
     }
 }

@@ -45,6 +45,7 @@ source_set("unit_tests") {
     ":smart_charging",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:test_support",
     "//chrome/test:test_support",
     "//chromeos/components/sensors",
     "//chromeos/dbus/power:power_manager_proto",

@@ -38,7 +38,7 @@ StereoPannerHandler::StereoPannerHandler(AudioNode& node,
   // The node-specific default mixing rules declare that StereoPannerNode
   // can handle mono to stereo and stereo to stereo conversion.
   channel_count_ = kMaximumOutputChannels;
-  SetInternalChannelCountMode(kClampedMax);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kClampedMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 
   Initialize();
@@ -123,7 +123,7 @@ void StereoPannerHandler::SetChannelCount(unsigned channel_count,
       channel_count <= kMaximumOutputChannels) {
     if (channel_count_ != channel_count) {
       channel_count_ = channel_count;
-      if (InternalChannelCountMode() != kMax) {
+      if (InternalChannelCountMode() != V8ChannelCountMode::Enum::kMax) {
         UpdateChannelsForInputs();
       }
     }
@@ -137,18 +137,17 @@ void StereoPannerHandler::SetChannelCount(unsigned channel_count,
   }
 }
 
-void StereoPannerHandler::SetChannelCountMode(const String& mode,
+void StereoPannerHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
                                               ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
-  ChannelCountMode old_mode = InternalChannelCountMode();
+  V8ChannelCountMode::Enum old_mode = InternalChannelCountMode();
 
-  if (mode == "clamped-max") {
-    new_channel_count_mode_ = kClampedMax;
-  } else if (mode == "explicit") {
-    new_channel_count_mode_ = kExplicit;
-  } else if (mode == "max") {
+  if (mode == V8ChannelCountMode::Enum::kClampedMax ||
+      mode == V8ChannelCountMode::Enum::kExplicit) {
+    new_channel_count_mode_ = mode;
+  } else if (mode == V8ChannelCountMode::Enum::kMax) {
     // This is not supported for a StereoPannerNode, which can only handle
     // 1 or 2 channels.
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,

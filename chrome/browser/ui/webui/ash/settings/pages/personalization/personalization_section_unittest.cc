@@ -35,9 +35,6 @@ class PersonalizationSectionTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        ash::features::kOsSettingsRevampWayfinding);
-
     ASSERT_TRUE(test_profile_manager_.SetUp());
     user_manager_ = std::make_unique<FakeChromeUserManager>();
     user_manager_->Initialize();

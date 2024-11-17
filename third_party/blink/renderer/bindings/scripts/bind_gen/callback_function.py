@@ -51,9 +51,6 @@ def bind_local_vars(code_node, cg_context, is_construct_call=False):
     local_vars = []
 
     local_vars.extend([
-        S("exception_state", ("ExceptionState ${exception_state}("
-                              "${isolate}, v8::ExceptionContext::kOperation,"
-                              "${class_like_name}, ${property_name});")),
         S("isolate", "v8::Isolate* ${isolate} = GetIsolate();"),
         S("script_state",
           "ScriptState* ${script_state} = CallbackRelevantScriptState();"),
@@ -253,8 +250,7 @@ if (!callback_relevant_script_state) {
                     T("v8::HandleScope handle_scope(${isolate});"),
                     T("v8::Context::Scope context_scope("
                       "callback_relevant_script_state->GetContext());"),
-                    T("${exception_state}.ThrowException("
-                      "static_cast<ExceptionCode>(ESErrorType::kError), "
+                    T("V8ThrowException::ThrowError(${isolate},"
                       "\"The provided callback is no longer runnable.\");"),
                     T("return ${return_value_on_failure};"),
                 ]),
@@ -515,9 +511,8 @@ if (is_runnable)
 """),
         T("ScriptState::Scope scope(callback_relevant_script_state);"),
         T("""\
-${exception_state}.ThrowException(
-    static_cast<ExceptionCode>(ESErrorType::kError),
-    "The provided callback is no longer runnable.");
+V8ThrowException::ThrowError(
+    ${isolate}, "The provided callback is no longer runnable.");
 return false;\
 """),
     ])

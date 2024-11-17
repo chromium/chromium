@@ -26,6 +26,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 class TemplateURLServiceUnitTest : public TemplateURLServiceUnitTestBase {};
 
@@ -102,6 +103,33 @@ TEST_F(TemplateURLServiceUnitTest, ExtractSearchMetadata) {
       << "q parameter and si parameter should have been preserved. other_param "
          "should be discarded.";
   EXPECT_EQ(result->search_terms, u"myquery");
+}
+
+TEST_F(TemplateURLServiceUnitTest, ValidDefaultSearchProviderOrigin) {
+  const std::string dse_str = "https://www.example.com";
+  url::Origin dse_origin = url::Origin::Create(GURL(dse_str));
+  TemplateURLData template_url_data;
+  template_url_data.SetURL(dse_str + "/?q={searchTerms}");
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
+          std::make_unique<TemplateURL>(template_url_data)));
+
+  EXPECT_EQ(template_url_service().GetDefaultSearchProviderOrigin(),
+            dse_origin);
+}
+
+TEST_F(TemplateURLServiceUnitTest, InvalidDefaultSearchProviderOrigin) {
+  const std::string dse_str = "https://invalid:test:site";
+  url::Origin dse_origin = url::Origin::Create(GURL(dse_str));
+  TemplateURLData template_url_data;
+  template_url_data.SetURL(dse_str + "/?q={searchTerms}");
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
+          std::make_unique<TemplateURL>(template_url_data)));
+
+  EXPECT_NE(template_url_service().GetDefaultSearchProviderOrigin(),
+            dse_origin);
+  EXPECT_TRUE(template_url_service().GetDefaultSearchProviderOrigin().opaque());
 }
 
 #if BUILDFLAG(IS_ANDROID)

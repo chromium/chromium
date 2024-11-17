@@ -279,7 +279,12 @@ def blink_type_info(idl_type):
                         is_traceable=True)
 
     if real_type.is_undefined:
-        assert False, "Blink does not support/accept IDL undefined type."
+        return TypeInfo("ToV8UndefinedGenerator",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=False,
+                        is_traceable=False,
+                        clear_member_var_fmt="")
 
     if real_type.type_definition_object:
         typename = blink_class_name(real_type.type_definition_object)
@@ -363,10 +368,12 @@ def blink_type_info(idl_type):
         if "IDLTypeImplementedAsV8Promise" in real_type.extended_attributes:
             type_name = "v8::Local<v8::Promise>"
         else:
-            type_name = "ScriptPromiseUntyped"
+            type_name = "ScriptPromise<{}>".format(
+                native_value_tag(real_type.result_type))
         return TypeInfo(type_name,
-                        ref_fmt="{}&",
-                        const_ref_fmt="const {}&",
+                        member_fmt="Member{}",
+                        ref_fmt="Member{}&",
+                        const_ref_fmt="const Member{}&",
                         is_traceable=True)
 
     if real_type.is_union:
@@ -522,7 +529,8 @@ def _native_value_tag_impl(idl_type):
             _native_value_tag_impl(real_type.value_type))
 
     if real_type.is_promise:
-        return "IDLPromise"
+        return "IDLPromise<{}>".format(
+            _native_value_tag_impl(real_type.result_type))
 
     if real_type.is_union:
         return blink_class_name(real_type.union_definition_object)

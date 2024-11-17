@@ -110,7 +110,6 @@ suite('LanguageChanged', () => {
   suite('with flag updates selected voice', () => {
     setup(() => {
       chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
-      chrome.readingMode.isLanguagePackDownloadingEnabled = true;
 
       for (const v of voices) {
         setInstalled(v.lang);
@@ -303,7 +302,6 @@ suite('LanguageChanged', () => {
     let sentRequest: boolean;
 
     setup(() => {
-      chrome.readingMode.isLanguagePackDownloadingEnabled = true;
       sentRequest = false;
       chrome.readingMode.sendGetVoicePackInfoRequest = () => {
         sentRequest = true;

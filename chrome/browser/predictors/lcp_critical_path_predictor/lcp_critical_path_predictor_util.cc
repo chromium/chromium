@@ -5,12 +5,17 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/predictors/predictors_features.h"
+#include "chrome/browser/predictors/prefetch_manager.h"
+#include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
@@ -491,7 +496,10 @@ bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
 
 bool RecordFetchedSubresourceUrlsHistogram(
     const LoadingPredictorConfig& config,
-    const std::map<GURL, base::TimeDelta>& fetched_subresource_urls,
+    const std::map<
+        GURL,
+        std::pair<base::TimeDelta, network::mojom::RequestDestination>>&
+        fetched_subresource_urls,
     LcppStat& stat) {
   // `time_and_urls` keeps URLs (and its fetch timings) in a reversed
   // event order. The URL count that can be stored in the database is
@@ -499,9 +507,14 @@ bool RecordFetchedSubresourceUrlsHistogram(
   // URLs that were fetched in the beginning of navigation.
   std::vector<std::pair<base::TimeDelta, std::string>> time_and_urls;
   time_and_urls.reserve(fetched_subresource_urls.size());
-  for (const auto& [subresource_url, resource_load_start] :
+  for (const auto& [subresource_url, time_and_request_destination] :
        fetched_subresource_urls) {
-    time_and_urls.emplace_back(resource_load_start, subresource_url.spec());
+    time_and_urls.emplace_back(time_and_request_destination.first,
+                               subresource_url.spec());
+
+    stat.mutable_fetched_subresource_url_destination()->insert(
+        {subresource_url.spec(),
+         static_cast<int32_t>(time_and_request_destination.second)});
   }
   // Reverse sort `time_and_urls`. That is why `rbegin` and `rend`
   // instead of `begin` and `end`.
@@ -520,6 +533,9 @@ bool RecordFetchedSubresourceUrlsHistogram(
   }
   *stat.mutable_fetched_subresource_url_stat() =
       updater->ToLcppStringFrequencyStatData();
+  for (const auto& dropped_url : updater->dropped_entries()) {
+    stat.mutable_fetched_subresource_url_destination()->erase(dropped_url);
+  }
   return updater->has_updated();
 }
 
@@ -575,9 +591,7 @@ bool IsValidLcpUrlsHistogram(
 }
 
 size_t GetLCPPMultipleKeyMaxPathLength() {
-  static const size_t max_length = base::checked_cast<size_t>(
-      blink::features::kLCPPMultipleKeyMaxPathLength.Get());
-  return max_length;
+  return blink::features::kLCPPMultipleKeyMaxPathLength.Get();
 }
 
 bool IsKeyLengthValidForMultipleKey(const std::string& host,
@@ -646,17 +660,17 @@ bool IsLCPPFontPrefetchExcludedHost(const GURL& url) {
   return base::Contains(*excluded_hosts, url.host());
 }
 
+template <typename T>
 class FakeLoadingPredictorKeyValueTable
-    : public sqlite_proto::KeyValueTable<LcppData> {
+    : public sqlite_proto::KeyValueTable<T> {
  public:
-  FakeLoadingPredictorKeyValueTable()
-      : sqlite_proto::KeyValueTable<LcppData>("") {}
-  void GetAllData(std::map<std::string, LcppData>* data_map,
+  FakeLoadingPredictorKeyValueTable() : sqlite_proto::KeyValueTable<T>("") {}
+  void GetAllData(std::map<std::string, T>* data_map,
                   sql::Database* db) const override {
     *data_map = data_;
   }
   void UpdateData(const std::string& key,
-                  const LcppData& data,
+                  const T& data,
                   sql::Database* db) override {
     data_[key] = data;
   }
@@ -668,7 +682,7 @@ class FakeLoadingPredictorKeyValueTable
   }
   void DeleteAllData(sql::Database* db) override { data_.clear(); }
 
-  std::map<std::string, LcppData> data_;
+  std::map<std::string, T> data_;
 };
 
 bool EnsureTable(sql::Database* db, const std::string_view& table_name) {
@@ -987,15 +1001,27 @@ std::string GetFirstLevelPath(const GURL& url) {
   return url.path().substr(0, first_level_path_length);
 }
 
+bool IsSameSite(const GURL& url1, const GURL& url2) {
+  return url1.SchemeIs(url2.scheme()) &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             url1, url2,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
 LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
                          const LoadingPredictorConfig& config)
     : LcppDataMap(std::move(manager),
                   config,
-                  std::make_unique<DataTable>(std::string(kLcppTableName))) {}
+                  std::make_unique<DataTable>(std::string(kLcppTableName)),
+                  IsInitiatorOriginEnabled()
+                      ? std::make_unique<OriginTable>(
+                            std::string(kLcppTableNameInitiatorOrigin))
+                      : nullptr) {}
 
 LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
                          const LoadingPredictorConfig& config,
-                         std::unique_ptr<DataTable> data_table)
+                         std::unique_ptr<DataTable> data_table,
+                         std::unique_ptr<OriginTable> origin_table)
     : manager_(manager),
       config_(config),
       data_table_(std::move(data_table)),
@@ -1005,8 +1031,7 @@ LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
           config.max_hosts_to_track_for_lcpp,
           base::Seconds(config.flush_data_to_disk_delay_seconds))) {
   if (IsInitiatorOriginEnabled()) {
-    origin_table_ = std::make_unique<OriginTable>(
-        std::string(kLcppTableNameInitiatorOrigin));
+    origin_table_ = std::move(origin_table);
     origin_map_ = std::make_unique<OriginMap>(
         manager, origin_table_.get(), config.max_hosts_to_track_for_lcpp,
         base::Seconds(config.flush_data_to_disk_delay_seconds));
@@ -1017,7 +1042,11 @@ std::unique_ptr<LcppDataMap> LcppDataMap::CreateWithMockTableForTesting(
     scoped_refptr<sqlite_proto::TableManager> manager,
     const LoadingPredictorConfig& config) {
   return base::WrapUnique(new LcppDataMap(
-      manager, config, std::make_unique<FakeLoadingPredictorKeyValueTable>()));
+      manager, config,
+      /*data_table=*/
+      std::make_unique<FakeLoadingPredictorKeyValueTable<LcppData>>(),
+      /*origin_table=*/
+      std::make_unique<FakeLoadingPredictorKeyValueTable<LcppOrigin>>()));
 }
 
 LcppDataMap::~LcppDataMap() {
@@ -1261,6 +1290,138 @@ bool LcppDataMap::CreateOrClearTablesIfNecessary(sql::Database* db) {
   return result && db->Execute(base::StringPrintf(
                        "DROP TABLE IF EXISTS %s",
                        std::string(kLcppTableNameInitiatorOrigin).c_str()));
+}
+
+void LcppDataMap::GetPreconnectAndPrefetchRequest(
+    const std::optional<url::Origin>& initiator_origin,
+    const GURL& url,
+    PreconnectPrediction& prediction) {
+  const std::optional<LcppStat> lcpp_stat = GetLcppStat(initiator_origin, url);
+  if (!lcpp_stat) {
+    return;
+  }
+  // LCPP: AutoPreconnectLCPOrigins experiment (crbug.com/1518996)
+  // Preconnect to LCPP predicted LCP origins in all platforms including those
+  // without optimization guide.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kLCPPAutoPreconnectLcpOrigin)) {
+    size_t count = 0;
+    std::vector<PreconnectRequest> additional_preconnects;
+    auto anonymization_key =
+        net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url));
+    for (const GURL& preconnect_origin :
+         PredictPreconnectableOrigins(*lcpp_stat)) {
+      additional_preconnects.emplace_back(
+          url::Origin::Create(preconnect_origin), 1, anonymization_key);
+      ++count;
+    }
+
+    if (count) {
+      // The first preconnect record is usually to the url origin itself.
+      // We want to prioritize LCP preconnects just after the page origin
+      // preconnect, to minimize any performance regression. If no new
+      // requests were identified, leave the existing set as-is.
+      if (prediction.requests.empty()) {
+        prediction.requests = std::move(additional_preconnects);
+      } else {
+        prediction.requests.reserve(count + prediction.requests.size());
+        prediction.requests.insert(++prediction.requests.begin(),
+                                   additional_preconnects.begin(),
+                                   additional_preconnects.end());
+      }
+    }
+    base::UmaHistogramCounts10000("Blink.LCPP.PreconnectPredictionCount",
+                                  count);
+  }
+
+  // LCPP: set fonts to be prefetched to prefetch_requests.
+  // TODO(crbug.com/40285959): make prefetch work for platforms without the
+  // optimization guide.
+  static const bool kLCPPFontURLPredictorEnabled =
+      base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) &&
+      blink::features::kLCPPFontURLPredictorEnablePrefetch.Get();
+  static const bool kLoadingPredictorPrefetchEnabled =
+      base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) &&
+      features::kLoadingPredictorPrefetchSubresourceType.Get() ==
+          features::PrefetchSubresourceType::kAll;
+  if (kLCPPFontURLPredictorEnabled && kLoadingPredictorPrefetchEnabled) {
+    auto network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateSameSite(
+            net::SchemefulSite(url::Origin::Create(url)));
+    size_t count = 0;
+    for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_stat)) {
+      prediction.prefetch_requests.emplace_back(
+          font_url, network_anonymization_key,
+          network::mojom::RequestDestination::kFont);
+      ++count;
+    }
+    base::UmaHistogramCounts1000("Blink.LCPP.PrefetchFontCount", count);
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource)) {
+    const std::vector<GURL>& subresource_urls =
+        PredictFetchedSubresourceUrls(*lcpp_stat);
+    if (!subresource_urls.empty()) {
+      const auto network_anonymization_key =
+          net::NetworkAnonymizationKey::CreateSameSite(
+              net::SchemefulSite(url::Origin::Create(url)));
+
+      size_t subresource_urls_same_site = 0;
+      size_t subresource_urls_cross_site = 0;
+      for (const GURL& subresource_url : subresource_urls) {
+        const auto destination_it =
+            lcpp_stat->fetched_subresource_url_destination().find(
+                subresource_url.spec());
+        // Database is broken.
+        // TODO(crbug.com/365423066): ReportUMA and only delete LCPP
+        // database.
+        const bool is_database_broken =
+            (destination_it ==
+             lcpp_stat->fetched_subresource_url_destination().end()) ||
+            destination_it->second < 0 ||
+            destination_it->second >
+                static_cast<int32_t>(
+                    network::mojom::RequestDestination::kMaxValue);
+        if (is_database_broken) {
+          LOG(ERROR) << "fetched_subresource_url_destination is broken.";
+          base::debug::DumpWithoutCrashing();
+          DeleteAllData();
+          return;
+        }
+        const network::mojom::RequestDestination destination =
+            static_cast<network::mojom::RequestDestination>(
+                destination_it->second);
+        if (destination == network::mojom::RequestDestination::kFont) {
+          // This is done by kLCPPFontURLPredictor.
+          continue;
+        }
+        if (!PrefetchManager::IsAvailableForPrefetch(destination)) {
+          continue;
+        }
+        const bool is_same_site = IsSameSite(url, subresource_url);
+        if (is_same_site) {
+          subresource_urls_same_site++;
+        } else {
+          subresource_urls_cross_site++;
+          // TODO(crbug.com/40140806): Allow cross site.
+          // Once we support cross-site cases, remove the following continue;
+          continue;
+        }
+        prediction.prefetch_requests.emplace_back(
+            subresource_url, network_anonymization_key, destination);
+      }
+      base::UmaHistogramCounts10000(
+          "Blink.LCPP.PrefetchSubresource.Count.SameSite",
+          base::checked_cast<int>(subresource_urls_same_site));
+      base::UmaHistogramCounts10000(
+          "Blink.LCPP.PrefetchSubresource.Count.CrossSite",
+          base::checked_cast<int>(subresource_urls_cross_site));
+      base::UmaHistogramPercentage(
+          "Blink.LCPP.PrefetchSubresource.Count.SameSiteRatio",
+          base::checked_cast<int>(100 * subresource_urls_same_site /
+                                  subresource_urls.size()));
+    }
+  }
 }
 
 }  // namespace predictors

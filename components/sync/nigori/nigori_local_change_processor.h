@@ -47,7 +47,7 @@ class NigoriLocalChangeProcessor {
   virtual ~NigoriLocalChangeProcessor() = default;
 
   // The Nigori model is expected to call this method as soon as possible during
-  // initialization, and must be called before invoking Put(). |bridge| must not
+  // initialization, and must be called before invoking Put(). `bridge` must not
   // be null and most outlive the NigoriLocalChangeProcessor.
   virtual void ModelReadyToSync(NigoriSyncBridge* bridge,
                                 NigoriMetadataBatch nigori_metadata) = 0;

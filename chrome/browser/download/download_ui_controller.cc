@@ -324,6 +324,7 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
   if (manager && manager->GetDelegate() &&
       manager->GetDelegate()->ShouldOpenPdfInline() &&
       !item->IsMustDownload() &&
+      item->GetState() == download::DownloadItem::IN_PROGRESS &&
       base::EqualsCaseInsensitiveASCII(item->GetMimeType(),
                                        pdf::kPDFMimeType)) {
     needs_to_render = true;

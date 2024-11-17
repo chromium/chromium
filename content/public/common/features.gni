@@ -1,0 +1,11 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+# Screen capture is enabled on most platforms. Currently, screen capture
+# is only enabled for desktop Android, but should be enabled on all Android
+# at some point once the feature is stable. See crbug.com/40418135.
+enable_screen_capture = is_linux || is_chromeos || (is_apple && use_blink) ||
+                        is_win || is_desktop_android || is_fuchsia

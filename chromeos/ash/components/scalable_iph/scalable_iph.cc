@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -557,6 +558,61 @@ bool ValidateVersionNumber(const base::Feature& feature) {
   return version_number == kCurrentVersionNumber;
 }
 
+// `ScalableIphDelegate::SessionState` can take four states:
+// `kUnknownInitialValue`, `kActive`, `kLocked`, `kOther`. We care two cases:
+//
+// 1. Session start
+// For session start, we observe `kUnknownInitialValue` -[any intermediate
+// states]-> `kActive` as unlock event. To allow [any intermediate states] in
+// the middle, we won't advance internal `session_state_` during the phase. In
+// production, there is `session_manager::SessionState::LOGGED_IN_NOT_ACTIVE`,
+// which will be observed as: `kUnknownInitialValue` -> `kOther` -> `kActive`.
+//
+// 2. Unlock event
+// For unlock event, we observe `kLocked` -> `kActive` as unlock event.
+//
+// This method returns `TransitionSet`, which is a set of enums. `GetTransition`
+// does not maintain its state. But it expect the caller to manage it. The set
+// specifies expected operations for the caller: advancing its internal state,
+// handling unlock transition.
+ScalableIph::TransitionSet GetTransition(ScalableIphDelegate::SessionState from,
+                                         ScalableIphDelegate::SessionState to) {
+  if (from == to) {
+    // Note that `OnSessionStateChanged` can be called more than once with the
+    // same `session_state` as `session_manager::SessionState` does not map to
+    // `ScalableIphDelegate::SessionState` with a 1:1 mapping, e.g.
+    // `ScalableIphDelegate::SessionState::kOther` is mapped to several states
+    // of `session_manager::SessionState`.
+    return {};
+  }
+
+  if (to == ScalableIphDelegate::SessionState::kUnknownInitialValue) {
+    // There should be no transition to `kUnknownInitialValue`. Ignore those
+    // transitions.
+    return {};
+  }
+
+  switch (from) {
+    case ScalableIphDelegate::SessionState::kUnknownInitialValue:
+      if (to == ScalableIphDelegate::SessionState::kActive) {
+        return {ScalableIph::SessionStateTransition::kAdvanceState,
+                ScalableIph::SessionStateTransition::kUnlock};
+      }
+      return {};
+    case ScalableIphDelegate::SessionState::kOther:
+      return {ScalableIph::SessionStateTransition::kAdvanceState};
+    case ScalableIphDelegate::SessionState::kLocked:
+      return to == ScalableIphDelegate::SessionState::kActive
+                 ? ScalableIph::TransitionSet(
+                       {ScalableIph::SessionStateTransition::kAdvanceState,
+                        ScalableIph::SessionStateTransition::kUnlock})
+                 : ScalableIph::TransitionSet(
+                       {ScalableIph::SessionStateTransition::kAdvanceState});
+    case ScalableIphDelegate::SessionState::kActive:
+      return {ScalableIph::SessionStateTransition::kAdvanceState};
+  }
+}
+
 }  // namespace
 
 // static
@@ -634,36 +690,29 @@ void ScalableIph::OnConnectionChanged(bool online) {
 }
 
 void ScalableIph::OnSessionStateChanged(
-    ScalableIphDelegate::SessionState session_state) {
-  if (session_state_ == session_state) {
-    // Note that `OnSessionStateChanged` can be called more than once with the
-    // same `session_state` as `session_manager::SessionState` does not map to
-    // `ScalableIphDelegate::SessionState` with a 1:1 mapping, e.g.
-    // `ScalableIphDelegate::SessionState::kOther` is mapped to several states
-    // of `session_manager::SessionState`.
-    return;
+    ScalableIphDelegate::SessionState new_session_state) {
+  TransitionSet transition_set =
+      GetTransition(session_state_, new_session_state);
+  if (transition_set.empty()) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Uninterested session state transition observed from "
+        << session_state_ << " to " << new_session_state
+        << ". No state update made. No unlock event observed.";
   }
 
-  const bool unlocked =
-      session_state_ == ScalableIphDelegate::SessionState::kLocked &&
-      session_state != ScalableIphDelegate::SessionState::kLocked;
+  // State transition must happen before `RecordEvent` as any code after
+  // `RecordEvent` can read the latest state.
+  if (transition_set.Has(SessionStateTransition::kAdvanceState)) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Session state changed from " << session_state_ << " to "
+        << new_session_state;
+    session_state_ = new_session_state;
+  }
 
-  session_state_ = session_state;
-
-  SCALABLE_IPH_LOG(GetLogger())
-      << "Session state changed to " << session_state
-      << ". Whether this is considered to be an unlocked event or not: "
-      << unlocked;
-
-  if (unlocked) {
+  if (transition_set.Has(SessionStateTransition::kUnlock)) {
+    SCALABLE_IPH_LOG(GetLogger()) << "Transition is recognized as unlock event";
+    // Recording `kUnlocked` can trigger condition checks.
     RecordEvent(Event::kUnlocked);
-  }
-
-  if (session_state_ == ScalableIphDelegate::SessionState::kActive) {
-    // Run conditions check as an IPH might be shown after a login.
-    tracker_->AddOnInitializedCallback(
-        base::BindOnce(&ScalableIph::CheckTriggerConditionsOnInitSuccess,
-                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -777,6 +826,21 @@ const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
 ScalableIph::GetFeatureListConstantForTesting() {
   CHECK_IS_TEST();
   return GetFeatureListConstant();
+}
+
+// static:
+ScalableIph::TransitionSet ScalableIph::GetTransitionForTesting(
+    ScalableIphDelegate::SessionState from,
+    ScalableIphDelegate::SessionState to) {
+  CHECK_IS_TEST();
+  return GetTransition(from, to);
+}
+
+bool ScalableIph::CheckTriggerEventForTesting(
+    const base::Feature& feature,
+    const std::optional<ScalableIph::Event>& trigger_event) {
+  CHECK_IS_TEST();
+  return CheckTriggerEvent(feature, trigger_event);
 }
 
 bool ScalableIph::ShouldPinHelpAppToShelf() {
@@ -1022,13 +1086,6 @@ bool ScalableIph::CheckCustomConditions(
 bool ScalableIph::CheckTriggerEvent(
     const base::Feature& feature,
     const std::optional<ScalableIph::Event>& trigger_event) {
-  if (!trigger_event.has_value()) {
-    SCALABLE_IPH_LOG(GetLogger())
-        << "This condition check is NOT triggered by an event. Skipping this "
-           "trigger event condition check.";
-    return true;
-  }
-
   SCALABLE_IPH_LOG(GetLogger())
       << "Checking trigger event condition for " << feature.name;
 
@@ -1037,6 +1094,13 @@ bool ScalableIph::CheckTriggerEvent(
   if (trigger_event_condition.empty()) {
     SCALABLE_IPH_LOG(GetLogger()) << "No trigger event condition specified.";
     return true;
+  }
+
+  if (!trigger_event.has_value()) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "This condition check is NOT triggered by an event. But trigger "
+           "event condition is specified. Condition unsatisfied.";
+    return false;
   }
 
   std::string trigger_event_name = GetEventName(trigger_event.value());

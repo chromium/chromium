@@ -1,16 +1,6 @@
-# Copyright (C) 2024 The Android Open Source Project
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 import os
 import sys
@@ -72,14 +62,10 @@ def _create_module_license_file(repo_path: str, directory_path: str,
       license_file.touch()
 
 
-def _maybe_create_license_file_symlink(repo_path: str, directory_path: str,
+def _maybe_create_license_file_symlink(directory_path: str,
     original_license_file: str,
     verify_only: bool):
   """Creates a LICENSE symbolic link only if it doesn't exist."""
-  if original_license_file == "LICENSE":
-    # This means that there already exists a LICENSE file at the same directory
-    # that we are trying to create our symlink. Do nothing.
-    return
   license_symlink_path = Path(os.path.join(directory_path, "LICENSE"))
   if license_symlink_path.exists():
     # The symlink is already there, skip.
@@ -90,7 +76,26 @@ def _maybe_create_license_file_symlink(repo_path: str, directory_path: str,
       raise Exception(
           f"License symlink does not exist for {license_symlink_path}")
   else:
-    os.symlink(original_license_file, license_symlink_path)
+    # license_symlink_path.relative_to(.., walk_up=True) does not exist in
+    # Python 3.10, this is the reason why os.path.relpath is used.
+    os.symlink(
+        os.path.relpath(original_license_file, license_symlink_path.parent),
+        license_symlink_path)
+
+
+def _map_rust_license_path_to_directory(license_file_path: str) -> str:
+  """ Returns the canonical path of the parent directory that includes
+  the LICENSE file for rust crates.
+
+  :param license_file_path: This is the filepath found in the README.chromium
+  and the expected format is //some/path/license_file
+  """
+  if not license_file_path.startswith("//"):
+    raise ValueError(
+        f"Rust third-party crate's `License File` is expected to be absolute path "
+        f"(Absolute GN labels are expected to start with //), "
+        f"but found {license_file_path}")
+  return license_file_path[2:license_file_path.rfind("/")]
 
 
 def get_all_readme(repo_path: str):
@@ -137,16 +142,25 @@ def update_license(repo_path: str = _ROOT_CRONET,
             lambda
                 _metadata: _metadata))
 
+    license_directory = readme_directory
+    if (os.path.relpath(readme_directory, repo_path)
+        .startswith("third_party/rust/")):
+      # We must do a mapping as Chromium stores the README.chromium
+      # in a different directory than where the src/LICENSE is stored.
+      license_directory = os.path.join(repo_path,
+                                       _map_rust_license_path_to_directory(
+                                           metadata.get_license_file_path()))
+
     if metadata.get_license_type() != LicenseType.UNENCUMBERED:
       # Unencumbered license are public domains or don't have a license.
-      _maybe_create_license_file_symlink(repo_path, readme_directory,
+      _maybe_create_license_file_symlink(license_directory,
                                          license_utils.resolve_license_path(
-                                             repo_path,
+                                             readme_directory,
                                              metadata.get_license_file_path()),
                                          verify_only)
-    _create_module_license_file(repo_path, readme_directory,
+    _create_module_license_file(repo_path, license_directory,
                                 metadata.get_licenses(), verify_only)
-    _create_metadata_file(repo_path, readme_directory,
+    _create_metadata_file(repo_path, license_directory,
                           metadata.to_android_metadata(), verify_only)
 
 

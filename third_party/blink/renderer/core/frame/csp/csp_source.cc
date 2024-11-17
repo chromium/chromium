@@ -76,11 +76,11 @@ bool HostMatches(const network::mojom::blink::CSPSource& source,
   if (!url.IsStandard()) {
     return HostMatches(source, "");
   }
-  return HostMatches(source, url.HostView());
+  return HostMatches(source, url.Host());
 }
 
 bool PathMatches(const network::mojom::blink::CSPSource& source,
-                 const String& url_path) {
+                 const StringView& url_path) {
   if (source.path.empty() || (source.path == "/" && url_path.empty()))
     return true;
 

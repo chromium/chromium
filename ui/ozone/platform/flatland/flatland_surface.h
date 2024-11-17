@@ -12,6 +12,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -150,7 +151,7 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
   // that case, so we should hold onto the Present until receiving them.
   std::vector<base::OnceClosure> pending_present_closures_;
 
-  FlatlandSurfaceFactory* const flatland_surface_factory_;
+  const raw_ptr<FlatlandSurfaceFactory> flatland_surface_factory_;
   const gfx::AcceleratedWidget window_;
 
   THREAD_CHECKER(thread_checker_);

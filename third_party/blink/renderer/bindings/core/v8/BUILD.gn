@@ -72,6 +72,7 @@ fuzzer_test("v8_serialized_script_value_fuzzer") {
   sources = [ "serialization/serialized_script_value_fuzzer.cc" ]
   seed_corpus = "serialization/fuzz_corpus"
   deps = [
+    "//base/test:test_support",
     "//third_party/blink/public/common",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/core:testing",

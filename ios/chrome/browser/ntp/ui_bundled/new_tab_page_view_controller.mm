@@ -238,8 +238,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-      UITraitUserInterfaceStyle.self, UITraitHorizontalSizeClass.self,
-      UITraitPreferredContentSizeCategory.self
+      UITraitUserInterfaceStyle.class, UITraitHorizontalSizeClass.class,
+      UITraitPreferredContentSizeCategory.class
     ]);
     __weak __typeof(self) weakSelf = self;
     UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
@@ -497,7 +497,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self addViewControllerAboveFeed:self.magicStackCollectionView];
   }
 
-  if (!ShouldPutMostVisitedSitesInMagicStack() &&
+  if (self.contentSuggestionsViewController &&
       (!IsHomeCustomizationEnabled() || self.mostVisitedVisible)) {
     [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
   }
@@ -590,7 +590,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.magicStackCollectionView];
-  if (!ShouldPutMostVisitedSitesInMagicStack()) {
+  if (self.contentSuggestionsViewController) {
     [self removeFromViewHierarchy:self.contentSuggestionsViewController];
   }
 
@@ -648,7 +648,9 @@ const CGFloat kFeedContainerExtraHeight = 500;
     }
   }
   if (!IsHomeCustomizationEnabled()) {
-    heightAboveFeed += kBottomMagicStackPadding;
+    if (self.feedHeaderViewController) {
+      heightAboveFeed += kBottomMagicStackPadding;
+    }
     if (!self.contentSuggestionsViewController) {
       heightAboveFeed += content_suggestions::HeaderBottomPadding();
     }
@@ -802,10 +804,11 @@ const CGFloat kFeedContainerExtraHeight = 500;
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  // If `feedWrapperViewController` is nil, then the NTP is either being created
-  // or updated and is not ready to handle scroll events. Doing so could cause
-  // unexpected behavior, such as breaking the layout or causing crashes.
-  if (!self.feedWrapperViewController) {
+  // If either of these properties are nil, then the NTP is either being
+  // created, stopped or updated and is not ready to handle scroll events. Doing
+  // so could cause unexpected behavior, such as breaking the layout or causing
+  // crashes.
+  if (!self.feedWrapperViewController || !self.viewControllersAboveFeed) {
     return;
   }
   // Scroll events might still be queued for a previous scroll view which was
@@ -1541,14 +1544,12 @@ const CGFloat kFeedContainerExtraHeight = 500;
           constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
     ]];
   }
-  if (!ShouldPutMostVisitedSitesInMagicStack()) {
-    if (!IsHomeCustomizationEnabled()) {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.magicStackCollectionView.view.topAnchor
-            constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                        .bottomAnchor],
-      ]];
-    }
+  if (self.contentSuggestionsViewController && !IsHomeCustomizationEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [self.magicStackCollectionView.view.topAnchor
+          constraintEqualToAnchor:self.contentSuggestionsViewController.view
+                                      .bottomAnchor],
+    ]];
   }
 
   // Anchor each module except the one directly below the header, since it will

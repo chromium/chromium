@@ -12,6 +12,7 @@
 #include "ash/auth/views/test_support/mock_auth_input_row_view_observer.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -146,6 +147,12 @@ TEST_F(PinContainerUnitTest, ResetStateTest) {
   test_api_auth_input_->GetTextfield()->SetText(kPin);
   EXPECT_CALL(*mock_observer_, OnContentsChanged(std::u16string()));
   test_api_->GetView()->ResetState();
+}
+
+TEST_F(PinContainerUnitTest, AccessibleState) {
+  ui::AXNodeData node_data;
+  container_view_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  ASSERT_TRUE(node_data.HasState(ax::mojom::State::kInvisible));
 }
 
 }  // namespace

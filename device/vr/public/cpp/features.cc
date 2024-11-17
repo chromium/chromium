@@ -16,6 +16,11 @@ namespace device::features {
 // Enables access to articulated hand tracking sensor input.
 BASE_FEATURE(kWebXrHandInput,
              "WebXRHandInput",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables rendering to WebXR sessions with the WebGPU API.
+BASE_FEATURE(kWebXrWebGpuBinding,
+             "WebXRWebGPUBinding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables access to experimental WebXR features.
@@ -87,6 +92,12 @@ BASE_FEATURE(kOpenXRSharedImages,
 BASE_FEATURE(kAllowOpenXrWithImmersiveFeature,
              "AllowOpenXrWithImmersiveFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kOpenXrAndroidSmoothDepth,
+             "OpenXrAndroidSmoothDepth",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Helper for enabling a feature if either the base flag is enabled or if the
 // device has an immersive feature that we will allow to override the default

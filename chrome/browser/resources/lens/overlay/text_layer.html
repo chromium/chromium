@@ -16,6 +16,7 @@
     position: absolute;
     pointer-events: none;
     user-select: none;
+    z-index: 0;
   }
 
   .translated-line,
@@ -34,6 +35,7 @@
     opacity: 100%;
     pointer-events: none;
     white-space: pre;
+    z-index: 1;
   }
 
   .translated-word {
@@ -64,6 +66,7 @@
     position: absolute;
     background-color: var(--color-shader-layer-3);
     opacity: 60%;
+    z-index: 1;
   }
 </style>
 <template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]"

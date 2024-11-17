@@ -292,7 +292,7 @@ public abstract class CronetProvider {
             // The resource wasn't included in the app; therefore, there is nothing to add.
             return false;
         }
-        String className = context.getResources().getString(resId);
+        String className = context.getString(resId);
 
         // If the resource specifies a well known provider, don't load it because
         // there will be an attempt to load it anyways.

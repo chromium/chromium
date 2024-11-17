@@ -23,9 +23,7 @@ bool AccountReconcilorDelegate::IsReconcileEnabled() const {
 }
 
 gaia::GaiaSource AccountReconcilorDelegate::GetGaiaApiSource() const {
-  NOTREACHED_IN_MIGRATION()
-      << "Reconcile is not enabled, no Gaia API calls should be made.";
-  return gaia::GaiaSource::kChrome;
+  NOTREACHED() << "Reconcile is not enabled, no Gaia API calls should be made.";
 }
 
 bool AccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError() const {

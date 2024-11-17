@@ -157,8 +157,7 @@ int WebSocketHttp2HandshakeStream::ReadResponseBody(
     CompletionOnceCallback callback) {
   // Callers should instead call Upgrade() to get a WebSocketStream
   // and call ReadFrames() on that.
-  NOTREACHED_IN_MIGRATION();
-  return OK;
+  NOTREACHED();
 }
 
 void WebSocketHttp2HandshakeStream::Close(bool not_reusable) {
@@ -286,7 +285,8 @@ void WebSocketHttp2HandshakeStream::OnHeadersReceived(
       SpdyHeadersToHttpResponse(response_headers, http_response_info_);
   DCHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
 
-  http_response_info_->response_time = stream_->response_time();
+  http_response_info_->response_time =
+      http_response_info_->original_response_time = stream_->response_time();
   // Do not store SSLInfo in the response here, HttpNetworkTransaction will take
   // care of that part.
   http_response_info_->was_alpn_negotiated = true;

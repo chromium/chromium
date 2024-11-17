@@ -11,10 +11,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
@@ -24,8 +25,8 @@
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -52,46 +53,48 @@ constexpr char kExperimentName[] = "OrcaEnabled";
 constexpr char kImeAllowlistLabel[] = "ime_allowlist";
 
 std::vector<std::string> AllowedInputMethods() {
-  std::vector<std::string> input_methods = EnglishInputMethods();
+  auto to_string = [](std::string_view sv) { return std::string(sv); };
+  std::vector<std::string> input_methods =
+      base::ToVector(EnglishInputMethods(), to_string);
 
   if (base::FeatureList::IsEnabled(features::kOrcaAfrikaans)) {
-    base::Extend(input_methods, AfrikaansInputMethods());
+    base::Extend(input_methods, AfrikaansInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaDanish)) {
-    base::Extend(input_methods, DanishInputMethods());
+    base::Extend(input_methods, DanishInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaDutch)) {
-    base::Extend(input_methods, DutchInputMethods());
+    base::Extend(input_methods, DutchInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaFinnish)) {
-    base::Extend(input_methods, FinnishInputMethods());
+    base::Extend(input_methods, FinnishInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaFrench)) {
-    base::Extend(input_methods, FrenchInputMethods());
+    base::Extend(input_methods, FrenchInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaGerman)) {
-    base::Extend(input_methods, GermanInputMethods());
+    base::Extend(input_methods, GermanInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaItalian)) {
-    base::Extend(input_methods, ItalianInputMethods());
+    base::Extend(input_methods, ItalianInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaJapanese)) {
-    base::Extend(input_methods, JapaneseInputMethods());
+    base::Extend(input_methods, JapaneseInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaNorwegian)) {
-    base::Extend(input_methods, NorwegianInputMethods());
+    base::Extend(input_methods, NorwegianInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaPolish)) {
-    base::Extend(input_methods, PolishInputMethods());
+    base::Extend(input_methods, PolishInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaPortugese)) {
-    base::Extend(input_methods, PortugeseInputMethods());
+    base::Extend(input_methods, PortugeseInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaSpanish)) {
-    base::Extend(input_methods, SpanishInputMethods());
+    base::Extend(input_methods, SpanishInputMethods(), to_string);
   }
   if (base::FeatureList::IsEnabled(features::kOrcaSwedish)) {
-    base::Extend(input_methods, SwedishInputMethods());
+    base::Extend(input_methods, SwedishInputMethods(), to_string);
   }
 
   return input_methods;
@@ -213,15 +216,15 @@ bool IsAppAllowed(std::string_view app_id) {
           extension_misc::kGoogleDocsDemoAppId,
           extension_misc::kGoogleSheetsDemoAppId,
           extension_misc::kGoogleSlidesDemoAppId,
-          web_app::kGmailAppId,
-          web_app::kGoogleChatAppId,
-          web_app::kGoogleMeetAppId,
-          web_app::kGoogleDocsAppId,
-          web_app::kGoogleSlidesAppId,
-          web_app::kGoogleSheetsAppId,
-          web_app::kGoogleDriveAppId,
-          web_app::kGoogleKeepAppId,
-          web_app::kGoogleCalendarAppId,
+          ash::kGmailAppId,
+          ash::kGoogleChatAppId,
+          ash::kGoogleMeetAppId,
+          ash::kGoogleDocsAppId,
+          ash::kGoogleSlidesAppId,
+          ash::kGoogleSheetsAppId,
+          ash::kGoogleDriveAppId,
+          ash::kGoogleKeepAppId,
+          ash::kGoogleCalendarAppId,
       });
 
   return base::FeatureList::IsEnabled(features::kOrcaOnWorkspace) ||

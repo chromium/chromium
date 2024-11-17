@@ -90,8 +90,7 @@ bool NotifierStateTracker::IsNotifierEnabled(
       // Disabling Crostini notifications is not supported yet.
       return true;
 #else
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 #endif
     case message_center::NotifierType::PHONE_HUB:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -102,8 +101,7 @@ bool NotifierStateTracker::IsNotifierEnabled(
 #endif
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void NotifierStateTracker::SetNotifierEnabled(
@@ -121,12 +119,12 @@ void NotifierStateTracker::SetNotifierEnabled(
       add_new_item = !enabled;
       id = base::Value(notifier_id.id);
       FirePermissionLevelChangedEvent(notifier_id, enabled);
-#else
-      NOTREACHED_IN_MIGRATION();
-#endif
       break;
+#else
+      NOTREACHED();
+#endif
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   DCHECK(pref_name != nullptr);
 

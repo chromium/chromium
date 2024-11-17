@@ -2,5 +2,5 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-declare const runFFmpeg: EmscriptenModuleFactory;
-export default runFFmpeg;
+declare const runFfmpeg: EmscriptenModuleFactory;
+export default runFfmpeg;

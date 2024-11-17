@@ -77,10 +77,12 @@ class DiscardWaiter : public resource_coordinator::TabLifecycleObserver {
 
   void Wait() { run_loop_->Run(); }
 
-  void OnDiscardedStateChange(content::WebContents* contents,
-                              LifecycleUnitDiscardReason reason,
-                              bool is_discarded) override {
-    if (is_discarded) {
+  void OnTabLifecycleStateChange(
+      content::WebContents* contents,
+      mojom::LifecycleUnitState previous_state,
+      mojom::LifecycleUnitState new_state,
+      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
+    if (new_state == mojom::LifecycleUnitState::DISCARDED) {
       run_loop_->Quit();
     }
   }
@@ -211,9 +213,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
-      // Flush the event queue to ensure that we trigger the button
-      // to hide after it is shown.
-
       PressButton(kToolbarPerformanceInterventionButtonElementId),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
@@ -264,8 +263,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       PressButton(kToolbarPerformanceInterventionButtonElementId),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
-      // Flush the event queue to ensure that we trigger the button to hide
-      // after it is shown.
+
       TriggerOnActionableTabListChange({}),
       WaitForHide(kToolbarPerformanceInterventionButtonElementId),
       TriggerOnActionableTabListChange({0}),
@@ -289,8 +287,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       EnsurePresent(kToolbarPerformanceInterventionButtonElementId),
-      // Flush the event queue to ensure that we trigger the button to hide
-      // after it is shown.
+
       SelectTab(kTabStripElementId, 0), WaitForShow(kFirstTab),
       WaitForHide(kToolbarPerformanceInterventionButtonElementId));
 }
@@ -305,8 +302,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       EnsureNotPresent(kToolbarPerformanceInterventionButtonElementId),
       TriggerOnActionableTabListChange({0, 1}),
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
-      // Flush the event queue to ensure that we trigger the button to hide
-      // after it is shown.
+
       CloseTab(1),
       // Button should still be showing since there is another actionable tab
       EnsurePresent(kToolbarPerformanceInterventionButtonElementId),
@@ -321,8 +317,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       AddInstrumentedTab(kSecondTab, GetURL()),
       TriggerOnActionableTabListChange({0}),
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
-      // Flush the event queue to ensure that the screenshot happens
-      // after the button is shown.
 
       PressButton(PerformanceInterventionBubble::
                       kPerformanceInterventionDialogDismissButton),
@@ -676,55 +670,51 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 }
 #endif
 
-class PerformanceInterventionNonUiMetricsTest
-    : public PerformanceInterventionInteractiveTest {
- public:
-  void SetUp() override {
-    set_open_about_blank_on_browser_launch(true);
-    feature_list_.InitWithFeatures(
-        {performance_manager::features::kPerformanceIntervention},
-        {performance_manager::features::kPerformanceInterventionUI});
-    InteractiveFeaturePromoTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// TODO(crbug.com/355466439): Fix test to work with UI after performance
-// intervention rolls out.
-IN_PROC_BROWSER_TEST_F(PerformanceInterventionNonUiMetricsTest,
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                        TriggerMetricsRecorded) {
   base::HistogramTester histogram_tester;
-  RunTestSequence(AddInstrumentedTab(kSecondTab, GetURL()),
-                  AddInstrumentedTab(kThirdTab, GetURL()),
-                  SelectTab(kTabStripElementId, 0), Do([&]() {
-                    // verify that metrics were recorded
-                    histogram_tester.ExpectBucketCount(
-                        kMessageTriggerResultHistogram,
-                        InterventionMessageTriggerResult::kShown, 0);
-                    histogram_tester.ExpectBucketCount(
-                        kMessageTriggerResultHistogram,
-                        InterventionMessageTriggerResult::kRateLimited, 0);
-                  }),
-                  TriggerOnActionableTabListChange({1, 2}), Do([&]() {
-                    // verify that metrics were recorded
-                    histogram_tester.ExpectBucketCount(
-                        kMessageTriggerResultHistogram,
-                        InterventionMessageTriggerResult::kShown, 1);
-                    histogram_tester.ExpectBucketCount(
-                        kMessageTriggerResultHistogram,
-                        InterventionMessageTriggerResult::kRateLimited, 0);
-                  }),
-                  TriggerOnActionableTabListChange({1}), Do([&]() {
-                    // verify that metrics were recorded
-                    histogram_tester.ExpectBucketCount(
-                        kMessageTriggerResultHistogram,
-                        InterventionMessageTriggerResult::kShown, 1);
-                    histogram_tester.ExpectBucketCount(
-                        kMessageTriggerResultHistogram,
-                        InterventionMessageTriggerResult::kRateLimited, 1);
-                  }));
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
+      Do([&]() {
+        // Verify that metrics are empty to start
+        histogram_tester.ExpectBucketCount(
+            kMessageTriggerResultHistogram,
+            InterventionMessageTriggerResult::kShown, 0);
+        histogram_tester.ExpectBucketCount(
+            kMessageTriggerResultHistogram,
+            InterventionMessageTriggerResult::kRateLimited, 0);
+      }),
+
+      TriggerOnActionableTabListChange({1, 2}), Do([&]() {
+        // Verify that metrics were recorded
+        histogram_tester.ExpectBucketCount(
+            kMessageTriggerResultHistogram,
+            InterventionMessageTriggerResult::kShown, 1);
+        histogram_tester.ExpectBucketCount(
+            kMessageTriggerResultHistogram,
+            InterventionMessageTriggerResult::kRateLimited, 0);
+      }),
+
+      // Close the performance intervention bubble.
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      TriggerOnActionableTabListChange({}),
+      WaitForHide(kToolbarPerformanceInterventionButtonElementId),
+
+      TriggerOnActionableTabListChange({1}), Do([&]() {
+        // Verify that metrics were recorded
+        histogram_tester.ExpectBucketCount(
+            kMessageTriggerResultHistogram,
+            InterventionMessageTriggerResult::kShown, 1);
+        histogram_tester.ExpectBucketCount(
+            kMessageTriggerResultHistogram,
+            InterventionMessageTriggerResult::kRateLimited, 1);
+      }));
 }
 
 class PerformanceInterventionMixedProfileTest

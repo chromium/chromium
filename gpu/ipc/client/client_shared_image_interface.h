@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -83,6 +84,14 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   void UpdateSharedImage(const SyncToken& sync_token,
                          scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
                          const Mailbox& mailbox) override;
+  bool CopyNativeGmbToSharedMemorySync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region) override;
+  void CopyNativeGmbToSharedMemoryAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      base::OnceCallback<void(bool)> callback) override;
+  bool IsConnected() override;
 #endif
   SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
                                         const gfx::Size& size,
@@ -133,6 +142,13 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
 
   base::Lock lock_;
   std::multiset<Mailbox> mailboxes_ GUARDED_BY(lock_);
+
+  // Used by ClientSharedImage while creating a GpuMemoryBuffer internally for
+  // MappableSI. This pool is used on windows only. It's needed to allocate
+  // temporary shared memory to transfer pixels from the gpu process to the
+  // renderer, because we can't map DXGI buffers in renderer. This will be null
+  // on other platforms.
+  const scoped_refptr<base::UnsafeSharedMemoryPool> shared_memory_pool_;
 };
 
 }  // namespace gpu

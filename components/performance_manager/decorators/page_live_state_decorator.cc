@@ -321,32 +321,34 @@ PageLiveStateDecorator::PageLiveStateDecorator() = default;
 PageLiveStateDecorator::~PageLiveStateDecorator() = default;
 
 // static
-void PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
+void PageLiveStateDecorator::OnCapabilityTypesChanged(
     content::WebContents* contents,
-    content::WebContentsObserver::DeviceConnectionType connection_type,
+    content::WebContents::CapabilityType capability_type,
     bool used) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  switch (connection_type) {
-    case content::WebContentsObserver::DeviceConnectionType::kUSB:
+  switch (capability_type) {
+    case content::WebContents::CapabilityType::kUSB:
       SetPropertyForWebContentsPageNode(
           contents, &PageLiveStateDataImpl::set_is_connected_to_usb_device,
           used);
       break;
-    case content::WebContentsObserver::DeviceConnectionType::kBluetooth:
+    case content::WebContents::CapabilityType::kBluetoothConnected:
       SetPropertyForWebContentsPageNode(
           contents,
           &PageLiveStateDataImpl::set_is_connected_to_bluetooth_device, used);
       break;
-    case content::WebContentsObserver::DeviceConnectionType::kHID:
+    case content::WebContents::CapabilityType::kHID:
       SetPropertyForWebContentsPageNode(
           contents, &PageLiveStateDataImpl::set_is_connected_to_hid_device,
           used);
       break;
-    case content::WebContentsObserver::DeviceConnectionType::kSerial:
+    case content::WebContents::CapabilityType::kSerial:
       SetPropertyForWebContentsPageNode(
           contents, &PageLiveStateDataImpl::set_is_connected_to_serial_port,
           used);
+      break;
+    default:
       break;
   }
 }

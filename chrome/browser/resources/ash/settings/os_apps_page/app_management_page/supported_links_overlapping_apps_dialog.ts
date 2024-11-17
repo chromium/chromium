@@ -4,11 +4,11 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
-import {castExists} from 'chrome://resources/cr_components/app_management/util.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
+import {castExists} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './supported_links_overlapping_apps_dialog.html.js';

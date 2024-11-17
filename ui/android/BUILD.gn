@@ -106,9 +106,12 @@ static_library("test_support") {
   sources = [
     "dummy_screen_android.cc",
     "dummy_screen_android.h",
+    "fake_modal_dialog_manager_bridge.cc",
+    "fake_modal_dialog_manager_bridge.h",
   ]
 
   deps = [
+    ":ui_javatest_jni_headers",
     "//ui/android",
     "//ui/display",
   ]
@@ -127,7 +130,6 @@ generate_jni("ui_android_jni_headers") {
     "java/src/org/chromium/ui/dragdrop/DropDataAndroid.java",
     "java/src/org/chromium/ui/events/devices/InputDeviceObserver.java",
     "java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",
-    "java/src/org/chromium/ui/gl/SurfaceTextureListener.java",
     "java/src/org/chromium/ui/modaldialog/ModalDialogManagerBridge.java",
     "java/src/org/chromium/ui/resources/HandleViewResources.java",
     "java/src/org/chromium/ui/resources/ResourceFactory.java",
@@ -141,7 +143,6 @@ java_cpp_enum("java_enums_srcjar") {
     "../base/ime/text_input_type.h",
     "../base/page_transition_types.h",
     "../base/pointer/pointer_device.h",
-    "../base/ui_base_types.h",
     "../events/android/gesture_event_type.h",
     "../events/back_gesture_event.h",
     "../gfx/android/java_bitmap.h",
@@ -353,9 +354,8 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/gfx/Animation.java",
     "java/src/org/chromium/ui/gfx/BitmapHelper.java",
     "java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",
+    "java/src/org/chromium/ui/gl/ChromeSurfaceTexture.java",
     "java/src/org/chromium/ui/gl/ScopedJavaSurfaceControl.java",
-    "java/src/org/chromium/ui/gl/SurfaceTextureListener.java",
-    "java/src/org/chromium/ui/gl/SurfaceTexturePlatformWrapper.java",
     "java/src/org/chromium/ui/interpolators/AndroidxInterpolators.java",
     "java/src/org/chromium/ui/interpolators/Interpolators.java",
     "java/src/org/chromium/ui/listmenu/BasicListMenu.java",
@@ -475,6 +475,7 @@ android_library("ui_no_recycler_view_java") {
     "//ui/base:select_file_dialog_jni_headers_java",
     "//ui/base/cursor/mojom:cursor_type_java",
     "//ui/base/ime/mojom:mojom_java",
+    "//ui/gl:gl_jni_headers_java",
     "//url:gurl_java",
   ]
 
@@ -536,7 +537,6 @@ android_library("ui_java_test_support") {
     "javatests/src/org/chromium/ui/test/util/MockitoHelper.java",
     "javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java",
     "javatests/src/org/chromium/ui/test/util/RenderTestRule.java",
-    "javatests/src/org/chromium/ui/test/util/UiDisableIf.java",
     "javatests/src/org/chromium/ui/test/util/UiDisableIfSkipCheck.java",
     "javatests/src/org/chromium/ui/test/util/UiRestriction.java",
     "javatests/src/org/chromium/ui/test/util/ViewUtils.java",
@@ -555,6 +555,7 @@ android_library("ui_java_test_support") {
     # For androidx.test.espresso.ViewInteraction
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -601,6 +602,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/base/LocalizationUtilsTest.java",
     "junit/src/org/chromium/ui/base/MimeTypeUtilsTest.java",
     "junit/src/org/chromium/ui/base/SelectFileDialogTest.java",
+    "junit/src/org/chromium/ui/display/DisplayAndroidTest.java",
     "junit/src/org/chromium/ui/display/DisplayUtilTest.java",
     "junit/src/org/chromium/ui/dragdrop/AnimatedImageDragShadowBuilderUnitTest.java",
     "junit/src/org/chromium/ui/dragdrop/DragAndDropDelegateImplUnitTest.java",
@@ -648,6 +650,7 @@ robolectric_library("ui_android_junit_tests") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//build/android:build_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -683,6 +686,7 @@ test("ui_android_unittests") {
   deps = [
     ":android",
     ":java_enums_srcjar",
+    ":test_support",
     ":ui_java",
     ":ui_java_test_support",
     ":ui_javatest_jni_headers",
@@ -741,6 +745,7 @@ android_library("ui_unit_device_javatests") {
     "java/src/org/chromium/ui/listmenu/ListMenuButtonTest.java",
     "java/src/org/chromium/ui/widget/TextViewWithTightWrapTest.java",
     "javatests/src/org/chromium/ui/base/ClipboardAndroidTest.java",
+    "javatests/src/org/chromium/ui/base/EventForwarderDeviceTest.java",
     "javatests/src/org/chromium/ui/util/WindowInsetsUtilsJavaUnitTest.java",
     "junit/src/org/chromium/ui/widget/TextViewWithLeadingTest.java",
   ]
@@ -761,6 +766,7 @@ android_library("ui_unit_device_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:gendeps_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

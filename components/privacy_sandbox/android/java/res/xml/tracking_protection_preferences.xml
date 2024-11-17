@@ -66,7 +66,8 @@ found in the LICENSE file.
             android:key="dnt_toggle"
             android:title="@string/tracking_protection_dnt_toggle_title"
             android:summary="@string/tracking_protection_dnt_toggle_summary"
-            app:allowDividerBelow="false" />
+            app:allowDividerBelow="false"
+            app:isPreferenceVisible="false" />
 
     </PreferenceCategory>
 

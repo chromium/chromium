@@ -25,8 +25,7 @@ viz::SharedImageFormat WGPUFormatToViz(wgpu::TextureFormat format) {
     case wgpu::TextureFormat::RGBA16Float:
       return viz::SinglePlaneFormat::kRGBA_F16;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return viz::SinglePlaneFormat::kRGBA_8888;
+      NOTREACHED();
   }
 }
 
@@ -209,9 +208,9 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
   // usage that supports clearing. Swapbuffer textures will always be
   // renderable, so we can pass RenderAttachment.
   current_swap_buffer_->mailbox_texture =
-      WebGPUMailboxTexture::FromExistingMailbox(
+      WebGPUMailboxTexture::FromExistingSharedImage(
           dawn_control_client_, device_, desc,
-          current_swap_buffer_->GetSharedImage()->mailbox(),
+          current_swap_buffer_->GetSharedImage(),
           // Wait on the last usage of this swap buffer.
           current_swap_buffer_->GetSyncToken(),
           gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
@@ -275,9 +274,8 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTexture() const {
       .format = format_,
   };
 
-  return WebGPUMailboxTexture::FromExistingMailbox(
-      dawn_control_client_, device_, desc,
-      latest_swap_buffer->GetSharedImage()->mailbox(),
+  return WebGPUMailboxTexture::FromExistingSharedImage(
+      dawn_control_client_, device_, desc, latest_swap_buffer->GetSharedImage(),
       latest_swap_buffer->GetSyncToken(), gpu::webgpu::WEBGPU_MAILBOX_NONE);
 }
 
@@ -344,17 +342,10 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
   // need to release WebGPU/Dawn's context's access to the texture.
   ReleaseWGPUTextureAccessIfNeeded();
 
-  uint32_t texture_target =
-      current_swap_buffer_->GetSharedImage()->GetTextureTarget();
-
-  gpu::MailboxHolder mailbox_holder(
-      current_swap_buffer_->GetSharedImage()->mailbox(),
-      current_swap_buffer_->GetSyncToken(), texture_target);
-
   if (frame_pool->CopyRGBATextureToVideoFrame(
-          Format(), current_swap_buffer_->GetSharedImage()->size(),
-          PredefinedColorSpaceToGfxColorSpace(color_space_),
-          kTopLeft_GrSurfaceOrigin, mailbox_holder, dst_color_space,
+          current_swap_buffer_->GetSharedImage()->size(),
+          current_swap_buffer_->GetSharedImage(),
+          current_swap_buffer_->GetSyncToken(), dst_color_space,
           std::move(callback))) {
     // Subsequent access to this swap buffer (either webgpu or compositor) must
     // wait for the copy operation to finish.

@@ -23,7 +23,9 @@
             },
             {
               "update_manifest_url": "https://example.com/another_isolated_web_app/update_manifest.json",
-              "web_bundle_id": "bbceqaztij5biqquuksfawpsaibuegqqcirgfcgwuosuofdjabzqaaic"
+              "web_bundle_id": "bbceqaztij5biqquuksfawpsaibuegqqcirgfcgwuosuofdjabzqaaic",
+              "update_channel": "beta",
+              "pinned_version": "3.2.4"
             }
           ]
         },
@@ -36,7 +38,9 @@
               },
               {
                 "update_manifest_url": "https://example.com/another_isolated_web_app/update_manifest.json",
-                "web_bundle_id": "bbceqaztij5biqquuksfawpsaibuegqqcirgfcgwuosuofdjabzqaaic"
+                "web_bundle_id": "bbceqaztij5biqquuksfawpsaibuegqqcirgfcgwuosuofdjabzqaaic",
+                "update_channel": "beta",
+                "pinned_version": "3.2.4"
               }
             ]
           }

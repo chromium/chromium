@@ -12,7 +12,6 @@
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -34,8 +33,9 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -197,17 +197,15 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
     int message_id = IDS_APP_MENU_BUTTON_UPDATE;
-    if (base::FeatureList::IsEnabled(features::kUpdateTextOptions)) {
-      // Select an update text option randomly. Show this text in all browser
-      // windows.
-      static const int update_text_option = base::RandInt(1, 3);
-      if (update_text_option == 1) {
-        message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT1;
-      } else if (update_text_option == 2) {
-        message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT2;
-      } else {
-        message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT3;
-      }
+    // Select an update text option randomly. Show this text in all browser
+    // windows.
+    static const int update_text_option = base::RandInt(1, 3);
+    if (update_text_option == 1) {
+      message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT1;
+    } else if (update_text_option == 2) {
+      message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT2;
+    } else {
+      message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT3;
     }
     text = l10n_util::GetStringUTF16(message_id);
 #else
@@ -272,6 +270,21 @@ void BrowserAppMenuButton::OnTouchUiChanged() {
 void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
   ShowMenu(event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
                               : views::MenuRunner::NO_FLAGS);
+}
+
+bool BrowserAppMenuButton::HandleAccessibleAction(
+    const ui::AXActionData& action_data) {
+  if (action_data.action == ax::mojom::Action::kExpand) {
+    ShowMenu(views::MenuRunner::NO_FLAGS);
+    return true;
+  }
+  if (action_data.action == ax::mojom::Action::kCollapse) {
+    if (AppMenuButton::IsMenuShowing()) {
+      CloseMenu();
+    }
+    return true;
+  }
+  return AppMenuButton::HandleAccessibleAction(action_data);
 }
 
 BEGIN_METADATA(BrowserAppMenuButton)

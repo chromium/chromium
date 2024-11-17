@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_coordinator.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_coordinator.h"
-#include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 
 namespace views {
 class View;
@@ -41,7 +41,7 @@ class MediaCoordinator {
                    views::View& parent_view,
                    bool is_subsection,
                    EligibleDevices eligible_devices,
-                   PrefService& prefs,
+                   base::WeakPtr<content::BrowserContext> browser_context,
                    bool allow_device_selection,
                    const media_preview_metrics::Context& metrics_context);
   MediaCoordinator(const MediaCoordinator&) = delete;

@@ -9,7 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace autofill {
 
@@ -19,9 +20,6 @@ class PersonalDataManager;
 // profiles.
 class PersonalDataManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static PersonalDataManager* GetForBrowserState(ProfileIOS* profile);
-
   static PersonalDataManager* GetForProfile(ProfileIOS* profile);
   static PersonalDataManagerFactory* GetInstance();
 
