@@ -55,11 +55,6 @@ wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
 crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-063-print.html [ Failure Pass ]
 crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-064-print.html [ Failure Pass ]
 
-# DCHECKs after being migrated to headless shell:
-#   [1114/152420.908516:FATAL:ax_object.cc(5100)] Check failed: obj->IsUsedForLabelOrDescription().
-crbug.com/379189288 external/wpt/custom-elements/element-internals-aria-element-reflection.html [ Crash Pass ]
-crbug.com/379189288 external/wpt/custom-elements/reactions/AriaMixin-element-attributes.html [ Crash ]
-
 # Times out
 http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]
 external/wpt/html/select/options-length-too-large.html [ Skip ]
