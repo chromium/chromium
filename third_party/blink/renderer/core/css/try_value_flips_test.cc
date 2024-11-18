@@ -71,9 +71,6 @@ class TryValueFlipsTest : public PageTestBase {
     add(CSSPropertyID::kAlignSelf, flips.align_self);
     add(CSSPropertyID::kJustifySelf, flips.justify_self);
     add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
-    if (RuntimeEnabledFeatures::CSSInsetAreaPropertyEnabled()) {
-      add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
-    }
     add_if_flipped(CSSPropertyID::kBlockSize, flips.block_size);
     add_if_flipped(CSSPropertyID::kInlineSize, flips.inline_size);
     add_if_flipped(CSSPropertyID::kMinBlockSize, flips.min_block_size);

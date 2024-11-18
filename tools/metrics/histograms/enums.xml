@@ -10740,7 +10740,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5057" label="SharedStorageWriteFromBidderReportWin"/>
   <int value="5058" label="SharedStorageWriteFromSellerScoreAd"/>
   <int value="5059" label="SharedStorageWriteFromSellerReportResult"/>
-  <int value="5060" label="CSSInsetAreaProperty"/>
+  <int value="5060" label="OBSOLETE_CSSInsetAreaProperty"/>
   <int value="5061" label="StructuredCloneMethod"/>
   <int value="5062" label="V8AI_Writer_AttributeGetter"/>
   <int value="5063" label="V8AIWriterFactory_Create_Method"/>
@@ -26637,7 +26637,7 @@ Called by update_use_counter_css.py.-->
   <int value="778" label="mask-composite"/>
   <int value="779" label="mask-position"/>
   <int value="780" label="mask-mode"/>
-  <int value="781" label="inset-area"/>
+  <int value="781" label="inset-area (obsolete)"/>
   <int value="782" label="view-transition-class"/>
   <int value="783" label="position-try-order"/>
   <int value="784" label="position-try-options (obsolete)"/>

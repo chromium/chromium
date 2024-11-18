@@ -468,7 +468,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kInitialLetter:
       return a.InitialLetter() == b.InitialLetter();
     case CSSPropertyID::kPositionArea:
-    case CSSPropertyID::kInsetArea:
       return a.GetPositionArea() == b.GetPositionArea();
     case CSSPropertyID::kInteractivity:
       return a.Interactivity() == b.Interactivity();

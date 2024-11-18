@@ -1423,23 +1423,7 @@
     "args": ["--disable-blink-features=HTMLPopoverHint"],
     "expires": "Jun 1, 2025"
   },
-  "TODO(crbug.com/352333393): These tests behave strangely when moved outside",
-  "of a WPT runner directory, e.g. with screen captures being taken before",
-  "reftest-wait is removed. So this virtual suite uses wpt_internal to continue",
-  "testing inset-area. All tests in this wpt_internal directory can be removed",
-  "when inset-area is no longer supported.",
   {
-    "prefix": "inset-area-enabled",
-    "owners": ["masonf@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": ["wpt_internal/css/css-anchor-position-inset-area-old"],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-blink-features=CSSInsetAreaProperty"
-    ],
-    "expires": "Feb 1, 2025"
-   },
-   {
     "prefix": "html-anchor-attribute-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],

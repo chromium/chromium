@@ -4761,38 +4761,7 @@ const CSSValue* PositionArea::ParseSingleValue(
   return css_parsing_utils::ConsumePositionArea(stream);
 }
 
-// TODO(crbug.com/352360007): this can be removed when inset-area is removed.
-const CSSValue* InsetArea::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  if (stream.Peek().Id() == CSSValueID::kNone) {
-    return css_parsing_utils::ConsumeIdent(stream);
-  }
-  if (const auto* document = context.GetDocument()) {
-    document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kDeprecation,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        String(
-            "The 'inset-area' property has been deprecated, "
-            "and will be removed from this browser very soon. Please use the "
-            "'position-area' property instead.")));
-    Deprecation::CountDeprecation(document->GetExecutionContext(),
-                                  WebFeature::kCSSInsetAreaProperty);
-  }
-  return css_parsing_utils::ConsumePositionArea(stream);
-}
-
 const CSSValue* PositionArea::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForPositionArea(style.GetPositionArea());
-}
-
-// TODO(crbug.com/352360007): this can be removed when inset-area is removed.
-const CSSValue* InsetArea::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,

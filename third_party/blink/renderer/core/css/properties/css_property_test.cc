@@ -472,16 +472,6 @@ TEST_F(CSSPropertyTest, AnchorModeHeight) {
             ComputedValue("max-height", "anchor-size(width, 0px)", context));
 }
 
-TEST_F(CSSPropertyTest, InsetAreaDisabled) {
-  ScopedCSSInsetAreaPropertyForTest inset_area_enabled(false);
-  auto* declarations = ParseShorthand("position-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 1u);
-  declarations = ParseShorthand("inset-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 0u);
-}
-
 TEST_F(CSSPropertyTest, AnchorSizeInsetsMarginsDisabled) {
   ScopedCSSAnchorSizeInsetsMarginsForTest enabled(false);
 

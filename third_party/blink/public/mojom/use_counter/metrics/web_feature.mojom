@@ -4431,7 +4431,7 @@ enum WebFeature {
   kSharedStorageWriteFromBidderReportWin = 5057,
   kSharedStorageWriteFromSellerScoreAd = 5058,
   kSharedStorageWriteFromSellerReportResult = 5059,
-  kCSSInsetAreaProperty = 5060,
+  kOBSOLETE_CSSInsetAreaProperty = 5060,
   kStructuredCloneMethod = 5061,
   kV8AI_Writer_AttributeGetter = 5062,
   kV8AIWriterFactory_Create_Method = 5063,
