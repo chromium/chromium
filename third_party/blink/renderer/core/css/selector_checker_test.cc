@@ -319,7 +319,7 @@ TEST_P(MatchFlagsTest, All) {
   CSSSelectorList* selector_list =
       css_test_helpers::ParseSelectorList(param.selector);
   ASSERT_TRUE(selector_list);
-  ASSERT_TRUE(selector_list->HasOneSelector());
+  ASSERT_TRUE(selector_list->IsSingleComplexSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
   SelectorChecker::SelectorCheckingContext context{
@@ -370,7 +370,7 @@ class ImpactTest : public PageTestBase {
     CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector);
     DCHECK(selector_list);
-    DCHECK(selector_list->HasOneSelector());
+    DCHECK(selector_list->IsSingleComplexSelector());
 
     SelectorChecker checker(SelectorChecker::kResolvingStyle);
     SelectorChecker::SelectorCheckingContext context{
@@ -688,7 +688,7 @@ TEST_P(MatchFlagsShadowTest, Host) {
   CSSSelectorList* selector_list =
       css_test_helpers::ParseSelectorList(param.selector);
   ASSERT_TRUE(selector_list);
-  ASSERT_TRUE(selector_list->HasOneSelector());
+  ASSERT_TRUE(selector_list->IsSingleComplexSelector());
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
   SelectorChecker::SelectorCheckingContext context{

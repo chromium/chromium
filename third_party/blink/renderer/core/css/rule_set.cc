@@ -255,6 +255,7 @@ void RuleSet::AddToRuleSet(HeapVector<RuleData>& rules,
 }
 
 static void ExtractSelectorValues(const CSSSelector* selector,
+                                  const StyleScope* style_scope,
                                   AtomicString& id,
                                   AtomicString& class_name,
                                   AtomicString& attr_name,
@@ -327,13 +328,32 @@ static void ExtractSelectorValues(const CSSSelector* selector,
           // If the :is/:where has only a single argument, it effectively acts
           // like a normal selector (save for specificity), and we can put it
           // into a bucket based on that selector.
-          if (selector_list->HasOneSelector()) {
-            ExtractSelectorValues(selector_list->First(), id, class_name,
+          if (selector_list->IsSingleComplexSelector()) {
+            ExtractSelectorValues(
+                selector_list->First(), style_scope, id, class_name, attr_name,
+                attr_value, is_exact_attr, custom_pseudo_element_name, tag_name,
+                part_name, picker_name, pseudo_type);
+          }
+          break;
+        }
+        case CSSSelector::kPseudoScope: {
+          // Just like :is() and :where(), we can bucket :scope as the
+          // <scope-start> it refers to, as long as the <scope-start>
+          // contains a single selector.
+          //
+          // Note that the <scope-start> selector is optional, therefore
+          // From() may return nullptr below.
+          const CSSSelector* selector_list =
+              style_scope ? style_scope->From() : nullptr;
+          if (selector_list &&
+              CSSSelectorList::IsSingleComplexSelector(*selector_list)) {
+            ExtractSelectorValues(selector_list, style_scope, id, class_name,
                                   attr_name, attr_value, is_exact_attr,
                                   custom_pseudo_element_name, tag_name,
                                   part_name, picker_name, pseudo_type);
           }
-        } break;
+          break;
+        }
         default:
           break;
       }
@@ -364,6 +384,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
 // the one given the highest priority.
 static const CSSSelector* ExtractBestSelectorValues(
     const CSSSelector& component,
+    const StyleScope* style_scope,
     AtomicString& id,
     AtomicString& class_name,
     AtomicString& attr_name,
@@ -377,14 +398,14 @@ static const CSSSelector* ExtractBestSelectorValues(
   const CSSSelector* it = &component;
   for (; it && it->Relation() == CSSSelector::kSubSelector;
        it = it->NextSimpleSelector()) {
-    ExtractSelectorValues(it, id, class_name, attr_name, attr_value,
-                          is_exact_attr, custom_pseudo_element_name, tag_name,
-                          part_name, picker_name, pseudo_type);
+    ExtractSelectorValues(it, style_scope, id, class_name, attr_name,
+                          attr_value, is_exact_attr, custom_pseudo_element_name,
+                          tag_name, part_name, picker_name, pseudo_type);
   }
   if (it) {
-    ExtractSelectorValues(it, id, class_name, attr_name, attr_value,
-                          is_exact_attr, custom_pseudo_element_name, tag_name,
-                          part_name, picker_name, pseudo_type);
+    ExtractSelectorValues(it, style_scope, id, class_name, attr_name,
+                          attr_value, is_exact_attr, custom_pseudo_element_name,
+                          tag_name, part_name, picker_name, pseudo_type);
   }
   return it;
 }
@@ -428,7 +449,8 @@ static void UnmarkAsCoveredByBucketing(CSSSelector& selector) {
 
 template <RuleSet::BucketCoverage bucket_coverage>
 void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
-                                    const RuleData& rule_data) {
+                                    const RuleData& rule_data,
+                                    const StyleScope* style_scope) {
   AtomicString id;
   AtomicString class_name;
   AtomicString attr_name;
@@ -445,9 +467,9 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
 
   bool is_exact_attr;
   const CSSSelector* it = ExtractBestSelectorValues(
-      component, id, class_name, attr_name, attr_value, is_exact_attr,
-      custom_pseudo_element_name, tag_name, part_name, picker_name,
-      pseudo_type);
+      component, style_scope, id, class_name, attr_name, attr_value,
+      is_exact_attr, custom_pseudo_element_name, tag_name, part_name,
+      picker_name, pseudo_type);
 
   // Prefer rule sets in order of most likely to apply infrequently.
   if (!id.empty()) {
@@ -506,9 +528,10 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
          it->Relation() == CSSSelector::RelationType::kShadowPart)) {
       const CSSSelector* previous = it->NextSimpleSelector();
       if (previous->Match() == CSSSelector::kPseudoElement) {
-        ExtractSelectorValues(previous, id, class_name, attr_name, attr_value,
-                              is_exact_attr, custom_pseudo_element_name,
-                              tag_name, part_name, picker_name, pseudo_type);
+        ExtractSelectorValues(previous, style_scope, id, class_name, attr_name,
+                              attr_value, is_exact_attr,
+                              custom_pseudo_element_name, tag_name, part_name,
+                              picker_name, pseudo_type);
         ua_shadow_pseudo = get_ua_shadow_pseudo();
       }
     }
@@ -685,7 +708,7 @@ void RuleSet::AddRule(StyleRule* rule,
   }
 
   FindBestRuleSetAndAdd<BucketCoverage::kCompute>(rule_data.MutableSelector(),
-                                                  rule_data);
+                                                  rule_data, style_scope);
 
   // If the rule has CSSSelector::kMatchLink, it means that there is a :visited
   // or :link pseudo-class somewhere in the selector. In those cases, we
@@ -702,7 +725,7 @@ void RuleSet::AddRule(StyleRule* rule,
     // Since the selector now is in two buckets, we use BucketCoverage::kIgnore
     // to prevent CSSSelector::is_covered_by_bucketing_ from being set.
     FindBestRuleSetAndAdd<BucketCoverage::kIgnore>(
-        visited_dependent.MutableSelector(), visited_dependent);
+        visited_dependent.MutableSelector(), visited_dependent, style_scope);
   }
 
   AddRuleToLayerIntervals(cascade_layer, rule_data.GetPosition());
@@ -1307,6 +1330,7 @@ bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,
 
 void RuleSet::CreateSubstringMatchers(
     RuleMap& attr_map,
+    const HeapVector<Interval<StyleScope>>& scope_intervals,
     RuleSet::SubstringMatcherMap& substring_matcher_map) {
   for (const auto& [/*AtomicString*/ attr,
                     /*base::span<const RuleData>*/ ruleset] : attr_map) {
@@ -1315,6 +1339,7 @@ void RuleSet::CreateSubstringMatchers(
     }
     std::vector<MatcherStringPattern> patterns;
     int rule_index = 0;
+    Seeker<StyleScope> scope_seeker(scope_intervals);
     for (const RuleData& rule : ruleset) {
       AtomicString id;
       AtomicString class_name;
@@ -1326,8 +1351,9 @@ void RuleSet::CreateSubstringMatchers(
       AtomicString picker_name;
       bool is_exact_attr;
       CSSSelector::PseudoType pseudo_type = CSSSelector::kPseudoUnknown;
-      ExtractBestSelectorValues(rule.Selector(), id, class_name, attr_name,
-                                attr_value, is_exact_attr,
+      const StyleScope* style_scope = scope_seeker.Seek(rule.GetPosition());
+      ExtractBestSelectorValues(rule.Selector(), style_scope, id, class_name,
+                                attr_name, attr_value, is_exact_attr,
                                 custom_pseudo_element_name, tag_name, part_name,
                                 picker_name, pseudo_type);
       DCHECK(!attr_name.empty());
@@ -1382,7 +1408,8 @@ void RuleSet::CompactRules() {
   id_rules_.Compact();
   class_rules_.Compact();
   attr_rules_.Compact();
-  CreateSubstringMatchers(attr_rules_, attr_substring_matchers_);
+  CreateSubstringMatchers(attr_rules_, scope_intervals_,
+                          attr_substring_matchers_);
   tag_rules_.Compact();
   ua_shadow_pseudo_element_rules_.Compact();
   link_pseudo_class_rules_.shrink_to_fit();

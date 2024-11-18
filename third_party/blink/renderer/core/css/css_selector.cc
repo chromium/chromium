@@ -207,7 +207,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           }
           [[fallthrough]];
         case kPseudoHostContext:
-          DCHECK(SelectorList()->HasOneSelector());
+          DCHECK(SelectorList()->IsSingleComplexSelector());
           return kClassLikeSpecificity + SelectorList()->First()->Specificity();
         case kPseudoNot:
           DCHECK(SelectorList());
@@ -255,7 +255,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
     case kPseudoElement:
       switch (GetPseudoType()) {
         case kPseudoSlotted:
-          DCHECK(SelectorList()->HasOneSelector());
+          DCHECK(SelectorList()->IsSingleComplexSelector());
           return kTagSpecificity + SelectorList()->First()->Specificity();
         case kPseudoViewTransitionGroup:
         case kPseudoViewTransitionImagePair:

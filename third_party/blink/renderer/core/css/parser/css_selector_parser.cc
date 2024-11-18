@@ -1688,7 +1688,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
         return false;
       }
 
-      if (!selector_list->HasOneSelector()) {
+      if (!selector_list->IsSingleComplexSelector()) {
         if (selector.GetPseudoType() == CSSSelector::kPseudoHost) {
           return false;
         }

@@ -2575,7 +2575,7 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
     return true;
   }
 
-  DCHECK(selector.SelectorList()->HasOneSelector());
+  DCHECK(selector.SelectorList()->IsSingleComplexSelector());
 
   SelectorCheckingContext sub_context(context);
   sub_context.is_sub_selector = true;

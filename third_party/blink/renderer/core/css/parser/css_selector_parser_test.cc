@@ -280,7 +280,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
     }
 
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
-    ASSERT_TRUE(list->HasOneSelector());
+    ASSERT_TRUE(list->IsSingleComplexSelector());
 
     auto* selector = list->First();
     while (selector->NextSimpleSelector()) {
@@ -500,7 +500,7 @@ TEST(CSSSelectorParserTest, ScrollControlPseudos) {
     EXPECT_TRUE(!vector.empty());
 
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
-    ASSERT_TRUE(list->HasOneSelector());
+    ASSERT_TRUE(list->IsSingleComplexSelector());
 
     const CSSSelector* selector = list->First();
     while (selector->NextSimpleSelector()) {
@@ -546,7 +546,7 @@ TEST(CSSSelectorParserTest, ColumnPseudo) {
     EXPECT_TRUE(!vector.empty());
 
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
-    ASSERT_TRUE(list->HasOneSelector());
+    ASSERT_TRUE(list->IsSingleComplexSelector());
 
     const CSSSelector* selector = list->First();
     while (selector->NextSimpleSelector()) {
