@@ -563,6 +563,12 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSAtRuleViewTransition,
            WebDXFeature::kCrossDocumentViewTransition},
           {WebFeature::kCSSCalcSizeFunction, WebDXFeature::kCalcSize},
+          {WebFeature::kLongAnimationFrameObserver,
+           WebDXFeature::kLongAnimationFrames},
+          {WebFeature::kLongAnimationFrameRequested,
+           WebDXFeature::kLongAnimationFrames},
+          {WebFeature::kVisibilityStateObserver,
+           WebDXFeature::kPageVisibilityState},
       }};
 
   return *kMap;
