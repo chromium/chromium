@@ -14,9 +14,11 @@
 #include "chrome/grit/glic_resources.h"
 #include "chrome/grit/glic_resources_map.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace glic {
@@ -47,6 +49,10 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   source->AddString("glicGuestURL", command_line->GetSwitchValueASCII(
                                         ::switches::kGlicGuestURL));
+  source->AddString(
+      "glicGuestAPISource",
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_GENERATED_GLIC_API_IMPL_ROLLUP_JS));
 
   extensions::TabHelper::CreateForWebContents(web_ui->GetWebContents());
 }
@@ -64,7 +70,6 @@ void GlicUI::BindInterface(
 void GlicUI::CreatePageHandler(
     mojo::PendingRemote<glic::mojom::Page> page,
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver) {
-  DCHECK(page);
   page_handler_ =
       std::make_unique<GlicPageHandler>(std::move(receiver), std::move(page));
 }

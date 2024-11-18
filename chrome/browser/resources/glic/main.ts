@@ -2,16 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.js';
+
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {GlicApiHost} from './glic_api_host.js';
 
 const browserProxy = BrowserProxyImpl.getInstance();
+const webview =
+    document.getElementById('guest-frame') as chrome.webviewTag.WebView;
 
-// Demo to verify the handler is connected.
-// TODO(harringtond): Replace this with actual functionality.
-async function initialize() {
-  const response = await browserProxy.handler.getChromeVersion();
-  document.body.append(
-      `Version: ${JSON.stringify(response.version.components)}`);
+// Manages construction of the GlicAppHost, which must be created to match the
+// lifecycle of the webview's page load.
+class GlicAppHostManager {
+  host: GlicApiHost|undefined;
+  constructor() {
+    webview.addEventListener('contentload', () => {
+      this.contentLoaded();
+    });
+  }
+
+  contentLoaded() {
+    if (this.host) {
+      this.host.destroy();
+      this.host = undefined;
+    }
+    if (webview.contentWindow) {
+      this.host = new GlicApiHost(
+          browserProxy, webview.contentWindow,
+          new URL(loadTimeData.getString('glicGuestURL')).origin);
+    }
+  }
 }
 
-document.addEventListener('DOMContentLoaded', initialize);
+new GlicAppHostManager();
