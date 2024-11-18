@@ -413,6 +413,21 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kSetMethods:
       webdx_feature = WebDXFeature::kSetMethods;
       break;
+    case v8::Isolate::kArrayFindLast:
+      webdx_feature = WebDXFeature::kArrayFindlast;
+      break;
+    case v8::Isolate::kArrayGroup:
+      webdx_feature = WebDXFeature::kArrayGroup;
+      break;
+    case v8::Isolate::kArrayBufferTransfer:
+      webdx_feature = WebDXFeature::kTransferableArraybuffer;
+      break;
+    case v8::Isolate::kPromiseWithResolvers:
+      webdx_feature = WebDXFeature::kPromiseWithresolvers;
+      break;
+    case v8::Isolate::kAtomicsWaitAsync:
+      webdx_feature = WebDXFeature::kAtomicsWaitAsync;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

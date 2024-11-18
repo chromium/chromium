@@ -293,6 +293,11 @@ enum WebDXFeature {
   kInterpolateSize = 235,
   kLongAnimationFrames = 236,
   kPageVisibilityState = 237,
+  kArrayFindlast = 238,
+  kArrayGroup = 239,
+  kPromiseWithresolvers = 240,
+  kTransferableArraybuffer = 241,
+  kAtomicsWaitAsync = 242,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
