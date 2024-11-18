@@ -1301,6 +1301,143 @@ suite('NoticeROW', function() {
   });
 });
 
+suite('NoticeROWAdsApiUxEnhancement', function() {
+  let page: PrivacySandboxNoticeDialogAppElement;
+  let browserProxy: TestPrivacySandboxDialogBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: true,
+    });
+  });
+
+  setup(async function() {
+    browserProxy = new TestPrivacySandboxDialogBrowserProxy();
+    PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('privacy-sandbox-notice-dialog-app');
+    document.body.appendChild(page);
+
+    await browserProxy.whenCalled('resizeDialog');
+    await browserProxy.whenCalled('showDialog');
+  });
+
+  test('learnMoreAndLastText', async function() {
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#learnMoreAndLastText')));
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#learnMoreAndLastTextV2')));
+  });
+
+  test('privacyPolicyNotShown', async function() {
+    browserProxy.setPrivacySandboxShouldShowPrivacyPolicy(false);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const learnMore =
+        page.shadowRoot!.querySelector('privacy-sandbox-dialog-learn-more');
+    assertTrue(!!learnMore);
+    const collapseElement = learnMore!.shadowRoot!.querySelector('cr-collapse');
+    testClickButton('cr-expand-button', learnMore);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
+    assertTrue(collapseElement!.opened);
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#privacyPolicyLinkV2')));
+  });
+
+  test('privacyPolicyShown', async function() {
+    browserProxy.setPrivacySandboxShouldShowPrivacyPolicy(true);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    const learnMore =
+        page.shadowRoot!.querySelector('privacy-sandbox-dialog-learn-more');
+    assertTrue(!!learnMore);
+    const collapseElement = learnMore!.shadowRoot!.querySelector('cr-collapse');
+    testClickButton('cr-expand-button', learnMore);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_INFO_OPENED);
+    assertTrue(collapseElement!.opened);
+
+    const privacyPolicyLinkV2 =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLinkV2');
+    assertTrue(!!privacyPolicyLinkV2);
+    assertTrue(isVisible(privacyPolicyLinkV2));
+    privacyPolicyLinkV2.click();
+    await microtasksFinished();
+
+    const privacyPolicyDialog = page!.shadowRoot!.querySelector(
+        'privacy-sandbox-privacy-policy-dialog');
+    assertTrue(!!privacyPolicyDialog);
+    const privacyPolicy =
+        privacyPolicyDialog.shadowRoot!.querySelector('#privacyPolicy');
+    assertTrue(!!privacyPolicy);
+    const privacyPolicyBackButtonContainer =
+        privacyPolicyDialog.shadowRoot!.querySelector('.button-container');
+    assertTrue(!!privacyPolicyBackButtonContainer);
+
+    assertEquals(
+        getComputedStyle(privacyPolicy).opacity, '1',
+        `privacy policy page should be visible when the link is clicked`);
+    assertEquals(
+        getComputedStyle(privacyPolicyBackButtonContainer).display, 'flex',
+        `privacy policy back button should be visible when the link is clicked`);
+    assertEquals(
+        isChildVisible(page, '#notice'), false,
+        `if the privacy policy page is visible,
+        the consent notice should not be visible.`);
+
+    // After clicking the back button, the content area should display the
+    // consent screen again.
+    testClickButton('#backButton', privacyPolicyDialog);
+    await microtasksFinished();
+
+    assertEquals(
+        isChildVisible(page, '#ackButton'), true,
+        `buttons should be shown on the consent notice again`);
+    assertEquals(
+        getComputedStyle(privacyPolicy).opacity, '0',
+        `privacy policy page should be hidden when the back button is clicked`);
+    assertEquals(
+        getComputedStyle(privacyPolicyBackButtonContainer).display, 'none',
+        `privacy policy back button should be hidden when the back button is clicked`);
+  });
+});
+
+suite('NoticeROWAdsApiUxEnhancementDisabled', function() {
+  let page: PrivacySandboxNoticeDialogAppElement;
+  let browserProxy: TestPrivacySandboxDialogBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: false,
+    });
+  });
+
+  setup(async function() {
+    browserProxy = new TestPrivacySandboxDialogBrowserProxy();
+    PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('privacy-sandbox-notice-dialog-app');
+    document.body.appendChild(page);
+
+    await browserProxy.whenCalled('resizeDialog');
+    await browserProxy.whenCalled('showDialog');
+  });
+
+  test('learnMoreAndLastText', async function() {
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#learnMoreAndLastText')));
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#learnMoreAndLastTextV2')));
+  });
+});
+
 suite('NoticeRestricted', function() {
   let page: PrivacySandboxNoticeRestrictedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
