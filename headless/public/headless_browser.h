@@ -111,8 +111,8 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // as the headless screen size. Defaults to 800x600.
   gfx::Size window_size = gfx::Size(800, 600);
 
-  // Headless screen scale factor.
-  float screen_scale_factor = 1.0;
+  // Headless screen info specification.
+  std::string screen_info_spec;
 
   // Path to user data directory, where browser will look for its state.
   // If empty, default directory (where the binary is located) will be used.

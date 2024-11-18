@@ -5,13 +5,17 @@
 #include "headless/lib/browser/headless_screen.h"
 
 #include "base/check_deref.h"
+#include "base/containers/flat_set.h"
+#include "headless/lib/browser/headless_screen_info.h"
+#include "ui/display/util/display_util.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace headless {
 
 // static
-HeadlessScreen* HeadlessScreen::Create(const gfx::Size& size,
-                                       float scale_factor) {
-  return new HeadlessScreen(gfx::Rect(size), scale_factor);
+HeadlessScreen* HeadlessScreen::Create(const gfx::Size& window_size,
+                                       std::string_view screen_info_spec) {
+  return new HeadlessScreen(window_size, screen_info_spec);
 }
 
 HeadlessScreen::~HeadlessScreen() = default;
@@ -40,12 +44,40 @@ display::Display HeadlessScreen::GetDisplayNearestWindow(
   return GetPrimaryDisplay();
 }
 
-HeadlessScreen::HeadlessScreen(const gfx::Rect& bounds, float scale_factor)
-    : natural_portrait_(bounds.height() > bounds.width()) {
-  static int64_t synthesized_display_id = 2000;
-  display::Display display(synthesized_display_id++);
-  display.SetScaleAndBounds(scale_factor, bounds);
-  ProcessDisplayChanged(display, /*is_primary=*/true);
+HeadlessScreen::HeadlessScreen(const gfx::Size& window_size,
+                               std::string_view screen_info_spec) {
+  std::vector<HeadlessScreenInfo> screen_info;
+  if (screen_info_spec.empty()) {
+    screen_info.push_back(
+        HeadlessScreenInfo({.bounds = gfx::Rect(window_size)}));
+  } else {
+    screen_info = HeadlessScreenInfo::FromString(screen_info_spec).value();
+    CHECK(!screen_info.empty());
+  }
+
+  bool is_primary = true;
+  base::flat_set<int64_t> internal_display_ids;
+  for (const auto& it : screen_info) {
+    static int64_t synthesized_display_id = 2000;
+    display::Display display(synthesized_display_id++);
+    display.set_label(it.label);
+    display.set_color_depth(it.color_depth);
+    display.SetScaleAndBounds(it.device_pixel_ratio, it.bounds);
+    if (it.is_internal) {
+      internal_display_ids.insert(display.id());
+    }
+    ProcessDisplayChanged(display, is_primary);
+    is_primary = false;
+  }
+
+  display::SetInternalDisplayIds(internal_display_ids);
+
+  // Currently rotation always assumes the primary screen, however,
+  // this needs to change when multiple screen support stabilizes.
+  // See https://crbug.com/379076352.
+  const HeadlessScreenInfo& primary_screen = screen_info[0];
+  natural_portrait_ =
+      primary_screen.bounds.height() > primary_screen.bounds.width();
 }
 
 // static

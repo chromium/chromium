@@ -13,6 +13,7 @@
 #include "cc/base/switches.h"
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
+#include "headless/lib/browser/headless_screen_info.h"
 #include "headless/public/switches.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -94,21 +95,20 @@ bool HandleWindowSize(base::CommandLine& command_line,
   return true;
 }
 
-bool HandleScreenScaleFactor(base::CommandLine& command_line,
-                             HeadlessBrowser::Options& options) {
-  DCHECK(command_line.HasSwitch(switches::kScreenScaleFactor));
+bool HandleScreenInfo(base::CommandLine& command_line,
+                      HeadlessBrowser::Options& options) {
+  DCHECK(command_line.HasSwitch(switches::kScreenInfo));
 
   const std::string switch_value =
-      command_line.GetSwitchValueASCII(switches::kScreenScaleFactor);
+      command_line.GetSwitchValueASCII(switches::kScreenInfo);
 
-  double scale_factor;
-  if (!base::StringToDouble(switch_value, &scale_factor) ||
-      scale_factor < 0.5) {
-    LOG(ERROR) << "Invalid screen scale factor: " << switch_value;
+  auto screen_info = HeadlessScreenInfo::FromString(switch_value);
+  if (!screen_info.has_value()) {
+    LOG(ERROR) << screen_info.error();
     return false;
   }
 
-  options.screen_scale_factor = base::checked_cast<float>(scale_factor);
+  options.screen_info_spec = switch_value;
   return true;
 }
 
@@ -209,8 +209,8 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     }
   }
 
-  if (command_line.HasSwitch(switches::kScreenScaleFactor)) {
-    if (!HandleScreenScaleFactor(command_line, options)) {
+  if (command_line.HasSwitch(switches::kScreenInfo)) {
+    if (!HandleScreenInfo(command_line, options)) {
       return false;
     }
   }

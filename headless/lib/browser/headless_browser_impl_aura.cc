@@ -21,8 +21,8 @@
 namespace headless {
 
 void HeadlessBrowserImpl::PlatformInitialize() {
-  HeadlessScreen* screen = HeadlessScreen::Create(
-      options()->window_size, options()->screen_scale_factor);
+  HeadlessScreen* screen = HeadlessScreen::Create(options()->window_size,
+                                                  options()->screen_info_spec);
   display::Screen::SetScreenInstance(screen);
 }
 

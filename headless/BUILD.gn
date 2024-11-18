@@ -263,6 +263,8 @@ component("headless_non_renderer") {
     "lib/browser/headless_request_context_manager.h",
     "lib/browser/headless_screen.cc",
     "lib/browser/headless_screen.h",
+    "lib/browser/headless_screen_info.cc",
+    "lib/browser/headless_screen_info.h",
     "lib/browser/headless_screen_orientation_delegate.cc",
     "lib/browser/headless_screen_orientation_delegate.h",
     "lib/browser/headless_web_contents_impl.cc",
@@ -381,9 +383,11 @@ component("headless_non_renderer") {
     "//services/device/public/cpp/geolocation",
     "//services/service_manager/public/cpp",
     "//third_party/inspector_protocol:crdtp",
+    "//third_party/re2",
     "//ui/base",
     "//ui/compositor",
     "//ui/display",
+    "//ui/display/util",
     "//ui/events/devices",
     "//ui/gfx",
     "//url",
@@ -551,6 +555,7 @@ test("headless_unittests") {
   sources = [
     "lib/browser/headless_browser_impl_unittest.cc",
     "lib/browser/headless_client_hints_controller_delegate_unittest.cc",
+    "lib/browser/headless_screen_info_unittest.cc",
     "lib/renderer/allowlist_unittest.cc",
   ]
 
