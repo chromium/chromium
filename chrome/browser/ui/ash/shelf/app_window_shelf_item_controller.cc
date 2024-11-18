@@ -12,8 +12,6 @@
 #include "ash/wm/window_animations.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
@@ -60,29 +58,6 @@ ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
     return ShowAndActivateOrMinimize(window_to_show, windows.size() == 1);
   }
   return ash::SHELF_ACTION_NONE;
-}
-
-// Launches a new lacros window if there isn't already one on the active desk,
-// or the icon is clicked with CTRL.
-bool ShouldLaunchNewLacrosWindow(
-    const ui::Event& event,
-    const std::list<raw_ptr<AppWindowBase, CtnExperimental>>& app_windows) {
-  // If the icon is clicked with holding the CTRL, launch a new window.
-  if (event.IsControlDown())
-    return true;
-
-  // Do not launch a new window if there is already a lacros window on the
-  // current desk.
-  for (AppWindowBase* window : app_windows) {
-    aura::Window* aura_window = window->GetNativeWindow();
-    if (crosapi::browser_util::IsLacrosWindow(aura_window) &&
-        chromeos::DesksHelper::Get(aura_window)
-            ->BelongsToActiveDesk(aura_window)) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 }  // namespace
@@ -180,19 +155,6 @@ void AppWindowShelfItemController::ItemSelected(
 
   if (filtered_windows.empty()) {
     std::move(callback).Run(ash::SHELF_ACTION_NONE, {});
-    return;
-  }
-
-  // If this app is the lacros browser, create a new window if there isn't a
-  // lacros window on the current workspace, or the icon is clicked with CTRL.
-  // Otherwise, fallthrough to minimize or activate or advance.
-  // TODO(sammiequon): This feature should only be for lacros browser and not
-  // lacros PWAs. Revisit when there is a way to differentiate the two.
-  if (app_id() == app_constants::kLacrosAppId &&
-      ShouldLaunchNewLacrosWindow(*event, filtered_windows)) {
-    crosapi::BrowserManager::Get()->NewWindow(
-        /*incognito=*/false, /*should_trigger_session_restore=*/true);
-    std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
   }
 
