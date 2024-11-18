@@ -310418,6 +310418,10 @@
       "test_csp_self_window.sub.html.sub.headers": [
        "5024a99bc9757a4d2d6dc7d629f0ad1a6496bfc8",
        []
+      ],
+      "utils.js": [
+       "0bb402dccc68cbc7a49af88bf2b83ac58640a2b6",
+       []
       ]
      }
     },
@@ -396731,6 +396735,10 @@
      "9d5ea8bae27a7ed694cb383965a5ffd14dd22d9a",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "86b772a45d1ab2417f11f825c94a128565a00afa",
+     []
+    ],
     "tentative": {
      "loaf-stream-expected.txt": [
       "9b0d0e1d77a0daff1ebe5f7acfb3a318ab4443e6",
@@ -400137,6 +400145,10 @@
     ],
     "OWNERS": [
      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "65c687eb6d4b644302f8e9ed1be27dc61806275f",
      []
     ],
     "resources": {
@@ -405203,6 +405215,10 @@
     ],
     "addRange.js": [
      "7c443f7dade9c236f146d09f274eb9113a5ff90d",
+     []
+    ],
+    "anchor-removal-expected.txt": [
+     "05d1be19471ff0202020a95f3b2d0c059e64cdbd",
      []
     ],
     "anonymous": {
@@ -456348,14 +456364,14 @@
       ]
      ],
      "to-javascript-parent-initiated-child-csp.html": [
-      "e95e71c59bca3b368034d3b44fda8834d0eeb7b1",
+      "84d74ad3f8a961b8d6f8c5beffbc4e7fd5fd77a8",
       [
        null,
        {}
       ]
      ],
      "to-javascript-parent-initiated-parent-csp.html": [
-      "98052c42c1e8f0fdf038791ab685cfc1d4246385",
+      "53057f449f125d7528cdcaca5a370dbc2a374671",
       [
        null,
        {}
@@ -496302,6 +496318,20 @@
      ],
      "calc-serialization.html": [
       "f92de7338d3f05a6623f3aa882e21a724f1344e5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "calc-sibling-function-parsing.html": [
+      "dfddf84a061556d3c7c08ac9eaae134922314439",
+      [
+       null,
+       {}
+      ]
+     ],
+     "calc-sibling-function.html": [
+      "19e08b7f9a9bae762aaec106aedec080dd9571a7",
       [
        null,
        {}
@@ -612864,7 +612894,7 @@
         ]
        ],
        "dialog-requestclose.tentative.html": [
-        "ed52f78a88722865aef9cf61718b2913a9c677b2",
+        "eb2270b861c75e8318760b1ee6ce5398c780d780",
         [
          null,
          {
@@ -614004,6 +614034,13 @@
       ],
       "popover-move-documents.html": [
        "11f52c2f2f0d14c74649cc7c52ac6e5ac68058b1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "popover-nested-in-button.tentative.html": [
+       "ed4cb78f8c8a87ff6a34541667e53ca5b5e2db79",
        [
         null,
         {}
@@ -645031,7 +645068,7 @@
      ]
     ],
     "pointerevent_pointerId_scope.html": [
-     "33f5d4fda3dcfb48fd41385d5c65944060154e27",
+     "c95fbf4ca15b695694c48b41d2bb6d74a6906e86",
      [
       null,
       {
@@ -664374,6 +664411,15 @@
       {}
      ]
     ],
+    "anchor-removal.html": [
+     "40675b1c6c98fa06b78099a68f3ce5424dedbac5",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "anonymous": {
      "details-ancestor.html": [
       "b0adfa68907044124e626d2871297b65eac4d35a",
@@ -664841,7 +664887,7 @@
        ]
       ],
       "Selection-getComposedRanges-dom-mutations-removal.html": [
-       "d89dcb2ce9ddb9318c36a66b64b1abb3ce1aef7c",
+       "194595aa4a7dc2cb34a61e854d5e4825019e1037",
        [
         "selection/shadow-dom/tentative/Selection-getComposedRanges-dom-mutations-removal.html?mode=closed",
         {}
@@ -782126,14 +782172,7 @@
        },
        "navigation_started": {
         "navigation_started.py": [
-         "effb359250b41c31267bd1942a3ca89542995608",
-         [
-          null,
-          {}
-         ]
-        ],
-        "navigation_started_initial_navigation_tentative.py": [
-         "87b18a8b9090cce6ad79a2cc813ffe2e958096e8",
+         "599708a5de8e49fd865f4bcfb6c2d742b703b90b",
          [
           null,
           {}

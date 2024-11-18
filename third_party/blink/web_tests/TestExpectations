@@ -2696,6 +2696,7 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nothing-captured.html [ Failure ]
 crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-answer.html [ Timeout ]
 crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription.html [ Timeout ]
 crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCRtpParameters-rtcp.html [ Timeout ]
@@ -2723,6 +2724,7 @@ crbug.com/379008012 [ Mac11-arm64 ] external/wpt/pointerevents/compat/pointereve
 crbug.com/379008012 [ Mac14 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008012 [ Mac11 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008012 [ Mac15 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
+crbug.com/379008012 [ Mac15-arm64 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008013 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Timeout ]
 crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error-downgraded.tentative.html [ Timeout ]
 crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_verification_error-downgraded.tentative.html [ Crash Timeout ]
@@ -7732,6 +7734,7 @@ crbug.com/356930166 [ Mac15 ] external/wpt/content-security-policy/webrtc/webrtc
 crbug.com/356930166 [ Mac15 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-explicit.html [ Timeout ]
 crbug.com/356930166 [ Mac14 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-nopolicy.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-nopolicy.html [ Timeout ]
+crbug.com/356930166 [ Mac14 ] external/wpt/content-security-policy/webrtc/webrtc-blocked-explicit.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/content-security-policy/webrtc/webrtc-blocked-explicit.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/content-security-policy/webrtc/webrtc-blocked-unknown.html [ Timeout ]
 crbug.com/356930166 [ Mac13 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-errors.https.html [ Timeout ]
