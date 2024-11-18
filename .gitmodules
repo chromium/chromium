@@ -408,6 +408,9 @@
 	path = third_party/libunwindstack
 	url = https://chromium.googlesource.com/chromium/src/third_party/libunwindstack
 	gclient-condition = checkout_android
+[submodule "third_party/libva-fake-driver/src"]
+	path = third_party/libva-fake-driver/src
+	url = https://chromium.googlesource.com/chromiumos/platform/libva-fake-driver
 [submodule "third_party/libvpx/source/libvpx"]
 	path = third_party/libvpx/source/libvpx
 	url = https://chromium.googlesource.com/webm/libvpx
