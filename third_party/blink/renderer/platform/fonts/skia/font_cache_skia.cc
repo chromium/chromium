@@ -62,7 +62,7 @@
 namespace blink {
 
 AtomicString ToAtomicString(const SkString& str) {
-  return AtomicString::FromUTF8(str.c_str(), str.size());
+  return AtomicString::FromUTF8(std::string_view(str.begin(), str.end()));
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

@@ -368,7 +368,8 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
         : ULocaleKeywordBuilder(locale.Utf8()) {}
 
     AtomicString ToAtomicString() const {
-      return AtomicString::FromUTF8(buffer_.data(), length_);
+      auto utf8_bytes = base::as_byte_span(buffer_).first(length_);
+      return AtomicString::FromUTF8(utf8_bytes.data(), utf8_bytes.size());
     }
 
     bool SetStrictness(LineBreakStrictness strictness) {

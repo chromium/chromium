@@ -45,7 +45,7 @@ namespace unicode {
 
 namespace {
 
-inline int InlineUTF8SequenceLengthNonASCII(char b0) {
+inline int InlineUTF8SequenceLengthNonASCII(uint8_t b0) {
   if ((b0 & 0xC0) != 0xC0)
     return 0;
   if ((b0 & 0xE0) == 0xC0)
@@ -57,7 +57,7 @@ inline int InlineUTF8SequenceLengthNonASCII(char b0) {
   return 0;
 }
 
-inline int InlineUTF8SequenceLength(char b0) {
+inline int InlineUTF8SequenceLength(uint8_t b0) {
   return IsASCII(b0) ? 1 : InlineUTF8SequenceLengthNonASCII(b0);
 }
 
@@ -267,44 +267,44 @@ const UChar32 kOffsetsFromUTF8[6] = {0x00000000UL,
                                      static_cast<UChar32>(0xFA082080UL),
                                      static_cast<UChar32>(0x82082080UL)};
 
-inline UChar32 ReadUTF8Sequence(const char*& sequence, unsigned length) {
+inline UChar32 ReadUTF8Sequence(const uint8_t*& sequence, unsigned length) {
   UChar32 character = 0;
 
   switch (length) {
     case 6:
-      character += static_cast<unsigned char>(*sequence++);
+      character += *sequence++;
       character <<= 6;
       [[fallthrough]];
     case 5:
-      character += static_cast<unsigned char>(*sequence++);
+      character += *sequence++;
       character <<= 6;
       [[fallthrough]];
     case 4:
-      character += static_cast<unsigned char>(*sequence++);
+      character += *sequence++;
       character <<= 6;
       [[fallthrough]];
     case 3:
-      character += static_cast<unsigned char>(*sequence++);
+      character += *sequence++;
       character <<= 6;
       [[fallthrough]];
     case 2:
-      character += static_cast<unsigned char>(*sequence++);
+      character += *sequence++;
       character <<= 6;
       [[fallthrough]];
     case 1:
-      character += static_cast<unsigned char>(*sequence++);
+      character += *sequence++;
   }
 
   return character - kOffsetsFromUTF8[length - 1];
 }
 
-ConversionStatus ConvertUTF8ToUTF16(const char** source_start,
-                                    const char* source_end,
+ConversionStatus ConvertUTF8ToUTF16(const uint8_t** source_start,
+                                    const uint8_t* source_end,
                                     UChar** target_start,
                                     UChar* target_end,
                                     bool strict) {
   ConversionStatus status = kConversionOK;
-  const char* source = *source_start;
+  const uint8_t* source = *source_start;
   UChar* target = *target_start;
   while (source < source_end) {
     int utf8_sequence_length = InlineUTF8SequenceLength(*source);
@@ -313,8 +313,7 @@ ConversionStatus ConvertUTF8ToUTF16(const char** source_start,
       break;
     }
     // Do this check whether lenient or strict
-    if (!IsLegalUTF8(reinterpret_cast<const unsigned char*>(source),
-                     utf8_sequence_length)) {
+    if (!IsLegalUTF8(source, utf8_sequence_length)) {
       status = kSourceIllegal;
       break;
     }
@@ -404,21 +403,20 @@ ConversionResult<uint8_t> ConvertUTF16ToUTF8(base::span<const UChar> source,
 ConversionResult<UChar> ConvertUTF8ToUTF16(base::span<const uint8_t> source,
                                            base::span<UChar> target,
                                            bool strict) {
-  auto source_chars = base::as_chars(source);
-  const char* source_start = source_chars.data();
+  const uint8_t* source_start = source.data();
   UChar* target_start = target.data();
   auto status =
-      ConvertUTF8ToUTF16(&source_start, source_start + source_chars.size(),
+      ConvertUTF8ToUTF16(&source_start, source_start + source.size(),
                          &target_start, target_start + target.size(), strict);
   return {
       target.first(static_cast<size_t>(target_start - target.data())),
-      static_cast<size_t>(source_start - source_chars.data()),
+      static_cast<size_t>(source_start - source.data()),
       status,
   };
 }
 
-unsigned CalculateStringLengthFromUTF8(const char* data,
-                                       const char*& data_end,
+unsigned CalculateStringLengthFromUTF8(const uint8_t* data,
+                                       const uint8_t*& data_end,
                                        bool& seen_non_ascii,
                                        bool& seen_non_latin1) {
   seen_non_ascii = false;
@@ -447,9 +445,9 @@ unsigned CalculateStringLengthFromUTF8(const char* data,
       return 0;
     }
 
-    if (!IsLegalUTF8(reinterpret_cast<const unsigned char*>(data),
-                     utf8_sequence_length))
+    if (!IsLegalUTF8(data, utf8_sequence_length)) {
       return 0;
+    }
 
     UChar32 character = ReadUTF8Sequence(data, utf8_sequence_length);
     DCHECK(!IsASCII(character));
@@ -472,63 +470,6 @@ unsigned CalculateStringLengthFromUTF8(const char* data,
 
   data_end = data;
   return utf16_length;
-}
-
-template <typename CharType>
-ALWAYS_INLINE bool EqualWithUTF8Internal(const CharType* a,
-                                         const CharType* a_end,
-                                         const char* b,
-                                         const char* b_end) {
-  while (b < b_end) {
-    if (IsASCII(*b)) {
-      if (*a++ != *b++)
-        return false;
-      continue;
-    }
-
-    int utf8_sequence_length = InlineUTF8SequenceLengthNonASCII(*b);
-
-    if (b_end - b < utf8_sequence_length)
-      return false;
-
-    if (!IsLegalUTF8(reinterpret_cast<const unsigned char*>(b),
-                     utf8_sequence_length))
-      return false;
-
-    UChar32 character = ReadUTF8Sequence(b, utf8_sequence_length);
-    DCHECK(!IsASCII(character));
-
-    if (U_IS_BMP(character)) {
-      // UTF-16 surrogate values are illegal in UTF-32
-      if (U_IS_SURROGATE(character))
-        return false;
-      if (*a++ != character)
-        return false;
-    } else if (U_IS_SUPPLEMENTARY(character)) {
-      if (*a++ != U16_LEAD(character))
-        return false;
-      if (*a++ != U16_TRAIL(character))
-        return false;
-    } else {
-      return false;
-    }
-  }
-
-  return a == a_end;
-}
-
-bool EqualUTF16WithUTF8(const UChar* a,
-                        const UChar* a_end,
-                        const char* b,
-                        const char* b_end) {
-  return EqualWithUTF8Internal(a, a_end, b, b_end);
-}
-
-bool EqualLatin1WithUTF8(const LChar* a,
-                         const LChar* a_end,
-                         const char* b,
-                         const char* b_end) {
-  return EqualWithUTF8Internal(a, a_end, b, b_end);
 }
 
 }  // namespace unicode

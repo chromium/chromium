@@ -199,7 +199,7 @@ class WTF_EXPORT AtomicString {
   // AtomicString::fromUTF8 will return a null string if
   // the input data contains invalid UTF-8 sequences.
   // NOTE: Passing a zero size means use the whole string.
-  static AtomicString FromUTF8(const char*, size_t length);
+  static AtomicString FromUTF8(const uint8_t*, size_t length);
   static AtomicString FromUTF8(const char*);
   static AtomicString FromUTF8(std::string_view);
 

@@ -72,7 +72,7 @@ scoped_refptr<StringImpl> AtomicString::AddSlowCase(StringImpl* string) {
   return AtomicStringTable::Instance().Add(string);
 }
 
-AtomicString AtomicString::FromUTF8(const char* chars, size_t length) {
+AtomicString AtomicString::FromUTF8(const uint8_t* chars, size_t length) {
   if (!chars)
     return g_null_atom;
   if (!length)
@@ -86,11 +86,13 @@ AtomicString AtomicString::FromUTF8(const char* chars) {
     return g_null_atom;
   if (!*chars)
     return g_empty_atom;
-  return AtomicString(AtomicStringTable::Instance().AddUTF8(chars, nullptr));
+  return AtomicString(AtomicStringTable::Instance().AddUTF8(
+      reinterpret_cast<const uint8_t*>(chars), nullptr));
 }
 
 AtomicString AtomicString::FromUTF8(std::string_view string) {
-  return AtomicString::FromUTF8(string.data(), string.length());
+  auto utf8_bytes = base::as_byte_span(string);
+  return AtomicString::FromUTF8(utf8_bytes.data(), utf8_bytes.size());
 }
 
 AtomicString AtomicString::LowerASCII(AtomicString source) {
