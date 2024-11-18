@@ -111,6 +111,11 @@ struct ChromeMLModelDescriptor {
 struct ChromeMLAdaptationDescriptor {
   // The model data to use.
   const ChromeMLModelData* model_data;
+
+  // The maximum input+output tokens the model can handle.
+  // The default value 0 will be treated not set, and in that case the original
+  // `max_tokens` set by the base model will be used.
+  uint32_t max_tokens;
 };
 
 // A status value included with each output chunk.

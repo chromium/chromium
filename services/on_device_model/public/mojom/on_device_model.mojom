@@ -98,6 +98,13 @@ interface ContextClient {
 struct LoadAdaptationParams {
   // Assets for an adaptation.
   AdaptationAssets assets;
+
+  // The maximum number of input+output tokens the adaptation model can handle.
+  // This is needed when initializing the model. Currently this is only
+  // supported by the APU backend.
+  // When set to 0 or not set, the original `max_tokens` set by the base model
+  // will be used.
+  [MinVersion=1] uint32? max_tokens;
 };
 
 // The set of tokens that can be added as part of an input.

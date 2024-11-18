@@ -447,11 +447,10 @@ base::expected<std::unique_ptr<OnDeviceModelExecutor::ScopedAdaptation>,
 OnDeviceModelExecutor::LoadAdaptation(
     on_device_model::mojom::LoadAdaptationParamsPtr params,
     base::OnceClosure on_complete) {
-  on_device_model::AdaptationAssets assets = std::move(params->assets);
   static uint32_t next_id = 0;
   base_sessions_.insert(
       {next_id, SessionAccessor::Create(chrome_ml_.get(), model_task_runner_,
-                                        model_, std::move(assets))});
+                                        model_, std::move(params))});
   model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
   return base::ok(std::make_unique<ScopedAdaptation>(
       weak_ptr_factory_.GetWeakPtr(), next_id++));

@@ -37,14 +37,14 @@ SessionAccessor::Ptr SessionAccessor::Create(
     const ChromeML& chrome_ml,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     ChromeMLModel model,
-    on_device_model::AdaptationAssets adaptation_assets) {
+    on_device_model::mojom::LoadAdaptationParamsPtr params) {
   Ptr handle(new SessionAccessor(chrome_ml, task_runner, model),
              base::OnTaskRunnerDeleter(task_runner));
   // SessionAccessor is deleted on `task_runner_` so base::Unretained is safe.
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(&SessionAccessor::CreateInternal,
-                                       base::Unretained(handle.get()),
-                                       std::move(adaptation_assets)));
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SessionAccessor::CreateInternal,
+                     base::Unretained(handle.get()), std::move(params)));
   return handle;
 }
 
@@ -109,20 +109,19 @@ void SessionAccessor::CloneFrom(SessionAccessor* other) {
 
 DISABLE_CFI_DLSYM
 void SessionAccessor::CreateInternal(
-    on_device_model::AdaptationAssets adaptation_assets) {
+    on_device_model::mojom::LoadAdaptationParamsPtr params) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (adaptation_assets.weights.IsValid() ||
-      !adaptation_assets.weights_path.empty()) {
+  if (params) {
     ChromeMLModelData data;
-    std::string weights_path_str =
-        adaptation_assets.weights_path.AsUTF8Unsafe();
-    if (adaptation_assets.weights.IsValid()) {
-      data.weights_file = adaptation_assets.weights.TakePlatformFile();
+    std::string weights_path_str = params->assets.weights_path.AsUTF8Unsafe();
+    if (params->assets.weights.IsValid()) {
+      data.weights_file = params->assets.weights.TakePlatformFile();
     } else {
       data.model_path = weights_path_str.data();
     }
     ChromeMLAdaptationDescriptor descriptor = {
         .model_data = &data,
+        .max_tokens = params->max_tokens.value_or(0),
     };
     session_ = chrome_ml_->api().CreateSession(model_, &descriptor);
   } else {
