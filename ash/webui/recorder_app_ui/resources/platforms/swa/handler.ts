@@ -27,7 +27,7 @@ import {
 import {computed, Signal, signal} from '../../core/reactive/signal.js';
 import {LangPackInfo, LanguageCode} from '../../core/soda/language_info.js';
 import {SodaSession} from '../../core/soda/types.js';
-import {settings} from '../../core/state/settings.js';
+import {settings, TranscriptionEnableState} from '../../core/state/settings.js';
 import {resetTranscriptionLanguage} from '../../core/state/transcription.js';
 import {
   assertExists,
@@ -152,8 +152,18 @@ export class PlatformHandler extends PlatformHandlerBase {
       update(state);
     }
 
-    // Reset unavailable transcript language.
     const selectedState = this.getSelectedLanguageState();
+    const transcriptionEnabled =
+      settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED;
+    if (selectedState === null && transcriptionEnabled) {
+      // When there's no other language option, users cannot choose language
+      // from selector. For this scenario, set selected language to default when
+      // transcription is enabled.
+      resetTranscriptionLanguage(
+        /* resetToDefault= */ !this.isMultipleLanguageAvailable(),
+      );
+    }
+    // Reset unavailable transcript language.
     if (selectedState !== null && selectedState.value.kind === 'unavailable') {
       // Set to default if there's no other language option.
       resetTranscriptionLanguage(

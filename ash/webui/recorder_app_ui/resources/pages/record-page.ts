@@ -56,6 +56,7 @@ import {
   toggleTranscriptionEnabled,
 } from '../core/state/transcription.js';
 import {
+  assert,
   assertExhaustive,
   assertExists,
   assertInstanceof,
@@ -719,6 +720,13 @@ export class RecordPage extends ReactiveLitElement {
       case TranscriptionEnableState.ENABLED: {
         const sodaState = this.platformHandler.getSelectedLanguageState();
         if (sodaState === null) {
+          // When language selection is not available, language is set to
+          // default at platform handler inits or first time transcription gets
+          // enabled.
+          assert(
+            this.platformHandler.isMultipleLanguageAvailable(),
+            'Language selection is unavailable but language is not set.',
+          );
           return html`
             <div id="transcription-consent">
               <cra-image name="transcription_off"></cra-image>
