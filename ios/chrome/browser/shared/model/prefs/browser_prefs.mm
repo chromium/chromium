@@ -1426,4 +1426,7 @@ void MigrateObsoleteUserDefault() {
 
   // Added 08/2024.
   [defaults removeObjectForKey:@"userHasInteractedWithWhatsNew"];
+
+  // Added 11/2024.
+  [defaults removeObjectForKey:@"DisplaySwitchProfile"];
 }

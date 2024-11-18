@@ -20,10 +20,6 @@ enum class SafeBrowsingSafetyCheckState;
 
 namespace experimental_flags {
 
-// NSUserDefaults key to display an experimental "switch profile" entry in
-// settings. For historic reasons, this is int-valued.
-extern NSString* const kDisplaySwitchProfile;
-
 // Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 
@@ -147,9 +143,6 @@ bool SimulatePostDeviceRestore();
 // recently or too many consecutive times. If this function is true, those
 // limits are suppressed for simpler testing.
 bool ShouldIgnoreHistorySyncDeclineLimits();
-
-// Whether the developer-mode Switch Profile UI will be be displayed.
-bool DisplaySwitchProfile();
 
 // Returns the inactivity threshold to be used for displaying Safety Check
 // notifications, overriding the default value stored in the code or any value

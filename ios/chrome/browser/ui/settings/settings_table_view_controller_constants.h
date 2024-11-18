@@ -52,7 +52,6 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeDefaultBrowser,
   SettingsItemTypeSigninDisabled,
   SettingsItemTypeTabs,
-  SettingsItemTypeSwitchProfile,
   SettingsItemTypeESBPromo
 };
 

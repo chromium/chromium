@@ -129,7 +129,6 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
@@ -297,9 +296,6 @@ struct EnhancedSafeBrowsingActivePromoData
 
   // Tabs settings coordinator.
   TabsSettingsCoordinator* _tabsCoordinator;
-
-  // Switch profile coordinator.
-  SwitchProfileSettingsCoordinator* _switchProfileCoordinator;
 
   // Address bar setting coordinator.
   AddressBarPreferenceCoordinator* _addressBarPreferenceCoordinator;
@@ -596,11 +592,6 @@ struct EnhancedSafeBrowsingActivePromoData
   if (experimental_flags::IsMemoryDebuggingEnabled()) {
     _showMemoryDebugToolsItem = [self showMemoryDebugSwitchItem];
     [model addItem:_showMemoryDebugToolsItem
-        toSectionWithIdentifier:SettingsSectionIdentifierDebug];
-  }
-
-  if (experimental_flags::DisplaySwitchProfile()) {
-    [model addItem:[self switchProfileItem]
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
   }
 
@@ -1106,26 +1097,6 @@ struct EnhancedSafeBrowsingActivePromoData
   return showMemoryDebugSwitchItem;
 }
 
-- (TableViewItem*)switchProfileItem {
-  NSString* detailText = nil;
-  std::string profileName = _profile->GetProfileName();
-  // TODO(crbug.com/331783685): Remove assumption that "Default" is the
-  // personal profile.
-  if (profileName == kIOSChromeInitialProfile) {
-    detailText = @"Personal";
-  } else {
-    detailText = base::SysUTF8ToNSString(profileName);
-  }
-  return [self
-           detailItemWithType:SettingsItemTypeSwitchProfile
-                         text:l10n_util::GetNSString(
-                                  IDS_IOS_SWITCH_PROFILE_MANAGEMENT_SETTINGS)
-                   detailText:detailText
-                       symbol:DefaultSettingsRootSymbol(kMultiIdentitySymbol)
-        symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
-      accessibilityIdentifier:nil];
-}
-
 - (TableViewItem*)enhancedSafeBrowsingInlinePromoItem {
   EnhancedSafeBrowsingInlinePromoItem* item =
       [[EnhancedSafeBrowsingInlinePromoItem alloc]
@@ -1502,9 +1473,6 @@ struct EnhancedSafeBrowsingActivePromoData
           pushViewController:[[TableCellCatalogViewController alloc] init]
                     animated:YES];
       break;
-    case SettingsItemTypeSwitchProfile:
-      [self showSwitchProfileSettings];
-      break;
     default:
       break;
   }
@@ -1652,18 +1620,6 @@ struct EnhancedSafeBrowsingActivePromoData
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
   [_tabsCoordinator start];
-}
-
-- (void)showSwitchProfileSettings {
-  if (_switchProfileCoordinator &&
-      self.navigationController.topViewController != self) {
-    base::debug::DumpWithoutCrashing();
-  }
-
-  _switchProfileCoordinator = [[SwitchProfileSettingsCoordinator alloc]
-      initWithBaseNavigationController:self.navigationController
-                               browser:_browser];
-  [_switchProfileCoordinator start];
 }
 
 - (void)showAddressBarPreferenceSetting {
@@ -2302,9 +2258,6 @@ struct EnhancedSafeBrowsingActivePromoData
 
   [_tabsCoordinator stop];
   _tabsCoordinator = nil;
-
-  [_switchProfileCoordinator stop];
-  _switchProfileCoordinator = nil;
 
   [_addressBarPreferenceCoordinator stop];
   _addressBarPreferenceCoordinator = nil;
