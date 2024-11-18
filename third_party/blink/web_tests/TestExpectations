@@ -8626,3 +8626,4 @@ crbug.com/379516106 [ Debug Mac14 ] external/wpt/css/css-overflow/scrollbar-larg
 crbug.com/377815400 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.html?high-6.2 [ Pass Timeout ]
 crbug.com/379335371 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.worker.html?baseline [ Pass Timeout ]
 crbug.com/379418978 [ Debug Linux ] virtual/soft-navigation-fp-fcp/external/wpt/soft-navigation-heuristics/navigation-api.tentative.html [ Failure Pass ]
+crbug.com/379660760 [ Win ] external/wpt/css/css-anchor-position/anchor-size-parse-valid.html [ Failure Pass ]
