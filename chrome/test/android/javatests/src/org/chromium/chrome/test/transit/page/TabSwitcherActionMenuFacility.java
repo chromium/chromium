@@ -21,6 +21,7 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -62,13 +63,17 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         elements.declareView(CLOSE_TAB_MENU_ITEM);
         elements.declareView(NEW_TAB_MENU_ITEM);
         elements.declareView(NEW_INCOGNITO_TAB_MENU_ITEM);
-        if (mHostStation.isIncognito()
-                && mHostStation.getActivity().getTabModelSelector().getModel(false).getCount()
-                        > 0) {
-            elements.declareView(SWITCH_OUT_OF_INCOGNITO_MENU_ITEM);
-        } else if (!mHostStation.isIncognito()
-                && mHostStation.getActivity().getTabModelSelector().getModel(true).getCount() > 0) {
-            elements.declareView(SWITCH_TO_INCOGNITO_MENU_ITEM);
+
+        if (ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) {
+            if (mHostStation.isIncognito()
+                    && mHostStation.getActivity().getTabModelSelector().getModel(false).getCount()
+                            > 0) {
+                elements.declareView(SWITCH_OUT_OF_INCOGNITO_MENU_ITEM);
+            } else if (!mHostStation.isIncognito()
+                    && mHostStation.getActivity().getTabModelSelector().getModel(true).getCount()
+                            > 0) {
+                elements.declareView(SWITCH_TO_INCOGNITO_MENU_ITEM);
+            }
         }
     }
 
