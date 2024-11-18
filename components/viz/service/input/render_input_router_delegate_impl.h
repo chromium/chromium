@@ -9,9 +9,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/input/event_with_latency_info.h"
-#include "components/input/peak_gpu_memory_tracker.h"
 #include "components/input/render_input_router_delegate.h"
 #include "components/input/render_input_router_iterator.h"
+#include "components/viz/common/resources/peak_gpu_memory_tracker.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -75,8 +75,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
       blink::mojom::InputEventResultState ack_result,
       const blink::WebInputEvent& event) override;
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
-  std::unique_ptr<input::PeakGpuMemoryTracker> MakePeakGpuMemoryTracker(
-      input::PeakGpuMemoryTracker::Usage usage) override;
+  std::unique_ptr<PeakGpuMemoryTracker> MakePeakGpuMemoryTracker(
+      PeakGpuMemoryTracker::Usage usage) override;
   void OnWheelEventAck(
       const input::MouseWheelEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,

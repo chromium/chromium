@@ -762,7 +762,7 @@ class CONTENT_EXPORT NavigationRequest
   // CreateForCommit().
   bool IsNavigationStarted() const;
 
-  std::unique_ptr<input::PeakGpuMemoryTracker> TakePeakGpuMemoryTracker();
+  std::unique_ptr<viz::PeakGpuMemoryTracker> TakePeakGpuMemoryTracker();
 
   std::unique_ptr<NavigationEarlyHintsManager> TakeEarlyHintsManager();
 
@@ -2513,7 +2513,7 @@ class CONTENT_EXPORT NavigationRequest
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
-  std::unique_ptr<input::PeakGpuMemoryTracker> loading_mem_tracker_;
+  std::unique_ptr<viz::PeakGpuMemoryTracker> loading_mem_tracker_;
 
   // Structure tracking the effects of the CrossOriginOpenerPolicy on this
   // navigation.

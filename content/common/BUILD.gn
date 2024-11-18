@@ -156,8 +156,6 @@ source_set("common") {
     "navigation_gesture.h",
     "navigation_params_utils.h",
     "origin_util.cc",
-    "peak_gpu_memory_callback.cc",
-    "peak_gpu_memory_callback.h",
     "process_type.cc",
     "process_visibility_tracker.cc",
     "process_visibility_tracker.h",

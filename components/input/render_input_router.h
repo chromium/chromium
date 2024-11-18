@@ -14,10 +14,10 @@
 #include "components/input/fling_scheduler_base.h"
 #include "components/input/input_disposition_handler.h"
 #include "components/input/input_router_impl.h"
-#include "components/input/peak_gpu_memory_tracker.h"
 #include "components/input/render_input_router_delegate.h"
 #include "components/input/render_input_router_iterator.h"
 #include "components/input/render_input_router_latency_tracker.h"
+#include "components/viz/common/resources/peak_gpu_memory_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -216,7 +216,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   bool is_in_touchpad_gesture_fling_ = false;
   std::unique_ptr<RenderInputRouterLatencyTracker> latency_tracker_;
 
-  std::unique_ptr<PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
+  std::unique_ptr<viz::PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
   raw_ptr<RenderInputRouterClient> render_input_router_client_;
 

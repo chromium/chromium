@@ -123,9 +123,9 @@ void RenderInputRouterDelegateImpl::OnInvalidInputEventSource() {
   delegate_->OnInvalidInputEventSource(frame_sink_id_, grouping_id_);
 }
 
-std::unique_ptr<input::PeakGpuMemoryTracker>
+std::unique_ptr<PeakGpuMemoryTracker>
 RenderInputRouterDelegateImpl::MakePeakGpuMemoryTracker(
-    input::PeakGpuMemoryTracker::Usage usage) {
+    PeakGpuMemoryTracker::Usage usage) {
   // TODO(b/365541296): Implement RenderInputRouterDelegate interface in Viz.
   NOTIMPLEMENTED();
   return nullptr;

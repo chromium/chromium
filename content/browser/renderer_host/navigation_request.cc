@@ -1795,7 +1795,7 @@ NavigationRequest::NavigationRequest(
 
   if (IsInPrimaryMainFrame()) {
     loading_mem_tracker_ = PeakGpuMemoryTrackerFactory::Create(
-        input::PeakGpuMemoryTracker::Usage::PAGE_LOAD);
+        viz::PeakGpuMemoryTracker::Usage::PAGE_LOAD);
   }
 
   if (frame_tree_node_->IsInFencedFrameTree()) {
@@ -9437,7 +9437,7 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   return true;
 }
 
-std::unique_ptr<input::PeakGpuMemoryTracker>
+std::unique_ptr<viz::PeakGpuMemoryTracker>
 NavigationRequest::TakePeakGpuMemoryTracker() {
   return std::move(loading_mem_tracker_);
 }

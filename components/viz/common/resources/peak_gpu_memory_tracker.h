@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_INPUT_PEAK_GPU_MEMORY_TRACKER_H_
-#define COMPONENTS_INPUT_PEAK_GPU_MEMORY_TRACKER_H_
+#ifndef COMPONENTS_VIZ_COMMON_RESOURCES_PEAK_GPU_MEMORY_TRACKER_H_
+#define COMPONENTS_VIZ_COMMON_RESOURCES_PEAK_GPU_MEMORY_TRACKER_H_
 
-#include "base/component_export.h"
+#include "components/viz/common/viz_common_export.h"
 
-namespace input {
+namespace viz {
 
 // Tracks the peak memory of the GPU service for its lifetime. Upon its
 // destruction a report will be requested from the GPU service. The peak will be
@@ -20,7 +20,7 @@ namespace input {
 // See `content::PeakGpuMemoryTrackerFactory::Create` for creation of
 // PeakGpuMemoryTracker in the browser process.
 
-class COMPONENT_EXPORT(INPUT) PeakGpuMemoryTracker {
+class VIZ_COMMON_EXPORT PeakGpuMemoryTracker {
  public:
   // The type of user interaction, for which the GPU Peak Memory Usage is being
   // observed.
@@ -37,6 +37,6 @@ class COMPONENT_EXPORT(INPUT) PeakGpuMemoryTracker {
   virtual void Cancel() = 0;
 };
 
-}  // namespace input
+}  // namespace viz
 
-#endif  // COMPONENTS_INPUT_PEAK_GPU_MEMORY_TRACKER_H_
+#endif  // COMPONENTS_VIZ_COMMON_RESOURCES_PEAK_GPU_MEMORY_TRACKER_H_

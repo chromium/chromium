@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "content/common/peak_gpu_memory_callback.h"
+#include "components/viz/common/resources/peak_gpu_memory_callback.h"
 
 #include <memory>
 
@@ -17,14 +17,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 
-namespace content {
+namespace viz {
 
 namespace {
 
 // These count values should be recalculated in case of changes to the number
 // of values in their respective enums.
 constexpr int kUsageTypeCount =
-    static_cast<int>(input::PeakGpuMemoryTracker::Usage::USAGE_MAX) + 1;
+    static_cast<int>(PeakGpuMemoryTracker::Usage::USAGE_MAX) + 1;
 constexpr int kAllocationSourceTypeCount =
     static_cast<int>(gpu::GpuPeakMemoryAllocationSource::
                          GPU_PEAK_MEMORY_ALLOCATION_SOURCE_MAX) +
@@ -39,13 +39,13 @@ constexpr int kMemoryHistogramMin = 1;
 constexpr int kMemoryHistogramMax = 64000;
 constexpr int kMemoryHistogramBucketCount = 100;
 
-constexpr const char* GetUsageName(input::PeakGpuMemoryTracker::Usage usage) {
+constexpr const char* GetUsageName(PeakGpuMemoryTracker::Usage usage) {
   switch (usage) {
-    case input::PeakGpuMemoryTracker::Usage::CHANGE_TAB:
+    case PeakGpuMemoryTracker::Usage::CHANGE_TAB:
       return "ChangeTab2";
-    case input::PeakGpuMemoryTracker::Usage::PAGE_LOAD:
+    case PeakGpuMemoryTracker::Usage::PAGE_LOAD:
       return "PageLoad";
-    case input::PeakGpuMemoryTracker::Usage::SCROLL:
+    case PeakGpuMemoryTracker::Usage::SCROLL:
       return "Scroll";
   }
 }
@@ -66,13 +66,12 @@ constexpr const char* GetAllocationSourceName(
   }
 }
 
-std::string GetPeakMemoryUsageUMAName(
-    input::PeakGpuMemoryTracker::Usage usage) {
+std::string GetPeakMemoryUsageUMAName(PeakGpuMemoryTracker::Usage usage) {
   return base::StrCat({"Memory.GPU.PeakMemoryUsage2.", GetUsageName(usage)});
 }
 
 std::string GetPeakMemoryAllocationSourceUMAName(
-    input::PeakGpuMemoryTracker::Usage usage,
+    PeakGpuMemoryTracker::Usage usage,
     gpu::GpuPeakMemoryAllocationSource source) {
   return base::StrCat({"Memory.GPU.PeakMemoryAllocationSource2.",
                        GetUsageName(usage), ".",
@@ -86,7 +85,7 @@ std::string GetPeakMemoryAllocationSourceUMAName(
 // requested |usage|. Some tests may provide an optional |testing_callback| in
 // order to sync tests with the work done here on the UI thread.
 void PeakGpuMemoryCallback(
-    input::PeakGpuMemoryTracker::Usage usage,
+    PeakGpuMemoryTracker::Usage usage,
     base::OnceClosure testing_callback,
     const uint64_t peak_memory,
     const base::flat_map<gpu::GpuPeakMemoryAllocationSource, uint64_t>&
@@ -117,4 +116,4 @@ void PeakGpuMemoryCallback(
   std::move(testing_callback).Run();
 }
 
-}  // namespace content
+}  // namespace viz
