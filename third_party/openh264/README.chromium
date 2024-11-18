@@ -5,7 +5,7 @@ Version: N/A
 Revision: DEPS
 CPEPrefix: cpe:/a:cisco:openh264:2.1.1
 (Cut at db956674bbdfbaab5acdd3fdb4117c2fef5527e9, which is 2.3.0)
-License: 2-Clause BSD
+License: BSD-2-Clause
 License File: src/LICENSE
 Security Critical: yes
 Shipped: yes

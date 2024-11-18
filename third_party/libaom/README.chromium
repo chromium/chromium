@@ -4,7 +4,7 @@ URL: https://aomedia.googlesource.com/aom/
 Version: N/A
 Revision: be60f06ab420d6a65c477213f04c8b0f2e12ba2e
 CPEPrefix: cpe:/a:aomedia:aomedia:3.10.0
-License: BSD
+License: BSD-2-Clause
 License File: source/libaom/LICENSE
 Security Critical: yes
 Shipped: yes

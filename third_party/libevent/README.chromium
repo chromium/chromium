@@ -1,7 +1,7 @@
 Name: libevent
 URL: http://libevent.org/
 Version: 1.4.15
-License: BSD
+License: BSD-3-Clause
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

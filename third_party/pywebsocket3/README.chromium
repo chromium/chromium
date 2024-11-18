@@ -3,7 +3,7 @@ Short Name: pywebsocket3
 URL: https://github.com/GoogleChromeLabs/pywebsocket3/
 Version: N/A
 Revision: DEPS
-License: New BSD
+License: BSD-3-Clause
 License File: src/LICENSE
 Security Critical: no
 Shipped: no

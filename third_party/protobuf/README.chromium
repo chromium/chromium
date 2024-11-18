@@ -1,7 +1,7 @@
 Name: Protocol Buffers
 Short Name: protobuf
 URL: https://github.com/google/protobuf
-License: BSD
+License: BSD-3-Clause
 License File: LICENSE
 Version: 21.12
 CPEPrefix: cpe:/a:google:protobuf:21.12

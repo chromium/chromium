@@ -4,7 +4,7 @@ URL: https://chromium.googlesource.com/webm/libwebm
 Version: N/A
 Revision: 26d9f667170dc75e8d759a997bb61c64dec42dda
 CPEPrefix: cpe:/a:webmproject:libwebm:1.0.0.31
-License: BSD
+License: BSD-3-Clause
 License File: source/LICENSE.TXT
 Security Critical: yes
 Shipped: yes
