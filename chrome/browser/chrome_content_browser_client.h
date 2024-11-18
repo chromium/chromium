@@ -562,7 +562,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsRendererCodeIntegrityEnabled() override;
   void SessionEnding(std::optional<DWORD> control_type) override;
   bool ShouldEnableAudioProcessHighPriority() override;
-  bool ShouldUseSkiaFontManager(const GURL& site_url) override;
+  bool ShouldUseFontDataManager(const GURL& site_url) override;
 #endif
   void ExposeInterfacesToRenderer(
       service_manager::BinderRegistry* registry,

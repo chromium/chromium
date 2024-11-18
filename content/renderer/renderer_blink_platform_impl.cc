@@ -212,7 +212,7 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 
 #if BUILDFLAG(IS_WIN)
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kUseSkiaFontManager)) {
+            switches::kUseFontDataManager)) {
       sk_sp<font_data_service::FontDataManager> font_data_manager =
           sk_make_sp<font_data_service::FontDataManager>();
 

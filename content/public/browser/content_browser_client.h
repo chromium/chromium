@@ -1784,8 +1784,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldEnableAudioProcessHighPriority();
 
   // Returns true if a site_url should launch a renderer that resolves
-  // fonts via the SkiaFontManager.
-  virtual bool ShouldUseSkiaFontManager(const GURL& site_url);
+  // fonts via the FontDataManager.
+  virtual bool ShouldUseFontDataManager(const GURL& site_url);
 #endif
 
   // Binds a new media remoter service to |receiver|, if supported by the

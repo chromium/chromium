@@ -1104,21 +1104,21 @@ const base::FeatureParam<base::TimeDelta>
         &kSiteIsolationForCrossOriginOpenerPolicy, "expiration_timeout",
         base::Days(7)};
 
-// This feature controls whether the renderer should use SkiaFontManager to
-// fetch fonts from the Browser's SkiaFontService. It is currently scoped to
+// This feature controls whether the renderer should use FontDataManager to
+// fetch fonts from the Browser's FontDataService. It is currently scoped to
 // just Windows. See crbug.com/335680565.
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kSkiaFontService,
-             "SkiaFontService",
+BASE_FEATURE(kFontDataService,
+             "FontDataService",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<SkiaFontServiceTypefaceType>::Option
-    skia_font_service_typeface[] = {
-        {SkiaFontServiceTypefaceType::kDwrite, "DWrite"},
-        {SkiaFontServiceTypefaceType::kFreetype, "FreeType"}};
-const base::FeatureParam<SkiaFontServiceTypefaceType>
-    kSkiaFontServiceTypefaceType{&kSkiaFontService, "typeface",
-                                 SkiaFontServiceTypefaceType::kDwrite,
-                                 &skia_font_service_typeface};
+const base::FeatureParam<FontDataServiceTypefaceType>::Option
+    font_data_service_typeface[] = {
+        {FontDataServiceTypefaceType::kDwrite, "DWrite"},
+        {FontDataServiceTypefaceType::kInternal, "Internal"}};
+const base::FeatureParam<FontDataServiceTypefaceType>
+    kFontDataServiceTypefaceType{&kFontDataService, "typeface",
+                                 FontDataServiceTypefaceType::kDwrite,
+                                 &font_data_service_typeface};
 
 // Whether a utility process configured to use a "UI" message pump should also
 // initialize COM.

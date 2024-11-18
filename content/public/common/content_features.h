@@ -237,13 +237,13 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam;
 #if BUILDFLAG(IS_WIN)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkiaFontService);
-enum class SkiaFontServiceTypefaceType {
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontDataService);
+enum class FontDataServiceTypefaceType {
   kDwrite,
-  kFreetype,
+  kInternal,
 };
-extern const base::FeatureParam<SkiaFontServiceTypefaceType>
-    kSkiaFontServiceTypefaceType;
+extern const base::FeatureParam<FontDataServiceTypefaceType>
+    kFontDataServiceTypefaceType;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUtilityWithUiPumpInitializesCom);
 #endif  // BUILDFLAG(IS_WIN)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisableProcessReuse);

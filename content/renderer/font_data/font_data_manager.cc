@@ -212,8 +212,8 @@ sk_sp<SkTypeface> FontDataManager::onMakeFromStreamArgs(
   // Experiment will test the performance of different SkTypefaces.
   // 'custom_fnt_mgr_' is a wrapper to create an SkFreeType typeface.
 
-  return features::kSkiaFontServiceTypefaceType.Get() ==
-                 features::SkiaFontServiceTypefaceType::kFreetype
+  return features::kFontDataServiceTypefaceType.Get() ==
+                 features::FontDataServiceTypefaceType::kInternal
              ?
 #if BUILDFLAG(ENABLE_FREETYPE)
              custom_fnt_mgr_->makeFromStream(std::move(stream), args)

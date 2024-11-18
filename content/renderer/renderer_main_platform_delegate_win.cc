@@ -54,10 +54,10 @@ void RendererMainPlatformDelegate::PlatformInitialize() {
     std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
   }
 
-  // Do not initialize DWriteFactory if the SkiaFontService feature is enabled
+  // Do not initialize DWriteFactory if the feature flag is enabled
   // since this will conflict with the experimental font manager.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseSkiaFontManager)) {
+          switches::kUseFontDataManager)) {
     InitializeDWriteFontProxy();
   }
 }

@@ -1019,7 +1019,7 @@ bool ContentBrowserClient::ShouldEnableAudioProcessHighPriority() {
   return false;
 }
 
-bool ContentBrowserClient::ShouldUseSkiaFontManager(const GURL& site_url) {
+bool ContentBrowserClient::ShouldUseFontDataManager(const GURL& site_url) {
   return false;
 }
 

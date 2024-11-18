@@ -318,14 +318,14 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
         refuse_reason.value());
   }
 
-  // Do not use spare renderer if running an experiment to run SkiaFontManager.
-  // SkiaFontManager needs to be initialized during renderer creation.
+  // Do not use spare renderer if running an experiment to run FontDataManager.
+  // FontDataManager needs to be initialized during renderer creation.
   // This is temporary and will be removed after the experiment has concluded;
   // see crbug.com/335680565.
-  bool use_skia_font_manager = false;
+  bool use_font_data_manager = false;
 #if BUILDFLAG(IS_WIN)
-  use_skia_font_manager =
-      GetContentClient()->browser()->ShouldUseSkiaFontManager(
+  use_font_data_manager =
+      GetContentClient()->browser()->ShouldUseFontDataManager(
           site_instance->GetSiteURL());
 #endif
 
@@ -392,7 +392,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       next_spare_rph->InSameStoragePartition(site_storage) &&
       !site_instance->IsGuest() && embedder_allows_spare_usage &&
       site_instance_allows_spare_usage && !hosts_pdf_content &&
-      !use_skia_font_manager) {
+      !use_font_data_manager) {
     CHECK(next_spare_rph->HostHasNotBeenUsed());
 
     // If the spare process ends up getting killed, the spare manager should

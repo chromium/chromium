@@ -768,9 +768,9 @@ const char kUseFakeUIForFedCM[] = "use-fake-ui-for-fedcm";
 const char kUseFakeUIForMediaStream[]     = "use-fake-ui-for-media-stream";
 
 #if BUILDFLAG(IS_WIN)
-// This will replace the existing font manager with SkiaFontManager in the
+// This will replace the existing font manager with FontDataManager in the
 // renderer.
-const char kUseSkiaFontManager[] = "use-skia-font-manager";
+const char kUseFontDataManager[] = "use-font-data-manager";
 #endif
 
 // Texture target for CHROMIUM_image backed video frame textures.
