@@ -1315,7 +1315,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1916770123977586577">Da biste primenili ažurirana podešavanja na ovom sajtu, učitajte stranicu ponovo</translation>
 <translation id="1918127774159128277">Osveži mogućnosti WiFi Direct-a</translation>
 <translation id="1918141783557917887">&amp;Manje</translation>
-<translation id="1918281588461452432">Dok pregledate sajtove, njihov sadržaj stranica se šifruje i čuva na uređaju</translation>
+<translation id="1918281588461452432">Dok pregledate sajtove, sadržaj njihovih stranica se šifruje i čuva na uređaju</translation>
 <translation id="1919872106782726755">Da biste podesili otisak prsta, neka dete dodirne senzor za otisak prsta u gornjem desnom uglu tastature, pored dugmeta za uključivanje. Podaci o otisku prsta deteta se bezbedno čuvaju isključivo na ovom <ph name="DEVICE_TYPE" /> uređaju.</translation>
 <translation id="192015196730532810">Možete da napravite sopstvenu grupu kartica.</translation>
 <translation id="1920314570001095522">Nema sličnih kartica za organizovanje, ali će vam se možda svideti ove grupe</translation>
@@ -9093,7 +9093,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7550885994112799211">Memorijski prostor, napajanje, jezik</translation>
 <translation id="7551059576287086432">Niste uspeli da preuzmete <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Zakači na policu</translation>
-<translation id="755198739067769724">Dobro došli, <ph name="CHILD_NAME" /></translation>
+<translation id="755198739067769724">Dobro došao/la, <ph name="CHILD_NAME" /></translation>
 <translation id="7552846755917812628">Isprobajte sledeće savete:</translation>
 <translation id="7553012839257224005">Proverava se Linux kontejner</translation>
 <translation id="7553242001898162573">Unesite lozinku</translation>

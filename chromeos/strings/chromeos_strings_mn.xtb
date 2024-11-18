@@ -1348,7 +1348,7 @@
 <translation id="7544853251252956727">Тохиолдлоор тоглуулах</translation>
 <translation id="7550715992156305117">Оношилгооны хэвшил</translation>
 <translation id="7551123448725492271">Төхөөрөмж нь аудио төхөөрөмж байна.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" />-н администратор <ph name="DEVICE_TYPE" />-г хэзээ ашиглаж болохыг тохируулсан.<ph name="END_PARAGRAPH1" />
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" />-н администратор энэ <ph name="DEVICE_TYPE" />-г хэзээ ашиглаж болохыг тохируулсан.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Та энэ төхөөрөмжийг <ph name="DAY" />-ны <ph name="TIME" />-д дахин ашиглах боломжтой болно.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Дэлгэцийн агшныг урьдчилан үзэх</translation>
 <translation id="7561454561030345039">Энэ үйлдлийг таны администратор удирддаг</translation>
