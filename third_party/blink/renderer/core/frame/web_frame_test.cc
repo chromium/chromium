@@ -7331,6 +7331,7 @@ class TestAccessInitialDocumentLocalFrameHost
   }
   void DraggableRegionsChanged(
       Vector<mojom::blink::DraggableRegionPtr> regions) override {}
+  void OnFirstContentfulPaint() override {}
 
   // !!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!
   // If the actual counts in the tests below increase, this could be an

@@ -7455,6 +7455,15 @@ void RenderFrameHostImpl::DidInferColorScheme(
   }
 }
 
+void RenderFrameHostImpl::OnFirstContentfulPaint() {
+  GetPage().set_did_first_contentful_paint_in_main_document();
+  if (IsInPrimaryMainFrame()) {
+    // Notify the delegates of the FCP. Note that the notifications for
+    // prerendering pages will be deferred until activation.
+    delegate_->OnFirstContentfulPaintInPrimaryMainFrame();
+  }
+}
+
 void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {
   if (!is_main_frame()) {
     mojo::ReportBadMessage("Renderer sent updated encoding for a subframe.");

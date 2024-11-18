@@ -972,6 +972,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // Called when WebContents received a request to vibrate the page.
   virtual void VibrationRequested() {}
 
+  // Called when a first contentful paint happened in the primary main frame.
+  virtual void OnFirstContentfulPaintInPrimaryMainFrame() {}
+
   WebContents* web_contents() const;
 
  protected:
