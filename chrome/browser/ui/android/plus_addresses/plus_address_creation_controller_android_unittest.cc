@@ -294,6 +294,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
        AcceptAfterErrorWithNotice) {
   base::test::ScopedFeatureList features_{
       features::kPlusAddressUserOnboardingEnabled};
+  base::UserActionTester user_action_tester;
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
@@ -319,7 +320,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
   plus_address_service().set_should_fail_to_confirm(false);
   FastForwardBy(kDuration);
   controller->OnConfirmed();
-
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.CreateErrorTryAgainClicked"),
+            1);
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(

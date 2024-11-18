@@ -238,6 +238,11 @@ void PlusAddressCreationControllerAndroid::OnRefreshClicked() {
 
 void PlusAddressCreationControllerAndroid::OnConfirmed() {
   CHECK(plus_profile_.has_value());
+  if (modal_error_status_ ==
+      metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.CreateErrorTryAgainClicked"));
+  }
   modal_error_status_.reset();
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalConfirmed,
                             ShouldShowNotice());
