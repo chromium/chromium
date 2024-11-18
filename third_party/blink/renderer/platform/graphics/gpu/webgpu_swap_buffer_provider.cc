@@ -190,13 +190,17 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
                          kTopLeft_GrSurfaceOrigin,
                          alpha_mode};
 
-  // If there is no pool or if the pool configuration does not match with the
-  // currently needed configuration, then create/re-create the pool with current
-  // configuration. This will reset/clear the existing pool if any.
-  if (!swap_buffer_pool_ || swap_buffer_pool_->GetImageInfo() != info) {
+  // Note that if the pool already exists but have different ImageInfo than what
+  // is required, we reconfigure the same pool with new ImageInfo instead of
+  // deleting old pool and creating a new one. This is required to take
+  // advantage of the temporal information the pool might have from its previous
+  // use.
+  if (!swap_buffer_pool_) {
     swap_buffer_pool_ = gpu::SharedImagePool<SwapBuffer>::Create(
         info, context_provider->ContextProvider()->SharedImageInterface(),
         /*max_pool_size=*/4);
+  } else if (swap_buffer_pool_->GetImageInfo() != info) {
+    swap_buffer_pool_->Reconfigure(info);
   }
 
   // Get a swap buffer from pool.
