@@ -104,3 +104,6 @@
 
 # crbug.com/378735617
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testNonResolveGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testResolveGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchSystemTest.testAppMenuSuppressedWhenMaximized
+
