@@ -1247,7 +1247,8 @@ bool DeskBarViewBase::ShouldShowLibraryUi() {
       auto* desk_model = Shell::Get()->saved_desk_delegate()->GetDeskModel();
       CHECK(desk_model);
       size_t saved_desk_count = desk_model->GetDeskTemplateEntryCount() +
-                                desk_model->GetSaveAndRecallDeskEntryCount();
+                                desk_model->GetSaveAndRecallDeskEntryCount() +
+                                desk_model->GetCoralEntryCount();
       library_ui_visibility_ = saved_desk_count ? LibraryUiVisibility::kVisible
                                                 : LibraryUiVisibility::kHidden;
     }

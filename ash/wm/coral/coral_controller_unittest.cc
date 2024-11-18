@@ -25,6 +25,8 @@
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
@@ -300,6 +302,29 @@ TEST_F(CoralSavedGroupTest, MaxCoralSavedGroupLimit) {
   LeftClickOn(save_as_group_item);
   EXPECT_TRUE(Shell::Get()->toast_manager()->IsToastShown(
       "coral_max_saved_groups_toast"));
+}
+
+// Tests that the saved desk library has the expected amount of grid items.
+TEST_F(CoralSavedGroupTest, CheckGridItems) {
+  AddCoralEntry("saved_group_1");
+  AddCoralEntry("saved_group_2");
+
+  // Enter overview, ensure the library button is visible and click it.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  RunScheduledLayoutForAllOverviewDeskBars();
+  auto* button = GetLibraryButton();
+  ASSERT_TRUE(button);
+  ASSERT_TRUE(button->GetVisible());
+  LeftClickOn(button);
+
+  // Test that the library view has the coral grid with two coral entries.
+  OverviewGrid* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  SavedDeskLibraryView* library_view = overview_grid->GetSavedDeskLibraryView();
+  const SavedDeskGridView* coral_grid_view =
+      SavedDeskLibraryViewTestApi(library_view).coral_grid_view();
+  EXPECT_EQ(coral_grid_view->grid_items().size(), 2u);
 }
 
 }  // namespace ash
