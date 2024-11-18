@@ -58,6 +58,7 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
@@ -500,8 +501,10 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         Rect containerViewRect = new Rect();
         containerView.getGlobalVisibleRect(containerViewRect);
         int searchBoxHeight =
-                HubUtils.getSearchBoxHeight(
-                        containerView, R.id.hub_toolbar, R.id.toolbar_action_container);
+                OmniboxFeatures.sAndroidHubSearch.isEnabled()
+                        ? HubUtils.getSearchBoxHeight(
+                                containerView, R.id.hub_toolbar, R.id.toolbar_action_container)
+                        : 0;
 
         View paneHost = mHubController.getPaneHostView();
         assert paneHost.isLaidOut();

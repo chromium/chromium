@@ -349,10 +349,12 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
 
                     int leftOffset = 0;
                     int searchBoxHeight =
-                            HubUtils.getSearchBoxHeight(
-                                    hubContainerView,
-                                    R.id.hub_toolbar,
-                                    R.id.toolbar_action_container);
+                            OmniboxFeatures.sAndroidHubSearch.isEnabled()
+                                    ? HubUtils.getSearchBoxHeight(
+                                            hubContainerView,
+                                            R.id.hub_toolbar,
+                                            R.id.toolbar_action_container)
+                                    : 0;
                     // Account for the hub's search box container height.
                     recyclerViewRect.offset(0, -searchBoxHeight);
                     recyclerViewRect.bottom += searchBoxHeight;

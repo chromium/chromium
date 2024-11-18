@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.view.View;
+
 import androidx.annotation.IdRes;
 
 /** Feature related utilities for Hub. */
@@ -19,9 +21,13 @@ public class HubUtils {
             HubContainerView containerView,
             @IdRes int hubToolbar,
             @IdRes int toolbarActionContainer) {
-        int hubToolbarBottom = containerView.findViewById(hubToolbar).getBottom();
-        int searchBoxContainerBottom =
-                containerView.findViewById(toolbarActionContainer).getBottom();
+        View hubToolbarView = containerView.findViewById(hubToolbar);
+        View searchBoxContainerView = containerView.findViewById(toolbarActionContainer);
+        if (hubToolbarView == null || searchBoxContainerView == null) return 0;
+        if (!hubToolbarView.isLaidOut() || !searchBoxContainerView.isLaidOut()) return 0;
+
+        int hubToolbarBottom = hubToolbarView.getBottom();
+        int searchBoxContainerBottom = searchBoxContainerView.getBottom();
         return hubToolbarBottom - searchBoxContainerBottom;
     }
 }
