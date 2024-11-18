@@ -52,9 +52,11 @@ LoginDetectionKeyedServiceFactory::LoginDetectionKeyedServiceFactory()
 LoginDetectionKeyedServiceFactory::~LoginDetectionKeyedServiceFactory() =
     default;
 
-KeyedService* LoginDetectionKeyedServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LoginDetectionKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new LoginDetectionKeyedService(Profile::FromBrowserContext(context));
+  return std::make_unique<LoginDetectionKeyedService>(
+      Profile::FromBrowserContext(context));
 }
 
 bool LoginDetectionKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()
