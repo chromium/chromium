@@ -258,7 +258,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 new ActivityKeyboardVisibilityDelegate(new WeakReference(this)),
                 getIntentRequestTracker(),
                 getInsetObserver(),
-                /* trackOcclusion= */ false) {
+                /* trackOcclusion= */ true) {
             @Override
             public ModalDialogManager getModalDialogManager() {
                 return SearchActivity.this.getModalDialogManager();

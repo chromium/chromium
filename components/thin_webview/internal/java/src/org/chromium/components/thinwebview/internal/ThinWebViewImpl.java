@@ -55,7 +55,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
                             /* listenToActivityState= */ true,
                             intentRequestTracker,
                             /* insetObserver= */ null,
-                            /* trackOcclusion= */ false);
+                            /* trackOcclusion= */ true);
         } else {
             mWindowAndroid = new WindowAndroid(context, /* trackOcclusion= */ false);
         }
