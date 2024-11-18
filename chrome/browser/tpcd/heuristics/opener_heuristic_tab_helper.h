@@ -40,17 +40,23 @@ class OpenerHeuristicTabHelper
     ~PopupObserver() override;
 
     // Set the time that the user previously interacted with this pop-up's site.
-    void SetPastInteractionTime(TimestampRange interaction_times,
-                                TimestampRange web_authn_assertion_times);
+    void SetPastInteractionTimeAndType(
+        TimestampRange interaction_times,
+        TimestampRange web_authn_assertion_times);
+
+    // this enum should match CookieHeuristicInteractionType in
+    // tools/metrics/ukm/ukm.xml
+    enum class InteractionType {
+      Authentication = 0,
+      UserActivation = 1,
+      NoInteraction = 2,
+    };
 
    private:
     // Emit the OpenerHeuristic.PopupPastInteraction UKM event if we have all
     // the necessary information, and create a storage access grant if
     // supported.
     void EmitPastInteractionIfReady();
-
-    // Type of interaction in third party sites
-    enum class InteractionType { UserActivation, Authentication };
 
     // Does three things:
 
@@ -101,6 +107,7 @@ class OpenerHeuristicTabHelper
     struct NoInteraction {};
     absl::variant<FieldNotSet, NoInteraction, base::TimeDelta>
         time_since_interaction_;
+    InteractionType past_interaction_type;
     // A source ID for `initial_url_`.
     std::optional<ukm::SourceId> initial_source_id_;
     std::optional<base::Time> commit_time_;
