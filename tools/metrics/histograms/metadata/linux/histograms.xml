@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>fangzhoug@chromium.org</owner>
   <owner>adunaev@igalia.com</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The Linux Wayland base shell protocol used actually. Logged in each session
     when the browser creates the first shell surface.
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>fangzhoug@chromium.org</owner>
   <owner>adunaev@igalia.com</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The Linux Wayland shell protocol(s) available. Logged in each session when
     the compositor announces a Wayland protocol extension that provides the

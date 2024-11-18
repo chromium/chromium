@@ -2308,7 +2308,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="AnimatedImage.NumOfFramesSkipped" units="count"
     expires_after="2023-04-24">
   <owner>khushalsagar@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     If the frame rate for the image animation can not be reached, frames in the
     animation are skipped to catch up to the desired frame. This metric tracks
@@ -5429,7 +5429,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Hardware.TotalDiskSpace" units="GB" expires_after="2025-04-13">
   <owner>zmo@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records a rough estimation of the system total disk space collected in the
     info collection GPU process, once per UMA ping.

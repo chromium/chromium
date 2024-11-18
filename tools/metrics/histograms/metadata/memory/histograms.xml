@@ -1058,7 +1058,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.GPU.PeakMemoryAllocationSource2.{Usage}.{Source}"
     units="MB" expires_after="2025-05-11">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The maximum amount of memory of the GPU process allocated by {Source} during
     the following user interaction: {Usage}.
@@ -1078,7 +1078,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.GPU.PeakMemoryUsage2.{Usage}" units="MB"
     expires_after="2025-05-11">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The maximum amount of memory of the GPU process during the following user
     interaction: {Usage}.
@@ -2197,7 +2197,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.Total.SystemCommitLimit" units="GB"
     expires_after="2023-05-07">
   <owner>zmo@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records the system commit limit (number of total pages) x page size,
     collected in the info collection GPU process, once per UMA ping. This is
@@ -2532,7 +2532,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="MemoryAndroid.EvictedTreeSize2" units="units"
     expires_after="2025-08-26">
   <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
     The total count of viz::SurfaceIds being evicted for the current FrameTree.
     Along with any surfaces that were embedded before a navigation occurred.

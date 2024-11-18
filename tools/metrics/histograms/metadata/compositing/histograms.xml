@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-07-01">
   <owner>petermcneeley@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The time since a BufferQueue's buffers were destroyed until they were
     recreated. If this time is commonly very small, that is a problem. Recorded
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.ColorGamut" enum="ColorGamut"
     expires_after="2024-04-16">
   <owner>vasilyt@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Every time a frame is presented, record the generalized color gamut of that
     frame. Note: this metric was expired from 2022-02-06 to 2023-11-17.
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.DirectRenderer.DrawnRectAssignmentType"
     enum="RenderPassDrawRectAssign" expires_after="2025-05-04">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records update type to the drawn rect for every draw to each non root
     renderpass.
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-03-16">
   <owner>vasilyt@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The area of the display damage that was added to current frame damage after
     all adjustments, including FrameBufferDamage from buffer queue and render
@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
     units="%" expires_after="2024-03-16">
   <owner>vasilyt@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The area of the display that was damaged since previous draw to this frame
     buffer.
@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>vasilyt@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The area of the display that was damaged in current frame.
 
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-30">
   <owner>vasilyt@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The total area of the display that will be redrawn this frame.
 
@@ -260,7 +260,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.DirectRenderer.RenderPassDrawnRectMatch"
     enum="Boolean" expires_after="2025-06-09">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Whether a render pass drawn rect matches the expected output rect. Record
     for each non-root render pass every time it is drawn.
@@ -271,7 +271,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanSkipped" expires_after="2025-05-11">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Whether all non-root render passes in a frame are skipped. Logged once per
     frame during DrawFrame for the frames with non-root render passes.
@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanSkipped" expires_after="2025-05-11">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Logged for every non-root render pass in DrawRenderPass during DrawFrame.
     True if there is no damages to the render pass and the rendering is skipped.
@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.DirectRenderer.{FocusType}" units="pixels"
     expires_after="2025-06-09">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Record every frame the sum of all rendered pixels from all render passes.
     The buckets are {FocusType}
@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Display.Draw.AverageOverdraw2" units="units"
     expires_after="2025-03-30">
   <owner>zoraiznaeem@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The average overdraw of the aggregated compositor frame. It is logged once
     per frame. Overdraw is expected to range is [1.0, 12.0]. An overdraw of 2.0
@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>vmiura@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     This is logged once per frame, when the frame is drawn. The total number of
     quads in all render passes in the CompositorFrame that is produced by
@@ -440,7 +440,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Display.DrawToSwapUs" units="microseconds"
     expires_after="2025-05-11">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     This is logged once per frame, if the output surface provides timing
     information. It measures the time from the display compositor starting a
@@ -454,7 +454,7 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2024-12-31">
   <owner>petermcneeley@chromium.org</owner>
   <owner>msisov@igalia.com</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     If kHandleOverlaysSwapFailure is enabled, this is logged once per frame that
     has a fullscreen overlay. Helps to measure how many times fullscreen
@@ -465,7 +465,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Display.FlattenedRenderPassCount" units="units"
     expires_after="2025-05-11">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     This is logged once per frame. It is the number of renderer passes after
     flattening all possible render passes. If the value is more than one, then
@@ -490,7 +490,7 @@ chromium-metrics-reviews@google.com.
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesAttemptingRequiredOverlays"
     enum="Boolean" expires_after="2025-04-13">
   <owner>zoraiznaeem@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records once per frame, whether we will attempt to promote any required
     overlay or not in that frame.
@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesScalingRequiredOverlays"
     enum="Boolean" expires_after="2025-05-11">
   <owner>zoraiznaeem@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records zero or once per frame, whether we attempted scaling any required
     overlay.
@@ -512,7 +512,7 @@ chromium-metrics-reviews@google.com.
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesWith{Catcher}"
     enum="Boolean" expires_after="2025-04-13">
   <owner>zoraiznaeem@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records zero or once per frame, wether a frame has a {Catcher}.
   </summary>
@@ -559,7 +559,7 @@ chromium-metrics-reviews@google.com.
     name="Compositing.Display.OverlayProcessorUsingStrategy.ShouldPromoteCandidatesWithMasks"
     enum="PromotingMaskCandidates" expires_after="2025-04-27">
   <owner>zoraiznaeem@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Logged for each mask candidate whether it was promoted or why it was not
     promoted.
@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
     name="Compositing.Display.OverlayProcessorUsingStrategy.WorkingScaleFactorForRequiredOverlays"
     units="scale_factor" expires_after="2025-05-11">
   <owner>zoraiznaeem@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records the scale factor that is used to downscale successfully promoted
     required candidates. It is only logged once per frame if a required overlay
@@ -592,7 +592,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs"
     units="microseconds" expires_after="2024-10-20">
   <owner>vasilyt@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     This is logged once per frame, if the output surface provides timing
     information. It measures delta between the time when display compositor draw
@@ -606,7 +606,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Display.VizScheduledDrawToDependencyResolvedUs"
     units="microseconds" expires_after="2025-04-27">
   <owner>vasilyt@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     This is logged once per frame if the output surface provides timing
     information. It measures delta between the time when display compositor
@@ -621,7 +621,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Display.VizScheduledDrawToGpuStartedDrawUs"
     units="microseconds" expires_after="2025-04-27">
   <owner>vasilyt@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     This is logged once per frame if the output surface provides timing
     information. It measures delta between the time when display compositor
@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.FrameRateDecider.ToggleFrameRateCase"
     enum="ToggleFrameRateCase" expires_after="2025-04-13">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The count of cases to decide whether we should toggle framerate or not in
     FrameRateDecider. This is logged at 1/1000 probability of frames with
@@ -691,7 +691,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Renderer.CALayerResult" enum="CALayerResult"
     expires_after="2025-05-11">
   <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The outcome of attempting to replace all renderer tiles with CALayers.
     Either success, or the first reason why a DrawQuad couldn't be replaced by a
@@ -764,7 +764,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.UsingRawDraw"
     enum="Boolean" expires_after="2023-06-11">
   <owner>penghuang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>Records if the TileDrawQuad is rendered with RawDraw.</summary>
 </histogram>
 
@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanSkipped" expires_after="2025-05-11">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Logged for every RenderPassDrawQuad in the overlay list during
     ScheduleOverlays. An Overlay RenderPassDrawQuad is skipped if there is no
@@ -784,7 +784,7 @@ chromium-metrics-reviews@google.com.
     units="pixels" expires_after="2024-11-03">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Pixel size for a skipped overlay render pass draw quad. Recorded in
     SkiaRenderer ScheduleOverlays.
@@ -794,7 +794,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.SurfaceAggregator.AggregateUs"
     units="microseconds" expires_after="2025-06-01">
   <owner>kylechar@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Time spent aggregating compositor frames from different surfaces in
     microseconds. This is logged once per frame.
@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.SurfaceAggregator.ExcessPixelsClipped"
     units="pixels" expires_after="2025-03-30">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Record the number of excess pixels for the output rect that would not be
     visible due to the parent root clip. This is logged once per frame.
@@ -844,7 +844,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.SurfaceAggregator.Has{Type}PerFrame"
     enum="Boolean" expires_after="2025-03-09">
   <owner>magchen@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Record whether a frame has a specific type of render pass. This is logged
     once per frame.
@@ -884,7 +884,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.SurfaceAggregator.RenderPassDamageType"
     enum="RenderPassDamage" expires_after="2025-05-04">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Record the damage type for an aggregate render pass based on clipping by the
     root. This is logged once per frame.
@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.SurfaceManager.MarkForDestructionToDestroy"
     units="ms" expires_after="2025-03-30">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The time between when a Surface has been Marked for Destruction, to when it
     is actually Destroyed.
@@ -932,7 +932,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.TileManager.TileInvalidationArea" units="%"
     expires_after="2025-06-09">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     When resource is assigned to tile for rasterization, records the percentage
     area of invalidation of said resource. This will only be recorded for
@@ -943,7 +943,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.VizBreakdownToPresentationUnexpected"
     enum="VizBreakdown" expires_after="2025-03-30">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Recorded when an unexpected viz stage ends after the presentation time.
   </summary>
@@ -953,7 +953,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>vmiura@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The total number of quads in all render passes in a CompositorFrame. This is
     logged as the CompositorFrame is submitted to its surface. Histogram was
@@ -969,7 +969,7 @@ chromium-metrics-reviews@google.com.
     name="CompositorLatency.CompositorOnlyFrame{InteractionType}.{StageType}"
     units="microseconds" expires_after="2025-03-30">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the duration of various stages in the pipeline as a single frame goes
     through the various stages in the compositor in the cases that there is no
@@ -1026,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="CompositorLatency.IpcThread.{LatencyType}"
     units="microseconds" expires_after="2025-04-20">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Reports the overhead of IPC's and thread hops during the production of a
     single frame. Measures {LatencyType}
@@ -1059,7 +1059,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="CompositorLatency.Type{Sequence}" enum="FrameReportType"
     expires_after="2025-04-13">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Whether frame is dropped or presented meeting or missing the deadline or is
     a compositor only frame.
@@ -1085,7 +1085,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="CompositorLatency{ReportType}{InteractionType}.{StageType}"
     units="microseconds" expires_after="2025-03-30">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the duration of various stages in the pipeline as a single frame goes
     through the various stages in the compositor {ReportType}.
@@ -1167,7 +1167,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2025-05-04">
   <owner>jonross@chromium.org</owner>
   <owner>yzshen@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Measures the time duration between Exo receiving a BeginFrame and submitting
     a frame for it. Reported for clients with high-resolution clocks.
@@ -1181,7 +1181,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2025-05-04">
   <owner>jonross@chromium.org</owner>
   <owner>yzshen@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Measures the time duration between Exo receiving a frame and submitting it.
     Reported for clients with high-resolution clocks.
@@ -1193,7 +1193,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
     units="%" expires_after="2025-04-13">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The percent dropped frame is calculated for each sliding window of 1 second
     length and added to a histogram, and then the 95 percentile of that
@@ -1215,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Graphics.Smoothness.CheckerboardingNeedRaster4.AllSequences"
     units="%" expires_after="2025-03-30">
   <owner>wangxianzhu@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of checkerboarded frames that contain any not fully
     rastered visible tiles, for a sequence by aggregating all its animations and
@@ -1239,7 +1239,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Graphics.Smoothness.CheckerboardingNeedRecord4.AllSequences"
     units="%" expires_after="2025-03-30">
   <owner>wangxianzhu@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of checkerboarded frames that contain any not fully
     recorded visible tiles, for a sequence by aggregating all its animations and
@@ -1263,7 +1263,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Graphics.Smoothness.Checkerboarding{Version}.AllSequences"
     units="%" expires_after="2025-03-30">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of checkerboarded frames for a sequence by aggregating
     all its animations and interactions, where a sequence is a series of frames
@@ -1287,7 +1287,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Graphics.Smoothness.Checkerboarding{Version}.{Sequence}"
     units="%" expires_after="2025-03-23">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of checkerboarded frames for a sequence by aggregating
     all {Sequence}, where a sequence is a series of frames produced which
@@ -1311,7 +1311,7 @@ chromium-metrics-reviews@google.com.
     name="Graphics.Smoothness.Checkerboarding{Version}.{Thread}{Sequence}"
     units="%" expires_after="2025-03-30">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of checkerboarded frames for a sequence by aggregating
     all {Sequence}, where a sequence is a series of frames produced which
@@ -1336,7 +1336,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of janks for a sequence by aggregating all its animations
     and interactions, where a sequence is a series of frames produced which
@@ -1359,7 +1359,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of janks for a sequence by aggregating all {Sequence},
     where a sequence is a series of frames produced which contain at least one
@@ -1381,7 +1381,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-13">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of janks for a sequence by aggregating all {Sequence},
     where a sequence is a series of frames produced which contain at least one
@@ -1403,7 +1403,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow"
     units="%" expires_after="2025-05-11">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for in a 1 second sliding window.
 
@@ -1419,7 +1419,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Tracks the percent of dropped frames for a sequence by aggregating all its
@@ -1451,7 +1451,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.{Sequence}"
     units="%" expires_after="2025-03-23">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a sequence by aggregating all
     {Sequence}, where a sequence is a series of frames produced which contain at
@@ -1503,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.{Thread}{Sequence}"
     units="%" expires_after="2025-03-23">
   <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a sequence by aggregating all
     {Sequence}, where a sequence is a series of frames produced which contain at
@@ -1530,7 +1530,7 @@ chromium-metrics-reviews@google.com.
     units="%" expires_after="2025-10-16">
   <owner>jonross@chromium.org</owner>
   <owner>gaiko@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a sequence by aggregating all its
     animations and interactions, where a sequence is a series of frames produced
@@ -1565,7 +1565,7 @@ chromium-metrics-reviews@google.com.
     units="%" expires_after="2025-10-16">
   <owner>jonross@chromium.org</owner>
   <owner>gaiko@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a sequence by aggregating all
     {Sequence}, where a sequence is a series of frames produced which contain at
@@ -1594,7 +1594,7 @@ chromium-metrics-reviews@google.com.
     units="%" expires_after="2025-01-19">
   <owner>jonross@chromium.org</owner>
   <owner>gaiko@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a sequence by aggregating all
     {Sequence}, where a sequence is a series of frames produced which contain at
