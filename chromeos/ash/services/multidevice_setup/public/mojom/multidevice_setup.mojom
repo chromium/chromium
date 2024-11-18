@@ -8,14 +8,19 @@ import "chromeos/ash/components/multidevice/mojom/multidevice_types.mojom";
 import "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom";
 
 // Enumeration of possible opt-in entry points for Phone Hub Camera Roll
-// feature. This enum is tied directly to a UMA enum defined in
-// tools/metrics/histograms/enums.xml. These values are persisted to logs.
+// feature. This enum is tied directly to the `CameraRollOptInEntryPoint`
+// enum in //chromeos/ash/components/phonehub/util/histogram_util.h and the
+// `PhoneHubCameraRollOptInEntryPoint` enum defined in
+// //tools/metrics/histograms/enums.xml. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.
+//
+// LINT.IfChange(PhoneHubCameraRollOptInEntryPoint)
 enum CameraRollOptInEntryPoint {
   kSetupFlow = 0,
   kOnboardingDialog = 1,
   kSettings = 2,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubCameraRollOptInEntryPoint)
 
 // Enumeration of event types which can be dispatched. Only used for debugging
 // purposes.
@@ -25,9 +30,13 @@ enum EventTypeForDebugging {
   kExistingUserNewChromebookAdded,
 };
 
-// This enum is tied directly to a UMA enum defined in
-// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-// change one without changing the other).
+// This enum is tied directly to the `MultiDevice_Setup_HostStatus` UMA enum
+// defined in //tools/metrics/histograms/metadata/cross_device/enums.xml and
+// the `MultiDeviceSettingsMode` enum in
+// //chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts
+// (do not change one without changing the others).
+//
+// LINT.IfChange(MultiDeviceSetupHostStatus)
 enum HostStatus {
   // The user's account has no devices which can serve as a host for
   // multi-device features.
@@ -55,12 +64,16 @@ enum HostStatus {
   // available for use.
   kHostVerified = 4
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:MultiDeviceSetupHostStatus)
 
 // Individual multi-device features types. Enums should remain in sync with
-// those in c/b/r/s/chromeos/multidevice_page/multidevice_constants.js,
-// and all features should be reflected in the FeatureStateMaps generated in
-// chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.cc
-// and chrome/browser/ui/webui/settings/ash/multidevice_handler.cc
+// the `MultiDeviceFeature` enum in
+// //chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.js
+// and all features should be reflected in the `FeatureStateMaps` generated in
+// //chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.cc
+// and //chrome/browser/ui/webui/settings/ash/multidevice_handler.cc
+//
+// LINT.IfChange(MultiDeviceFeature)
 enum Feature {
   kBetterTogetherSuite = 0,
   kInstantTethering = 1,
@@ -73,11 +86,15 @@ enum Feature {
   kEche = 8,
   kPhoneHubCameraRoll = 9,
 };
+// LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:MultiDeviceFeature)
 
-// This enum is tied directly to a UMA enum defined in
-// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-// change one without changing the other). Enums should remain in sync with
-// those in c/b/r/s/chromeos/multidevice_page/multidevice_constants.js
+// This enum is tied directly to the `MultiDevice_FeatureState` UMA enum
+// defined in //tools/metrics/histograms/enums.xml, and should always reflect it
+// (do not change one without changing the other). Enums should also remain in
+// sync with the `MultideviceFeatureState` enum in
+// //chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.js
+//
+// LINT.IfChange(MultiDeviceFeatureState)
 enum FeatureState {
   // Feature was prohibited by a device policy (e.g., EDU or Enterprise).
   kProhibitedByPolicy = 0,
@@ -131,6 +148,7 @@ enum FeatureState {
   // a host, use RetrySetHostNow().
   kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified = 12,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MultiDeviceFeatureState)
 
 // Metadata describing a device that can used as the host for multidevice
 // features.

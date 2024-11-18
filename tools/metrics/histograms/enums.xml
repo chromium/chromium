@@ -26976,6 +26976,8 @@ Called by update_use_counter_css.py.-->
   <int value="11" label="11"/>
 </enum>
 
+<!-- LINT.IfChange(MultiDeviceFeatureState) -->
+
 <enum name="MultiDevice_FeatureState">
   <int value="0" label="Prohibited by policy"/>
   <int value="1" label="Disabled by user"/>
@@ -26996,6 +26998,8 @@ Called by update_use_counter_css.py.-->
       label="Unable, eligible host exists but no host set or set host is
              unverified"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:MultiDeviceFeatureState) -->
 
 <enum name="MultiDisplayModeDisplayCountRanges">
   <summary>

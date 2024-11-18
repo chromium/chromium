@@ -475,6 +475,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Success page"/>
 </enum>
 
+<!-- LINT.IfChange(MultiDeviceSetupHostStatus) -->
+
 <enum name="MultiDevice_Setup_HostStatus">
   <int value="0" label="No eligible hosts"/>
   <int value="1" label="Eligible host exists but no host set"/>
@@ -482,6 +484,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Host set but not yet verified"/>
   <int value="4" label="Host verified"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/multidevice_page/multidevice_constants.ts:MultiDeviceSetupHostStatus) -->
 
 <enum name="MultiDevice_VerifyAndForgetHostConfirmationState">
   <int value="0" label="Button clicked"/>
