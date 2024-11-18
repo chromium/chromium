@@ -10,7 +10,6 @@
 
 namespace content {
 class WebContents;
-struct OpenURLParams;
 }  // namespace content
 
 namespace views {
@@ -20,10 +19,6 @@ class Widget;
 class Browser;
 
 namespace lens {
-
-// Opens the Lens side panel with the given Lens URL params.
-void OpenLensSidePanel(Browser* browser,
-                       const content::OpenURLParams& url_params);
 
 // Opens the Lens region search feature in a new tab with a WebUI page.
 void OpenLensStaticPage(Browser* browser);

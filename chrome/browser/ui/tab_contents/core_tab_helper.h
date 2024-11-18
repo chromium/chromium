@@ -131,7 +131,6 @@ class CoreTabHelper : public content::WebContentsObserver,
           chrome_render_frame,
       const GURL& src_url,
       const std::string& additional_query_params,
-      bool use_side_panel,
       bool is_image_translate,
       int thumbnail_min_area,
       int thumbnail_max_width,
@@ -140,7 +139,6 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   void DoSearchByImage(const GURL& src_url,
                        const std::string& additional_query_params,
-                       bool use_side_panel,
                        bool is_image_translate,
                        const std::vector<unsigned char>& thumbnail_data,
                        const std::string& content_type,
@@ -158,12 +156,8 @@ class CoreTabHelper : public content::WebContentsObserver,
       std::string& content_type,
       lens::mojom::ImageFormat& image_format);
 
-  // Posts the bytes and content type to the specified URL If |use_side_panel|
-  // is true, the content will open in a side panel, otherwise it will open in
-  // a new tab.
-  void PostContentToURL(TemplateURLRef::PostContent post_content,
-                        GURL url,
-                        bool use_side_panel);
+  // Posts the bytes and content type to the specified URL in a new tab.
+  void PostContentToURL(TemplateURLRef::PostContent post_content, GURL url);
 
   // Creates a thumbnail to POST to search engine for the image that triggered
   // the context menu.  The |src_url| is passed to the search request and is
@@ -176,13 +170,11 @@ class CoreTabHelper : public content::WebContentsObserver,
                          int thumbnail_max_width,
                          int thumbnail_max_height,
                          const std::string& additional_query_params,
-                         bool use_side_panel,
                          bool is_image_translate);
 
   // Searches the `original_image`, which will be downscaled if needed.
   void SearchByImageImpl(const gfx::Image& original_image,
-                         const std::string& additional_query_params,
-                         bool use_side_panel);
+                         const std::string& additional_query_params);
 
   // Sets search args used for image translation if the current page is
   // currently being translated.

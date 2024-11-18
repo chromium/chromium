@@ -36,14 +36,7 @@ GURL CreateURLForNewTab(const GURL& original_url) {
   // Append or replace query parameters related to entry point.
   return AppendOrReplaceQueryParametersForLensRequest(
       original_url, EntryPoint::CHROME_OPEN_NEW_TAB_SIDE_PANEL,
-      RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN,
-      /*is_side_panel_request=*/false);
-}
-
-void OpenLensSidePanel(Browser* browser,
-                       const content::OpenURLParams& url_params) {
-  LensSidePanelCoordinator::GetOrCreateForBrowser(browser)
-      ->RegisterEntryAndShow(url_params);
+      RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN);
 }
 
 views::Widget* OpenLensRegionSearchInstructions(

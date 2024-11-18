@@ -79,8 +79,7 @@ std::string GetEntryPointQueryString(lens::EntryPoint entry_point) {
 
 std::map<std::string, std::string> GetLensQueryParametersMap(
     lens::EntryPoint ep,
-    lens::RenderingEnvironment re,
-    bool is_side_panel_request) {
+    lens::RenderingEnvironment re) {
   std::map<std::string, std::string> query_parameters;
 
   // Insert EntryPoint query parameter.
@@ -116,15 +115,10 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
 }
 
 lens::RenderingEnvironment GetRenderingEnvironment(
-    bool is_lens_side_panel_request,
     bool is_full_screen_request) {
   if (is_full_screen_request) {
     return lens::RenderingEnvironment::
         ONELENS_AMBIENT_VISUAL_SEARCH_WEB_FULLSCREEN;
-  }
-
-  if (is_lens_side_panel_request) {
-    return lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL;
   }
 
   return lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN;
@@ -142,25 +136,21 @@ void AppendLogsQueryParam(
   }
 }
 
-GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
-                                                  lens::EntryPoint ep,
-                                                  lens::RenderingEnvironment re,
-                                                  bool is_side_panel_request) {
+GURL AppendOrReplaceQueryParametersForLensRequest(
+    const GURL& url,
+    lens::EntryPoint ep,
+    lens::RenderingEnvironment re) {
   GURL modified_url(url);
-  for (auto const& param :
-       GetLensQueryParametersMap(ep, re, is_side_panel_request)) {
+  for (auto const& param : GetLensQueryParametersMap(ep, re)) {
     modified_url = net::AppendOrReplaceQueryParameter(modified_url, param.first,
                                                       param.second);
   }
 
-  // Remove the viewport width and height params if the request is not a side
-  // panel request.
-  if (!is_side_panel_request) {
-    modified_url = net::AppendOrReplaceQueryParameter(
-        modified_url, kViewportWidthQueryParameter, std::nullopt);
-    modified_url = net::AppendOrReplaceQueryParameter(
-        modified_url, kViewportHeightQueryParameter, std::nullopt);
-  }
+  modified_url = net::AppendOrReplaceQueryParameter(
+      modified_url, kViewportWidthQueryParameter, std::nullopt);
+  modified_url = net::AppendOrReplaceQueryParameter(
+      modified_url, kViewportHeightQueryParameter, std::nullopt);
+
   return modified_url;
 }
 
@@ -200,14 +190,10 @@ GURL AppendOrReplaceViewportSizeForRequest(const GURL& url,
 }
 
 std::string GetQueryParametersForLensRequest(lens::EntryPoint ep,
-                                             bool is_lens_side_panel_request,
                                              bool is_full_screen_request) {
-  auto re = GetRenderingEnvironment(is_lens_side_panel_request,
-                                    is_full_screen_request);
+  auto re = GetRenderingEnvironment(is_full_screen_request);
   std::string query_string;
-  const bool is_side_panel_request = is_lens_side_panel_request;
-  for (auto const& param :
-       GetLensQueryParametersMap(ep, re, is_side_panel_request)) {
+  for (auto const& param : GetLensQueryParametersMap(ep, re)) {
     AppendQueryParam(&query_string, param.first.c_str(), param.second.c_str());
   }
   return query_string;
