@@ -32,11 +32,9 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
 
     @Inject
     TrustedWebActivityOpenTimeRecorder(
-            BaseCustomTabActivity activity,
-            CurrentPageVerifier currentPageVerifier,
-            ActivityTabProvider provider) {
+            BaseCustomTabActivity activity, CurrentPageVerifier currentPageVerifier) {
         mCurrentPageVerifier = currentPageVerifier;
-        mTabProvider = provider;
+        mTabProvider = activity.getActivityTabProvider();
         activity.getLifecycleDispatcher().register(this);
         currentPageVerifier.addVerificationObserver(this::onVerificationStateChanged);
     }

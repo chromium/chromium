@@ -123,12 +123,10 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     public CustomTabActivityTabController(
             BaseCustomTabActivity activity,
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
-            ActivityTabProvider activityTabProvider,
             Lazy<CompositorViewHolder> compositorViewHolder,
             CustomTabTabPersistencePolicy persistencePolicy,
             CustomTabActivityTabFactory tabFactory,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
-            ActivityWindowAndroid windowAndroid,
             TabModelInitializer tabModelInitializer) {
         mProfileProviderSupplier = activity.getProfileProviderSupplier();
         mCustomTabDelegateFactory = customTabDelegateFactory;
@@ -140,10 +138,10 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         mTabFactory = tabFactory;
         mCustomTabObserver = activity.getCustomTabObserver();
         mTabNavigationEventObserver = activity.getCustomTabNavigationEventObserver();
-        mActivityTabProvider = activityTabProvider;
+        mActivityTabProvider = activity.getActivityTabProvider();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
-        mWindowAndroid = windowAndroid;
+        mWindowAndroid = activity.getWindowAndroid();
         mTabModelInitializer = tabModelInitializer;
         mCipherFactory = activity.getCipherFactory();
 

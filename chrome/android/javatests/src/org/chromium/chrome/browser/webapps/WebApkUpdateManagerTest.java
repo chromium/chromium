@@ -34,7 +34,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.DisplayMode;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -174,12 +172,11 @@ public class WebApkUpdateManagerTest {
         private boolean mAcceptDialogIfAppears;
 
         public TestWebApkUpdateManager(
-                AsyncInitializationActivity activity,
+                ChromeActivity activity,
                 CallbackHelper waiter,
                 CallbackHelper complete,
-                ActivityTabProvider tabProvider,
                 boolean acceptDialogIfAppears) {
-            super(activity, tabProvider);
+            super(activity);
             mWaiter = waiter;
             mCompleteCallback = complete;
             mLastUpdateReasons = new ArrayList<>();
@@ -334,11 +331,7 @@ public class WebApkUpdateManagerTest {
                 () -> {
                     TestWebApkUpdateManager updateManager =
                             new TestWebApkUpdateManager(
-                                    mActivity,
-                                    waiter,
-                                    completeCallback,
-                                    mActivity.getActivityTabProvider(),
-                                    acceptDialogIfAppears);
+                                    mActivity, waiter, completeCallback, acceptDialogIfAppears);
                     WebappDataStorage storage =
                             WebappRegistry.getInstance().getWebappDataStorage(WEBAPK_ID);
                     BrowserServicesIntentDataProvider intentDataProvider =

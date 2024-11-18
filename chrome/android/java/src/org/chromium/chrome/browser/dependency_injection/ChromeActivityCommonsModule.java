@@ -20,10 +20,9 @@ import dagger.Provides;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -32,8 +31,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
-import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import javax.inject.Named;
@@ -41,9 +38,7 @@ import javax.inject.Named;
 /** Module for common dependencies in {@link ChromeActivity}. */
 @Module
 public class ChromeActivityCommonsModule {
-    private final AsyncInitializationActivity mActivity;
-    private final ActivityTabProvider mActivityTabProvider;
-    private final ActivityWindowAndroid mActivityWindowAndroid;
+    private final ChromeActivity mActivity;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabCreator> mTabCreatorSupplier;
@@ -60,9 +55,7 @@ public class ChromeActivityCommonsModule {
     private final @ActivityType int mActivityType;
 
     public ChromeActivityCommonsModule(
-            AsyncInitializationActivity activity,
-            ActivityTabProvider activityTabProvider,
-            ActivityWindowAndroid activityWindowAndroid,
+            ChromeActivity activity,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabCreatorManager tabCreatorManager,
             Supplier<TabCreator> tabCreatorSupplier,
@@ -78,8 +71,6 @@ public class ChromeActivityCommonsModule {
             TabModelInitializer tabModelInitializer,
             @ActivityType int activityType) {
         mActivity = activity;
-        mActivityTabProvider = activityTabProvider;
-        mActivityWindowAndroid = activityWindowAndroid;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabCreatorManager = tabCreatorManager;
         mTabCreatorSupplier = tabCreatorSupplier;
@@ -108,7 +99,7 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    public AsyncInitializationActivity provideAsyncInitializationActivity() {
+    public ChromeActivity provideChromeActivity() {
         return mActivity;
     }
 
@@ -120,21 +111,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public Resources provideResources() {
         return mActivity.getResources();
-    }
-
-    @Provides
-    public ActivityTabProvider provideActivityTabProvider() {
-        return mActivityTabProvider;
-    }
-
-    @Provides
-    public WindowAndroid provideWindowAndroid() {
-        return mActivityWindowAndroid;
-    }
-
-    @Provides
-    public ActivityWindowAndroid provideActivityWindowAndroid() {
-        return mActivityWindowAndroid;
     }
 
     @Provides

@@ -569,8 +569,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ChromeActivityCommonsModule commonsModule =
                 new ChromeActivityCommonsModule(
                         this,
-                        mActivityTabProvider,
-                        getWindowAndroid(),
                         mCompositorViewHolderSupplier,
                         /* tabCreatorManager= */ this,
                         this::getCurrentTabCreator,

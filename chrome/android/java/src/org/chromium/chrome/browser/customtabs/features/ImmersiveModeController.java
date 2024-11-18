@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.display_cutout.ActivityDisplayCutoutModeSupplier;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
-import org.chromium.ui.base.WindowAndroid;
 
 import javax.inject.Inject;
 
@@ -57,23 +56,22 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     @Inject
-    public ImmersiveModeController(BaseCustomTabActivity activity, WindowAndroid window) {
+    public ImmersiveModeController(BaseCustomTabActivity activity) {
         mActivity = activity;
         activity.getLifecycleDispatcher().register(this);
 
-        mCutoutSupplier.attach(window.getUnownedUserDataHost());
+        mCutoutSupplier.attach(activity.getWindowAndroid().getUnownedUserDataHost());
     }
 
     /**
      * Sets activity's decor view into an immersive mode and ensures it stays that way.
      *
-     * @param layoutInDisplayCutoutMode Integer defining how to deal with cutouts, see
-     * {@link android.view.WindowManager.LayoutParams#layoutInDisplayCutoutMode} and
-     * https://developer.android.com/guide/topics/display-cutout
-     *
-     * @param sticky Whether {@link View#SYSTEM_UI_FLAG_IMMERSIVE} or
-     * {@link View#SYSTEM_UI_FLAG_IMMERSIVE_STICKY} should be used.
-     * See https://developer.android.com/training/system-ui/immersive#sticky-immersive
+     * @param layoutInDisplayCutoutMode Integer defining how to deal with cutouts, see {@link
+     *     android.view.WindowManager.LayoutParams#layoutInDisplayCutoutMode} and
+     *     https://developer.android.com/guide/topics/display-cutout
+     * @param sticky Whether {@link View#SYSTEM_UI_FLAG_IMMERSIVE} or {@link
+     *     View#SYSTEM_UI_FLAG_IMMERSIVE_STICKY} should be used. See
+     *     https://developer.android.com/training/system-ui/immersive#sticky-immersive
      */
     public void enterImmersiveMode(int layoutInDisplayCutoutMode, boolean sticky) {
         if (mInImmersiveMode) return;

@@ -236,21 +236,9 @@ public class WebApkUpdateManagerUnitTest {
                 BaseCustomTabActivity activity,
                 boolean nameUpdatesEnabled,
                 boolean iconUpdatesEnabled) {
-            this(activity, buildMockTabProvider());
+            super(activity);
             mNameUpdatesEnabled = nameUpdatesEnabled;
             mIconUpdatesEnabled = iconUpdatesEnabled;
-        }
-
-        private static ActivityTabProvider buildMockTabProvider() {
-            Tab mockTab = Mockito.mock(Tab.class);
-            ActivityTabProvider tabProvider = Mockito.mock(ActivityTabProvider.class);
-            Mockito.when(tabProvider.get()).thenReturn(mockTab);
-            return tabProvider;
-        }
-
-        private TestWebApkUpdateManager(
-                BaseCustomTabActivity activity, ActivityTabProvider tabProvider) {
-            super(activity, tabProvider);
         }
 
         /** Returns whether the is-update-needed check has been triggered. */
@@ -736,11 +724,20 @@ public class WebApkUpdateManagerUnitTest {
         return updateManager.updateRequested();
     }
 
+    private ActivityTabProvider buildMockTabProvider() {
+        Tab mockTab = Mockito.mock(Tab.class);
+        ActivityTabProvider tabProvider = Mockito.mock(ActivityTabProvider.class);
+        Mockito.when(tabProvider.get()).thenReturn(mockTab);
+        return tabProvider;
+    }
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
+        ActivityTabProvider provider = buildMockTabProvider();
         when(mActivityMock.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
+        when(mActivityMock.getActivityTabProvider()).thenReturn(provider);
 
         PathUtils.setPrivateDataDirectorySuffix("chrome");
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());

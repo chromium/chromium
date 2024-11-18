@@ -25,10 +25,8 @@ public class CustomTabOrientationController {
     private int mLockScreenOrientation;
 
     @Inject
-    public CustomTabOrientationController(
-            ActivityWindowAndroid activityWindowAndroid, BaseCustomTabActivity activity) {
-        mActivityWindowAndroid = activityWindowAndroid;
-
+    public CustomTabOrientationController(BaseCustomTabActivity activity) {
+        mActivityWindowAndroid = activity.getWindowAndroid();
         mLockScreenOrientation = activity.getIntentDataProvider().getDefaultOrientation();
     }
 

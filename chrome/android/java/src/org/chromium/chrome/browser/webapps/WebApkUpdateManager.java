@@ -31,6 +31,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.MergedWebappInfo;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -132,10 +132,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     }
 
     @Inject
-    public WebApkUpdateManager(
-            AsyncInitializationActivity activity, ActivityTabProvider tabProvider) {
+    public WebApkUpdateManager(ChromeActivity activity) {
         mContext = activity;
-        mTabProvider = tabProvider;
+        mTabProvider = activity.getActivityTabProvider();
         activity.getLifecycleDispatcher().register(this);
     }
 

@@ -50,7 +50,7 @@ import javax.inject.Inject;
 public class CustomTabActivityTabFactory {
     private final Activity mActivity;
     private final CustomTabTabPersistencePolicy mPersistencePolicy;
-    private final Lazy<ActivityWindowAndroid> mActivityWindowAndroid;
+    private final ActivityWindowAndroid mActivityWindowAndroid;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Lazy<CustomTabDelegateFactory> mCustomTabDelegateFactory;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -66,13 +66,12 @@ public class CustomTabActivityTabFactory {
     public CustomTabActivityTabFactory(
             BaseCustomTabActivity activity,
             CustomTabTabPersistencePolicy persistencePolicy,
-            Lazy<ActivityWindowAndroid> activityWindowAndroid,
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
             TabCreatorManager tabCreatorManager,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
         mPersistencePolicy = persistencePolicy;
-        mActivityWindowAndroid = activityWindowAndroid;
+        mActivityWindowAndroid = activity.getWindowAndroid();
         mProfileProviderSupplier = activity.getProfileProviderSupplier();
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mIntentDataProvider = activity.getIntentDataProvider();
@@ -137,7 +136,7 @@ public class CustomTabActivityTabFactory {
     private ChromeTabCreator createTabCreator(boolean incognito) {
         return new ChromeTabCreator(
                 mActivity,
-                mActivityWindowAndroid.get(),
+                mActivityWindowAndroid,
                 mCustomTabDelegateFactory::get,
                 mProfileProviderSupplier,
                 incognito,
@@ -156,7 +155,7 @@ public class CustomTabActivityTabFactory {
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
         return TabBuilder.createLiveTab(profile, /* initiallyHidden= */ false)
                 .setId(IntentHandler.getTabId(intent))
-                .setWindow(mActivityWindowAndroid.get())
+                .setWindow(mActivityWindowAndroid)
                 .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)
                 .setWebContents(webContents)
                 .setDelegateFactory(delegateFactory)
