@@ -697,11 +697,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.custom_tabs_default_corner_radius);
         int radiusPx =
-                IntentUtils.safeGetIntExtra(intent, EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY, 0);
-        if (radiusPx > 0) return radiusPx;
+                IntentUtils.safeGetIntExtra(
+                        intent, EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY, -1);
+        if (radiusPx >= 0) return radiusPx;
 
-        int radiusDp = IntentUtils.safeGetIntExtra(intent, EXTRA_TOOLBAR_CORNER_RADIUS_DP, 0);
-        if (radiusDp > 0) {
+        int radiusDp = IntentUtils.safeGetIntExtra(intent, EXTRA_TOOLBAR_CORNER_RADIUS_DP, -1);
+        if (radiusDp >= 0) {
             return Math.round(radiusDp * context.getResources().getDisplayMetrics().density);
         }
 

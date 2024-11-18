@@ -15,6 +15,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_P
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -779,6 +780,35 @@ public class CustomTabIntentDataProviderTest {
         assertTrue(
                 "The fixed height resize behavior should return true",
                 dataProvider.isPartialCustomTabFixedHeight());
+    }
+
+    @Test
+    public void partialCustomTabHeight_cornerRadius_defaultValue() {
+        Intent intent = new Intent();
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        int defaultRadius =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.custom_tabs_default_corner_radius);
+        assertEquals(
+                "Intent without the extra should have the default value.",
+                defaultRadius,
+                dataProvider.getPartialTabToolbarCornerRadius());
+    }
+
+    @Test
+    public void partialCustomTabHeight_cornerRadius_intentExtra() {
+        Intent intent = new Intent().putExtra(EXTRA_TOOLBAR_CORNER_RADIUS_DP, 0);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(
+                "The value from the extra should be returned.",
+                0,
+                dataProvider.getPartialTabToolbarCornerRadius());
     }
 
     @Test
