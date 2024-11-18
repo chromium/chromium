@@ -39,7 +39,7 @@ source_set("content_suggestions") {
     "//components/sync/base:features",
     "//components/url_formatter",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model:model",

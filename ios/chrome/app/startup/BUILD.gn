@@ -132,6 +132,7 @@ group("chrome_app_startup_parameters_fuzzers_deps") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//ios/chrome/app:app_internal",
     "//ios/chrome/app:tests_fake_hook",
     "//ios/chrome/browser/providers:chromium_providers",
     "//ios/chrome/browser/tabs/model:tabs_internal",
