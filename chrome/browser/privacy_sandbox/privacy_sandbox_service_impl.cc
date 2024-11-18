@@ -425,12 +425,24 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
         prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
   }
 
+  PromptSuppressedReason prompt_suppressed_reason =
+      static_cast<PromptSuppressedReason>(
+          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed));
+
   // kRestricted prompt suppression reason must be cleared at startup when
   // restricted notice feature is enabled.
   if (privacy_sandbox::IsRestrictedNoticeRequired() &&
-      static_cast<PromptSuppressedReason>(
-          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed)) ==
-          PromptSuppressedReason::kRestricted) {
+      prompt_suppressed_reason == PromptSuppressedReason::kRestricted) {
+    pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
+  }
+
+  // Special usecase for Third Party Coookies: Make sure the 3PC suppression
+  // value is overridden in case 3PC Blocking is not a valid reason to block the
+  // Prompt.
+  if (prompt_suppressed_reason ==
+          PromptSuppressedReason::kThirdPartyCookiesBlocked &&
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
     pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
   }
 
@@ -1397,8 +1409,11 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
   }
 
   // If third party cookies are blocked, set the suppression reason as such, and
-  // do not show a prompt.
-  if (third_party_cookies_blocked) {
+  // do not show a prompt. Unless the prompt is allowed when 3P Cookies are
+  // blocked.
+  if (third_party_cookies_blocked &&
+      !base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
     pref_service->SetInteger(
         prefs::kPrivacySandboxM1PromptSuppressed,
         static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));

@@ -2591,6 +2591,39 @@ TEST_F(PrivacySandboxServiceM1DelayCreation,
             static_cast<int>(PromptSuppressedReason::kRestricted));
 }
 
+TEST_F(
+    PrivacySandboxServiceM1DelayCreation,
+    ThirdPartyCookieBlockedSuppressReasonClearedWhenAllowPromptFeatureEnabled) {
+  feature_list()->InitAndEnableFeature(
+      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies);
+
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
+
+  CreateService();
+
+  EXPECT_EQ(prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
+            static_cast<int>(PromptSuppressedReason::kNone));
+}
+
+TEST_F(
+    PrivacySandboxServiceM1DelayCreation,
+    ThirdPartyCookieBlockedSuppressReasonClearedWhenAllowPromptFeatureDisabled) {
+  feature_list()->InitAndDisableFeature(
+      privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies);
+
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
+
+  CreateService();
+
+  EXPECT_EQ(
+      prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
+      static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
+}
+
 class PrivacySandboxServiceM1DelayCreationRestricted
     : public PrivacySandboxServiceM1DelayCreation {
  public:
@@ -2659,11 +2692,13 @@ TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
 class PrivacySandboxServiceM1PromptTest : public PrivacySandboxServiceTest {
  public:
   void InitializeFeaturesBeforeStart() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxSettings4,
-        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
-          "false"}});
+    feature_list()->InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxSettings4,
+          {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+            "true"},
+           {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+            "false"}}}},
+        {privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies});
   }
 };
 
