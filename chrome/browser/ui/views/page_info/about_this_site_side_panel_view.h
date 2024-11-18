@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
+#include "chrome/browser/page_info/site_side_panel_throttle.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -28,7 +28,7 @@ class AboutThisSiteSidePanelView final
     : public views::FlexLayoutView,
       public content::WebContentsObserver,
       public content::WebContentsDelegate,
-      public AboutThisSiteWebContentsUserData::Delegate {
+      public SiteSidePanelWebContentsUserData::Delegate {
  public:
   explicit AboutThisSiteSidePanelView(
       content::WebContents* parent_web_contents);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_SIDE_PANEL_THROTTLE_H_
-#define CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_SIDE_PANEL_THROTTLE_H_
+#ifndef CHROME_BROWSER_PAGE_INFO_SITE_SIDE_PANEL_THROTTLE_H_
+#define CHROME_BROWSER_PAGE_INFO_SITE_SIDE_PANEL_THROTTLE_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -16,14 +16,14 @@ class NavigationHandle;
 class NavigationThrottle;
 }  // namespace content
 
-extern const char kAboutThisSiteWebContentsUserDataKey[];
+extern const char kSiteSidePanelWebContentsUserDataKey[];
 
 // Holds a handler to open a URL in a new tab in the browser that the sidepanel
 // of this webcontents is associated with. The NavigationThrottle from
-// |MaybeCreateAboutThisSiteThrottleFor| will check if this UserData is present
+// |MaybeCreateSiteSidePanelThrottleFor| will check if this UserData is present
 // and if it is present, intercepts navigations if |IsNavigationAllowed|
 // and opens them using |OpenUrlInBrowser| instead.
-class AboutThisSiteWebContentsUserData : public base::SupportsUserData::Data {
+class SiteSidePanelWebContentsUserData : public base::SupportsUserData::Data {
  public:
   class Delegate {
    public:
@@ -32,8 +32,8 @@ class AboutThisSiteWebContentsUserData : public base::SupportsUserData::Data {
                                      const GURL& old_url) = 0;
   };
 
-  explicit AboutThisSiteWebContentsUserData(base::WeakPtr<Delegate> delegate);
-  ~AboutThisSiteWebContentsUserData() override;
+  explicit SiteSidePanelWebContentsUserData(base::WeakPtr<Delegate> delegate);
+  ~SiteSidePanelWebContentsUserData() override;
 
   Delegate* delegate() { return delegate_.get(); }
 
@@ -41,9 +41,9 @@ class AboutThisSiteWebContentsUserData : public base::SupportsUserData::Data {
   base::WeakPtr<Delegate> delegate_;
 };
 
-// Installs a NavigationThrottle if an AboutThisSiteWebContentsUserData is
+// Installs a NavigationThrottle if an SiteSidePanelWebContentsUserData is
 // associated with the WebContents of this navigation.
 std::unique_ptr<content::NavigationThrottle>
-MaybeCreateAboutThisSiteThrottleFor(content::NavigationHandle* handle);
+MaybeCreateSiteSidePanelThrottleFor(content::NavigationHandle* handle);
 
-#endif  // CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_SIDE_PANEL_THROTTLE_H_
+#endif  // CHROME_BROWSER_PAGE_INFO_SITE_SIDE_PANEL_THROTTLE_H_

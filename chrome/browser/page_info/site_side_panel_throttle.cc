@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
+#include "chrome/browser/page_info/site_side_panel_throttle.h"
 
 #include "components/navigation_interception/intercept_navigation_throttle.h"
-#include "components/page_info/core/about_this_site_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -14,29 +13,29 @@
 #include "net/base/url_util.h"
 #include "ui/base/window_open_disposition.h"
 
-const char kAboutThisSiteWebContentsUserDataKey[] =
-    "about_this_site_web_contents_user_data";
+const char kSiteSidePanelWebContentsUserDataKey[] =
+    "site_side_panel_web_contents_user_data";
 
-AboutThisSiteWebContentsUserData::AboutThisSiteWebContentsUserData(
+SiteSidePanelWebContentsUserData::SiteSidePanelWebContentsUserData(
     base::WeakPtr<Delegate> delegate)
     : delegate_(delegate) {}
 
-AboutThisSiteWebContentsUserData::~AboutThisSiteWebContentsUserData() = default;
+SiteSidePanelWebContentsUserData::~SiteSidePanelWebContentsUserData() = default;
 
 std::unique_ptr<content::NavigationThrottle>
-MaybeCreateAboutThisSiteThrottleFor(content::NavigationHandle* handle) {
-  // Only install throttle for WebContents that are in the SidePanel.
+MaybeCreateSiteSidePanelThrottleFor(content::NavigationHandle* handle) {
+  // Only install throttle for WebContents that are in the SiteSidePanel.
   if (!handle || !handle->IsInPrimaryMainFrame() || !handle->GetWebContents() ||
       !handle->GetWebContents()->GetUserData(
-          kAboutThisSiteWebContentsUserDataKey)) {
+          kSiteSidePanelWebContentsUserDataKey)) {
     return nullptr;
   }
   return std::make_unique<navigation_interception::InterceptNavigationThrottle>(
       handle, base::BindRepeating([](content::NavigationHandle* handle) {
         DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-        auto* data = static_cast<AboutThisSiteWebContentsUserData*>(
+        auto* data = static_cast<SiteSidePanelWebContentsUserData*>(
             handle->GetWebContents()->GetUserData(
-                kAboutThisSiteWebContentsUserDataKey));
+                kSiteSidePanelWebContentsUserDataKey));
         // The delegate is stored in a WeakPtr. Check if it is still there.
         if (!data->delegate())
           return true;

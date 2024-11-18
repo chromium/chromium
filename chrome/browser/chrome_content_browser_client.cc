@@ -579,7 +579,7 @@
 #include "chrome/browser/media_effects/media_effects_manager_binder.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
-#include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
+#include "chrome/browser/page_info/site_side_panel_throttle.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
@@ -5690,7 +5690,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   MaybeAddThrottle(MaybeCreateNavigationAblationThrottle(handle), &throttles);
 
 #if !BUILDFLAG(IS_ANDROID)
-  MaybeAddThrottle(MaybeCreateAboutThisSiteThrottleFor(handle), &throttles);
+  MaybeAddThrottle(MaybeCreateSiteSidePanelThrottleFor(handle), &throttles);
 #endif
 
   auto* privacy_sandbox_settings =
