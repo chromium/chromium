@@ -218,7 +218,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
+        category = "debug|mac|x64",
         short_name = "bld",
     ),
 )
@@ -258,7 +258,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
+        category = "release|mac|x64",
         short_name = "bld",
     ),
 )
@@ -298,7 +298,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
+        category = "debug|mac|arm64",
         short_name = "bld",
     ),
 )
@@ -338,7 +338,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
+        category = "release|mac|arm64",
         short_name = "bld",
     ),
 )
@@ -379,7 +379,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
+        category = "debug|mac|x64",
         short_name = "bld-asan",
     ),
 )
@@ -661,7 +661,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "updater_gtests_mac",
+            "updater_user_gtests_mac",
         ],
         mixins = [
             "mac_15_arm64",

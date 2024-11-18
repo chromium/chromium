@@ -5831,6 +5831,18 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "updater_user_gtests_mac",
+    targets = [
+        "updater_tests",
+    ],
+    per_test_modifications = {
+        "updater_tests": [
+            "updater-default-pool",
+        ],
+    },
+)
+
+targets.bundle(
     name = "updater_gtests_win",
     targets = [
         "updater_tests",
