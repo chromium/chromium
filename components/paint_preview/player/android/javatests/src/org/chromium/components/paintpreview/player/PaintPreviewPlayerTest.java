@@ -169,6 +169,7 @@ public class PaintPreviewPlayerTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/379611296")
     public void singleFrameDisplayTest_Wide() throws Exception {
         makeLayoutWide();
         displayTest(false);
