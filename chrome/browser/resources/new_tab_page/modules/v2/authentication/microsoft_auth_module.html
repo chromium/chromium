@@ -5,12 +5,16 @@
     @dismiss-button-click="${this.onDismissButtonClick_}">
 </ntp-module-header-v2>
 <div id="contents">
-  <div id="headings">
-    <h2 id="heading">$i18n{modulesMicrosoftAuthHeading}</h2>
-    <h3 id="subheading">$i18n{modulesMicrosoftAuthSubheading}</h3>
+  <img id="authImg"
+      src="modules/v2/authentication/icons/microsoft_auth_light.svg">
+  <div id="headingsAndButton">
+    <div id="headings">
+      <h2 id="heading">$i18n{modulesMicrosoftAuthHeading}</h2>
+      <h3 id="subheading">$i18n{modulesMicrosoftAuthSubheading}</h3>
+    </div>
+    <cr-button role="link" class="action-button" id="signInButton"
+        @click="${this.onSignInClick_}">
+      $i18n{modulesMicrosoftAuthSignIn}
+    </cr-button>
   </div>
-  <cr-button role="link" class="action-button" id="signInButton"
-      @click="${this.onSignInClick_}">
-    $i18n{modulesMicrosoftAuthSignIn}
-  </cr-button>
 </div>
