@@ -82,11 +82,6 @@ void RecordUmaPreSubmitBufferingDelay(bool is_media_stream,
     base::UmaHistogramTimes(
         "Media.VideoFrameSubmitter.Video.PreSubmitBuffering", delay);
   }
-
-  // TODO(crbug.com/364352012): This will be removed once expired, kept for now
-  // due to internal dependencies.
-  base::UmaHistogramTimes("Media.VideoFrameSubmitter.PreSubmitBuffering",
-                          delay);
 }
 
 }  // namespace

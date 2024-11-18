@@ -6636,31 +6636,6 @@ chromium-metrics-reviews@google.com.
   <token key="Impl" variants="VideoEncoderImpl"/>
 </histogram>
 
-<histogram name="Media.VideoFrameSubmitter" units="ms"
-    expires_after="2025-05-11">
-  <owner>mcasas@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
-  <summary>
-    To be deprecated on 2024-12-15. Please use the corresponding Video/Rtc
-    histogram instead. Delay between a VideoFrame being decoded and it being
-    consumed by the OS presentation API (on ChromeOS, this includes the display
-    controller too).
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoFrameSubmitter.PreSubmitBuffering" units="ms"
-    expires_after="2025-05-11">
-  <owner>mcasas@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
-  <summary>
-    To be deprecated on 2024-12-15. Please use the corresponding Video or Rtc
-    histogram instead. Delay between a VideoFrame being decoded and it being
-    handed over to the CompositorFrameSink, essentially capturing the buffering
-    in the Renderer. This value is strictly included in
-    Media.VideoFrameSubmitter
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoFrameSubmitter.{Source}.PresentationDelay"
     units="ms" expires_after="never">
 <!-- expires-never: used by ChromeOS and RTC test infrastructure -->
