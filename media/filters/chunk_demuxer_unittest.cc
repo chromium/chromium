@@ -3557,8 +3557,7 @@ TEST_F(ChunkDemuxerTest, EndOfStreamTruncateDuration) {
 
 TEST_F(ChunkDemuxerTest, ZeroLengthAppend) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO | HAS_VIDEO));
-  base::span<uint8_t> data;
-  ASSERT_TRUE(AppendData(data.subspan(0)));
+  ASSERT_TRUE(AppendData({}));
 }
 
 TEST_F(ChunkDemuxerTest, AppendAfterEndOfStream) {

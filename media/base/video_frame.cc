@@ -1322,8 +1322,8 @@ void VideoFrame::HashFrameForTesting(base::MD5Context* context,
     for (int row = 0; row < frame.rows(plane); ++row) {
       base::MD5Update(context,
                       frame.data_[plane].subspan(
-                          frame.stride(plane) * row,
-                          static_cast<size_t>(frame.row_bytes(plane))));
+                          base::checked_cast<size_t>(frame.stride(plane) * row),
+                          base::checked_cast<size_t>(frame.row_bytes(plane))));
     }
   }
 }
@@ -1545,11 +1545,11 @@ base::span<T> VideoFrame::GetVisibleDataInternal(base::span<T> data,
   const gfx::Size subsample = SampleSize(format(), plane);
   DCHECK(offset.x() % subsample.width() == 0);
   DCHECK(offset.y() % subsample.height() == 0);
-  int visible_plane_offset =
+  const auto visible_plane_offset = base::checked_cast<size_t>(
       // Row offset.
       plane_stride * (offset.y() / subsample.height()) +
       // Column offset.
-      BytesPerElement(format(), plane) * (offset.x() / subsample.width());
+      BytesPerElement(format(), plane) * (offset.x() / subsample.width()));
   // In the last row, bytes between visible width and the full stride are not
   // the part of the visible plane.
   size_t visible_plane_size = plane_stride * (visible_plane_rows - 1) +
@@ -1928,8 +1928,8 @@ bool VideoFrame::AllocateMemory(bool zero_initialize_memory) {
   private_data_.reset(data);
   // SAFETY: We've just allocated a region of `allocation_size` at `data`.
   auto allocated_region = UNSAFE_BUFFERS(base::span(data, allocation_size));
-  ptrdiff_t alignment_offset =
-      base::bits::AlignUp(data, layout_.buffer_addr_align()) - data;
+  const auto alignment_offset = base::checked_cast<size_t>(
+      base::bits::AlignUp(data, layout_.buffer_addr_align()) - data);
   allocated_region = allocated_region.subspan(alignment_offset, buffer_size);
 
   // Note that if layout.buffer_sizes is specified, color planes' layout is

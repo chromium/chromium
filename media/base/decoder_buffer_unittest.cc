@@ -113,7 +113,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
 TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
   const uint8_t kData[] = "XXXhello";
   const size_t kDataSize = std::size(kData);
-  const off_t kDataOffset = 3;
+  const size_t kDataOffset = 3;
 
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
@@ -163,7 +163,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion) {
 TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
   const uint8_t kData[] = "XXXhello";
   const size_t kDataSize = std::size(kData);
-  const off_t kDataOffset = 3;
+  const size_t kDataOffset = 3;
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
   ASSERT_TRUE(mapping_region.IsValid());
