@@ -716,7 +716,7 @@ template("protoc_convert") {
              "--infile",
              "{{source}}",
              "--outfile",
-             rebase_path(invoker.output_pattern),
+             rebase_path(invoker.output_pattern, root_build_dir),
            ] + invoker.args
   }
 }
