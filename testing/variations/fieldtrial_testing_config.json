@@ -19798,21 +19798,6 @@
             ]
         }
     ],
-    "RoundedDisplay": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "RoundedDisplayEnabled",
-                    "enable_features": [
-                        "RoundedDisplay"
-                    ]
-                }
-            ]
-        }
-    ],
     "RoundedWindows": [
         {
             "platforms": [
