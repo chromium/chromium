@@ -31,7 +31,8 @@ promise_test (async t => {
     const [entry, script] = await expect_long_frame_with_script(() =>
       executor.execute_script(async (duration) => {
         await new Promise(resolve => window.requestAnimationFrame(resolve));
-        window.parent.busy_wait();
+        const deadline = performance.now() + duration;
+        while (performance.now() < deadline) {}
       }, [very_long_frame_duration]), () => true, t);
 
       if (script.windowAttribution === "descendant" && script.window === iframe.contentWindow) {

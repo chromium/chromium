@@ -5,43 +5,35 @@ if ("setup" in globalThis) {
       'Long animation frames are not supported.'));
 }
 
-const very_long_frame_duration = 120;
+const very_long_frame_duration = 360;
 const no_long_frame_timeout = very_long_frame_duration * 2;
 const waiting_for_long_frame_timeout = very_long_frame_duration * 10;
 
-let busy_wait_reference_times = [];
-
 function loaf_promise(t) {
-  let ref_time = 0;
-  window.busy_wait = (ms_delay = very_long_frame_duration) => {
-    ref_time = performance.now();
-    const deadline = performance.now() + ms_delay;
-    while (performance.now() < deadline) {}
-  }
-
   return new Promise(resolve => {
       const observer = new PerformanceObserver(entries => {
-        for (const entry of entries.getEntries()) {
-          // The 2ms epsilon accounts for jittered coarsening
-          if ((entry.startTime < ref_time + 2) &&
-            ((entry.startTime + entry.duration > (ref_time - 2)))) {
+          const entry = entries.getEntries()[0];
+          // TODO: understand why we need this 5ms epsilon.
+          if (entry.duration > very_long_frame_duration - 5) {
             observer.disconnect();
             resolve(entry);
           }
-        }
       });
 
       t.add_cleanup(() => observer.disconnect());
+
       observer.observe({entryTypes: ['long-animation-frame']});
   });
 }
 
-window.busy_wait = (ms_delay = very_long_frame_duration) => {
+function busy_wait(ms_delay = very_long_frame_duration) {
   const deadline = performance.now() + ms_delay;
   while (performance.now() < deadline) {}
 }
 
 async function expect_long_frame(cb, t) {
+  await windowLoaded;
+  await new Promise(resolve => t.step_timeout(resolve, 0));
   const timeout = new Promise((resolve, reject) =>
     t.step_timeout(() => resolve("timeout"), waiting_for_long_frame_timeout));
   const receivedLongFrame = loaf_promise(t);
@@ -54,10 +46,14 @@ async function expect_long_frame(cb, t) {
 }
 
 async function expect_long_frame_with_script(cb, predicate, t) {
-  const entry = await expect_long_frame(cb, t);
-  for (const script of entry.scripts) {
-    if (predicate(script, entry))
-      return [entry, script];
+  for (let i = 0; i < 10; ++i) {
+      const entry = await expect_long_frame(cb, t);
+      if (entry === "timeout" || !entry.scripts.length)
+        continue;
+      for (const script of entry.scripts) {
+        if (predicate(script, entry))
+          return [entry, script];
+      }
   }
 
   return [];

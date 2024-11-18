@@ -35,6 +35,7 @@ function test_source_location_with_redirect({path, type, name}) {
   for (let scriptType of ["classic-opaque", "classic-cors", "module"]) {
     const cors = scriptType !== "classic-opaque";
     promise_test(async t => {
+      const VERY_LONG_FRAME_DURATION = 360;
       const preRedirectURL = crossOriginRedirectURL(path, cors);
       const postRedirectURL = targetURL(path, cors);
       let [entry, script] = await expect_long_frame_with_script(() => {
@@ -46,7 +47,7 @@ function test_source_location_with_redirect({path, type, name}) {
           script.crossOrigin = "anonymous";
         document.body.appendChild(script);
         t.add_cleanup(() => script.remove());
-      }, script => !(script.sourceLocation?.includes("testharness")), t);
+      }, script => script.duration >= VERY_LONG_FRAME_DURATION - 5, t);
 
       const result =
         script.sourceURL.startsWith(postRedirectURL) ? "post-redirect" :
