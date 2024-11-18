@@ -96,7 +96,7 @@ export class CrPolicyIndicatorElement extends CrLitElement {
             CrPolicyStrings.controlledSettingExtension!.replace(
                 '$1', this.indicatorSourceName) :
             CrPolicyStrings.controlledSettingExtensionWithoutName!;
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       case CrPolicyIndicatorType.PRIMARY_USER:
         return CrPolicyStrings.controlledSettingShared!.replace(
             '$1', this.indicatorSourceName);

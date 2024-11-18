@@ -25,7 +25,7 @@
       <include name="IDR_FILE_MANAGER_ICON_256" file="file_manager/common/images/icon256.png" type="BINDATA" />
 
       <!-- Image loader extension manifest and scripts. -->
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <include name="IDR_IMAGE_LOADER_MANIFEST" file="image_loader/manifest.json" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_OFFSCREEN_HTML" file="image_loader/offscreen.html" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_PIEX_WASM_JS" file="image_loader/piex/piex.js.wasm" type="BINDATA" />

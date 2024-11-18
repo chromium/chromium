@@ -19,7 +19,7 @@ export const COLORS_CSS_SELECTOR: string = 'link[href*=\'//theme/colors.css\']';
 
 let documentInstance: ColorChangeUpdater|null = null;
 
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 // Event fired after updated colors have been fetched and applied.
 export const COLOR_PROVIDER_CHANGED: string = 'color-provider-changed';
 // </if>
@@ -28,7 +28,7 @@ export class ColorChangeUpdater {
   private listenerId_: null|number = null;
   private root_: Document|ShadowRoot;
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   eventTarget: EventTarget = new EventTarget();
   // </if>
 
@@ -56,7 +56,7 @@ export class ColorChangeUpdater {
   // method private.
   async onColorProviderChanged() {
     await this.refreshColorsCss();
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     this.eventTarget.dispatchEvent(new CustomEvent(COLOR_PROVIDER_CHANGED));
     // </if>
   }

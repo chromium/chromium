@@ -13,7 +13,7 @@ export const isWindows = /Win/.test(navigator.platform);
 /** Whether this is the ChromeOS/ash web browser. */
 export const isChromeOS = (() => {
   let returnValue = false;
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   returnValue = true;
   // </if>
   return returnValue;
