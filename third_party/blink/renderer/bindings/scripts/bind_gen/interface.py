@@ -2237,8 +2237,7 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
             FormatNode("auto&& observable_array = {attribute_get_call};",
                        attribute_get_call=attribute_get_call),
             TextNode("observable_array->PerformAttributeSet("
-                     "${script_state}, ${v8_property_value}, "
-                     "${exception_state});"),
+                     "${script_state}, ${v8_property_value});"),
         ])
         return func_def
 
