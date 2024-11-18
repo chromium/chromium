@@ -8,6 +8,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/seed_reader_writer.h"
 
 namespace variations {
 namespace {
@@ -63,9 +64,7 @@ void VariationsSafeSeedStoreLocalState::SetTimeForStudyDateChecks(
 }
 
 StoredSeed VariationsSafeSeedStoreLocalState::GetCompressedSeed() const {
-  // TODO(crbug.com/374947675): Use |seed_reader_writer_| to read a seed.
-  return {StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
-          local_state_->GetString(prefs::kVariationsSafeCompressedSeed)};
+  return seed_reader_writer_->GetSeedData();
 }
 
 void VariationsSafeSeedStoreLocalState::SetCompressedSeed(

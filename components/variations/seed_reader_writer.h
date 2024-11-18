@@ -28,8 +28,8 @@ class EntropyProviders;
 // Trial and group names for the seed file experiment.
 const char kSeedFileTrial[] = "SeedFileTrial";
 const char kDefaultGroup[] = "Default";
-const char kControlGroup[] = "Control_V4";
-const char kSeedFilesGroup[] = "SeedFiles_V4";
+const char kControlGroup[] = "Control_V5";
+const char kSeedFilesGroup[] = "SeedFiles_V5";
 
 // Represents a seed and its storage format where clients using
 // seed-file-based seeds store compressed data and those using

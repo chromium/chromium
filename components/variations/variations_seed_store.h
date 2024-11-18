@@ -46,6 +46,9 @@ struct ValidatedSeed {
   ValidatedSeed(ValidatedSeed&& other);
   ValidatedSeed& operator=(ValidatedSeed&& other);
 
+  // Returns whether a seed matches an already stored seed.
+  bool MatchesStoredSeed(const StoredSeed& stored_seed) const;
+
   // Gzipped and base-64 encoded serialized VariationsSeed.
   std::string base64_seed_data;
   // Gzipped serialized VariationsSeed.
