@@ -5364,21 +5364,6 @@
             ]
         }
     ],
-    "ClassifyUrlOnProcessResponseEventAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClassifyUrlOnProcessResponseEvent"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClassifyUrlOnProcessResponseEventChromeOs": [
         {
             "platforms": [
