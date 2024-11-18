@@ -262,7 +262,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerHistoryEmbeddings,
       /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{"non empty results",
-                               "best matches result clicked", "result_clicked",
+                               "best matches result clicked", "result clicked",
                                "answer shown", "answer citation clicked"},
       std::vector<std::string>{"query word count"});
 
