@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -195,6 +190,8 @@ wgpu::MultisampleState AsDawnType(const GPUMultisampleState* webgpu_desc) {
   return dawn_desc;
 }
 
+// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
+// or avoid UNSAFE entirely (maybe possible using HeapArray)
 void AsDawnVertexBufferLayouts(GPUDevice* device,
                                const GPUVertexState* descriptor,
                                OwnedVertexState* dawn_desc_info) {
@@ -231,9 +228,11 @@ void AsDawnVertexBufferLayouts(GPUDevice* device,
       continue;
     }
     const GPUVertexBufferLayout* buffer = maybe_buffer.Get();
-    dawn_desc_info->attributes.get()[i] = AsDawnType(buffer->attributes());
+    UNSAFE_TODO(dawn_desc_info->attributes.get()[i]) =
+        AsDawnType(buffer->attributes());
     wgpu::VertexBufferLayout* dawn_buffer = &dawn_desc_info->buffers[i];
-    dawn_buffer->attributes = dawn_desc_info->attributes.get()[i].get();
+    dawn_buffer->attributes =
+        UNSAFE_TODO(dawn_desc_info->attributes.get()[i].get());
   }
 }
 

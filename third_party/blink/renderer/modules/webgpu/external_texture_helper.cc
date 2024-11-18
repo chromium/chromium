@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webgpu/external_texture_helper.h"
 
 #include "media/base/video_frame.h"
@@ -95,13 +90,14 @@ ColorSpaceConversionConstants GetColorSpaceConversionConstants(
   skcms_Matrix3x3 transform_matrix = skcms_Matrix3x3_concat(
       &dst_primary_matrix_from_XYZD50, &src_primary_matrix_to_XYZD50);
   // From row major matrix to col major matrix
+  // SAFETY: skcms_Matrix3x3_concat always creates 3x3 array
   color_space_conversion_constants.gamut_conversion_matrix =
-      std::array<float, 9>{
+      UNSAFE_BUFFERS(std::array<float, 9>{
           transform_matrix.vals[0][0], transform_matrix.vals[1][0],
           transform_matrix.vals[2][0], transform_matrix.vals[0][1],
           transform_matrix.vals[1][1], transform_matrix.vals[2][1],
           transform_matrix.vals[0][2], transform_matrix.vals[1][2],
-          transform_matrix.vals[2][2]};
+          transform_matrix.vals[2][2]});
 
   // Set constants for source transfer function.
   skcms_TransferFunction src_transfer_fn;
