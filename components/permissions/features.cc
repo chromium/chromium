@@ -54,7 +54,7 @@ BASE_FEATURE(kFailFastQuietChip,
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kKeyboardAndPointerLockPrompt,
              "KeyboardAndPointerLockPrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables different positioning of the permission dialog, so that it's placed
