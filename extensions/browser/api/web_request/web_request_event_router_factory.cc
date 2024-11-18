@@ -41,9 +41,10 @@ WebRequestEventRouterFactory::WebRequestEventRouterFactory()
 
 WebRequestEventRouterFactory::~WebRequestEventRouterFactory() = default;
 
-KeyedService* WebRequestEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebRequestEventRouterFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new WebRequestEventRouter(context);
+  return std::make_unique<WebRequestEventRouter>(context);
 }
 
 BrowserContext* WebRequestEventRouterFactory::GetBrowserContextToUse(
