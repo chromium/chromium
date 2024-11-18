@@ -7,6 +7,7 @@ import './info_card.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HealthdApiTelemetryResult} from '../externs.js';
+import {toFixedFloat} from '../utils/number_utils.js';
 
 import type {HealthdInternalsInfoCardElement} from './info_card.js';
 import {getTemplate} from './power_card.html.js';
@@ -38,9 +39,9 @@ export class HealthdInternalsPowerCardElement extends PolymerElement {
       return;
     }
     this.$.infoCard.updateDisplayedInfo(0, {
-      'Voltage (V)': data.battery.voltageNow,
-      'Current (A)': data.battery.currentNow,
-      'Charge (Ah)': data.battery.chargeNow,
+      'Voltage (V)': toFixedFloat(data.battery.voltageNow, 4),
+      'Current (A)': toFixedFloat(data.battery.currentNow, 4),
+      'Charge (Ah)': toFixedFloat(data.battery.chargeNow, 4),
     });
   }
 
