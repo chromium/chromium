@@ -116,8 +116,7 @@ declare_args() {
   }
 }
 
-if ((use_reclient || (use_siso && use_remoteexec && (is_apple || is_win))) &&
-    current_toolchain == default_toolchain) {
+if (use_reclient && current_toolchain == default_toolchain) {
   # Check existence of reclient configs and show user friendly error message if
   # it doesn't.
   exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),
