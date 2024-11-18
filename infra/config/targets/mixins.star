@@ -272,6 +272,52 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "15-tablet-x64-emulator",
+    generate_pyl_entry = False,
+    description = "Run with android_35_google_apis_x64_tablet",
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_35_google_apis_x64_tablet",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_35_google_apis_x64_tablet",
+                path = ".android_emulator/android_35_google_apis_x64_tablet",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
+    name = "15-tablet-landscape-x64-emulator",
+    generate_pyl_entry = False,
+    description = "Run with android_35_google_apis_x64_tablet_landscape",
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet_landscape.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_35_google_apis_x64_tablet_landscape",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_35_google_apis_x64_tablet_landscape",
+                path = ".android_emulator/android_35_google_apis_x64_tablet_landscape",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "15-x64-emulator",
     generate_pyl_entry = False,
     description = "Run with android_35_google_apis_x64",

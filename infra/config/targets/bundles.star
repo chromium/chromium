@@ -74,8 +74,9 @@ targets.bundle(
     ],
 )
 
+# For Android large form factor.
 targets.bundle(
-    name = "android_12l_emulator_gtests",
+    name = "android_lff_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
         "android_trichrome_smoke_tests",
@@ -89,8 +90,9 @@ targets.bundle(
     ],
 )
 
+# For Android large form factor in landscape mode.
 targets.bundle(
-    name = "android_12l_landscape_emulator_gtests",
+    name = "android_lff_landscape_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
     ],

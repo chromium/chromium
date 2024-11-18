@@ -573,7 +573,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "android_12l_emulator_gtests",
+            "android_lff_emulator_gtests",
         ],
         mixins = [
             "12l-fyi-x64-emulator",
