@@ -19,6 +19,10 @@ fuzzable_proto_library("connectors_proto") {
   deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
 }
 
+proto_library("dlp_policy_event_proto") {
+  sources = [ "synced/dlp_policy_event.proto" ]
+}
+
 proto_library("extension_install_events") {
   proto_in_dir = "//"
   sources = [ "synced/extension_install_events.proto" ]

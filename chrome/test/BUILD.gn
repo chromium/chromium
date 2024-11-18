@@ -5089,7 +5089,7 @@ if (!is_android) {
         "//components/device_event_log",
         "//components/device_signals/core/browser",
         "//components/drive",
-        "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+        "//components/enterprise/common/proto:dlp_policy_event_proto",
         "//components/exo:test_support",
         "//components/feedback:feedback",
         "//components/feedback/content:content",

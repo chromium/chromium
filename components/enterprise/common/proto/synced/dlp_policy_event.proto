@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+// Events sent from ChromeOS devices having DLP enabled.
+
+syntax = "proto3";
+
+// copybara:datapol_begin
+// package chrome.cros.reporting.proto;
+// copybara:datapol_end
 
 option optimize_for = LITE_RUNTIME;
 
 // The source of the data that triggered the DLP restriction.
 message DlpPolicyEventSource {
-  optional string url = 1;
+  string url = 1;
 }
 
 // In case of a DLP event with transferring the data - where it was going to be
@@ -25,8 +31,8 @@ message DlpPolicyEventDestination {
   }
 
   // Either |url| or |component| should be set.
-  optional string url = 1;
-  optional Component component = 2;
+  string url = 1;
+  Component component = 2;
 }
 
 message DlpPolicyEvent {
@@ -40,14 +46,17 @@ message DlpPolicyEvent {
     EPRIVACY = 5;
     FILES = 6;
   }
+
   // The mode of the applied restriction.
   enum Mode {
     UNDEFINED_MODE = 0;
     BLOCK = 1;
     REPORT = 2;
+
     // WARN event is reported when a user either receives a warning dialog
     // or repeats an action that was previously accepted.
     WARN = 3;
+
     // WARN_PROCEED event is only reported when a user selects to proceed with
     // an action in a warn dialog.
     WARN_PROCEED = 4;
@@ -61,18 +70,19 @@ message DlpPolicyEvent {
     KIOSK = 3;
   }
 
-  optional DlpPolicyEventSource source = 1;
-  optional DlpPolicyEventDestination destination = 2;
-  optional Restriction restriction = 3;
-  optional Mode mode = 4;
-  optional int64 timestamp_micro = 6;
-  optional UserType user_type = 7;
+  DlpPolicyEventSource source = 1;
+  DlpPolicyEventDestination destination = 2;
+  Restriction restriction = 3;
+  Mode mode = 4;
+  int64 timestamp_micro = 6;
+  UserType user_type = 7;
+
   // Currently used for the filename involved in a file event.
-  optional string content_name = 8;
+  string content_name = 8;
+
   // Server side name of the triggered rule.
-  optional string triggered_rule_name = 9;
-  // Obfuscated rule id of the triggered rule.
-  optional string triggered_rule_id = 10;
+  string triggered_rule_name = 9;
+  string triggered_rule_id = 10;
 
   reserved 5;
 }
