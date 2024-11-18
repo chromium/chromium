@@ -148,8 +148,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
     return std::nullopt;
   }
 
-  base::span<const uint8_t> ciphertext =
-      encrypted_data.subspan(X25519_PUBLIC_VALUE_LEN);
+  auto ciphertext = encrypted_data.subspan<X25519_PUBLIC_VALUE_LEN>();
   std::vector<uint8_t> plaintext(ciphertext.size());
   size_t plaintext_len;
 

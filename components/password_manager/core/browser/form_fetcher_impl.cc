@@ -58,7 +58,7 @@ base::span<Form> NonFederatedSameSchemeMatches(base::span<Form> non_federated,
                                                PasswordForm::Scheme scheme) {
   const auto same_scheme_count = static_cast<size_t>(
       std::ranges::count(non_federated, scheme, &Form::scheme));
-  return non_federated.subspan(0, same_scheme_count);
+  return non_federated.first(same_scheme_count);
 }
 }  // namespace
 

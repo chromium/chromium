@@ -63,8 +63,7 @@ std::optional<std::vector<uint8_t>> HybridEncryptionKey::Decrypt(
   if (encrypted_data.size() < kEncapsulatedKeySize) {
     return std::nullopt;
   }
-  base::span<const uint8_t> encapsulated_key =
-      encrypted_data.subspan(0, kEncapsulatedKeySize);
+  auto encapsulated_key = encrypted_data.first<kEncapsulatedKeySize>();
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_recipient(
