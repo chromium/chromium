@@ -1919,6 +1919,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Viz.ExternalBeginFrameSource.Interval" units="ms"
+    expires_after="2025-03-18">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
+  <summary>
+    Frame interval, as provided in OnBeginFrame() for external sources.
+    Subsampled, but recorded at BeginFrame() time.
+  </summary>
+</histogram>
+
 <histogram name="Viz.ExternalBeginFrameSourceMac.DisplayLink"
     enum="DisplayLinkCreateResult" expires_after="2025-04-13">
   <owner>magchen@chromium.org</owner>

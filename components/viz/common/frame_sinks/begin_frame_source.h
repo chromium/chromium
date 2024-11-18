@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
@@ -452,6 +453,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
  private:
   BeginFrameArgs pending_begin_frame_args_;
+  base::MetricsSubSampler metrics_sub_sampler_;
 };
 
 }  // namespace viz
