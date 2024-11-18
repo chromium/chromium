@@ -229,7 +229,7 @@ TEST_F(PowerEventObserverTest, DelayResuspendForLockAnimations) {
 
 // Tests that device suspend is delayed for screen lock until the screen lock
 // changes are composited for all root windows.
-TEST_F(PowerEventObserverTest, DelaySuspendForCompositing_MultiDisplay) {
+TEST_F(PowerEventObserverTest, DelaySuspendForCompositingMultiDisplay) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
@@ -716,12 +716,12 @@ TEST_F(LockOnSuspendUsageTest, LockOnSuspendUsage) {
 
 // TODO(crbug.com/40898491): Test is failing on "Linux ChromiumOS MSan Tests".
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_No_ShouldLockScreenAutomatically \
-  DISABLED_No_ShouldLockScreenAutomatically
+#define MAYBE_NoShouldLockScreenAutomatically \
+  DISABLED_NoShouldLockScreenAutomatically
 #else
-#define MAYBE_No_ShouldLockScreenAutomatically No_ShouldLockScreenAutomatically
+#define MAYBE_NoShouldLockScreenAutomatically NoShouldLockScreenAutomatically
 #endif
-TEST_F(LockOnSuspendUsageTest, MAYBE_No_ShouldLockScreenAutomatically) {
+TEST_F(LockOnSuspendUsageTest, MAYBE_NoShouldLockScreenAutomatically) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(false);
 
@@ -734,7 +734,7 @@ TEST_F(LockOnSuspendUsageTest, MAYBE_No_ShouldLockScreenAutomatically) {
   histogram_tester.ExpectTotalCount("ChromeOS.FeatureUsage.LockOnSuspend", 0);
 }
 
-TEST_F(LockOnSuspendUsageTest, No_CanLockScreen) {
+TEST_F(LockOnSuspendUsageTest, NoCanLockScreen) {
   SetCanLockScreen(false);
   SimulateNewUserFirstLogin("user@gmail.com");
   PowerEventObserverTestApi test_api(observer_);

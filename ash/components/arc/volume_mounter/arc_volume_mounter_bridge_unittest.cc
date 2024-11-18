@@ -159,7 +159,7 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
   std::unique_ptr<ArcVolumeMounterBridge> bridge_;
 };
 
-TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_RemovableMedia) {
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEventRemovableMedia) {
   constexpr char kDevicePath[] = "/dev/foo";
   constexpr char kMountPath[] = "/media/removable/UNTITLED";
   constexpr char kFsUUID[] = "0123-abcd";
@@ -204,7 +204,7 @@ TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_RemovableMedia) {
   EXPECT_FALSE(delegate()->is_watching(kMountPath));
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_IgnoreNonRemovableMedia) {
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEventIgnoreNonRemovableMedia) {
   // Only the (un)mount events for /media/removable/* are propagated.
 
   bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
@@ -220,7 +220,7 @@ TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_IgnoreNonRemovableMedia) {
   EXPECT_FALSE(delegate()->is_watching("/media/REMOVABLE/foo"));
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_MountError) {
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEventMountError) {
   // Mount event with errors are not propagated to ARC.
   bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
                          ash::MountError::kInvalidArgument,
@@ -229,7 +229,7 @@ TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_MountError) {
   EXPECT_FALSE(delegate()->is_watching("/media/removable/FOO"));
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageDisabled) {
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEventExternalStorageDisabled) {
   constexpr char kDevicePath1[] = "/dev/foo";
   constexpr char kDevicePath2[] = "/dev/bar";
   constexpr char kRemovableMountPath1[] = "/media/removable/FOO";
@@ -265,7 +265,7 @@ TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageDisabled) {
   EXPECT_FALSE(delegate()->is_watching(kRemovableMountPath1));
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageAccess) {
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEventExternalStorageAccess) {
   constexpr char kDevicePath1[] = "/dev/foo";
   constexpr char kDevicePath2[] = "/dev/bar";
   constexpr char kRemovableMountPath1[] = "/media/removable/FOO";
@@ -302,7 +302,7 @@ TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageAccess) {
   EXPECT_FALSE(delegate()->is_watching(kRemovableMountPath1));
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_VisibleToAndroidApps) {
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEventVisibleToAndroidApps) {
   constexpr char kDevicePath[] = "/dev/foo";
   constexpr char kMountPath[] = "/media/removable/UNTITLED";
   constexpr char kFsUUID[] = "0123-abcd";
@@ -370,7 +370,7 @@ TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents) {
             DiskMountManager::MountEvent::MOUNTING);
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageDisabled) {
+TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEventsExternalStorageDisabled) {
   constexpr char kDevicePath[] = "/dev/foo";
   constexpr char kRemovableMountPath[] = "/media/removable/FOO";
 
@@ -401,7 +401,7 @@ TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageDisabled) {
             DiskMountManager::MountEvent::MOUNTING);
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageAccess) {
+TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEventsExternalStorageAccess) {
   constexpr char kDevicePath[] = "/dev/foo";
   constexpr char kRemovableMountPath[] = "/media/removable/FOO";
 
@@ -433,7 +433,7 @@ TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents_ExternalStorageAccess) {
             DiskMountManager::MountEvent::MOUNTING);
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPoints_P_Container) {
+TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPointsPContainer) {
   // Use ARC++ (container) P.
   ResetArcAndroidSdkVersionForTesting(arc::kArcVersionP);
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -445,7 +445,7 @@ TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPoints_P_Container) {
   EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPoints_R_VM) {
+TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPointsRVM) {
   // Use ARCVM R.
   ResetArcAndroidSdkVersionForTesting(arc::kArcVersionR);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -487,7 +487,7 @@ TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPoints_R_VM) {
   EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
 }
 
-TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPoints_R_Container) {
+TEST_F(ArcVolumeMounterBridgeTest, RequestAllMountPointsRContainer) {
   // Use ARC++ (container) R.
   ResetArcAndroidSdkVersionForTesting(arc::kArcVersionR);
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -609,7 +609,7 @@ TEST_F(ArcVolumeMounterBridgeTest,
 
 // Tests that DropArcCaches() can be called serially multiple times and calls
 // back the correct callback.
-TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Sequential) {
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCachesSequential) {
   bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
 
   base::test::TestFuture<bool> future1, future2;
@@ -643,7 +643,7 @@ TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Sequential) {
 
 // Tests that DropArcCaches() can be called concurrently multiple times and
 // calls back the correct callback.
-TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Concurrent) {
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCachesConcurrent) {
   bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
 
   base::test::TestFuture<bool> future1, future2;
@@ -675,7 +675,7 @@ TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Concurrent) {
 }
 
 // Tests the scenario where PrepareForRemovableMediaUnmount mojo call times out.
-TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Timeout) {
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCachesTimeout) {
   bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
 
   base::test::TestFuture<bool> future;
@@ -692,7 +692,7 @@ TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Timeout) {
 }
 
 // Tests the scenario when the device is going to sleep.
-TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Suspend) {
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCachesSuspend) {
   bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
 
   base::test::TestFuture<bool> future1, future2, future3, future4, future5;
@@ -757,7 +757,7 @@ TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_Suspend) {
 
 // Tests the scenario when the device suspension is canceled before ARC calls
 // OnReadyToSuspend.
-TEST_F(ArcVolumeMounterBridgeTest, DropArcCaches_SuspendCanceled) {
+TEST_F(ArcVolumeMounterBridgeTest, DropArcCachesSuspendCanceled) {
   bridge()->SetUnmountTimeoutForTesting(base::TimeDelta::Max());
 
   base::test::TestFuture<bool> future1, future2;

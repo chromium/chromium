@@ -50,7 +50,7 @@ TEST_F(ArcClientAdapterTest, ConstructDestruct) {
   adapter_observation.Observe(adapter.get());
 }
 
-TEST_F(ArcClientAdapterTest, ConstructDestruct_WithARCVM) {
+TEST_F(ArcClientAdapterTest, ConstructDestructWithARCVM) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--enable-arcvm"});
   ASSERT_TRUE(IsArcVmEnabled());

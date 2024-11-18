@@ -204,7 +204,7 @@ class BrightnessControllerChromeosTest : public AshTestBase {
   }
 };
 
-TEST_F(BrightnessControllerChromeosTest, Prefs_OnLoginScreen_MultipleUsers) {
+TEST_F(BrightnessControllerChromeosTest, PrefsOnLoginScreenMultipleUsers) {
   // Set initial brightness.
   power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
 
@@ -464,7 +464,7 @@ TEST_F(BrightnessControllerChromeosTest,
   }
 }
 
-TEST_F(BrightnessControllerChromeosTest, HistogramTest_LoginSecondary) {
+TEST_F(BrightnessControllerChromeosTest, HistogramTestLoginSecondary) {
   // Metric count should start at 0.
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Display.TimeUntilFirstBrightnessChange.OnLoginScreen."
@@ -509,7 +509,7 @@ TEST_F(BrightnessControllerChromeosTest, HistogramTest_LoginSecondary) {
       1);
 }
 
-TEST_F(BrightnessControllerChromeosTest, HistogramTest_PowerSourceCharger) {
+TEST_F(BrightnessControllerChromeosTest, HistogramTestPowerSourceCharger) {
   // Metric count should start at 0.
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Display.TimeUntilFirstBrightnessChange.OnLoginScreen."
@@ -949,7 +949,7 @@ TEST_F(BrightnessControllerChromeosTest,
       base::Seconds(seconds_to_wait), 1);
 }
 
-TEST_F(BrightnessControllerChromeosTest, SetBrightnessPercent_Cause) {
+TEST_F(BrightnessControllerChromeosTest, SetBrightnessPercentCause) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   SetChargerPower();
@@ -974,7 +974,7 @@ TEST_F(BrightnessControllerChromeosTest, SetBrightnessPercent_Cause) {
           SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP);
 }
 
-TEST_F(BrightnessControllerChromeosTest, SetAmbientLightSensorEnabled_Cause) {
+TEST_F(BrightnessControllerChromeosTest, SetAmbientLightSensorEnabledCause) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   SetChargerPower();
@@ -1740,7 +1740,7 @@ TEST_F(BrightnessControllerChromeosTest,
       "ChromeOS.Display.Startup.AmbientLightSensorEnabled", 1);
 }
 
-TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_NoSensor) {
+TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettingsNoSensor) {
   // Test case: Disable ALS via brightness key and restore brightness settings.
   // When the device has no sensor. ALS should not be re-enabled after login.
   scoped_feature_list_.InitAndEnableFeature(
@@ -1792,7 +1792,7 @@ TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_NoSensor) {
   ExpectBrightnessPercent(30.0, "brighntess is restored");
 }
 
-TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_HasSensor) {
+TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettingsHasSensor) {
   // Test case: Disable ALS via brightness key and restore brightness settings.
   // When the device has a sensor. ALS should be re-enabled after login.
   scoped_feature_list_.InitAndEnableFeature(

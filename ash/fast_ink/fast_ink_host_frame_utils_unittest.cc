@@ -166,7 +166,7 @@ TEST_F(FastInkHostCreateFrameUtilTest, CompositorFrameHasCorrectStructure) {
             primary_display.device_scale_factor());
 }
 
-TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOff) {
+TEST_F(FastInkHostCreateFrameUtilTest, FrameDamageAutoModeOff) {
   auto frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/false, *host_window_,
@@ -186,7 +186,7 @@ TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOff) {
             gfx::Rect(0, 0, 1000, 200));
 }
 
-TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOn) {
+TEST_F(FastInkHostCreateFrameUtilTest, FrameDamageAutoModeOn) {
   auto frame = fast_ink_internal::CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
       kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,

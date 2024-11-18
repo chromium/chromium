@@ -78,7 +78,7 @@ class ArcDiskSpaceBridgeTest : public testing::Test {
   std::unique_ptr<ArcDiskSpaceBridge> bridge_;
 };
 
-TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_Supported) {
+TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupportedSupported) {
   ash::FakeSpacedClient::Get()->set_quota_supported(true);
   ash::FakeUserDataAuthClient::TestApi::Get()->set_arc_quota_supported(true);
 
@@ -87,7 +87,7 @@ TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_Supported) {
   EXPECT_TRUE(future.Get());
 }
 
-TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_NotSupportedInSpaced) {
+TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupportedNotSupportedInSpaced) {
   ash::FakeSpacedClient::Get()->set_quota_supported(false);
   ash::FakeUserDataAuthClient::TestApi::Get()->set_arc_quota_supported(true);
 
@@ -96,7 +96,7 @@ TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_NotSupportedInSpaced) {
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_NotSupportedInCryptohome) {
+TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupportedNotSupportedInCryptohome) {
   ash::FakeSpacedClient::Get()->set_quota_supported(true);
   ash::FakeUserDataAuthClient::TestApi::Get()->set_arc_quota_supported(false);
 
@@ -105,7 +105,7 @@ TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_NotSupportedInCryptohome) {
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(ArcDiskSpaceBridgeTest, GetQuotaCurrentSpaceForGid_Success) {
+TEST_F(ArcDiskSpaceBridgeTest, GetQuotaCurrentSpaceForGidSuccess) {
   const std::vector<std::pair<uint32_t, int64_t>>
       valid_android_gid_and_expected_space = {
           {kAndroidGidStart, 100},
@@ -124,7 +124,7 @@ TEST_F(ArcDiskSpaceBridgeTest, GetQuotaCurrentSpaceForGid_Success) {
   }
 }
 
-TEST_F(ArcDiskSpaceBridgeTest, GetQuotaCurrentSpaceForGid_InvalidId) {
+TEST_F(ArcDiskSpaceBridgeTest, GetQuotaCurrentSpaceForGidInvalidId) {
   constexpr uint32_t kInvalidAndroidGid = kAndroidGidEnd + 1;
 
   base::test::TestFuture<int64_t> future;

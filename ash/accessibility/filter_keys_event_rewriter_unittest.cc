@@ -359,7 +359,7 @@ TEST_F(FilterKeysEventRewriterBounceKeysTest, DifferentKeysResetDelay) {
   EXPECT_EQ(LastEventKeyCode(), ui::VKEY_A);
 }
 
-TEST_F(FilterKeysEventRewriterBounceKeysTest, MultipleKeys_ADownBDownAUpBUp) {
+TEST_F(FilterKeysEventRewriterBounceKeysTest, MultipleKeysADownBDownAUpBUp) {
   AdvanceClockWithinBounceDelay();
   PressA();
   ASSERT_EQ(NumRecordedEvents(), 1u);
@@ -410,7 +410,7 @@ TEST_F(FilterKeysEventRewriterBounceKeysTest, MultipleKeys_ADownBDownAUpBUp) {
   EXPECT_EQ(LastEventKeyCode(), ui::VKEY_B);
 }
 
-TEST_F(FilterKeysEventRewriterBounceKeysTest, MultipleKeys_ADownBDownBUpAUp) {
+TEST_F(FilterKeysEventRewriterBounceKeysTest, MultipleKeysADownBDownBUpAUp) {
   AdvanceClockWithinBounceDelay();
   PressA();
   ASSERT_EQ(NumRecordedEvents(), 1u);

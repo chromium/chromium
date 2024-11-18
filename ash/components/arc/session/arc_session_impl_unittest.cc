@@ -374,7 +374,7 @@ class ArcSessionImplTest : public testing::Test {
 };
 
 // Starting mini container success case.
-TEST_F(ArcSessionImplTest, MiniInstance_Success) {
+TEST_F(ArcSessionImplTest, MiniInstanceSuccess) {
   auto arc_session = CreateArcSession();
   TestArcSessionObserver observer(arc_session.get());
   arc_session->StartMiniInstance();
@@ -387,7 +387,7 @@ TEST_F(ArcSessionImplTest, MiniInstance_Success) {
 
 // ArcClientAdapter::StartMiniArc() reports an error, causing the mini instance
 // start to fail.
-TEST_F(ArcSessionImplTest, MiniInstance_DBusFail) {
+TEST_F(ArcSessionImplTest, MiniInstanceDBusFail) {
   auto arc_session = CreateArcSession();
   TestArcSessionObserver observer(arc_session.get());
   GetClient(arc_session.get())->set_arc_available(false);
@@ -405,7 +405,7 @@ TEST_F(ArcSessionImplTest, MiniInstance_DBusFail) {
 // ArcClientAdapter::UpgradeArc() reports an error due to low disk,
 // causing the container upgrade to fail to start container with reason
 // LOW_DISK_SPACE.
-TEST_F(ArcSessionImplTest, Upgrade_LowDisk) {
+TEST_F(ArcSessionImplTest, UpgradeLowDisk) {
   auto delegate = std::make_unique<FakeDelegate>();
   delegate->SetFreeDiskSpace(kMinimumFreeDiskSpaceBytes / 2);
 
@@ -429,7 +429,7 @@ TEST_F(ArcSessionImplTest, Upgrade_LowDisk) {
 }
 
 // Upgrading a mini container to a full container. Success case.
-TEST_F(ArcSessionImplTest, Upgrade_Success) {
+TEST_F(ArcSessionImplTest, UpgradeSuccess) {
   // Set up. Start a mini instance.
   auto arc_session = CreateArcSession();
   TestArcSessionObserver observer(arc_session.get());
@@ -445,7 +445,7 @@ TEST_F(ArcSessionImplTest, Upgrade_Success) {
 }
 
 // ArcClientAdapter::UpgradeArc() reports an error, then the upgrade fails.
-TEST_F(ArcSessionImplTest, Upgrade_DBusFail) {
+TEST_F(ArcSessionImplTest, UpgradeDBusFail) {
   // Set up. Start a mini instance.
   auto arc_session = CreateArcSession();
   TestArcSessionObserver observer(arc_session.get());
@@ -467,7 +467,7 @@ TEST_F(ArcSessionImplTest, Upgrade_DBusFail) {
 }
 
 // Mojo connection fails on upgrading. Then, the upgrade fails.
-TEST_F(ArcSessionImplTest, Upgrade_MojoConnectionFail) {
+TEST_F(ArcSessionImplTest, UpgradeMojoConnectionFail) {
   // Let Mojo connection fail.
   auto delegate = std::make_unique<FakeDelegate>();
   delegate->EmulateMojoConnectionFailure();
@@ -493,7 +493,7 @@ TEST_F(ArcSessionImplTest, Upgrade_MojoConnectionFail) {
 
 // Calling UpgradeArcContainer() during STARTING_MINI_INSTANCE should eventually
 // succeed to run a full container.
-TEST_F(ArcSessionImplTest, Upgrade_StartingMiniInstance) {
+TEST_F(ArcSessionImplTest, UpgradeStartingMiniInstance) {
   auto arc_session = CreateArcSession();
   TestArcSessionObserver observer(arc_session.get());
   arc_session->StartMiniInstance();
@@ -516,7 +516,7 @@ TEST_F(ArcSessionImplTest, Upgrade_StartingMiniInstance) {
 }
 
 // Testing stop during START_MINI_INSTANCE.
-TEST_F(ArcSessionImplTest, Stop_StartingMiniInstance) {
+TEST_F(ArcSessionImplTest, StopStartingMiniInstance) {
   auto arc_session = CreateArcSession();
   TestArcSessionObserver observer(arc_session.get());
   arc_session->StartMiniInstance();
@@ -535,7 +535,7 @@ TEST_F(ArcSessionImplTest, Stop_StartingMiniInstance) {
 }
 
 // Testing stop during RUNNING_MINI_INSTANCE.
-TEST_F(ArcSessionImplTest, Stop_RunningMiniInstance) {
+TEST_F(ArcSessionImplTest, StopRunningMiniInstance) {
   auto arc_session = CreateArcSession();
   TestArcSessionObserver observer(arc_session.get());
   arc_session->StartMiniInstance();
@@ -555,7 +555,7 @@ TEST_F(ArcSessionImplTest, Stop_RunningMiniInstance) {
 }
 
 // Testing stop during STARTING_FULL_INSTANCE for upgrade.
-TEST_F(ArcSessionImplTest, Stop_StartingFullInstanceForUpgrade) {
+TEST_F(ArcSessionImplTest, StopStartingFullInstanceForUpgrade) {
   auto arc_session = CreateArcSession();
   TestArcSessionObserver observer(arc_session.get());
   // Start mini container.
@@ -579,7 +579,7 @@ TEST_F(ArcSessionImplTest, Stop_StartingFullInstanceForUpgrade) {
 }
 
 // Testing stop during CONNECTING_MOJO for upgrade.
-TEST_F(ArcSessionImplTest, Stop_ConnectingMojoForUpgrade) {
+TEST_F(ArcSessionImplTest, StopConnectingMojoForUpgrade) {
   // Let Mojo connection suspend.
   auto delegate = std::make_unique<FakeDelegate>();
   delegate->SuspendMojoConnection();
@@ -609,7 +609,7 @@ TEST_F(ArcSessionImplTest, Stop_ConnectingMojoForUpgrade) {
 }
 
 // Testing stop during RUNNING_FULL_INSTANCE after upgrade.
-TEST_F(ArcSessionImplTest, Stop_RunningFullInstanceForUpgrade) {
+TEST_F(ArcSessionImplTest, StopRunningFullInstanceForUpgrade) {
   auto arc_session = CreateArcSession();
   TestArcSessionObserver observer(arc_session.get());
   // Start mini container.
@@ -861,7 +861,7 @@ TEST_F(ArcSessionImplTest, ShutdownWhileWaitingForNumCores) {
 }
 
 // Test that correct value false for managed sideloading is passed
-TEST_F(ArcSessionImplTest, CanChangeAdbSideloading_False) {
+TEST_F(ArcSessionImplTest, CanChangeAdbSideloadingFalse) {
   auto arc_session = CreateArcSession();
   adb_sideloading_availability_delegate_->SetCanChangeAdbSideloading(false);
 
@@ -875,7 +875,7 @@ TEST_F(ArcSessionImplTest, CanChangeAdbSideloading_False) {
 }
 
 // Test that correct value true for managed sideloading is passed
-TEST_F(ArcSessionImplTest, CanChangeAdbSideloading_True) {
+TEST_F(ArcSessionImplTest, CanChangeAdbSideloadingTrue) {
   auto arc_session = CreateArcSession();
   adb_sideloading_availability_delegate_->SetCanChangeAdbSideloading(true);
 

@@ -61,7 +61,7 @@ TEST_F(ArcMemoryBridgeTest, DropCaches) {
 }
 
 // Tests that DropCaches runs the callback with a proper result.
-TEST_F(ArcMemoryBridgeTest, DropCaches_Fail) {
+TEST_F(ArcMemoryBridgeTest, DropCachesFail) {
   // Inject failure.
   memory_instance()->set_drop_caches_result(false);
 
@@ -73,7 +73,7 @@ TEST_F(ArcMemoryBridgeTest, DropCaches_Fail) {
 }
 
 // Tests that DropCaches runs the callback with a proper result.
-TEST_F(ArcMemoryBridgeTest, DropCaches_NoInstance) {
+TEST_F(ArcMemoryBridgeTest, DropCachesNoInstance) {
   // Inject failure.
   ArcServiceManager::Get()->arc_bridge_service()->memory()->CloseInstance(
       memory_instance());
@@ -87,7 +87,7 @@ TEST_F(ArcMemoryBridgeTest, DropCaches_NoInstance) {
 
 // Tests that Reclaim runs the callback with memory reclaimed from all
 // processes successfully.
-TEST_F(ArcMemoryBridgeTest, Reclaim_All_Success) {
+TEST_F(ArcMemoryBridgeTest, ReclaimAllSuccess) {
   memory_instance()->set_reclaim_all_result(100, 0);
 
   std::optional<uint32_t> reclaimed_result;
@@ -107,7 +107,7 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_All_Success) {
 
 // Tests that Reclaim runs the callback with memory reclaimed from some
 // processes successfully.
-TEST_F(ArcMemoryBridgeTest, Reclaim_Partial_Success) {
+TEST_F(ArcMemoryBridgeTest, ReclaimPartialSuccess) {
   memory_instance()->set_reclaim_all_result(50, 50);
 
   std::optional<uint32_t> reclaimed_result;
@@ -127,7 +127,7 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_Partial_Success) {
 
 // Tests that Reclaim runs the callback with memory reclaimed from some
 // processes successfully when anon pages are requested.
-TEST_F(ArcMemoryBridgeTest, Reclaim_Anon_Partial_Success) {
+TEST_F(ArcMemoryBridgeTest, ReclaimAnonPartialSuccess) {
   memory_instance()->set_reclaim_anon_result(10, 10);
 
   std::optional<uint32_t> reclaimed_result;
@@ -146,7 +146,7 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_Anon_Partial_Success) {
 }
 
 // Tests that Reclaim runs the callback with the instance not available.
-TEST_F(ArcMemoryBridgeTest, Reclaim_NoInstance) {
+TEST_F(ArcMemoryBridgeTest, ReclaimNoInstance) {
   // Inject failure.
   ArcServiceManager::Get()->arc_bridge_service()->memory()->CloseInstance(
       memory_instance());

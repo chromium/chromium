@@ -1850,7 +1850,7 @@ TEST_F(FasterSplitScreenTest,
 
 // Integration test of the `SplitViewOverviewSession` exit point with drag to
 // snap action source. Verify that the end-to-end metric is recorded correctly.
-TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTest_DragToSnap) {
+TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTestDragToSnap) {
   UpdateDisplay("800x600");
 
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -1912,7 +1912,7 @@ TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTest_DragToSnap) {
 // Integration test of the `SplitViewOverviewSession` exit point with window
 // size button as the snap action source. Verify that the end-to-end metric is
 // recorded correctly.
-TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTest_WindowSizeButton) {
+TEST_F(FasterSplitScreenTest, KeyMetricsIntegrationTestWindowSizeButton) {
   UpdateDisplay("800x600");
 
   std::unique_ptr<aura::Window> w1(CreateAppWindow());

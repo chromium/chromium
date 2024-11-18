@@ -322,7 +322,7 @@ TEST_F(CalendarUpNextViewTest,
   EXPECT_EQ(ScrollPosition(), 0);
 }
 
-TEST_F(CalendarUpNextViewTest, ShouldHideScrollButtons_WhenOnlyOneEvent) {
+TEST_F(CalendarUpNextViewTest, ShouldHideScrollButtonsWhenOnlyOneEvent) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -340,7 +340,7 @@ TEST_F(CalendarUpNextViewTest, ShouldHideScrollButtons_WhenOnlyOneEvent) {
   EXPECT_FALSE(GetScrollRightButton()->GetVisible());
 }
 
-TEST_F(CalendarUpNextViewTest, ShouldShowScrollButtons_WhenMultipleEvents) {
+TEST_F(CalendarUpNextViewTest, ShouldShowScrollButtonsWhenMultipleEvents) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -542,7 +542,7 @@ TEST_F(CalendarUpNextViewTest,
 }
 
 // Greenlines can be found in b/258648030.
-TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
+TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrderWhenPressingTab) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },

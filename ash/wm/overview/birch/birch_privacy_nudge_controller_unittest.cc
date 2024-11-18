@@ -48,7 +48,7 @@ class BirchPrivacyNudgeControllerTest : public AshTestBase {
 base::Time BirchPrivacyNudgeControllerTest::test_time_;
 
 // Tests that the nudge shows by default.
-TEST_F(BirchPrivacyNudgeControllerTest, NudgeShows_ByDefault) {
+TEST_F(BirchPrivacyNudgeControllerTest, NudgeShowsByDefault) {
   EXPECT_FALSE(IsNudgeShown());
   nudge_controller()->MaybeShowNudge(nullptr);
   EXPECT_TRUE(IsNudgeShown());
@@ -56,7 +56,7 @@ TEST_F(BirchPrivacyNudgeControllerTest, NudgeShows_ByDefault) {
 
 // Tests that the nudge does not show if the birch context menu has been
 // opened.
-TEST_F(BirchPrivacyNudgeControllerTest, NudgeDoesNotShow_WhenMenuWasOpened) {
+TEST_F(BirchPrivacyNudgeControllerTest, NudgeDoesNotShowWhenMenuWasOpened) {
   BirchPrivacyNudgeController::DidShowContextMenu();
 
   EXPECT_FALSE(IsNudgeShown());
@@ -66,7 +66,7 @@ TEST_F(BirchPrivacyNudgeControllerTest, NudgeDoesNotShow_WhenMenuWasOpened) {
 
 // Tests that the nudge won't show if the time between shown threshold hasn't
 // passed since it was last shown.
-TEST_F(BirchPrivacyNudgeControllerTest, NudgeDoesNotShow_IfRecentlyShown) {
+TEST_F(BirchPrivacyNudgeControllerTest, NudgeDoesNotShowIfRecentlyShown) {
   SetTestTime(base::Time::Now());
   base::subtle::ScopedTimeClockOverrides clock_override(
       /*time_override=*/&BirchPrivacyNudgeControllerTest::GetTestTime,
@@ -95,7 +95,7 @@ TEST_F(BirchPrivacyNudgeControllerTest, NudgeDoesNotShow_IfRecentlyShown) {
   EXPECT_TRUE(IsNudgeShown());
 }
 
-TEST_F(BirchPrivacyNudgeControllerTest, NudgeDoesNotShow_IfMaxTimesShown) {
+TEST_F(BirchPrivacyNudgeControllerTest, NudgeDoesNotShowIfMaxTimesShown) {
   SetTestTime(base::Time::Now());
   base::subtle::ScopedTimeClockOverrides clock_override(
       /*time_override=*/&BirchPrivacyNudgeControllerTest::GetTestTime,

@@ -112,7 +112,7 @@ class AnchoredNudgeManagerImplTest : public AshTestBase {
 };
 
 // Tests that a nudge can be shown and its contents are properly sent.
-TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudgeSingleNudge) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -139,7 +139,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
 }
 
 // Tests that two nudges can be shown on screen at the same time.
-TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_TwoNudges) {
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudgeTwoNudges) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   auto* contents_view =
       widget->SetContentsView(std::make_unique<views::View>());
@@ -178,7 +178,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_TwoNudges) {
 
 // Tests that a nudge with buttons can be shown, execute callbacks and dismiss
 // the nudge when the button is pressed.
-TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudgeWithButtons) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
@@ -292,7 +292,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation) {
 }
 
 // Tests that a nudge without an anchor view is placed on the right on RTL.
-TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithRTL) {
+TEST_F(AnchoredNudgeManagerImplTest, DefaultLocationWithRTL) {
   Shelf* shelf = GetPrimaryShelf();
   display::Display primary_display = GetPrimaryDisplay();
   gfx::Rect display_bounds = primary_display.bounds();
@@ -334,7 +334,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithRTL) {
 
 // Tests that a nudge without an anchor view updates its baseline based on the
 // current hotseat state.
-TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithHotseatShown) {
+TEST_F(AnchoredNudgeManagerImplTest, DefaultLocationWithHotseatShown) {
   Shelf* shelf = GetPrimaryShelf();
   HotseatWidget* hotseat = shelf->hotseat_widget();
   display::Display primary_display = GetPrimaryDisplay();
@@ -362,7 +362,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithHotseatShown) {
 
 // Tests that a nudge without an anchor view updates its baseline when the shelf
 // hides itself.
-TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithAutoHideShelf) {
+TEST_F(AnchoredNudgeManagerImplTest, DefaultLocationWithAutoHideShelf) {
   Shelf* shelf = GetPrimaryShelf();
   display::Display primary_display = GetPrimaryDisplay();
   gfx::Rect display_bounds = primary_display.bounds();
@@ -391,7 +391,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithAutoHideShelf) {
 }
 
 // Tests that a nudge updates its location after zooming in/out the UI.
-TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_Zoom) {
+TEST_F(AnchoredNudgeManagerImplTest, DefaultLocationZoom) {
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   gfx::Rect display_bounds;
   gfx::Rect nudge_bounds;
@@ -430,7 +430,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_Zoom) {
 
 // Tests that attempting to show a nudge with an `id` that's in use cancels
 // the existing nudge and replaces it with a new nudge.
-TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudgeNudgeWithIdAlreadyExists) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   auto* contents_view =
       widget->SetContentsView(std::make_unique<views::View>());
@@ -468,7 +468,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
 }
 
 // Tests that a nudge is not created if its anchor view is not visible.
-TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_InvisibleAnchorView) {
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudgeInvisibleAnchorView) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -487,7 +487,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_InvisibleAnchorView) {
 }
 
 // Tests that a nudge is not created if its anchor view doesn't have a widget.
-TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_AnchorViewWithoutWidget) {
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudgeAnchorViewWithoutWidget) {
   // Set up nudge data contents.
   const std::string id("id");
   auto contents_view = std::make_unique<views::View>();
@@ -503,7 +503,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_AnchorViewWithoutWidget) {
 }
 
 // Tests that a nudge is not created if its anchor view was deleted.
-TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_DeletedAnchorView) {
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudgeDeletedAnchorView) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -528,7 +528,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_DeletedAnchorView) {
 // Tests that a nudge will not be shown if a `ScopedNudgePause` exists, and even
 // if the `scoped_anchored_nudge_pause` gets destroyed, the nudge is dismissed
 // and will not be saved.
-TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_ScopedNudgePause) {
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudgeScopedNudgePause) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -553,7 +553,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_ScopedNudgePause) {
 
 // Tests that if a `ScopedNudgePause` creates when a nudge is showing, the nudge
 // will be dismissed immediately.
-TEST_F(AnchoredNudgeManagerImplTest, CancelNudge_ScopedNudgePause) {
+TEST_F(AnchoredNudgeManagerImplTest, CancelNudgeScopedNudgePause) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -663,7 +663,7 @@ TEST_F(AnchoredNudgeManagerImplTest,
 
 // Tests that a nudge that is anchored to the shelf maintains the shelf visible
 // while the nudge is being shown and the shelf is on auto-hide.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeAnchoredToShelf_ShelfDoesNotHide) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgeAnchoredToShelfShelfDoesNotHide) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -692,7 +692,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeAnchoredToShelf_ShelfDoesNotHide) {
 }
 
 // Tests that a nudge closes if its anchor view is made invisible.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewIsHiding) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgeClosesWhenAnchorViewIsHiding) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -714,7 +714,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewIsHiding) {
 }
 
 // Tests that a nudge closes if its anchor view is deleted.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewIsDeleting) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgeClosesWhenAnchorViewIsDeleting) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -764,7 +764,7 @@ TEST_F(AnchoredNudgeManagerImplTest,
 }
 
 // Tests that a nudge closes if its anchor view widget is hiding.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewWidgetIsHiding) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgeClosesWhenAnchorViewWidgetIsHiding) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -786,7 +786,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewWidgetIsHiding) {
 }
 
 // Tests that a nudge is properly destroyed on shutdown.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnShutdown) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgeClosesOnShutdown) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -802,7 +802,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnShutdown) {
 }
 
 // Tests that nudges expire after their dismiss timer reaches its end.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenDismissTimerExpires) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgeClosesWhenDismissTimerExpires) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -916,7 +916,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeDefaultDurationIsUpdated) {
 }
 
 // Tests that nudges are destroyed on session state changes.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnSessionStateChanged) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgeClosesOnSessionStateChanged) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -942,7 +942,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnSessionStateChanged) {
 }
 
 // Tests that the nudge widget closes after its hide animation is completed.
-TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnHideAnimationComplete) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgeClosesOnHideAnimationComplete) {
   // Set animations to last a non-zero, faster than normal duration, since the
   // regular duration may last longer in tests and cause flakiness.
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -973,7 +973,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnHideAnimationComplete) {
   ASSERT_FALSE(GetShownNudge(id));
 }
 
-TEST_F(AnchoredNudgeManagerImplTest, NudgeHideAnimationInterrupted_OnShutdown) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgeHideAnimationInterruptedOnShutdown) {
   // Set animations to last their normal duration.
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
@@ -1052,7 +1052,7 @@ TEST_F(AnchoredNudgeManagerImplTest,
 }
 
 // Tests that the dismiss timer is paused on hover so the nudge won't close.
-TEST_F(AnchoredNudgeManagerImplTest, NudgePersists_OnHover) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgePersistsOnHover) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -1087,7 +1087,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgePersists_OnHover) {
 
 // Tests that the dismiss timer is paused when one of the nudge's children is
 // focused so the nudge won't close.
-TEST_F(AnchoredNudgeManagerImplTest, NudgePersists_OnFocus) {
+TEST_F(AnchoredNudgeManagerImplTest, NudgePersistsOnFocus) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge with a button so the nudge has a focusable child.
@@ -1225,7 +1225,7 @@ TEST_F(AnchoredNudgeManagerImplTest, TimeToActionMetric) {
 }
 
 // Tests that a nudge is parented to its anchor view, which has a widget.
-TEST_F(AnchoredNudgeManagerImplTest, SetParent_AnchorViewWithWidget) {
+TEST_F(AnchoredNudgeManagerImplTest, SetParentAnchorViewWithWidget) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -1247,7 +1247,7 @@ TEST_F(AnchoredNudgeManagerImplTest, SetParent_AnchorViewWithWidget) {
 
 // Tests that a nudge is not parented to its anchor view if
 // `set_anchor_view_as_parent` is not set to true.
-TEST_F(AnchoredNudgeManagerImplTest, NotSetParent_AnchorViewWithWidget) {
+TEST_F(AnchoredNudgeManagerImplTest, NotSetParentAnchorViewWithWidget) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -1269,7 +1269,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NotSetParent_AnchorViewWithWidget) {
 
 // Tests that a nudge is not created if its anchor view doesn't have a widget
 // but `set_anchor_view_as_parent` is set to true.
-TEST_F(AnchoredNudgeManagerImplTest, SetParent_AnchorViewWithoutWidget) {
+TEST_F(AnchoredNudgeManagerImplTest, SetParentAnchorViewWithoutWidget) {
   // Set up nudge data contents.
   const std::string id("id");
   auto contents_view = std::make_unique<views::View>();
@@ -1348,7 +1348,7 @@ TEST_F(AnchoredNudgeManagerImplTest, FocusTraversable) {
 
 // Tests that a nudge is anchored at the bottom left corner of its anchor
 // widget.
-TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_BottomLeft) {
+TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidgetBottomLeft) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   anchor_widget->SetBounds(
@@ -1380,7 +1380,7 @@ TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_BottomLeft) {
 
 // Tests that a nudge is anchored at the bottom right corner of its anchor
 // widget.
-TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_BottomRight) {
+TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidgetBottomRight) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   anchor_widget->SetBounds(
@@ -1411,7 +1411,7 @@ TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_BottomRight) {
 }
 
 // Tests that a nudge with an anchor widget is placed on the right on RTL.
-TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_WithRTL) {
+TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidgetWithRTL) {
   // Turn on RTL mode.
   base::i18n::SetRTLForTesting(true);
   base::RunLoop().RunUntilIdle();
@@ -1455,7 +1455,7 @@ TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_WithRTL) {
 
 // Tests that a nudge is anchored at the bottom left corner of its anchor
 // widget in the tablet mode.
-TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_TabletMode) {
+TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidgetTabletMode) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   std::unique_ptr<views::Widget> anchor_widget =

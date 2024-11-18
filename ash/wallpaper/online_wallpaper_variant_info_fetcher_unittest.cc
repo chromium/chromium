@@ -235,7 +235,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
 }
 
 // When variants are already populated, params are returned.
-TEST_F(OnlineWallpaperVariantInfoFetcherTest, FetchOnlineWallpaper_FromInfo) {
+TEST_F(OnlineWallpaperVariantInfoFetcherTest, FetchOnlineWallpaperFromInfo) {
   const uint64_t kAssetId = 14;
   const GURL kUrl("https://populated_url/14");
   const std::string kCollectionId = "PrePopulatedCollection";

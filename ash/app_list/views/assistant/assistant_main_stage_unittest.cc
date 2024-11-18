@@ -123,7 +123,7 @@ TEST_F(AssistantMainStageTest, FooterIsVisibleAfterResponse) {
   EXPECT_TRUE(footer->GetVisible());
 }
 
-TEST_F(AssistantMainStageTest, FooterIsVisible_Tablet) {
+TEST_F(AssistantMainStageTest, FooterIsVisibleTablet) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       feature_engagement::kIPHLauncherSearchHelpUiFeature);
@@ -135,7 +135,7 @@ TEST_F(AssistantMainStageTest, FooterIsVisible_Tablet) {
   EXPECT_TRUE(footer->GetVisible());
 }
 
-TEST_F(AssistantMainStageTest, FooterIsNotVisible_Tablet) {
+TEST_F(AssistantMainStageTest, FooterIsNotVisibleTablet) {
   base::test::ScopedFeatureList scoped_feature_list(
       feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
@@ -146,7 +146,7 @@ TEST_F(AssistantMainStageTest, FooterIsNotVisible_Tablet) {
   EXPECT_FALSE(footer->GetVisible());
 }
 
-TEST_F(AssistantMainStageTest, FooterIsVisibleAfterQuery_Tablet) {
+TEST_F(AssistantMainStageTest, FooterIsVisibleAfterQueryTablet) {
   base::test::ScopedFeatureList scoped_feature_list(
       feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
@@ -162,7 +162,7 @@ TEST_F(AssistantMainStageTest, FooterIsVisibleAfterQuery_Tablet) {
   EXPECT_TRUE(footer->GetVisible());
 }
 
-TEST_F(AssistantMainStageTest, FooterIsVisibleAfterResponse_Tablet) {
+TEST_F(AssistantMainStageTest, FooterIsVisibleAfterResponseTablet) {
   base::test::ScopedFeatureList scoped_feature_list(
       feature_engagement::kIPHLauncherSearchHelpUiFeature);
 

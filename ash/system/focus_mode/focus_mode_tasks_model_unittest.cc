@@ -133,14 +133,14 @@ FocusModeTask TestTask(std::string_view task_id) {
   return task;
 }
 
-TEST_F(FocusModeTasksModelObserverTest, SelectedTaskChanged_EmptyList) {
+TEST_F(FocusModeTasksModelObserverTest, SelectedTaskChangedEmptyList) {
   FocusModeTask task = TestTask("task0");
   model().SetSelectedTask(task);
   EXPECT_THAT(observer().last_selected_task(), Optional(SameId("task0")));
   EXPECT_THAT(observer().last_task_list(), Optional(SizeIs(1)));
 }
 
-TEST_F(FocusModeTasksModelObserverTest, SelectedTaskChanged_SelectById) {
+TEST_F(FocusModeTasksModelObserverTest, SelectedTaskChangedSelectById) {
   std::vector<FocusModeTask> test_tasks = {TestTask("task0"), TestTask("task1"),
                                            TestTask("task2")};
   model().SetTaskList(std::move(test_tasks));
@@ -163,7 +163,7 @@ TEST_F(FocusModeTasksModelObserverTest,
   EXPECT_THAT(observer().last_selected_task(), Eq(std::nullopt));
 }
 
-TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefs_PrefFirst) {
+TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefsPrefFirst) {
   model().SetSelectedTaskFromPrefs({
       .list_id = kTaskListId,
       .id = "from_prefs",
@@ -186,7 +186,7 @@ TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefs_PrefFirst) {
   EXPECT_THAT(observer().last_task_list(), Optional(SizeIs(4)));
 }
 
-TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefs_ListFirst) {
+TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefsListFirst) {
   FocusModeTask pref_task = TestTask("from_prefs");
   pref_task.title = "Correct title";
   std::vector<FocusModeTask> test_tasks = {TestTask("task0"), TestTask("task1"),
@@ -207,7 +207,7 @@ TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefs_ListFirst) {
                               Field(&FocusModeTask::title, "Correct title"))));
 }
 
-TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefs_TaskIsCompleted) {
+TEST_F(FocusModeTasksModelObserverTest, SelectedTaskFromPrefsTaskIsCompleted) {
   // Desired task from prefs.
   TaskId task_id = {.list_id = kTaskListId, .id = "from_prefs"};
 
@@ -327,7 +327,7 @@ TEST_F(FocusModeTasksModelObserverTest, ClearTask) {
   EXPECT_THAT(observer().last_selected_task(), Eq(std::nullopt));
 }
 
-TEST_F(FocusModeTasksModelObserverTest, RequestUpdate_ImmediateNotification) {
+TEST_F(FocusModeTasksModelObserverTest, RequestUpdateImmediateNotification) {
   model().SetTaskList(
       {TestTask("task0"), TestTask("task1"), TestTask("task2")});
   ASSERT_TRUE(model().SetSelectedTask({.list_id = kTaskListId, .id = "task1"}));
@@ -359,7 +359,7 @@ TEST_F(FocusModeTasksModelObserverTest, CompleteTask) {
 
 // Tests that we fetch the selected task data when `RequestUpdate()` is called
 // and update the selected task title if it is updated.
-TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTask_TaskTitleUpdated) {
+TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTaskTaskTitleUpdated) {
   // Setup.
   FakeDelegate delegate;
   model().SetDelegate(delegate.AsWeakPtr());
@@ -395,7 +395,7 @@ TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTask_TaskTitleUpdated) {
 
 // Tests that if a selected task was completed remotely, it is marked as
 // completed and removed from the list for `RequestUpdate()`.
-TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTask_TaskIsCompleted) {
+TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTaskTaskIsCompleted) {
   // Setup.
   FakeDelegate delegate;
   model().SetDelegate(delegate.AsWeakPtr());
@@ -433,7 +433,7 @@ TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTask_TaskIsCompleted) {
 
 // Tests that `FetchTasks()` is still called even if the selected task request
 // fails.
-TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTask_RequestFails) {
+TEST_F(FocusModeTasksModelObserverTest, FetchSelectedTaskRequestFails) {
   // Setup.
   FakeDelegate delegate;
   model().SetDelegate(delegate.AsWeakPtr());

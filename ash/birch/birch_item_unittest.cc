@@ -118,7 +118,7 @@ class BirchItemTest : public testing::Test {
   calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone_;
 };
 
-TEST_F(BirchItemTest, RecordActionMetrics_Basics) {
+TEST_F(BirchItemTest, RecordActionMetricsBasics) {
   base::HistogramTester histograms;
   BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
   item.set_ranking(5.f);
@@ -129,7 +129,7 @@ TEST_F(BirchItemTest, RecordActionMetrics_Basics) {
   histograms.ExpectBucketCount("Ash.Birch.Chip.ActivatedRanking", 5, 1);
 }
 
-TEST_F(BirchItemTest, RecordActionMetrics_FirstSecondThird) {
+TEST_F(BirchItemTest, RecordActionMetricsFirstSecondThird) {
   base::HistogramTester histograms;
   BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
 
@@ -169,7 +169,7 @@ TEST_F(BirchItemTest, RecordActionMetrics_FirstSecondThird) {
 
 // When both conference URL and calendar URL are set, the conference URL is
 // preferred.
-TEST_F(BirchItemTest, Calendar_PerformAction_BothConferenceAndCalendar) {
+TEST_F(BirchItemTest, Calendar_PerformActionBothConferenceAndCalendar) {
   // Create an event that is happening now so the "Join" action is enabled.
   base::Time now = base::Time::Now();
   BirchCalendarItem item(u"item", /*start_time=*/now - base::Minutes(30),
@@ -187,7 +187,7 @@ TEST_F(BirchItemTest, Calendar_PerformAction_BothConferenceAndCalendar) {
   EXPECT_EQ(new_window_delegate().last_opened_url_, GURL("http://meet.com/"));
 }
 
-TEST_F(BirchItemTest, Calendar_PerformAction_Histograms) {
+TEST_F(BirchItemTest, CalendarPerformActionHistograms) {
   base::HistogramTester histograms;
   BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
                          /*end_time=*/base::Time(),
@@ -207,7 +207,7 @@ TEST_F(BirchItemTest, Calendar_PerformAction_Histograms) {
 }
 
 // If only the calendar URL is set, it is opened.
-TEST_F(BirchItemTest, Calendar_PerformAction_CalendarOnly) {
+TEST_F(BirchItemTest, CalendarPerformActionCalendarOnly) {
   BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL("http://calendar.com"),
@@ -225,7 +225,7 @@ TEST_F(BirchItemTest, Calendar_PerformAction_CalendarOnly) {
 }
 
 // If neither the conference URL nor the calendar URL is set, nothing opens.
-TEST_F(BirchItemTest, Calendar_PerformAction_NoURL) {
+TEST_F(BirchItemTest, CalendarPerformActionNoURL) {
   BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL(),
@@ -236,7 +236,7 @@ TEST_F(BirchItemTest, Calendar_PerformAction_NoURL) {
   EXPECT_EQ(new_window_delegate().last_opened_url_, GURL());
 }
 
-TEST_F(BirchItemTest, Calendar_ShouldShowAddonAction) {
+TEST_F(BirchItemTest, CalendarShouldShowAddonAction) {
   base::Time now = base::Time::Now();
 
   // Create an event with a conference URL, but in the future.
@@ -274,7 +274,7 @@ TEST_F(BirchItemTest, Calendar_ShouldShowAddonAction) {
   EXPECT_TRUE(item2.addon_label().has_value());
 }
 
-TEST_F(BirchItemTest, Calendar_Subtitle_Ongoing) {
+TEST_F(BirchItemTest, CalendarSubtitleOngoing) {
   BirchCalendarItem item(u"item",
                          /*start_time=*/base::Time::Now() - base::Minutes(30),
                          /*end_time=*/base::Time::Now() + base::Minutes(30),
@@ -285,7 +285,7 @@ TEST_F(BirchItemTest, Calendar_Subtitle_Ongoing) {
   EXPECT_EQ(item.subtitle(), u"Now · Ends 5:30 PM");
 }
 
-TEST_F(BirchItemTest, Calendar_Subtitle_Soon) {
+TEST_F(BirchItemTest, CalendarSubtitleSoon) {
   BirchCalendarItem item(u"item",
                          /*start_time=*/base::Time::Now() + base::Minutes(15),
                          /*end_time=*/base::Time::Now() + base::Hours(1),
@@ -296,7 +296,7 @@ TEST_F(BirchItemTest, Calendar_Subtitle_Soon) {
   EXPECT_EQ(item.subtitle(), u"In 15 mins · 5:15 PM - 6:00 PM");
 }
 
-TEST_F(BirchItemTest, Calendar_Subtitle_NotSoon) {
+TEST_F(BirchItemTest, CalendarSubtitleNotSoon) {
   BirchCalendarItem item(u"item",
                          /*start_time=*/base::Time::Now() + base::Hours(1),
                          /*end_time=*/base::Time::Now() + base::Hours(2),
@@ -307,7 +307,7 @@ TEST_F(BirchItemTest, Calendar_Subtitle_NotSoon) {
   EXPECT_EQ(item.subtitle(), u"6:00 PM - 7:00 PM");
 }
 
-TEST_F(BirchItemTest, Calendar_Subtitle_Tomorrow) {
+TEST_F(BirchItemTest, CalendarSubtitleTomorrow) {
   base::Time next_midnight = base::Time::Now().LocalMidnight() + base::Days(1);
   BirchCalendarItem item(u"item",
                          /*start_time=*/next_midnight + base::Hours(1),
@@ -319,7 +319,7 @@ TEST_F(BirchItemTest, Calendar_Subtitle_Tomorrow) {
   EXPECT_EQ(item.subtitle(), u"Tomorrow · 1:00 AM - 2:00 AM");
 }
 
-TEST_F(BirchItemTest, Calendar_Subtitle_AllDay) {
+TEST_F(BirchItemTest, CalendarSubtitleAllDay) {
   base::Time next_midnight = base::Time::Now().LocalMidnight() + base::Days(1);
   BirchCalendarItem item(u"item",
                          /*start_time=*/next_midnight - base::Days(1),
@@ -331,7 +331,7 @@ TEST_F(BirchItemTest, Calendar_Subtitle_AllDay) {
   EXPECT_EQ(item.subtitle(), u"All Day");
 }
 
-TEST_F(BirchItemTest, Attachment_PerformAction_ValidUrl) {
+TEST_F(BirchItemTest, AttachmentPerformActionValidUrl) {
   BirchAttachmentItem item(u"item",
                            /*file_url=*/GURL("http://file.com/"),
                            /*icon_url=*/GURL("http://attachment.icon"),
@@ -342,7 +342,7 @@ TEST_F(BirchItemTest, Attachment_PerformAction_ValidUrl) {
   EXPECT_EQ(new_window_delegate().last_opened_url_, GURL("http://file.com/"));
 }
 
-TEST_F(BirchItemTest, Attachment_PerformAction_Histograms) {
+TEST_F(BirchItemTest, AttachmentPerformActionHistograms) {
   base::HistogramTester histograms;
   BirchAttachmentItem item(u"item",
                            /*file_url=*/GURL("http://file.com/"),
@@ -356,7 +356,7 @@ TEST_F(BirchItemTest, Attachment_PerformAction_Histograms) {
                                BirchItemType::kAttachment, 1);
 }
 
-TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
+TEST_F(BirchItemTest, AttachmentPerformActionEmptyUrl) {
   BirchAttachmentItem item(u"item",
                            /*file_url=*/GURL(),
                            /*icon_url=*/GURL("http://attachment.icon"),
@@ -367,7 +367,7 @@ TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
   EXPECT_EQ(new_window_delegate().last_opened_url_, GURL());
 }
 
-TEST_F(BirchItemTest, Attachment_Subtitle_Now) {
+TEST_F(BirchItemTest, AttachmentSubtitleNow) {
   base::Time now = base::Time::Now();
   BirchAttachmentItem item(u"item",
                            /*file_url=*/GURL("http://file.com/"),
@@ -378,7 +378,7 @@ TEST_F(BirchItemTest, Attachment_Subtitle_Now) {
   EXPECT_EQ(item.subtitle(), u"From event happening now");
 }
 
-TEST_F(BirchItemTest, Attachment_Subtitle_Upcoming) {
+TEST_F(BirchItemTest, AttachmentSubtitleUpcoming) {
   base::Time now = base::Time::Now();
   BirchAttachmentItem item(u"item",
                            /*file_url=*/GURL("http://file.com/"),
@@ -389,21 +389,21 @@ TEST_F(BirchItemTest, Attachment_Subtitle_Upcoming) {
   EXPECT_EQ(item.subtitle(), u"From upcoming calendar event");
 }
 
-TEST_F(BirchItemTest, File_TitleDoesNotShowFileExtension) {
+TEST_F(BirchItemTest, FileTitleDoesNotShowFileExtension) {
   BirchFileItem item(base::FilePath("/path/to/file.gdoc"), std::nullopt,
                      u"suggested", base::Time(), "id_1", "icon_url");
   // The title does not contain the ".gdoc" extension.
   EXPECT_EQ(u"file", item.title());
 }
 
-TEST_F(BirchItemTest, File_Title) {
+TEST_F(BirchItemTest, FileTitle) {
   BirchFileItem item(base::FilePath("/path/to/file.gdoc"), "file_title",
                      u"suggested", base::Time(), "id_1", "icon_url");
   // When set, the title will take precedence over the file path.
   EXPECT_EQ(u"file_title", item.title());
 }
 
-TEST_F(BirchItemTest, File_PerformAction) {
+TEST_F(BirchItemTest, FilePerformAction) {
   BirchFileItem item(base::FilePath("file_path"), "title", u"suggested",
                      base::Time(), "id_1", "icon_url");
   EXPECT_EQ(u"title", item.title());
@@ -415,7 +415,7 @@ TEST_F(BirchItemTest, File_PerformAction) {
             base::FilePath("file_path"));
 }
 
-TEST_F(BirchItemTest, File_PerformAction_Histograms) {
+TEST_F(BirchItemTest, FilePerformActionHistograms) {
   base::HistogramTester histograms;
   BirchFileItem item(base::FilePath("file_path"), "title", u"suggested",
                      base::Time(), "id_1", "icon_url");
@@ -425,14 +425,14 @@ TEST_F(BirchItemTest, File_PerformAction_Histograms) {
                                1);
 }
 
-TEST_F(BirchItemTest, Weather_PerformAction) {
+TEST_F(BirchItemTest, WeatherPerformAction) {
   BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
   item.PerformAction();
   EXPECT_EQ(new_window_delegate().last_opened_url_,
             GURL("https://google.com/search?q=weather"));
 }
 
-TEST_F(BirchItemTest, Weather_PerformAction_Histograms) {
+TEST_F(BirchItemTest, WeatherPerformActionHistograms) {
   base::HistogramTester histograms;
   BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
   item.PerformAction();
@@ -456,7 +456,7 @@ TEST_F(BirchWeatherItemTest, AddonLabelInCelsius) {
   EXPECT_EQ(item.addon_label(), u"22");
 }
 
-TEST_F(BirchItemTest, Tab_Subtitle_Recent) {
+TEST_F(BirchItemTest, TabSubtitleRecent) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time::Now() - base::Minutes(5),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
@@ -464,7 +464,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_Recent) {
   EXPECT_EQ(item.subtitle(), u"Within 1 hr · From Chromebook");
 }
 
-TEST_F(BirchItemTest, Tab_Subtitle_OneHour) {
+TEST_F(BirchItemTest, TabSubtitleOneHour) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time::Now() - base::Minutes(65),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
@@ -472,7 +472,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_OneHour) {
   EXPECT_EQ(item.subtitle(), u"1 hr ago · From Chromebook");
 }
 
-TEST_F(BirchItemTest, Tab_Subtitle_TwoHours) {
+TEST_F(BirchItemTest, TabSubtitleTwoHours) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time::Now() - base::Minutes(125),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
@@ -480,7 +480,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_TwoHours) {
   EXPECT_EQ(item.subtitle(), u"2 hr ago · From Chromebook");
 }
 
-TEST_F(BirchItemTest, Tab_Subtitle_Yesterday) {
+TEST_F(BirchItemTest, TabSubtitleYesterday) {
   BirchTabItem item(
       u"item", /*url=*/GURL("http://example.com/"),
       /*timestamp=*/base::Time::Now().LocalMidnight() - base::Minutes(5),
@@ -489,7 +489,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_Yesterday) {
   EXPECT_EQ(item.subtitle(), u"Yesterday · From Chromebook");
 }
 
-TEST_F(BirchItemTest, Tab_PerformAction_ValidUrl) {
+TEST_F(BirchItemTest, TabPerformActionValidUrl) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL(), /*session_name=*/"",
@@ -499,7 +499,7 @@ TEST_F(BirchItemTest, Tab_PerformAction_ValidUrl) {
             GURL("http://example.com/"));
 }
 
-TEST_F(BirchItemTest, Tab_PerformAction_EmptyUrl) {
+TEST_F(BirchItemTest, TabPerformActionEmptyUrl) {
   BirchTabItem item(u"item", /*url=*/GURL(),
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL(), /*session_name=*/"",
@@ -508,7 +508,7 @@ TEST_F(BirchItemTest, Tab_PerformAction_EmptyUrl) {
   EXPECT_EQ(new_window_delegate().last_opened_url_, GURL());
 }
 
-TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
+TEST_F(BirchItemTest, TabPerformActionHistograms) {
   base::HistogramTester histograms;
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),
@@ -520,32 +520,32 @@ TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
                                1);
 }
 
-TEST_F(BirchItemTest, LastActive_Subtitle_TwoDaysAgo) {
+TEST_F(BirchItemTest, LastActiveSubtitleTwoDaysAgo) {
   BirchLastActiveItem item(u"item", GURL("http://example.com/"),
                            base::Time::Now() - base::Days(2));
   EXPECT_EQ(item.subtitle(), u"2 days ago · Continue browsing");
 }
 
-TEST_F(BirchItemTest, LastActive_Subtitle_Yesterday) {
+TEST_F(BirchItemTest, LastActiveSubtitleYesterday) {
   BirchLastActiveItem item(u"item", GURL("http://example.com/"),
                            base::Time::Now() - base::Days(1));
   EXPECT_EQ(item.subtitle(), u"Yesterday · Continue browsing");
 }
 
-TEST_F(BirchItemTest, LastActive_Subtitle_OneHourAgo) {
+TEST_F(BirchItemTest, LastActiveSubtitleOneHourAgo) {
   BirchLastActiveItem item(u"item", GURL("http://example.com/"),
                            base::Time::Now() - base::Hours(1));
   EXPECT_EQ(item.subtitle(), u"1 hr ago · Continue browsing");
 }
 
-TEST_F(BirchItemTest, LastActive_PerformAction) {
+TEST_F(BirchItemTest, LastActivePerformAction) {
   BirchLastActiveItem item(u"item", GURL("http://example.com/"), base::Time());
   item.PerformAction();
   EXPECT_EQ(new_window_delegate().last_opened_url_,
             GURL("http://example.com/"));
 }
 
-TEST_F(BirchItemTest, SelfShare_PerformAction) {
+TEST_F(BirchItemTest, SelfSharePerformAction) {
   base::MockCallback<base::RepeatingClosure> activation_callback;
   BirchSelfShareItem item(
       /*guid=*/u"self share guid", /*title*/ u"self share tab",
@@ -583,7 +583,7 @@ class BirchItemIconTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(BirchItemIconTest, Calendar_LoadIcon) {
+TEST_F(BirchItemIconTest, CalendarLoadIcon) {
   BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL("http://calendar.com"),
@@ -600,7 +600,7 @@ TEST_F(BirchItemIconTest, Calendar_LoadIcon) {
   }));
 }
 
-TEST_F(BirchItemIconTest, Attachment_LoadIcon) {
+TEST_F(BirchItemIconTest, AttachmentLoadIcon) {
   BirchAttachmentItem item(u"item",
                            /*file_url=*/GURL("http://file.com/"),
                            /*icon_url=*/GURL("http://attachment.icon"),
@@ -623,7 +623,7 @@ TEST_F(BirchItemIconTest, Attachment_LoadIcon) {
   EXPECT_FALSE(icon_cache->Get("http://attachment.icon/").isNull());
 }
 
-TEST_F(BirchItemIconTest, Attachment_LoadIcon_InvalidUrl) {
+TEST_F(BirchItemIconTest, AttachmentLoadIconInvalidUrl) {
   BirchAttachmentItem item(u"item",
                            /*file_url=*/GURL("http://file.com/"),
                            /*icon_url=*/GURL("invalid-url"),
@@ -643,7 +643,7 @@ TEST_F(BirchItemIconTest, Attachment_LoadIcon_InvalidUrl) {
   EXPECT_EQ(icon_cache->size_for_test(), 0u);
 }
 
-TEST_F(BirchItemIconTest, Tab_LoadIcon) {
+TEST_F(BirchItemIconTest, TabLoadIcon) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL("http://icon.com/"),
@@ -666,7 +666,7 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon) {
   EXPECT_FALSE(icon_cache->Get("http://icon.com/").isNull());
 }
 
-TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
+TEST_F(BirchItemIconTest, TabLoadIconInvalidUrl) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL("invalid-url"),
@@ -684,7 +684,7 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
   EXPECT_EQ(icon_cache->size_for_test(), 0u);
 }
 
-TEST_F(BirchItemIconTest, Weather_LoadIcon) {
+TEST_F(BirchItemIconTest, WeatherLoadIcon) {
   BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
 
   item.LoadIcon(base::BindOnce([](PrimaryIconType primary_icon_type,
@@ -696,7 +696,7 @@ TEST_F(BirchItemIconTest, Weather_LoadIcon) {
   }));
 }
 
-TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
+TEST_F(BirchItemIconTest, WeatherLoadIconNoIcon) {
   BirchWeatherItem item(u"Sunny", 72.f, GURL());
 
   item.LoadIcon(base::BindOnce([](PrimaryIconType primary_icon_type,
@@ -710,7 +710,7 @@ TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
   }));
 }
 
-TEST_F(BirchItemIconTest, File_LoadIcon) {
+TEST_F(BirchItemIconTest, FileLoadIcon) {
   const std::string icon_url =
       "https://drive-thirdparty.googleusercontent.com/32/type/application/"
       "vnd.google-apps.document";
@@ -733,7 +733,7 @@ TEST_F(BirchItemIconTest, File_LoadIcon) {
   EXPECT_FALSE(icon_cache->Get(icon_url).isNull());
 }
 
-TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
+TEST_F(BirchItemIconTest, SelfShareLoadIcon) {
   const GURL page_url = GURL("https://www.example.com/");
   BirchSelfShareItem item(
       u"self share guid", u"self share tab", page_url, base::Time(),
@@ -755,21 +755,21 @@ TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
   EXPECT_FALSE(icon_cache->Get(page_url.spec()).isNull());
 }
 
-TEST_F(BirchItemTest, LostMedia_VideoConference_Subtitle) {
+TEST_F(BirchItemTest, LostMediaVideoConferenceSubtitle) {
   BirchLostMediaItem item(GURL(), u"test_title", std::nullopt,
                           SecondaryIconType::kLostMediaVideoConference,
                           base::DoNothing());
   EXPECT_EQ(item.subtitle(), u"Ongoing · Switch to tab");
 }
 
-TEST_F(BirchItemTest, LostMedia_MediaTab_Subtitle) {
+TEST_F(BirchItemTest, LostMediaMediaTabSubtitle) {
   BirchLostMediaItem item(GURL(), u"test_title", std::nullopt,
                           SecondaryIconType::kLostMediaVideo,
                           base::DoNothing());
   EXPECT_EQ(item.subtitle(), u"Playing · Switch to tab");
 }
 
-TEST_F(BirchItemIconTest, LostMedia_LoadIcon) {
+TEST_F(BirchItemIconTest, LostMediaLoadIcon) {
   const GURL page_url = GURL("https://www.example.com/");
   BirchLostMediaItem item(page_url, u"test_title", std::nullopt,
                           SecondaryIconType::kLostMediaVideoConference,
@@ -791,7 +791,7 @@ TEST_F(BirchItemIconTest, LostMedia_LoadIcon) {
   EXPECT_FALSE(icon_cache->Get(page_url.spec()).isNull());
 }
 
-TEST_F(BirchItemIconTest, LastActive_LoadIcon) {
+TEST_F(BirchItemIconTest, LastActiveLoadIcon) {
   const GURL page_url = GURL("https://www.example.com/");
   BirchLastActiveItem item(u"item", page_url, base::Time());
 
@@ -813,7 +813,7 @@ TEST_F(BirchItemIconTest, LastActive_LoadIcon) {
   EXPECT_FALSE(icon_cache->Get(page_url.spec()).isNull());
 }
 
-TEST_F(BirchItemIconTest, MostVisited_LoadIcon) {
+TEST_F(BirchItemIconTest, MostVisitedLoadIcon) {
   const GURL page_url = GURL("https://www.example.com/");
   BirchMostVisitedItem item(u"item", page_url);
 

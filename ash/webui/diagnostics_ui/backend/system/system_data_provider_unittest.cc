@@ -1261,7 +1261,7 @@ TEST_F(SystemDataProviderTest, CpuUsagePtrDataValidation) {
 
 // Validate expected metric NoData error triggered when request for SystemInfo
 // returns no system info data.
-TEST_F(SystemDataProviderTest, RecordSystemDataError_NoSystemInfo) {
+TEST_F(SystemDataProviderTest, RecordSystemDataErrorNoSystemInfo) {
   base::HistogramTester histogram_tester;
   VerifySystemDataErrorBucketCounts(histogram_tester,
                                     /*expected_no_data_error=*/0,
@@ -1289,7 +1289,7 @@ TEST_F(SystemDataProviderTest, RecordSystemDataError_NoSystemInfo) {
 
 // Validate expected metric NoData error triggered when request for SystemInfo
 // returns no cpu info data.
-TEST_F(SystemDataProviderTest, RecordSystemDataError_NoCpuInfo) {
+TEST_F(SystemDataProviderTest, RecordSystemDataErrorNoCpuInfo) {
   base::HistogramTester histogram_tester;
   VerifySystemDataErrorBucketCounts(histogram_tester,
                                     /*expected_no_data_error=*/0,
@@ -1324,7 +1324,7 @@ TEST_F(SystemDataProviderTest, RecordSystemDataError_NoCpuInfo) {
   run_loop.Run();
 }
 
-TEST_F(SystemDataProviderTest, RecordSystemDataError_NoPhysicalCpuInfo) {
+TEST_F(SystemDataProviderTest, RecordSystemDataErrorNoPhysicalCpuInfo) {
   base::HistogramTester histogram_tester;
   VerifySystemDataErrorBucketCounts(histogram_tester,
                                     /*expected_no_data_error=*/0,
@@ -1366,7 +1366,7 @@ TEST_F(SystemDataProviderTest, RecordSystemDataError_NoPhysicalCpuInfo) {
 
 // Validate expected metric ExpectationNotMet error triggered when logical cpu
 // info is empty.
-TEST_F(SystemDataProviderTest, RecordSystemDataError_NoLogicalCpuInfo) {
+TEST_F(SystemDataProviderTest, RecordSystemDataErrorNoLogicalCpuInfo) {
   base::HistogramTester histogram_tester;
   VerifySystemDataErrorBucketCounts(histogram_tester,
                                     /*expected_no_data_error=*/0,
@@ -1409,7 +1409,7 @@ TEST_F(SystemDataProviderTest, RecordSystemDataError_NoLogicalCpuInfo) {
 
 // Validate expected metric ExpectationNotMet error triggered when cpu usage
 // delta is zero.
-TEST_F(SystemDataProviderTest, RecordSystemDataError_DeltaZero) {
+TEST_F(SystemDataProviderTest, RecordSystemDataErrorDeltaZero) {
   base::HistogramTester histogram_tester;
   VerifySystemDataErrorBucketCounts(histogram_tester,
                                     /*expected_no_data_error=*/0,
@@ -1443,7 +1443,7 @@ TEST_F(SystemDataProviderTest, RecordSystemDataError_DeltaZero) {
 
 // Validate expected metric triggered when request for BatteryInfo returns a
 // ProbeError.
-TEST_F(SystemDataProviderTest, RecordProbeError_BatteryInfo) {
+TEST_F(SystemDataProviderTest, RecordProbeErrorBatteryInfo) {
   base::HistogramTester histogram_tester;
   VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorBatteryInfo,
                                /*expected_unknown_error=*/0,
@@ -1476,7 +1476,7 @@ TEST_F(SystemDataProviderTest, RecordProbeError_BatteryInfo) {
 
 // Validate expected metric NoData error triggered when request for SystemInfo
 // returns no battery info data.
-TEST_F(SystemDataProviderTest, RecordBatteryDataError_BatteryInfoNoDataError) {
+TEST_F(SystemDataProviderTest, RecordBatteryDataErrorBatteryInfoNoDataError) {
   base::HistogramTester histogram_tester;
   VerifyBatteryDataErrorBucketCounts(histogram_tester,
                                      /*expected_no_data_error=*/0,
@@ -1502,7 +1502,7 @@ TEST_F(SystemDataProviderTest, RecordBatteryDataError_BatteryInfoNoDataError) {
 
 // Validate expected metric triggered when request for CpuInfo returns a
 // ProbeError.
-TEST_F(SystemDataProviderTest, RecordProbeError_CpuInfo) {
+TEST_F(SystemDataProviderTest, RecordProbeErrorCpuInfo) {
   base::HistogramTester histogram_tester;
   // Setup Timer
   auto timer = std::make_unique<base::MockRepeatingTimer>();
@@ -1548,7 +1548,7 @@ TEST_F(SystemDataProviderTest, RecordProbeError_CpuInfo) {
 
 // Validate expected metric triggered when request for MemoryInfo returns a
 // ProbeError.
-TEST_F(SystemDataProviderTest, RecordProbeError_MemoryInfo) {
+TEST_F(SystemDataProviderTest, RecordProbeErrorMemoryInfo) {
   base::HistogramTester histogram_tester;
   VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorMemoryInfo,
                                /*expected_unknown_error=*/0,
@@ -1592,7 +1592,7 @@ TEST_F(SystemDataProviderTest, RecordProbeError_MemoryInfo) {
 
 // Validate expected metric triggered when request for SystemInfo returns a
 // ProbeError.
-TEST_F(SystemDataProviderTest, RecordProbeError_SystemInfo) {
+TEST_F(SystemDataProviderTest, RecordProbeErrorSystemInfo) {
   base::HistogramTester histogram_tester;
   VerifyProbeErrorBucketCounts(
       histogram_tester, kProbeErrorSystemInfo, /*expected_unknown_error=*/0,
@@ -1623,7 +1623,7 @@ TEST_F(SystemDataProviderTest, RecordProbeError_SystemInfo) {
 
 // Validate expected metric ExpectationNotMet error triggered when
 // charge_full_design value from battery_info is zero.
-TEST_F(SystemDataProviderTest, RecordBatteryDataError_ChargeFullDesignZero) {
+TEST_F(SystemDataProviderTest, RecordBatteryDataErrorChargeFullDesignZero) {
   base::HistogramTester histogram_tester;
   VerifyBatteryDataErrorBucketCounts(histogram_tester,
                                      /*expected_no_data_error=*/0,
@@ -1655,7 +1655,7 @@ TEST_F(SystemDataProviderTest, RecordBatteryDataError_ChargeFullDesignZero) {
 
 // Validate expected metric ExpectationNotMet error triggered when
 // charge_full value from battery_info is zero.
-TEST_F(SystemDataProviderTest, RecordBatteryDataError_ChargeFullZero) {
+TEST_F(SystemDataProviderTest, RecordBatteryDataErrorChargeFullZero) {
   base::HistogramTester histogram_tester;
   VerifyBatteryDataErrorBucketCounts(histogram_tester,
                                      /*expected_no_data_error=*/0,
@@ -1684,7 +1684,7 @@ TEST_F(SystemDataProviderTest, RecordBatteryDataError_ChargeFullZero) {
 
 // Validate expected metric ExpectationNotMet error triggered when
 // has battery info mismatch from two sources.
-TEST_F(SystemDataProviderTest, RecordBatteryDataError_HasBatteryInfoMismatch) {
+TEST_F(SystemDataProviderTest, RecordBatteryDataErrorHasBatteryInfoMismatch) {
   base::HistogramTester histogram_tester;
   VerifyBatteryDataErrorBucketCounts(histogram_tester,
                                      /*expected_no_data_error=*/0,
@@ -1705,7 +1705,7 @@ TEST_F(SystemDataProviderTest, RecordBatteryDataError_HasBatteryInfoMismatch) {
 
 // Validate expected metric NoData error triggered when battery charge status
 // returns null.
-TEST_F(SystemDataProviderTest, RecordBatteryDataError_ChargeStatusNull) {
+TEST_F(SystemDataProviderTest, RecordBatteryDataErrorChargeStatusNull) {
   base::HistogramTester histogram_tester;
   VerifyBatteryDataErrorBucketCounts(histogram_tester,
                                      /*expected_no_data_error=*/0,

@@ -478,7 +478,7 @@ TEST_F(ExtendedDesktopTest, CaptureEventLocationHighDPI) {
             location_handler.release_location().ToString());
 }
 
-TEST_F(ExtendedDesktopTest, CaptureEventLocationHighDPI_2) {
+TEST_F(ExtendedDesktopTest, CaptureEventLocationHighDPI2) {
   UpdateDisplay("1000x600,600x400*2");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 

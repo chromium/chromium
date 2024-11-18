@@ -309,7 +309,7 @@ TEST_F(LoginAuthFactorsViewUnittest, MultipleAuthFactorsInReadyState) {
 
 // Note: At the moment, Smart Lock is the only auth factor that uses state
 // kClickRequired (hence no similar test for Fingerprint).
-TEST_F(LoginAuthFactorsViewUnittest, ClickRequired_SmartLock) {
+TEST_F(LoginAuthFactorsViewUnittest, ClickRequiredSmartLock) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -372,7 +372,7 @@ TEST_F(LoginAuthFactorsViewUnittest, ClickingArrowButton) {
 // kAuthenticated state, it should not request to hide the password field, and
 // that is its final state as the screen becomes unlocked (it doesn't
 // transition to any further states).
-TEST_F(LoginAuthFactorsViewUnittest, Authenticated_LockScreen_Fingerprint) {
+TEST_F(LoginAuthFactorsViewUnittest, AuthenticatedLockScreenFingerprint) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   Shell::Get()->login_screen_controller()->ShowLockScreen();
@@ -402,7 +402,7 @@ TEST_F(LoginAuthFactorsViewUnittest, Authenticated_LockScreen_Fingerprint) {
 //
 // On the lock screen, kAuthenticated is its final state as the screen becomes
 // unlocked (it doesn't transition to any further states).
-TEST_F(LoginAuthFactorsViewUnittest, Authenticated_LockScreen_SmartLock) {
+TEST_F(LoginAuthFactorsViewUnittest, AuthenticatedLockScreenSmartLock) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   Shell::Get()->login_screen_controller()->ShowLockScreen();
@@ -438,7 +438,7 @@ TEST_F(LoginAuthFactorsViewUnittest, Authenticated_LockScreen_SmartLock) {
 // state (if Cryptohome fails to decrypt the user directory with the
 // phone-provided decryption key). When Smart Lock transitions out of
 // kAuthenticated, it should no longer request to hide the password field.
-TEST_F(LoginAuthFactorsViewUnittest, Authenticated_LoginScreen_SmartLock) {
+TEST_F(LoginAuthFactorsViewUnittest, AuthenticatedLoginScreenSmartLock) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
   Shell::Get()->login_screen_controller()->ShowLoginScreen();
@@ -579,7 +579,7 @@ TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonRequestsFocus) {
 // The arrow button automatically becomes focused when Smart Lock state is
 // kClickRequired. After the state changes, the button loses visibility and the
 // entire view should have its focus cleared.
-TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocus_Authenticated) {
+TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocusAuthenticated) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   Shell::Get()->login_screen_controller()->ShowLockScreen();
@@ -593,12 +593,12 @@ TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocus_Authenticated) {
 // as though the focus is not cleared and instead jumps to the password input.
 // This focus happens inside LoginAuthUserView when the state change causes
 // the password input to become visible.
-TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocus_Ready) {
+TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocusReady) {
   TestArrowButtonClearsFocus(
       /*state_after_click_required=*/AuthFactorState::kReady);
 }
 
-TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocus_Error) {
+TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonClearsFocusError) {
   TestArrowButtonClearsFocus(
       /*state_after_click_required=*/AuthFactorState::kErrorTemporary);
   TestArrowButtonClearsFocus(

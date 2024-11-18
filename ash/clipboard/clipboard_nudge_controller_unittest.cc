@@ -256,7 +256,7 @@ TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
 }
 
 // Asserts that all nudge metric related histograms start at 0.
-TEST_F(ClipboardNudgeControllerTest, NudgeMetrics_StartAtZero) {
+TEST_F(ClipboardNudgeControllerTest, NudgeMetricsStartAtZero) {
   histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgeOpenTime, 0);
   histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgePasteTime, 0);
   histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgeOpenTime, 0);

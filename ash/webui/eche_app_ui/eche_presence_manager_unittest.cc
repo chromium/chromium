@@ -116,7 +116,7 @@ class EchePresenceManagerTest : public testing::Test {
   std::unique_ptr<EchePresenceManager> eche_presence_manager_;
 };
 
-TEST_F(EchePresenceManagerTest, StopMonitoring_PersistentScan) {
+TEST_F(EchePresenceManagerTest, StopMonitoringPersistentScan) {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kEcheShorterScanningDutyCycle});
@@ -184,7 +184,7 @@ TEST_F(EchePresenceManagerTest, StartMonitoring) {
   EXPECT_EQ(1u, num_start_monitor_calls_);
 }
 
-TEST_F(EchePresenceManagerTest, StartMonitoring_PeriodicalScanning) {
+TEST_F(EchePresenceManagerTest, StartMonitoringPeriodicalScanning) {
   Reset();
   SetFeatureStatus(FeatureStatus::kConnected);
   SetStreamStatus(proto::StatusChangeType::TYPE_STREAM_START);

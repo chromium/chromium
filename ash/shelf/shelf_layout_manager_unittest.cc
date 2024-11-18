@@ -847,7 +847,7 @@ TEST_F(ShelfLayoutManagerTest, StatusAreaMoveWithSwipeOnAutoHiddenShelf) {
 }
 
 // Checks that the shelf keeps hidden during the Kiosk mode.
-TEST_F(ShelfLayoutManagerTest, HiddenShelfInKioskMode_FullScreen) {
+TEST_F(ShelfLayoutManagerTest, HiddenShelfInKioskModeFullScreen) {
   SetUpKioskSession();
 
   // Create a window and make it full screen; the shelf should be hidden.
@@ -868,7 +868,7 @@ TEST_F(ShelfLayoutManagerTest, HiddenShelfInKioskMode_FullScreen) {
 
 // Checks that the shelf keeps hidden during the Kiosk mode. (Some windows might
 // not be fullscreen, e.g., the a11y setting window.)
-TEST_F(ShelfLayoutManagerTest, HiddenShelfInKioskMode_Default) {
+TEST_F(ShelfLayoutManagerTest, HiddenShelfInKioskModeDefault) {
   SetUpKioskSession();
 
   // Create a default window; the shelf should be hidden.

@@ -847,7 +847,7 @@ TEST_F(MahiPanelViewTest, ScrollViewContentsDynamicSize) {
 
 // Tests that the question textfield accepts user input and creates a text
 // bubble with the provided text by pressing the send button or enter.
-TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
+TEST_F(MahiPanelViewTest, QuestionTextfieldCreateQuestion) {
   auto* const question_answer_view =
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
   auto* const send_button =
@@ -920,7 +920,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
 
 // Tests that the question textfield does not send requests to the manager while
 // it is waiting to load an answer.
-TEST_F(MahiPanelViewTest, QuestionTextfield_InputDisabledWhileLoadingAnswer) {
+TEST_F(MahiPanelViewTest, QuestionTextfieldInputDisabledWhileLoadingAnswer) {
   // Send button is initially enabled.
   const auto* const send_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
@@ -973,7 +973,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_InputDisabledWhileLoadingAnswer) {
 }
 
 // Tests that the question textfield does not process empty or blank inputs.
-TEST_F(MahiPanelViewTest, QuestionTextfield_EmptyInput) {
+TEST_F(MahiPanelViewTest, QuestionTextfieldEmptyInput) {
   // Question textfield is initially empty.
   auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
@@ -1001,7 +1001,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_EmptyInput) {
 
 // Tests that the question textfield trims whitespace from the front and back of
 // the provided text.
-TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
+TEST_F(MahiPanelViewTest, QuestionTextfieldTrimWhitespace) {
   // Set a text in the textfield with leading and trailing whitespace.
   auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
@@ -1715,7 +1715,7 @@ TEST_F(MahiPanelViewTest, ContentSourceButtonUrlAfterRefresh) {
 
 // Tests that refreshing Summary contents will bring the user to the Summary
 // View and clear all previously added Q&A text bubbles.
-TEST_F(MahiPanelViewTest, RefreshSummaryContents_TransitionToSummaryView) {
+TEST_F(MahiPanelViewTest, RefreshSummaryContentsTransitionToSummaryView) {
   ON_CALL(mock_mahi_manager(), AnswerQuestion)
       .WillByDefault(
           [](const std::u16string& question, bool current_panel_content,

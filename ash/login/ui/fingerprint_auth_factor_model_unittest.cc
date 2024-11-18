@@ -91,7 +91,7 @@ TEST_F(FingerprintAuthFactorModelTest, GetAuthFactorState) {
   }
 }
 
-TEST_F(FingerprintAuthFactorModelTest, GetAuthFactorState_Unavailable) {
+TEST_F(FingerprintAuthFactorModelTest, GetAuthFactorStateUnavailable) {
   for (const Testcase& testcase : kTestCases) {
     fingerprint_auth_factor_model_->SetFingerprintState(
         testcase.fingerprint_state);
@@ -100,7 +100,7 @@ TEST_F(FingerprintAuthFactorModelTest, GetAuthFactorState_Unavailable) {
   }
 }
 
-TEST_F(FingerprintAuthFactorModelTest, GetAuthFactorState_AuthResultFalse) {
+TEST_F(FingerprintAuthFactorModelTest, GetAuthFactorStateAuthResultFalse) {
   for (const Testcase& testcase : kTestCases) {
     fingerprint_auth_factor_model_->SetFingerprintState(
         testcase.fingerprint_state);
@@ -114,7 +114,7 @@ TEST_F(FingerprintAuthFactorModelTest, GetAuthFactorState_AuthResultFalse) {
   }
 }
 
-TEST_F(FingerprintAuthFactorModelTest, GetAuthFactorState_AuthResulTrue) {
+TEST_F(FingerprintAuthFactorModelTest, GetAuthFactorStateAuthResulTrue) {
   for (const Testcase& testcase : kTestCases) {
     fingerprint_auth_factor_model_->SetFingerprintState(
         testcase.fingerprint_state);
@@ -131,7 +131,7 @@ TEST_F(FingerprintAuthFactorModelTest, GetLabelId) {
   }
 }
 
-TEST_F(FingerprintAuthFactorModelTest, GetLabelId_AuthResultFalse) {
+TEST_F(FingerprintAuthFactorModelTest, GetLabelIdAuthResultFalse) {
   for (const Testcase& testcase : kTestCases) {
     fingerprint_auth_factor_model_->SetFingerprintState(
         testcase.fingerprint_state);
@@ -147,7 +147,7 @@ TEST_F(FingerprintAuthFactorModelTest, GetLabelId_AuthResultFalse) {
   }
 }
 
-TEST_F(FingerprintAuthFactorModelTest, GetLabelId_AuthResultTrue) {
+TEST_F(FingerprintAuthFactorModelTest, GetLabelIdAuthResultTrue) {
   for (const Testcase& testcase : kTestCases) {
     fingerprint_auth_factor_model_->SetFingerprintState(
         testcase.fingerprint_state);
@@ -157,7 +157,7 @@ TEST_F(FingerprintAuthFactorModelTest, GetLabelId_AuthResultTrue) {
   }
 }
 
-TEST_F(FingerprintAuthFactorModelTest, GetLabelId_CanUsePin) {
+TEST_F(FingerprintAuthFactorModelTest, GetLabelIdCanUsePin) {
   fingerprint_auth_factor_model_->SetFingerprintState(
       FingerprintState::DISABLED_FROM_TIMEOUT);
   model_->set_can_use_pin(true);

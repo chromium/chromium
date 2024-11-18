@@ -2622,7 +2622,7 @@ TEST_F(AcceleratorControllerTest, CalculatorKey) {
 }
 
 // Tests the IME mode change key.
-TEST_F(AcceleratorControllerTest, ChangeIMEMode_SwitchesInputMethod) {
+TEST_F(AcceleratorControllerTest, ChangeIMEModeSwitchesInputMethod) {
   AddTestImes();
 
   ImeController* controller = Shell::Get()->ime_controller();
@@ -2999,7 +2999,7 @@ class AcceleratorControllerDeprecatedTest : public AcceleratorControllerTest {
 };
 
 // TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
-TEST_F(AcceleratorControllerDeprecatedTest, DeskShortcuts_Old) {
+TEST_F(AcceleratorControllerDeprecatedTest, DeskShortcutsOld) {
   // The shortcuts are Search+Shift+[MINUS|PLUS], but due to event
   // rewriting they became Shift+[F11|F12]. So only the rewritten shortcut
   // works but the "real" shortcut doesn't.

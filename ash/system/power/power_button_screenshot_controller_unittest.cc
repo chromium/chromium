@@ -213,7 +213,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Tests the functionalities that press the volume key first and then press
 // volume down and volume up key alternative.
-TEST_F(PowerButtonScreenshotControllerTest, VolumeKeyPressedFirst_Screenshot) {
+TEST_F(PowerButtonScreenshotControllerTest, VolumeKeyPressedFirstScreenshot) {
   // Tests when volume up pressed first, it waits for power button pressed
   // screenshot chord.
   PressKey(ui::VKEY_VOLUME_UP);

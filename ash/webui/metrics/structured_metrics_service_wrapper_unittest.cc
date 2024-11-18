@@ -69,7 +69,7 @@ TEST_F(StructuredMetricsServiceWrapperTest,
   EXPECT_TRUE(received_event.has_system_uptime());
 }
 
-TEST_F(StructuredMetricsServiceWrapperTest, TestComputeEventUptime_ValidTimes) {
+TEST_F(StructuredMetricsServiceWrapperTest, TestComputeEventUptimeValidTimes) {
   base::TimeDelta system_uptime = base::Seconds(4000);
   base::TimeDelta system_timestamp = base::Seconds(10000);
   base::TimeDelta event_timestamp = base::Seconds(7000);

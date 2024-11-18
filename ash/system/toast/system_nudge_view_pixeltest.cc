@@ -87,7 +87,7 @@ TEST_F(SystemNudgeViewPixelTest, TextOnly) {
       "screenshot", /*revision_number=*/0, GetContentsView()));
 }
 
-TEST_F(SystemNudgeViewPixelTest, TextOnly_LongText) {
+TEST_F(SystemNudgeViewPixelTest, TextOnlyLongText) {
   // Set up base nudge data and set a long text.
   auto nudge_data = CreateBaseNudgeData();
   nudge_data.body_text = long_body_text;
