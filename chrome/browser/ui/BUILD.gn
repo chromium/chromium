@@ -309,6 +309,7 @@ static_library("ui") {
     "//chrome/browser/headless",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/search",
+    "//chrome/browser/task_manager",
     "//chrome/browser/ui/tabs:tab_enums",
   ]
 
@@ -384,6 +385,7 @@ static_library("ui") {
     "//chrome/browser/signin:impl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
+    "//chrome/browser/task_manager:impl",
     "//chrome/browser/task_manager/common",
     "//chrome/browser/task_manager/common:impl",
     "//chrome/browser/ui/autofill",
@@ -738,6 +740,8 @@ static_library("ui") {
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/updates/announcement_notification:impl",
     "//chrome/browser/prefs:impl",
+
+    "//chrome/browser/task_manager:impl",
   ]
 
   if (enable_vr && is_win) {
@@ -1680,7 +1684,6 @@ static_library("ui") {
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/smart_card:smart_card",
       "//chrome/browser/tab_group_sync:utils",
-      "//chrome/browser/task_manager:impl",
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/apps:impl",
@@ -1839,7 +1842,6 @@ static_library("ui") {
     public_deps += [
       "//chrome/browser/importer",
       "//chrome/browser/importer:impl",
-      "//chrome/browser/task_manager",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/ui/tabs:tab_enums",
@@ -1862,8 +1864,6 @@ static_library("ui") {
       # TODO(crbug.com/40246046): Remove allow_circular_includes_from when
       # dependencies for controller are fixed.
       "//chrome/browser/lens/region_search",
-
-      "//chrome/browser/task_manager:impl",
 
       # TODO(crbug.com/359593415): Remove allow_circular_includes_from.
       # //c/b/ui/apps/directory_access_confirmation_dialog.cc includes

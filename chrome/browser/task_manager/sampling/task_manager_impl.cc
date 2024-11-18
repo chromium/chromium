@@ -21,12 +21,16 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/browser_process_task_provider.h"
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/task_manager/providers/child_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"
 #include "chrome/browser/task_manager/providers/render_process_host_task_provider.h"
 #include "chrome/browser/task_manager/providers/spare_render_process_host_task_provider.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_task_provider.h"
 #include "chrome/browser/task_manager/providers/worker_task_provider.h"
+#endif  // !BUIDLFLAG(IS_ANDROID)
+
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_thread.h"
@@ -72,13 +76,17 @@ TaskManagerImpl::TaskManagerImpl()
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   task_providers_.push_back(std::make_unique<BrowserProcessTaskProvider>());
-  task_providers_.push_back(std::make_unique<ChildProcessTaskProvider>());
 
   // Put all task providers for various types of RenderProcessHosts in this
   // section. All of them should be added as primary subproviders for the
   // FallbackTaskProvider, so that a fallback task can be shown for a renderer
   // process if no other provider is shown for it.
   std::vector<std::unique_ptr<TaskProvider>> primary_subproviders;
+
+// TODO(crbug.com/379192565): Enable more providers on android.
+#if !BUILDFLAG(IS_ANDROID)
+  task_providers_.push_back(std::make_unique<ChildProcessTaskProvider>());
+
   primary_subproviders.push_back(
       std::make_unique<SpareRenderProcessHostTaskProvider>());
   primary_subproviders.push_back(std::make_unique<WorkerTaskProvider>());
@@ -86,6 +94,7 @@ TaskManagerImpl::TaskManagerImpl()
   task_providers_.push_back(std::make_unique<FallbackTaskProvider>(
       std::move(primary_subproviders),
       std::make_unique<RenderProcessHostTaskProvider>()));
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (arc::IsArcAvailable())
