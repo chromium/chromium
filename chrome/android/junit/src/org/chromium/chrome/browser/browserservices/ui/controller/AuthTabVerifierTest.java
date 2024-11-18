@@ -37,7 +37,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
@@ -64,7 +63,7 @@ public class AuthTabVerifierTest {
     @Mock AuthTabIntentDataProvider mIntentDataProvider;
     @Mock ChromeOriginVerifier mOriginVerifier;
     @Mock CustomTabActivityTabProvider mActivityTabProvider;
-    @Mock BaseCustomTabActivity mActivity;
+    @Mock Activity mActivity;
 
     private AuthTabVerifier mDelegate;
     private Runnable mDelayedTask;
@@ -77,11 +76,10 @@ public class AuthTabVerifierTest {
         when(mIntentDataProvider.getAuthRedirectPath()).thenReturn(REDIRECT_PATH);
         when(mIntentDataProvider.getClientPackageName()).thenReturn("org.chromium.authtab");
         ChromeOriginVerifierFactory.setInstanceForTesting(mOriginVerifier);
-        when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mActivityTabProvider);
-        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
-        when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
 
-        mDelegate = new AuthTabVerifier(mActivity);
+        mDelegate =
+                new AuthTabVerifier(
+                        mActivity, mLifecycleDispatcher, mIntentDataProvider, mActivityTabProvider);
     }
 
     void simulateVerificationResultFromNetwork(String url, boolean success) {

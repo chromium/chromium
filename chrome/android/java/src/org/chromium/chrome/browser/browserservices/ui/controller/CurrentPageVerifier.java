@@ -11,10 +11,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -23,13 +23,10 @@ import org.chromium.content_public.browser.NavigationHandle;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Inject;
-
 /**
  * Checks whether the currently seen web page belongs to a verified origin and notifies any
  * observers.
  */
-@ActivityScope
 public class CurrentPageVerifier implements NativeInitObserver {
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -79,14 +76,18 @@ public class CurrentPageVerifier implements NativeInitObserver {
                 }
             };
 
-    @Inject
-    public CurrentPageVerifier(BaseCustomTabActivity activity) {
-        mTabProvider = activity.getCustomTabActivityTabProvider();
-        mIntentDataProvider = activity.getIntentDataProvider();
-        mDelegate = activity.getVerifier();
+    public CurrentPageVerifier(
+            CustomTabActivityTabProvider customTabActivityTabProvider,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            Verifier verifier,
+            TabObserverRegistrar tabObserverRegistrar,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mTabProvider = customTabActivityTabProvider;
+        mIntentDataProvider = intentDataProvider;
+        mDelegate = verifier;
 
-        activity.getTabObserverRegistrar().registerActivityTabObserver(mVerifyOnPageLoadObserver);
-        activity.getLifecycleDispatcher().register(this);
+        tabObserverRegistrar.registerActivityTabObserver(mVerifyOnPageLoadObserver);
+        lifecycleDispatcher.register(this);
     }
 
     /**

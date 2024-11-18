@@ -31,12 +31,11 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
     private boolean mTwaOpenedRecorded;
 
     @Inject
-    TrustedWebActivityOpenTimeRecorder(
-            BaseCustomTabActivity activity, CurrentPageVerifier currentPageVerifier) {
-        mCurrentPageVerifier = currentPageVerifier;
+    TrustedWebActivityOpenTimeRecorder(BaseCustomTabActivity activity) {
+        mCurrentPageVerifier = activity.getCurrentPageVerifier();
         mTabProvider = activity.getActivityTabProvider();
         activity.getLifecycleDispatcher().register(this);
-        currentPageVerifier.addVerificationObserver(this::onVerificationStateChanged);
+        mCurrentPageVerifier.addVerificationObserver(this::onVerificationStateChanged);
     }
 
     @Override

@@ -69,7 +69,7 @@ public final class TrustedWebActivityCurrentPageVerifierTest {
 
     private @VerificationStatus int getCurrentPageVerifierStatus() {
         CustomTabActivity customTabActivity = mActivityTestRule.getActivity();
-        return customTabActivity.getComponent().resolveCurrentPageVerifier().getState().status;
+        return customTabActivity.getCurrentPageVerifier().getState().status;
     }
 
     @Test

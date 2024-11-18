@@ -10,8 +10,8 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.gsa.GSAUtils;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -19,15 +19,11 @@ import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Inject;
-
 /**
- * Keeps the client app alive, when possible, while CustomTabActivity is in foreground (see
- * {@link CustomTabsConnection#keepAliveForSession}).
+ * Keeps the client app alive, when possible, while CustomTabActivity is in foreground (see {@link
+ * CustomTabsConnection#keepAliveForSession}).
  */
-@ActivityScope
 public class CustomTabActivityClientConnectionKeeper implements StartStopWithNativeObserver {
-
     @IntDef({
         ConnectionStatus.DISCONNECTED,
         ConnectionStatus.DISCONNECTED_KEEP_ALIVE,
@@ -48,11 +44,13 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
 
     private boolean mIsKeepingAlive;
 
-    @Inject
-    public CustomTabActivityClientConnectionKeeper(BaseCustomTabActivity activity) {
-        mIntentDataProvider = activity.getIntentDataProvider();
-        mTabProvider = activity.getCustomTabActivityTabProvider();
-        activity.getLifecycleDispatcher().register(this);
+    public CustomTabActivityClientConnectionKeeper(
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabActivityTabProvider tabProvider,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mIntentDataProvider = intentDataProvider;
+        mTabProvider = tabProvider;
+        lifecycleDispatcher.register(this);
     }
 
     @Override

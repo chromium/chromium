@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
-import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -36,12 +35,11 @@ public class WebappDisclosureController extends DisclosureController {
     public WebappDisclosureController(
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             TrustedWebActivityModel model,
-            CurrentPageVerifier currentPageVerifier,
             BaseCustomTabActivity activity) {
         super(
                 model,
                 activity.getLifecycleDispatcher(),
-                currentPageVerifier,
+                activity.getCurrentPageVerifier(),
                 activity.getIntentDataProvider().getClientPackageName());
         mIntentDataProvider = activity.getIntentDataProvider();
 

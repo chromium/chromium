@@ -81,11 +81,9 @@ public class WebappDisclosureControllerTest {
         when(mActivity.getIntentDataProvider()).thenReturn(intentDataProvider);
         when(mActivity.getLifecycleDispatcher())
                 .thenReturn(mock(ActivityLifecycleDispatcher.class));
+        when(mActivity.getCurrentPageVerifier()).thenReturn(mCurrentPageVerifier);
         return new WebappDisclosureController(
-                mock(WebappDeferredStartupWithStorageHandler.class),
-                mModel,
-                mCurrentPageVerifier,
-                mActivity);
+                mock(WebappDeferredStartupWithStorageHandler.class), mModel, mActivity);
     }
 
     private WebappDataStorage registerStorageForWebApk(String packageName) {

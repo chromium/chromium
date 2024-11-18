@@ -6,16 +6,12 @@ package org.chromium.chrome.browser.customtabs.dependency_injection;
 
 import dagger.Subcomponent;
 
-import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
-import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
-import org.chromium.chrome.browser.customtabs.CustomTabActivityClientConnectionKeeper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTracker;
 import org.chromium.chrome.browser.customtabs.CustomTabBottomBarDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
-import org.chromium.chrome.browser.customtabs.CustomTabDownloadObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
@@ -42,10 +38,6 @@ import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 @Subcomponent(modules = {ChromeActivityCommonsModule.class, BaseCustomTabActivityModule.class})
 @ActivityScope
 public interface BaseCustomTabActivityComponent extends ChromeActivityComponent {
-    CurrentPageVerifier resolveCurrentPageVerifier();
-
-    CustomTabActivityClientConnectionKeeper resolveConnectionKeeper();
-
     CustomTabActivityLifecycleUmaTracker resolveUmaTracker();
 
     CustomTabActivityNavigationController resolveNavigationController();
@@ -59,8 +51,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     CustomTabCompositorContentInitializer resolveCompositorContentInitializer();
 
     CustomTabDelegateFactory resolveTabDelegateFactory();
-
-    CustomTabDownloadObserver resolveDownloadObserver();
 
     CustomTabIncognitoManager resolveCustomTabIncognitoManager();
 
@@ -86,9 +76,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
 
     // TWA only
     TrustedWebActivityCoordinator resolveTrustedWebActivityCoordinator();
-
-    // AuthTab only
-    AuthTabVerifier resolveAuthTabVerifier();
 
     // For testing
     CustomTabTabPersistencePolicy resolveTabPersistencePolicy();

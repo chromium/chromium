@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebacti
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
-import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 
@@ -22,13 +21,11 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
 
     @Inject
     TrustedWebActivityDisclosureController(
-            TrustedWebActivityModel model,
-            CurrentPageVerifier currentPageVerifier,
-            BaseCustomTabActivity activity) {
+            TrustedWebActivityModel model, BaseCustomTabActivity activity) {
         super(
                 model,
                 activity.getLifecycleDispatcher(),
-                currentPageVerifier,
+                activity.getCurrentPageVerifier(),
                 activity.getClientPackageNameProvider().get());
         mClientPackageNameProvider = activity.getClientPackageNameProvider();
     }

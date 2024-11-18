@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.EmptyVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
@@ -120,7 +121,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected CustomTabNightModeStateController mNightModeStateController;
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
-    protected @Nullable AuthTabVerifier mAuthTabVerifier;
+    private @Nullable AuthTabVerifier mAuthTabVerifier;
     private Verifier mVerifier;
     protected FullscreenManager mFullscreenManager;
     protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
@@ -133,6 +134,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private TwaFinishHandler mTwaFinishHandler;
     private CloseButtonVisibilityManager mCloseButtonVisibilityManager;
     private CustomTabBrowserControlsVisibilityDelegate mCustomTabBrowserControlsVisibilityDelegate;
+    private CurrentPageVerifier mCurrentPageVerifier;
+    private CustomTabActivityClientConnectionKeeper mCustomTabActivityClientConnectionKeeper;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -337,12 +340,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         component.resolveCompositorContentInitializer();
         component.resolveTaskDescriptionHelper();
         component.resolveUmaTracker();
-        component.resolveDownloadObserver();
-        CustomTabActivityClientConnectionKeeper connectionKeeper =
-                component.resolveConnectionKeeper();
         mNavigationController.setFinishHandler(
                 (reason, warmupOnFinish) -> {
-                    if (reason == USER_NAVIGATION) connectionKeeper.recordClientConnectionStatus();
+                    if (reason == USER_NAVIGATION) {
+                        getCustomTabActivityClientConnectionKeeper().recordClientConnectionStatus();
+                    }
                     handleFinishAndClose(warmupOnFinish);
                 });
 
@@ -371,10 +373,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         if (mIntentDataProvider.isTrustedWebActivity()) {
             mTwaCoordinator = component.resolveTrustedWebActivityCoordinator();
-        }
-
-        if (mIntentDataProvider.isAuthTab()) {
-            mAuthTabVerifier = component.resolveAuthTabVerifier();
         }
 
         mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
@@ -444,6 +442,30 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                             mIntentDataProvider.getSession(), /* forPrerender= */ false);
         }
         mTabObserverRegistrar.associateWithActivity(getLifecycleDispatcher(), mTabProvider);
+
+        mCurrentPageVerifier =
+                new CurrentPageVerifier(
+                        getCustomTabActivityTabProvider(),
+                        getIntentDataProvider(),
+                        getVerifier(),
+                        getTabObserverRegistrar(),
+                        getLifecycleDispatcher());
+        if (mIntentDataProvider.isAuthTab()) {
+            mAuthTabVerifier =
+                    new AuthTabVerifier(
+                            this,
+                            getLifecycleDispatcher(),
+                            getIntentDataProvider(),
+                            getCustomTabActivityTabProvider());
+        }
+
+        mCustomTabActivityClientConnectionKeeper =
+                new CustomTabActivityClientConnectionKeeper(
+                        getIntentDataProvider(),
+                        getCustomTabActivityTabProvider(),
+                        getLifecycleDispatcher());
+
+        new CustomTabDownloadObserver(this, getTabObserverRegistrar());
 
         super.performPreInflationStartup();
 
@@ -919,7 +941,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     public TwaFinishHandler getTwaFinishHandler() {
-        if (mTwaFinishHandler == null) mTwaFinishHandler = new TwaFinishHandler(this);
+        if (mTwaFinishHandler == null)
+            mTwaFinishHandler = new TwaFinishHandler(this, mIntentDataProvider);
         return mTwaFinishHandler;
     }
 
@@ -952,5 +975,17 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public void setLifecycleDispatcherForTesting(ActivityLifecycleDispatcher dispatcher) {
         mLifecycleDispatcherForTesting = dispatcher;
+    }
+
+    public CurrentPageVerifier getCurrentPageVerifier() {
+        return mCurrentPageVerifier;
+    }
+
+    public @Nullable AuthTabVerifier getAuthTabVerifier() {
+        return mAuthTabVerifier;
+    }
+
+    public CustomTabActivityClientConnectionKeeper getCustomTabActivityClientConnectionKeeper() {
+        return mCustomTabActivityClientConnectionKeeper;
     }
 }

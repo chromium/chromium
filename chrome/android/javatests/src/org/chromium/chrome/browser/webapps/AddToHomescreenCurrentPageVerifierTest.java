@@ -58,7 +58,7 @@ public final class AddToHomescreenCurrentPageVerifierTest {
 
     private @VerificationStatus int getCurrentPageVerifierStatus() {
         WebappActivity webappActivity = mActivityTestRule.getActivity();
-        return webappActivity.getComponent().resolveCurrentPageVerifier().getState().status;
+        return webappActivity.getCurrentPageVerifier().getState().status;
     }
 
     /**

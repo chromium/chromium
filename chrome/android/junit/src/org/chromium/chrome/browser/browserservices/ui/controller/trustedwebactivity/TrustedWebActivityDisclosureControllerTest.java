@@ -65,9 +65,9 @@ public class TrustedWebActivityDisclosureControllerTest {
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
         when(mActivity.getClientPackageNameProvider()).thenReturn(mClientPackageNameProvider);
         when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
+        when(mActivity.getCurrentPageVerifier()).thenReturn(mCurrentPageVerifier);
 
-        mController =
-                new TrustedWebActivityDisclosureController(mModel, mCurrentPageVerifier, mActivity);
+        mController = new TrustedWebActivityDisclosureController(mModel, mActivity);
     }
 
     @Test

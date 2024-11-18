@@ -38,18 +38,17 @@ public class TrustedWebActivityCoordinator {
             TrustedWebActivityDisclosureController unused_disclosureController,
             DisclosureUiPicker unused_disclosureUiPicker,
             TrustedWebActivityOpenTimeRecorder unused_openTimeRecorder,
-            CurrentPageVerifier currentPageVerifier,
             Lazy<TwaSplashController> splashController,
             BaseCustomTabActivity activity) {
         // We don't need to do anything with the unused_ classes above, we just need to resolve them
         // so they start working.
         mSharedActivityCoordinator = sharedActivityCoordinator;
-        mCurrentPageVerifier = currentPageVerifier;
+        mCurrentPageVerifier = activity.getCurrentPageVerifier();
         mClientPackageNameProvider = activity.getClientPackageNameProvider();
 
         initSplashScreen(splashController, activity.getIntentDataProvider());
 
-        currentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
+        mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
     }
 
     private void initSplashScreen(

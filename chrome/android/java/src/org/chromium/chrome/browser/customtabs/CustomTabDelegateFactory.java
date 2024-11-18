@@ -18,8 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
-import dagger.Lazy;
-
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
@@ -91,7 +89,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final Verifier mVerifier;
         private final @ActivityType int mActivityType;
         private final BrowserServicesIntentDataProvider mIntentDataProvider;
-        private final Lazy<AuthTabVerifier> mAuthTabVerifier;
+        private final AuthTabVerifier mAuthTabVerifier;
 
         /** Constructs a new instance of {@link CustomTabNavigationDelegate}. */
         CustomTabNavigationDelegate(
@@ -99,7 +97,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Verifier verifier,
                 @ActivityType int activityType,
                 BrowserServicesIntentDataProvider intentDataProvider,
-                Lazy<AuthTabVerifier> authTabVerifier) {
+                AuthTabVerifier authTabVerifier) {
             super(tab);
             mClientPackageName = TabAssociatedApp.from(tab).getAppId();
             mVerifier = verifier;
@@ -150,7 +148,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         public boolean shouldReturnAsActivityResult(GURL url) {
             if (mActivityType != ActivityType.AUTH_TAB) return false;
 
-            var authTabVerifier = mAuthTabVerifier.get();
+            var authTabVerifier = mAuthTabVerifier;
             return authTabVerifier.isCustomScheme(url)
                     || authTabVerifier.shouldRedirectHttpsAuthUrl(url);
         }
@@ -158,7 +156,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         @Override
         public void returnAsActivityResult(GURL url) {
             assert mIntentDataProvider.isAuthTab();
-            mAuthTabVerifier.get().returnAsActivityResult(url);
+            mAuthTabVerifier.returnAsActivityResult(url);
         }
 
         @Override
@@ -180,7 +178,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         public void resumeDelayedVerificationForTesting() {
-            mAuthTabVerifier.get().onFinishNativeInitialization();
+            mAuthTabVerifier.onFinishNativeInitialization();
         }
     }
 
@@ -312,7 +310,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     // Should only be used after inflation.
     private final Supplier<BottomSheetController> mBottomSheetController;
-    private final Lazy<AuthTabVerifier> mAuthTabVerifier;
+    private final AuthTabVerifier mAuthTabVerifier;
     private final boolean mContextMenuEnabled;
 
     private TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
@@ -367,7 +365,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
             Supplier<BottomSheetController> bottomSheetController,
-            Lazy<AuthTabVerifier> authTabVerifier,
+            AuthTabVerifier authTabVerifier,
             boolean contextMenuEnabled,
             BrowserControlsManager browserControlsManager) {
         mActivity = activity;
@@ -402,8 +400,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            @Named(ACTIVITY_TYPE) @ActivityType int activityType,
-            Lazy<AuthTabVerifier> authTabVerifier) {
+            @Named(ACTIVITY_TYPE) @ActivityType int activityType) {
         this(
                 activity,
                 activity.getIntentDataProvider().shouldEnableUrlBarHiding(),
@@ -425,7 +422,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 shareDelegateSupplier,
                 activityType,
                 activity.getBottomSheetController(),
-                authTabVerifier,
+                activity.getAuthTabVerifier(),
                 !activity.getIntentDataProvider().isAuthTab(),
                 activity.getBrowserControlsManager());
     }

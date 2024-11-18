@@ -10,7 +10,6 @@ import android.os.Bundle;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
 
@@ -24,9 +23,10 @@ public class TwaFinishHandler {
 
     private boolean mShouldAttemptFinishingTask;
 
-    public TwaFinishHandler(BaseCustomTabActivity activity) {
+    public TwaFinishHandler(
+            Activity activity, BrowserServicesIntentDataProvider intentDataProvider) {
         mActivity = activity;
-        mIntentDataProvider = activity.getIntentDataProvider();
+        mIntentDataProvider = intentDataProvider;
     }
 
     public void setShouldAttemptFinishingTask(boolean shouldAttemptFinishingTask) {

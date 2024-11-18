@@ -41,7 +41,6 @@ public class SharedActivityCoordinator implements InflationObserver {
 
     @Inject
     public SharedActivityCoordinator(
-            CurrentPageVerifier currentPageVerifier,
             CustomTabActivityNavigationController navigationController,
             CustomTabToolbarColorController toolbarColorController,
             CustomTabStatusBarColorProvider statusBarColorProvider,
@@ -49,7 +48,7 @@ public class SharedActivityCoordinator implements InflationObserver {
             Lazy<ImmersiveModeController> immersiveModeController,
             CustomTabOrientationController customTabOrientationController,
             BaseCustomTabActivity activity) {
-        mCurrentPageVerifier = currentPageVerifier;
+        mCurrentPageVerifier = activity.getCurrentPageVerifier();
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mToolbarColorController = toolbarColorController;
         mStatusBarColorProvider = statusBarColorProvider;
@@ -60,7 +59,7 @@ public class SharedActivityCoordinator implements InflationObserver {
         navigationController.setLandingPageOnCloseCriterion(
                 activity.getVerifier()::wasPreviouslyVerified);
 
-        currentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
+        mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
         activity.getLifecycleDispatcher().register(this);
     }
 

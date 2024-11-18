@@ -71,12 +71,13 @@ public class CurrentPageVerifierTest {
                 .registerActivityTabObserver(mTabObserverCaptor.capture());
         when(mIntentDataProvider.getTrustedWebActivityAdditionalOrigins())
                 .thenReturn(Collections.singletonList("https://www.origin2.com/"));
-        when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
-        when(mActivity.getTabObserverRegistrar()).thenReturn(mTabObserverRegistrar);
-        when(mActivity.getVerifier()).thenReturn(mVerifierDelegate);
-        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
-        when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
-        mCurrentPageVerifier = new CurrentPageVerifier(mActivity);
+        mCurrentPageVerifier =
+                new CurrentPageVerifier(
+                        mTabProvider,
+                        mIntentDataProvider,
+                        mVerifierDelegate,
+                        mTabObserverRegistrar,
+                        mLifecycleDispatcher);
         // TODO(peconn): Add check on permission updated being updated.
     }
 
