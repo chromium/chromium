@@ -8,6 +8,7 @@
 #include <functional>
 #include <unordered_map>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"
@@ -42,10 +43,12 @@ class TabMatcher {
   struct TabWrapper {
     std::u16string title;
     GURL url;
+    base::Time last_shown_time;
 
-    TabWrapper(std::u16string title, GURL url) {
+    TabWrapper(std::u16string title, GURL url, base::Time last_shown_time) {
       this->title = title;
       this->url = url;
+      this->last_shown_time = last_shown_time;
     }
   };
 

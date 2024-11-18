@@ -94,7 +94,8 @@ std::vector<TabMatcher::TabWrapper> TabMatcherDesktop::GetOpenTabs(
   std::vector<TabMatcher::TabWrapper> open_tabs;
   for (auto* web_contents : GetOpenWebContents()) {
     open_tabs.emplace_back(web_contents->GetTitle(),
-                           web_contents->GetLastCommittedURL());
+                           web_contents->GetLastCommittedURL(),
+                           web_contents->GetLastActiveTime());
   }
 
   return open_tabs;
