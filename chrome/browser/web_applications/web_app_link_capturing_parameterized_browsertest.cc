@@ -683,39 +683,10 @@ bool IsElementInPage(content::RenderFrameHost* host,
 // suites can start running the test again.
 static const base::flat_set<std::string> disabled_flaky_tests = {
 #if defined(ADDRESS_SANITIZER)
-    // TODO(crbug.com/377425233): Fix flakiness on ASAN.
-    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_"
-    "ViaLink_MiddleClick_WithoutOpener_TargetBlank",
-    "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
-    "ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
-    "ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "FocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
-    "RightClick_WithoutOpener_TargetBlank",
-    "FocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
-    "RightClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_"
-    "ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetBlank",
-    "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_"
-    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
 #endif
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/372119276): Fix flakiness for `Redirection_OpenInChrome`
-    // tests on MacOS.
-    "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaB_ViaLink_"
-    "ShiftClick_WithOpener_TargetBlank",
-    "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_"
-    "ShiftClick_WithOpener_TargetBlank",
-    "BothStandalone_CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_"
-    "MiddleClick_WithOpener_TargetBlank",
+// Example string to add when disabling a test:
+// "FocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_..." (etc).
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
 #elif BUILDFLAG(IS_CHROMEOS)
