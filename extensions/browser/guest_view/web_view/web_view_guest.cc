@@ -812,10 +812,9 @@ void WebViewGuest::SetUserAgentOverride(const std::string& ua_string_override) {
   //   `ua_string_override` string within must also be non-empty.
 
   if (default_user_agent_override.has_value()) {
-    CHECK(!default_user_agent_override.value().ua_string_override.empty());
+    CHECK(!default_user_agent_override->ua_string_override.empty());
     if (is_overriding_ua_string) {
-      default_user_agent_override.value().ua_string_override =
-          ua_string_override;
+      default_user_agent_override->ua_string_override = ua_string_override;
     }
   }
 
@@ -826,6 +825,43 @@ void WebViewGuest::SetUserAgentOverride(const std::string& ua_string_override) {
         default_user_agent_override.value_or(
             blink::UserAgentOverride::UserAgentOnly(ua_string_override)),
         false);
+  }
+}
+
+void WebViewGuest::SetClientHintsEnabled(bool enable) {
+  if (web_view_guest_delegate_) {
+    web_view_guest_delegate_->SetClientHintsEnabled(enable);
+  }
+  UpdateUserAgentMetadata();
+}
+
+void WebViewGuest::UpdateUserAgentMetadata() {
+  std::optional<blink::UserAgentOverride> default_user_agent_override =
+      web_view_guest_delegate_
+          ? web_view_guest_delegate_->GetDefaultUserAgentOverride()
+          : std::nullopt;
+
+  // TODO(crbug.com/376085326): MPArch migration for "User-Agent" override.
+  const std::string& retained_ua_string_override =
+      web_contents()->GetUserAgentOverride().ua_string_override;
+
+  is_overriding_user_agent_ = !retained_ua_string_override.empty() ||
+                              default_user_agent_override.has_value();
+
+  if (default_user_agent_override.has_value() &&
+      !retained_ua_string_override.empty()) {
+    default_user_agent_override->ua_string_override =
+        retained_ua_string_override;
+  }
+
+  blink::UserAgentOverride new_user_agent_override =
+      default_user_agent_override.value_or(
+          blink::UserAgentOverride::UserAgentOnly(retained_ua_string_override));
+
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    NOTIMPLEMENTED();
+  } else {
+    web_contents()->SetUserAgentOverride(new_user_agent_override, false);
   }
 }
 

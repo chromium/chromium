@@ -47,6 +47,10 @@ class WebViewGuestDelegate {
   // guest does not have a special default.
   virtual std::optional<blink::UserAgentOverride>
   GetDefaultUserAgentOverride() = 0;
+
+  // Toggles whether to include special client hints brand in the user agent
+  // override.
+  virtual void SetClientHintsEnabled(bool enable) = 0;
 };
 
 }  // namespace extensions

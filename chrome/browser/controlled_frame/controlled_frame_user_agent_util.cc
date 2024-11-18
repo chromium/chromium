@@ -20,7 +20,7 @@ std::string GetChromeDefaultUserAgent() {
   return embedder_support::GetUserAgent();
 }
 
-blink::UserAgentMetadata GetControlledFrameUserAgentMetadata() {
+blink::UserAgentMetadata GetControlledFrameBrandedUserAgentMetadata() {
   auto metadata = embedder_support::GetUserAgentMetadata();
 
   metadata.brand_version_list =
@@ -40,10 +40,13 @@ blink::UserAgentMetadata GetControlledFrameUserAgentMetadata() {
 
 namespace controlled_frame {
 
-blink::UserAgentOverride GetDefaultControlledFrameUserAgentOverride() {
+blink::UserAgentOverride GetDefaultControlledFrameUserAgentOverride(
+    bool brand_enabled) {
   blink::UserAgentOverride result;
   result.ua_string_override = GetChromeDefaultUserAgent();
-  result.ua_metadata_override = GetControlledFrameUserAgentMetadata();
+  result.ua_metadata_override =
+      brand_enabled ? GetControlledFrameBrandedUserAgentMetadata()
+                    : embedder_support::GetUserAgentMetadata();
   return result;
 }
 

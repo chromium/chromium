@@ -30,6 +30,9 @@ const CONTROLLED_FRAME_API_METHODS = [
 
   // Stops loading the current navigation if one is in progress.
   'stop',
+
+  // Toggles whether client hints use the Controlled Frame brand.
+  'setClientHintsUABrandEnabled',
 ];
 
 // Contains a list of API details that can return Promises. The details have the

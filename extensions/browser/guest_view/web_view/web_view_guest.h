@@ -130,6 +130,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // subsequent guest navigations.
   void SetUserAgentOverride(const std::string& ua_string_override);
 
+  // Sets whether a special brand list is used in client hints. This currently
+  // affects <controlledframe> and has no affect on <webview>
+  void SetClientHintsEnabled(bool enable);
+
   // Stop loading the guest.
   void Stop();
 
@@ -345,6 +349,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       const base::Value::Dict& create_params,
       GuestPageCreatedCallback callback,
       std::optional<content::StoragePartitionConfig> storage_partition_config);
+
+  void UpdateUserAgentMetadata();
 
   // Identifies the set of rules registries belonging to this guest.
   int rules_registry_id_;

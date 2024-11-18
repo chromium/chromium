@@ -34,6 +34,7 @@ class ShellWebViewGuestDelegate : public WebViewGuestDelegate {
   bool NavigateToURLShouldBlock(const GURL& url) override;
   std::optional<blink::UserAgentOverride> GetDefaultUserAgentOverride()
       override;
+  void SetClientHintsEnabled(bool enable) override;
 };
 
 }  // namespace extensions

@@ -40,6 +40,7 @@ class ChromeWebViewGuestDelegate : public WebViewGuestDelegate {
   bool NavigateToURLShouldBlock(const GURL& url) override;
   std::optional<blink::UserAgentOverride> GetDefaultUserAgentOverride()
       override;
+  void SetClientHintsEnabled(bool enable) override;
 
   WebViewGuest* web_view_guest() const { return web_view_guest_; }
 
@@ -53,6 +54,8 @@ class ChromeWebViewGuestDelegate : public WebViewGuestDelegate {
   std::unique_ptr<RenderViewContextMenuBase> pending_menu_;
 
   const raw_ptr<WebViewGuest> web_view_guest_;
+
+  bool enable_client_hints_brand_ = true;
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.

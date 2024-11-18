@@ -55,6 +55,7 @@
     "removeContentScripts",
     "request",
     "setAudioMuted",
+    "setClientHintsUABrandEnabled",
     "setUserAgentOverride",
     "setZoom",
     "setZoomMode",
