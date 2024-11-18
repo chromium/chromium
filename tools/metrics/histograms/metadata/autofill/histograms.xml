@@ -3016,6 +3016,10 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<!--
+TODO(crbug.com/378835293): Remove metric.
+-->
+
 <histogram
     name="Autofill.Funnel.ClassifiedFieldAutocompleteUnrecognized.FillAfterSuggestion.Address"
     enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-05-11">
@@ -3074,6 +3078,10 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
 </histogram>
+
+<!--
+TODO(crbug.com/378835293): Keep this metric only for passwords.
+-->
 
 <histogram
     name="Autofill.Funnel.NotClassifiedAsTargetFilling.FillAfterSuggestion{AutofillFormType}"
@@ -3749,6 +3757,10 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<!--
+TODO(crbug.com/378835293): Remove metric.
+-->
+
 <histogram name="Autofill.ManualFallback.AddNewAddressPromptShown"
     enum="AutofillAddNewAddressPromptOutcome" expires_after="2025-03-18">
   <owner>brunobraga@google.com</owner>
@@ -3774,6 +3786,10 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<!--
+TODO(crbug.com/378835293): Remove metric.
+-->
+
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling.Total"
     enum="BooleanSelectManualFallback" expires_after="2025-03-23">
@@ -3788,6 +3804,10 @@ AutofillSaveCreditCardPromptDestination.
     per page.
   </summary>
 </histogram>
+
+<!--
+TODO(crbug.com/378835293): Keep this metric only for passwords.
+-->
 
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling{AutofillFormType}"
@@ -3804,6 +3824,10 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
+
+<!--
+TODO(crbug.com/378835293): Remove metric.
+-->
 
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.{AutocompleteState}.Address"

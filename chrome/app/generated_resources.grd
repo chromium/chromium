@@ -879,12 +879,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="The name of the Autofill context menu entry that will initiate filling using improved predictions." translateable="false">
             Autocomplete
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
-            Addresses and more
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
-            Payment methods
-          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
             Passwords and passkeys
           </message>
@@ -1215,12 +1209,6 @@ are declared in tools/grit/grit_rule.gni.
           <!-- TODO(359570730): remove non translateable flag  -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu." translateable="false">
             Autocomplete
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="In Title Case: The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
-            Addresses and More
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
-            Payment Methods
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
             Passwords and Passkeys

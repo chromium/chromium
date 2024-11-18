@@ -6,14 +6,13 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CONTEXT_MENU_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/menus/simple_menu_model.h"
+
+class RenderViewContextMenuBase;
 
 namespace password_manager {
 class ContentPasswordManagerDriver;
@@ -21,9 +20,10 @@ class ContentPasswordManagerDriver;
 
 namespace autofill {
 
-class AutofillField;
 class AutofillAiDelegate;
-class PersonalDataManager;
+class AutofillDriver;
+class AutofillManager;
+class ContentAutofillDriver;
 
 // `AutofillContextMenuManager` is responsible for adding/executing Autofill
 // related context menu items. `RenderViewContextMenu` is intended to own and
@@ -38,8 +38,7 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // it's initialization.
   using CommandId = base::StrongAlias<class CommandIdTag, int>;
 
-  AutofillContextMenuManager(PersonalDataManager* personal_data_manager,
-                             RenderViewContextMenuBase* delegate,
+  AutofillContextMenuManager(RenderViewContextMenuBase* delegate,
                              ui::SimpleMenuModel* menu_model);
   ~AutofillContextMenuManager() override;
   AutofillContextMenuManager(const AutofillContextMenuManager&) = delete;
@@ -85,11 +84,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   bool ShouldAddPredictionImprovementsItem(AutofillAiDelegate* delegate,
                                            const GURL& url);
 
-  // Checks if the manual fallback context menu entry can be shown for the
-  // currently focused field.
-  bool ShouldAddAddressManualFallbackItem(
-      ContentAutofillDriver& autofill_driver);
-
   // Checks if the currently focused field is a password field and whether
   // password filling is enabled.
   bool ShouldAddPasswordsManualFallbackItem(
@@ -122,23 +116,11 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   void AddPasswordsManualFallbackItems(
       password_manager::ContentPasswordManagerDriver& password_manager_driver);
 
-  void LogAddressManualFallbackContextMenuEntryShown(
-      ContentAutofillDriver& autofill_driver);
-
-  void LogPaymentsManualFallbackContextMenuEntryShown(
-      ContentAutofillDriver& autofill_driver);
-
   // Out of all password entries, this method is only interested in the "select
   // password" entry, because the rest of them don't trigger suggestions and are
   // recorded by default separately (outside `AutofillContextMenuManager`).
   void LogSelectPasswordManualFallbackContextMenuEntryShown(
       password_manager::ContentPasswordManagerDriver& password_manager_drivern);
-
-  void LogAddressManualFallbackContextMenuEntryAccepted(
-      AutofillDriver& autofill_driver);
-
-  void LogPaymentsManualFallbackContextMenuEntryAccepted(
-      AutofillDriver& autofill_driver);
 
   void LogSelectPasswordManualFallbackContextMenuEntryAccepted();
 
@@ -155,34 +137,19 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // opened on.
   void ExecuteFallbackForPlusAddressesCommand(AutofillDriver& driver);
 
-  // Triggers Autofill payments suggestions on the field that the context menu
-  // was opened on.
-  void ExecuteFallbackForPaymentsCommand(AutofillDriver& driver);
 
   // Triggers passwords suggestions on the field that the context menu was
   // opened on.
   void ExecuteFallbackForSelectPasswordCommand(AutofillDriver& driver);
 
-  // Triggers Autofill address suggestions on the field that the context menu
-  // was opened on.
-  void ExecuteFallbackForAddressesCommand(
-      ContentAutofillDriver& autofill_driver);
-
   // Marks the last added menu item as a new feature, depending on the response
   // from the `UserEducationService`.
   void MaybeMarkLastItemAsNewFeature(const base::Feature& feature);
 
-  // Gets the `AutofillField` described by the `params_` from the
-  // `autofill_driver`'s manager.
-  AutofillField* GetAutofillField(AutofillDriver& autofill_driver) const;
-
-  const raw_ptr<PersonalDataManager> personal_data_manager_;
   const raw_ptr<ui::SimpleMenuModel> menu_model_;
   const raw_ptr<RenderViewContextMenuBase> delegate_;
   ui::SimpleMenuModel passwords_submenu_model_;
   content::ContextMenuParams params_;
-
-  base::WeakPtrFactory<AutofillContextMenuManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
