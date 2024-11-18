@@ -48,6 +48,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -194,6 +195,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testRenderEEAConsent() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -212,7 +214,51 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void testRenderEeaConsentV2() throws IOException {
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
+        launchDialog();
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_consent_dialog_v2");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY
+    })
+    public void testRenderEeaConsentV2PrivacyPolicyEnabled() throws IOException {
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
+        launchDialog();
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        renderViewWithId(
+                R.id.privacy_sandbox_dialog,
+                "privacy_sandbox_eea_consent_dialog_v2_privacy_policy_link_shown");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
+    public void testRenderEeaConsentV2PrivacyPolicyDisabled() throws IOException {
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_CONSENT);
+        launchDialog();
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        renderViewWithId(
+                R.id.privacy_sandbox_dialog,
+                "privacy_sandbox_eea_consent_dialog_v2_privacy_policy_link_not_shown");
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     // TODO(crbug.com/369540483): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
     @DisableIf.Build(supported_abis_includes = "arm64-v8a")
@@ -262,6 +308,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testEEAConsentPrivacyPolicyPageUrlParams() throws IOException {
         Locale defaultLocale = Locale.getDefault();
         Locale.setDefault(new Locale("fr", "FR"));
@@ -287,6 +334,7 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testRenderEEAConsentPrivacyPolicyLink() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

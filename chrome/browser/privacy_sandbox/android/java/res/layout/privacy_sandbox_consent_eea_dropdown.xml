@@ -30,6 +30,17 @@ found in the LICENSE file.
         style="@style/TextAppearance.TextMedium.Secondary" />
 
     <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_consent_learn_more_bullet_2_description"
+        android:visibility="gone"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="14dp"
+        android:text="@string/privacy_sandbox_m1_consent_learn_more_bullet_2_description_no_link"
+        app:leading="@dimen/text_size_medium_leading"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/privacy_sandbox_m1_consent_learn_more_bullet_three"
         android:layout_marginBottom="@dimen/list_item_default_margin"
         android:layout_width="match_parent"
