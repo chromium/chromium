@@ -109,7 +109,8 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-
+# Fails on GL, Metal, Graphite and Ganesh
+crbug.com/377724727 [ mac amd-0x67ef passthrough ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 
 
