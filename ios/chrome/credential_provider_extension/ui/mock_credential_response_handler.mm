@@ -40,7 +40,6 @@ NSArray<NSData*>* SecurityDomainSecrets() {
 - (void)userSelectedPasskey:(id<Credential>)passkey
               clientDataHash:(NSData*)clientDataHash
           allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                  allowRetry:(BOOL)allowRetry
     userVerificationRequired:(BOOL)userVerificationRequired {
   if (@available(iOS 17.0, *)) {
     [self userSelectedPasskey:PerformPasskeyAssertion(passkey, clientDataHash,

@@ -130,6 +130,7 @@ source_set("passkey_keychain_provider_bridge") {
   ]
   deps = [
     ":passkey_keychain_provider",
+    ":passkey_util",
     "//base",
     "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
   ]

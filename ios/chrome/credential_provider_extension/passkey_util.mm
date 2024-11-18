@@ -42,41 +42,14 @@ NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
 // Generates the signature during the passkey assertion process by decrypting
 // the passkey using the security domain secret and then using the decrypted
 // passkey to call passkey_model_utils's GenerateEcSignature function.
-NSData* GenerateSignature(NSData* encrypted_private_key,
-                          NSData* encrypted_message,
+NSData* GenerateSignature(id<Credential> credential,
                           NSData* authenticator_data,
                           NSData* client_data_hash,
                           NSArray<NSData*>* security_domain_secrets) {
-  if ([security_domain_secrets count] == 0) {
-    return nil;
-  }
+  std::string private_key =
+      DecryptPrivateKey(credential, security_domain_secrets);
 
-  // Decrypt the private key using the security domain secret.
-  sync_pb::WebauthnCredentialSpecifics credential_specifics;
-  if ([encrypted_private_key length] > 0) {
-    credential_specifics.set_private_key(encrypted_private_key.bytes,
-                                         encrypted_private_key.length);
-  } else if ([encrypted_message length] > 0) {
-    credential_specifics.set_encrypted(encrypted_message.bytes,
-                                       encrypted_message.length);
-  } else {
-    return nil;
-  }
-
-  bool successful_decryption = false;
-  sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
-  for (NSData* security_domain_secret in security_domain_secrets) {
-    std::vector<uint8_t> trusted_vault_key;
-    Append(trusted_vault_key, security_domain_secret);
-
-    if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-            trusted_vault_key, credential_specifics, &credential_secrets)) {
-      successful_decryption = true;
-      break;
-    }
-  }
-
-  if (!successful_decryption) {
+  if (private_key.empty()) {
     return nil;
   }
 
@@ -88,8 +61,7 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
   // Compute signature.
   std::optional<std::vector<uint8_t>> signature =
       webauthn::passkey_model_utils::GenerateEcSignature(
-          base::as_byte_span(credential_secrets.private_key()),
-          signed_over_data);
+          base::as_byte_span(private_key), signed_over_data);
   if (!signature) {
     return nil;
   }
@@ -142,6 +114,38 @@ UserVerificationPreference UserVerificationPreferenceFromString(
 }
 
 }  // namespace
+
+std::string DecryptPrivateKey(id<Credential> credential,
+                              NSArray<NSData*>* security_domain_secrets) {
+  if ([security_domain_secrets count] == 0) {
+    return std::string();
+  }
+
+  // Decrypt the private key using the security domain secret.
+  sync_pb::WebauthnCredentialSpecifics credential_specifics;
+  if ([credential.privateKey length] > 0) {
+    credential_specifics.set_private_key(credential.privateKey.bytes,
+                                         credential.privateKey.length);
+  } else if ([credential.encrypted length] > 0) {
+    credential_specifics.set_encrypted(credential.encrypted.bytes,
+                                       credential.encrypted.length);
+  } else {
+    return std::string();
+  }
+
+  sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
+  for (NSData* security_domain_secret in security_domain_secrets) {
+    std::vector<uint8_t> trusted_vault_key;
+    Append(trusted_vault_key, security_domain_secret);
+
+    if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+            trusted_vault_key, credential_specifics, &credential_secrets)) {
+      return std::move(credential_secrets.private_key());
+    }
+  }
+
+  return std::string();
+}
 
 ASPasskeyRegistrationCredential* PerformPasskeyCreation(
     NSData* client_data_hash,
@@ -216,8 +220,7 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
   NSData* authenticatorData =
       MakeAuthenticatorDataForAssertion(credential.rpId);
   NSData* signature = GenerateSignature(
-      credential.privateKey, credential.encrypted, authenticatorData,
-      client_data_hash, security_domain_secrets);
+      credential, authenticatorData, client_data_hash, security_domain_secrets);
 
   if (!signature) {
     return nil;
