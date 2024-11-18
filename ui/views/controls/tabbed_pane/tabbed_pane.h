@@ -284,6 +284,14 @@ class TabbedPaneTabStrip : public View, public gfx::AnimationDelegate {
     int start, end;
   };
 
+  // Returns the beginning and ending distances for the icon+label in a tab.
+  // start is the distance from the origin to the left-side of the icon,
+  // and end is the distance from the origin to the right-side of the text.
+  //                    (x) Label
+  // -------start-------^       ^
+  // -------end-----------------^
+  Coordinates GetIconLabelStartEndingX(TabbedPaneTab* tab);
+
   // The orientation of the tab alignment.
   const TabbedPane::Orientation orientation_;
 
