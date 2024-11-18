@@ -1140,19 +1140,18 @@ void StyleEngine::MarkViewportUnitDirty(ViewportUnitFlag flag) {
 
 namespace {
 
-void SetNeedsStyleRecalcForViewportUnits(TreeScope& tree_scope,
-                                         unsigned dirty_flags) {
+template <typename Func>
+void MarkElementsForRecalc(TreeScope& tree_scope,
+                           const StyleChangeReasonForTracing& reason,
+                           Func predicate) {
   for (Element* element = ElementTraversal::FirstWithin(tree_scope.RootNode());
        element; element = ElementTraversal::NextIncludingPseudo(*element)) {
     if (ShadowRoot* root = element->GetShadowRoot()) {
-      SetNeedsStyleRecalcForViewportUnits(*root, dirty_flags);
+      MarkElementsForRecalc(*root, reason, predicate);
     }
     const ComputedStyle* style = element->GetComputedStyle();
-    if (style && ((style->ViewportUnitFlags() & dirty_flags) ||
-                  style->HighlightPseudoElementStylesDependOnViewportUnits())) {
-      element->SetNeedsStyleRecalc(kLocalStyleChange,
-                                   StyleChangeReasonForTracing::Create(
-                                       style_change_reason::kViewportUnits));
+    if (style && predicate(*style)) {
+      element->SetNeedsStyleRecalc(kLocalStyleChange, reason);
     }
   }
 }
@@ -1175,7 +1174,13 @@ void StyleEngine::InvalidateViewportUnitStylesIfNeeded() {
     return;
   }
 
-  SetNeedsStyleRecalcForViewportUnits(GetDocument(), dirty_flags);
+  const auto& reason =
+      StyleChangeReasonForTracing::Create(style_change_reason::kViewportUnits);
+  MarkElementsForRecalc(
+      GetDocument(), reason, [dirty_flags](const ComputedStyle& style) {
+        return (style.ViewportUnitFlags() & dirty_flags) ||
+               style.HighlightPseudoElementStylesDependOnViewportUnits();
+      });
 }
 
 void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {
@@ -3117,11 +3122,23 @@ void StyleEngine::PropertyRegistryChanged() {
 }
 
 void StyleEngine::EnvironmentVariableChanged() {
-  MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
-      style_change_reason::kEnvironmentVariableChanged));
+  is_env_dirty_ = true;
   if (resolver_) {
     resolver_->InvalidateMatchedPropertiesCache();
   }
+  GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
+}
+
+void StyleEngine::InvalidateEnvDependentStylesIfNeeded() {
+  if (!is_env_dirty_) {
+    return;
+  }
+  is_env_dirty_ = false;
+  const auto& reason = StyleChangeReasonForTracing::Create(
+      style_change_reason::kEnvironmentVariableChanged);
+  MarkElementsForRecalc(GetDocument(), reason, [](const ComputedStyle& style) {
+    return style.HasEnv();
+  });
 }
 
 void StyleEngine::NodeWillBeRemoved(Node& node) {
@@ -4333,7 +4350,7 @@ void StyleEngine::UpdateViewportStyle() {
 
 bool StyleEngine::NeedsFullStyleUpdate() const {
   return NeedsActiveStyleUpdate() || IsViewportStyleDirty() ||
-         viewport_unit_dirty_flags_;
+         viewport_unit_dirty_flags_ || is_env_dirty_;
 }
 
 void StyleEngine::PropagateWritingModeAndDirectionToHTMLRoot() {
