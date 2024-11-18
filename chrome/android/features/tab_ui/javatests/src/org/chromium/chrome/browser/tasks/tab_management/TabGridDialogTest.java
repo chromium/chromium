@@ -1195,6 +1195,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
     public void testSwipeToDismiss_Dialog() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create 2 tabs and merge them into one group.
@@ -1790,6 +1791,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.TABLET)
+    @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
     public void testStripDialog_TabListEditorCloseAll_NoCustomHomepage() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create a tab group with 2 tabs.
@@ -1837,6 +1839,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.TABLET)
+    @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
     public void testStripDialog_TabListEditorCloseAll_CustomHomepage() {
         GURL url =
                 new GURL(

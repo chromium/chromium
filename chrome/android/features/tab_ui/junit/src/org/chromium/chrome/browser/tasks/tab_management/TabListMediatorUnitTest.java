@@ -136,6 +136,8 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
@@ -342,6 +344,7 @@ public class TabListMediatorUnitTest {
     @Captor ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
     @Captor ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
     @Captor ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCallbackCaptor;
+    @Captor ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
 
     @Captor
     ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
@@ -1005,7 +1008,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void sendsCloseSignalCorrectly_ImmediateContinue() {
+    public void sendsCloseSignalCorrectly() {
         mMediator.setActionOnAllRelatedTabsForTesting(false);
         mModelList
                 .get(1)
@@ -1014,55 +1017,21 @@ public class TabListMediatorUnitTest {
                 .tabActionListener
                 .run(mItemView2, mModelList.get(1).model.get(TabProperties.TAB_ID));
 
-        verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
-        mActionConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
-
-        TabClosureParams params = TabClosureParams.closeTab(mTab2).build();
-        verify(mTabModel).closeTabs(params);
+        TabClosureParams params = TabClosureParams.closeTab(mTab2).allowUndo(true).build();
+        verify(mTabRemover)
+                .closeTabs(
+                        eq(params),
+                        /* allowUndo= */ eq(true),
+                        mTabModelActionListenerCaptor.capture());
         assertTrue(mModelList.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
-    }
 
-    @Test
-    public void sendsCloseSignalCorrectly_ConfirmationPositive() {
-        mMediator.setActionOnAllRelatedTabsForTesting(false);
-        mModelList
-                .get(1)
-                .model
-                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
-                .tabActionListener
-                .run(mItemView2, mModelList.get(1).model.get(TabProperties.TAB_ID));
-
-        verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
-        mActionConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
-
-        TabClosureParams params = TabClosureParams.closeTab(mTab2).allowUndo(false).build();
-        verify(mTabModel).closeTabs(params);
+        TabModelActionListener listener = mTabModelActionListenerCaptor.getValue();
+        listener.onConfirmationDialogResult(
+                DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_POSITIVE);
         assertTrue(mModelList.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
-    }
 
-    @Test
-    public void sendsCloseSignalCorrectly_ConfirmationNegative() {
-        mMediator.setActionOnAllRelatedTabsForTesting(false);
-        mModelList
-                .get(1)
-                .model
-                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
-                .tabActionListener
-                .run(mItemView2, mModelList.get(1).model.get(TabProperties.TAB_ID));
-
-        verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mActionConfirmationResultCallbackCaptor.capture());
-        mActionConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
-
-        verify(mTabModel, never()).closeTabs(any());
+        listener.onConfirmationDialogResult(
+                DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
         assertFalse(mModelList.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
     }
 
@@ -1076,8 +1045,11 @@ public class TabListMediatorUnitTest {
                 .tabActionListener
                 .run(mItemView2, mModelList.get(1).model.get(TabProperties.TAB_ID));
 
-        verify(mActionConfirmationManager, never()).processCloseTabAttempt(any(), any());
-        verify(mTabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab2));
+        verify(mTabRemover)
+                .closeTabs(
+                        argThat(params -> params.tabs.get(0) == mTab2),
+                        /* allowDialog= */ eq(true),
+                        any());
     }
 
     @Test
@@ -1091,8 +1063,11 @@ public class TabListMediatorUnitTest {
                 .tabActionListener
                 .run(mItemView2, mModelList.get(1).model.get(TabProperties.TAB_ID));
 
-        verify(mActionConfirmationManager, never()).processCloseTabAttempt(any(), any());
-        verify(mTabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab2));
+        verify(mTabRemover)
+                .closeTabs(
+                        argThat(params -> params.tabs.get(0) == mTab2),
+                        /* allowDialog= */ eq(true),
+                        any());
     }
 
     @Test
@@ -4537,7 +4512,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         mModelList.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
-        mMediator.getMaybeUnsetShrinkCloseAnimationCallback(TAB1_ID).onResult(false);
+        mMediator.getOnMaybeTabClosedCallback(TAB1_ID).onResult(false);
         assertFalse(mModelList.get(0).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
     }
 
@@ -4551,7 +4526,7 @@ public class TabListMediatorUnitTest {
 
         mModelList.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
 
-        var callback = mMediator.getMaybeUnsetShrinkCloseAnimationCallback(TAB1_ID);
+        var callback = mMediator.getOnMaybeTabClosedCallback(TAB1_ID);
 
         mMediator.resetWithListOfTabs(null, false);
 
@@ -4569,7 +4544,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         mModelList.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
-        var callback = mMediator.getMaybeUnsetShrinkCloseAnimationCallback(TAB1_ID);
+        var callback = mMediator.getOnMaybeTabClosedCallback(TAB1_ID);
 
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, /* didCloseAlone= */ false);
 
@@ -4586,7 +4561,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, false);
 
         mModelList.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
-        var callback = mMediator.getMaybeUnsetShrinkCloseAnimationCallback(TAB1_ID);
+        var callback = mMediator.getOnMaybeTabClosedCallback(TAB1_ID);
 
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, /* didCloseAlone= */ false);
         mTabModelObserverCaptor.getValue().willCloseTab(newTab, /* didCloseAlone= */ false);
