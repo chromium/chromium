@@ -29,6 +29,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -53,9 +54,13 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCard
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -280,7 +285,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @NonNull ViewGroup mTabSwitcherView;
     private final @NonNull FadingShadowView mShadowView;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-
+    private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private TabListRecyclerView mDialogRecyclerView;
     private WeakReference<TabListRecyclerView> mTabSwitcherRecyclerView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
@@ -304,6 +310,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
      * @param tabArchiveSettings The settings manager for tab archive.
      * @param modalDialogManager Used for managing the modal dialogs.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param edgeToEdgeSupplier Supplier for the {@link EdgeToEdgeController}.
      */
     public ArchivedTabsDialogCoordinator(
             @NonNull Activity activity,
@@ -318,7 +325,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             @NonNull BackPressManager backPressManager,
             @NonNull TabArchiveSettings tabArchiveSettings,
             @NonNull ModalDialogManager modalDialogManager,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
@@ -360,6 +368,13 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
         // Initialize the confirmation dialog for when the last archived tab is removed.
         mActionConfirmationDialog = new ActionConfirmationDialog(mActivity, mModalDialogManager);
+
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
+            mEdgeToEdgePadAdjuster =
+                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                            getCloseAllTabsButtonContainer(), mEdgeToEdgeSupplier);
+        }
     }
 
     /** Hides the dialog. */
@@ -369,6 +384,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             hide(
                     /* animationDuration= */ 0,
                     /* animationFinishCallback= */ CallbackUtils.emptyRunnable());
+        }
+
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
+            mEdgeToEdgePadAdjuster = null;
         }
     }
 
@@ -701,5 +721,16 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     View getViewForTesting() {
         return mDialogView;
+    }
+
+    /** Returns the Edge to edge pad adjuster. */
+    @Nullable
+    EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
+        return mEdgeToEdgePadAdjuster;
+    }
+
+    @VisibleForTesting
+    FrameLayout getCloseAllTabsButtonContainer() {
+        return mDialogView.findViewById(R.id.close_all_tabs_button_container);
     }
 }
