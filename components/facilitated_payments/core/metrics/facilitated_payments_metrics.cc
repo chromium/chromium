@@ -18,6 +18,14 @@ void LogPixCodeCopied() {
                             /*sample=*/true);
 }
 
+void LogFopSelected() {
+  // The histogram name should be in sync with
+  // `FacilitatedPaymentsPaymentMethodsMediator.FOP_SELECTOR_USER_ACTION_HISTOGRAM`.
+  base::UmaHistogramEnumeration(
+      "FacilitatedPayments.Pix.FopSelector.UserAction",
+      FopSelectorAction::kFopSelected);
+}
+
 void LogPaymentCodeValidationResultAndLatency(
     base::expected<bool, std::string> result,
     base::TimeDelta duration) {

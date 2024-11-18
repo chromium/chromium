@@ -41,6 +41,7 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
@@ -55,6 +56,7 @@ import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.facilitated_payments.core.ui_utils.FopSelectorAction;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 import org.chromium.components.payments.InputProtector;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -70,6 +72,12 @@ import java.util.Optional;
  */
 class FacilitatedPaymentsPaymentMethodsMediator {
     static final String PIX_BANK_ACCOUNT_TRANSACTION_LIMIT = "500";
+
+    // This histogram name should be in sync with the one in
+    // components/facilitated_payments/core/metrics/facilitated_payments_metrics.cc:LogFopSelected.
+    @VisibleForTesting
+    static final String FOP_SELECTOR_USER_ACTION_HISTOGRAM =
+            "FacilitatedPayments.Pix.FopSelector.UserAction";
 
     private Context mContext;
     private PropertyModel mModel;
@@ -194,7 +202,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(
                                 FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                () -> mDelegate.showManagePaymentMethodsSettings(mContext))
+                                () -> this.onManagePaymentMethodsOptionSelected())
                         .build());
     }
 
@@ -208,7 +216,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                                 R.string.pix_payment_additional_info)
                         .with(
                                 SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                () -> mDelegate.showFinancialAccountsManagementSettings(mContext))
+                                () -> this.onTurnOffPaymentPromptLinkClicked())
                         .build());
     }
 
@@ -275,6 +283,24 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     public void onEwalletSelected(Ewallet eWallet) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.onEwalletSelected(eWallet.getInstrumentId());
+    }
+
+    private void onManagePaymentMethodsOptionSelected() {
+        mDelegate.showManagePaymentMethodsSettings(mContext);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                FOP_SELECTOR_USER_ACTION_HISTOGRAM,
+                FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED,
+                FopSelectorAction.MAX_VALUE + 1);
+    }
+
+    private void onTurnOffPaymentPromptLinkClicked() {
+        mDelegate.showFinancialAccountsManagementSettings(mContext);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                FOP_SELECTOR_USER_ACTION_HISTOGRAM,
+                FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED,
+                FopSelectorAction.MAX_VALUE + 1);
     }
 
     @VisibleForTesting

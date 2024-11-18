@@ -25,6 +25,17 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
                                       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogFopSelected) {
+  base::HistogramTester histogram_tester;
+
+  LogFopSelected();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelector.UserAction",
+      /*sample=*/FopSelectorAction::kFopSelected,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest,
      LogPaymentCodeValidationResultAndLatency_ValidatorFailed) {
   base::HistogramTester histogram_tester;
