@@ -92,6 +92,8 @@ test("device_unittests") {
   if (is_android) {
     sources += [
       "bluetooth/bluetooth_adapter_android_unittest.cc",
+      "bluetooth/test/bluetooth_scanner_callback.cc",
+      "bluetooth/test/bluetooth_scanner_callback.h",
       "bluetooth/test/bluetooth_test_android.cc",
       "bluetooth/test/bluetooth_test_android.h",
     ]
@@ -500,8 +502,9 @@ test("device_unittests") {
 
 if (is_android) {
   bluetooth_java_sources_needing_jni = [
-    "bluetooth/test/android/java/src/org/chromium/device/bluetooth/Fakes.java",
+    "bluetooth/test/android/java/src/org/chromium/device/bluetooth/ChromeBluetoothLeScannerTestUtil.java",
     "bluetooth/test/android/java/src/org/chromium/device/bluetooth/ChromeBluetoothScanFilter.java",
+    "bluetooth/test/android/java/src/org/chromium/device/bluetooth/Fakes.java",
   ]
 
   generate_jni("bluetooth_test_jni_headers") {

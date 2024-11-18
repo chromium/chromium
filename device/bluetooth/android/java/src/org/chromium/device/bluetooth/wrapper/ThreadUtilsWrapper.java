@@ -38,6 +38,10 @@ public class ThreadUtilsWrapper {
         ThreadUtils.runOnUiThread(r);
     }
 
+    public void postOnUiThreadDelayed(Runnable r, long delayMillis) {
+        ThreadUtils.postOnUiThreadDelayed(r, delayMillis);
+    }
+
     /**
      * Instantiate this to explain how to create a ThreadUtilsWrapper instance in
      * ThreadUtilsWrapper.getInstance().
