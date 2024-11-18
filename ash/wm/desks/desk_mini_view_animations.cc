@@ -234,6 +234,9 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view) {
             overview_controller->overview_session()->UpdateAccessibilityFocus();
           }
         }
+        // Manually call `InvalidateLayout` at the end of the animation to
+        // ensure that all the child views on `bar_view` are correctly painted.
+        bar_view->InvalidateLayout();
 
         bar_view->OnUiUpdateDone();
       }),
