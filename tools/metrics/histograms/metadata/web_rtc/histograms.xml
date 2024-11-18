@@ -2081,6 +2081,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebRTC.Video.EstimatedClockDrift_ppm" units="ppm"
+    expires_after="2025-11-18">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The clock drift between the local and remote clock is estimated in
+    TimestampExtrapolator. This histograms records the current estimate of the
+    relative clock drift in points per million (ppm), i.e., the ratio of the
+    relative drift times 1e6. The histogram is recorded when
+    TimestampExtrapolator is destroyed if the number of samples is at least
+    3000, which corresponds to 100 s for a 30 fps stream.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Video.FecBitrateReceivedInKbps" units="kbps"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
