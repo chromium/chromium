@@ -26,7 +26,7 @@
 #include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 #include "ui/events/ozone/features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"  // nogncheck
 #endif
 
@@ -1012,7 +1012,7 @@ bool EventDeviceInfo::IsInternalUSB(input_id id) {
       {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::switches::IsRevenBranding()) {
     usb_internal_ids.insert(
         usb_internal_ids.end(),

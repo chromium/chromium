@@ -50,15 +50,11 @@ component("platform_window") {
       "extensions/system_modal_extension.h",
       "extensions/wayland_extension.cc",
       "extensions/wayland_extension.h",
-    ]
-    deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
-  }
-  if (is_linux || is_chromeos_ash) {
-    sources += [
       "extensions/x11_extension.cc",
       "extensions/x11_extension.h",
       "extensions/x11_extension_delegate.h",
     ]
+    deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
   }
 }
 

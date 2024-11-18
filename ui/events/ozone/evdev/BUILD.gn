@@ -131,7 +131,6 @@ component("evdev") {
     ":keyboard_mouse_combo_metrics",
     ":mouse_button_property",
     "//base",
-    "//build:chromeos_buildflags",
     "//third_party/re2:re2",
     "//ui/display",
     "//ui/events",
@@ -254,7 +253,6 @@ source_set("event_device_info") {
   deps = [
     ":keyboard_mouse_combo_metrics",
     "//base",
-    "//build:chromeos_buildflags",
     "//ui/events/devices",
     "//ui/events/ozone",
   ]
@@ -327,7 +325,6 @@ source_set("unittests") {
     ":mouse_button_property",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/re2:re2",
