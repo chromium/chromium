@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -75,6 +76,58 @@ std::string BytesToBase64(const std::vector<uint8_t>& bytes) {
 
 using CreditCardAccessManagerTest = CreditCardAccessManagerTestBase;
 
+// Params of the
+// CreditCardAccessManagerAuthFlowTest:
+// -- bool masked_server_card_risk_based_auth_enabled;
+class CreditCardAccessManagerAuthFlowTest
+    : public testing::WithParamInterface<bool>,
+      public CreditCardAccessManagerTestBase {
+ public:
+  CreditCardAccessManagerAuthFlowTest() = default;
+  ~CreditCardAccessManagerAuthFlowTest() override = default;
+
+  bool IsMaskedServerCardRiskBasedAuthEnabled() { return GetParam(); }
+
+  void FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
+      const CreditCard* card,
+      base::Value::Dict fido_request_options = base::Value::Dict()) {
+    CreditCardAccessManagerTestBase::FetchCreditCard(card);
+    if (!IsMaskedServerCardRiskBasedAuthEnabled()) {
+      return;
+    }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+    credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+        CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+            .with_result(CreditCardRiskBasedAuthenticator::
+                             RiskBasedAuthenticationResponse::Result::
+                                 kAuthenticationRequired)
+            .with_fido_request_options(std::move(fido_request_options))
+            .with_context_token("fake context token"));
+#endif
+  }
+
+ protected:
+  void SetUp() override {
+    CreditCardAccessManagerTestBase::SetUp();
+    if (IsMaskedServerCardRiskBasedAuthEnabled()) {
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+      GTEST_SKIP() << "Skipping test because masked server card risk-based "
+                      "flow should only happen on WIN, MAC or ANDROID";
+#endif
+    }
+    feature_list_.InitWithFeatureState(
+        features::kAutofillEnableFpanRiskBasedAuthentication,
+        IsMaskedServerCardRiskBasedAuthEnabled());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CreditCardAccessManagerAuthFlowTest,
+                         testing::Bool());
+
 // Tests retrieving local cards.
 TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
 #if BUILDFLAG(IS_ANDROID)
@@ -115,7 +168,7 @@ TEST_F(CreditCardAccessManagerTest, FetchNullptrFailure) {
 
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
 // response from payments.
-TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCSuccess) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
@@ -124,7 +177,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
       "Autofill.BetterAuth.FlowEvents.Cvc";
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   histogram_tester.ExpectUniqueSample(
       flow_events_histogram_name,
@@ -151,13 +204,13 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
 
 // Ensures that FetchCreditCard() returns a failure upon a negative response
 // from the server.
-TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCNetworkError) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCNetworkError) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   EXPECT_TRUE(
       GetRealPanForCVCAuth(PaymentsRpcResult::kNetworkError, std::string()));
@@ -166,13 +219,14 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCNetworkError) {
 
 // Ensures that FetchCreditCard() returns a failure upon a negative response
 // from the server.
-TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCPermanentFailure) {
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       FetchServerCardCVCPermanentFailure) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kPermanentFailure,
                                    std::string()));
@@ -180,12 +234,12 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCPermanentFailure) {
 }
 
 // Ensures that a "try again" response from payments does not end the flow.
-TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCTryAgainFailure) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCTryAgainFailure) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   EXPECT_TRUE(
       GetRealPanForCVCAuth(PaymentsRpcResult::kTryAgainFailure, std::string()));
@@ -200,7 +254,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCTryAgainFailure) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
 // WebAuthn verification and response from payments.
-TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardFIDOSuccess) {
   base::HistogramTester histogram_tester;
   std::string unmask_decision_histogram_name =
       "Autofill.BetterAuth.CardUnmaskTypeDecision";
@@ -218,7 +272,8 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
       card->server_id(), kCredentialId, kGooglePaymentsRpid);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
+      card, /*fido_request_options=*/GetTestRequestOptions());
   WaitForCallbacks();
 
   histogram_tester.ExpectUniqueSample(
@@ -254,7 +309,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
 }
 
 // Ensures that CVC filling gets logged after FIDO success if the card has CVC.
-TEST_F(CreditCardAccessManagerTest, LogCvcFillingFIDOSuccess) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, LogCvcFillingFIDOSuccess) {
   base::HistogramTester histogram_tester;
 
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
@@ -268,7 +323,8 @@ TEST_F(CreditCardAccessManagerTest, LogCvcFillingFIDOSuccess) {
       card->server_id(), kCredentialId, kGooglePaymentsRpid);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
+      card, /*fido_request_options=*/GetTestRequestOptions());
   WaitForCallbacks();
 
   // FIDO Success.
@@ -283,7 +339,7 @@ TEST_F(CreditCardAccessManagerTest, LogCvcFillingFIDOSuccess) {
 
 // Ensures that CVC filling doesn't get logged after FIDO success if the card
 // doesn't have CVC.
-TEST_F(CreditCardAccessManagerTest, DoNotLogCvcFillingFIDOSuccess) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, DoNotLogCvcFillingFIDOSuccess) {
   base::HistogramTester histogram_tester;
 
   CreditCard server_card = test::GetMaskedServerCard();
@@ -298,7 +354,8 @@ TEST_F(CreditCardAccessManagerTest, DoNotLogCvcFillingFIDOSuccess) {
       card->server_id(), kCredentialId, kGooglePaymentsRpid);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
+      card, /*fido_request_options=*/GetTestRequestOptions());
   WaitForCallbacks();
 
   // FIDO Success.
@@ -352,7 +409,8 @@ TEST_F(CreditCardAccessManagerTest,
 // Ensures that accessor retrieve empty CVC upon a successful
 // WebAuthn verification and response from payments using masked server card
 // without CVC.
-TEST_F(CreditCardAccessManagerTest, FetchServerCardWithoutCvcFIDOSuccess) {
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       FetchServerCardWithoutCvcFIDOSuccess) {
   CreditCard server_card = CreditCard();
   test::SetCreditCardInfo(&server_card, "Elvis Presley", kTestNumber,
                           test::NextMonth().c_str(), test::NextYear().c_str(),
@@ -368,7 +426,8 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardWithoutCvcFIDOSuccess) {
       card->server_id(), kCredentialId, kGooglePaymentsRpid);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
+      card, /*fido_request_options=*/GetTestRequestOptions());
   WaitForCallbacks();
 
   // FIDO Success.
@@ -382,7 +441,8 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardWithoutCvcFIDOSuccess) {
 
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
 // WebAuthn verification and response from payments.
-TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccessWithDcvv) {
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       FetchServerCardFIDOSuccessWithDcvv) {
   // Opt user in for FIDO auth.
   prefs::SetCreditCardFIDOAuthEnabled(autofill_client_.GetPrefs(), true);
 
@@ -395,7 +455,8 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccessWithDcvv) {
       card->server_id(), kCredentialId, kGooglePaymentsRpid);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
+      card, /*fido_request_options=*/GetTestRequestOptions());
   WaitForCallbacks();
 
   // FIDO Success.
@@ -413,7 +474,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccessWithDcvv) {
 }
 
 // Ensures that CVC prompt is invoked after WebAuthn fails.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FetchServerCardFIDOVerificationFailureCVCFallback) {
   base::HistogramTester histogram_tester;
   std::string webauthn_result_histogram_name =
@@ -432,7 +493,8 @@ TEST_F(CreditCardAccessManagerTest,
       card->server_id(), kCredentialId, kGooglePaymentsRpid);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
+      card, /*fido_request_options=*/GetTestRequestOptions());
   WaitForCallbacks();
 
   histogram_tester.ExpectUniqueSample(
@@ -473,7 +535,7 @@ TEST_F(CreditCardAccessManagerTest,
 
 // Ensures that CVC prompt is invoked after payments returns an error from
 // GetRealPan via FIDO.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FetchServerCardFIDOServerFailureCVCFallback) {
   base::HistogramTester histogram_tester;
   std::string histogram_name =
@@ -488,7 +550,8 @@ TEST_F(CreditCardAccessManagerTest,
       card->server_id(), kCredentialId, kGooglePaymentsRpid);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
+      card, /*fido_request_options=*/GetTestRequestOptions());
   WaitForCallbacks();
 
   // FIDO Failure.
@@ -518,7 +581,7 @@ TEST_F(CreditCardAccessManagerTest,
 
 // Ensures WebAuthn call is not made if Request Options is missing a Credential
 // ID, and falls back to CVC.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FetchServerCardBadRequestOptionsCVCFallback) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
@@ -530,7 +593,7 @@ TEST_F(CreditCardAccessManagerTest,
       card->server_id(), /*credential_id=*/"", kGooglePaymentsRpid);
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   WaitForCallbacks();
 
   // FIDO Failure.
@@ -546,7 +609,12 @@ TEST_F(CreditCardAccessManagerTest,
 
 // Ensures that CVC prompt is invoked when the pre-flight call to Google
 // Payments times out.
-TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOTimeoutCVCFallback) {
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       FetchServerCardFIDOTimeoutCVCFallback) {
+  if (IsMaskedServerCardRiskBasedAuthEnabled()) {
+    GTEST_SKIP() << "For risk based authentication, whether fallback to FIDO "
+                    "or CVC flow doesn't rely on the platform call";
+  }
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
@@ -563,10 +631,10 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOTimeoutCVCFallback) {
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 }
 
-// Ensures the existence of user-perceived latency during the preflight call is
-// correctly logged.
-TEST_F(CreditCardAccessManagerTest,
-       Metrics_LoggingExistenceOfUserPerceivedLatency) {
+// Ensures whether user choose a masked server card before or after the
+// preflight call is returned is correctly logged.
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       Metrics_LoggingPreflightCallReturnedBeforeUserSelection) {
   // Setting up a FIDO-enabled user with a local card and a server card.
   std::string server_guid = "00000000-0000-0000-0000-000000000001";
   std::string local_guid = "00000000-0000-0000-0000-000000000003";
@@ -579,9 +647,17 @@ TEST_F(CreditCardAccessManagerTest,
   GetFIDOAuthenticator()->SetUserVerifiable(true);
 
   for (bool user_is_opted_in : {true, false}) {
-    std::string histogram_name =
-        "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.";
-    histogram_name += user_is_opted_in ? "OptedIn" : "OptedOut";
+    std::string histogram_name;
+    if (IsMaskedServerCardRiskBasedAuthEnabled()) {
+      histogram_name =
+          "Autofill.BetterAuth.PreflightCallResponseReceivedOnCardSelection.";
+      histogram_name +=
+          user_is_opted_in ? "OptedIn.ServerCard" : "OptedOut.ServerCard";
+    } else {
+      histogram_name =
+          "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.";
+      histogram_name += user_is_opted_in ? "OptedIn" : "OptedOut";
+    }
     SetCreditCardFIDOAuthEnabled(user_is_opted_in);
 
     {
@@ -597,7 +673,9 @@ TEST_F(CreditCardAccessManagerTest,
       WaitForCallbacks();
 
       histogram_tester.ExpectUniqueSample(
-          histogram_name,
+          std::string(
+              "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.") +
+              (user_is_opted_in ? "OptedIn" : "OptedOut"),
           autofill_metrics::PreflightCallEvent::kDidNotChooseMaskedCard, 1);
     }
 
@@ -617,14 +695,16 @@ TEST_F(CreditCardAccessManagerTest,
           autofill_metrics::PreflightCallEvent::
               kCardChosenBeforePreflightCallReturned,
           1);
-      histogram_tester.ExpectTotalCount(
-          "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn."
-          "Duration",
-          static_cast<int>(user_is_opted_in));
-      histogram_tester.ExpectTotalCount(
-          "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn."
-          "TimedOutCvcFallback",
-          static_cast<int>(user_is_opted_in));
+      if (!IsMaskedServerCardRiskBasedAuthEnabled()) {
+        histogram_tester.ExpectTotalCount(
+            "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn."
+            "Duration",
+            static_cast<int>(user_is_opted_in));
+        histogram_tester.ExpectTotalCount(
+            "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn."
+            "TimedOutCvcFallback",
+            static_cast<int>(user_is_opted_in));
+      }
     }
 
     {
@@ -650,7 +730,12 @@ TEST_F(CreditCardAccessManagerTest,
 
 // Ensures that falling back to CVC because of preflight timeout is correctly
 // logged.
-TEST_F(CreditCardAccessManagerTest, Metrics_LoggingTimedOutCvcFallback) {
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       Metrics_LoggingTimedOutCvcFallback) {
+  if (IsMaskedServerCardRiskBasedAuthEnabled()) {
+    GTEST_SKIP() << "For risk based authentication, whether fallback to FIDO "
+                    "or CVC flow doesn't rely on the platform call";
+  }
   // Setting up a FIDO-enabled user with a local card and a server card.
   std::string server_guid = "00000000-0000-0000-0000-000000000001";
   CreateServerCard(server_guid, "4594299181086168");
@@ -718,7 +803,7 @@ TEST_F(CreditCardAccessManagerTest, Metrics_LoggingTimedOutCvcFallback) {
 
 // Ensures that use of a server card that is not enrolled into FIDO invokes
 // authorization flow when user is opted-in.
-TEST_F(CreditCardAccessManagerTest, FIDONewCardAuthorization) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, FIDONewCardAuthorization) {
   base::HistogramTester histogram_tester;
   std::string unmask_decision_histogram_name =
       "Autofill.BetterAuth.CardUnmaskTypeDecision";
@@ -736,7 +821,7 @@ TEST_F(CreditCardAccessManagerTest, FIDONewCardAuthorization) {
   payments_network_interface().SetFidoRequestOptionsInUnmaskDetails(
       kCredentialId, kGooglePaymentsRpid);
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -778,7 +863,7 @@ TEST_F(CreditCardAccessManagerTest, FIDONewCardAuthorization) {
 
 // Ensures that the use of a server card that is not enrolled into FIDO fills
 // the form if the user is opted-in to FIDO but no request options are present.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FIDONewCardAuthorization_NoRequestOptions_FormFilled) {
   const CreditCard* card = CreateServerCard(kTestGUID, kTestNumber);
   OptUserInToFido();
@@ -788,7 +873,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   payments_network_interface().ShouldReturnUnmaskDetailsImmediately(true);
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -803,7 +888,7 @@ TEST_F(CreditCardAccessManagerTest,
 
 // Ensures that use of a server card that is not enrolled into FIDO fills the
 // form if the user is opted-in to FIDO but the request options are invalid.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FIDONewCardAuthorization_InvalidRequestOptions_FormFilled) {
   const CreditCard* card = CreateServerCard(kTestGUID, kTestNumber);
   OptUserInToFido();
@@ -815,7 +900,10 @@ TEST_F(CreditCardAccessManagerTest,
       /*credential_id=*/"", /*relying_party_id=*/"");
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
+      card, /*fido_request_options=*/GetTestRequestOptions(
+          /*return_invalid_request_options=*/true));
+
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -855,7 +943,7 @@ TEST_F(CreditCardAccessManagerTest, FetchExpiredServerCardInvokesCvcPrompt) {
 #if BUILDFLAG(IS_ANDROID)
 // Ensures that the WebAuthn verification prompt is invoked after user opts in
 // on unmask card checkbox.
-TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, FIDOOptInSuccess_Android) {
   base::HistogramTester histogram_tester;
   std::string histogram_name =
       "Autofill.BetterAuth.WebauthnResult.CheckoutOptIn";
@@ -866,7 +954,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
 
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -908,7 +996,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
 
 // Ensures that the card is filled into the form if the request options returned
 // are invalid when the user opts in through the checkbox.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FIDOOptInFailure_InvalidResponseRequestOptions) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
@@ -916,7 +1004,7 @@ TEST_F(CreditCardAccessManagerTest,
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
 
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -933,7 +1021,7 @@ TEST_F(CreditCardAccessManagerTest,
 }
 
 // Ensures that the failed user verification disallows enrollment.
-TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, FIDOOptInUserVerificationFailure) {
   base::HistogramTester histogram_tester;
   std::string histogram_name =
       "Autofill.BetterAuth.WebauthnResult.CheckoutOptIn";
@@ -944,7 +1032,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
 
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -978,14 +1066,14 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
 }
 
 // Ensures that enrollment does not happen if the server returns a failure.
-TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, FIDOOptInServerFailure) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
 
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1016,14 +1104,14 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
 
 // Ensures that enrollment does not happen if user unchecking the opt-in
 // checkbox.
-TEST_F(CreditCardAccessManagerTest, FIDOOptIn_CheckboxDeclined) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, FIDOOptIn_CheckboxDeclined) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
 
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1044,7 +1132,8 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptIn_CheckboxDeclined) {
 
 // Ensures that opting-in through settings page on Android successfully sends an
 // opt-in request the next time the user downstreams a card.
-TEST_F(CreditCardAccessManagerTest, FIDOSettingsPageOptInSuccess_Android) {
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       FIDOSettingsPageOptInSuccess_Android) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
@@ -1058,7 +1147,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOSettingsPageOptInSuccess_Android) {
   payments_network_interface().ShouldReturnUnmaskDetailsImmediately(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1329,8 +1418,12 @@ TEST_F(CreditCardAccessManagerTest, SettingsPage_OptOut) {
 
 // Ensure that when unmask detail response is delayed, we will automatically
 // fall back to CVC even if local pref and Payments mismatch.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        IntentToOptOut_DelayedUnmaskDetailsResponse) {
+  if (IsMaskedServerCardRiskBasedAuthEnabled()) {
+    GTEST_SKIP() << "For risk based authentication, whether fallback to FIDO "
+                    "or CVC flow doesn't rely on the platform call";
+  }
   base::HistogramTester histogram_tester;
   // Setting up a FIDO-enabled user with a server card.
   CreateServerCard(kTestGUID, kTestNumber);
@@ -1375,7 +1468,8 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
 }
 
-TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskSucceeds) {
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       IntentToOptOut_OptOutAfterUnmaskSucceeds) {
   // Setting up a FIDO-enabled user with a server card.
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
@@ -1390,7 +1484,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskSucceeds) {
   SetCreditCardFIDOAuthEnabled(/*enabled=*/false);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   // Ensure that the local pref is still unchanged after unmask detail returns.
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
@@ -1410,7 +1504,8 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskSucceeds) {
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
 }
 
-TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskFails) {
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       IntentToOptOut_OptOutAfterUnmaskFails) {
   // Setting up a FIDO-enabled user with a server card.
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
@@ -1425,7 +1520,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskFails) {
   SetCreditCardFIDOAuthEnabled(/*enabled=*/false);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   // Ensure that the local pref is still unchanged after unmask detail returns.
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
@@ -1446,7 +1541,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskFails) {
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
 }
 
-TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutFailure) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, IntentToOptOut_OptOutFailure) {
   // Setting up a FIDO-enabled user with a server card.
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
@@ -1461,7 +1556,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutFailure) {
   SetCreditCardFIDOAuthEnabled(/*enabled=*/false);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   // Ensure that the local pref is still unchanged after unmask detail returns.
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
@@ -1523,7 +1618,7 @@ TEST_F(CreditCardAccessManagerTest, PreflightCallRateLimited) {
 
 // Ensures that UnmaskAuthFlowEvents also log to a ".ServerCard" subhistogram
 // when a masked server card is selected.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        UnmaskAuthFlowEvent_AlsoLogsServerCardSubhistogram) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
@@ -1533,7 +1628,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.BetterAuth.FlowEvents.Cvc.ServerCard";
 
   PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   histogram_tester.ExpectUniqueSample(
       flow_events_histogram_name,
