@@ -694,7 +694,7 @@ void SetCardArtURL(Suggestion& suggestion,
       suggestion.custom_icon = Suggestion::CustomIconUrl(card_art_url);
     } else {
       gfx::Image* image =
-          payments_data.GetCreditCardArtImageForUrl(card_art_url);
+          payments_data.GetCachedCardArtImageForUrl(card_art_url);
       if (image) {
         suggestion.custom_icon = *image;
       }
