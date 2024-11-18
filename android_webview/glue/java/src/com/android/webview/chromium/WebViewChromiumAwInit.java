@@ -21,6 +21,7 @@ import android.webkit.WebStorage;
 import android.webkit.WebViewDatabase;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import com.android.webview.chromium.WebViewChromium.ApiCall;
 
@@ -69,15 +70,33 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ResourceBundle;
 
 /**
- * Class controlling the Chromium initialization for WebView.
- * We hold on to most static objects used by WebView here.
- * This class is shared between the webkit glue layer and the support library glue layer.
+ * Class controlling the Chromium initialization for WebView. We hold on to most static objects used
+ * by WebView here. This class is shared between the webkit glue layer and the support library glue
+ * layer.
  */
 @Lifetime.Singleton
 public class WebViewChromiumAwInit {
     private static final String TAG = "WebViewChromiumAwInit";
 
     private static final String HTTP_AUTH_DATABASE_FILE = "http_auth.db";
+
+    public static class WebViewStartUpDiagnostics {
+        private Long mTotalTimeUiThreadChromiumInitMillis;
+
+        private void setTotalTimeUiThreadChromiumInitMillis(Long time) {
+            // The setter should only be called once.
+            assert (mTotalTimeUiThreadChromiumInitMillis == null);
+            mTotalTimeUiThreadChromiumInitMillis = time;
+        }
+
+        public Long getTotalTimeUiThreadChromiumInitMillis() {
+            return mTotalTimeUiThreadChromiumInitMillis;
+        }
+    }
+
+    public interface WebViewStartUpCallback {
+        void onSuccess(WebViewStartUpDiagnostics result);
+    }
 
     // TODO(gsennton): store aw-objects instead of adapters here
     // Initialization guarded by mLock.
@@ -109,6 +128,8 @@ public class WebViewChromiumAwInit {
     private int mInitState;
 
     private final WebViewChromiumFactoryProvider mFactory;
+    private final WebViewStartUpDiagnostics mWebViewStartUpDiagnostics =
+            new WebViewStartUpDiagnostics();
 
     // This enum must be kept in sync with WebViewStartup.CallSite in chrome_track_event.proto and
     // WebViewStartupCallSite in enums.xml.
@@ -123,6 +144,7 @@ public class WebViewChromiumAwInit {
         CallSite.GET_DEFAULT_WEB_STORAGE,
         CallSite.GET_DEFAULT_WEBVIEW_DATABASE,
         CallSite.GET_TRACING_CONTROLLER,
+        CallSite.ASYNC_WEBVIEW_STARTUP,
         CallSite.COUNT,
     })
     public @interface CallSite {
@@ -136,8 +158,9 @@ public class WebViewChromiumAwInit {
         int GET_DEFAULT_WEB_STORAGE = 7;
         int GET_DEFAULT_WEBVIEW_DATABASE = 8;
         int GET_TRACING_CONTROLLER = 9;
+        int ASYNC_WEBVIEW_STARTUP = 10;
         // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-        int COUNT = 10;
+        int COUNT = 11;
     };
 
     WebViewChromiumAwInit(WebViewChromiumFactoryProvider factory) {
@@ -319,17 +342,17 @@ public class WebViewChromiumAwInit {
             AwCrashyClassUtils.maybeCrashIfEnabled();
         }
 
+        long totalTimeTaken = SystemClock.uptimeMillis() - startTime;
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.Startup.CreationTime.InitReason", callSite, CallSite.COUNT);
-
         RecordHistogram.recordTimesHistogram(
-                "Android.WebView.Startup.CreationTime.StartChromiumLocked",
-                SystemClock.uptimeMillis() - startTime);
+                "Android.WebView.Startup.CreationTime.StartChromiumLocked", totalTimeTaken);
         TraceEvent.webViewStartupStartChromiumLocked(
                 startTime,
-                SystemClock.uptimeMillis() - startTime,
+                totalTimeTaken,
                 /* callSite= */ callSite,
                 /* fromUIThread= */ triggeredFromUIThread);
+        mWebViewStartUpDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTaken);
     }
 
     /**
@@ -388,7 +411,35 @@ public class WebViewChromiumAwInit {
 
     // This method is not private only because the downstream subclass needs to access it,
     // it shouldn't be accessed from anywhere else.
+    // Postcondition: Chromium startup is finished when this method returns.
     /* package */ void ensureChromiumStartedLocked(
+            boolean fromThreadSafeFunction, @CallSite int callSite) {
+        assert Thread.holdsLock(mLock);
+        ensureChromiumStartupHappensSoon(fromThreadSafeFunction, callSite);
+        if (mInitState == INIT_FINISHED) { // Early-out for the common case.
+            return;
+        }
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.waitForUIThreadInit")) {
+            long startTime = SystemClock.uptimeMillis();
+            // Wait for the UI thread to finish init.
+            while (mInitState != INIT_FINISHED) {
+                try {
+                    mLock.wait();
+                } catch (InterruptedException e) {
+                    // Keep trying; we can't abort init as WebView APIs do not declare that they
+                    // throw InterruptedException.
+                }
+            }
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.waitForUIThreadInit",
+                    SystemClock.uptimeMillis() - startTime);
+        }
+    }
+
+    // Postcondition: Chromium startup will be finished in the near future, but it may or may not be
+    // finished after this method returns.
+    private void ensureChromiumStartupHappensSoon(
             boolean fromThreadSafeFunction, @CallSite int callSite) {
         assert Thread.holdsLock(mLock);
 
@@ -423,23 +474,6 @@ public class WebViewChromiumAwInit {
                         }
                     }
                 });
-
-        try (ScopedSysTraceEvent event =
-                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.waitForUIThreadInit")) {
-            long startTime = SystemClock.uptimeMillis();
-            // Wait for the UI thread to finish init.
-            while (mInitState != INIT_FINISHED) {
-                try {
-                    mLock.wait();
-                } catch (InterruptedException e) {
-                    // Keep trying; we can't abort init as WebView APIs do not declare that they
-                    // throw InterruptedException.
-                }
-            }
-            RecordHistogram.recordTimesHistogram(
-                    "Android.WebView.Startup.CreationTime.waitForUIThreadInit",
-                    SystemClock.uptimeMillis() - startTime);
-        }
     }
 
     private void setChromiumUiThreadLocked(boolean fromThreadSafeFunction) {
@@ -633,5 +667,23 @@ public class WebViewChromiumAwInit {
 
     public WebViewChromiumRunQueue getRunQueue() {
         return mFactory.getRunQueue();
+    }
+
+    // Starts up WebView asynchronously.
+    // MUST NOT be called on the UI thread.
+    // The callback will be called on the UI thread.
+    public void startUpWebView(@NonNull WebViewStartUpCallback callback) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            throw new IllegalStateException(
+                    "startUpWebView should not be called on the Android main looper");
+        }
+        synchronized (mLock) {
+            if (mInitState == INIT_FINISHED) {
+                callback.onSuccess(mWebViewStartUpDiagnostics);
+                return;
+            }
+            getRunQueue().addTask(() -> callback.onSuccess(mWebViewStartUpDiagnostics));
+            ensureChromiumStartupHappensSoon(true, CallSite.ASYNC_WEBVIEW_STARTUP);
+        }
     }
 }

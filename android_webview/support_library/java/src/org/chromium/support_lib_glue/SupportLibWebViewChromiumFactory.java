@@ -22,6 +22,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewProviderFactoryBoundaryInterface;
+import org.chromium.support_lib_boundary.WebViewStartUpCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_boundary.util.Features;
 
@@ -98,6 +99,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.BACK_FORWARD_CACHE,
                 Features.PREFETCH_WITH_URL + Features.DEV_SUFFIX,
                 Features.DEFAULT_TRAFFICSTATS_TAGGING + Features.DEV_SUFFIX,
+                Features.ASYNC_WEBVIEW_STARTUP + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -220,6 +222,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.CANCEL_PREFETCH,
         ApiCall.SET_DEFAULT_TRAFFICSTATS_TAG,
         ApiCall.SET_DEFAULT_TRAFFICSTATS_UID,
+        ApiCall.START_UP_WEBVIEW,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -340,8 +343,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int CANCEL_PREFETCH = 111;
         int SET_DEFAULT_TRAFFICSTATS_TAG = 112;
         int SET_DEFAULT_TRAFFICSTATS_UID = 113;
+        int START_UP_WEBVIEW = 114;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 112;
+        int COUNT = 114;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
@@ -572,6 +576,33 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 }
             }
             return mProfileStore;
+        }
+    }
+
+    @Override
+    public void startUpWebView(
+            /* WebViewStartUpConfig */ InvocationHandler configInvoHandler,
+            /* WebViewStartUpCallback */ InvocationHandler callbackInvoHandler) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.START_UP_WEBVIEW")) {
+            recordApiCall(ApiCall.START_UP_WEBVIEW);
+            final WebViewStartUpCallbackBoundaryInterface webViewStartUpCallback =
+                    BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                            WebViewStartUpCallbackBoundaryInterface.class, callbackInvoHandler);
+            WebViewChromiumAwInit.WebViewStartUpCallback callback =
+                    new WebViewChromiumAwInit.WebViewStartUpCallback() {
+                        @Override
+                        public void onSuccess(
+                                WebViewChromiumAwInit.WebViewStartUpDiagnostics result) {
+                            SupportLibStartUpResult supportLibResult =
+                                    new SupportLibStartUpResult();
+                            supportLibResult.setTotalTimeInUiThreadMillis(
+                                    result.getTotalTimeUiThreadChromiumInitMillis());
+                            webViewStartUpCallback.onSuccess(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            supportLibResult));
+                        }
+                    };
+            mAwInit.startUpWebView(callback);
         }
     }
 }

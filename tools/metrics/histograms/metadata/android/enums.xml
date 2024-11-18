@@ -588,6 +588,7 @@ chromium-metrics-reviews@google.com.
   <int value="111" label="Profile.cancelPrefetch"/>
   <int value="112" label="WebViewCompat.setDefaultTrafficStatsTag"/>
   <int value="113" label="WebViewCompat.setDefaultTrafficStatsUid"/>
+  <int value="114" label="WebViewCompat.startUpWebView"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -2281,6 +2282,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="getDefaultWebStorage"/>
   <int value="8" label="getDefaultWebViewDatabase"/>
   <int value="9" label="getTracingController"/>
+  <int value="10" label="asyncWebViewStartUp"/>
 </enum>
 
 <enum name="WebViewUrlScheme">
