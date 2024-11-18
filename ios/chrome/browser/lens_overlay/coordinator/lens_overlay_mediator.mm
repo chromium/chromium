@@ -99,14 +99,23 @@
 
 - (void)omniboxDidAcceptText:(const std::u16string&)text
               destinationURL:(const GURL&)destinationURL
-            thumbnailRemoved:(BOOL)thumbnailRemoved {
+            thumbnailRemoved:(BOOL)thumbnailRemoved
+               textClobbered:(BOOL)textClobbered {
   [self defocusOmnibox];
-  // Start new unimodal searches in a new tab.
-  if (thumbnailRemoved || _currentLensResult.isTextSelection) {
-    [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
-    [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
-    [self updateForLensResult:_currentLensResult];
-  } else {
+
+  const BOOL isUnimodalTextQuery =
+      thumbnailRemoved || _currentLensResult.isTextSelection;
+  if (isUnimodalTextQuery) {
+    if (textClobbered) {
+      [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
+      [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
+      if (_omniboxClient) {
+        [self updateOmniboxText:_omniboxClient->GetOmniboxSteadyStateText()];
+      }
+    } else if (_navigationManager) {
+      _navigationManager->LoadUnimodalOmniboxNavigation(destinationURL, text);
+    }
+  } else {  // Multimodal query.
     // Setting the query text generates new results.
     NSString* nsText = base::SysUTF16ToNSString(text);
     [self updateOmniboxText:nsText];
