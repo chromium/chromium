@@ -10896,6 +10896,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5193" label="V8Animation_Constructor"/>
   <int value="5194" label="V8Element_GetAnimations_Method"/>
   <int value="5195" label="CSSCalcSizeFunction"/>
+  <int value="5196" label="MoveEvent"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
