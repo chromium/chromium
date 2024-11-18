@@ -450,6 +450,14 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
       DCHECK(HasProfileWithName(name));
     }
 
+    // If this is the first profile ever loaded, mark it as the personal
+    // profile.
+    // TODO(crbug.com/331783685): Handle the (theoretical) case where the pref
+    // does have a value, but no profile with that name actually exists.
+    if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
+      profile_attributes_storage_.SetPersonalProfileName(name);
+    }
+
     std::tie(iter, inserted) = profiles_map_.insert(std::make_pair(
         std::string(name),
         ProfileInfo(ProfileIOS::CreateProfile(profile_data_dir_.Append(name),
@@ -472,13 +480,6 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     } else {
       std::move(initialized_callback).Run(profile_info.profile());
     }
-  }
-
-  // If this is the first profile ever loaded, mark it as the personal profile.
-  // TODO(crbug.com/331783685): Handle the (theoretical) case where the pref
-  // does have a value, but no profile with that name actually exists.
-  if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
-    profile_attributes_storage_.SetPersonalProfileName(name);
   }
 
   // If asked to load synchronously but an asynchronous load was already in
