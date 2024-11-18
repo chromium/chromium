@@ -23,7 +23,6 @@ class TimeDelta;
 namespace display {
 class Display;
 class DisplayObserver;
-enum class TabletState;
 }  // namespace display
 
 namespace gfx {
@@ -138,15 +137,6 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   // available.
   virtual std::optional<float> GetPreferredScaleFactorForAcceleratedWidget(
       gfx::AcceleratedWidget widget) const;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Called when tablet state is changed.
-  virtual void OnTabletStateChanged(display::TabletState tablet_state) {}
-
-  // Returns tablet state. If a platform does not support this, returns
-  // display::TabletState::kInClamshellMode.
-  virtual display::TabletState GetTabletState() const = 0;
-#endif
 
  protected:
   void StorePlatformNameIntoListOfValues(base::Value::List& values,
