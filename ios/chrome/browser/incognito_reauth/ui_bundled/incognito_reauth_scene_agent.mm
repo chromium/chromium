@@ -13,6 +13,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
@@ -38,7 +40,7 @@
 
 #pragma mark - IncognitoReauthSceneAgent
 
-@interface IncognitoReauthSceneAgent ()
+@interface IncognitoReauthSceneAgent () <PrefObserverDelegate>
 
 // Whether the window had incognito content (e.g. at least one open tab) upon
 // backgrounding.
@@ -59,7 +61,12 @@
 
 @end
 
-@implementation IncognitoReauthSceneAgent
+@implementation IncognitoReauthSceneAgent {
+  // Bridge to listen to pref changes.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
+}
 
 @synthesize lastBackgroundedTime = _lastBackgroundedTime;
 
@@ -228,6 +235,21 @@
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   [self logEnabledHistogramOnce];
+  if (IsIOSSoftLockEnabled()) {
+    [self setUpPrefObservers];
+  }
+}
+
+- (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  if (IsIOSSoftLockEnabled()) {
+    [self tearDownPrefObservers];
+  }
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  [self notifyObservers];
 }
 
 #pragma mark - private
@@ -394,13 +416,38 @@
 
 // Notifies the observers of changes to the state of isAuthenticationRequired.
 - (void)notifyObservers {
-  DCHECK([self areLockFeaturesEnabled]);
   if (IsIOSSoftLockEnabled()) {
     [self.observers reauthAgent:self
         didUpdateIncognitoLockState:self.incognitoLockState];
   } else {
     [self.observers reauthAgent:self
         didUpdateAuthenticationRequirement:self.isAuthenticationRequired];
+  }
+}
+
+// Registers observers for the relevant preferences, so that settings changes
+// can be picked up in real time.
+- (void)setUpPrefObservers {
+  // TODO(crbug.com/370804664): Adding a DCHECK instead of a CHECK for the
+  // moment as its not clear whether the localState will be available at this
+  // point.
+  DCHECK(self.localState);
+  if (!_prefObserverBridge) {
+    _prefChangeRegistrar.Init(self.localState);
+
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kIncognitoAuthenticationSetting, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kIncognitoSoftLockSetting, &_prefChangeRegistrar);
+  }
+}
+
+// Removes the already setup preference observers.
+- (void)tearDownPrefObservers {
+  if (_prefObserverBridge) {
+    _prefChangeRegistrar.RemoveAll();
+    _prefObserverBridge.reset();
   }
 }
 
