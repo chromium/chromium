@@ -75,36 +75,26 @@ public class TabUiUtils {
                         .allowUndo(true)
                         .build();
 
-        @Nullable TabModelActionListener listener = buildMaybeDidCloseTabListener(didCloseCallback);
+        TabModelActionListener listener =
+                new TabModelActionListener() {
+                    @Override
+                    public void onConfirmationDialogResult(
+                            @DialogType int dialogType, @ActionConfirmationResult int result) {
+                        // Cases:
+                        // - DialogType.NONE: will always close tabs as no interrupt happened.
+                        // - DialogType.COLLABORATION: will always perform the action. The dialog is used
+                        //   to confirm if the group should remain.
+                        // - DialogType.SYNC: a dialog interrupts the flow. If the action was positive the
+                        //   tabs will be closed.
+                        // The goal is to differentiate whether tabs were closed which can be inferred from
+                        // the combination of `dialogType` and `result`. 
+                        boolean didCloseTabs =
+                                dialogType != DialogType.SYNC
+                                        || result != ActionConfirmationResult.CONFIRMATION_NEGATIVE;
+                        Callback.runNullSafe(didCloseCallback, didCloseTabs);
+                    }
+                };
         tabModel.getTabRemover().closeTabs(closureParams, /* allowDialog= */ true, listener);
-    }
-
-    /**
-     * Returns a {@link TabModelActionListener} that will invoke {@code didCloseCallback} with
-     * whether tabs were closed or null if {@code didCloseCallback} is null.
-     */
-    public static @Nullable TabModelActionListener buildMaybeDidCloseTabListener(
-            @Nullable Callback<Boolean> didCloseCallback) {
-        if (didCloseCallback == null) return null;
-
-        return new TabModelActionListener() {
-            @Override
-            public void onConfirmationDialogResult(
-                    @DialogType int dialogType, @ActionConfirmationResult int result) {
-                // Cases:
-                // - DialogType.NONE: will always close tabs as no interrupt happened.
-                // - DialogType.COLLABORATION: will always perform the action. The dialog is used to
-                //   confirm if the group should remain.
-                // - DialogType.SYNC: a dialog interrupts the flow. If the action was positive the
-                //   tabs will be closed.
-                // The goal is to differentiate whether tabs were closed which can be inferred from
-                // the combination of `dialogType` and `result`.
-                boolean didCloseTabs =
-                        dialogType != DialogType.SYNC
-                                || result != ActionConfirmationResult.CONFIRMATION_NEGATIVE;
-                didCloseCallback.onResult(didCloseTabs);
-            }
-        };
     }
 
     /**
