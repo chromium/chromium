@@ -1492,7 +1492,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectTotalCount(interaction_histogram, 0);
 
   // After navigating to the page, the totals should be set.
-  SetupWarningAndNavigate(browser());
+  const GURL url = SetupWarningAndNavigate(browser());
   histograms.ExpectTotalCount(decision_histogram, 1);
   histograms.ExpectBucketCount(decision_histogram,
                                security_interstitials::MetricsHelper::SHOW, 1);
@@ -1552,6 +1552,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   auto ukm_entries =
       test_ukm_recorder.GetEntriesByName("SafeBrowsingInterstitial");
   EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntrySourceHasUrl(ukm_entries[0], url);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "Shown", true);
 }
 
@@ -1628,6 +1629,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   auto ukm_entries =
       test_ukm_recorder.GetEntriesByName("SafeBrowsingInterstitial");
   EXPECT_EQ(2u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntrySourceHasUrl(ukm_entries[0], url);
+  test_ukm_recorder.ExpectEntrySourceHasUrl(ukm_entries[1], url);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "Shown", true);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[1], "Bypassed", true);
 }
