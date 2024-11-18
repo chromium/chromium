@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -80,6 +81,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
@@ -326,6 +328,12 @@ void LogPriceDropMetrics(web::WebState* web_state) {
     return;
   }
 
+  if (!self.profile ||
+      !IsAddNewTabAllowedByPolicy(self.profile->GetPrefs(),
+                                  self.profile->IsOffTheRecord())) {
+    return;
+  }
+
   // There are some circumstances where a new tab insertion can be erroniously
   // triggered while another web state list mutation is happening. To ensure
   // those bugs don't become crashes, check that the web state list is OK to
@@ -337,17 +345,21 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   }
 
   CHECK(self.profile);
-  CHECK(self.URLLoader);
+  web::WebState::CreateParams params(self.profile);
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
 
   int webStateListIndex =
       WebStateIndexFromGridDropItemIndex(self.webStateList, index);
-  webStateListIndex = std::clamp(webStateListIndex, 0, _webStateList->count());
+  webStateListIndex =
+      std::clamp(webStateListIndex, 0, self.webStateList->count());
 
-  UrlLoadParams params = UrlLoadParams::InNewTab(newTabURL);
-  params.in_incognito = self.profile->IsOffTheRecord();
-  params.append_to = OpenPosition::kSpecifiedIndex;
-  params.insertion_index = webStateListIndex;
-  self.URLLoader->Load(params);
+  web::NavigationManager::WebLoadParams loadParams(newTabURL);
+  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
+  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  self.webStateList->InsertWebState(
+      std::move(webState),
+      WebStateList::InsertionParams::AtIndex(webStateListIndex).Activate());
 }
 
 - (void)insertItem:(GridItemIdentifier*)item
