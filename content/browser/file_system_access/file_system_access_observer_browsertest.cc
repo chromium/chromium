@@ -562,24 +562,6 @@ class FileSystemAccessObserverBrowserTest
   }
 
   TestFileSystemType GetTestFileSystemType() const { return GetParam(); }
-
-  // TODO(crbug.com/379052298): See if this helper and SupportsChangeInfo() can
-  // be removed.
-  bool SupportsReportingModifiedPath() const {
-    if (GetTestFileSystemType() == TestFileSystemType::kBucket) {
-      return true;
-    }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-    return true;
-#else
-    return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_MAC)
-  }
-
-  bool SupportsChangeInfo() const { return SupportsReportingModifiedPath(); }
 };
 
 // `base::FilePatchWatcher` is not implemented on Fuchsia. See
@@ -886,12 +868,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
-  // TODO(crbug.com/321980270): Support change types for the local file system
-  // on more platforms.
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "modified" : "unknown";
   EXPECT_THAT(*records.front().GetDict().FindString("type"),
-              testing::StrEq(expected_change_type));
+              testing::StrEq("modified"));
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
@@ -1037,10 +1015,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
-  const auto relative_path_component_matcher = testing::Conditional(
-      SupportsReportingModifiedPath(), testing::SizeIs(1), testing::IsEmpty());
   EXPECT_THAT(*records.front().GetDict().FindList("relativePathComponents"),
-              relative_path_component_matcher);
+              testing::SizeIs(1));
 }
 
 // TODO(b/321980270): Re-enable these tests on Mac, after fixing the failing
@@ -1073,20 +1049,11 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "moved" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("subdir", "newFile.txt"));
-    EXPECT_THAT(*record_dict.FindList("relativePathMovedFrom"),
-                testing::ElementsAre("subdir", "oldFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-    EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
-  }
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("moved"));
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("subdir", "newFile.txt"));
+  EXPECT_THAT(*record_dict.FindList("relativePathMovedFrom"),
+              testing::ElementsAre("subdir", "oldFile.txt"));
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
@@ -1117,17 +1084,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "appeared" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("newFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-  }
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("appeared"));
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("newFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
 
@@ -1155,17 +1114,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "disappeared" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("oldFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-  }
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("disappeared"));
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("oldFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
 
@@ -1194,17 +1145,9 @@ IN_PROC_BROWSER_TEST_P(
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "disappeared" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("oldFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-  }
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("disappeared"));
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("oldFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
 #endif  // !BUILDFLAG(IS_MAC)
@@ -1237,19 +1180,11 @@ IN_PROC_BROWSER_TEST_P(
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
-  const std::string expected_change_type =
-      SupportsChangeInfo() ? "appeared" : "unknown";
-  EXPECT_THAT(*record_dict.FindString("type"),
-              testing::StrEq(expected_change_type));
-  if (SupportsReportingModifiedPath()) {
-    // Moved-to path is out of the watched scope, so moved-from path is reported
-    // as `relativePathComponents`.
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("newFile.txt"));
-  } else {
-    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::IsEmpty());
-  }
+  EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("appeared"));
+  // Moved-to path is out of the watched scope, so moved-from path is reported
+  // as `relativePathComponents`.
+  EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+              testing::ElementsAre("newFile.txt"));
   EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
 #endif  // !BUILDFLAG(IS_MAC)
@@ -1289,11 +1224,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(records, testing::SizeIs(1));
   auto& record_dict = records.front().GetDict();
   EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("modified"));
-  const auto relative_path_component_matcher = testing::Conditional(
-      SupportsReportingModifiedPath(), testing::ElementsAre("file.txt"),
-      testing::IsEmpty());
   EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-              relative_path_component_matcher);
+              testing::ElementsAre("file.txt"));
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
