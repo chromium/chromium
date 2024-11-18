@@ -1358,18 +1358,6 @@
              "--enable-blink-features=SerializeViewTransitionStateInSPA"],
     "expires": "never"
   },
-  {
-    "prefix": "getinnerhtml-enabled",
-    "platforms": ["Linux"],
-    "owners": ["masonf@chromium.org"],
-    "bases": [
-      "external/wpt/shadow-dom/declarative/getinnerhtml.tentative.html",
-      "http/tests/inspector-protocol/issues/getinnerhtml-issue.js",
-      "shadow-dom/getinnerhtml-use-counter.html"
-    ],
-    "args": ["--enable-blink-features=ElementGetInnerHTML"],
-    "expires": "Dec 1, 2024"
-  },
   "This virtual suite ensures that mutation events continue to function in the",
   "case that MutationEvents are re-enabled. That is important because there is",
   "an active Deprecation Trial [1] and an active Enterprise Policy [2]. So this",

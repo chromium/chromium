@@ -3182,7 +3182,7 @@ enum WebFeature {
   kPaymentRequestCSPViolation = 3871,
   kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope = 3872,
   kAuthorizationCoveredByWildcard = 3873,
-  kElementGetInnerHTML = 3874,
+  kOBSOLETE_ElementGetInnerHTML = 3874,
   kFileHandlingLaunch = 3875,
   kSameOriginDocumentsWithDifferentCOOPStatus = 3876,
   kHTMLMediaElementSetSinkId = 3877,

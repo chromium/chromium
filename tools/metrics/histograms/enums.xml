@@ -9443,7 +9443,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3872"
       label="WorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope"/>
   <int value="3873" label="AuthorizationCoveredByWildcard"/>
-  <int value="3874" label="ElementGetInnerHTML"/>
+  <int value="3874" label="OBSOLETE_ElementGetInnerHTML"/>
   <int value="3875" label="FileHandlingLaunch"/>
   <int value="3876" label="SameOriginDocumentsWithDifferentCOOPStatus"/>
   <int value="3877" label="HTMLMediaElementSetSinkId"/>

@@ -1697,16 +1697,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      // TODO(crbug.fom/41492947) This is the "old" version of getInnerHTML()
-      // used for declarative shadow DOM, and this version is deprecated and
-      // currently being removed via Finch. It has been removed via Finch at
-      // 5+ percent of Stable users, and that ramp will continue. So this
-      // feature is now disabled by default in code, starting M131. This flag
-      // can be removed in M133, assuming no issues. In the meantime,
-      // replacement API is called `getHTML()` and that shipped in M125.
-      name: "ElementGetInnerHTML",
-    },
-    {
       name: "EnforceAnonymityExposure",
       status: "stable",
     },
