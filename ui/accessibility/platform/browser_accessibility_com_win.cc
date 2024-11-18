@@ -1156,8 +1156,25 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
                                     ax::mojom::StringAttribute::kName));
   }
 
+  // For OmniPass—rebranded as Fiserv Verifast. See https://crbug.com/378908266.
+  std::string type_attr =
+      GetOwner()->GetStringAttribute(ax::mojom::StringAttribute::kInputType);
+  if (!type_attr.empty()) {
+    ADD_ATTRIBUTE("type", type_attr);
+  }
+  std::string value_attr =
+      GetOwner()->GetStringAttribute(ax::mojom::StringAttribute::kValue);
+  if (!value_attr.empty()) {
+    ADD_ATTRIBUTE("value", value_attr);
+  }
+  std::string name_attr = GetOwner()->GetStringAttribute(
+      ax::mojom::StringAttribute::kHtmlInputName);
+  if (!name_attr.empty()) {
+    ADD_ATTRIBUTE("name", name_attr);
+  }
+
   // Vispero's Inspect tool needs this temporarily, until they start tracking
-  // nodes using the unique id.
+  // nodes using the unique id. Also used by OmniPass / Fiserve Verifast.
   std::string id_attr =
       GetOwner()->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
   if (!id_attr.empty()) {

@@ -526,6 +526,8 @@ optimization_guide::proto::AXStringAttribute StringAttributeToProto(
       return optimization_guide::proto::AXStringAttribute::AX_SA_FONTFAMILY;
     case ax::mojom::StringAttribute::kHtmlId:
       return optimization_guide::proto::AXStringAttribute::AX_SA_HTMLID;
+    case ax::mojom::StringAttribute::kHtmlInputName:
+      return optimization_guide::proto::AXStringAttribute::AX_SA_HTMLINPUTNAME;
     case ax::mojom::StringAttribute::kHtmlTag:
       return optimization_guide::proto::AXStringAttribute::AX_SA_HTMLTAG;
     case ax::mojom::StringAttribute::kImageAnnotation:
