@@ -15,6 +15,10 @@
   GURL _externalURL;
   GURL _completeURL;
   std::vector<GURL> _URLs;
+  ApplicationModeRequestStatus _applicationModeRequestStatus;
+
+  // An array of blocks to execute once the `applicationMode` is available.
+  NSMutableArray<AppModeRequestBlock>* _pendingBlocks;
 }
 
 @synthesize externalURLParams = _externalURLParams;
@@ -41,6 +45,7 @@
     _externalURL = externalURL;
     _completeURL = completeURL;
     _applicationMode = mode;
+    _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
   }
   return self;
 }
@@ -171,6 +176,26 @@
       // Other actions are only valid on NTP;
     default:
       return _externalURL == GURL(kChromeUINewTabURL);
+  }
+}
+
+- (void)requestApplicationModeWithBlock:(AppModeRequestBlock)block {
+  switch (_applicationModeRequestStatus) {
+    case ApplicationModeRequestStatus::kAvailable:
+      block(self.applicationMode);
+      break;
+    case ApplicationModeRequestStatus::kRequested:
+      NOTREACHED();
+      CHECK(_pendingBlocks);
+      [_pendingBlocks addObject:block];
+      break;
+    case ApplicationModeRequestStatus::kUnavailable: {
+      NOTREACHED();
+      CHECK(!_pendingBlocks);
+      _pendingBlocks = [[NSMutableArray alloc] init];
+      [_pendingBlocks addObject:block];
+      break;
+    }
   }
 }
 
