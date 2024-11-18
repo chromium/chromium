@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -32,6 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
@@ -79,6 +80,8 @@ public class QuickDeleteDialogDelegateTest {
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -91,7 +94,6 @@ public class QuickDeleteDialogDelegateTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
         SyncServiceFactory.setInstanceForTesting(mMockSyncService);
         setSyncable(false);
 

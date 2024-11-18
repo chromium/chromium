@@ -16,10 +16,12 @@ import static org.mockito.Mockito.when;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
@@ -41,6 +43,8 @@ import java.util.List;
 @LooperMode(LooperMode.Mode.PAUSED)
 @Batch(Batch.UNIT_TESTS)
 public class QuickDeleteMediatorTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
 
@@ -56,7 +60,6 @@ public class QuickDeleteMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
                 .thenReturn(mIdentityManagerMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);

@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import static org.chromium.chrome.browser.quick_delete.QuickDeleteTabsFilter.FIFTEEN_MINUTES_IN_MS;
 import static org.chromium.chrome.browser.quick_delete.QuickDeleteTabsFilter.FOUR_WEEKS_IN_MS;
@@ -20,9 +19,12 @@ import static org.chromium.chrome.browser.quick_delete.QuickDeleteTabsFilter.ONE
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
@@ -48,6 +50,8 @@ public class QuickDeleteTabsFilterTest {
     private QuickDeleteTabsFilter mQuickDeleteTabsFilter;
     private final List<MockTab> mMockTabList = new ArrayList<>();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private TabGroupModelFilter mTabGroupModelFilterMock;
     @Mock private TabModel mTabModelMock;
     @Mock private Profile mProfileMock;
@@ -68,7 +72,6 @@ public class QuickDeleteTabsFilterTest {
 
     @Before
     public void setUp() {
-        initMocks(this);
         doReturn(false).when(mTabGroupModelFilterMock).isIncognito();
         doReturn(false).when(mTabModelMock).isIncognito();
         doReturn(mTabModelMock).when(mTabGroupModelFilterMock).getTabModel();

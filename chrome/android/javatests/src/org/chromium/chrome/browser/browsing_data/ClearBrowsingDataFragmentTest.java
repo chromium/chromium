@@ -62,7 +62,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.ThreadUtils;
@@ -125,6 +126,8 @@ public class ClearBrowsingDataFragmentTest {
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeMock;
 
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
@@ -135,8 +138,6 @@ public class ClearBrowsingDataFragmentTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         BrowsingDataBridgeJni.setInstanceForTesting(mBrowsingDataBridgeMock);
         // Ensure that whenever the mock is asked to clear browsing data, the callback is
         // immediately called.
