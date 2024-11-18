@@ -613,8 +613,6 @@ after discussions on the right group.
       <annotation id="nux_ntp_background_preview"/>
       <annotation id="popular_sites_fetch"/>
       <annotation id="promo_service"/>
-      <annotation id="chrome_cart_discounts_lookup"/>
-      <annotation id="chrome_cart_get_discounted_link"/>
     </sender>
     <sender name="Speech Recognition">
       <annotation id="speech_recognition_downstream"/>

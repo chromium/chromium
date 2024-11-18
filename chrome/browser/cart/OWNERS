@@ -1,8 +1,0 @@
-file://chrome/browser/ui/webui/new_tab_page/OWNERS
-file://chrome/browser/complex_tasks/OWNERS
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-meiliang@chromium.org
-yuezhanggg@chromium.org

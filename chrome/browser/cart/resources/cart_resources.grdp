@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_CART_DOMAIN_NAME_MAPPING_JSON" file="cart/resources/cart_domain_name_mapping.json" compress="gzip" type="BINDATA" />
-  <include name="IDR_CART_DOMAIN_CART_URL_MAPPING_JSON" file="cart/resources/cart_domain_cart_url_mapping.json" compress="gzip" type="BINDATA" />
-</grit-part>

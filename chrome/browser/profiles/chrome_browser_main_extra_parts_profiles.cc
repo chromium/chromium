@@ -298,7 +298,6 @@
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
-#include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
@@ -748,9 +747,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   CaptivePortalServiceFactory::GetInstance();
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-  CartServiceFactory::GetInstance();
 #endif
   ChildAccountServiceFactory::GetInstance();
   chrome_browser_net::DnsProbeServiceFactory::GetInstance();

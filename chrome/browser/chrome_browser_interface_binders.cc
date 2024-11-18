@@ -150,7 +150,6 @@
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #else
 #include "chrome/browser/badging/badge_manager.h"
-#include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
