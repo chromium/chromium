@@ -3720,6 +3720,7 @@ TEST_F(QuotaManagerImplTest, StaticReportedQuota_Bucket) {
   static const ClientBucketData kData[] = {
       {"http://foo.com/", "logs", kTemp, 10},
       {"http://foo.com/", "inbox", kTemp, 60},
+      {"http://highrequestedquota.com/", "bucket", kTemp, 0},
       {"http://unlimited/", "other", kTemp, 0},
   };
   mock_special_storage_policy()->AddUnlimited(GURL("http://unlimited/"));
@@ -3729,9 +3730,15 @@ TEST_F(QuotaManagerImplTest, StaticReportedQuota_Bucket) {
       CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kSync});
 
   // Initialize the logs bucket with a non-default quota.
-  BucketInitParams params(ToStorageKey("http://foo.com/"), "logs");
-  params.quota = 117;
-  ASSERT_TRUE(UpdateOrCreateBucket(params).has_value());
+  BucketInitParams low_quota_params(ToStorageKey("http://foo.com/"), "logs");
+  low_quota_params.quota = 117;
+  ASSERT_TRUE(UpdateOrCreateBucket(low_quota_params).has_value());
+
+  // Initialize a bucket with quota > the max quota.
+  BucketInitParams high_quota_params(
+      ToStorageKey("http://highrequestedquota.com/"), "bucket");
+  high_quota_params.quota = kDefaultPerStorageKeyQuota + 100;
+  ASSERT_TRUE(UpdateOrCreateBucket(high_quota_params).has_value());
 
   RegisterClientBucketData(fs_client, kData);
 
@@ -3743,7 +3750,7 @@ TEST_F(QuotaManagerImplTest, StaticReportedQuota_Bucket) {
     auto result = GetUsageAndQuotaForBucket(bucket);
     EXPECT_EQ(result.status, QuotaStatusCode::kOk);
     EXPECT_EQ(result.usage, 10);
-    EXPECT_EQ(result.quota, params.quota);
+    EXPECT_EQ(result.quota, low_quota_params.quota);
   }
 
   // Static quota is returned for bucket with default quota and limited storage.
@@ -3767,6 +3774,19 @@ TEST_F(QuotaManagerImplTest, StaticReportedQuota_Bucket) {
     EXPECT_GT(result.quota, initial_reported_quota);
     EXPECT_GT(result.quota, result.usage);
     EXPECT_EQ(result.usage, 60 + additional_usage);
+  }
+
+  // Requested quota is returned for bucket with requested quota > the max.
+  {
+    ASSERT_OK_AND_ASSIGN(
+        BucketInfo bucket,
+        UpdateOrCreateBucket(
+            {ToStorageKey("http://highrequestedquota.com/"), "bucket"}));
+    auto result = GetUsageAndQuotaForBucket(bucket);
+    EXPECT_EQ(result.status, QuotaStatusCode::kOk);
+    EXPECT_EQ(result.usage, 0);
+    EXPECT_NE(result.quota, kDefaultPerStorageKeyQuota);
+    EXPECT_EQ(result.quota, high_quota_params.quota);
   }
 
   // Actual quota is returned for bucket with default quota and unlimited
