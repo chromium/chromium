@@ -25,7 +25,7 @@
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "components/safe_browsing/core/common/safebrowsing_constants.h"
+#import "components/safe_browsing/core/common/safebrowsing_switches.h"
 #import "components/safe_browsing/core/common/utils.h"
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
 #import "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -84,7 +84,7 @@ namespace {
 bool HasArtificialCachedVerdict() {
   std::string phishing_url_string =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          safe_browsing::kArtificialCachedPhishGuardVerdictFlag);
+          safe_browsing::switches::kArtificialCachedPhishGuardVerdictFlag);
   return !phishing_url_string.empty();
 }
 

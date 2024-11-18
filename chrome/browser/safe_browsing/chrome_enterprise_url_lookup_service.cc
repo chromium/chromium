@@ -32,6 +32,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -41,8 +42,6 @@ namespace safe_browsing {
 
 namespace {
 
-constexpr char kUrlFilteringEndpointFlag[] = "url-filtering-endpoint";
-
 std::optional<GURL> GetUrlOverride() {
   // Ignore this flag on Stable and Beta to avoid abuse.
   if (!g_browser_process || !g_browser_process->browser_policy_connector()
@@ -51,13 +50,13 @@ std::optional<GURL> GetUrlOverride() {
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kUrlFilteringEndpointFlag)) {
-    GURL url =
-        GURL(command_line->GetSwitchValueASCII(kUrlFilteringEndpointFlag));
+  if (command_line->HasSwitch(switches::kUrlFilteringEndpointFlag)) {
+    GURL url = GURL(
+        command_line->GetSwitchValueASCII(switches::kUrlFilteringEndpointFlag));
     if (url.is_valid()) {
       return url;
     } else {
-      LOG(ERROR) << "--" << kUrlFilteringEndpointFlag
+      LOG(ERROR) << "--" << switches::kUrlFilteringEndpointFlag
                  << " is set to an invalid URL";
     }
   }

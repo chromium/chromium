@@ -15,6 +15,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "components/enterprise/common/strings.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -25,8 +26,6 @@
 namespace safe_browsing {
 namespace {
 
-constexpr char kCloudBinaryUploadServiceUrlFlag[] = "binary-upload-service-url";
-
 std::optional<GURL> GetUrlOverride() {
   // Ignore this flag on Stable and Beta to avoid abuse.
   if (!g_browser_process || !g_browser_process->browser_policy_connector()
@@ -35,9 +34,9 @@ std::optional<GURL> GetUrlOverride() {
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kCloudBinaryUploadServiceUrlFlag)) {
-    GURL url = GURL(
-        command_line->GetSwitchValueASCII(kCloudBinaryUploadServiceUrlFlag));
+  if (command_line->HasSwitch(switches::kCloudBinaryUploadServiceUrlFlag)) {
+    GURL url = GURL(command_line->GetSwitchValueASCII(
+        switches::kCloudBinaryUploadServiceUrlFlag));
     if (url.is_valid())
       return url;
     else

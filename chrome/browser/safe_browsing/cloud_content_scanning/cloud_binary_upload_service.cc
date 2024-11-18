@@ -23,6 +23,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_status_code.h"
@@ -30,10 +31,7 @@
 namespace safe_browsing {
 namespace {
 
-// The command line flag to control the max amount of concurrent active
-// requests.
 // TODO(crbug.com/40174400): Tweak this number to an "optimal" value.
-constexpr char kMaxParallelActiveRequests[] = "wp-max-parallel-active-requests";
 constexpr int kDefaultMaxParallelActiveRequests = 5;
 
 constexpr base::TimeDelta kAuthTimeout = base::Seconds(10);
@@ -185,11 +183,11 @@ bool IgnoreErrorResultForResumableUpload(BinaryUploadService::Request* request,
 // static
 size_t CloudBinaryUploadService::GetParallelActiveRequestsMax() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kMaxParallelActiveRequests)) {
+  if (command_line->HasSwitch(switches::kWpMaxParallelActiveRequests)) {
     int parsed_max;
-    if (base::StringToInt(
-            command_line->GetSwitchValueASCII(kMaxParallelActiveRequests),
-            &parsed_max) &&
+    if (base::StringToInt(command_line->GetSwitchValueASCII(
+                              switches::kWpMaxParallelActiveRequests),
+                          &parsed_max) &&
         parsed_max > 0) {
       return parsed_max;
     } else {

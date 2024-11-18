@@ -57,11 +57,6 @@ const int64_t kBytesPerFullHashEntry = 32;
 // smaller than this number, the allowlist is considered as unavailable.
 const int kHighConfidenceAllowlistMinimumEntryCount = 100;
 
-// If the switch is present, any high-confidence allowlist check will return
-// that it does not match the allowlist.
-const char kSkipHighConfidenceAllowlist[] =
-    "safe-browsing-skip-high-confidence-allowlist";
-
 const ThreatSeverity kLeastSeverity =
     std::numeric_limits<ThreatSeverity>::max();
 
@@ -131,11 +126,12 @@ ListInfos GetListInfos() {
 base::span<const CommandLineSwitchAndThreatType> GetSwitchAndThreatTypes() {
   static constexpr CommandLineSwitchAndThreatType
       kCommandLineSwitchAndThreatType[] = {
-          {"mark_as_allowlisted_for_phish_guard", CSD_ALLOWLIST},
-          {"mark_as_allowlisted_for_real_time", HIGH_CONFIDENCE_ALLOWLIST},
+          {switches::kMarkAsPasswordProtectionAllowlisted, CSD_ALLOWLIST},
+          {switches::kMarkAsHighConfidenceAllowlisted,
+           HIGH_CONFIDENCE_ALLOWLIST},
           {switches::kMarkAsPhishing, SOCIAL_ENGINEERING},
-          {"mark_as_malware", MALWARE_THREAT},
-          {"mark_as_uws", UNWANTED_SOFTWARE}};
+          {switches::kMarkAsMalware, MALWARE_THREAT},
+          {switches::kMarkAsUws, UNWANTED_SOFTWARE}};
   return kCommandLineSwitchAndThreatType;
 }
 
@@ -438,7 +434,7 @@ void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     CheckUrlForHighConfidenceAllowlistCallback callback) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kSkipHighConfidenceAllowlist)) {
+          switches::kSkipHighConfidenceAllowlist)) {
     ui_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   /*url_on_high_confidence_allowlist=*/false,
