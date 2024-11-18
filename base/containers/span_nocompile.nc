@@ -288,6 +288,11 @@ void FixedSizeSplitAtOutOfBounds() {
   span(arr).split_at<4u>();  // expected-error@*:* {{no matching member function for call to 'split_at'}}
 }
 
+void DerefEmpty() {
+  constexpr span<int, 0> kEmptySpan;
+  [[maybe_unused]] int i = kEmptySpan[0];  // expected-error {{no viable overloaded operator[] for type 'const span<int, 0>'}}
+}
+
 void FromRefLifetimeBoundErrorForIntLiteral() {
   // Testing that `LIFETIME_BOUND` works as intended.
   [[maybe_unused]] auto wont_work = span_from_ref<const int>(123);        // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}

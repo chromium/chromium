@@ -163,7 +163,7 @@ TEST(SpanTest, DefaultConstructor) {
 
   constexpr span<int, 0> static_span;
   static_assert(nullptr == static_span.data());
-  static_assert(0u == static_span.size());
+  static_assert(0 == static_span.size());
 }
 
 TEST(SpanTest, ConstructFromDataAndSize) {
@@ -2017,7 +2017,6 @@ TEST(SpanTest, EnsureConstexprGoodness) {
 
 TEST(SpanTest, OutOfBoundsDeath) {
   constexpr span<int, 0> kEmptySpan;
-  ASSERT_DEATH_IF_SUPPORTED(kEmptySpan[0], "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.first(1u), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.last(1u), "");
   ASSERT_DEATH_IF_SUPPORTED(kEmptySpan.subspan(1u), "");

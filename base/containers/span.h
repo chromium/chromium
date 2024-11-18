@@ -261,11 +261,6 @@ template <class T, class U, size_t N, size_t M>
   requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
            std::equality_comparable_with<T, U>)
 constexpr bool span_eq(span<T, N> l, span<U, M> r);
-template <class T, class U, size_t N, size_t M>
-  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
-           std::three_way_comparable_with<T, U>)
-constexpr auto span_cmp(span<T, N> l, span<U, M> r)
-    -> decltype(l[0u] <=> r[0u]);
 template <class T, size_t N>
 constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 
@@ -548,14 +543,11 @@ class GSL_POINTER span {
 
   // [span.elem], span element access
   //
-  // # Checks
-  // The function CHECKs that the `idx` is inside the span and will terminate
-  // otherwise.
-  constexpr T& operator[](size_t idx) const noexcept {
-    CHECK_LT(idx, size());
-    // SAFETY: Since data() always points to at least `N` elements, the check
-    // above ensures `idx < N` and is thus in range for data().
-    return UNSAFE_BUFFERS(data()[idx]);
+  // When `idx` is outside the span, the underlying call will `CHECK()`.
+  constexpr T& operator[](size_t idx) const noexcept
+    requires(N > 0)
+  {
+    return *get_at(idx);
   }
 
   // Returns a pointer to an element in the span.
@@ -570,28 +562,31 @@ class GSL_POINTER span {
   // # Checks
   // The function CHECKs that the `idx` is inside the span and will terminate
   // otherwise.
-  constexpr T* get_at(size_t idx) const noexcept {
+  constexpr T* get_at(size_t idx) const noexcept
+    requires(N > 0)
+  {
     CHECK_LT(idx, size());
     // SAFETY: Since data() always points to at least `N` elements, the check
     // above ensures `idx < N` and is thus in range for data().
     return UNSAFE_BUFFERS(data() + idx);
   }
 
+  // Returns a reference to the first element in the span.
+  //
+  // When `empty()`, the underlying call will `CHECK()`.
   constexpr T& front() const noexcept
     requires(N > 0)
   {
-    // SAFETY: Since data() always points to at least `N` elements, the requires
-    // constraint above ensures `0 < N` and is thus in range for data().
-    return UNSAFE_BUFFERS(data()[0]);
+    return operator[](0);
   }
 
+  // Returns a reference to the last element in the span.
+  //
+  // When `empty()`, the underlying call will `CHECK()`.
   constexpr T& back() const noexcept
     requires(N > 0)
   {
-    // SAFETY: Since data() always points to at least `N` elements, the requires
-    // constraint above ensures `N > 0` and thus `N - 1` does not underflow and
-    // is in range for data().
-    return UNSAFE_BUFFERS(data()[N - 1]);
+    return operator[](size() - 1);
   }
 
   // Returns a pointer to the first element in the span. If the span is empty
@@ -859,18 +854,24 @@ class GSL_POINTER span {
   friend constexpr auto operator<=>(span lhs, span rhs)
     requires(std::is_const_v<T> && std::three_way_comparable<T>)
   {
-    return internal::span_cmp(span<const T, N>(lhs), span<const T, N>(rhs));
+    const auto const_lhs = span<const T>(lhs);
+    const auto const_rhs = span<const T>(rhs);
+    return std::lexicographical_compare_three_way(
+        const_lhs.begin(), const_lhs.end(), const_rhs.begin(), const_rhs.end());
   }
   friend constexpr auto operator<=>(span lhs, span<const T, N> rhs)
     requires(!std::is_const_v<T> && std::three_way_comparable<const T>)
   {
-    return internal::span_cmp(span<const T, N>(lhs), span<const T, N>(rhs));
+    return span<const element_type>(lhs) <=> rhs;
   }
   template <class U, size_t M>
     requires((N == M || M == dynamic_extent) &&
              std::three_way_comparable_with<const T, const U>)
   friend constexpr auto operator<=>(span lhs, span<U, M> rhs) {
-    return internal::span_cmp(span<const T, N>(lhs), span<const U, M>(rhs));
+    const auto const_lhs = span<const T>(lhs);
+    const auto const_rhs = span<const U, M>(rhs);
+    return std::lexicographical_compare_three_way(
+        const_lhs.begin(), const_lhs.end(), const_rhs.begin(), const_rhs.end());
   }
 
  private:
@@ -1153,15 +1154,8 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
 
   // [span.elem], span element access
   //
-  // # Checks
-  // The function CHECKs that the `idx` is inside the span and will terminate
-  // otherwise.
-  constexpr T& operator[](size_t idx) const noexcept {
-    CHECK_LT(idx, size());
-    // SAFETY: Since data() always points to at least `size()` elements, the
-    // check above ensures `idx < size()` and is thus in range for data().
-    return UNSAFE_BUFFERS(data()[idx]);
-  }
+  // When `idx` is outside the span, the underlying call will `CHECK()`.
+  constexpr T& operator[](size_t idx) const noexcept { return *get_at(idx); }
 
   // Returns a pointer to an element in the span.
   //
@@ -1184,28 +1178,13 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
 
   // Returns a reference to the first element in the span.
   //
-  // # Checks
-  // The function CHECKs that the span is not empty and will terminate
-  // otherwise.
-  constexpr T& front() const noexcept {
-    CHECK(!empty());
-    // SAFETY: Since data() always points to at least `size()` elements, the
-    // check above above ensures `0 < size()` and is thus in range for data().
-    return UNSAFE_BUFFERS(data()[0]);
-  }
+  // When `empty()`, the underlying call will `CHECK()`.
+  constexpr T& front() const noexcept { return operator[](0); }
 
   // Returns a reference to the last element in the span.
   //
-  // # Checks
-  // The function CHECKs that the span is not empty and will terminate
-  // otherwise.
-  constexpr T& back() const noexcept {
-    CHECK(!empty());
-    // SAFETY: Since data() always points to at least `size()` elements, the
-    // check above above ensures `size() > 0` and thus `size() - 1` does not
-    // underflow and is in range for data().
-    return UNSAFE_BUFFERS(data()[size() - 1]);
-  }
+  // When `empty()`, the underlying call will `CHECK()`.
+  constexpr T& back() const noexcept { return operator[](size() - 1); }
 
   // Returns a pointer to the first element in the span. If the span is empty
   // (`size()` is 0), the returned pointer may or may not be null, and it must
@@ -1402,17 +1381,23 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   friend constexpr auto operator<=>(span lhs, span rhs)
     requires(std::is_const_v<T> && std::three_way_comparable<T>)
   {
-    return internal::span_cmp(span<const T>(lhs), span<const T>(rhs));
+    const auto const_lhs = span<const T>(lhs);
+    const auto const_rhs = span<const T>(rhs);
+    return std::lexicographical_compare_three_way(
+        const_lhs.begin(), const_lhs.end(), const_rhs.begin(), const_rhs.end());
   }
   friend constexpr auto operator<=>(span lhs, span<const T> rhs)
     requires(!std::is_const_v<T> && std::three_way_comparable<const T>)
   {
-    return internal::span_cmp(span<const T>(lhs), span<const T>(rhs));
+    return span<const element_type>(lhs) <=> rhs;
   }
   template <class U, size_t M>
     requires(std::three_way_comparable_with<const T, const U>)
   friend constexpr auto operator<=>(span lhs, span<U, M> rhs) {
-    return internal::span_cmp(span<const T>(lhs), span<const U, M>(rhs));
+    const auto const_lhs = span<const T>(lhs);
+    const auto const_rhs = span<const U, M>(rhs);
+    return std::lexicographical_compare_three_way(
+        const_lhs.begin(), const_lhs.end(), const_rhs.begin(), const_rhs.end());
   }
 
  private:
@@ -1738,16 +1723,6 @@ template <class T, class U, size_t N, size_t M>
            std::equality_comparable_with<T, U>)
 constexpr bool span_eq(span<T, N> l, span<U, M> r) {
   return l.size() == r.size() && std::equal(l.begin(), l.end(), r.begin());
-}
-
-// Template helper for implementing operator<=>.
-template <class T, class U, size_t N, size_t M>
-  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
-           std::three_way_comparable_with<T, U>)
-constexpr auto span_cmp(span<T, N> l, span<U, M> r)
-    -> decltype(l[0u] <=> r[0u]) {
-  return std::lexicographical_compare_three_way(l.begin(), l.end(), r.begin(),
-                                                r.end());
 }
 
 template <class T>
