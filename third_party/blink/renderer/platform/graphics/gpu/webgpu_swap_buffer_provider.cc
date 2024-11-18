@@ -285,7 +285,6 @@ WebGPUSwapBufferProvider::GetContextProviderWeakPtr() const {
 }
 
 bool WebGPUSwapBufferProvider::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   DCHECK(!neutered_);

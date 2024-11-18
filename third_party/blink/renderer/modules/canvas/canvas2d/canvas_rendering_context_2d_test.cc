@@ -2085,7 +2085,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
                                                           &release_callback));
 
   // Put the resource in the Cc layer and then make a second call to prepare a
@@ -2095,7 +2095,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().CcLayer()->SetTransferableResource(
       resource, std::move(release_callback));
   viz::ReleaseCallback release_callback2;
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback2));
   EXPECT_FALSE(release_callback2);
 }
@@ -2128,13 +2128,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
                                                           &release_callback));
 
   // When the context is lost we are not sure if we should still be producing
   // GL frames for the compositor or not, so fail to generate frames.
   test_context_provider_->TestContextGL()->set_context_lost(true);
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
 }
 
@@ -2181,14 +2181,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
                                                           &release_callback));
 
   // Losing the context should result in the resource becoming invalid and the
   // host being unable to produce a TransferableResource from it.
   test_context_provider_->TestContextGL()->set_context_lost(true);
   EXPECT_FALSE(CanvasElement().IsResourceValid());
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
 
   // Restoration of the context should fail because
@@ -2197,7 +2197,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // while the GPU process is down.
   Context2D()->TryRestoreContextEvent(/*timer=*/nullptr);
   EXPECT_FALSE(CanvasElement().IsResourceValid());
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
 }
 
@@ -2646,13 +2646,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResourceRecycling) {
   // be present.
   CanvasElement().GetOrCreateCcLayerIfNeeded();
 
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[0], &callbacks[0]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[0],
+                                                          &callbacks[0]));
 
   Context2D()->fillRect(3, 3, 1, 1);
 
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[1], &callbacks[1]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[1],
+                                                          &callbacks[1]));
   EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
 
   // Now release the first resource and draw again. It should be reused due to
@@ -2661,8 +2661,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResourceRecycling) {
 
   Context2D()->fillRect(3, 3, 1, 1);
 
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[2], &callbacks[2]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[2],
+                                                          &callbacks[2]));
   EXPECT_EQ(resources[0].mailbox(), resources[2].mailbox());
 }
 
@@ -2684,8 +2684,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   viz::ReleaseCallback callbacks[2];
 
   // Emulate sending the canvas' resource to the display compositor.
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[0], &callbacks[0]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[0],
+                                                          &callbacks[0]));
 
   // Write to the canvas.
   Context2D()->fillRect(3, 3, 1, 1);
@@ -2697,8 +2697,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Emulate sending the canvas' resource to the display compositor, which
   // forces copy-on-write before rasterization as the display compositor has a
   // read ref on the first resource.
-  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(
-      nullptr, &resources[1], &callbacks[1]));
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[1],
+                                                          &callbacks[1]));
   EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
 
@@ -2786,7 +2786,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that PrepareTransferableResource() fails while hibernating.
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
-  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(nullptr, &resource,
+  EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_TRUE(handler.IsHibernating());
   EXPECT_TRUE(CanvasElement().IsResourceValid());

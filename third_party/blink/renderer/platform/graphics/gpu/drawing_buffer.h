@@ -39,7 +39,6 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
-#include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -67,6 +66,7 @@
 
 namespace cc {
 class Layer;
+class TextureLayer;
 }
 
 namespace gpu {
@@ -254,7 +254,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   // cc::TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
 
@@ -349,13 +348,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   struct RegisteredBitmap {
     RegisteredBitmap(
         scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
-        cc::SharedBitmapIdRegistration registration,
         scoped_refptr<gpu::ClientSharedImage> shared_image,
         gpu::SyncToken sync_token,
         base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider>
             sii_provider)
         : bitmap(std::move(bitmap)),
-          registration(std::move(registration)),
           shared_image(std::move(shared_image)),
           sync_token(std::move(sync_token)),
           sii_provider(sii_provider) {}
@@ -366,7 +363,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     RegisteredBitmap& operator=(RegisteredBitmap&&) = default;
 
     scoped_refptr<cc::CrossThreadSharedBitmap> bitmap;
-    cc::SharedBitmapIdRegistration registration;
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken sync_token;
     base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;
@@ -522,7 +518,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       DiscardBehavior discardBehavior);
 
   bool PrepareTransferableResourceInternal(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
       scoped_refptr<gpu::ClientSharedImage>* client_si,
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback,

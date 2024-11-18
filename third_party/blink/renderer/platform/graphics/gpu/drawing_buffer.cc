@@ -427,7 +427,6 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap() {
       std::move(shared_image_mapping.mapping), size_, format);
 
   RegisteredBitmap registered = {std::move(bitmap),
-                                 cc::SharedBitmapIdRegistration(),
                                  std::move(shared_image_mapping.shared_image),
                                  shared_image_interface->GenVerifiedSyncToken(),
                                  sii_provider->GetWeakPtr()};
@@ -436,14 +435,13 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap() {
 }
 
 bool DrawingBuffer::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   ScopedStateRestorer scoped_state_restorer(this);
   bool force_gpu_result = false;
   return PrepareTransferableResourceInternal(
-      bitmap_registrar, /*client_si=*/nullptr, out_resource,
-      out_release_callback, force_gpu_result);
+      /*client_si=*/nullptr, out_resource, out_release_callback,
+      force_gpu_result);
 }
 
 DrawingBuffer::CheckForDestructionResult
@@ -481,7 +479,6 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
 }
 
 bool DrawingBuffer::PrepareTransferableResourceInternal(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     scoped_refptr<gpu::ClientSharedImage>* client_si,
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback,
@@ -755,9 +752,9 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
   constexpr bool force_gpu_result = true;
-  if (!PrepareTransferableResourceInternal(
-          nullptr, &client_si, &transferable_resource, &release_callback,
-          force_gpu_result)) {
+  if (!PrepareTransferableResourceInternal(&client_si, &transferable_resource,
+                                           &release_callback,
+                                           force_gpu_result)) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
@@ -865,9 +862,8 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   viz::ReleaseCallback out_release_callback;
   const bool force_gpu_result = true;
   scoped_refptr<gpu::ClientSharedImage> client_si;
-  if (!PrepareTransferableResourceInternal(nullptr, &client_si, &out_resource,
-                                           &out_release_callback,
-                                           force_gpu_result)) {
+  if (!PrepareTransferableResourceInternal(
+          &client_si, &out_resource, &out_release_callback, force_gpu_result)) {
     return nullptr;
   }
   // If PrepareTransferableResourceInternal() succeeded, the ClientSI must be

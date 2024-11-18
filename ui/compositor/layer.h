@@ -548,7 +548,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      cc::SharedBitmapIdRegistrar* bitmap_registar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override;
 

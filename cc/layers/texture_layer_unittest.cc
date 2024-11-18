@@ -1000,7 +1000,6 @@ class TextureLayerNoExtraCommitForMailboxTest : public LayerTreeTest,
  public:
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
     if (layer_tree_host()->SourceFrameNumber() == 1) {
@@ -1071,7 +1070,6 @@ class TextureLayerChangeInvisibleMailboxTest : public LayerTreeTest,
 
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
     ++prepare_called_;
@@ -1233,7 +1231,6 @@ class TextureLayerReleaseResourcesBase : public LayerTreeTest,
  public:
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
     constexpr gfx::Size size(64, 64);
@@ -1449,7 +1446,6 @@ class StubTextureLayerClient : public TextureLayerClient {
  public:
   // TextureLayerClient implementation.
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
     return false;
@@ -1859,7 +1855,6 @@ SINGLE_AND_MULTI_THREAD_TEST_F(SoftwareTextureLayerLoseFrameSinkTest);
 class TextureLayerNoResourceTest : public LayerTreeTest, TextureLayerClient {
  public:
   bool PrepareTransferableResource(
-      SharedBitmapIdRegistrar* bitmap_registar,
       viz::TransferableResource* transferable_resource,
       viz::ReleaseCallback* release_callback) override {
     return false;

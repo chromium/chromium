@@ -1799,7 +1799,6 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
 }
 
 bool PepperPluginInstanceImpl::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* transferable_resource,
     viz::ReleaseCallback* release_callback) {
   if (!bound_graphics_2d_platform_)

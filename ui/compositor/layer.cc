@@ -1528,7 +1528,6 @@ scoped_refptr<cc::DisplayItemList> Layer::PaintContentsToDisplayList() {
 bool Layer::FillsBoundsCompletely() const { return fills_bounds_completely_; }
 
 bool Layer::PrepareTransferableResource(
-    cc::SharedBitmapIdRegistrar* bitmap_registar,
     viz::TransferableResource* resource,
     viz::ReleaseCallback* release_callback) {
   if (!transfer_release_callback_)

@@ -193,7 +193,7 @@ bool TextureLayer::Update() {
   if (client_.Read(*this)) {
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
-    if (client_.Write(*this)->PrepareTransferableResource(this, &resource,
+    if (client_.Write(*this)->PrepareTransferableResource(&resource,
                                                           &release_callback)) {
       // Already within a commit, no need to do another one immediately.
       bool requires_commit = false;

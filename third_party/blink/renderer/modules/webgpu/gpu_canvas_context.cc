@@ -243,8 +243,8 @@ bool GPUCanvasContext::PushFrame() {
   auto client_si = swap_buffers_->GetCurrentSharedImage();
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
-  if (!swap_buffers_->PrepareTransferableResource(
-          nullptr, &transferable_resource, &release_callback)) {
+  if (!swap_buffers_->PrepareTransferableResource(&transferable_resource,
+                                                  &release_callback)) {
     return false;
   }
 
@@ -311,8 +311,8 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
   auto client_si = swap_buffers_->GetCurrentSharedImage();
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
-  if (!swap_buffers_->PrepareTransferableResource(
-          nullptr, &transferable_resource, &release_callback)) {
+  if (!swap_buffers_->PrepareTransferableResource(&transferable_resource,
+                                                  &release_callback)) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
