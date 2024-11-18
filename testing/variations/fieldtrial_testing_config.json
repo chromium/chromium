@@ -21551,21 +21551,6 @@
             ]
         }
     ],
-    "SecagentdEnableXDRFileEvents": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootSecagentdXDRFileEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "SecureTimeCertificateVerification": [
         {
             "platforms": [
