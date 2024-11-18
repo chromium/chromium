@@ -30,6 +30,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/app_constants/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -235,9 +236,12 @@ class CoralSavedGroupTest : public CoralControllerTest {
     EXPECT_TRUE(model_adapter->IsShowingMenu());
     views::MenuItemView* save_as_group_item =
         model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(1);
-    CHECK_EQ(save_as_group_item->GetCommand(),
-             base::to_underlying(
-                 BirchChipContextMenuModel::CommandId::kCoralSaveForLater));
+    if (!save_as_group_item ||
+        save_as_group_item->GetCommand() !=
+            base::to_underlying(
+                BirchChipContextMenuModel::CommandId::kCoralSaveForLater)) {
+      return nullptr;
+    }
     return save_as_group_item;
   }
 
@@ -246,6 +250,22 @@ class CoralSavedGroupTest : public CoralControllerTest {
     ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
   }
 };
+
+// Tests that the saved as group menu item does not show up in tablet mode.
+TEST_F(CoralSavedGroupTest, NoMenuInTablet) {
+  TabletModeControllerTestApi().EnterTabletMode();
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  EXPECT_FALSE(GetSaveAsGroupMenuItem());
+}
+
+// Tests that the saved as group menu item does not show up in an informed
+// restore overview session.
+TEST_F(CoralSavedGroupTest, NoMenuInInformedRestore) {
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests, OverviewEnterExitType::kInformedRestore);
+  EXPECT_FALSE(GetSaveAsGroupMenuItem());
+}
 
 // Tests saving a group that has a couple tabs in it.
 TEST_F(CoralSavedGroupTest, SaveBrowserInGroup) {

@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -82,7 +83,8 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
       AddItemWithIcon(base::to_underlying(CommandId::kCoralNewDesk), u"Open",
                       CreateIconForMenuItem(kCoralOpenIcon));
       if (features::IsCoralSavedDeskFeatureEnabled() &&
-          !display::Screen::GetScreen()->InTabletMode()) {
+          !display::Screen::GetScreen()->InTabletMode() &&
+          !BirchBarController::Get()->is_informed_restore()) {
         AddItemWithIcon(base::to_underlying(CommandId::kCoralSaveForLater),
                         u"Save group for later",
                         CreateIconForMenuItem(kSaveDeskForLaterIcon));
