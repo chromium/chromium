@@ -21,7 +21,7 @@ class Event;
 // input latency.
 // See also: https://github.com/wicg/event-timing
 class CORE_EXPORT EventTiming final {
-  USING_FAST_MALLOC(EventTiming);
+  STACK_ALLOCATED();
 
  public:
   // Processes an event that will be dispatched. Notifies the
@@ -30,18 +30,15 @@ class CORE_EXPORT EventTiming final {
   // This object should be constructed before the event is dispatched and
   // destructed after dispatch so that we can calculate the input delay and
   // other latency values correctly.
-  static std::unique_ptr<EventTiming> Create(
-      LocalDOMWindow* window,
-      const Event& event,
-      EventTarget* original_event_target);
+  static std::optional<EventTiming> TryCreate(LocalDOMWindow* window,
+                                              const Event& event,
+                                              EventTarget* hit_test_target);
 
-  explicit EventTiming(base::TimeTicks processing_start,
-                       WindowPerformance* performance,
-                       const Event& event,
-                       EventTarget* original_event_target);
   ~EventTiming();
   EventTiming(const EventTiming&) = delete;
   EventTiming& operator=(const EventTiming&) = delete;
+  EventTiming(EventTiming&&) = default;
+  EventTiming& operator=(EventTiming&&) = default;
 
   static void HandleInputDelay(LocalDOMWindow* window,
                                const Event& event,
@@ -53,16 +50,14 @@ class CORE_EXPORT EventTiming final {
   static bool IsEventTypeForEventTiming(const Event& event);
 
  private:
-  // The time the first event handler or default action started to execute.
-  base::TimeTicks processing_start_;
-  // The event timestamp to be used in EventTiming and in histograms.
-  base::TimeTicks event_timestamp_;
+  explicit EventTiming(base::TimeTicks processing_start,
+                       WindowPerformance* performance,
+                       const Event& event,
+                       EventTarget* hit_test_target);
 
+  // Data members:
   Persistent<WindowPerformance> performance_;
-
   Persistent<const Event> event_;
-
-  Persistent<EventTarget> original_event_target_;
 };
 
 }  // namespace blink

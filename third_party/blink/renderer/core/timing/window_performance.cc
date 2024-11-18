@@ -510,33 +510,128 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
   }
 }
 
-void WindowPerformance::RegisterEventTiming(const Event& event,
-                                            EventTarget* event_target,
-                                            base::TimeTicks start_time,
-                                            base::TimeTicks processing_start,
-                                            base::TimeTicks processing_end) {
-  // |start_time| could be null in some tests that inject input.
-  DCHECK(!processing_start.is_null());
-  DCHECK(!processing_end.is_null());
-  DCHECK_GE(processing_end, processing_start);
+void WindowPerformance::EventTimingProcessingStart(
+    const Event& event,
+    base::TimeTicks processing_start,
+    EventTarget* hit_test_target) {
   if (!DomWindow() || !DomWindow()->GetFrame()) {
     return;
   }
+  DCHECK(!processing_start.is_null());
 
   const AtomicString& event_type = event.type();
-  const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
-  if (event_type == event_type_names::kPointermove) {
-    // A trusted pointermove must be a PointerEvent.
-    if (!event.IsPointerEvent()) {
-      return;
-    }
 
-    NotifyPotentialDrag(pointer_event->pointerId());
-    SetCurrentEventTimingEvent(nullptr);
+  // TODO(crbug.com/40930016): remove support for pointermove
+  if (event_type == event_type_names::kPointermove) {
     return;
   }
+
+  // Event Counts API.
   eventCounts()->Add(event_type);
 
+  // Some events are neither pointer nor keyboard (i.e. mouse events)
+  // But we only use pointer and keyboard event data for interactions.
+  const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
+  const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
+
+  PerformanceEventTiming::EventTimingReportingInfo reporting_info{
+      .enqueued_to_main_thread_time =
+          responsiveness_metrics_->CurrentInteractionEventQueuedTimestamp(),
+      .processing_start_time = processing_start,
+  };
+
+  if (pointer_event) {
+    reporting_info.creation_time = pointer_event->OldestPlatformTimeStamp();
+    reporting_info.pointer_id = pointer_event->pointerId();
+
+    if (RuntimeEnabledFeaturesBase::
+            EventTimingTapStopScrollNoInteractionIdEnabled()) {
+      reporting_info.prevent_counting_as_interaction |=
+          pointer_event->GetPreventCountingAsInteraction();
+    };
+  } else {
+    reporting_info.creation_time = event.PlatformTimeStamp();
+
+    if (key_event) {
+      reporting_info.key_code = key_event->keyCode();
+    }
+  }
+
+  // Set prevent_counting_as_interaction to true for all the event entries when
+  // the selection autoscroll happens at the current event presentation frame
+  // or the previous frame.
+  if (RuntimeEnabledFeaturesBase::
+          EventTimingSelectionAutoScrollNoInteractionIdEnabled()) {
+    reporting_info.prevent_counting_as_interaction |= IsAutoscrollActive();
+  }
+
+  // We always have a Hit test target before starting event dispatch.  During
+  // event dispatch we might change target via event retargetting or
+  // pointer-capture (or any number of other features).
+  // The "final" target is attached to the blink::Event as target().  However,
+  // its possible that we optimize out the event dispatch steps (i.e. we don't
+  // have listeners).  When that happens, Event Timing still measures and
+  // reports entries, but Chromium leaves the blink::Event target() value as
+  // nullptr.  So, we cannot rely on always having a target().  We use the
+  // following strategy:
+  // 1. Start with `hit_test_target`, from ProcessingStart, before dispatch.
+  // 2. Update to `event.target()`, from ProcessingEnd, if we can.
+  // `hit_test_target` can still be null in tests.
+  // `target` can be non-null but detached from DOM and GC-ed before observer
+  // fires.
+  PerformanceEventTiming* entry = PerformanceEventTiming::Create(
+      event_type, reporting_info, event.cancelable(),
+      hit_test_target ? hit_test_target->ToNode() : nullptr, DomWindow());
+
+  event_timing_entries_.push_back(entry);
+  current_event_ = &event;
+}
+
+void WindowPerformance::EventTimingProcessingEnd(
+    const Event& event,
+    base::TimeTicks processing_end) {
+  current_event_ = nullptr;
+  DCHECK(!processing_end.is_null());
+
+  if (!DomWindow() || !DomWindow()->GetFrame()) {
+    return;
+  }
+  const AtomicString& event_type = event.type();
+
+  // TODO(crbug.com/40930016): remove support for pointermove
+  if (event_type == event_type_names::kPointermove) {
+    // A trusted pointermove must be a PointerEvent.
+    const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
+    if (pointer_event) {
+      NotifyPotentialDrag(pointer_event->pointerId());
+    }
+    return;
+  }
+
+  auto iter = std::find_if(event_timing_entries_.rbegin(),
+                           event_timing_entries_.rend(), [](const auto& event) {
+                             return event->GetEventTimingReportingInfo()
+                                 ->processing_end_time.is_null();
+                           });
+  CHECK(iter != event_timing_entries_.rend());
+  PerformanceEventTiming* entry = *iter;
+  CHECK(entry);
+
+  PerformanceEventTiming::EventTimingReportingInfo* reporting_info =
+      entry->GetEventTimingReportingInfo();
+  CHECK(reporting_info);
+  reporting_info->processing_end_time = processing_end;
+
+  if (event.target()) {
+    // `event->target()` is assigned as part of EventDispatch, and will be unset
+    // whenever we skip dispatch. (See: crbug.com/1367329).
+    // Note: target may be dom detached, and even GC-ed, before Observer fires.
+    entry->SetTarget(event.target()->ToNode());
+  }
+
+  // Request presentation time first, because this might increment presentation
+  // index
+  // TODO(crbug.com/)
   if (need_new_promise_for_event_presentation_time_) {
     DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
         *DomWindow()->GetFrame(),
@@ -546,58 +641,7 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
     need_new_promise_for_event_presentation_time_ = false;
   }
 
-  std::optional<PointerId> pointer_id;
-  if (pointer_event) {
-    pointer_id = pointer_event->pointerId();
-  }
-  std::optional<int> key_code;
-  if (event.IsKeyboardEvent()) {
-    key_code = DynamicTo<KeyboardEvent>(event)->keyCode();
-  }
-
-  bool prevent_counting_as_interaction =
-      pointer_event
-          ? RuntimeEnabledFeaturesBase::
-                    EventTimingTapStopScrollNoInteractionIdEnabled() &&
-                pointer_event->GetPreventCountingAsInteraction()
-          : false;
-  // Set prevent_counting_as_interaction to true for all the event entries when
-  // the selection autoscroll happens at the current event presentation frame
-  // or the previous frame.
-  prevent_counting_as_interaction |=
-      RuntimeEnabledFeaturesBase::
-          EventTimingSelectionAutoScrollNoInteractionIdEnabled() &&
-      IsAutoscrollActive();
-  PerformanceEventTiming::EventTimingReportingInfo reporting_info{
-      .presentation_index = event_presentation_promise_count_,
-      .creation_time = start_time,
-      .enqueued_to_main_thread_time =
-          responsiveness_metrics_->CurrentInteractionEventQueuedTimestamp(),
-      .processing_start_time = processing_start,
-      .processing_end_time = processing_end,
-      .key_code = key_code,
-      .pointer_id = pointer_id,
-      .prevent_counting_as_interaction = prevent_counting_as_interaction};
-
-  PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-      event_type, reporting_info, event.cancelable(),
-      event_target ? event_target->ToNode() : nullptr,
-      DomWindow());  // TODO(haoliuk): Add WPT for Event Timing.
-                     // See crbug.com/1320878.
-
-  // Add |entry| to in the order of processing_start, along with the
-  // presentation promise index in order to match with corresponding
-  // presentation feedback later.
-
-  auto reverse_iter = std::find_if_not(
-      event_timing_entries_.rbegin(), event_timing_entries_.rend(),
-      [processing_start](auto event) {
-        return processing_start <
-               event->GetEventTimingReportingInfo()->processing_start_time;
-      });
-  event_timing_entries_.InsertAt(reverse_iter.base(), entry);
-
-  SetCurrentEventTimingEvent(nullptr);
+  reporting_info->presentation_index = event_presentation_promise_count_;
 }
 
 void WindowPerformance::SetCommitFinishTimeStampForPendingEvents(
@@ -818,6 +862,7 @@ void WindowPerformance::ReportEvent(
               event_timing_entry->GetEventTimingReportingInfo()
                   ->processing_end_time),
       event_end_time};
+
   if (SetInteractionIdAndRecordLatency(event_timing_entry, event_timestamps)) {
     NotifyAndAddEventTimingBuffer(event_timing_entry);
   }

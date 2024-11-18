@@ -95,6 +95,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   Node* target() const;
 
+  void SetTarget(Node* target);
+
   uint32_t interactionId() const;
 
   void SetInteractionId(uint32_t interaction_id);
@@ -130,8 +132,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
  private:
   AtomicString entry_type_;
-  DOMHighResTimeStamp processing_start_;
-  DOMHighResTimeStamp processing_end_;
+  mutable DOMHighResTimeStamp processing_start_ = 0;
+  mutable DOMHighResTimeStamp processing_end_ = 0;
   bool cancelable_;
   WeakMember<Node> target_;
   std::optional<uint32_t> interaction_id_ = std::nullopt;

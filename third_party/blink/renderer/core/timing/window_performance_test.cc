@@ -97,9 +97,10 @@ class WindowPerformanceTest : public testing::Test {
   // SimulateResolvePresentationPromise() separately instead and perform actions
   // in between as needed.
   void SimulatePaintAndResolvePresentationPromise(base::TimeTicks timestamp) {
+    uint64_t presentation_promise_index =
+        performance_->event_presentation_promise_count_;
     SimulatePaint();
-    SimulateResolvePresentationPromise(
-        performance_->event_presentation_promise_count_, timestamp);
+    SimulateResolvePresentationPromise(presentation_promise_index, timestamp);
   }
 
   void SimulateInteractionId(PerformanceEventTiming* entry) {
@@ -116,14 +117,16 @@ class WindowPerformanceTest : public testing::Test {
                                  base::TimeTicks start_time,
                                  base::TimeTicks processing_start,
                                  base::TimeTicks processing_end,
-                                 int key_code) {
+                                 int key_code,
+                                 EventTarget* target = nullptr) {
     KeyboardEventInit* init = KeyboardEventInit::Create();
     init->setKeyCode(key_code);
     KeyboardEvent* keyboard_event =
-        MakeGarbageCollected<KeyboardEvent>(type, init);
-    performance_->RegisterEventTiming(*keyboard_event, keyboard_event->target(),
-                                      start_time, processing_start,
-                                      processing_end);
+        MakeGarbageCollected<KeyboardEvent>(type, init, start_time);
+    performance_->EventTimingProcessingStart(*keyboard_event, processing_start,
+                                             target);
+    keyboard_event->SetTarget(target);
+    performance_->EventTimingProcessingEnd(*keyboard_event, processing_end);
     return performance_->event_presentation_promise_count_;
   }
 
@@ -135,13 +138,11 @@ class WindowPerformanceTest : public testing::Test {
                             EventTarget* target = nullptr) {
     PointerEventInit* init = PointerEventInit::Create();
     init->setPointerId(pointer_id);
-    PointerEvent* pointer_event = PointerEvent::Create(type, init);
-    if (target) {
-      pointer_event->SetTarget(target);
-    }
-    performance_->RegisterEventTiming(*pointer_event, pointer_event->target(),
-                                      start_time, processing_start,
-                                      processing_end);
+    PointerEvent* pointer_event = PointerEvent::Create(type, init, start_time);
+    performance_->EventTimingProcessingStart(*pointer_event, processing_start,
+                                             target);
+    pointer_event->SetTarget(target);
+    performance_->EventTimingProcessingEnd(*pointer_event, processing_end);
   }
 
   PerformanceEventTiming* CreatePerformanceEventTiming(

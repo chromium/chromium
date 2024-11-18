@@ -23,10 +23,6 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
     bool cancelable,
     Node* target,
     DOMWindow* source) {
-  // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
-  // DCHECK_LE(start_time, processing_start);
-  DCHECK_LE(reporting_info.processing_start_time,
-            reporting_info.processing_end_time);
   CHECK(source);
   return MakeGarbageCollected<PerformanceEventTiming>(
       event_type, performance_entry_names::kEvent, std::move(reporting_info),
@@ -41,7 +37,7 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
           entry->name(), performance_entry_names::kFirstInput,
           *entry->GetEventTimingReportingInfo(), entry->cancelable(),
           entry->target(), entry->source());
-  first_input->SetDuration(entry->duration());
+  first_input->SetDuration(entry->duration_);
   if (entry->HasKnownInteractionID()) {
     first_input->SetInteractionIdAndOffset(entry->interactionId(),
                                            entry->interactionOffset());
@@ -64,14 +60,6 @@ PerformanceEventTiming::PerformanceEventTiming(
           0.0,
           source),
       entry_type_(entry_type),
-      processing_start_(
-          DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
-              ->MonotonicTimeToDOMHighResTimeStamp(
-                  reporting_info.processing_start_time)),
-      processing_end_(
-          DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
-              ->MonotonicTimeToDOMHighResTimeStamp(
-                  reporting_info.processing_end_time)),
       cancelable_(cancelable),
       target_(target),
       reporting_info_(reporting_info) {}
@@ -85,15 +73,31 @@ PerformanceEntryType PerformanceEventTiming::EntryTypeEnum() const {
 }
 
 DOMHighResTimeStamp PerformanceEventTiming::processingStart() const {
+  if (!processing_start_) {
+    processing_start_ =
+        DOMWindowPerformance::performance(*source()->ToLocalDOMWindow())
+            ->MonotonicTimeToDOMHighResTimeStamp(
+                reporting_info_.processing_start_time);
+  }
   return processing_start_;
 }
 
 DOMHighResTimeStamp PerformanceEventTiming::processingEnd() const {
+  if (!processing_end_) {
+    processing_end_ =
+        DOMWindowPerformance::performance(*source()->ToLocalDOMWindow())
+            ->MonotonicTimeToDOMHighResTimeStamp(
+                reporting_info_.processing_end_time);
+  }
   return processing_end_;
 }
 
 Node* PerformanceEventTiming::target() const {
   return Performance::CanExposeNode(target_) ? target_ : nullptr;
+}
+
+void PerformanceEventTiming::SetTarget(Node* target) {
+  target_ = target;
 }
 
 uint32_t PerformanceEventTiming::interactionId() const {
