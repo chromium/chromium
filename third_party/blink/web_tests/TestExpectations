@@ -2268,10 +2268,10 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 # Guide On Device Model only on Mac bots. So marking as flaky only for Mac.
 # Also, these tests pass when they are executed without the models as
 # content_shell uses EchoAIWriter/EchoAIRewriter.
-crbug.com/372099809 [ Mac ] wpt_internal/ai/rewriter-api-slow.any.html [ Failure Pass ]
-crbug.com/372099809 [ Mac ] wpt_internal/ai/rewriter-api-slow.any.worker.html [ Failure Pass ]
-crbug.com/372099809 [ Mac ] wpt_internal/ai/writer-api-slow.any.html [ Failure Pass ]
-crbug.com/372099809 [ Mac ] wpt_internal/ai/writer-api-slow.any.worker.html [ Failure Pass ]
+crbug.com/372099809 [ Mac ] wpt_internal/ai/rewriter-api-slow.https.any.html [ Failure Pass ]
+crbug.com/372099809 [ Mac ] wpt_internal/ai/rewriter-api-slow.https.any.worker.html [ Failure Pass ]
+crbug.com/372099809 [ Mac ] wpt_internal/ai/writer-api-slow.https.any.html [ Failure Pass ]
+crbug.com/372099809 [ Mac ] wpt_internal/ai/writer-api-slow.https.any.worker.html [ Failure Pass ]
 
 # FontFace object failures detected by WPT test
 crbug.com/965409 external/wpt/css/css-font-loading/fontface-descriptor-updates.html [ Failure ]
@@ -8617,8 +8617,8 @@ crbug.com/378566925 [ Mac ] virtual/gpu-rasterization/external/wpt/css/css-image
 crbug.com/356930166 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-same-size.html [ Failure Pass Timeout ]
 crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Failure Pass Timeout ]
 
-crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.any.html [ Pass Timeout ]
-crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.any.worker.html [ Pass Timeout ]
+crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.html [ Pass Timeout ]
+crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.worker.html [ Pass Timeout ]
 
 # Gardener 2024-11-14
 crbug.com/379003897 [ Win11 ] external/wpt/css/css-anchor-position/anchor-parse-valid.html [ Failure Pass ]
