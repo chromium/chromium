@@ -53,22 +53,24 @@ LensPreselectionBubble::LensPreselectionBubble(
     base::WeakPtr<LensOverlayController> lens_overlay_controller,
     views::View* anchor_view,
     bool offline,
-    ExitClickedCallback callback)
+    ExitClickedCallback exit_clicked_callback,
+    base::OnceClosure on_cancel_callback)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::NONE,
                                views::BubbleBorder::NO_SHADOW),
       lens_overlay_controller_(lens_overlay_controller),
       offline_(offline),
-      callback_(std::move(callback)) {
-  // Toast bubble doesn't have any buttons, cannot be active, and should not be
-  // focus traversable.
+      exit_clicked_callback_(std::move(exit_clicked_callback)) {
   SetShowCloseButton(false);
-  SetCanActivate(false);
-  set_focus_traversable_from_anchor_view(false);
+  // Should be true for menu button to work, although this constraint is not
+  // being upheld on Mac and Linux. See crbug.com/378566071.
+  SetCanActivate(true);
+  set_close_on_deactivate(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(48);
   SetProperty(views::kElementIdentifierKey, kLensPreselectionBubbleElementId);
   SetAccessibleWindowRole(ax::mojom::Role::kAlertDialog);
+  SetCancelCallback(std::move(on_cancel_callback));
 }
 
 LensPreselectionBubble::~LensPreselectionBubble() = default;
@@ -117,7 +119,7 @@ void LensPreselectionBubble::Init() {
   label_->SetAutoColorReadabilityEnabled(false);
   if (offline_) {
     exit_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-        std::move(callback_),
+        std::move(exit_clicked_callback_),
         l10n_util::GetStringUTF16(
             IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_EXIT_BUTTON_TEXT)));
     exit_button_->SetProperty(views::kMarginsKey,

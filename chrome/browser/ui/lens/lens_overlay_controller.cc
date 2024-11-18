@@ -2010,6 +2010,7 @@ void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
 
 void LensOverlayController::OnWidgetDestroying(views::Widget* widget) {
   preselection_widget_ = nullptr;
+  preselection_widget_observer_.Reset();
 }
 
 void LensOverlayController::OnOmniboxFocusChanged(
@@ -2499,10 +2500,16 @@ void LensOverlayController::ShowPreselectionBubble() {
             weak_factory_.GetWeakPtr(),
             tab_->GetBrowserWindowInterface()->TopContainer(),
             net::NetworkChangeNotifier::IsOffline(),
-            base::BindRepeating(&LensOverlayController::CloseUIAsync,
-                                weak_factory_.GetWeakPtr(),
-                                lens::LensOverlayDismissalSource::
-                                    kPreselectionToastExitButton)));
+            /*exit_clicked_callback=*/
+            base::BindRepeating(
+                &LensOverlayController::CloseUIAsync,
+                weak_factory_.GetWeakPtr(),
+                lens::LensOverlayDismissalSource::kPreselectionToastExitButton),
+            /*on_cancel_callback=*/
+            base::BindOnce(&LensOverlayController::CloseUIAsync,
+                           weak_factory_.GetWeakPtr(),
+                           lens::LensOverlayDismissalSource::
+                               kPreselectionToastEscapeKeyPress)));
     preselection_widget_->SetNativeWindowProperty(
         views::kWidgetIdentifierKey,
         const_cast<void*>(kLensOverlayPreselectionWidgetIdentifier));

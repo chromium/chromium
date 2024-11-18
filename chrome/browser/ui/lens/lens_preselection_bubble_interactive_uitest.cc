@@ -49,7 +49,8 @@ class LensPreselectionBubbleInteractiveUiTest : public InteractiveBrowserTest {
               net::NetworkChangeNotifier::IsOffline(),
               base::BindRepeating(
                   &LensPreselectionBubbleInteractiveUiTest::ExitClickedCallback,
-                  base::Unretained(this))));
+                  base::Unretained(this)),
+              base::NullCallback()));
       preselection_widget_->Show();
     }));
   }

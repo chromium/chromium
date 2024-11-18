@@ -32,7 +32,8 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
       base::WeakPtr<LensOverlayController> lens_overlay_controller,
       views::View* anchor_view,
       bool offline,
-      ExitClickedCallback callback);
+      ExitClickedCallback exit_clicked_callback,
+      base::OnceClosure on_cancel_callback);
   ~LensPreselectionBubble() override;
 
   // views::BubbleDialogDelegateView:
@@ -75,7 +76,7 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   // Whether user is offline.
   bool offline_ = false;
   // Callback for exit button which closes the lens overlay.
-  ExitClickedCallback callback_;
+  ExitClickedCallback exit_clicked_callback_;
   // Model for the more info menu.
   std::unique_ptr<ui::MenuModel> more_info_menu_model_;
   // Runner for the more info menu.
