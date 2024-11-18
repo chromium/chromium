@@ -12,7 +12,6 @@
 
 import '/strings.m.js';
 /** Top-level Advanced pages & About page */
-import './crostini_page/crostini_page.js';
 import './os_about_page/os_about_page.js';
 import './os_files_page/os_files_page.js';
 import './os_languages_page/os_languages_section.js';
@@ -165,7 +164,6 @@ export {SettingsCrostiniDiskResizeDialogElement} from './crostini_page/crostini_
 export {SettingsCrostiniExportImportElement} from './crostini_page/crostini_export_import.js';
 export {ExtraContainersElement} from './crostini_page/crostini_extra_containers.js';
 export {ExtraContainersCreateDialog} from './crostini_page/crostini_extra_containers_create_dialog.js';
-export {SettingsCrostiniPageElement} from './crostini_page/crostini_page.js';
 export {CrostiniPortForwardingElement} from './crostini_page/crostini_port_forwarding.js';
 export {CrostiniSettingsCardElement} from './crostini_page/crostini_settings_card.js';
 export {CrostiniSharedUsbDevicesElement} from './crostini_page/crostini_shared_usb_devices.js';

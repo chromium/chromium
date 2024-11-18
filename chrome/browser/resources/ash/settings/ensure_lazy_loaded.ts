@@ -11,7 +11,6 @@
 import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 
 const ADVANCED_SECTION_PAGES = [
-  'settings-crostini-page',
   'os-settings-files-page',
   'os-settings-languages-section',
   'os-settings-printing-page',

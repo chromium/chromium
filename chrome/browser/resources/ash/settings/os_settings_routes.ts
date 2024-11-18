@@ -156,7 +156,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   ANDROID_APPS_DETAILS: Route;
   ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES: Route;
   AUDIO: Route;
-  CROSTINI: Route;
   CROSTINI_ANDROID_ADB: Route;
   CROSTINI_DETAILS: Route;
   CROSTINI_DISK_RESIZE: Route;
@@ -720,18 +719,6 @@ export function createRoutes(): OsSettingsRoutes {
     r.CUPS_PRINTERS = createSubpage(
         r.OS_PRINTING, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
         Subpage.kPrintingDetails);
-
-    // Crostini section.
-    r.CROSTINI = createSection(
-        r.ADVANCED, routesMojom.CROSTINI_SECTION_PATH, Section.kCrostini);
-    if (isCrostiniSupported()) {
-      r.CROSTINI_DETAILS = createSubpage(
-          r.CROSTINI, routesMojom.CROSTINI_DETAILS_SUBPAGE_PATH,
-          Subpage.kCrostiniDetails);
-      r.BRUSCHETTA_DETAILS = createSubpage(
-          r.CROSTINI, routesMojom.BRUSCHETTA_DETAILS_SUBPAGE_PATH,
-          Subpage.kBruschettaDetails);
-    }
   }
 
   // Crostini details subpages.

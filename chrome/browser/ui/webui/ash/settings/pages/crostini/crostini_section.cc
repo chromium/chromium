@@ -50,7 +50,6 @@ using ::chromeos::settings::mojom::kCrostiniDevelopAndroidAppsSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniExtraContainersSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniManageSharedFoldersSubpagePath;
 using ::chromeos::settings::mojom::kCrostiniPortForwardingSubpagePath;
-using ::chromeos::settings::mojom::kCrostiniSectionPath;
 using ::chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
@@ -262,9 +261,6 @@ bool CrostiniSection::ShouldShowBruschetta(Profile* profile) {
 }
 
 void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"bruschettaPageLabel", IDS_SETTINGS_BRUSCHETTA_LABEL},
       {"bruschettaEnable", IDS_SETTINGS_TURN_ON},
@@ -273,9 +269,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bruschettaRemoveButton", IDS_SETTINGS_BRUSCHETTA_REMOVE_BUTTON},
       {"crostiniPageTitle", IDS_SETTINGS_CROSTINI_TITLE},
       {"crostiniPageLabel", IDS_SETTINGS_CROSTINI_LABEL},
-      {"crostiniEnable", kIsRevampEnabled
-                             ? IDS_OS_SETTINGS_REVAMP_CROSTINI_SET_UP
-                             : IDS_SETTINGS_TURN_ON},
+      {"crostiniEnable", IDS_OS_SETTINGS_REVAMP_CROSTINI_SET_UP},
       {"crostiniSharedPathsInstructionsAdd",
        IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_ADD},
       {"crostiniSharedPathsRemoveFailureDialogMessage",
@@ -513,13 +507,9 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString(
       "crostiniSubtext",
-      kIsRevampEnabled
-          ? l10n_util::GetStringFUTF16(
-                IDS_OS_SETTINGS_REVAMP_CROSTINI_SUBTEXT,
-                GetHelpUrlWithBoard(chrome::kLinuxAppsLearnMoreURL))
-          : l10n_util::GetStringFUTF16(
-                IDS_SETTINGS_CROSTINI_SUBTEXT, ui::GetChromeOSDeviceName(),
-                GetHelpUrlWithBoard(chrome::kLinuxAppsLearnMoreURL)));
+      l10n_util::GetStringFUTF16(
+          IDS_OS_SETTINGS_REVAMP_CROSTINI_SUBTEXT,
+          GetHelpUrlWithBoard(chrome::kLinuxAppsLearnMoreURL)));
   html_source->AddString(
       "crostiniSubtextNotSupported",
       l10n_util::GetStringFUTF16(

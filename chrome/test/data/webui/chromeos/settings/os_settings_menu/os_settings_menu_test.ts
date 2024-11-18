@@ -177,10 +177,6 @@ suite('<os-settings-menu> menu item visibility', () => {
       sectionName: 'kPrinting',
       path: `/${routesMojom.PRINTING_SECTION_PATH}`,
     },
-    {
-      sectionName: 'kCrostini',
-      path: `/${routesMojom.CROSTINI_SECTION_PATH}`,
-    },
   ];
 
   for (const {sectionName, path} of menuItemData) {

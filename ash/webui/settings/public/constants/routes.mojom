@@ -17,7 +17,7 @@ enum Section {
   kPersonalization = 5,
   kSearchAndAssistant = 6,
   kApps = 7,
-  kCrostini = 8,
+  // Note: Value 8 was for deprecated kCrostini. Do not reuse.
   // Note: Value 9 was for deprecated Plugin VM section - see
   // https://crbug.com/1074101. Do not reuse.
   // Note: Value 10 was for deprecated kDateAndTime. Do not reuse.
@@ -277,7 +277,6 @@ const string kManageIsolatedWebAppsSubpagePath = "manage-isolated-web-apps";
 const string kAppParentalControlsSubpagePath = "app-parental-controls";
 
 // Crostini section.
-const string kCrostiniSectionPath = "crostini";
 const string kCrostiniDetailsSubpagePath = "crostini/details";
 const string kCrostiniManageSharedFoldersSubpagePath = "crostini/sharedPaths";
 const string kCrostiniUsbPreferencesSubpagePath = "crostini/sharedUsbDevices";

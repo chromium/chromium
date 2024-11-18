@@ -66,7 +66,6 @@ build_webui("build") {
     "crostini_page/crostini_extra_containers.ts",
     "crostini_page/crostini_extra_containers_create_dialog.ts",
     "crostini_page/crostini_import_confirmation_dialog.ts",
-    "crostini_page/crostini_page.ts",
     "crostini_page/crostini_port_forwarding.ts",
     "crostini_page/crostini_port_forwarding_add_port_dialog.ts",
     "crostini_page/crostini_settings_card.ts",

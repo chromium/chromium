@@ -604,12 +604,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         icon: 'os-settings:print',
         label: this.i18n('printingPageTitle'),
       },
-      {
-        section: Section.kCrostini,
-        path: `/${routesMojom.CROSTINI_SECTION_PATH}`,
-        icon: 'os-settings:developer-tags',
-        label: this.i18n('crostiniPageTitle'),
-      },
     ];
 
     return advancedMenuItems.filter(

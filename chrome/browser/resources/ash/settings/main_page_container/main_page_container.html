@@ -322,14 +322,6 @@
         </page-displayer>
       </template>
       <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kCrostini)]]"
-          restamp>
-        <page-displayer section="[[Section.kCrostini]]">
-          <settings-crostini-page prefs="{{prefs}}">
-          </settings-crostini-page>
-        </page-displayer>
-      </template>
-      <template is="dom-if"
           if="[[shouldStampPage_(pageAvailability, Section.kReset)]]"
           restamp>
         <page-displayer section="[[Section.kReset]]">

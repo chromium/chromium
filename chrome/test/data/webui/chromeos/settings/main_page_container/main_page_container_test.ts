@@ -193,10 +193,6 @@ suite('<main-page-container>', () => {
           pageName: 'kPrinting',
           elementName: 'os-settings-printing-page',
         },
-        {
-          pageName: 'kCrostini',
-          elementName: 'settings-crostini-page',
-        },
 
         // About page
         {
