@@ -8602,3 +8602,6 @@ crbug.com/379138826 [ Win ] external/wpt/html/webappapis/system-state-and-capabi
 
 # Gardener 2024-11-15
 crbug.com/359319433 [ Win11 ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
+
+# Gardener 2024-11-18
+crbug.com/379516106 [ Mac14 Debug ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
