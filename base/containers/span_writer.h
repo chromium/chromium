@@ -19,19 +19,20 @@ namespace base {
 // SpanWriter is used to split off prefix spans from a larger span, reporting
 // errors if there's not enough room left (instead of crashing, as would happen
 // with span directly).
-template <class T>
+template <typename T>
 class SpanWriter {
   static_assert(!std::is_const_v<T>,
                 "SpanWriter needs mutable access to its buffer");
 
  public:
   // Construct SpanWriter that writes to `buf`.
-  explicit SpanWriter(span<T> buf) : buf_(buf), original_size_(buf_.size()) {}
+  constexpr explicit SpanWriter(span<T> buf)
+      : buf_(buf), original_size_(buf_.size()) {}
 
   // Returns true and writes the span `data` into the front of the inner span,
   // if there is enough room left. Otherwise, it returns false and does
   // nothing.
-  bool Write(span<const T> data) {
+  constexpr bool Write(span<const T> data) {
     if (data.size() > remaining()) {
       return false;
     }
@@ -57,7 +58,7 @@ class SpanWriter {
   // Skips over the next `n` objects, and returns a span that points to the
   // skipped objects, if there are enough objects left. Otherwise, it returns
   // nullopt and does nothing.
-  std::optional<span<T>> Skip(StrictNumeric<size_t> n) {
+  constexpr std::optional<span<T>> Skip(StrictNumeric<size_t> n) {
     if (n > remaining()) {
       return std::nullopt;
     }
@@ -65,11 +66,8 @@ class SpanWriter {
     buf_ = rhs;
     return lhs;
   }
-  // Skips over the next `N` objects, and returns a fixed-size span that points
-  // to the skipped objects, if there are enough objects left. Otherwise, it
-  // returns nullopt and does nothing.
   template <size_t N>
-  std::optional<span<T, N>> Skip() {
+  constexpr std::optional<span<T, N>> Skip() {
     if (N > remaining()) {
       return std::nullopt;
     }
@@ -86,7 +84,7 @@ class SpanWriter {
   // "native" order is almost never what you want; it only makes sense for byte
   // buffers that stay in memory and are never written to the disk or network.
 #define BASE_SPANWRITER_WRITE(signchar, bitsize, endian, typeprefix) \
-  bool Write##signchar##bitsize##endian##Endian(                     \
+  constexpr bool Write##signchar##bitsize##endian##Endian(           \
       typeprefix##int##bitsize##_t value)                            \
     requires(std::same_as<T, uint8_t>)                               \
   {                                                                  \
@@ -109,13 +107,14 @@ BASE_SPANWRITER_WRITE_BOTH_SIGNS_ALL_SIZES(Native)
 #undef BASE_SPANWRITER_WRITE_BOTH_SIGNS
 #undef BASE_SPANWRITER_WRITE
 
-  // Returns the number of objects remaining to be written to the original span.
-  size_t remaining() const { return buf_.size(); }
-  // Returns the objects that have not yet been written to, as a span.
-  span<T> remaining_span() const { return buf_; }
+  // Returns the remaining not-yet-written-to object count.
+  constexpr size_t remaining() const { return buf_.size(); }
 
-  // Returns the number of objects written (or skipped) in the original span.
-  size_t num_written() const { return original_size_ - buf_.size(); }
+  // Returns the remaining not-yet-written-to objects.
+  constexpr span<T> remaining_span() const { return buf_; }
+
+  // Returns the number of objects already written (or skipped).
+  constexpr size_t num_written() const { return original_size_ - buf_.size(); }
 
  private:
   raw_span<T> buf_;
