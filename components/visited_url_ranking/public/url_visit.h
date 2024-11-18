@@ -69,6 +69,34 @@ struct URLVisit {
  * sources.
  */
 struct URLVisitAggregate {
+  // Type of result URLVisitAggregate, note that each visit can match multiple
+  // types. If any of the types match, then the URL will be returned. Entries
+  // should not be renumbered and numeric values should never be reused.
+  enum class URLType {
+    kUnknown = 0,
+    // The visit has an active local tab.
+    kActiveLocalTab = 1,
+    // The visit has an active remote tab, based on the latest sync.
+    kActiveRemoteTab = 2,
+    // The visit is recorded in history, is not from remote client.
+    kLocalVisit = 3,
+    // The visit is recorded in history, is from a remote client.
+    kRemoteVisit = 4,
+    // The visit is local and registered with app ID from an Android CCT
+    // (Android only).
+    kCCTVisit = 5,
+    kMaxValue = kCCTVisit,
+  };
+  using URLTypeSet =
+      base::EnumSet<URLType, URLType::kUnknown, URLType::kMaxValue>;
+  static constexpr URLTypeSet kAllResultTypes = {
+      URLType::kActiveLocalTab, URLType::kActiveRemoteTab, URLType::kLocalVisit,
+      URLType::kRemoteVisit,
+#if BUILDFLAG(IS_ANDROID)
+      URLType::kCCTVisit
+#endif
+  };
+
   // Captures tab data associated with a given URL visit.
   struct Tab {
     Tab(int32_t id_arg,
@@ -178,6 +206,8 @@ struct URLVisitAggregate {
 
   // Utility to fetch timestamp that the URL was last opened on a tab.
   base::Time GetLastVisitTime() const;
+
+  URLTypeSet GetURLTypes() const;
 
   // A map of aggregate tab related characteristics associated with the visit as
   // provided by a given source.

@@ -40,7 +40,7 @@
 
 using segmentation_platform::HasTrainingLabel;
 using segmentation_platform::MockSegmentationPlatformService;
-using URLType = visited_url_ranking::FetchOptions::URLType;
+using URLType = visited_url_ranking::URLVisitAggregate::URLType;
 using ResultOption = visited_url_ranking::FetchOptions::ResultOption;
 using testing::_;
 
