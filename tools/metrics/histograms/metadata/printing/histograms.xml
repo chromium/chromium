@@ -160,19 +160,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
-    expires_after="2024-12-15">
-  <owner>bmgordon@chromium.org</owner>
-  <owner>cros-printing-dev@chromium.org</owner>
-  <summary>
-    Record if the request for IPP attributes was successful during printer
-    setup. This only occurs for setup attempts of IPP and IPPS printers.
-    Starting with M79, this is only recorded if the printer was reachable.
-
-    Recorded when printers are queried for attributes in ChromeOS settings.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
     expires_after="2025-03-22">
   <owner>bmgordon@chromium.org</owner>
