@@ -46,8 +46,4 @@ public class TabGroupUtils {
 
         return tabModel.indexOf(tabs.get(tabs.size() - 1));
     }
-
-    public static void triggerAssertionForTesting() {
-        assert false;
-    }
 }
