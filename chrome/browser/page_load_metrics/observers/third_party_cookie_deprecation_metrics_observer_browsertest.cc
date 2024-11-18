@@ -99,6 +99,8 @@ const Allow3PCMechanismBrowserTestCase kAllowMechanismTestCases[] = {
         .allow_by_global_setting = true,
         .expected_allow_mechanism_histogram_sample =
             ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowByGlobalSetting,
     },
     {
         .allow_by_3pcd_1p_trial_token = true,
@@ -174,6 +176,8 @@ const Allow3PCMechanismBrowserTestCase kAllowMechanismTestCases[] = {
         .allow_by_explicit_setting = true,
         .expected_allow_mechanism_histogram_sample =
             ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowByExplicitSetting,
     },
     // Precedence testing test cases:
     {
@@ -181,6 +185,8 @@ const Allow3PCMechanismBrowserTestCase kAllowMechanismTestCases[] = {
         .allow_by_3pcd_1p_trial_token = true,
         .expected_allow_mechanism_histogram_sample =
             ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowByGlobalSetting,
     },
     {
         .allow_by_3pcd_1p_trial_token = true,
@@ -1278,9 +1284,11 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverSSABrowserTest,
 
   histogram_tester.ExpectUniqueSample(kThirdPartyCookieAllowMechanismHistogram,
                                       /*kAllowByStorageAccess*/ 6, 2);
+  // Only record blink usage when tracking protection is onboard.
   histogram_tester.ExpectBucketCount(
       kWebFeatureHistogram,
-      WebFeature::kThirdPartyCookieAccessBlockByExperiment, GetParam() ? 1 : 0);
+      WebFeature::kThirdPartyCookieDeprecation_AllowByStorageAccess,
+      GetParam() ? 1 : 0);
 }
 
 class ThirdPartyCookieDeprecationObserverCookieReadBrowserTest
