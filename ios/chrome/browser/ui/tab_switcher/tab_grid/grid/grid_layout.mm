@@ -171,6 +171,36 @@ NSCollectionLayoutBoundarySupplementaryItem* TabGroupHeader() {
 }
 
 // Returns a compositional layout grid section for the Inactive Tab button.
+// The button size is at most the size of two tabs plus some spacing to
+// either align on the sides of the tabs when there are 2 or 4 columns,
+// or align on the center of the two tabs when there are 3 columns.
+//
+// 2 columns:
+// +-------------+
+// | +---------+ |
+// | |         | |
+// | +---------+ |
+// | +---+ +---+ |
+// | |   | |   | |
+// | +---+ +---+ |
+//
+// 3 columns:
+// +-------------------+
+// |   +-----------+   |
+// |   |           |   |
+// |   +-----------+   |
+// | +---+ +---+ +---+ |
+// | |   | |   | |   | |
+// | +---+ +---+ +---+ |
+//
+// 4 columns:
+// +-------------------------+
+// |       +---------+       |
+// |       |         |       |
+// |       +---------+       |
+// | +---+ +---+ +---+ +---+ |
+// | |   | |   | |   | |   | |
+// | +---+ +---+ +---+ +---+ |
 NSCollectionLayoutSection* InactiveTabButtonSection(
     id<NSCollectionLayoutEnvironment> layout_environment,
     NSDirectionalEdgeInsets section_insets) {
@@ -193,14 +223,34 @@ NSCollectionLayoutSection* InactiveTabButtonSection(
       [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
                                                     subitems:@[ item ]];
 
+  const CGFloat spacing = Spacing(layout_environment);
+  const CGFloat section_horizontal_inset = spacing;
+
+  NSInteger colums_count = ColumnsCount(layout_environment);
+  CGFloat groupHorizontalInset = 0;
+  if (colums_count > 2) {
+    const CGFloat width =
+        layout_environment.container.effectiveContentSize.width;
+    const CGFloat number_of_spacing = (colums_count % 2 == 0) ? 1 : 2;
+    const CGFloat tab_width =
+        (width - spacing * (colums_count - 1) - 2 * section_horizontal_inset) /
+        colums_count;
+    const CGFloat button_width =
+        AlignValueToPixel(2 * tab_width + number_of_spacing * spacing);
+    groupHorizontalInset =
+        (width - button_width - 2 * section_horizontal_inset) / 2;
+  }
+
+  group.contentInsets = NSDirectionalEdgeInsetsMake(0, groupHorizontalInset, 0,
+                                                    groupHorizontalInset);
+
   // Configure the layout section.
   NSCollectionLayoutSection* section =
       [NSCollectionLayoutSection sectionWithGroup:group];
-  const CGFloat spacing = Spacing(layout_environment);
   section_insets.top += spacing;
-  section_insets.leading += spacing;
+  section_insets.leading += section_horizontal_inset;
   section_insets.bottom += kInactiveTabsSectionBottomInset;
-  section_insets.trailing += spacing;
+  section_insets.trailing += section_horizontal_inset;
   section.contentInsets = section_insets;
   section.contentInsetsReference = UIContentInsetsReferenceNone;
 
