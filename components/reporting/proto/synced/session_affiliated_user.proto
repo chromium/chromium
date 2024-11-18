@@ -32,7 +32,7 @@ message SessionUnaffiliatedUser {
 
   // Unique per-device user id. Used to track unaffiliated user activity on a
   // given device without revealing the identity of the user.
-  optional uint32 user_id_num = 2
+  optional int64 user_id_num = 2
       // copybara:datapol_begin
       // [(datapol.semantic_type) = ST_NOT_REQUIRED]
       // copybara:datapol_end
