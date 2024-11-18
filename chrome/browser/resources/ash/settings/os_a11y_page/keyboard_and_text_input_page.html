@@ -167,8 +167,8 @@
       sub-label="$i18n{slowKeysDescription}"
       deep-link-focus-id$="[[Setting.kSlowKeys]]">
   </settings-toggle-button>
-  <div class="sub-item"
-      hidden$="[[!prefs.settings.a11y.slow_keys_enabled.value]]">
+  <iron-collapse class="sub-item"
+      opened="[[prefs.settings.a11y.slow_keys_enabled.value]]">
     <div class="settings-box">
       <div class="start settings-box-text" aria-hidden="true">
         $i18n{slowKeysDelayLabel}
@@ -184,7 +184,7 @@
           deep-link-focus-id$="[[Setting.kSlowKeysDelay]]">
       </settings-slider>
     </div>
-  </div>
+  </iron-collapse>
   <settings-toggle-button
       id="bounceKeysToggle"
       class="hr"
@@ -193,8 +193,8 @@
       sub-label="$i18n{bounceKeysDescription}"
       deep-link-focus-id$="[[Setting.kBounceKeys]]">
   </settings-toggle-button>
-  <div class="sub-item"
-      hidden$="[[!prefs.settings.a11y.bounce_keys_enabled.value]]">
+  <iron-collapse class="sub-item"
+      opened="[[prefs.settings.a11y.bounce_keys_enabled.value]]">
     <div class="settings-box">
       <div class="start settings-box-text" aria-hidden="true">
         $i18n{bounceKeysDelayLabel}
@@ -210,7 +210,7 @@
           deep-link-focus-id$="[[Setting.kBounceKeysDelay]]">
       </settings-slider>
     </div>
-  </div>
+  </iron-collapse>
 </template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="keyboardSubpageButton" class="hr"
