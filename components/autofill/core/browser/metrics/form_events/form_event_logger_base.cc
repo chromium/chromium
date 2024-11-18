@@ -140,32 +140,6 @@ void FormEventLoggerBase::OnDidShowSuggestions(
   RecordShowSuggestions();
 }
 
-void FormEventLoggerBase::RecordFillingOperation(
-    FormGlobalId form_id,
-    base::span<const FormFieldData* const> filled_fields,
-    base::span<const AutofillField* const> filled_autofill_fields) {
-  ++filling_operation_count_;
-  bool is_address =
-      parsed_form_types_.contains(FormTypeNameForLogging::kAddressForm);
-  CHECK_EQ(filled_fields.size(), filled_autofill_fields.size());
-  for (size_t i = 0; i < filled_fields.size(); ++i) {
-    FieldGlobalId field_id = CHECK_DEREF(filled_fields[i]).global_id();
-    const AutofillField* autofill_field = filled_autofill_fields[i];
-    if (!autofill_field ||
-        autofill_field->Type().GetStorableType() == UNKNOWN_TYPE ||
-        (IsAddressType(autofill_field->Type().GetStorableType()) !=
-         is_address)) {
-      filled_fields_types_[field_id] = FilledFieldTypeMetric::kUnclassified;
-    } else if (autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-      filled_fields_types_[field_id] =
-          FilledFieldTypeMetric::kClassifiedWithUnrecognizedAutocomplete;
-    } else {
-      filled_fields_types_[field_id] =
-          FilledFieldTypeMetric::kClassifiedWithRecognizedAutocomplete;
-    }
-  }
-}
-
 void FormEventLoggerBase::OnDidRefill(const FormStructure& form) {
   Log(FORM_EVENT_DID_DYNAMIC_REFILL, form);
 }
@@ -248,22 +222,6 @@ void FormEventLoggerBase::OnDestroyed() {
   if (ablation_group_ != AblationGroup::kAblation) {
     RecordFunnelMetrics();
     RecordKeyMetrics();
-    if (filling_operation_count_) {
-      // Log the number of filling operations and each filled field type.
-      for (FormTypeNameForLogging form_type :
-           GetParsedAndFieldByFieldFormTypes()) {
-        base::UmaHistogramCounts100(
-            base::StrCat({"Autofill.FillingOperationCount.",
-                          FormTypeNameForLoggingToStringView(form_type)}),
-            filling_operation_count_);
-        for (const auto& [_, filled_field_type] : filled_fields_types_) {
-          base::UmaHistogramEnumeration(
-              base::StrCat({"Autofill.FilledFieldType.",
-                            FormTypeNameForLoggingToStringView(form_type)}),
-              filled_field_type);
-        }
-      }
-    }
   }
   RecordAblationMetrics();
 }

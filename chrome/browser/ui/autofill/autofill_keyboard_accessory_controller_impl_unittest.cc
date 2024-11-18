@@ -274,46 +274,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
       AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
 }
 
-// Tests that the correct metrics are logged when the confirmation dialog for
-// deleting an Autofill profile is cancelled.
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       MetricsAfterAddressDeletionDeclined) {
-  ShowAutofillProfileSuggestion();
-  ASSERT_TRUE(client().popup_view());
-
-  base::HistogramTester histogram;
-  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
-      .WillOnce(base::test::RunOnceCallback<2>(/*confirmed=*/false));
-  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
-
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      /*index=*/0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", false,
-                               1);
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", false, 1);
-}
-
-// Tests that no metrics are logged when the confirmation dialog for deleting a
-// credit card is cancelled.
-TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       MetricsAfterCreditCardDeletionDeclined) {
-  ShowLocalCardSuggestion();
-  ASSERT_TRUE(client().popup_view());
-
-  base::HistogramTester histogram;
-  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
-      .WillOnce(base::test::RunOnceCallback<2>(/*confirmed=*/false));
-  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
-
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      /*index=*/0,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", false,
-                               0);
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", false, 0);
-}
-
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        AcceptPwdSuggestionInvokesWarningAndroid) {
   base::test::ScopedFeatureList scoped_feature_list(

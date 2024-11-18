@@ -44,7 +44,6 @@
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -1169,8 +1168,6 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
     AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> edited_profile) {
   if (decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) {
-    autofill_metrics::LogEditAddressProfileDialogClosed(
-        /*user_saved_changes=*/true);
     AddressDataManager& adm =
         manager_->client().GetPersonalDataManager()->address_data_manager();
     if (!adm_observation_.IsObserving()) {
@@ -1180,16 +1177,12 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
     adm.UpdateProfile(edited_profile.value());
     return;
   }
-  autofill_metrics::LogEditAddressProfileDialogClosed(
-      /*user_saved_changes=*/false);
   manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
                                                       GetReopenTriggerSource());
 }
 
 void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
                                                     bool user_accepted_delete) {
-  autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
-      user_accepted_delete);
   if (user_accepted_delete) {
     AddressDataManager& adm =
         manager_->client().GetPersonalDataManager()->address_data_manager();
@@ -1291,35 +1284,6 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
         [autofill_trigger_field->section()] =
             SuggestionType::kAddressFieldByFieldFilling;
   }
-  const bool is_triggering_field_address =
-      autofill_trigger_field &&
-      IsAddressType(autofill_trigger_field->Type().GetStorableType());
-
-  autofill_metrics::LogFillingMethodUsed(
-      FillingMethod::kFieldByFieldFilling, FillingProduct::kAddress,
-      /*triggering_field_type_matches_filling_product=*/
-      is_triggering_field_address);
-
-  // Only log the field-by-field filling type used if it was accepted from
-  // a suggestion in a subpopup. The root popup can have field-by-field
-  // suggestions after a field-by-field suggestion was accepted from a
-  // subpopup, this is done to keep the user in a certain filling
-  // granularity during their filling experience. However only the
-  // subpopups field-by-field-filling types are statically built, based on
-  // what we think is useful/handy (this will in the future vary per
-  // country, see crbug.com/1502162), while field-by-field filling
-  // suggestions in the root popup are dynamically built depending on the
-  // triggering field type, which means that selecting them is the only
-  // option users have in the first level. Therefore we only emit logs for
-  // subpopup acceptance to measure the efficiency of the types we chose
-  // and potentially remove/add new ones.
-  if (metadata.sub_popup_level > 0) {
-    autofill_metrics::LogFieldByFieldFillingFieldUsed(
-        *suggestion.field_by_field_filling_type_used, FillingProduct::kAddress,
-        /*triggering_field_type_matches_filling_product=*/
-        is_triggering_field_address);
-  }
-
   const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
       profile, manager_->client().GetAppLocale(),
       AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
@@ -1582,9 +1546,6 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       ABSL_FALLTHROUGH_INTENDED;
     }
     case SuggestionType::kFillEverythingFromAddressProfile:
-      autofill_metrics::LogFillingMethodUsed(
-          FillingMethod::kFullForm, FillingProduct::kAddress,
-          /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.type, suggestion.payload, metadata,
           /*is_preview=*/false,
@@ -1594,21 +1555,15 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
     case SuggestionType::kFillFullAddress:
     case SuggestionType::kFillFullName:
     case SuggestionType::kFillFullEmail:
-    case SuggestionType::kFillFullPhoneNumber: {
-      FillingMethod filling_method =
-          GetFillingMethodFromSuggestionType(suggestion.type);
-      autofill_metrics::LogFillingMethodUsed(
-          filling_method, FillingProduct::kAddress,
-          /*triggering_field_type_matches_filling_product=*/true);
+    case SuggestionType::kFillFullPhoneNumber:
       FillAutofillFormData(
           suggestion.type, suggestion.payload, metadata,
           /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill =
-               GetTargetFieldTypesFromFillingMethod(filling_method)});
+           .field_types_to_fill = GetTargetFieldTypesFromFillingMethod(
+               GetFillingMethodFromSuggestionType(suggestion.type))});
       break;
-    }
     case SuggestionType::kAddressFieldByFieldFilling:
       FillFieldByFieldFillingSuggestion(suggestion, metadata);
       break;

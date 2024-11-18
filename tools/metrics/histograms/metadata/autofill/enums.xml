@@ -994,26 +994,6 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Closed without user interaction"/>
 </enum>
 
-<enum name="AutofillFieldByFieldFillingTypes">
-  <int value="0" label="Name first"/>
-  <int value="1" label="Name middle"/>
-  <int value="2" label="Name last"/>
-  <int value="3" label="Addres home line 1"/>
-  <int value="4" label="Address home line 2"/>
-  <int value="5" label="Address home zip"/>
-  <int value="6" label="Phone home whole number"/>
-  <int value="7" label="Email address"/>
-  <int value="8" label="Address home house number"/>
-  <int value="9" label="Address home street name"/>
-  <int value="10" label="Credit card full name"/>
-  <int value="11" label="Credit card number"/>
-  <int value="12" label="Credit card expiration date"/>
-  <int value="13" label="Credir card expiration year"/>
-  <int value="14" label="Credit card expiration month"/>
-  <int value="15" label="City"/>
-  <int value="16" label="Company"/>
-</enum>
-
 <enum name="AutofillFieldPredictionQuality">
   <int value="0" label="True Positive"/>
   <int value="1" label="True Negative (Ambiguous)"/>
@@ -4738,12 +4718,6 @@ Called by update_autofill_enums.py.-->
   <int value="8" label="Failure: AutofillCreditCard settings is disabled."/>
   <int value="9" label="Failure: Unsuported field type."/>
   <int value="10" label="Failure: Unsuported country."/>
-</enum>
-
-<enum name="FieldClassificationType">
-  <int value="0" label="Classified with recognized autocomplete."/>
-  <int value="1" label="Classified with unrecognized autocomplete."/>
-  <int value="2" label="Unclassified."/>
 </enum>
 
 <enum name="FieldFillingStatus">

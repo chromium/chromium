@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
-#include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill::autofill_metrics {
@@ -156,16 +155,6 @@ void LogFieldFillingStats(FormTypeNameForLogging form_type,
                           const FormGroupFillingStats& filling_stats) {
   LogFieldFillingStatsWithHistogramPrefix(
       form_type, base::StrCat({"Autofill.FieldFillingStats."}), filling_stats);
-}
-
-void LogAddressFieldFillingStatsForFillingMethod(
-    FillingMethod filling_method,
-    const FormGroupFillingStats& filling_stats) {
-  LogFieldFillingStatsWithHistogramPrefix(
-      FormTypeNameForLogging::kAddressForm,
-      base::StrCat({"Autofill.FieldFillingStats.",
-                    FillingMethodToCompactStringView(filling_method), "."}),
-      filling_stats);
 }
 
 // Logs a form-wide score for the fields of `form_type` based on the
@@ -346,10 +335,6 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
   autofill_metrics::FormGroupFillingStats cc_field_stats;
   autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
   autofill_metrics::FormGroupFillingStats unclassified_fields_field_stats;
-
-  // Same as above, but keyed by `FillingMethod`.
-  base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
-      address_field_stats_by_filling_method;
   const bool is_postal_address_form = internal::IsPostalAddressForm(form);
   for (const std::unique_ptr<AutofillField>& field : form) {
     // For any field that belongs to either an address or a credit card form,
@@ -388,16 +373,6 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
       ac_unrecognized_address_field_stats.AddFieldFillingStatus(
           autofill_metrics::GetFieldFillingStatus(*field));
     }
-    // For address forms we want to emit filling stats metrics per
-    // `FillingMethod`. Therefore, the stats generated are added to
-    // a map keyed by `FillingMethod`, so that later, metrics can
-    // emitted for each method used.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillGranularFillingAvailable) &
-        is_address_form_field) {
-      AddFillingStatsForFillingMethod(*field,
-                                      address_field_stats_by_filling_method);
-    }
   }
   LogFieldFillingStats(FormTypeNameForLogging::kAddressForm,
                        address_field_stats);
@@ -418,17 +393,6 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
 
   LogFormFillingComplexScore(FormType::kAddressForm, address_field_stats);
   LogFormFillingComplexScore(FormType::kCreditCardForm, cc_field_stats);
-
-  // TODO(crbug.com/40274514): Remove these metrics on cleanup.
-  autofill_metrics::FormGroupFillingStats any;
-  for (const auto& filling_stats : address_field_stats_by_filling_method) {
-    LogAddressFieldFillingStatsForFillingMethod(filling_stats.first,
-                                                filling_stats.second);
-    MergeFormGroupFillingStats(filling_stats.second, any);
-  }
-  LogFieldFillingStatsWithHistogramPrefix(
-      FormTypeNameForLogging::kAddressForm,
-      base::StrCat({"Autofill.FieldFillingStats.Any."}), any);
 }
 
 }  // namespace autofill::autofill_metrics

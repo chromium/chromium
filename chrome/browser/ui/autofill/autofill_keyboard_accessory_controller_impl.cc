@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
@@ -358,10 +357,6 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
   const FillingProduct filling_product =
       GetFillingProductFromSuggestionType(GetSuggestionAt(index).type);
   if (!confirmed) {
-    if (filling_product == FillingProduct::kAddress) {
-      autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
-          /*user_accepted_delete=*/false);
-    }
     return;
   }
 

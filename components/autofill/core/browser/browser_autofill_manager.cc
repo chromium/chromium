@@ -2005,15 +2005,9 @@ void BrowserAutofillManager::FillOrPreviewField(
   if (action_persistence == mojom::ActionPersistence::kFill) {
     if (type == SuggestionType::kAddressFieldByFieldFilling) {
       metrics_->address_form_event_logger.OnFilledByFieldByFieldFilling(type);
-      metrics_->address_form_event_logger.RecordFillingOperation(
-          form.global_id(), std::to_array<const FormFieldData*>({&field}),
-          std::to_array<const AutofillField*>({autofill_field}));
     } else if (type == SuggestionType::kCreditCardFieldByFieldFilling) {
       metrics_->credit_card_form_event_logger.OnFilledByFieldByFieldFilling(
           type);
-      metrics_->credit_card_form_event_logger.RecordFillingOperation(
-          form.global_id(), std::to_array<const FormFieldData*>({&field}),
-          std::to_array<const AutofillField*>({autofill_field}));
     }
 
     const bool is_address_manual_fallback_on_non_address_field =
@@ -2834,9 +2828,6 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
         metrics_->signin_state_for_metrics);
     metrics_->credit_card_form_event_logger.OnDidRefill(form_structure);
   } else {
-    metrics_->credit_card_form_event_logger.RecordFillingOperation(
-        form_structure.global_id(), safe_filled_fields,
-        safe_filled_autofill_fields);
     // The originally selected masked card is `metrics_->last_selected_card`.
     // So we must log `metrics_->last_selected_card` as opposed to
     // `absl::get<const CreditCard*>(profile_or_credit_card)` to correctly
@@ -2864,17 +2855,11 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
     if (is_refill) {
       metrics_->address_form_event_logger.OnDidRefill(form_structure);
     } else {
-      metrics_->address_form_event_logger.RecordFillingOperation(
-          form_structure.global_id(), safe_filled_fields,
-          safe_filled_autofill_fields);
       metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
           *filled_profile, form_structure, trigger_autofill_field,
           trigger_details.trigger_source);
     }
   } else if (!is_refill) {
-    metrics_->address_form_event_logger.RecordFillingOperation(
-        form_structure.global_id(), safe_filled_fields,
-        safe_filled_autofill_fields);
     metrics_->autocomplete_unrecognized_fallback_logger
         .OnDidFillFormFillingSuggestion();
   }

@@ -37,7 +37,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_ai_delegate.h"
@@ -683,95 +682,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForExistingProfile) {
                                           SuggestionPosition{.row = 0});
 }
 
-// Test that the editor changes are not persisted if the user has canceled
-// editing.
-TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
-  IssueOnQuery();
-
-  base::HistogramTester histogram;
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
-      .WillOnce([](auto profile, auto save_prompt_callback) {
-        std::move(save_prompt_callback)
-            .Run(AutofillClient::AddressPromptUserDecision::kEditDeclined,
-                 profile);
-      });
-  // No changes should be saved when user cancels editing.
-  EXPECT_CALL(address_data_manager(), UpdateProfile).Times(0);
-  // The Autofill popup must be reopened when editor dialog is closed.
-  EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
-                            queried_field().global_id(),
-                            AutofillSuggestionTriggerSource::
-                                kShowPromptAfterDialogClosedNonManualFallback));
-
-  auto suggestion = Suggestion(SuggestionType::kEditAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.EditAddress", 0, 1);
-}
-
-// Test that the manual fallback is re-triggered after user closes the edit
-// address profile dialog.
-TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing_ManualFallback) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackAddress);
-
-  base::HistogramTester histogram;
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
-      .WillOnce([](auto profile, auto save_prompt_callback) {
-        std::move(save_prompt_callback)
-            .Run(AutofillClient::AddressPromptUserDecision::kEditDeclined,
-                 profile);
-      });
-  // No changes should be saved when user cancels editing.
-  EXPECT_CALL(address_data_manager(), UpdateProfile).Times(0);
-  // The Autofill popup must be reopened when editor dialog is closed.
-  EXPECT_CALL(driver(),
-              RendererShouldTriggerSuggestions(
-                  queried_field().global_id(),
-                  AutofillSuggestionTriggerSource::kManualFallbackAddress));
-
-  auto suggestion = Suggestion(SuggestionType::kEditAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.EditAddress", 0, 1);
-}
-
-// Test that the editor changes are persisted if the user has canceled editing.
-TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
-  IssueOnQuery();
-
-  base::HistogramTester histogram;
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
-      .WillOnce([](auto profile, auto save_prompt_callback) {
-        std::move(save_prompt_callback)
-            .Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
-                 profile);
-      });
-  // Updated Autofill profile must be persisted when user saves changes through
-  // the address editor.
-  EXPECT_CALL(address_data_manager(), UpdateProfile(profile));
-  // The Autofill popup must be reopened when editor dialog is closed.
-  EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
-                            queried_field().global_id(),
-                            AutofillSuggestionTriggerSource::
-                                kShowPromptAfterDialogClosedNonManualFallback));
-
-  auto suggestion = Suggestion(SuggestionType::kEditAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-
-  external_delegate().OnAddressDataChanged();
-  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.EditAddress", 1, 1);
-}
-
 // Test the situation when database changes take long enough for the user to
 // open the address editor for the second time.
 TEST_F(AutofillExternalDelegateUnitTest,
@@ -851,92 +761,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowDeleteDialog) {
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
-}
-
-// Test that the Autofill profile is not deleted when user cancels the deletion
-// process.
-TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
-  IssueOnQuery();
-
-  base::HistogramTester histogram;
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _))
-      .WillOnce([](auto profile, auto delete_dialog_callback) {
-        std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/false);
-      });
-  // Address profile must remain intact if user cancels deletion process.
-  EXPECT_CALL(address_data_manager(), RemoveProfile).Times(0);
-  // The Autofill popup must be reopened when the delete dialog is closed.
-  EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
-                            queried_field().global_id(),
-                            AutofillSuggestionTriggerSource::
-                                kShowPromptAfterDialogClosedNonManualFallback));
-  auto suggestion = Suggestion(SuggestionType::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", 0, 1);
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 0, 1);
-}
-
-// Test that the manual fallback is re-triggered after user closes the edit
-// address profile dialog.
-TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion_ManualFallback) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackAddress);
-
-  base::HistogramTester histogram;
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _))
-      .WillOnce([](auto profile, auto delete_dialog_callback) {
-        std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/false);
-      });
-  // Address profile must remain intact if user cancels deletion process.
-  EXPECT_CALL(address_data_manager(), RemoveProfile).Times(0);
-  // The Autofill popup must be reopened when the delete dialog is closed.
-  EXPECT_CALL(driver(),
-              RendererShouldTriggerSuggestions(
-                  queried_field().global_id(),
-                  AutofillSuggestionTriggerSource::kManualFallbackAddress));
-  auto suggestion = Suggestion(SuggestionType::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", 0, 1);
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 0, 1);
-}
-
-// Test that the correct Autofill profile is deleted when the user accepts the
-// deletion process.
-TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
-  IssueOnQuery();
-
-  base::HistogramTester histogram;
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _))
-      .WillOnce([](auto profile, auto delete_dialog_callback) {
-        std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/true);
-      });
-  // Autofill profile must be deleted when user confirms the dialog.
-  EXPECT_CALL(address_data_manager(), RemoveProfile(profile.guid()));
-  // The Autofill popup must be reopened when the delete dialog is closed.
-  EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
-                            queried_field().global_id(),
-                            AutofillSuggestionTriggerSource::
-                                kShowPromptAfterDialogClosedNonManualFallback));
-  auto suggestion = Suggestion(SuggestionType::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-
-  external_delegate().OnAddressDataChanged();
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", 1, 1);
-  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 1);
 }
 
 // Test the situation when AutofillExternalDelegate is destroyed before the
@@ -1452,84 +1276,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnSuggestionsShown(suggestions);
 }
 
-// Test parameter data for asserting filling method metrics depending on the
-// suggestion (`SuggestionType`) accepted.
-struct FillingMethodMetricsTestParams {
-  const SuggestionType type;
-  const FillingMethod target_metric;
-  const std::string test_name;
-};
-
-class FillingMethodMetricsUnitTest
-    : public AutofillExternalDelegateUnitTest,
-      public ::testing::WithParamInterface<FillingMethodMetricsTestParams> {};
-
-const FillingMethodMetricsTestParams kFillingMethodMetricsTestCases[] = {
-    {.type = SuggestionType::kAddressEntry,
-     .target_metric = FillingMethod::kFullForm,
-     .test_name = "addressEntry"},
-    {.type = SuggestionType::kFillEverythingFromAddressProfile,
-     .target_metric = FillingMethod::kFullForm,
-     .test_name = "fillEverythingFromAddressProfile"},
-    {.type = SuggestionType::kAddressFieldByFieldFilling,
-     .target_metric = FillingMethod::kFieldByFieldFilling,
-     .test_name = "fieldByFieldFilling"},
-    {.type = SuggestionType::kFillFullAddress,
-     .target_metric = FillingMethod::kGroupFillingAddress,
-     .test_name = "fillFullAddress"},
-    {.type = SuggestionType::kFillFullPhoneNumber,
-     .target_metric = FillingMethod::kGroupFillingPhoneNumber,
-     .test_name = "fillFullPhoneNumber"},
-    {.type = SuggestionType::kFillFullEmail,
-     .target_metric = FillingMethod::kGroupFillingEmail,
-     .test_name = "fillFullEmail"},
-};
-
-// Tests that for a certain `SuggestionType` accepted, the expected
-// `FillingMethod` is recorded.
-TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
-  IssueOnQuery();
-  const FillingMethodMetricsTestParams& params = GetParam();
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  const Suggestion suggestion =
-      params.type == SuggestionType::kAddressFieldByFieldFilling
-          ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
-          : test::CreateAutofillSuggestion(params.type);
-  base::HistogramTester histogram_tester;
-
-  // Field-by-field filling is the only filling method that can fill
-  // unclassified fields.
-  if (params.target_metric == FillingMethod::kFieldByFieldFilling) {
-    get_triggering_autofill_field()->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-    external_delegate().DidAcceptSuggestion(suggestion,
-                                            SuggestionPosition{.row = 0});
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.FillingMethodUsed.Address."
-        "TriggeringFieldDoesNotMatchFillingProduct",
-        params.target_metric, 1);
-
-    get_triggering_autofill_field()->SetTypeTo(AutofillType(NAME_FIRST));
-    // Now the field is classified as an address field, assert the expected
-    // metric.
-  }
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.FillingMethodUsed.Address."
-      "TriggeringFieldMatchesFillingProduct",
-      params.target_metric, 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillExternalDelegateUnitTest,
-    FillingMethodMetricsUnitTest,
-    ::testing::ValuesIn(kFillingMethodMetricsTestCases),
-    [](const ::testing::TestParamInfo<FillingMethodMetricsUnitTest::ParamType>&
-           info) { return info.param.test_name; });
-
 // Test parameter data for asserting that group filling suggestions
 // forward the expected fields to the manager.
 struct GroupFillingTestParams {
@@ -1754,45 +1500,6 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
           EqualsAutofillTriggerDetails({.trigger_source = expected_source})));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
-}
-
-// Tests that when the suggestion is of type
-// `SuggestionType::kAddressFieldByFieldFilling`, we emit the expected metric
-// corresponding to which field type was used.
-TEST_F(AutofillExternalDelegateUnitTest,
-       FieldByFieldFilling_SubPopup_EmitsTypeMetric) {
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  Suggestion suggestion =
-      CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
-  IssueOnQuery();
-  base::HistogramTester histogram_tester;
-
-  external_delegate().DidAcceptSuggestion(
-      suggestion, SuggestionPosition{.row = 0, .sub_popup_level = 1});
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.FieldByFieldFilling.FieldTypeUsed.Address."
-      "TriggeringFieldMatchesFillingProduct",
-      autofill_metrics::AutofillFieldByFieldFillingTypes::kNameFirst, 1);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       FieldByFieldFilling_RootPopup_DoNotEmitTypeMetric) {
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  Suggestion suggestion =
-      CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
-  IssueOnQuery();
-  base::HistogramTester histogram_tester;
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.FieldByFieldFilling.FieldTypeUsed.Address."
-      "TriggeringFieldMatchesFillingProduct",
-      autofill_metrics::AutofillFieldByFieldFillingTypes::kNameFirst, 0);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,

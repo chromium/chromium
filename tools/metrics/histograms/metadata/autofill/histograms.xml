@@ -457,16 +457,6 @@ spaces. This should be deprecated in favor of FirstShowOrReshow.
                Autofill Server"/>
 </variants>
 
-<variants name="AutofillFillingMethod">
-  <variant name=".Any" summary="User chose any of the filling methods."/>
-  <variant name=".FieldByFieldFilling"
-      summary="User chose to fill a specific field"/>
-  <variant name=".FullForm" summary="User chose to fill the full form"/>
-  <variant name=".GroupFilling"
-      summary="User chose one of the group filling options"/>
-  <variant name=".None" summary="No filling method."/>
-</variants>
-
 <variants name="AutofillFormType">
   <variant name=".Address" summary="Address form"/>
   <variant name=".CreditCard" summary="Credit card form"/>
@@ -2357,17 +2347,6 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ExtendedMenu.EditAddress"
-    enum="BooleanAutofillEditAddress" expires_after="2025-03-30">
-  <owner>tchudakov@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    This metric measures how many users Clicked on the Edit Address option in
-    the extended Autofill menu and the next action. The metric is logged when
-    the user closes the edit address profile dialog.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ExtractForm{OwnershipType}.FieldCount" units="fields"
     expires_after="2025-04-06">
   <owner>jkeitel@google.com</owner>
@@ -2450,22 +2429,6 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.FieldByFieldFilling.FieldTypeUsed.{FillingProduct}{ClassificationMatchesFillingProduct}"
-    enum="AutofillFieldByFieldFillingTypes" expires_after="2025-05-11">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Specifies the field type used to fill a specific field and whether the
-    product chosen (Address, payments, passwords etc) matches the field
-    classification. Recorded when a field-by-field filling suggestion is
-    accepted by the user from an Autofill popup.
-  </summary>
-  <token key="FillingProduct" variants="Autofill.FillingProduct.Condensed"/>
-  <token key="ClassificationMatchesFillingProduct"
-      variants="ClassificationMatchesFillingProduct"/>
-</histogram>
-
 <histogram name="Autofill.FieldCount" units="form fields"
     expires_after="2025-04-13">
   <owner>battre@chromium.org</owner>
@@ -2488,25 +2451,6 @@ AutofillSaveCreditCardPromptDestination.
     <variant name="StandaloneCvc"/>
     <variant name="Unknown"/>
   </token>
-</histogram>
-
-<histogram
-    name="Autofill.FieldFillingStats{AutofillFillingMethod}{AutofillFormType}{FillingStatus}"
-    units="fields" expires_after="2025-05-04">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    For a filling method (full form, group filling or field-by-field-filling)
-    and {AutofillFormType} logs an histogram of the number of fields with the
-    {FillingStatus} at submission time. The non-aggregated FillingStatuses are
-    mutually exclusive and each field can only contribute to one of
-    corresponding histograms. However, the combined histograms that are prefixed
-    with Total are not mutually exclusive and a single field can contribute to
-    multiple of those.
-  </summary>
-  <token key="AutofillFillingMethod" variants="AutofillFillingMethod"/>
-  <token key="AutofillFormType" variants="AutofillFormType"/>
-  <token key="FillingStatus" variants="AutofillFieldFillingStats"/>
 </histogram>
 
 <histogram name="Autofill.FieldFillingStats{AutofillFormType}{FillingStatus}"
@@ -2711,48 +2655,6 @@ AutofillSaveCreditCardPromptDestination.
     Records for each field filled with passwords data, whether it is classified
     as target filling password or not. Emitted at the time of the filling.
   </summary>
-</histogram>
-
-<histogram name="Autofill.FilledFieldType.{FormType}"
-    enum="FieldClassificationType" expires_after="2025-04-13">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records for each field autofilled with {FormType} data, whether it is
-    classified with autocomplete attribute recognized, unrecognized, or whether
-    it is simply unclassified. Emitted at destruction time of
-    BrowserAutofillManager if at least one autofill operation was performed.
-  </summary>
-  <token key="FormType" variants="AutofillFormType.Fillable"/>
-</histogram>
-
-<histogram
-    name="Autofill.FillingMethodUsed.{FillingProduct}{ClassificationMatchesFillingProduct}"
-    enum="AutofillFillingMethodMetric" expires_after="2025-05-11">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Recorded when an Autofill suggestion is accepted by the user. The filling
-    method defines whether the user chose to fill the whole form, a specific
-    field or a group of fields (address fields, phone fields, name fields or
-    email fields).
-  </summary>
-  <token key="FillingProduct" variants="Autofill.FillingProduct.Condensed"/>
-  <token key="ClassificationMatchesFillingProduct"
-      variants="ClassificationMatchesFillingProduct"/>
-</histogram>
-
-<histogram name="Autofill.FillingOperationCount.{FormType}" units="unit"
-    expires_after="2025-04-13">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records how many time the user uses Autofill to fill forms and fields with
-    {FormType} data before submitting. Does not account for refill operations.
-    Recorded on the destruction of BrowserAutofillManager if at least one
-    autofill operation was performed.
-  </summary>
-  <token key="FormType" variants="AutofillFormType.Fillable"/>
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.WithBenefits.{CardIssuerId}"
@@ -4604,9 +4506,9 @@ TODO(crbug.com/378835293): Remove metric.
   <owner>theocristea@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Autofill.ProfileDeleted is emitted in the following scenarios: ExtendedMenu,
-    Settings, Popup and KeyboardAccessory. There is also an &quot;Any&quot;
-    bucket, which sums all of the above.
+    Autofill.ProfileDeleted is emitted in the following scenarios: Settings,
+    Popup and KeyboardAccessory. There is also an &quot;Any&quot; bucket, which
+    sums all of the above.
 
     {DeletionType}
   </summary>
@@ -4615,10 +4517,6 @@ TODO(crbug.com/378835293): Remove metric.
         summary="This metric records how many users tried to delete an
                  address and whether they canceled or confirmed the deletion
                  (regardless of how the address was deleted)."/>
-    <variant name="ExtendedMenu"
-        summary="This metric records how many users clicked on the
-                 &quot;Delete Address&quot; button in the autofill extended
-                 menu, and whether they canceled or confirmed the deletion."/>
     <variant name="KeyboardAccessory"
         summary="This metric records how many users long-pressed on an
                  address suggestion button in the keyboard accessory, and

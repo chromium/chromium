@@ -311,8 +311,6 @@ Suggestion GetFillEverythingFromAddressProfileSuggestion(
 // Append new suggestions to `suggestions` based on the `FieldType` list
 // provided. Suggestions are not added if their info is not found in the
 // provided `profile`. Returns true if any suggestion was added.
-// Note that adding a new field-by-field filling `FieldType` should be
-// reflected in `AutofillFieldByFieldFillingTypes`.
 bool AddAddressFieldByFieldSuggestions(
     const std::vector<FieldType>& field_types,
     const AutofillProfile& profile,
