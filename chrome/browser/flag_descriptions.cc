@@ -7677,12 +7677,6 @@ const char kCrOSSystemVoiceIsolationOptionName[] =
 const char kCrOSSystemVoiceIsolationOptionDescription[] =
     "Enable the options of setting system voice isolation per stream.";
 
-const char kAudioFlexibleLoopbackForSystemLoopbackName[] =
-    "Use FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK";
-const char kAudioFlexibleLoopbackForSystemLoopbackDescription[] =
-    "Request a FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK for system "
-    "loopback";
-
 const char kShowSpatialAudioToggleName[] =
     "Enable a setting toggle for spatial audio.";
 const char kShowSpatialAudioToggleDescription[] =
