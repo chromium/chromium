@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/engine/net/server_connection_manager.h"
@@ -202,8 +201,9 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
     }
   }
 
-  if (command.has_gu_retry_delay_seconds() &&
-      !base::FeatureList::IsEnabled(syncer::kSyncIgnoreGetUpdatesRetryDelay)) {
+  if (command.has_gu_retry_delay_seconds()) {
+    // TODO(crbug.com/40252048): The server no longer supports retry GU this
+    // field. Clean up client-side code.
     cycle->delegate()->OnReceivedGuRetryDelay(
         base::Seconds(command.gu_retry_delay_seconds()));
   }

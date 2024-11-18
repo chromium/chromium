@@ -90,9 +90,6 @@ constexpr bool IsWebauthnCredentialSyncEnabled() {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-// If enabled, ignore GetUpdates retry delay command from the server.
-BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
-
 // Wrapper flag to control the nudge delay of the #tab-groups-save feature.
 BASE_DECLARE_FEATURE(kTabGroupsSaveNudgeDelay);
 
