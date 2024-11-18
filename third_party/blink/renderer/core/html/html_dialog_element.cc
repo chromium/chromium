@@ -136,6 +136,7 @@ HTMLDialogElement::HTMLDialogElement(Document& document)
     : HTMLElement(html_names::kDialogTag, document),
       is_modal_(false),
       return_value_(""),
+      request_close_return_value_(""),
       previously_focused_element_(nullptr) {
   UseCounter::Count(document, WebFeature::kDialogElement);
 }
@@ -202,13 +203,20 @@ void HTMLDialogElement::close(const String& return_value,
   }
 }
 
-void HTMLDialogElement::requestClose(const String& return_value) {
+void HTMLDialogElement::requestClose(const String& return_value,
+                                     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
   if (!IsOpen()) {
     return;
   }
-  // The close watcher might be disabled if this is a non-modal dialog.
-  close_watcher_->setEnabled(true);
+  if (ClosedBy() == ClosedByState::kNone) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "To use requestClose, the dialog's closedBy state must not be 'none'.");
+    return;
+  }
+  CHECK(close_watcher_);
+  request_close_return_value_ = return_value;
   close_watcher_->requestClose();
   SetCloseWatcherEnabledState();
 }
@@ -317,7 +325,7 @@ void HTMLDialogElement::HandleDialogLightDismiss(const Event& event,
       auto& dialog = dialog_list.at(index);
       if (dialog != ancestor_dialog &&
           dialog->ClosedBy() == ClosedByState::kAny) {
-        dialog->requestClose();
+        dialog->requestClose(String(), ASSERT_NO_EXCEPTION);
       }
     }
   }
@@ -469,8 +477,7 @@ void HTMLDialogElement::SetCloseWatcherEnabledState() {
   }
   CHECK(close_watcher_);
   ClosedByState closed_by = ClosedBy();
-  close_watcher_->setEnabled(closed_by == ClosedByState::kAny ||
-                             closed_by == ClosedByState::kCloseRequest);
+  close_watcher_->setEnabled(closed_by != ClosedByState::kNone);
 }
 
 void HTMLDialogElement::CreateCloseWatcher() {
@@ -479,6 +486,7 @@ void HTMLDialogElement::CreateCloseWatcher() {
   if (!window) {
     return;
   }
+  CHECK(IsOpen());
   close_watcher_ = CloseWatcher::Create(*window);
   if (!close_watcher_) {
     return;
@@ -594,7 +602,7 @@ void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
 void HTMLDialogElement::CloseWatcherFiredClose() {
   // https://wicg.github.io/close-watcher/#patch-dialog closeAction
 
-  close();
+  close(request_close_return_value_);
 }
 
 // https://html.spec.whatwg.org#dialog-focusing-steps

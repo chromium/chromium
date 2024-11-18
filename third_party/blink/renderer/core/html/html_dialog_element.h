@@ -54,7 +54,10 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
 
   void close(const String& return_value = String(),
              bool ignore_open_attribute = false);
-  void requestClose(const String& return_value = String());
+  void requestClose(ExceptionState& exception_state) {
+    requestClose(String(), exception_state);
+  }
+  void requestClose(const String& return_value, ExceptionState&);
   void show(ExceptionState&);
   void showModal(ExceptionState&);
   void RemovedFrom(ContainerNode&) override;
@@ -120,6 +123,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   // false after the call to close() finishes.
   bool is_closing_ = false;
   String return_value_;
+  String request_close_return_value_;
   WeakMember<Element> previously_focused_element_;
 
   Member<CloseWatcher> close_watcher_;
