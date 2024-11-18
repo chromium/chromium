@@ -941,11 +941,11 @@ void BrowserAccessibilityManager::Decrement(const BrowserAccessibility& node) {
 
 void BrowserAccessibilityManager::DoDefaultAction(
     const BrowserAccessibility& node) {
-  DCHECK(node.node()->data().GetDefaultActionVerb() !=
-         ax::mojom::DefaultActionVerb::kNone);
+  DCHECK(node.HasDefaultAction());
 
-  if (!delegate_)
+  if (!delegate_) {
     return;
+  }
 
   base::RecordAction(
       base::UserMetricsAction("Accessibility.NativeApi.DoDefault"));

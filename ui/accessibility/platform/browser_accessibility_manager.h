@@ -218,7 +218,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   // information about each of these actions.
   void ClearAccessibilityFocus(const BrowserAccessibility& node);
   void Decrement(const BrowserAccessibility& node);
-  void DoDefaultAction(const BrowserAccessibility& node);
+  virtual void DoDefaultAction(const BrowserAccessibility& node);
   void GetImageData(const BrowserAccessibility& node,
                     const gfx::Size& max_size);
   void Expand(const BrowserAccessibility& node);

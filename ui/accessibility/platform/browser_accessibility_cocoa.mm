@@ -2615,24 +2615,29 @@ bool ui::IsNSRange(id value) {
                "BrowserAccessibilityCocoa::accessibilityPerformAction",
                "role=", ui::ToString([self internalRole]),
                "action=", base::SysNSStringToUTF8(action));
-  if (![self instanceActive])
+  if (![self instanceActive]) {
     return;
+  }
 
   // TODO(dmazzoni): Support more actions.
   BrowserAccessibility* actionTarget = [self actionTarget];
   BrowserAccessibilityManager* manager = actionTarget->manager();
   if ([action isEqualToString:NSAccessibilityPressAction]) {
+    ui::AXNode* node = actionTarget->node();
+    if (!node || !actionTarget->HasDefaultAction()) {
+      return;
+    }
+
     manager->DoDefaultAction(*actionTarget);
     if (actionTarget->GetData().GetRestriction() !=
             ax::mojom::Restriction::kNone ||
-        ![self isCheckable])
+        ![self isCheckable]) {
       return;
+    }
+
     // Hack: preemptively set the checked state to what it should become,
     // otherwise VoiceOver will very likely report the old, incorrect state to
     // the user as it requests the value too quickly.
-    ui::AXNode* node = actionTarget->node();
-    if (!node)
-      return;
     AXNodeData data(node->TakeData());  // Temporarily take data.
     if (data.role == ax::mojom::Role::kRadioButton) {
       data.SetCheckedState(ax::mojom::CheckedState::kTrue);
