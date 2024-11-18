@@ -346,8 +346,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
       // augmented_surface_set_clip_rect become supported widely enough.
       bool needs_commit = subsurface->ConfigureAndShowSurface(
           config.bounds_rect, root_config.bounds_rect, config.clip_rect,
-          config.transform, root_config.surface_scale_factor, nullptr,
-          reference_above);
+          root_config.surface_scale_factor, nullptr, reference_above);
       auto result = ApplySurfaceConfigure(frame.get(), surface, config, true);
       // A fatal error happened. Must stop the playback and terminate the gpu
       // process as it might have been compromised.

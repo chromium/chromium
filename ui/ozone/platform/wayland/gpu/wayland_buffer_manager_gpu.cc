@@ -95,17 +95,15 @@ void WaylandBufferManagerGpu::Initialize(
   supports_non_backed_solid_color_buffers_ =
       supported_surface_augmentor_version >=
       SURFACE_AUGMENTER_CREATE_SOLID_COLOR_BUFFER_SINCE_VERSION;
-  supports_subpixel_accurate_position_ =
-      supported_surface_augmentor_version >=
-      SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
+  // TODO(crbug.com/375523817): remove this.
+  supports_subpixel_accurate_position_ = false;
   supports_surface_background_color_ =
       supported_surface_augmentor_version >=
       AUGMENTED_SURFACE_SET_BACKGROUND_COLOR_SINCE_VERSION;
-  supports_clip_rect_ = supported_surface_augmentor_version >=
-                        AUGMENTED_SUB_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
-  supports_affine_transform_ =
-      supported_surface_augmentor_version >=
-      AUGMENTED_SUB_SURFACE_SET_TRANSFORM_SINCE_VERSION;
+  // TODO(crbug.com/375523817): remove this.
+  supports_clip_rect_ = false;
+  // TODO(crbug.com/375523817): remove this.
+  supports_affine_transform_ = false;
 
   // HitTestMask fix landed in https://crrev.com/c/5252908. This is required to
   // support DnD behavior when the target window has out-of-window frames.

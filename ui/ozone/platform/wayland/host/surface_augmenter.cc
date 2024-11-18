@@ -63,19 +63,9 @@ SurfaceAugmenter::SurfaceAugmenter(surface_augmenter* surface_augmenter,
 
 SurfaceAugmenter::~SurfaceAugmenter() = default;
 
-bool SurfaceAugmenter::SupportsSubpixelAccuratePosition() const {
-  return GetSurfaceAugmentorVersion() >=
-         SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
-}
-
 bool SurfaceAugmenter::SupportsClipRectOnAugmentedSurface() const {
   return GetSurfaceAugmentorVersion() >=
          AUGMENTED_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
-}
-
-bool SurfaceAugmenter::SupportsTransform() const {
-  return GetSurfaceAugmentorVersion() >=
-         AUGMENTED_SUB_SURFACE_SET_TRANSFORM_SINCE_VERSION;
 }
 
 bool SurfaceAugmenter::NeedsRoundedClipBoundsInLocalSurfaceCoordinates() const {
@@ -95,15 +85,6 @@ wl::Object<augmented_surface> SurfaceAugmenter::CreateAugmentedSurface(
     wl_surface* surface) {
   return wl::Object<augmented_surface>(
       surface_augmenter_get_augmented_surface(augmenter_.get(), surface));
-}
-
-wl::Object<augmented_sub_surface> SurfaceAugmenter::CreateAugmentedSubSurface(
-    wl_subsurface* subsurface) {
-  if (!SupportsSubpixelAccuratePosition())
-    return {};
-
-  return wl::Object<augmented_sub_surface>(
-      surface_augmenter_get_augmented_subsurface(augmenter_.get(), subsurface));
 }
 
 wl::Object<wl_buffer> SurfaceAugmenter::CreateSolidColorBuffer(

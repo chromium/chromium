@@ -926,21 +926,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
   }
   // Apply viewport scale (wp_viewport.set_destination).
   if (!base::ranges::equal(dst_to_set, dst_set_)) {
-    auto* augmented_surface = get_augmented_surface();
-    if (dst_to_set[0] > 0.f && augmented_surface &&
-        connection_->surface_augmenter()->SupportsSubpixelAccuratePosition()) {
-      // Subpixel accurate positioning is available since the surface augmenter
-      // version 2. Since that version, the augmented surface also supports
-      // setting destination with wl_fixed. Verify that with dchecks.
-      DCHECK_EQ(AUGMENTED_SURFACE_SET_DESTINATION_SIZE_SINCE_VERSION,
-                SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION);
-      DCHECK(augmented_surface_get_version(get_augmented_surface()) >=
-             AUGMENTED_SURFACE_SET_DESTINATION_SIZE_SINCE_VERSION);
-      augmented_surface_set_destination_size(
-          augmented_surface, wl_fixed_from_double(viewport_dst_dip.width()),
-          wl_fixed_from_double(viewport_dst_dip.height()));
-      needs_commit = true;
-    } else if (viewport()) {
+    if (viewport()) {
       wp_viewport_set_destination(
           viewport(),
           dst_to_set[0] > 0.f ? base::ClampRound(viewport_dst_dip.width())

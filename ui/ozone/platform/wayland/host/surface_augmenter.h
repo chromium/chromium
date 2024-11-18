@@ -34,10 +34,8 @@ class SurfaceAugmenter : public wl::GlobalObjectRegistrar<SurfaceAugmenter> {
   SurfaceAugmenter& operator=(const SurfaceAugmenter&) = delete;
   ~SurfaceAugmenter();
 
-  bool SupportsSubpixelAccuratePosition() const;
   // Returns true if augmented_surface_set_clip_rect is supported.
   bool SupportsClipRectOnAugmentedSurface() const;
-  bool SupportsTransform() const;
   // Returns true if augmented_surface_set_rounded_corners_clip_bounds handles
   // bounds as its in local surface coordinates space.
   bool NeedsRoundedClipBoundsInLocalSurfaceCoordinates() const;
@@ -46,8 +44,6 @@ class SurfaceAugmenter : public wl::GlobalObjectRegistrar<SurfaceAugmenter> {
   uint32_t GetSurfaceAugmentorVersion() const;
 
   wl::Object<augmented_surface> CreateAugmentedSurface(wl_surface* surface);
-  wl::Object<augmented_sub_surface> CreateAugmentedSubSurface(
-      wl_subsurface* subsurface);
 
   wl::Object<wl_buffer> CreateSolidColorBuffer(const SkColor4f& color,
                                                const gfx::Size& size);

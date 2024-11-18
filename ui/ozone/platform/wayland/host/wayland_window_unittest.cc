@@ -4109,8 +4109,7 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
         });
     wayland_subsurface->ConfigureAndShowSurface(
         subsurface_bounds, gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/,
-        std::nullopt /*clip_rect_px*/, gfx::OVERLAY_TRANSFORM_NONE,
-        1.f /*buffer_scale*/, nullptr, nullptr);
+        std::nullopt /*clip_rect_px*/, 1.f /*buffer_scale*/, nullptr, nullptr);
     connection_->Flush();
 
     PostToServerAndWait(
@@ -4155,42 +4154,23 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
 
 }  // namespace
 
-// Tests integer and non integer size/position support with and without surface
-// augmenter.
-TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceInteger) {
+// Tests integer and non integer size/position support. Ozone/Wayland is
+// expected to ceil the bounds.
+TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceBoundsCeil) {
   ASSERT_FALSE(connection_->surface_augmenter());
 
-  constexpr std::array<std::array<gfx::RectF, 2>, 2> test_data = {
+  constexpr std::array<std::array<gfx::RectF, 2>, 4> test_data = {
       {{gfx::RectF({15.12, 15.912}, {10.351, 10.742}),
         gfx::RectF({16, 16}, {11, 11})},
        {gfx::RectF({7.041, 8.583}, {13.452, 20.231}),
-        gfx::RectF({7.041, 8.583}, {13.452, 20.231})}}};
-
-  for (const auto& item : test_data) {
-    OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,
-                                   item[1] /* expected_subsurface_bounds */);
-
-    // Initialize the surface augmenter now.
-    InitializeSurfaceAugmenter();
-    ASSERT_TRUE(connection_->surface_augmenter());
-  };
-}
-
-TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceNonInteger) {
-  ASSERT_FALSE(connection_->surface_augmenter());
-
-  constexpr std::array<std::array<gfx::RectF, 2>, 2> test_data = {
-      {{gfx::RectF({15, 15}, {10, 10}), gfx::RectF({15, 15}, {10, 10})},
+        gfx::RectF({8, 9}, {14, 21})},
+       {gfx::RectF({15, 15}, {10, 10}), gfx::RectF({15, 15}, {10, 10})},
        {gfx::RectF({7, 8}, {16, 18}), gfx::RectF({7, 8}, {16, 18})}}};
 
   for (const auto& item : test_data) {
     OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,
                                    item[1] /* expected_subsurface_bounds */);
-
-    // Initialize the surface augmenter now.
-    InitializeSurfaceAugmenter();
-    ASSERT_TRUE(connection_->surface_augmenter());
-  }
+  };
 }
 
 TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
@@ -4199,9 +4179,9 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   }
   auto subsurfaces = RequestWaylandSubsurface(3);
   for (auto* subsurface : subsurfaces) {
-    subsurface->ConfigureAndShowSurface(
-        gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-        std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, nullptr);
+    subsurface->ConfigureAndShowSurface(gfx::RectF(1.f, 2.f, 10.f, 20.f),
+                                        gfx::RectF(0.f, 0.f, 800.f, 600.f),
+                                        std::nullopt, 1.f, nullptr, nullptr);
   }
   connection_->Flush();
 
@@ -4230,13 +4210,13 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   // Stack subsurfaces[0] to be from bottom to top, and change its position.
   subsurfaces[0]->ConfigureAndShowSurface(
       gfx::RectF(0.f, 0.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, subsurfaces[2], nullptr);
+      std::nullopt, 1.f, subsurfaces[2], nullptr);
   subsurfaces[1]->ConfigureAndShowSurface(
       gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[2]);
+      std::nullopt, 1.f, nullptr, subsurfaces[2]);
   subsurfaces[2]->ConfigureAndShowSurface(
       gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      std::nullopt, gfx::OVERLAY_TRANSFORM_NONE, 1.f, nullptr, subsurfaces[0]);
+      std::nullopt, 1.f, nullptr, subsurfaces[0]);
   connection_->Flush();
 
   VerifyAndClearExpectations();

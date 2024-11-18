@@ -448,8 +448,6 @@ source_set("test_support") {
     "test/test_alpha_blending.h",
     "test/test_alpha_compositing.cc",
     "test/test_alpha_compositing.h",
-    "test/test_augmented_subsurface.cc",
-    "test/test_augmented_subsurface.h",
     "test/test_augmented_surface.cc",
     "test/test_augmented_surface.h",
     "test/test_buffer.cc",
