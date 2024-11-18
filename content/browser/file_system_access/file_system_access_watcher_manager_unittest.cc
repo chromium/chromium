@@ -88,13 +88,18 @@ bool ReportsChangeInfoForLocalObservations() {
 // Accumulates changes it receives from the given `observation`.
 class ChangeAccumulator {
  public:
-  explicit ChangeAccumulator(std::unique_ptr<Observation> observation)
-      : observation_(std::move(observation)) {
-    observation_->SetCallback(base::BindRepeating(&ChangeAccumulator::OnChanges,
-                                                  weak_factory_.GetWeakPtr()));
-    observation_->SetUsageCallback(base::BindRepeating(
-        &ChangeAccumulator::OnUsageChanges, weak_factory_.GetWeakPtr()));
+  explicit ChangeAccumulator(std::unique_ptr<Observation> observation) {
+    SetupCallback(std::move(observation));
   }
+
+  explicit ChangeAccumulator(
+      base::expected<std::unique_ptr<Observation>,
+                     blink::mojom::FileSystemAccessErrorPtr>
+          get_observation_future) {
+    CHECK(get_observation_future.has_value());
+    SetupCallback(std::move(get_observation_future).value());
+  }
+
   ChangeAccumulator(const ChangeAccumulator&) = delete;
   ChangeAccumulator& operator=(const ChangeAccumulator&) = delete;
   ~ChangeAccumulator() = default;
@@ -117,16 +122,6 @@ class ChangeAccumulator {
     }
   }
 
-  void OnUsageChanges(size_t old_usage, size_t new_usage) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    if (has_error_) {
-      return;
-    }
-
-    received_usage_changes_.emplace_back(old_usage, new_usage);
-  }
-
   Observation* observation() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return observation_.get();
@@ -142,6 +137,45 @@ class ChangeAccumulator {
     return received_changes_;
   }
 
+ private:
+  void SetupCallback(std::unique_ptr<Observation> observation) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    observation_ = std::move(observation);
+    observation_->SetCallback(base::BindRepeating(&ChangeAccumulator::OnChanges,
+                                                  weak_factory_.GetWeakPtr()));
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<Observation> observation_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::list<Change> received_changes_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  base::WeakPtrFactory<ChangeAccumulator> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
+};
+
+// Accumulates usage changes it receives from the given `observation`.
+class UsageChangeAccumulator {
+ public:
+  explicit UsageChangeAccumulator(std::unique_ptr<Observation>& observation) {
+    observation->SetUsageCallback(base::BindRepeating(
+        &UsageChangeAccumulator::OnUsageChanges, weak_factory_.GetWeakPtr()));
+  }
+  UsageChangeAccumulator(const ChangeAccumulator&) = delete;
+  UsageChangeAccumulator& operator=(const ChangeAccumulator&) = delete;
+  ~UsageChangeAccumulator() = default;
+
+  void OnUsageChanges(size_t old_usage, size_t new_usage) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    received_usage_changes_.emplace_back(old_usage, new_usage);
+  }
+
   const std::list<std::pair<size_t, size_t>>& usage_changes() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return received_usage_changes_;
@@ -150,17 +184,10 @@ class ChangeAccumulator {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<Observation> observation_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  std::list<Change> received_changes_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   std::list<std::pair<size_t, size_t>> received_usage_changes_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-
-  base::WeakPtrFactory<ChangeAccumulator> weak_factory_
+  base::WeakPtrFactory<UsageChangeAccumulator> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
@@ -354,6 +381,48 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
         });
   }
 
+  base::expected<std::unique_ptr<Observation>,
+                 blink::mojom::FileSystemAccessErrorPtr>
+  ObserveFile(const storage::FileSystemURL& file_url) {
+    base::test::TestFuture<base::expected<
+        std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>
+        get_observation_future;
+    watcher_manager().GetFileObservation(file_url,
+                                         get_observation_future.GetCallback());
+
+    CheckObserveResult(get_observation_future);
+
+    return get_observation_future.Take();
+  }
+
+  base::expected<std::unique_ptr<Observation>,
+                 blink::mojom::FileSystemAccessErrorPtr>
+  ObserveDirectory(const storage::FileSystemURL& dir_url, bool is_recursive) {
+    base::test::TestFuture<base::expected<
+        std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>
+        get_observation_future;
+    watcher_manager().GetDirectoryObservation(
+        dir_url, is_recursive, get_observation_future.GetCallback());
+
+    CheckObserveResult(get_observation_future);
+
+    return get_observation_future.Take();
+  }
+
+  void CheckObserveResult(
+      base::test::TestFuture<
+          base::expected<std::unique_ptr<Observation>,
+                         blink::mojom::FileSystemAccessErrorPtr>>&
+          get_observation_future) {
+    if (!get_observation_future.Get().has_value()) {
+      return;
+    }
+
+    Observation* observation = get_observation_future.Get()->get();
+
+    CHECK(watcher_manager().HasObservationForTesting(observation));
+  }
+
  protected:
   const GURL kTestUrl = GURL("http://example.com/foo");
   const blink::StorageKey kTestStorageKey =
@@ -412,9 +481,11 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
         *observation_scope));
   }
 
-  // Destroying an observation unregisters it with the manager and removes the
-  // respective source.
+  // Destroying an observation unregisters it with the manager.
   EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
+
+  // The watcher manager removes a source when there are no observations for
+  // that source.
   EXPECT_FALSE(
       watcher_manager().HasSourceContainingScopeForTesting(*observation_scope));
 }
@@ -447,16 +518,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnownedSource) {
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
-
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(ObserveFile(file_url));
 
   source.Signal();
 
@@ -482,17 +544,16 @@ TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
       base::File::FILE_OK, ""));
 
   // Attempting to observe a scope covered by `source` will use `source`.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_FALSE(get_observation_future.Get().has_value());
-  EXPECT_EQ(get_observation_future.Get().error()->status,
+  auto observation_or_error = ObserveFile(file_url);
+
+  // If the source fails to initialize, an error should be passed back to our
+  // callback.
+  ASSERT_FALSE(observation_or_error.has_value());
+  EXPECT_EQ(observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kOperationFailed);
 
-  // TODO(crbug.com/341095544): Determine what should happen on failure to
-  // initialize a source, then add better test coverage.
+  // No observations should have been created.
+  ASSERT_FALSE(watcher_manager().HasObservationsForTesting());
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
@@ -506,27 +567,20 @@ TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
   auto non_swap_file_path = dir_path.AppendASCII("bar.noncrswap");
   WriteFile(non_swap_file_path, "watch me and then report me");
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetDirectoryObservation(
-      dir_url,
-      /*is_recursive=*/false, get_observation_future.GetCallback());
+  auto observation_or_error = ObserveDirectory(dir_url, /*is_recursive=*/false);
+
 // Watching the local file system is not supported on Android, iOS, or Fuchsia.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-  ASSERT_FALSE(get_observation_future.Get().has_value());
-  EXPECT_EQ(get_observation_future.Get().error()->status,
+  ASSERT_FALSE(observation_or_error.has_value());
+  EXPECT_EQ(observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 #else
   if (!ReportsChangeInfoForLocalObservations()) {
     GTEST_SKIP();
   }
 
-  ASSERT_TRUE(get_observation_future.Get().has_value());
   // Constructing an observation registers it with the manager.
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(std::move(observation_or_error));
 
   // Delete a file in the directory. This should be reported to `accumulator`.
   // But it will be ignored because it is a swap file.
@@ -576,15 +630,10 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
+  auto observation_or_error = ObserveFile(file_url);
 
   {
-    ChangeAccumulator accumulator(get_observation_future.Take().value());
+    ChangeAccumulator accumulator(std::move(observation_or_error));
     EXPECT_TRUE(
         watcher_manager().HasObservationForTesting(accumulator.observation()));
 
@@ -605,39 +654,31 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
 TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
   ASSERT_OK_AND_ASSIGN(auto default_bucket,
                        CreateSandboxFileSystemAndGetDefaultBucket());
-  auto test_dir_url = file_system_context_->CreateCrackedFileSystemURL(
+  auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
-  test_dir_url.SetBucket(default_bucket);
+  test_file_url.SetBucket(default_bucket);
 
 #if BUILDFLAG(IS_MAC)
   // Flush setup events before observation begins.
   SpinEventLoopForABit();
 #endif
 
-  // Attempting to observe the given file will fail.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(test_dir_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  // Attempting to observe the given file will succeed.
+  ChangeAccumulator accumulator(ObserveFile(test_file_url));
 
   base::test::TestFuture<base::File::Error> create_file_future;
   manager_->DoFileSystemOperation(
       FROM_HERE, &storage::FileSystemOperationRunner::CreateDirectory,
-      create_file_future.GetCallback(), test_dir_url,
+      create_file_future.GetCallback(), test_file_url,
       /*exclusive=*/false, /*recursive=*/true);
   ASSERT_EQ(create_file_future.Get(), base::File::Error::FILE_OK);
 
   // TODO(crbug.com/40283118): Expect changes for recursively-created
   // intermediate directories.
   ChangeInfo change_info(FilePathType::kDirectory, ChangeType::kCreated,
-                         test_dir_url.path());
-  Change expected_change{test_dir_url, change_info};
+                         test_file_url.path());
+  Change expected_change{test_file_url, change_info};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::Contains(expected_change))(
         accumulator.changes());
@@ -657,13 +698,9 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
 #endif
 
   // Attempting to observe the given file will fail.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(external_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_FALSE(get_observation_future.Get().has_value());
-  EXPECT_EQ(get_observation_future.Get().error()->status,
+  auto observation_or_error = ObserveFile(external_url);
+  ASSERT_FALSE(observation_or_error.has_value());
+  EXPECT_EQ(observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 }
 
@@ -689,16 +726,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   watcher_manager().RegisterSource(&source_for_dir);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source_for_dir));
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
-
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(ObserveFile(file_url));
 
   source_for_file.Signal();
   source_for_dir.Signal(/*relative_path=*/file_path.BaseName());
@@ -732,28 +760,9 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_dir_observation_future;
-  watcher_manager().GetDirectoryObservation(
-      dir_url, /*is_recursive=*/true, get_dir_observation_future.GetCallback());
-  EXPECT_TRUE(get_dir_observation_future.Get().has_value());
-
-  ChangeAccumulator dir_accumulator(get_dir_observation_future.Take().value());
-  EXPECT_TRUE(watcher_manager().HasObservationForTesting(
-      dir_accumulator.observation()));
-
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_file_observation_future;
-  watcher_manager().GetFileObservation(
-      file_url, get_file_observation_future.GetCallback());
-  EXPECT_TRUE(get_file_observation_future.Get().has_value());
-
-  ChangeAccumulator file_accumulator(
-      get_file_observation_future.Take().value());
-  EXPECT_TRUE(watcher_manager().HasObservationForTesting(
-      file_accumulator.observation()));
+  ChangeAccumulator dir_accumulator(
+      ObserveDirectory(dir_url, /*is_recursive=*/true));
+  ChangeAccumulator file_accumulator(ObserveFile(file_url));
 
   // Only observed by `dir_accumulator`.
   source.Signal(dir_url);
@@ -784,33 +793,16 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_dir_observation_future;
-  watcher_manager().GetDirectoryObservation(
-      dir_url, /*is_recursive=*/true, get_dir_observation_future.GetCallback());
-  EXPECT_TRUE(get_dir_observation_future.Get().has_value());
-
-  ChangeAccumulator dir_accumulator(get_dir_observation_future.Take().value());
-  EXPECT_TRUE(watcher_manager().HasObservationForTesting(
-      dir_accumulator.observation()));
+  ChangeAccumulator dir_accumulator(
+      ObserveDirectory(dir_url, /*is_recursive=*/true));
 
   FakeChangeSource file_source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
   watcher_manager().RegisterSource(&file_source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&file_source));
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_file_observation_future;
-  watcher_manager().GetFileObservation(
-      file_url, get_file_observation_future.GetCallback());
-  EXPECT_TRUE(get_file_observation_future.Get().has_value());
 
-  ChangeAccumulator file_accumulator(
-      get_file_observation_future.Take().value());
-  EXPECT_TRUE(watcher_manager().HasObservationForTesting(
-      file_accumulator.observation()));
+  ChangeAccumulator file_accumulator(ObserveFile(file_url));
 
   // Only observed by `dir_accumulator`.
   source.Signal();
@@ -840,16 +832,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ErroredChange) {
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
-
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(ObserveFile(file_url));
 
   source.Signal(/*relative_path=*/base::FilePath(), /*error=*/true);
 
@@ -877,17 +860,8 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetDirectoryObservation(
-      sub_dir_url, /*is_recursive=*/false,
-      get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
-
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(
+      ObserveDirectory(sub_dir_url, /*is_recursive=*/false));
 
   // `accumulator` should receive this error.
   source.Signal(dir_url, /*error=*/true);
@@ -906,17 +880,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeAtRelativePath) {
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
-  // Attempting to observe a scope covered by `source` will use `source`.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetDirectoryObservation(
-      dir_url, /*is_recursive=*/true, get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
-
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(
+      ObserveDirectory(dir_url, /*is_recursive=*/true));
 
   auto relative_path =
       base::FilePath::FromASCII("nested").AppendASCII("subdir");
@@ -943,16 +908,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeType) {
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
-
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(ObserveFile(file_url));
 
   base::FilePath path;
   ChangeInfo change_info(FilePathType::kUnknown, ChangeType::kCreated, path);
@@ -976,23 +932,18 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
   auto file_path = dir_path.AppendASCII("foo");
   WriteFile(file_path, "watch me");
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetDirectoryObservation(
-      dir_url,
-      /*is_recursive=*/false, get_observation_future.GetCallback());
+  auto observation_or_error = ObserveDirectory(dir_url,
+                                               /*is_recursive=*/false);
+
 // Watching the local file system is not supported on Android, iOS, or Fuchsia.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-  ASSERT_FALSE(get_observation_future.Get().has_value());
-  EXPECT_EQ(get_observation_future.Get().error()->status,
+  ASSERT_FALSE(observation_or_error.has_value());
+  EXPECT_EQ(observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 #else
-  ASSERT_TRUE(get_observation_future.Get().has_value());
+  ASSERT_TRUE(observation_or_error.has_value());
   // Constructing an observation registers it with the manager.
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(std::move(observation_or_error));
 
   // Move a file in the directory. This should be reported to `accumulator`.
   auto new_file_path = dir_path.AppendASCII("bar");
@@ -1027,24 +978,20 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   auto file_path = dir_path.AppendASCII("subdir").AppendASCII("foo");
   WriteFile(file_path, "watch me");
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetDirectoryObservation(
-      dir_url,
-      /*is_recursive=*/false, get_observation_future.GetCallback());
+  auto observation_or_error = ObserveDirectory(dir_url,
+                                               /*is_recursive=*/false);
+
   // Watching the local file system is not supported on Android, iOS, or
   // Fuchsia.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-  ASSERT_FALSE(get_observation_future.Get().has_value());
-  EXPECT_EQ(get_observation_future.Get().error()->status,
+  ASSERT_FALSE(observation_or_error.has_value());
+  EXPECT_EQ(observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 #else
-  ASSERT_TRUE(get_observation_future.Get().has_value());
+  ASSERT_TRUE(observation_or_error.has_value());
 
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(std::move(observation_or_error));
+
   EXPECT_TRUE(watcher_manager().HasSourceContainingScopeForTesting(
       accumulator.observation()->scope()));
 
@@ -1069,24 +1016,20 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
   auto file_path = dir_path.AppendASCII("subdir").AppendASCII("foo");
   WriteFile(file_path, "watch me");
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetDirectoryObservation(
-      dir_url,
-      /*is_recursive=*/true, get_observation_future.GetCallback());
+  auto observation_or_error = ObserveDirectory(dir_url,
+                                               /*is_recursive=*/true);
+
   // Watching the local file system is not supported on Android or Fuchsia.
   // Recursive watching of the local file system is not supported on iOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-  ASSERT_FALSE(get_observation_future.Get().has_value());
-  EXPECT_EQ(get_observation_future.Get().error()->status,
+  ASSERT_FALSE(observation_or_error.has_value());
+  EXPECT_EQ(observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 #else
-  ASSERT_TRUE(get_observation_future.Get().has_value());
+  ASSERT_TRUE(observation_or_error.has_value());
 
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(std::move(observation_or_error));
+
   EXPECT_TRUE(watcher_manager().HasSourceContainingScopeForTesting(
       accumulator.observation()->scope()));
 
@@ -1113,23 +1056,18 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
   // Create the file to be watched.
   WriteFile(file_path, "watch me");
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
+  auto observation_or_error = ObserveFile(file_url);
+
   // Watching the local file system is not supported on Android, Fuchsia, or
   // iOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-  ASSERT_FALSE(get_observation_future.Get().has_value());
-  EXPECT_EQ(get_observation_future.Get().error()->status,
+  ASSERT_FALSE(observation_or_error.has_value());
+  EXPECT_EQ(observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 #else
-  ASSERT_TRUE(get_observation_future.Get().has_value());
+  ASSERT_TRUE(observation_or_error.has_value());
 
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(std::move(observation_or_error));
 
   // Deleting the watched file should notify `accumulator`.
   DeleteFile(file_path);
@@ -1166,41 +1104,30 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   // Create the file to be watched.
   WriteFile(file_path, "watch me");
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future1, get_observation_future2, get_observation_future3;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future1.GetCallback());
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future2.GetCallback());
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future3.GetCallback());
+  auto observation_or_error1 = ObserveFile(file_url);
+  auto observation_or_error2 = ObserveFile(file_url);
+  auto observation_or_error3 = ObserveFile(file_url);
+
   // Watching the local file system is not supported on Android, iOS, or
   // Fuchsia.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-  ASSERT_FALSE(get_observation_future1.Get().has_value());
-  ASSERT_FALSE(get_observation_future2.Get().has_value());
-  ASSERT_FALSE(get_observation_future3.Get().has_value());
-  EXPECT_EQ(get_observation_future1.Get().error()->status,
+  ASSERT_FALSE(observation_or_error1.has_value());
+  ASSERT_FALSE(observation_or_error2.has_value());
+  ASSERT_FALSE(observation_or_error3.has_value());
+  EXPECT_EQ(observation_or_error1.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
-  EXPECT_EQ(get_observation_future2.Get().error()->status,
+  EXPECT_EQ(observation_or_error2.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
-  EXPECT_EQ(get_observation_future3.Get().error()->status,
+  EXPECT_EQ(observation_or_error3.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 #else
-  ASSERT_TRUE(get_observation_future1.Get().has_value());
-  ASSERT_TRUE(get_observation_future2.Get().has_value());
-  ASSERT_TRUE(get_observation_future3.Get().has_value());
+  ASSERT_TRUE(observation_or_error1.has_value());
+  ASSERT_TRUE(observation_or_error2.has_value());
+  ASSERT_TRUE(observation_or_error3.has_value());
 
-  ChangeAccumulator accumulator1(get_observation_future1.Take().value());
-  ChangeAccumulator accumulator2(get_observation_future2.Take().value());
-  ChangeAccumulator accumulator3(get_observation_future3.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator1.observation()));
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator2.observation()));
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator3.observation()));
+  ChangeAccumulator accumulator1(std::move(observation_or_error1));
+  ChangeAccumulator accumulator2(std::move(observation_or_error2));
+  ChangeAccumulator accumulator3(std::move(observation_or_error3));
 
   // Deleting the watched file should notify each `accumulator`.
   DeleteFile(file_path);
@@ -1240,23 +1167,18 @@ TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
   SpinEventLoopForABit();
 #endif
 
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
+  auto observation_or_error = ObserveFile(file_url);
+
   // Watching the local file system is not supported on Android, Fuchsia, or
   // iOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
-  ASSERT_FALSE(get_observation_future.Get().has_value());
-  EXPECT_EQ(get_observation_future.Get().error()->status,
+  ASSERT_FALSE(observation_or_error.has_value());
+  EXPECT_EQ(observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
 #else
-  ASSERT_TRUE(get_observation_future.Get().has_value());
+  ASSERT_TRUE(observation_or_error.has_value());
 
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  ChangeAccumulator accumulator(std::move(observation_or_error));
 
   // Making a change to a sibling of the watched file should _not_ report a
   // change to the accumulator.
@@ -1281,16 +1203,13 @@ TEST_F(FileSystemAccessWatcherManagerTest, UsageChange) {
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
+  auto observation_or_error = ObserveFile(file_url);
+  ASSERT_TRUE(observation_or_error.has_value());
 
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
+  std::unique_ptr<Observation>& observation = observation_or_error.value();
+
+  UsageChangeAccumulator accumulator(observation);
+  EXPECT_TRUE(watcher_manager().HasObservationForTesting(observation.get()));
 
   source.SignalUsageChange(50, 100);
   source.SignalUsageChange(100, 80);
