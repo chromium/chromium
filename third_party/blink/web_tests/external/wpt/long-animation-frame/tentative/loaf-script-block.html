@@ -26,7 +26,7 @@ promise_test(async t => {
 test_self_script_block(t => {
     const script = document.createElement("script");
     script.type = "module";
-    script.innerHTML = `(${busy_wait.toString()})()`;
+    script.innerHTML = `window.busy_wait()`;
     document.body.appendChild(script);
 }, location.href, "module-script");
 
@@ -53,8 +53,7 @@ test_self_script_block(t => {
 }, new URL("resources/busy.js?import", location.href).href, "module-script");
 
 const busy_wait_str = `  (function() {
-    const deadline = performance.now() + 365;
-    while (performance.now() < deadline) {}
+    window.busy_wait();
   })()
 `;
 

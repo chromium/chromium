@@ -1,4 +1,3 @@
 (() => {
-  const deadline = performance.now() + 360;
-  while (performance.now() < deadline) {}
+  window.busy_wait();
 })();
