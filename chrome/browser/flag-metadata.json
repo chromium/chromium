@@ -1664,11 +1664,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "cras-processor-dedicated-thread",
-    "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "cras-processor-wav-dump",
     "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
     "expiry_milestone": 150

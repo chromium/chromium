@@ -1237,9 +1237,6 @@ extern const char kHeavyAdPrivacyMitigationsDescription[];
 extern const char kTabAudioMutingName[];
 extern const char kTabAudioMutingDescription[];
 
-extern const char kCrasProcessorDedicatedThreadName[];
-extern const char kCrasProcessorDedicatedThreadDescription[];
-
 extern const char kCrasProcessorWavDumpName[];
 extern const char kCrasProcessorWavDumpDescription[];
 

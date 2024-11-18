@@ -2201,11 +2201,6 @@ const char kTabAudioMutingDescription[] =
     "When enabled, the audio indicators in the tab strip double as tab audio "
     "mute controls.";
 
-const char kCrasProcessorDedicatedThreadName[] =
-    "Run CrasProcessor in a dedicated thread";
-const char kCrasProcessorDedicatedThreadDescription[] =
-    "Run CrasProcessor in a separate thread out of the audio thread";
-
 const char kCrasProcessorWavDumpName[] = "Enable CrasProcessor WAVE file dumps";
 const char kCrasProcessorWavDumpDescription[] =
     "Make CrasProcessor produce WAVE file dumps for the audio processing "
