@@ -310,8 +310,7 @@ void BeginMemoryExperimentationAfterDelay() {
                               BlockingSceneCommands,
                               ChangeProfileCommands,
                               PrefObserverDelegate,
-                              ProfileStateObserver,
-                              SceneStateObserver>
+                              ProfileStateObserver>
 
 // Handles collecting metrics on user triggered screenshots
 @property(nonatomic, strong)
@@ -355,8 +354,6 @@ void BeginMemoryExperimentationAfterDelay() {
 - (void)scheduleMemoryExperimentation;
 // Crashes the application if requested.
 - (void)crashIfRequested;
-// Performs synchronous profile initialization steps.
-- (void)initializeProfile:(ProfileIOS*)profile;
 // Initializes the application to the minimum initialization needed in all
 // cases.
 - (void)startUpBrowserBasicInitialization;
@@ -364,13 +361,6 @@ void BeginMemoryExperimentationAfterDelay() {
 // background initilisation that are required, and then transition to the
 // next stage.
 - (void)startUpBrowserBackgroundInitialization;
-// Performs any initialisation that are required before the ProfileIOS can
-// be used (mostly migrating the session storage) and asynchronously progress
-// the initialisation stage when done.
-- (void)startUpBrowserBackgroundProfilesInitialization;
-// Initializes the browser objects for the browser UI (e.g., the browser
-// state).
-- (void)startUpBrowserForegroundInitialization;
 
 @end
 
@@ -540,27 +530,6 @@ void BeginMemoryExperimentationAfterDelay() {
   [self.appState queueTransitionToNextInitStage];
 }
 
-- (void)startUpBrowserBackgroundProfilesInitialization {
-  const std::vector<ProfileIOS*> loadedProfiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-
-  // Should transition the init stage when all ProfileIOS have been migrated.
-  __weak __typeof(self) weakSelf = self;
-  base::RepeatingClosure closure =
-      base::BarrierClosure(loadedProfiles.size(), base::BindOnce(^{
-                             [weakSelf.appState queueTransitionToNextInitStage];
-                           }));
-
-  // MigrateSessionStorageFormat is synchronous if the storage is already in
-  // the requested format, so this is safe to call and won't block the app
-  // startup.
-  for (ProfileIOS* profile : loadedProfiles) {
-    SessionRestorationServiceFactory::GetInstance()
-        ->MigrateSessionStorageFormat(
-            profile, SessionRestorationServiceFactory::kOptimized, closure);
-  }
-}
-
 // This initialization must happen before any windows are created.
 - (void)startUpBeforeFirstWindowCreated {
   // TODO(crbug.com/40190949): Determine whether Chrome needs to resume
@@ -634,56 +603,6 @@ void BeginMemoryExperimentationAfterDelay() {
   }
 
   return PostCrashAction::kRestoreTabsUncleanShutdown;
-}
-
-- (void)startUpBrowserForegroundInitialization {
-  const std::vector<ProfileIOS*> loadedProfiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-
-  for (ProfileIOS* profile : loadedProfiles) {
-    [self initializeProfile:profile];
-  }
-  DCHECK(!_profileControllers.empty());
-
-  for (SceneState* sceneState in self.appState.connectedScenes) {
-    [self attachProfileToSceneState:sceneState];
-  }
-}
-
-- (void)initializeProfile:(ProfileIOS*)profile {
-  DCHECK(!profile->IsOffTheRecord());
-
-  ProfileController* controller =
-      [[ProfileController alloc] initWithAppState:self.appState
-                                  metricsMediator:_metricsMediator];
-  [controller.state addObserver:self];
-  controller.state.profile = profile;
-  auto insertion_result = _profileControllers.insert(
-      std::make_pair(profile->GetProfileName(), controller));
-  DCHECK(insertion_result.second);
-
-  search_engines::UpdateSearchEngineCountryCodeIfNeeded(profile->GetPrefs());
-
-  // Force desktop mode when raccoon is enabled.
-  if (ios::provider::IsRaccoonEnabled()) {
-    if (!profile->GetPrefs()->GetBoolean(prefs::kUserAgentWasChanged)) {
-      HostContentSettingsMap* settingsMap =
-          ios::HostContentSettingsMapFactory::GetForProfile(profile);
-      settingsMap->SetDefaultContentSetting(
-          ContentSettingsType::REQUEST_DESKTOP_SITE, CONTENT_SETTING_ALLOW);
-      profile->GetPrefs()->SetBoolean(prefs::kUserAgentWasChanged, true);
-    }
-  }
-
-  if (IsTabGroupSyncEnabled()) {
-    // Ensure that the tab group sync services are created to observe updates.
-    tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  }
-
-  // Stop forcing the orientation at the application level. ProfileController
-  // take care of forcing the orientation of the application until done with
-  // the early UI initialisation.
-  _scopedForceOrientation.reset();
 }
 
 #pragma mark - AppLifetimeObserver
@@ -800,7 +719,7 @@ void BeginMemoryExperimentationAfterDelay() {
 
   // Fully initialize the browser objects for the browser UI if it is not
   // already the case. This is especially needed for scene startup.
-  if (_appState.initStage < AppInitStage::kBrowserObjectsForUI) {
+  if (_highestProfileInitStageReached < ProfileInitStage::kPrepareUI) {
     // TODO(crbug.com/40760092): This function should only be called once
     // during a specific stage, but this requires non-trivial refactoring, so
     // for now #initializeUIPreSafeMode will just return early if called more
@@ -935,20 +854,19 @@ void BeginMemoryExperimentationAfterDelay() {
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
-  [sceneState addObserver:self];
-
-  // If the application is not yet ready to present the UI, install
-  // a LaunchScreenViewController as the root view of the connected
-  // SceneState. This ensures that there is no "blank" window.
-  if (self.appState.initStage < AppInitStage::kBrowserObjectsForUI) {
-    LaunchScreenViewController* launchScreen =
-        [[LaunchScreenViewController alloc] init];
-    [sceneState setRootViewController:launchScreen makeKeyAndVisible:YES];
+  if (appState.initStage < AppInitStage::kFinal) {
+    return;
   }
 
-  if (self.appState.initStage >= AppInitStage::kNormalUI) {
-    [self attachProfileToSceneState:sceneState];
-  }
+  ApplicationContext* applicationContext = GetApplicationContext();
+  ProfileManagerIOS* manager = applicationContext->GetProfileManager();
+  ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
+  PrefService* localState = applicationContext->GetLocalState();
+
+  [self attachProfileToScene:sceneState
+              profileManager:manager
+           attributesStorage:storage
+                  localState:localState];
 }
 
 - (void)appState:(AppState*)appState
@@ -970,19 +888,8 @@ void BeginMemoryExperimentationAfterDelay() {
       break;
     case AppInitStage::kEnterprise:
       break;
-    case AppInitStage::kLoadProfiles:
-      [self startUpBrowserBackgroundProfilesInitialization];
-      break;
-    case AppInitStage::kBrowserObjectsForUI:
-      [self maybeContinueForegroundInitialization];
-      break;
-    case AppInitStage::kNormalUI:
-      break;
-    case AppInitStage::kFirstRun:
-      break;
-    case AppInitStage::kChoiceScreen:
-      break;
     case AppInitStage::kFinal:
+      [self attachProfilesToAllConnectedScenes];
       break;
   }
 }
@@ -1006,15 +913,10 @@ void BeginMemoryExperimentationAfterDelay() {
         NOTREACHED();
 
       case ProfileInitStage::kLoadProfile:
-        break;
-
       case ProfileInitStage::kMigrateStorage:
-        break;
-
       case ProfileInitStage::kProfileLoaded:
-        break;
-
       case ProfileInitStage::kPrepareUI:
+        // Nothing to do.
         break;
 
       case ProfileInitStage::kUIReady:
@@ -1022,15 +924,10 @@ void BeginMemoryExperimentationAfterDelay() {
         break;
 
       case ProfileInitStage::kFirstRun:
-        break;
-
       case ProfileInitStage::kChoiceScreen:
-        break;
-
       case ProfileInitStage::kNormalUI:
-        break;
-
       case ProfileInitStage::kFinal:
+        // Nothing to do.
         break;
     }
   }
@@ -1046,30 +943,15 @@ void BeginMemoryExperimentationAfterDelay() {
         NOTREACHED();
 
       case ProfileInitStage::kLoadProfile:
-        break;
-
       case ProfileInitStage::kMigrateStorage:
-        break;
-
       case ProfileInitStage::kProfileLoaded:
-        break;
-
       case ProfileInitStage::kPrepareUI:
-        break;
-
       case ProfileInitStage::kUIReady:
-        break;
-
       case ProfileInitStage::kFirstRun:
-        break;
-
       case ProfileInitStage::kChoiceScreen:
-        break;
-
       case ProfileInitStage::kNormalUI:
-        break;
-
       case ProfileInitStage::kFinal:
+        // Nothing to do.
         break;
     }
   }
@@ -1092,22 +974,6 @@ void BeginMemoryExperimentationAfterDelay() {
 
   _firstWindowCreated = YES;
   [self startUpAfterFirstWindowCreated];
-}
-
-#pragma mark - SceneStateObserver
-
-- (void)sceneState:(SceneState*)sceneState
-    transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (level <= SceneActivationLevelDisconnected) {
-    [sceneState removeObserver:self];
-  } else if (level > SceneActivationLevelBackground) {
-    // Stop observing all scenes since we only needed to know when the app
-    // (first scene) is about to go to the foreground.
-    for (SceneState* scene in _appState.connectedScenes) {
-      [scene removeObserver:self];
-    }
-    [self maybeContinueForegroundInitialization];
-  }
 }
 
 #pragma mark - Property implementation.
@@ -1268,17 +1134,6 @@ void BeginMemoryExperimentationAfterDelay() {
 }
 
 #pragma mark - Startup tasks
-
-// Continues foreground initialization iff both the init stage and activation
-// level are ready.
-- (void)maybeContinueForegroundInitialization {
-  if (self.appState.foregroundScenes.count > 0 &&
-      self.appState.initStage == AppInitStage::kBrowserObjectsForUI) {
-    DCHECK(_userInteracted);
-    [self startUpBrowserForegroundInitialization];
-    [self.appState queueTransitionToNextInitStage];
-  }
-}
 
 - (void)sendQueuedFeedback {
   if (ios::provider::IsUserFeedbackSupported()) {
@@ -1703,6 +1558,14 @@ void BeginMemoryExperimentationAfterDelay() {
     return;
   }
 
+  if (self.appState.initStage < AppInitStage::kFinal) {
+    // Cannot change profile before the MainController is done with loading
+    // the initial profiles.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(completion, /*success=*/false));
+    return;
+  }
+
   SceneState* sceneState = [self sceneForIdentifier:sceneIdentifier];
   if (sceneState == nil) {
     // No scene with that identifier, cannot change the profile.
@@ -1711,13 +1574,21 @@ void BeginMemoryExperimentationAfterDelay() {
     return;
   }
 
-  ProfileManagerIOS* profileManager =
-      GetApplicationContext()->GetProfileManager();
-
+  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
   const std::string wantedProfileName = base::SysNSStringToUTF8(profileName);
-  const std::string actualProfileName =
-      profileManager->GetProfileAttributesStorage()->GetProfileNameForSceneID(
-          base::SysNSStringToUTF8(sceneIdentifier));
+
+  if (!manager->HasProfileWithName(wantedProfileName) &&
+      !manager->CanCreateProfileWithName(wantedProfileName)) {
+    // The profile does not exists and cannot be created, so cannot change
+    // the Scene to use that profile.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(completion, /*success=*/false));
+    return;
+  }
+
+  ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
+  const std::string actualProfileName = storage->GetProfileNameForSceneID(
+      base::SysNSStringToUTF8(sceneIdentifier));
 
   if (actualProfileName == wantedProfileName) {
     auto iter = _profileControllers.find(actualProfileName);
@@ -1731,43 +1602,9 @@ void BeginMemoryExperimentationAfterDelay() {
     }
   }
 
-  // Need to load the Profile and to attach it to the Scene.
-  __weak MainController* weakSelf = self;
-  profileManager->CreateProfileAsync(wantedProfileName,
-                                     base::BindOnce(^(ProfileIOS* profile) {
-                                       [weakSelf profileLoaded:profile
-                                                 forSceneState:sceneState
-                                                    completion:completion];
-                                     }));
-}
-
-#pragma mark - Private
-
-// Helper method for switching the profile for a scene.
-// Called when the profile has been loaded (`profile` is null if loading the
-// profile has failed).
-- (void)profileLoaded:(ProfileIOS*)profile
-        forSceneState:(SceneState*)sceneState
-           completion:(ChangeProfileCompletion)completion {
-  if (!profile) {
-    // Creating the profile failed, cannot change the profile.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(completion, /*success=*/false));
-    return;
-  }
-
-  // Initialize the profile if needed.
-  if (!base::Contains(_profileControllers, profile->GetProfileName())) {
-    [self initializeProfile:profile];
-  }
-
   // Set the mapping between profile and scene.
-  GetApplicationContext()
-      ->GetProfileManager()
-      ->GetProfileAttributesStorage()
-      ->SetProfileNameForSceneID(
-          base::SysNSStringToUTF8(sceneState.sceneSessionID),
-          profile->GetProfileName());
+  storage->SetProfileNameForSceneID(
+      base::SysNSStringToUTF8(sceneState.sceneSessionID), wantedProfileName);
 
   // Pretend the scene has been disconnected, then reconnect it.
   const SceneActivationLevel savedLevel = sceneState.activationLevel;
@@ -1798,8 +1635,10 @@ void BeginMemoryExperimentationAfterDelay() {
   sceneState.activationLevel = SceneActivationLevelBackground;
   sceneState.scene = scene;
 
+  // Reconnect the scene. This will attach a profile automatically based
+  // on the information stored in the ProfileAttributesStorageIOS.
   [self appState:self.appState sceneConnected:sceneState];
-  DCHECK_EQ(sceneState.profileState.profile, profile);
+  DCHECK(sceneState.profileState);
 
   while (sceneState.activationLevel < savedLevel) {
     sceneState.activationLevel = static_cast<SceneActivationLevel>(
@@ -1810,6 +1649,8 @@ void BeginMemoryExperimentationAfterDelay() {
                        toReachInitStage:ProfileInitStage::kFinal
                              completion:completion];
 }
+
+#pragma mark - Private
 
 // Returns the SceneState with the given `sceneIdentifier`.
 - (SceneState*)sceneForIdentifier:(NSString*)sceneIdentifier {
@@ -1832,76 +1673,65 @@ void BeginMemoryExperimentationAfterDelay() {
   return connectedSessionIDs;
 }
 
-- (void)attachProfileToSceneState:(SceneState*)sceneState {
-  ProfileAttributesStorageIOS* storage = GetApplicationContext()
-                                             ->GetProfileManager()
-                                             ->GetProfileAttributesStorage();
+// Attach a Profile to all connected scenes.
+- (void)attachProfilesToAllConnectedScenes {
+  ApplicationContext* applicationContext = GetApplicationContext();
+  ProfileManagerIOS* manager = applicationContext->GetProfileManager();
+  ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
+  PrefService* localState = applicationContext->GetLocalState();
 
+  for (SceneState* sceneState in self.appState.connectedScenes) {
+    [self attachProfileToScene:sceneState
+                profileManager:manager
+             attributesStorage:storage
+                    localState:localState];
+  }
+
+  // Stop forcing the orientation at the application level. ProfileController
+  // take care of forcing the orientation of the application until done with
+  // the early UI initialisation.
+  _scopedForceOrientation.reset();
+}
+
+// Attach a profile to `sceneState`.
+- (void)attachProfileToScene:(SceneState*)sceneState
+              profileManager:(ProfileManagerIOS*)manager
+           attributesStorage:(ProfileAttributesStorageIOS*)storage
+                  localState:(PrefService*)localState {
   const std::string sceneID =
       base::SysNSStringToUTF8(sceneState.sceneSessionID);
   std::string profileName = storage->GetProfileNameForSceneID(sceneID);
+  if (profileName.empty()) {
+    profileName = localState->GetString(prefs::kLastUsedProfile);
+    if (profileName.empty()) {
+      profileName = kIOSChromeInitialProfile;
+      localState->SetString(prefs::kLastUsedProfile, profileName);
+    }
+  }
+  DCHECK(!profileName.empty());
 
   auto iterator = _profileControllers.find(profileName);
   if (iterator == _profileControllers.end()) {
-    if (profileName.empty()) {
-      // TODO(crbug.com/41492447): provide an API to mark a profile as the
-      // profile to use by default when a new SceneState is open.
-      profileName = GetApplicationContext()->GetLocalState()->GetString(
-          prefs::kLastUsedProfile);
-      if (profileName.empty()) {
-        profileName = kIOSChromeInitialProfile;
-      }
+    ProfileController* controller =
+        [[ProfileController alloc] initWithAppState:self.appState
+                                    metricsMediator:_metricsMediator];
+    [controller.state addObserver:self];
 
-      iterator = _profileControllers.find(profileName);
-      storage->SetProfileNameForSceneID(sceneID, profileName);
-    }
+    auto insertion_result =
+        _profileControllers.insert(std::make_pair(profileName, controller));
+    DCHECK(insertion_result.second);
+    iterator = insertion_result.first;
 
-    DCHECK(!profileName.empty());
-    if (iterator == _profileControllers.end()) {
-      __weak __typeof(self) weakSelf = self;
-      GetApplicationContext()->GetProfileManager()->CreateProfileAsync(
-          profileName, base::BindOnce(^(ProfileIOS* profile) {
-            [weakSelf profileLoaded:profile forSceneState:sceneState];
-          }));
-      return;
-    }
+    // Start loading the profile.
+    [controller loadProfileNamed:profileName usingManager:manager];
   }
 
   DCHECK(iterator != _profileControllers.end());
-  ProfileState* profileState = iterator->second.state;
+  ProfileState* state = iterator->second.state;
+  DCHECK(state != nil);
 
-  // TODO(crbug.com/343166723): remove the global mainProfile when it is only
-  // accessed per scene.
-  if (!self.appState.mainProfile) {
-    self.appState.mainProfile = profileState;
-  }
-
-  // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
-  // AppInitStage are fully decoupled.
-  AppInitStage initStage = self.appState.initStage;
-  if (initStage >= AppInitStage::kLoadProfiles) {
-    ProfileInitStage currStage = profileState.initStage;
-    ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
-    while (currStage != nextStage) {
-      // The ProfileInitStage enum has more values than AppInitStage, so move
-      // over all stage that have no representation in AppInitStage to avoid
-      // failing CHECK in -[ProfileState setInitStage:].
-      currStage =
-          static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
-      profileState.initStage = currStage;
-    }
-  }
-
-  [sceneState.controller setProfileState:profileState];
-  storage->SetProfileNameForSceneID(sceneID, iterator->first);
-}
-
-// TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
-// AppInitStage are fully decoupled.
-- (void)profileLoaded:(ProfileIOS*)profile
-        forSceneState:(SceneState*)sceneState {
-  [self initializeProfile:profile];
-  [self attachProfileToSceneState:sceneState];
+  // Attach the SceneState to the ProfileState.
+  [sceneState.controller setProfileState:state];
 }
 
 @end

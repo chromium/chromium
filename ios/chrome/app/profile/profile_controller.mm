@@ -15,6 +15,9 @@
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings.h"
+#import "components/content_settings/core/common/content_settings_types.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
@@ -22,6 +25,7 @@
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
+#import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/profile/application_storage_metrics.h"
 #import "ios/chrome/app/profile/certificate_policy_profile_agent.h"
 #import "ios/chrome/app/profile/docking_promo_profile_agent.h"
@@ -33,6 +37,7 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
@@ -44,18 +49,22 @@
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -63,6 +72,7 @@
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/components/cookie_util/cookie_util.h"
+#import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/cookies/cookie_store.h"
@@ -132,7 +142,7 @@ void FlushCookieStoreOnIOThread(
 
 }  // namespace
 
-@interface ProfileController () <ProfileStateObserver>
+@interface ProfileController () <ProfileStateObserver, SceneStateObserver>
 @end
 
 @implementation ProfileController {
@@ -160,6 +170,22 @@ void FlushCookieStoreOnIOThread(
     [_state addObserver:self];
   }
   return self;
+}
+
+- (void)loadProfileNamed:(std::string_view)profileName
+            usingManager:(ProfileManagerIOS*)manager {
+  CHECK_EQ(_state.initStage, ProfileInitStage::kStart);
+
+  // Transition to the next init stage before loading the profile as the
+  // load may be synchronous (if the profile has already been loaded for
+  // background operation).
+  [_state queueTransitionToNextInitStage];
+
+  __weak ProfileController* weakSelf = self;
+  manager->CreateProfileAsync(profileName,
+                              base::BindOnce(^(ProfileIOS* profile) {
+                                [weakSelf profileLoaded:profile];
+                              }));
 }
 
 - (void)shutdown {
@@ -192,15 +218,10 @@ void FlushCookieStoreOnIOThread(
       NOTREACHED();
 
     case ProfileInitStage::kLoadProfile:
-      break;
-
     case ProfileInitStage::kMigrateStorage:
-      break;
-
     case ProfileInitStage::kProfileLoaded:
-      break;
-
     case ProfileInitStage::kPrepareUI:
+      // Nothing to do.
       break;
 
     case ProfileInitStage::kUIReady:
@@ -208,15 +229,10 @@ void FlushCookieStoreOnIOThread(
       break;
 
     case ProfileInitStage::kFirstRun:
-      break;
-
     case ProfileInitStage::kChoiceScreen:
-      break;
-
     case ProfileInitStage::kNormalUI:
-      break;
-
     case ProfileInitStage::kFinal:
+      // Nothing to do.
       break;
   }
 }
@@ -229,16 +245,20 @@ void FlushCookieStoreOnIOThread(
       NOTREACHED();
 
     case ProfileInitStage::kLoadProfile:
+      // Nothing to do.
       break;
 
     case ProfileInitStage::kMigrateStorage:
+      [self migrateSessionStorageIfNeeded];
       break;
 
     case ProfileInitStage::kProfileLoaded:
-      [self attachProfileAgents];
+      [self startUpBrowserBackgroundInitialization];
+      [profileState queueTransitionToNextInitStage];
       break;
 
     case ProfileInitStage::kPrepareUI:
+      [self maybeContinueForegroundInitialization];
       break;
 
     case ProfileInitStage::kUIReady:
@@ -249,17 +269,19 @@ void FlushCookieStoreOnIOThread(
       break;
 
     case ProfileInitStage::kFirstRun:
-      break;
-
     case ProfileInitStage::kChoiceScreen:
+      // Nothing to do.
       break;
 
     case ProfileInitStage::kNormalUI:
-      // Stop forcing the portrait orientation once the normal UI is presented.
+      // Stop forcing the portrait orientation once the normal UI is presented
+      // then transition to the final stage as the profile is fully initialised.
       _scopedForceOrientation.reset();
+      [profileState queueTransitionToNextInitStage];
       break;
 
     case ProfileInitStage::kFinal:
+      // Nothing to do.
       break;
   }
 }
@@ -268,6 +290,44 @@ void FlushCookieStoreOnIOThread(
     firstSceneHasInitializedUI:(SceneState*)sceneState {
   DCHECK_GE(profileState.initStage, ProfileInitStage::kUIReady);
   [self startUpAfterFirstWindowCreated];
+}
+
+- (void)profileState:(ProfileState*)profileState
+      sceneConnected:(SceneState*)sceneState {
+  if (_state.initStage >= ProfileInitStage::kUIReady) {
+    return;
+  }
+
+  // If the application is not yet ready to present the UI, install
+  // a LaunchScreenViewController as the root view of the connected
+  // SceneState. This ensures that there is no "blank" window.
+  LaunchScreenViewController* launchScreen =
+      [[LaunchScreenViewController alloc] init];
+  [sceneState setRootViewController:launchScreen makeKeyAndVisible:YES];
+
+  [sceneState addObserver:self];
+}
+
+#pragma mark SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  switch (level) {
+    case SceneActivationLevelUnattached:
+      break;
+
+    case SceneActivationLevelDisconnected:
+      [sceneState removeObserver:self];
+      break;
+
+    case SceneActivationLevelBackground:
+      break;
+
+    case SceneActivationLevelForegroundInactive:
+    case SceneActivationLevelForegroundActive:
+      [self maybeContinueForegroundInitialization];
+      break;
+  }
 }
 
 #pragma mark AppLifetimeObserver
@@ -378,6 +438,49 @@ void FlushCookieStoreOnIOThread(
 
 #pragma mark Private methods
 
+- (void)profileLoaded:(ProfileIOS*)profile {
+  CHECK(profile);
+
+  [_state setProfile:profile];
+  [_state queueTransitionToNextInitStage];
+}
+
+- (void)migrateSessionStorageIfNeeded {
+  DCHECK(_state.profile);
+
+  __weak ProfileController* weakSelf = self;
+  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
+      _state.profile, SessionRestorationServiceFactory::kOptimized,
+      base::BindOnce(^{
+        [weakSelf.state queueTransitionToNextInitStage];
+      }));
+}
+
+- (void)startUpBrowserBackgroundInitialization {
+  DCHECK(_state.profile);
+  ProfileIOS* profile = _state.profile;
+  PrefService* prefs = profile->GetPrefs();
+
+  search_engines::UpdateSearchEngineCountryCodeIfNeeded(prefs);
+
+  // Force desktop mode when racoon is enabled.
+  if (ios::provider::IsRaccoonEnabled()) {
+    if (!prefs->GetBoolean(prefs::kUserAgentWasChanged)) {
+      prefs->SetBoolean(prefs::kUserAgentWasChanged, true);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile)
+          ->SetDefaultContentSetting(ContentSettingsType::REQUEST_DESKTOP_SITE,
+                                     CONTENT_SETTING_ALLOW);
+    }
+  }
+
+  // Ensure that the tab group sync services are created to observe updates.
+  if (IsTabGroupSyncEnabled()) {
+    tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  }
+
+  [self attachProfileAgents];
+}
+
 - (void)attachProfileAgents {
   // TODO(crbug.com/355142171): Remove the DiscoverFeedProfileAgent?
   [_state addAgent:[[DiscoverFeedProfileAgent alloc] init]];
@@ -399,6 +502,18 @@ void FlushCookieStoreOnIOThread(
         break;
     }
   }
+}
+
+- (void)maybeContinueForegroundInitialization {
+  if (_state.initStage != ProfileInitStage::kPrepareUI) {
+    return;
+  }
+
+  if (_state.foregroundScenes.count == 0) {
+    return;
+  }
+
+  [_state queueTransitionToNextInitStage];
 }
 
 - (void)startUpBeforeFirstWindowCreated {

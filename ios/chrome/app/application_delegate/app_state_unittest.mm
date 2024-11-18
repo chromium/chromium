@@ -115,21 +115,6 @@
       break;
     case AppInitStage::kEnterprise:
       break;
-    case AppInitStage::kLoadProfiles:
-      [appState queueTransitionToNextInitStage];
-      break;
-    case AppInitStage::kBrowserObjectsForUI:
-      [appState queueTransitionToNextInitStage];
-      break;
-    case AppInitStage::kNormalUI:
-      [appState queueTransitionToNextInitStage];
-      break;
-    case AppInitStage::kFirstRun:
-      [appState queueTransitionToNextInitStage];
-      break;
-    case AppInitStage::kChoiceScreen:
-      [appState queueTransitionToNextInitStage];
-      break;
     case AppInitStage::kFinal:
       break;
   }

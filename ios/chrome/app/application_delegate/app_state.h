@@ -59,10 +59,6 @@ enum class PostCrashAction {
 // Most features should use the browser-level dispatcher instead.
 @property(nonatomic, strong) CommandDispatcher* appCommandDispatcher;
 
-// The ProfileState associated with the main Profile.
-// TODO(crbug.com/324417250) remove this property.
-@property(nonatomic, weak) ProfileState* mainProfile;
-
 // Container for startup information.
 @property(nonatomic, weak) id<StartupInformation> startupInformation;
 

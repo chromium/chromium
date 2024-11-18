@@ -16,8 +16,6 @@
 #import "ios/chrome/app/deferred_initialization_queue.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
-#import "ios/chrome/app/profile/profile_init_stage.h"
-#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -170,23 +168,6 @@ BOOL ApplicationIsInBackground() {
   [_observers appState:self willTransitionToInitStage:newInitStage];
   _initStage = newInitStage;
   [_observers appState:self didTransitionFromInitStage:previousInitStage];
-
-  // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
-  // AppInitStage are fully decoupled.
-  if (_initStage >= AppInitStage::kLoadProfiles) {
-    for (ProfileState* profileState in self.connectedProfileStates) {
-      ProfileInitStage currStage = profileState.initStage;
-      ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(_initStage);
-      while (currStage != nextStage) {
-        // The ProfileInitStage enum has more values than AppInitStage, so move
-        // over all stage that have no representation in AppInitStage to avoid
-        // failing CHECK in -[ProfileState setInitStage:].
-        currStage =
-            static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
-        profileState.initStage = currStage;
-      }
-    }
-  }
 }
 
 - (BOOL)portraitOnly {
@@ -413,22 +394,6 @@ BOOL ApplicationIsInBackground() {
 
 - (void)voiceOverStatusDidChange:(NSNotification*)notification {
   crash_keys::SetVoiceOverRunning(UIAccessibilityIsVoiceOverRunning());
-}
-
-#pragma mark - Private
-
-// TODO(crbug.com/325596562): AppState should not push to ProfileState, instead
-// this should be refactored. This is temporary code until each ProfileState is
-// correctly managed by its ProfileController.
-- (NSSet<ProfileState*>*)connectedProfileStates {
-  NSMutableSet<ProfileState*>* profileStates = [[NSMutableSet alloc] init];
-  for (SceneState* sceneState in self.connectedScenes) {
-    ProfileState* profileState = sceneState.profileState;
-    if (profileState) {
-      [profileStates addObject:profileState];
-    }
-  }
-  return profileStates;
 }
 
 @end
