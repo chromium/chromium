@@ -2696,12 +2696,12 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-answer.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc/RTCRtpParameters-rtcp.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc/RTCRtpSender-setParameters.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc/RTCSctpTransport-constructor.html [ Timeout ]
-[ Mac14 ] external/wpt/webrtc/protocol/sctp-format.html [ Timeout ]
+crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-answer.html [ Timeout ]
+crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription.html [ Timeout ]
+crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCRtpParameters-rtcp.html [ Timeout ]
+crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCRtpSender-setParameters.html [ Timeout ]
+crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCSctpTransport-constructor.html [ Timeout ]
+crbug.com/379418921 [ Mac14 ] external/wpt/webrtc/protocol/sctp-format.html [ Timeout ]
 crbug.com/379519388 [ Win10.20h2 ] external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
 crbug.com/379519388 [ Mac15 ] external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
 crbug.com/379414142 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-audio.https.html [ Timeout ]
