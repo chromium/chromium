@@ -1,7 +1,7 @@
 Name: QUICHE
 URL: https://quiche.googlesource.com/quiche
 Version: git
-License: BSD
+License: BSD-3-Clause
 License File: src/LICENSE
 Security Critical: yes
 Shipped: yes

@@ -3,7 +3,7 @@ Short Name: arcore
 URL: https://github.com/google-ar/arcore-android-sdk
 Version: 1.44
 Revision: 80036a515b38deca1ad080b7c436856b454358f5
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

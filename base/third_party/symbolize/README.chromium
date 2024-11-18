@@ -1,6 +1,6 @@
 Name: google-glog's symbolization library
 URL: https://github.com/google/glog
-License: BSD
+License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes
 

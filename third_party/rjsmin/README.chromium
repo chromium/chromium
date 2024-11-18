@@ -2,7 +2,7 @@ Name: rjsmin
 Short Name: rjsmin
 URL: http://opensource.perlig.de/rjsmin/
 Version: 1.0.12
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: yes
