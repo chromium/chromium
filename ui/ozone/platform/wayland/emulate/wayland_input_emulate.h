@@ -131,10 +131,10 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     bool buffer_attached_and_configured = false;
 
     // Frame callback that invokes WaylandInputEmulate::FrameCallbackHandler.
-    raw_ptr<wl_callback, DanglingUntriaged> frame_callback = nullptr;
+    raw_ptr<wl_callback> frame_callback = nullptr;
 
     // The attached buffer.
-    raw_ptr<wl_buffer, DanglingUntriaged> buffer = nullptr;
+    raw_ptr<wl_buffer> buffer = nullptr;
 
     // True if the window was created or assigned a role and is now waiting for
     // a buffer to be committed.
@@ -142,6 +142,9 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
 
     base::WeakPtrFactory<TestWindow> weak_factory{this};
   };
+
+  // Destroys `window`'s frame callback and buffer.
+  void DestroyTestWindowState(TestWindow* window);
 
   // WaylandProxy::Delegate:
   void OnWindowAdded(gfx::AcceleratedWidget widget) override;
