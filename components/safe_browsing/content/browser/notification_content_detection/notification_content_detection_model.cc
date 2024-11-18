@@ -79,9 +79,13 @@ void NotificationContentDetectionModel::PostprocessCategories(
     const GURL& origin,
     bool did_match_allowlist,
     const std::optional<std::vector<tflite::task::core::Category>>& output) {
+  // If the model does not have an output, return without collecting metrics.
+  // This can happen if the model times out and this should not cause a crash.
+  if (!output.has_value()) {
+    return;
+  }
   // Validate model response and obtain suspicious and not suspicious confidence
   // scores. Crash on debug builds only.
-  DCHECK(output);
   DCHECK_EQ(output->size(), 2UL);
   for (const auto& category : *output) {
     if (category.class_name == kSuspiciousVerdictLabel) {
