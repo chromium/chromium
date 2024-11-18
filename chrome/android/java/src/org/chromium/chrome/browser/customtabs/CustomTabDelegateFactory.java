@@ -308,7 +308,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     // Should only be used after inflation.
-    private final Lazy<SnackbarManager> mSnackbarManager;
+    private final Supplier<SnackbarManager> mSnackbarManager;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     // Should only be used after inflation.
     private final Supplier<BottomSheetController> mBottomSheetController;
@@ -363,7 +363,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Lazy<SnackbarManager> snackbarManager,
+            Supplier<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
             Supplier<BottomSheetController> bottomSheetController,
@@ -398,11 +398,9 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     @Inject
     public CustomTabDelegateFactory(
             BaseCustomTabActivity activity,
-            FullscreenManager fullscreenManager,
             TabCreatorManager tabCreatorManager,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Lazy<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
             Lazy<AuthTabVerifier> authTabVerifier) {
@@ -418,12 +416,12 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 activity.getVerifier(),
                 activity,
                 activity.getBrowserControlsManager(),
-                fullscreenManager,
+                activity.getFullscreenManager(),
                 tabCreatorManager,
                 activity.getTabModelSelectorSupplier(),
                 compositorViewHolderSupplier,
                 modalDialogManagerSupplier,
-                snackbarManager,
+                activity::getSnackbarManager,
                 shareDelegateSupplier,
                 activityType,
                 activity.getBottomSheetController(),

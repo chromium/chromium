@@ -13,8 +13,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
-import dagger.Lazy;
-
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -30,13 +29,13 @@ import javax.inject.Inject;
 /**
  * Shows the Trusted Web Activity disclosure when appropriate and notifies of its acceptance.
  *
- * Thread safety: All methods on this class should be called on the UI thread.
+ * <p>Thread safety: All methods on this class should be called on the UI thread.
  */
 @ActivityScope
 public class DisclosureInfobar
         implements PropertyObservable.PropertyObserver<PropertyKey>, StartStopWithNativeObserver {
     private final Resources mResources;
-    private final Lazy<SnackbarManager> mSnackbarManager;
+    private final Supplier<SnackbarManager> mSnackbarManager;
     private final TrustedWebActivityModel mModel;
 
     /**
@@ -57,12 +56,9 @@ public class DisclosureInfobar
 
     @Inject
     DisclosureInfobar(
-            Resources resources,
-            Lazy<SnackbarManager> snackbarManager,
-            TrustedWebActivityModel model,
-            BaseCustomTabActivity activity) {
+            Resources resources, TrustedWebActivityModel model, BaseCustomTabActivity activity) {
         mResources = resources;
-        mSnackbarManager = snackbarManager;
+        mSnackbarManager = activity::getSnackbarManager;
         mModel = model;
         mModel.addObserver(this);
         activity.getLifecycleDispatcher().register(this);

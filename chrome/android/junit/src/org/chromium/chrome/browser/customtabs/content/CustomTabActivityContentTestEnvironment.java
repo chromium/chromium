@@ -150,6 +150,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
         when(activity.getIntentDataProvider()).thenReturn(intentDataProvider);
         when(activity.getLifecycleDispatcher()).thenReturn(lifecycleDispatcher);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(profileProvider);
+        when(activity.getProfileProviderSupplier()).thenReturn(profileProviderSupplier);
         when(powerManager.isInteractive()).thenReturn(true);
     }
 
@@ -160,12 +163,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     }
 
     public CustomTabActivityTabController createTabController() {
-        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
-        profileProviderSupplier.set(profileProvider);
-
         return new CustomTabActivityTabController(
                 activity,
-                profileProviderSupplier,
                 () -> customTabDelegateFactory,
                 activityTabProvider,
                 () -> compositorViewHolder,

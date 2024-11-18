@@ -19,23 +19,17 @@ import dagger.Module;
 import dagger.Provides;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -48,19 +42,13 @@ import javax.inject.Named;
 @Module
 public class ChromeActivityCommonsModule {
     private final AsyncInitializationActivity mActivity;
-    private final FullscreenManager mFullscreenManager;
-    private final Supplier<LayoutManagerImpl> mLayoutManagerSupplier;
-    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
-    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final ActivityTabProvider mActivityTabProvider;
-    private final TabContentManager mTabContentManager;
     private final ActivityWindowAndroid mActivityWindowAndroid;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabCreator> mTabCreatorSupplier;
     private final StatusBarColorController mStatusBarColorController;
     private final ScreenOrientationProvider mScreenOrientationProvider;
-    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final Supplier<LegacyTabStartupMetricsTracker> mLegacyTabStartupMetricsTrackerSupplier;
     private final Supplier<StartupMetricsTracker> mStartupMetricsTrackerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
@@ -73,19 +61,13 @@ public class ChromeActivityCommonsModule {
 
     public ChromeActivityCommonsModule(
             AsyncInitializationActivity activity,
-            FullscreenManager fullscreenManager,
-            Supplier<LayoutManagerImpl> layoutManagerSupplier,
-            Supplier<SnackbarManager> snackbarManagerSupplier,
-            OneshotSupplier<ProfileProvider> profileProviderSupplier,
             ActivityTabProvider activityTabProvider,
-            TabContentManager tabContentManager,
             ActivityWindowAndroid activityWindowAndroid,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabCreatorManager tabCreatorManager,
             Supplier<TabCreator> tabCreatorSupplier,
             StatusBarColorController statusBarColorController,
             ScreenOrientationProvider screenOrientationProvider,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LegacyTabStartupMetricsTracker> legacyTabStartupMetricsTrackerSupplier,
             Supplier<StartupMetricsTracker> startupMetricsTrackerSupplier,
             CompositorViewHolder.Initializer compositorViewHolderInitializer,
@@ -96,19 +78,13 @@ public class ChromeActivityCommonsModule {
             TabModelInitializer tabModelInitializer,
             @ActivityType int activityType) {
         mActivity = activity;
-        mFullscreenManager = fullscreenManager;
-        mLayoutManagerSupplier = layoutManagerSupplier;
-        mSnackbarManagerSupplier = snackbarManagerSupplier;
-        mProfileProviderSupplier = profileProviderSupplier;
         mActivityTabProvider = activityTabProvider;
-        mTabContentManager = tabContentManager;
         mActivityWindowAndroid = activityWindowAndroid;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabCreatorManager = tabCreatorManager;
         mTabCreatorSupplier = tabCreatorSupplier;
         mStatusBarColorController = statusBarColorController;
         mScreenOrientationProvider = screenOrientationProvider;
-        mTabContentManagerSupplier = tabContentManagerSupplier;
         mLegacyTabStartupMetricsTrackerSupplier = legacyTabStartupMetricsTrackerSupplier;
         mStartupMetricsTrackerSupplier = startupMetricsTrackerSupplier;
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
@@ -118,16 +94,6 @@ public class ChromeActivityCommonsModule {
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabModelInitializer = tabModelInitializer;
         mActivityType = activityType;
-    }
-
-    @Provides
-    public FullscreenManager provideFullscreenManager() {
-        return mFullscreenManager;
-    }
-
-    @Provides
-    public LayoutManagerImpl provideLayoutManager() {
-        return mLayoutManagerSupplier.get();
     }
 
     @Provides
@@ -157,23 +123,8 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    public SnackbarManager provideSnackbarManager() {
-        return mSnackbarManagerSupplier.get();
-    }
-
-    @Provides
-    public OneshotSupplier<ProfileProvider> provideProfileProviderSupplier() {
-        return mProfileProviderSupplier;
-    }
-
-    @Provides
     public ActivityTabProvider provideActivityTabProvider() {
         return mActivityTabProvider;
-    }
-
-    @Provides
-    public TabContentManager provideTabContentManager() {
-        return mTabContentManager;
     }
 
     @Provides
@@ -214,11 +165,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public ScreenOrientationProvider provideScreenOrientationProvider() {
         return mScreenOrientationProvider;
-    }
-
-    @Provides
-    public ObservableSupplier<TabContentManager> provideTabContentManagerSupplier() {
-        return mTabContentManagerSupplier;
     }
 
     @Provides

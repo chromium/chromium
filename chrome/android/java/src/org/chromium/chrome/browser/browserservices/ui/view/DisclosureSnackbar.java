@@ -8,8 +8,6 @@ import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
-import dagger.Lazy;
-
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -42,11 +40,8 @@ public class DisclosureSnackbar extends DisclosureInfobar {
 
     @Inject
     DisclosureSnackbar(
-            Resources resources,
-            Lazy<SnackbarManager> snackbarManager,
-            TrustedWebActivityModel model,
-            BaseCustomTabActivity activity) {
-        super(resources, snackbarManager, model, activity);
+            Resources resources, TrustedWebActivityModel model, BaseCustomTabActivity activity) {
+        super(resources, model, activity);
         mResources = resources;
     }
 
