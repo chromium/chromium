@@ -5949,6 +5949,78 @@ TEST_F(WebNNGraphImplTest, ReshapeTest) {
   }
 }
 
+struct ReverseTester {
+  OperandInfo input;
+  OperandInfo output;
+  std::vector<uint32_t> axes;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildReverse(input_operand_id, output_operand_id, std::move(axes));
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ReverseTest) {
+  {
+    // Test reverse operator.
+    ReverseTester{.input = {.type = OperandDataType::kFloat32,
+                            .dimensions = {1, 2, 3, 4}},
+                  .output = {.type = OperandDataType::kFloat32,
+                             .dimensions = {1, 2, 3, 4}},
+                  .axes = {0, 1, 2},
+                  .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the axes is duplicated.
+    ReverseTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .axes = {1, 1, 2},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the axes is greater than input rank.
+    ReverseTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .axes = {4},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    ReverseTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 4}},
+        .output = {.type = OperandDataType::kInt32, .dimensions = {2, 4}},
+        .axes = {0},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test an invalid reverse where the output is the same as the input.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {3, 3}, OperandDataType::kFloat32);
+    builder.BuildReverse(input_operand_id, input_operand_id, /*axes=*/{1});
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
 struct ScatterElementsTester {
   OperandInfo input;
   OperandInfo indices;

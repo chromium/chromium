@@ -95,6 +95,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {webnn::OperandDataType::kFloat32},
        webnn::SupportedDataTypes::All(),
        webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
        webnn::SupportedDataTypes::All(),
        webnn::SupportedDataTypes::All(),
        webnn::SupportedDataTypes::All(),
@@ -123,7 +124,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

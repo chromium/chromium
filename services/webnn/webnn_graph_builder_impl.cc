@@ -603,6 +603,8 @@ class OperationValidationContext {
   bool ValidateResample2d(const mojom::Resample2d& resample2d,
                           size_t operation_id);
   bool ValidateReshape(const mojom::Reshape& reshape, size_t operation_id);
+  bool ValidateReverseOperation(const mojom::Reverse& reverse,
+                                size_t operation_id);
   bool ValidateScatterElements(const mojom::ScatterElements& scatter_elements,
                                size_t operation_id);
   bool ValidateScatterND(const mojom::ScatterND& scatter_nd,
@@ -2130,6 +2132,34 @@ bool OperationValidationContext::ValidateReshape(const mojom::Reshape& reshape,
   return true;
 }
 
+bool OperationValidationContext::ValidateReverseOperation(
+    const mojom::Reverse& reverse,
+    size_t operation_id) {
+  if (!processed_operands_.contains(reverse.input_operand_id)) {
+    return false;
+  }
+  NoteDependency(reverse.input_operand_id, operation_id);
+
+  RETURN_IF_FALSE(processed_operands_.insert(reverse.output_operand_id).second);
+
+  auto* input = GetMojoOperand(reverse.input_operand_id);
+  auto* output = GetMojoOperand(reverse.output_operand_id);
+  if (!input || !output || output == input) {
+    return false;
+  }
+
+  auto validated_output = ValidateReverseAndInferOutput(
+      *context_properties_, input->descriptor, reverse.axes, reverse.label);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != output->descriptor) {
+    return false;
+  }
+
+  return true;
+}
+
 bool OperationValidationContext::ValidateScatterElements(
     const mojom::ScatterElements& scatter_elements,
     size_t operation_id) {
@@ -2554,6 +2584,8 @@ bool OperationValidationContext::ValidateOperation(
       return ValidateUnaryOperation(
           *operation.get_relu(),
           context_properties_->data_type_limits.relu_input, operation_id);
+    case mojom::Operation::Tag::kReverse:
+      return ValidateReverseOperation(*operation.get_reverse(), operation_id);
     case mojom::Operation::Tag::kScatterElements:
       return ValidateScatterElements(*operation.get_scatter_elements(),
                                      operation_id);

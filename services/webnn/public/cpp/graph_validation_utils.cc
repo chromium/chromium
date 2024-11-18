@@ -1297,6 +1297,24 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
   return OperandDescriptor::Create(input.data_type(), output_shape);
 }
 
+base::expected<OperandDescriptor, std::string> ValidateReverseAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    base::span<const uint32_t> axes,
+    std::string_view label) {
+  RETURN_IF_ERROR(ValidateAxes(axes, input.Rank(), label));
+
+  if (!context_properties.data_type_limits.reverse_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.reverse_input)));
+  }
+
+  return OperandDescriptor::Create(input.data_type(), input.shape());
+}
+
 base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
