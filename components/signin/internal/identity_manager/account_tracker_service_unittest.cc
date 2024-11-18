@@ -411,6 +411,7 @@ class AccountTrackerServiceTest : public testing::Test {
   }
 
   void DeleteAccountTracker() {
+    fake_account_capabilities_fetcher_factory_ = nullptr;
     account_fetcher_.reset();
     account_tracker_.reset();
     // Allow residual |account_tracker_| posted tasks to run.
@@ -422,8 +423,8 @@ class AccountTrackerServiceTest : public testing::Test {
   FakeProfileOAuth2TokenService fake_oauth2_token_service_;
   std::unique_ptr<AccountFetcherService> account_fetcher_;
   std::unique_ptr<AccountTrackerService> account_tracker_;
-  raw_ptr<FakeAccountCapabilitiesFetcherFactory, DanglingUntriaged>
-      fake_account_capabilities_fetcher_factory_ = nullptr;
+  raw_ptr<FakeAccountCapabilitiesFetcherFactory>
+      fake_account_capabilities_fetcher_factory_;
   std::vector<TrackingEvent> account_tracker_events_;
 };
 
