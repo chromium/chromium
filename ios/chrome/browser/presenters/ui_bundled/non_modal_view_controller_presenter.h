@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PRESENTERS_NON_MODAL_VIEW_CONTROLLER_PRESENTER_H_
-#define IOS_CHROME_BROWSER_UI_PRESENTERS_NON_MODAL_VIEW_CONTROLLER_PRESENTER_H_
+#ifndef IOS_CHROME_BROWSER_PRESENTERS_UI_BUNDLED_NON_MODAL_VIEW_CONTROLLER_PRESENTER_H_
+#define IOS_CHROME_BROWSER_PRESENTERS_UI_BUNDLED_NON_MODAL_VIEW_CONTROLLER_PRESENTER_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/presenters/contained_presenter.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter.h"
 
 // Presents a view controller above the base view controller in a non modal
 // style. Allowing any interaction outside the presented view controller. The
@@ -16,4 +16,4 @@
 @interface NonModalViewControllerPresenter : NSObject <ContainedPresenter>
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_PRESENTERS_NON_MODAL_VIEW_CONTROLLER_PRESENTER_H_
+#endif  // IOS_CHROME_BROWSER_PRESENTERS_UI_BUNDLED_NON_MODAL_VIEW_CONTROLLER_PRESENTER_H_

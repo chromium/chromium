@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("presenters") {
+source_set("ui_bundled") {
   sources = [
     "contained_presenter.h",
     "contained_presenter_delegate.h",
@@ -23,7 +23,7 @@ source_set("unit_tests") {
   sources = [ "vertical_animation_container_unittest.mm" ]
 
   deps = [
-    ":presenters",
+    ":ui_bundled",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",

@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
+#import "ios/chrome/browser/presenters/ui_bundled/vertical_animation_container.h"
 
-#import "ios/chrome/browser/ui/presenters/contained_presenter.h"
-#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 // Test delegate helper; the delegate callback sets the `presented` and
 // `dismissed` property.
-@interface TestContainedPresenterDelegate : NSObject<ContainedPresenterDelegate>
+@interface TestContainedPresenterDelegate
+    : NSObject <ContainedPresenterDelegate>
 @property(nonatomic) BOOL presented;
 @property(nonatomic) BOOL dismissed;
 @end

@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
-#import "ios/chrome/browser/ui/presenters/contained_presenter.h"
 
 // Presenter for the popup menu. It handles showing/dismissing a popup menu.
 @interface PopupMenuPresenter : NSObject <ContainedPresenter>

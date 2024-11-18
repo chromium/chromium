@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_POPUP_MENU_PUBLIC_POPUP_MENU_PRESENTER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_POPUP_MENU_PUBLIC_POPUP_MENU_PRESENTER_DELEGATE_H_
 
-#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 
 @class PopupMenuPresenter;
 

@@ -6,9 +6,9 @@
 
 #import "base/i18n/rtl.h"
 #import "base/logging.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

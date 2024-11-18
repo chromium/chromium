@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/presenters/contained_presenter.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter.h"
 
 // ContainedPresenter used for testing.
 @interface FakeContainedPresenter : NSObject<ContainedPresenter>

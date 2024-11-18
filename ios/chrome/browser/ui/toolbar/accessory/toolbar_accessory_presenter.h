@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/presenters/contained_presenter.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter.h"
 
 // Presenter that displays accessories over or next to the toolbar. Note that
 // there are different presentations styles for iPhone (Compact Toolbar) vs.

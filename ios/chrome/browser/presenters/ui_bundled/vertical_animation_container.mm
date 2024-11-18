@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
+#import "ios/chrome/browser/presenters/ui_bundled/vertical_animation_container.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -74,8 +74,9 @@ NSTimeInterval kAnimationDuration = 0.2;
   DCHECK(self.presentedViewController.view.superview);
 
   // No-op if already presented.
-  if (self.presentedConstraints[0].active)
+  if (self.presentedConstraints[0].active) {
     return;
+  }
 
   auto animations = ^{
     [NSLayoutConstraint deactivateConstraints:self.dismissedConstraints];
@@ -105,8 +106,9 @@ NSTimeInterval kAnimationDuration = 0.2;
   DCHECK(!animated || self.baseViewController.view.superview);
 
   // No-op if already dismissed.
-  if (self.dismissedConstraints[0].active)
+  if (self.dismissedConstraints[0].active) {
     return;
+  }
 
   auto animations = ^{
     [NSLayoutConstraint deactivateConstraints:self.presentedConstraints];

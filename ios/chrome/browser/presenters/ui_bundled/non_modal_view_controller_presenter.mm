@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/presenters/non_modal_view_controller_presenter.h"
+#import "ios/chrome/browser/presenters/ui_bundled/non_modal_view_controller_presenter.h"
 
 #import <ostream>
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
+#import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -86,8 +86,9 @@ constexpr CGFloat kAnimationOutDuration = 0.1;
 }
 
 - (void)dismissAnimated:(BOOL)animated {
-  if (self.animator.state == UIViewAnimatingStateActive)
+  if (self.animator.state == UIViewAnimatingStateActive) {
     [self.animator stopAnimation:YES];
+  }
 
   [self.presentedViewController willMoveToParentViewController:nil];
 
