@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/user_annotations/user_annotations_types.h"
 
 namespace autofill {
@@ -44,6 +45,10 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
       base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
       PredictionsReceivedCallback callback) override;
+  const std::optional<optimization_guide::proto::FormsPredictionsRequest>&
+  GetLatestRequest() const override;
+  const std::optional<optimization_guide::proto::FormsPredictionsResponse>&
+  GetLatestResponse() const override;
 
  private:
   // Invokes `callback` when user annotations were retrieved.
@@ -68,6 +73,26 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
   static PredictionsByGlobalId ExtractPredictions(
       const autofill::FormData& form_data,
       const optimization_guide::proto::FilledFormData& form_data_proto);
+
+  // Setter for `latest_request_`. Also resets `latest_response_`.
+  void SetLatestRequestForDebugging(
+      optimization_guide::proto::FormsPredictionsRequest request);
+
+  // Setter for `latest_response_`.
+  // Note that within a tab and thus per model executor instance, there cannot
+  // be multiple requests as per the
+  // `AutofillAiManager::prediction_retrieval_state_`.
+  void SetLatestResponseForDebugging(
+      std::optional<optimization_guide::proto::FormsPredictionsResponse>
+          response);
+
+  // Latest request made to the optimization guide.
+  std::optional<optimization_guide::proto::FormsPredictionsRequest>
+      latest_request_ = std::nullopt;
+
+  // Response received for `latest_request_`, if any.
+  std::optional<optimization_guide::proto::FormsPredictionsResponse>
+      latest_response_ = std::nullopt;
 
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> model_executor_ =
       nullptr;

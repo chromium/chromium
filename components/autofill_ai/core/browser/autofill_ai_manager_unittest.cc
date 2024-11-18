@@ -104,6 +104,16 @@ class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
        optimization_guide::proto::AXTreeUpdate ax_tree_update,
        PredictionsReceivedCallback callback),
       (override));
+  MOCK_METHOD(
+      const std::optional<optimization_guide::proto::FormsPredictionsRequest>&,
+      GetLatestRequest,
+      (),
+      (const override));
+  MOCK_METHOD(
+      const std::optional<optimization_guide::proto::FormsPredictionsResponse>&,
+      GetLatestResponse,
+      (),
+      (const override));
 };
 
 const GURL& url() {
