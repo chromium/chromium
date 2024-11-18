@@ -9,6 +9,7 @@
 
 #include "services/network/public/cpp/cors/cors.h"
 
+#include <algorithm>
 #include <set>
 #include <string_view>
 #include <vector>
@@ -421,10 +422,10 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
              lower_name == "rtt") {
     return IsSimilarToIntABNF(value);
   } else if (lower_name == "ect") {
-    auto* const* begin = network::kWebEffectiveConnectionTypeMapping;
-    auto* const* end = network::kWebEffectiveConnectionTypeMapping +
-                       network::kWebEffectiveConnectionTypeMappingCount;
-    return std::find(begin, end, value) != end;
+    return std::find(network::kWebEffectiveConnectionTypeMapping.begin(),
+                     network::kWebEffectiveConnectionTypeMapping.end(),
+                     value) !=
+           network::kWebEffectiveConnectionTypeMapping.end();
   } else if (lower_name == "save-data") {
     return lower_value == "on";
   }

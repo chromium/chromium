@@ -364,9 +364,8 @@ void NetworkStateNotifier::RemoveObserver(
 // static
 String NetworkStateNotifier::EffectiveConnectionTypeToString(
     WebEffectiveConnectionType type) {
-  DCHECK_GT(network::kWebEffectiveConnectionTypeMappingCount,
-            static_cast<size_t>(type));
-  return network::kWebEffectiveConnectionTypeMapping[static_cast<int>(type)];
+  return network::kWebEffectiveConnectionTypeMapping.at(
+      static_cast<size_t>(type));
 }
 
 double NetworkStateNotifier::GetRandomMultiplier(const String& host) const {

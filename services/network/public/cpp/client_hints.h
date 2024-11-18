@@ -7,12 +7,14 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "net/nqe/effective_connection_type.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 
 namespace url {
@@ -45,11 +47,21 @@ extern const char kPrefersReducedTransparencyReduce[];
 // public/platform/WebEffectiveConnectionType.h.
 // This array should be updated if either of the enums in
 // effective_connection_type.h or WebEffectiveConnectionType.h are updated.
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const char* const kWebEffectiveConnectionTypeMapping[];
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const size_t kWebEffectiveConnectionTypeMappingCount;
+inline constexpr auto kWebEffectiveConnectionTypeMapping =
+    std::to_array<const char*>({
+        "4g" /* Unknown */,
+        "4g" /* Offline */,
+        "slow-2g" /* Slow 2G */,
+        "2g" /* 2G */,
+        "3g" /* 3G */,
+        "4g" /* 4G */,
+    });
+
+static_assert(network::kWebEffectiveConnectionTypeMapping.size() ==
+              net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
+static_assert(network::kWebEffectiveConnectionTypeMapping.size() ==
+              static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
 
 using ClientHintToNameMap =
     base::flat_map<network::mojom::WebClientHintsType, std::string>;
