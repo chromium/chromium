@@ -520,7 +520,7 @@ export class BrowsingContextImpl {
           this.id,
         );
         this.#pendingCommandNavigation.reject(
-          ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+          new UnknownErrorException('navigation aborted'),
         );
         this.#pendingCommandNavigation = undefined;
       }
@@ -942,7 +942,7 @@ export class BrowsingContextImpl {
     ]).catch((e) => {
       // Aborting navigation should not fail the original navigation command for now.
       // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
-      if (e !== ChromiumBidi.BrowsingContext.EventNames.NavigationAborted) {
+      if (e.message !== 'navigation aborted') {
         throw e;
       }
     });

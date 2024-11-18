@@ -243,6 +243,9 @@ export default [
       ],
       '@typescript-eslint/no-unused-expressions': 'off',
       'import/no-extraneous-dependencies': 'off',
+
+      'no-throw-literal': 'off',
+      '@typescript-eslint/only-throw-error': 'error',
     },
   },
   {
