@@ -81,10 +81,10 @@ function setupPeerConnection(stream) {
   });
 }
 
-function createAndStartMediaRecorder(stream, mimeType, slice) {
+function createAndStartMediaRecorder(stream, mimeType, slice, videoKeyFrameIntervalDuration) {
   return new Promise(function(resolve, reject) {
     document.getElementById('video').srcObject = stream;
-    var recorder = new MediaRecorder(stream, {'mimeType' : mimeType});
+    var recorder = new MediaRecorder(stream, { mimeType, videoKeyFrameIntervalDuration });
     console.log('Recorder object created, mimeType = ' + mimeType);
     if (slice != undefined) {
       recorder.start(slice);
@@ -96,10 +96,10 @@ function createAndStartMediaRecorder(stream, mimeType, slice) {
   });
 }
 
-function createMediaRecorder(stream, mimeType) {
+function createMediaRecorder(stream, mimeType, videoKeyFrameIntervalDuration) {
   return new Promise(function(resolve, reject) {
-    var recorder = new MediaRecorder(stream, {'mimeType' : mimeType});
-    console.log('Recorder object created.');
+    var recorder = new MediaRecorder(stream, { mimeType, videoKeyFrameIntervalDuration });
+    console.log('Recorder object created, mimeType = ' + mimeType);
     resolve(recorder);
   });
 }
@@ -207,8 +207,13 @@ function testStartWithTimeSlice(mimeType) {
   var lastTimecode = NaN;
   return navigator.mediaDevices.getUserMedia(DEFAULT_CONSTRAINTS)
       .then(function(stream) {
+        // When mimetype is `video/mp4`, MediaRecorder only has a possible
+        // chance to flush when an IDR frame output. To make `ondataavailable`
+        // callback is triggered precisely based on the timeslice parameter
+        // value, set `videoKeyFrameIntervalDuration` to the same value of
+        // `timeslice`.
         return createAndStartMediaRecorder(stream, mimeType,
-                                           DEFAULT_TIME_SLICE);
+          DEFAULT_TIME_SLICE, DEFAULT_TIME_SLICE);
       })
       .then(function(recorder) {
         recorder.ondataavailable = function(event) {
@@ -226,10 +231,7 @@ function testStartWithTimeSlice(mimeType) {
       .then(function() {
         return waitFor('Making sure the recording has data',
             function() {
-              // When mimetype is mp4, it only has a possible chance to flush when an
-              // IDR frame output. Therefore, the `ondataavailable` callback is not
-              // triggered precisely based on the timeslice parameter value.
-              return videoSize > 0 && timeStamps.length > (mimeType.startsWith('video/mp4') ? 2 : 10);
+              return videoSize > 0 && timeStamps.length > 10;
             });
       })
       .then(function() {
@@ -405,6 +407,7 @@ function testRecordRemotePeerConnection(mimeType) {
     console.log('Skip unsupported mimeType:', mimeType);
     return logSuccess();
   }
+  const ZERO_TIME_SLICE = 0;
   var videoSize = 0;
   var timeStamps = [];
   var lastTimecode = NaN;
@@ -413,7 +416,12 @@ function testRecordRemotePeerConnection(mimeType) {
         return setupPeerConnection(localStream);
       })
       .then(function(remoteStream) {
-        return createMediaRecorder(remoteStream, mimeType);
+        // When mimetype is `video/mp4`, MediaRecorder only has a possible
+        // chance to flush when an IDR frame output. To make `ondataavailable`
+        // callback is triggered precisely based on the timeslice parameter
+        // value, set `videoKeyFrameIntervalDuration` to the same value of
+        // `timeslice`.
+        return createMediaRecorder(remoteStream, mimeType, /*videoKeyFrameIntervalDuration=*/ZERO_TIME_SLICE);
       })
       .then(function(recorder) {
         recorder.ondataavailable = function(event) {
@@ -424,15 +432,12 @@ function testRecordRemotePeerConnection(mimeType) {
             assertTrue(event.timecode > lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
-        recorder.start(0);
+        recorder.start(ZERO_TIME_SLICE);
       })
       .then(function() {
         return waitFor('Making sure the recording has data',
             function() {
-              // When mimetype is mp4, it only has a possible chance to flush when an
-              // IDR frame output. Therefore, the `ondataavailable` callback is not
-              // triggered precisely based on the timeslice parameter value.
-              return videoSize > 0 && (mimeType.startsWith('video/mp4') ? 2 : 100);
+              return videoSize > 0 && timeStamps.length > 100;
             });
       })
       .then(logSuccess);
@@ -508,10 +513,8 @@ function testRecordWithTransparency(mimeType) {
     return logSuccess();
   }
   const ON_DATA_AVAILABLE_THRESHOLD = 10;
-  // When mimetype is mp4, it only has a possible chance to flush when an
-  // IDR frame output. Therefore, the `ondataavailable` callback is not
-  // triggered precisely based on the timeslice parameter value.
-  const NUMBER_OF_EVENTS_TO_RECORD = mimeType.startsWith('video/mp4') ? 1 : 5;
+  const NUMBER_OF_EVENTS_TO_RECORD = 5;
+  const ZERO_TIME_SLICE = 0;
 
   var canvas = document.createElement('canvas');
   canvas.width = 640;
@@ -529,13 +532,18 @@ function testRecordWithTransparency(mimeType) {
     requestAnimationFrame( function() { drawOnCanvas(canvas); });
   }
 
-  return createMediaRecorder(stream, mimeType)
+  // When mimetype is `video/mp4`, MediaRecorder only has a possible
+  // chance to flush when an IDR frame output. To make `ondataavailable`
+  // callback is triggered precisely based on the timeslice parameter
+  // value, set `videoKeyFrameIntervalDuration` to the same value of
+  // `timeslice`.
+  return createMediaRecorder(stream, mimeType, /*videoKeyFrameIntervalDuration=*/ZERO_TIME_SLICE)
       .then(function(recorder) {
         recorder.ondataavailable = function(event) {
           if (event.data.size > ON_DATA_AVAILABLE_THRESHOLD)
             ++recordedEvents;
         };
-        recorder.start(0);
+        recorder.start(ZERO_TIME_SLICE);
         drawOnCanvas(canvas);
       })
       .then(function() {
