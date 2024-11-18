@@ -3309,6 +3309,12 @@
       name: "PopoverAnchorRelationships",
       status: "experimental",
     },
+    // TODO(crbug.com/379241451): This controls the behavior when a popover is
+    // nested inside an invoker button.
+    {
+      name: "PopoverButtonNestingBehavior",
+      status: "experimental",
+    },
     // This is a killswitch for the behavior of <dialog popover autofocus>,
     // which landed in M130 and can be removed in M132.
     {
