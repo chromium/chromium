@@ -70,24 +70,6 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         &devtools_freestyler_user_tier_options};
 
 // Whether the DevTools AI Assistance Performance Agent is enabled.
-BASE_FEATURE(kDevToolsAiAssistancePerformanceAgentDogfood,
-             "DevToolsAiAssistancePerformanceAgentDogfood",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string>
-    kDevToolsAiAssistancePerformanceAgentDogfoodModelId{
-        &kDevToolsAiAssistancePerformanceAgentDogfood, "aida_model_id",
-        /*default_value=*/""};
-const base::FeatureParam<double>
-    kDevToolsAiAssistancePerformanceAgentDogfoodTemperature{
-        &kDevToolsAiAssistancePerformanceAgentDogfood, "aida_temperature",
-        /*default_value=*/-1};
-const base::FeatureParam<DevToolsFreestylerUserTier>
-    kDevToolsAiAssistancePerformanceAgentDogfoodUserTier{
-        &kDevToolsAiAssistancePerformanceAgentDogfood, "user_tier",
-        /*default_value=*/DevToolsFreestylerUserTier::kBeta,
-        &devtools_freestyler_user_tier_options};
-
-// Whether the DevTools AI Assistance Performance Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistancePerformanceAgent,
              "DevToolsAiAssistancePerformanceAgent",
              base::FEATURE_ENABLED_BY_DEFAULT);

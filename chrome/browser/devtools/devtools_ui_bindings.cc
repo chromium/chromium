@@ -713,9 +713,7 @@ bool IsAnyAidaPoweredFeatureEnabled() {
          base::FeatureList::IsEnabled(
              ::features::kDevToolsAiAssistanceNetworkAgent) ||
          base::FeatureList::IsEnabled(
-             ::features::kDevToolsAiAssistancePerformanceAgent) ||
-         base::FeatureList::IsEnabled(
-             ::features::kDevToolsAiAssistancePerformanceAgentDogfood);
+             ::features::kDevToolsAiAssistancePerformanceAgent);
 }
 }  // namespace
 
@@ -1639,26 +1637,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
             features::kDevToolsAiAssistancePerformanceAgentUserTier.Get()));
     response_dict.Set("devToolsAiAssistancePerformanceAgent",
                       std::move(ai_assistance_performance_agent_dict));
-  } else {
-    base::Value::Dict ai_assistance_performance_agent_dogfood_dict;
-    ai_assistance_performance_agent_dogfood_dict.Set(
-        "enabled",
-        base::FeatureList::IsEnabled(
-            ::features::kDevToolsAiAssistancePerformanceAgentDogfood));
-    ai_assistance_performance_agent_dogfood_dict.Set(
-        "modelId",
-        features::kDevToolsAiAssistancePerformanceAgentDogfoodModelId.Get());
-    ai_assistance_performance_agent_dogfood_dict.Set(
-        "temperature",
-        features::kDevToolsAiAssistancePerformanceAgentDogfoodTemperature
-            .Get());
-    ai_assistance_performance_agent_dogfood_dict.Set(
-        "userTier",
-        features::kDevToolsAiAssistancePerformanceAgentDogfoodUserTier.GetName(
-            features::kDevToolsAiAssistancePerformanceAgentDogfoodUserTier
-                .Get()));
-    response_dict.Set("devToolsAiAssistancePerformanceAgent",
-                      std::move(ai_assistance_performance_agent_dogfood_dict));
   }
 
   if (base::FeatureList::IsEnabled(
