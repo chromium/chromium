@@ -6,10 +6,7 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java" ]
 }
 
 android_library("java") {
@@ -34,7 +31,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsBaseFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSnackbarController.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyBridge.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/Topic.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicSwitchPreference.java",
