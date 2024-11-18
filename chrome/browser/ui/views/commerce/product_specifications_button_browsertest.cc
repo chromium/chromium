@@ -298,3 +298,22 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
   ASSERT_EQ(product_specifications_button()->GetText(), u"title");
   ASSERT_EQ(product_specifications_button()->GetTooltipText(), u"title");
 }
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       NotifyHideEntryPoint) {
+  product_specifications_button()->ShowEntryPointWithTitle(u"title");
+
+  ShowButton();
+  product_specifications_button()->expansion_animation_for_testing()->Reset(1);
+  ASSERT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsShowing());
+
+  product_specifications_button()->HideEntryPoint();
+
+  EXPECT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsClosing());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.ProactiveChipDisqualified"));
+}
