@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
 #import "base/auto_reset.h"
+#import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
@@ -30,6 +31,8 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
@@ -164,6 +167,40 @@ void AuthenticationService::Initialize(
     base::UmaHistogramEnumeration("Signin.IOSDeviceRestoreSignedInState",
                                   signed_in_state);
   }
+  // If opening the managed identity profile, the user needs to be signed in
+  // automatically.
+  // TODO(crbug.com/375605572): Need to create an onboarding screen for a
+  // new profile.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Skip if the feature is not enabled.
+    return;
+  }
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+  if (!profile_manager) {
+    // Skip if there is no profile manager, but this is possible only for test.
+    CHECK_IS_TEST();
+    return;
+  }
+  std::string default_profile_name =
+      profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
+  std::string profile_name = account_manager_service_->GetProfileName();
+  if (profile_name == default_profile_name) {
+    // Skip if the current profile is the default profile.
+    return;
+  }
+  NSArray<id<SystemIdentity>>* identities_for_profile =
+      account_manager_service_->GetAllIdentities();
+  // TODO(crbug.com/375605572): Evaluate if there is no race condition with
+  // this CHECK.
+  CHECK_EQ(identities_for_profile.count, 1ul);
+  if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    // Skip if the profile is already signed in.
+    return;
+  }
+  // TODO(crbug.com/375605572): Need to set the right access point.
+  SignIn(identities_for_profile[0],
+         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 }
 
 void AuthenticationService::Shutdown() {
