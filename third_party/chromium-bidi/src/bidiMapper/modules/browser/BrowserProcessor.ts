@@ -113,7 +113,7 @@ export class BrowserProcessor {
       {targetId},
     );
     return {
-      // Is not supported in CDP yet.
+      // `active` is not supported in CDP yet.
       active: false,
       clientWindow: `${windowInfo.windowId}`,
       state: windowInfo.bounds.windowState ?? 'normal',
@@ -134,6 +134,17 @@ export class BrowserProcessor {
         async (targetId) => await this.#getWindowInfo(targetId),
       ),
     );
-    return {clientWindows};
+
+    const uniqueClientWindowIds = new Set<string>();
+    const uniqueClientWindows = new Array<Browser.ClientWindowInfo>();
+
+    // Filter out duplicated client windows.
+    for (const window of clientWindows) {
+      if (!uniqueClientWindowIds.has(window.clientWindow)) {
+        uniqueClientWindowIds.add(window.clientWindow);
+        uniqueClientWindows.push(window);
+      }
+    }
+    return {clientWindows: uniqueClientWindows};
   }
 }

@@ -174,12 +174,12 @@ async def another_context_id(create_context):
 @pytest_asyncio.fixture
 def create_context(websocket):
     """Return a browsing context factory."""
-    async def create_context(user_context_id=None):
+    async def create_context(user_context_id=None, context_type='tab'):
         result = await execute_command(
             websocket, {
                 "method": "browsingContext.create",
                 "params": {
-                    "type": "tab"
+                    "type": context_type
                 } | ({
                     "userContext": user_context_id
                 } if user_context_id is not None else {})
