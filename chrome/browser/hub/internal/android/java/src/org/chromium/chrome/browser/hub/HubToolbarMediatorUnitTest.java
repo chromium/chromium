@@ -10,7 +10,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,6 +33,7 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -51,9 +55,12 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.HubToolbarMediator.HubSearchEntrypoint;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentBuilder;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -82,6 +89,8 @@ public class HubToolbarMediatorUnitTest {
     @Mock private View mButton2;
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
+    @Mock private IntentBuilder mIntentBuilder;
+    @Mock private Intent mIntent;
 
     private ObservableSupplierImpl<FullButtonData> mActionButtonSupplier;
     private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
@@ -427,5 +436,86 @@ public class HubToolbarMediatorUnitTest {
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
         assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testSearchBox_ClickListener_Phone() {
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        new HubToolbarMediator(
+                Robolectric.buildActivity(Activity.class).get(),
+                mModel,
+                mPaneManager,
+                mTracker,
+                mSearchActivityClient);
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+        assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
+        assertNotNull(mModel.get(SEARCH_LISTENER));
+
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.HubSearch.SearchBoxEntrypointV2",
+                                HubSearchEntrypoint.REGULAR_SEARCHBOX)
+                        .expectIntRecord(
+                                "Android.HubSearch.SearchBoxEntrypointV2",
+                                HubSearchEntrypoint.INCOGNITO_SEARCHBOX)
+                        .build();
+
+        // Fake clicks on the search box.
+        mockSearchActivityClient();
+        mModel.get(SEARCH_LISTENER).run();
+        verify(mSearchActivityClient).requestOmniboxForResult(any());
+
+        // Toggle to incognito pane
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        mModel.get(SEARCH_LISTENER).run();
+        histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    @Config(qualifiers = "sw600dp")
+    public void testSearchBox_ClickListener_Tablet() {
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        new HubToolbarMediator(
+                Robolectric.buildActivity(Activity.class).get(),
+                mModel,
+                mPaneManager,
+                mTracker,
+                mSearchActivityClient);
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+        assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
+        assertNotNull(mModel.get(SEARCH_LISTENER));
+
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.HubSearch.SearchBoxEntrypointV2",
+                                HubSearchEntrypoint.REGULAR_LOUPE)
+                        .expectIntRecord(
+                                "Android.HubSearch.SearchBoxEntrypointV2",
+                                HubSearchEntrypoint.INCOGNITO_LOUPE)
+                        .build();
+
+        // Fake clicks on the search box.
+        mockSearchActivityClient();
+        mModel.get(SEARCH_LISTENER).run();
+        verify(mSearchActivityClient).requestOmniboxForResult(any());
+
+        // Toggle to incognito pane
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        mModel.get(SEARCH_LISTENER).run();
+        histograms.assertExpected();
+    }
+
+    private void mockSearchActivityClient() {
+        doReturn(mIntentBuilder).when(mSearchActivityClient).newIntentBuilder();
+        doReturn(mIntentBuilder).when(mIntentBuilder).setPageUrl(any());
+        doReturn(mIntentBuilder).when(mIntentBuilder).setIncognito(anyBoolean());
+        doReturn(mIntentBuilder).when(mIntentBuilder).setResolutionType(anyInt());
+        doReturn(mIntent).when(mIntentBuilder).build();
     }
 }
