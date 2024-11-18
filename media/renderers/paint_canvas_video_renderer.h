@@ -293,12 +293,12 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // The size of the texture.
     gfx::Size size;
 
-    // The shared image backing the texture.
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    // The RGB shared image backing the texture.
+    scoped_refptr<gpu::ClientSharedImage> rgb_shared_image;
 
-    // Used to perform YUV->RGB conversion on video frames. Internally caches
-    // shared images that are created to upload CPU video frame data to the GPU.
-    VideoFrameYUVConverter yuv_converter;
+    // Cache of YUV shared images that are created to upload CPU video frame
+    // data to the GPU.
+    std::unique_ptr<VideoFrameSharedImageCache> yuv_shared_image;
 
     // A SyncToken after last usage, used for reusing or destroying texture and
     // shared image.

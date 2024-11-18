@@ -36,7 +36,8 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder,
-    bool use_visible_rect) {
+    bool use_visible_rect,
+    VideoFrameSharedImageCache* shared_image_cache) {
   CHECK(video_frame);
   CHECK(!video_frame->HasSharedImage());
   DCHECK(IsVideoFrameFormatSupported(*video_frame))
@@ -45,8 +46,12 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
       << "|video_frame| must have an area > 0";
   DCHECK(raster_context_provider);
 
-  if (!shared_image_cache_) {
-    shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
+  // Callers may choose to provide cache which ensures that the source yuv
+  // shared images are cached across convert calls.
+  std::unique_ptr<VideoFrameSharedImageCache> local_si_cache;
+  if (!shared_image_cache) {
+    local_si_cache = std::make_unique<VideoFrameSharedImageCache>();
+    shared_image_cache = local_si_cache.get();
   }
 
   auto* ri = raster_context_provider->RasterInterface();
@@ -59,7 +64,7 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
   // For pure software pixel upload path with video frame that does not have
   // textures.
   const scoped_refptr<gpu::ClientSharedImage>& src_shared_image =
-      shared_image_cache_->GetSharedImage(video_frame, raster_context_provider);
+      shared_image_cache->GetSharedImage(video_frame, raster_context_provider);
   CHECK(src_shared_image);
   const viz::SharedImageFormat si_format = src_shared_image->format();
   constexpr SkAlphaType kPlaneAlphaType = kUnpremul_SkAlphaType;
@@ -97,10 +102,6 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
   ri->CopySharedImage(src_shared_image->mailbox(), dest_mailbox_holder.mailbox,
                       0, 0, source_rect.x(), source_rect.y(),
                       source_rect.width(), source_rect.height());
-}
-
-void VideoFrameYUVConverter::ReleaseCachedData() {
-  shared_image_cache_.reset();
 }
 
 }  // namespace media

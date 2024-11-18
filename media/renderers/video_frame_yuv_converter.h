@@ -5,8 +5,6 @@
 #ifndef MEDIA_RENDERERS_VIDEO_FRAME_YUV_CONVERTER_H_
 #define MEDIA_RENDERERS_VIDEO_FRAME_YUV_CONVERTER_H_
 
-#include <array>
-
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/media_export.h"
@@ -37,16 +35,13 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
   static bool IsVideoFrameFormatSupported(const VideoFrame& video_frame);
 
   // For pure software pixel upload path with video frame that does not have
-  // textures. Gets the shared image from `shared_image_cache_` and uploads YUV
+  // textures. Gets the shared image from `shared_image_cache` and uploads YUV
   // data to GPU if `video_frame` is mappable.
   void ConvertYUVVideoFrame(const VideoFrame* video_frame,
                             viz::RasterContextProvider* raster_context_provider,
                             const gpu::MailboxHolder& dest_mailbox_holder,
-                            bool use_visible_rect = false);
-  void ReleaseCachedData();
-
- private:
-  std::unique_ptr<VideoFrameSharedImageCache> shared_image_cache_;
+                            bool use_visible_rect,
+                            VideoFrameSharedImageCache* shared_image_cache);
 };
 }  // namespace media
 

@@ -1534,7 +1534,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // We need a shared image to receive the intermediate RGB result. Try to reuse
   // one if compatible, otherwise create a new one.
   gpu::SyncToken token;
-  if (yuv_cache_.shared_image && yuv_cache_.size == video_frame->coded_size() &&
+  if (yuv_cache_.rgb_shared_image &&
+      yuv_cache_.size == video_frame->coded_size() &&
       yuv_cache_.raster_context_provider == raster_context_provider) {
     token = yuv_cache_.sync_token;
   } else {
@@ -1553,21 +1554,23 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
       usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
     }
 
-    yuv_cache_.shared_image = sii->CreateSharedImage(
+    yuv_cache_.rgb_shared_image = sii->CreateSharedImage(
         {SHARED_IMAGE_FORMAT, video_frame->coded_size(),
          video_frame->CompatRGBColorSpace(), usage, "PaintCanvasVideoRenderer"},
         gpu::kNullSurfaceHandle);
-    CHECK(yuv_cache_.shared_image);
+    CHECK(yuv_cache_.rgb_shared_image);
     token = sii->GenUnverifiedSyncToken();
   }
 
   // On the source Raster context, do the YUV->RGB conversion.
   gpu::MailboxHolder dest_holder;
-  dest_holder.mailbox = yuv_cache_.shared_image->mailbox();
+  dest_holder.mailbox = yuv_cache_.rgb_shared_image->mailbox();
   dest_holder.texture_target = GL_TEXTURE_2D;
   dest_holder.sync_token = token;
-  yuv_cache_.yuv_converter.ConvertYUVVideoFrame(
-      video_frame.get(), raster_context_provider, dest_holder);
+  VideoFrameYUVConverter yuv_converter;
+  yuv_converter.ConvertYUVVideoFrame(video_frame.get(), raster_context_provider,
+                                     dest_holder, /*use_visible_rect=*/false,
+                                     yuv_cache_.yuv_shared_image.get());
 
   gpu::SyncToken post_conversion_sync_token;
   source_ri->GenUnverifiedSyncTokenCHROMIUM(
@@ -1577,7 +1580,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // destination texture.
   yuv_cache_.sync_token = CopySharedImageToTexture(
       destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
-      yuv_cache_.shared_image.get(), post_conversion_sync_token, target,
+      yuv_cache_.rgb_shared_image.get(), post_conversion_sync_token, target,
       texture, internal_format, format, type, level, premultiply_alpha, flip_y);
 
   // video_frame->UpdateReleaseSyncToken is not necessary since the video frame
@@ -1856,7 +1859,8 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     // TODO(vasilyt): Add caching support
     VideoFrameYUVConverter converter;
     converter.ConvertYUVVideoFrame(video_frame.get(), raster_context_provider,
-                                   destination, use_visible_rect);
+                                   destination, use_visible_rect,
+                                   /*shared_image_cache=*/nullptr);
   }
 
   gpu::SyncToken sync_token;
@@ -1872,13 +1876,14 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   return sync_token;
 }
 
-PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache() = default;
+PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache()
+    : yuv_shared_image(std::make_unique<VideoFrameSharedImageCache>()) {}
 PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() {
   Reset();
 }
 
 void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
-  if (!shared_image) {
+  if (!rgb_shared_image) {
     return;
   }
   DCHECK(raster_context_provider);
@@ -1888,9 +1893,9 @@ void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
   ri->OrderingBarrierCHROMIUM();
 
   auto* sii = raster_context_provider->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, std::move(shared_image));
+  sii->DestroySharedImage(sync_token, std::move(rgb_shared_image));
 
-  yuv_converter.ReleaseCachedData();
+  yuv_shared_image.reset();
 
   // Kick off the GL work up to the OrderingBarrierCHROMIUM above as well as the
   // SharedImageInterface work, to ensure the shared image memory is released in
