@@ -95,8 +95,11 @@ message EncryptionInfo {
   // private key (identified by |public_key_id|) for shared secret recreation by
   // the server to compose the symmetric key used for |encrypted_wrapped_record|
   // encryption. Is transmitted in plaintext.
-  // ${COPYBARA_DATAPOL_ST_SECURITY_KEY}
-  optional bytes encryption_key = 1;
+  optional bytes encryption_key = 1
+    // copybara:datapol_begin
+    // [(datapol.semantic_type) = ST_SECURITY_KEY]
+    // copybara:datapol_end
+  ;
 
   // Public key id (optional)
   // Hash of the public key used to do encryption. Used to identity the server
