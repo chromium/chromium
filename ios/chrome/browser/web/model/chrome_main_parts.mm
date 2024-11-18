@@ -388,7 +388,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   variations::VariationsService* variations_service =
       application_context_->GetVariationsService();
   if (variations_service) {
-    variations_service->set_policy_pref_service(last_used_profile->GetPrefs());
     variations_service->PerformPreMainMessageLoopStartup();
   }
 
