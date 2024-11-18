@@ -51,6 +51,16 @@ public class HubToolbarMediator {
             new ComponentCallbacks() {
                 @Override
                 public void onConfigurationChanged(@NonNull Configuration configuration) {
+                    // Only show the search box visuals in the tab switcher and incognito panes.
+                    @PaneId
+                    int focusedPaneId = mPaneManager.getFocusedPaneSupplier().get().getPaneId();
+                    if (focusedPaneId != PaneId.TAB_SWITCHER
+                            && focusedPaneId != PaneId.INCOGNITO_TAB_SWITCHER) {
+                        mPropertyModel.set(SEARCH_BOX_VISIBLE, false);
+                        mPropertyModel.set(SEARCH_LOUPE_VISIBLE, false);
+                        return;
+                    }
+
                     boolean showLoupe =
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                                     || configuration.orientation
@@ -230,6 +240,11 @@ public class HubToolbarMediator {
 
             boolean isIncognito = focusedPaneId == PaneId.INCOGNITO_TAB_SWITCHER;
             mPropertyModel.set(IS_INCOGNITO, isIncognito);
+        }
+
+        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
+            // Fire an event to determine what is shown.
+            mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
         }
 
         int index = 0;
