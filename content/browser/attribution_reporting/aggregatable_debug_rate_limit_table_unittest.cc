@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
 
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -24,6 +26,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 namespace {
@@ -352,6 +356,28 @@ TEST_F(AggregatableDebugRateLimitTableTest, DeleteExpiredRows) {
               UnorderedElementsAre(
                   Field(&RateLimitData::context_site, "https://c2.test"),
                   Field(&RateLimitData::context_site, "https://c3.test")));
+}
+
+TEST_F(AggregatableDebugRateLimitTableTest, GetAttributionDataKeysSet) {
+  ASSERT_TRUE(table_.AddRateLimit(
+      &db_, CreateAggregatableDebugReport(
+                /*context_site=*/"https://a.test",
+                /*reporting_origin=*/"https://a.r.test", base::Time::Now(),
+                /*consumed_budget=*/1)));
+  ASSERT_TRUE(table_.AddRateLimit(
+      &db_, CreateAggregatableDebugReport(
+                /*context_site=*/"https://b.test",
+                /*reporting_origin=*/"https://b.r.test", base::Time::Now(),
+                /*consumed_budget=*/1)));
+
+  std::set<AttributionDataModel::DataKey> keys;
+  table_.AppendRateLimitDataKeys(&db_, keys);
+
+  EXPECT_THAT(keys, UnorderedElementsAre(
+                        AttributionDataModel::DataKey(
+                            url::Origin::Create(GURL("https://a.r.test"))),
+                        AttributionDataModel::DataKey(
+                            url::Origin::Create(GURL("https://b.r.test")))));
 }
 
 }  // namespace
