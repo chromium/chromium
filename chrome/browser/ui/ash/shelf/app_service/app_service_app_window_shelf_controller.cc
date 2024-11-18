@@ -731,12 +731,3 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     RegisterWindow(window, shelf_id);
   }
 }
-
-void AppServiceAppWindowShelfController::StopHandleWindow(
-    aura::Window* window) {
-  observed_windows_.RemoveObservation(window);
-  if (arc_tracker_)
-    arc_tracker_->RemoveCandidateWindow(window);
-  UnregisterWindow(window);
-  aura_window_to_app_window_.erase(window);
-}
