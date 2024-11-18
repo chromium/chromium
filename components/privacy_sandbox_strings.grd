@@ -430,7 +430,7 @@
         <ph name="BEGIN_BOLD">&lt;b&gt;</ph>What data is used?<ph name="END_BOLD">&lt;/b&gt;</ph> Your ad topics are based on your recent browsing history, a list of sites you've visited using Chrome on this device.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_V2" desc="" translateable="false">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How we use this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like, Arts &amp; Entertainment, Shopping, and Sports. Later, a site you visit can ask Chrome for a few of your topics (but not your browsing history) to personalize the ads you see.
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How do sites use this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like, Arts &amp; Entertainment, Shopping, and Sports. Later, a site you visit can ask Chrome for a few of your topics (but not your browsing history) to personalize the ads you see.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION" desc="" translateable="false">
         Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more about how Google protects your data in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
@@ -439,7 +439,7 @@
         Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our Privacy Policy.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3_V2" desc="" translateable="false">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How you can manage your data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. You can also block topics you don't want Chrome to share with sites and turn ad topics off at any time in Chrome settings.
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How can you manage this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. You can also block topics you don't want Chrome to share with sites and turn ad topics off at any time in Chrome settings.
       </message>
       <!--Ad Topics EEA Notice-->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_1_V2" desc="" translateable="false">
