@@ -924,12 +924,30 @@ TEST_P(PasswordStoreBuiltInBackendTest, NotAbleToSavePasswordsEmptyDB) {
   EXPECT_FALSE(backend->IsAbleToSavePasswords());
 }
 
-TEST_P(PasswordStoreBuiltInBackendTest, IsAbleToSavePasswords) {
+TEST_P(PasswordStoreBuiltInBackendTest,
+       IsAbleToSavePasswordsBeforeDeprecation) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
   PasswordStoreBackend* backend = Initialize();
   EXPECT_TRUE(backend->IsAbleToSavePasswords());
 }
+
+TEST_P(PasswordStoreBuiltInBackendTest,
+       NotAbleToSavePasswordsDuringDeprecation) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
+  // Pretend the login DB is not empty, because saving passwords to an
+  // empty login DB has already been disallowed before.
+  pref_service()->SetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+  PasswordStoreBackend* backend = Initialize();
+  EXPECT_FALSE(backend->IsAbleToSavePasswords());
+}
+
 #endif
 
 TEST_P(PasswordStoreBuiltInBackendTest, NotAbleSavePasswordsWhenDatabaseIsBad) {
