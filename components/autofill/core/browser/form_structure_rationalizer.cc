@@ -731,11 +731,6 @@ void FormStructureRationalizer::RationalizeBetweenStreetFields(
 
 void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
     LogManager* log_manager) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
-    return;
-  }
-
   // Changes the `field`'s type to `new_type` if it isn't `new_type` already.
   // If the type is changed, logs to `log_manager`.
   auto change_type_and_log =

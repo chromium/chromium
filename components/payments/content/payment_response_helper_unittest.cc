@@ -229,11 +229,7 @@ TEST_F(PaymentResponseHelperTest,
                                test_address(), GetWeakPtr());
 
   // Check that the phone was formatted.
-  EXPECT_EQ(base::FeatureList::IsEnabled(
-                autofill::features::kAutofillInferCountryCallingCode)
-                ? "+15151231234"
-                : "5151231234",
-            response()->payer->phone.value());
+  EXPECT_EQ("+15151231234", response()->payer->phone.value());
 }
 
 }  // namespace payments

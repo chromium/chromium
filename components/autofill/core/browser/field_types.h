@@ -81,19 +81,15 @@ namespace autofill {
 // If the user made no attempt at formatting the number (it consists only of
 // characters of the set [+0123456789], no whitespaces, no parentheses, no
 // hyphens, no slashes, etc), we will make an attempt to format the number in a
-// proper way. If AutofillInferCountryCallingCode is enabled, we will infer the
-// country code and also store that in the formatted number.
-// If a website contains <input autocomplete="tel"> this is what we fill. I.e.,
-// the phone number representation the user tried to give us.
-// With AutofillInferCountryCallingCode, the GetInfo() representation always
-// contains a country code. So for filling purposes, PHONE_HOME_WHOLE_NUMBER is
-// in international format.
-// If we reformat the number ourselves, the GetRawInfo() contains the inferred
-// country code. If we don't reformat the number, the GetRawInfo()
-// representation remains without one. In all countries but the US and Canada,
-// formatting will put a + in front of the country code.
-// TODO(crbug.com/40220393) Clean this up once AutofillInferCountryCallingCode
-// is launched.
+// proper way. We will infer the country code and also store that in the
+// formatted number. If a website contains <input autocomplete="tel"> this is
+// what we fill. I.e., the phone number representation the user tried to give
+// us. The GetInfo() representation always contains a country code. So for
+// filling purposes, PHONE_HOME_WHOLE_NUMBER is in international format. If we
+// reformat the number ourselves, the GetRawInfo() contains the inferred country
+// code. If we don't reformat the number, the GetRawInfo() representation
+// remains without one. In all countries but the US and Canada, formatting will
+// put a + in front of the country code.
 //
 // PHONE_HOME_EXTENSION: Extensions are detected, but not filled. This would
 //   be the part that comes after a PHONE_HOME_WHOLE_NUMBER or

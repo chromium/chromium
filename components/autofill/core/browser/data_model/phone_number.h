@@ -28,12 +28,6 @@ class AutofillProfile;
 // best to see the exact behavior of learning phone numbers from submitted forms
 // and filling phone numbers into new forms.
 //
-// If no country code is submitted (as a separate PHONE_HOME_COUNTRY_CODE field
-// or as part of a PHONE_HOME_WHOLE_NUMBER or PHONE_HOME_CITY_AND_NUMBER) at
-// form submission time, no attempt is made to save one. As a consequence, we
-// cannot fill country code fields nor international phone number fields with
-// the country code. See b/322330285.
-//
 // Phone numbers of form submissions are validated by libphonenumber for
 // plausibility before getting saved (in the context of the country, which is
 // the first of 1) country in the form, 2) country of GeoIP, 3) country of

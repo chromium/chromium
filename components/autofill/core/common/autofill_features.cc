@@ -40,20 +40,6 @@ BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Autofill always sets the phone number as parsed by
-// i18n::phonenumber.
-// TODO(crbug.com/40220393): Cleanup when launched.
-BASE_FEATURE(kAutofillPreferParsedPhoneNumber,
-             "AutofillPreferParsedPhoneNumber",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, the country calling code for nationally formatted phone numbers
-// is inferred from the profile's country, if available.
-// TODO(crbug.com/40220393): Cleanup when launched.
-BASE_FEATURE(kAutofillInferCountryCallingCode,
-             "AutofillInferCountryCallingCode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, label inference considers strings entirely made up of  '(', ')'
 // and '-' as valid labels.
 // TODO(crbug.com/40220393): Cleanup when launched.
@@ -191,13 +177,6 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
 BASE_FEATURE(kAutofillEnablePaymentsFieldSwapping,
              "AutofillEnablePaymentsFieldSwapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, trunk prefix-related phone number types are added to the
-// supported and matching types of |PhoneNumber|. Local heuristics for these
-// types are enabled as well.
-BASE_FEATURE(kAutofillEnableSupportForPhoneNumberTrunkTypes,
-             "AutofillEnableSupportForPhoneNumberTrunkTypes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, only non-ad frames are extracted.
 // Otherwise, non-ad frames as well as *visible* ad frames are extracted.

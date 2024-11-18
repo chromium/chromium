@@ -179,23 +179,13 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"12345678901", {PHONE_HOME_WHOLE_NUMBER}},
     {"+1 (234) 567-8901", {PHONE_HOME_WHOLE_NUMBER}},
     {"(234)567-8901",
-     base::FeatureList::IsEnabled(
-         features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
-         ? FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER,
-                        PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}
-         : FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER}},
+     {PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}},
     {"2345678901",
-     base::FeatureList::IsEnabled(
-         features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
-         ? FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER,
-                        PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}
-         : FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER}},
+     {PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}},
     {"1", {PHONE_HOME_COUNTRY_CODE}},
-    {"234", base::FeatureList::IsEnabled(
-                features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
-                ? FieldTypeSet{PHONE_HOME_CITY_CODE,
-                               PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX}
-                : FieldTypeSet{PHONE_HOME_CITY_CODE}},
+    {"234", {PHONE_HOME_CITY_CODE, PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX}},
     {"5678901", {PHONE_HOME_NUMBER}},
     {"567", {PHONE_HOME_NUMBER_PREFIX}},
     {"8901", {PHONE_HOME_NUMBER_SUFFIX}},
@@ -249,13 +239,10 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"Texas", {ADDRESS_HOME_STATE}},  // Saved as "TX" in profile.
 
     // Special phone number case. A profile with no country code should
-    // only match PHONE_HOME_CITY_AND_NUMBER.
+    // only match PHONE_HOME_CITY_AND_NUMBER (And the trunk prefix equivalent).
     {"5142821292",
-     base::FeatureList::IsEnabled(
-         features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
-         ? FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER,
-                        PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}
-         : FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER}},
+     {PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}},
 
     // Make sure unsupported variants do not match.
     {"Elvis Aaron", {UNKNOWN_TYPE}},

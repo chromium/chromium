@@ -20445,8 +20445,6 @@ from previous Chrome versions.
   <int value="69778786" label="NotificationPermissionVariant:disabled"/>
   <int value="71290103" label="ArcNearbySharing:enabled"/>
   <int value="72097284" label="SmdsSupport:disabled"/>
-  <int value="73008877"
-      label="AutofillEnableSupportForPhoneNumberTrunkTypes:enabled"/>
   <int value="73425444"
       label="NewConfirmationBubbleForGeneratedPasswords:enabled"/>
   <int value="73606763" label="XsurfaceMetricsReporting:disabled"/>
@@ -22006,8 +22004,6 @@ from previous Chrome versions.
   <int value="699149897" label="ContentSuggestionsDebugLog:disabled"/>
   <int value="699177589"
       label="EnableSupervisedUserReauthenticationForSubframes:enabled"/>
-  <int value="699334781"
-      label="AutofillEnableSupportForPhoneNumberTrunkTypes:disabled"/>
   <int value="699632009" label="NewTabPageTilesTitleWrapAround:enabled"/>
   <int value="700346797" label="WheelEventRegions:enabled"/>
   <int value="700926106" label="OmniboxPedalsBatch3NonEnglish:enabled"/>

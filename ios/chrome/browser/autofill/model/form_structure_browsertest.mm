@@ -210,18 +210,11 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillEnableSupportForParsingWithSharedLabels,
           features::kAutofillPageLanguageDetection,
           features::kAutofillFixValueSemantics,
-          // TODO(crbug.com/40220393): Remove once launched.
-          features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-          features::kAutofillInferCountryCallingCode,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
       },
       // Disabled
       {
-          // TODO(crbug.com/40220393): Remove once launched.
-          // This feature is part of the AutofillRefinedPhoneNumberTypes
-          // rollout. As it is not supported on iOS yet, it is disabled.
-          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
           // TODO(crbug.com/40285735): Remove when/if launched. This feature
           // changes default parsing behavior, so must be disabled to avoid
           // fieldtrial_testing_config interference.

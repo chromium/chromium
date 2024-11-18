@@ -244,10 +244,6 @@ public final class ProductionSupportedFlagList {
                 "Splits Autofill labels among consecutive fields for better heuristic"
                         + " predictions."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PHONE_NUMBER_TRUNK_TYPES,
-                "Rationalizes city-and-number and city-code fields to the "
-                        + "correct trunk-prefix types."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_CACHING_ON_JAVA_SCRIPT_CHANGES,
                 "When enabled, Autofill will reset the autofill state of fields modified by JS"),
         Flag.baseFeature(
@@ -266,12 +262,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_CURRENT_VALUE_IN_IMPORT,
                 "Prevents the AutofillField's current value from being reset for import"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_INFER_COUNTRY_CALLING_CODE,
-                "Infers the country calling code from the profile's country, if available."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_INFER_COUNTRY_CALLING_CODE,
-                "Infers the country calling code from the profile's country, if available."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_INFER_LABEL_FROM_DEFAULT_SELECT_TEXT,
                 "Considers the text of a <select> element's first <option> as a potential label"),
         Flag.baseFeature(
@@ -288,10 +278,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_PARSE_EMAIL_LABEL_AND_PLACEHOLDER,
                 "Classifies fields as email fields if their label or placeholder have valid email"
                         + " format."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_PREFER_PARSED_PHONE_NUMBER,
-                "When enabled, Autofill will always prefer the phone number parsed using "
-                        + "libphonenumber over the format provided by the field during imports."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PREFER_SAVED_FORM_AS_SUBMITTED_FORM,
                 "When enabled, Autofill will start preferring the saved form over performing form "
