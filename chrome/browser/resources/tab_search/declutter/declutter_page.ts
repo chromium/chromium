@@ -158,6 +158,10 @@ export class DeclutterPageElement extends CrLitElement {
         'declutterCloseTabAriaLabel', tabData.tab.title);
   }
 
+  protected getCloseButtonTooltip_(): string {
+    return loadTimeData.getString('declutterCloseTabTooltip');
+  }
+
   protected onBackClick_() {
     this.fire('back-click');
   }
