@@ -1623,13 +1623,19 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   cookies_from_browser_.clear();
   request_cookies_.clear();
 
-  net::cookie_util::AddOrRemoveStorageAccessApiOverride(
-      redirect_info.new_url, storage_access_api_status_,
-      url_request_->initiator(), url_request_->cookie_setting_overrides());
-  if (!url::Origin::Create(url_request_->url())
-           .IsSameOriginWith(redirect_info.new_url)) {
+  const url::Origin origin = url::Origin::Create(url_request_->url());
+  const url::Origin pending_origin = url::Origin::Create(redirect_info.new_url);
+  if (!origin.IsSameOriginWith(pending_origin)) {
     url_request_->cookie_setting_overrides().Remove(
         net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
+
+    // TODO(https://crbug.com/379030052): the `CookieSettingOverride`s for
+    // Storage Access API and Storage Access Headers should be handled
+    // consistently during a same-site, cross-origin redirect.
+    if (net::SchemefulSite(origin) != net::SchemefulSite(pending_origin)) {
+      url_request_->cookie_setting_overrides().Remove(
+          net::CookieSettingOverride::kStorageAccessGrantEligible);
+    }
   }
 
   // Note: There are some ordering dependencies here.

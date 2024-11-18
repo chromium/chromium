@@ -5377,6 +5377,11 @@ TEST_P(URLLoaderCookieSettingOverridesTest,
                   ExpectedCookieSettingOverridesForCrossSiteRedirect()));
 }
 
+// This test sends a request to an endpoint that is cross-site from the
+// initiator, which redirects to an endpoint that is same-site (and same-origin)
+// to the initiator. The second redirect leg should not have the
+// `kStorageAccessGrantEligible` override, since that would include cookies on
+// the request and therefore make a CSRF attack possible via that redirect.
 TEST_P(URLLoaderCookieSettingOverridesTest,
        CookieSettingOverrides_OnCrossSiteToSameSite) {
   GURL cross_site_to_same_site_redirect_url = test_server()->GetURL(
@@ -5400,12 +5405,14 @@ TEST_P(URLLoaderCookieSettingOverridesTest,
   loader->FollowRedirect({}, {}, {}, std::nullopt);
   client()->RunUntilComplete();
   delete_run_loop.Run();
-  EXPECT_THAT(test_network_delegate()->cookie_setting_overrides_records(),
-              ElementsAre(ExpectedCookieSettingOverridesForCrossSiteRedirect(),
-                          ExpectedCookieSettingOverridesForCrossSiteRedirect(),
-                          ExpectedCookieSettingOverrides(),
-                          ExpectedCookieSettingOverrides()));
+  EXPECT_THAT(
+      test_network_delegate()->cookie_setting_overrides_records(),
+      ElementsAre(ExpectedCookieSettingOverridesForCrossSiteRedirect(),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect(),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect(),
+                  ExpectedCookieSettingOverridesForCrossSiteRedirect()));
 }
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     URLLoaderCookieSettingOverridesTest,
