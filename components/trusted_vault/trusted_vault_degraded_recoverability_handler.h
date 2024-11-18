@@ -37,6 +37,12 @@ class TrustedVaultDegradedRecoverabilityHandler {
     virtual void OnDegradedRecoverabilityChanged() = 0;
   };
 
+  // Exposed for testing.
+  static constexpr base::TimeDelta kLongDegradedRecoverabilityRefreshPeriod =
+      base::Days(7);
+  static constexpr base::TimeDelta kShortDegradedRecoverabilityRefreshPeriod =
+      base::Hours(1);
+
   // `connection` and `delegate` must not be null and must outlive this object.
   TrustedVaultDegradedRecoverabilityHandler(
       TrustedVaultConnection* connection,
@@ -63,8 +69,6 @@ class TrustedVaultDegradedRecoverabilityHandler {
   void OnRecoverabilityIsDegradedDownloaded(
       TrustedVaultRecoverabilityStatus status);
 
-  base::TimeDelta long_degraded_recoverability_refresh_period_;
-  base::TimeDelta short_degraded_recoverability_refresh_period_;
   const raw_ptr<TrustedVaultConnection> connection_;
   const raw_ptr<Delegate> delegate_;
   CoreAccountInfo account_info_;
