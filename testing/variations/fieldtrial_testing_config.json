@@ -25929,6 +25929,25 @@
             ]
         }
     ],
+    "WebRTC-Video-AV1EvenPayloadSizes": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-Video-EnableRetransmitAllLayers": [
         {
             "platforms": [
