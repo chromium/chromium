@@ -34,14 +34,14 @@
   for (const item of ["elements", "removeElements", "replaceWithChildrenElements"]) {
     test(t => {
       const sanitizer = new Sanitizer({[item]: all_elems});
-      assert_array_same(sanitizer.getConfiguration()[item],
-                          elems_valid.map(x => "" + x));
+      assert_array_same(sanitizer.get()[item].map(x => x.name),
+                        elems_valid.map(x => "" + x));
     }, `Element names in config item: ${item}`);
   }
   for (const item of ["attributes", "removeAttributes"]) {
     test(t => {
       const sanitizer = new Sanitizer({[item]: all_attrs});
-      assert_array_same(Object.keys(sanitizer.getConfiguration()[item]),
+      assert_array_same(sanitizer.get()[item].map(x => x.name),
                         attrs_valid.map(x => "" + x));
     }, `Attribute names in config item: ${item}`);
   }
@@ -55,19 +55,16 @@
   const MATHML_NS = "http://www.w3.org/1998/Math/MathML";
   [
     [ "p", "<p>Hello</p>" ],
-    [ "svg", "<svg>Hello</svg>", "Hello" ],
+    [ "svg", "<svg>Hello</svg>", "" ],
     [ { name: "svg", namespace: SVG_NS }, "<svg>Hello</svg>" ],
-    [ "math", "<math>Hello</math>", "Hello" ],
-    [ { name: "math", namespace: SVG_NS }, "<math>Hello</math>", "Hello" ],
+    [ "math", "<math>Hello</math>", "" ],
+    [ { name: "math", namespace: SVG_NS }, "<math>Hello</math>", "" ],
     [ { name: "math", namespace: MATHML_NS }, "<math>Hello</math>" ],
   ].forEach(([elem, probe, expected], index) => {
     test(t => {
-      const options = { elements: [elem],
-        // TODO(https://github.com/WICG/sanitizer-api/issues/167)
-        unknownMarkup: true};
-      const template = document.createElement("template");
-      template.setHTML(probe, {sanitizer: options});
-      assert_equals(template.innerHTML, expected ?? probe);
+      const div = document.createElement("div");
+      div.setHTML(probe, {sanitizer: {elements: [elem]}});
+      assert_equals(div.innerHTML, expected ?? probe);
     }, `Namespaced elements #${index}: elements: [${JSON.stringify(elem)}]`);
   });
 
@@ -109,8 +106,10 @@
     assert_equals(template.innerHTML, probe);
   }, "Namespaced attribute xlink:href inside SVG tree");
 
-  // Most element and attribute names are lower-cased, but "foreign content"
-  // like SVG and MathML have some mixed-cased names.
+  // Names are case-senstive. Most element and attribute names are
+  // lower-cased, but "foreign content" like SVG and MathML have some
+  // mixed-cased names. Check this is supported. Check there is no
+  // case normalization.
   [
     [ "feBlend", "<feBlend></feBlend>" ],
     [ "feColorMatrix", "<feColorMatrix></feColorMatrix>" ],
@@ -131,18 +130,11 @@
       assert_equals(sanitize(elem, probe), probe);
     }, `Mixed-case element names #${index}: "svg:${elem}"`);
     test(t => {
-      // Lowercase element names should be normalized to mixed-case.
-      assert_equals(sanitize(elem.toLowerCase(), probe), probe);
+      assert_not_equals(sanitize(elem.toLowerCase(), probe), probe);
     }, `Lower-case element names #${index}: "svg:${elem.toLowerCase()}"`);
     test(t => {
       assert_not_equals(sanitize(elem.toUpperCase(), probe), probe);
     }, `Upper-case element names #${index}: "svg:${elem.toUpperCase()}"`);
-    test(t => {
-      const elems = ["svg:" + elem];
-      assert_array_equals(
-        new Sanitizer({elements: elems}).getConfiguration().allowElements.toSorted(),
-        elems);
-    }, `Mixed case element names #${index}: "${elem}" is preserved in config.`);
   });
 </script>
 </body>
