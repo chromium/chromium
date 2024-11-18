@@ -445,10 +445,15 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
     // Scale this processes' memory by the inverse of the probability that it
     // was chosen to get its estimated contribution to the total memory.
     constexpr int kBytesPerMB = 1024 * 1024;
+    const int scaled_sampled_memory =
+        total_sampled_bytes / kBytesPerMB * (100.0 / process_probability_pct);
     base::UmaHistogramMemoryLargeMB(
         ProcessHistogramName("HeapProfiling.InProcess.TotalSampledMemory",
                              process_type),
-        total_sampled_bytes / kBytesPerMB * (100.0 / process_probability_pct));
+        scaled_sampled_memory);
+    // Also summarize over all process types.
+    base::UmaHistogramMemoryLargeMB(
+        "HeapProfiling.InProcess.TotalSampledMemory", scaled_sampled_memory);
   };
 
   std::vector<Sample> samples =
