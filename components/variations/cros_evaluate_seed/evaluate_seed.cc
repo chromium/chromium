@@ -259,7 +259,11 @@ std::unique_ptr<CrOSVariationsFieldTrialCreator> GetFieldTrialCreator(
     safe_seed = std::make_unique<EarlyBootSafeSeed>(safe_seed_details.value());
   } else {
     safe_seed = std::make_unique<VariationsSafeSeedStoreLocalState>(
-        local_state, client->GetVariationsSeedFileDir());
+        local_state, client->GetVariationsSeedFileDir(),
+        client->GetChannelForVariations(),
+        // TODO(crbug.com/379327745): Plumb EntropyProviders here and below in
+        // VariationsSeedStore.
+        /*entropy_providers=*/nullptr);
   }
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,

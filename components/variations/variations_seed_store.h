@@ -75,15 +75,14 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // |use_first_run_prefs|, if true (default), facilitates modifying Java
   // SharedPreferences ("first run prefs") on Android. If false,
   // SharedPreferences are not accessed.
-  VariationsSeedStore(
-      PrefService* local_state,
-      std::unique_ptr<SeedResponse> initial_seed,
-      bool signature_verification_enabled,
-      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
-      version_info::Channel channel,
-      const base::FilePath& seed_file_dir,
-      const variations::EntropyProviders* entropy_providers = nullptr,
-      bool use_first_run_prefs = true);
+  VariationsSeedStore(PrefService* local_state,
+                      std::unique_ptr<SeedResponse> initial_seed,
+                      bool signature_verification_enabled,
+                      std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
+                      version_info::Channel channel,
+                      const base::FilePath& seed_file_dir,
+                      const EntropyProviders* entropy_providers = nullptr,
+                      bool use_first_run_prefs = true);
 
   VariationsSeedStore(const VariationsSeedStore&) = delete;
   VariationsSeedStore& operator=(const VariationsSeedStore&) = delete;

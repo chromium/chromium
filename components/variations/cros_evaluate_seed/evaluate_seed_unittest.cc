@@ -241,7 +241,8 @@ CreateTestCrOSVariationsFieldTrialCreator(
   (void)safe_seed_details;
 
   auto safe_seed = std::make_unique<VariationsSafeSeedStoreLocalState>(
-      local_state, client->GetVariationsSeedFileDir());
+      local_state, client->GetVariationsSeedFileDir(),
+      client->GetChannelForVariations(), /*entropy_providers=*/nullptr);
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,
       /*signature_verification_enabled=*/true, std::move(safe_seed),

@@ -4,6 +4,7 @@
 
 #include "components/variations/variations_safe_seed_store_local_state.h"
 
+#include "base/version_info/channel.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/pref_names.h"
@@ -19,13 +20,17 @@ const base::FilePath::CharType kSafeSeedFilename[] =
 
 VariationsSafeSeedStoreLocalState::VariationsSafeSeedStoreLocalState(
     PrefService* local_state,
-    const base::FilePath& seed_file_dir)
+    const base::FilePath& seed_file_dir,
+    version_info::Channel channel,
+    const EntropyProviders* entropy_providers)
     : local_state_(local_state),
       seed_reader_writer_(std::make_unique<SeedReaderWriter>(
           local_state,
           seed_file_dir,
           kSafeSeedFilename,
-          prefs::kVariationsSafeCompressedSeed)) {}
+          prefs::kVariationsSafeCompressedSeed,
+          channel,
+          entropy_providers)) {}
 
 VariationsSafeSeedStoreLocalState::~VariationsSafeSeedStoreLocalState() =
     default;

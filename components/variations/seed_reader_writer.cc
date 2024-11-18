@@ -15,7 +15,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/version_info/channel.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
 
 namespace variations {
@@ -48,6 +50,40 @@ base::FilePath GetFilePath(const base::FilePath& seed_file_dir,
                                : seed_file_dir.Append(filename);
 }
 
+// Returns true if the client is eligible to participate in the seed file trial.
+bool IsEligibleForSeedFileTrial(version_info::Channel channel,
+                                const base::FilePath& seed_file_dir,
+                                const EntropyProviders* entropy_providers) {
+  // Note platforms that should not participate in the experiment will
+  // deliberately pass an empty |seed_file_dir| and null |entropy_provider|.
+  if (seed_file_dir.empty() || entropy_providers == nullptr) {
+    return false;
+  }
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV ||
+         channel == version_info::Channel::BETA;
+}
+
+// Sets up the seed file experiment which only some clients are eligible for
+// (see IsEligibleForSeedFileTrial()).
+void SetUpSeedFileTrial(
+    const base::FieldTrial::EntropyProvider& entropy_provider) {
+  // Verify that the field trial has not already been set up. This may be the
+  // case if a SeedReaderWriter associated with a safe seed calls this function
+  // before one associated with a latest seed or vice versa.
+  if (base::FieldTrialList::TrialExists(kSeedFileTrial)) {
+    return;
+  }
+
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::FactoryGetFieldTrial(
+          kSeedFileTrial, /*total_probability=*/100, kDefaultGroup,
+          entropy_provider));
+
+  trial->AppendGroup(kControlGroup, /*group_probability=*/50);
+  trial->AppendGroup(kSeedFilesGroup, /*group_probability=*/50);
+}
+
 }  // namespace
 
 SeedReaderWriter::SeedReaderWriter(
@@ -55,6 +91,8 @@ SeedReaderWriter::SeedReaderWriter(
     const base::FilePath& seed_file_dir,
     base::FilePath::StringPieceType seed_filename,
     std::string_view seed_pref,
+    version_info::Channel channel,
+    const EntropyProviders* entropy_providers,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner)
     : local_state_(local_state),
       seed_pref_(seed_pref),
@@ -64,6 +102,9 @@ SeedReaderWriter::SeedReaderWriter(
     seed_writer_ = std::make_unique<base::ImportantFileWriter>(
         GetFilePath(seed_file_dir, seed_filename), file_task_runner_,
         kSeedWriterHistogramSuffix);
+  }
+  if (IsEligibleForSeedFileTrial(channel, seed_file_dir, entropy_providers)) {
+    SetUpSeedFileTrial(entropy_providers->default_entropy());
     if (ShouldUseSeedFile()) {
       ReadSeedFile();
     }

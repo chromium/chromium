@@ -80,16 +80,18 @@ class TestVariationsSeedStore : public VariationsSeedStore {
           std::make_unique<const MockEntropyProviders>(
               MockEntropyProviders::Results{
                   .low_entropy = kAlwaysUseLastGroup}))
-      : VariationsSeedStore(
-            local_state,
-            std::move(initial_seed),
-            signature_verification_needed,
-            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state,
-                                                                seed_file_dir),
-            channel,
-            seed_file_dir,
-            entropy_providers.get(),
-            use_first_run_prefs) {}
+      : VariationsSeedStore(local_state,
+                            std::move(initial_seed),
+                            signature_verification_needed,
+                            std::make_unique<VariationsSafeSeedStoreLocalState>(
+                                local_state,
+                                seed_file_dir,
+                                channel,
+                                entropy_providers.get()),
+                            channel,
+                            seed_file_dir,
+                            entropy_providers.get(),
+                            use_first_run_prefs) {}
   ~TestVariationsSeedStore() override = default;
 };
 
@@ -322,9 +324,13 @@ class SeedStoreGroupTestBase : public ::testing::Test {
     VariationsSeedStore::RegisterPrefs(prefs_.registry());
     SetUpSeedFileTrial(std::string(field_trial_group));
 
-    // Initialize |seed_reader_writer_| with test thread and timer.
+    // Initialize |seed_reader_writer_|.
     seed_reader_writer_ = std::make_unique<SeedReaderWriter>(
         &prefs_, temp_dir_.GetPath(), kSeedFilename, seed_pref,
+        version_info::Channel::UNKNOWN,
+        std::make_unique<const MockEntropyProviders>(
+            MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup})
+            .get(),
         file_writer_thread_.task_runner());
     seed_reader_writer_->SetTimerForTesting(&timer_);
   }
@@ -593,81 +599,6 @@ struct StoreSeedDataTestParams {
       : require_synchronous_stores(std::get<0>(t)),
         field_trial_group(std::get<1>(t)) {}
 };
-
-class ExpectedFieldTrialGroupChannelsTest
-    : public SeedStoreGroupTestBase,
-      public ::testing::WithParamInterface<version_info::Channel> {
- public:
-  explicit ExpectedFieldTrialGroupChannelsTest()
-      : SeedStoreGroupTestBase(
-            "ignored_seed_type",
-            // Note that an empty group does not force set a trial group.
-            kNoGroup) {}
-};
-
-class ExpectedFieldTrialGroupAllChannelsTest
-    : public ExpectedFieldTrialGroupChannelsTest {};
-class ExpectedFieldTrialGroupPreStableTest
-    : public ExpectedFieldTrialGroupChannelsTest {};
-class ExpectedFieldTrialGroupStableAndUnknownTest
-    : public ExpectedFieldTrialGroupChannelsTest {};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExpectedFieldTrialGroupAllChannelsTest,
-                         ::testing::Values(version_info::Channel::UNKNOWN,
-                                           version_info::Channel::CANARY,
-                                           version_info::Channel::DEV,
-                                           version_info::Channel::BETA,
-                                           version_info::Channel::STABLE));
-
-// If empty seed file dir given, client is not assigned a group.
-TEST_P(ExpectedFieldTrialGroupAllChannelsTest, NoSeedFileDir) {
-  TestVariationsSeedStore seed_store(
-      &prefs_,
-      /*seed_file_dir=*/base::FilePath(),
-      /*signature_verification_needed=*/false, /*initial_seed=*/nullptr,
-      /*use_first_run_prefs=*/true, /*channel=*/GetParam());
-  EXPECT_THAT(base::FieldTrialList::FindFullName(kSeedFileTrial), IsEmpty());
-}
-
-// If no entropy provider given, client is not assigned a group.
-TEST_P(ExpectedFieldTrialGroupAllChannelsTest, NoEntropyProvider) {
-  TestVariationsSeedStore seed_store(
-      &prefs_, temp_dir_.GetPath(), /*signature_verification_needed=*/false,
-      /*initial_seed=*/nullptr, /*use_first_run_prefs=*/true,
-      /*channel=*/GetParam(), /*entropy_providers=*/nullptr);
-  EXPECT_THAT(base::FieldTrialList::FindFullName(kSeedFileTrial), IsEmpty());
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExpectedFieldTrialGroupPreStableTest,
-                         ::testing::Values(version_info::Channel::CANARY,
-                                           version_info::Channel::DEV,
-                                           version_info::Channel::BETA));
-
-// If channel is pre-stable, client is assigned a group.
-TEST_P(ExpectedFieldTrialGroupPreStableTest, PreStable) {
-  TestVariationsSeedStore seed_store(
-      &prefs_, temp_dir_.GetPath(), /*signature_verification_needed=*/false,
-      /*initial_seed=*/nullptr, /*use_first_run_prefs=*/true,
-      /*channel=*/GetParam());
-  EXPECT_THAT(base::FieldTrialList::FindFullName(kSeedFileTrial),
-              ::testing::AnyOf(kControlGroup, kSeedFilesGroup));
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExpectedFieldTrialGroupStableAndUnknownTest,
-                         ::testing::Values(version_info::Channel::UNKNOWN,
-                                           version_info::Channel::STABLE));
-
-// If channel is stable or unknown, client is not assigned a group.
-TEST_P(ExpectedFieldTrialGroupStableAndUnknownTest, StableAndUnknown) {
-  TestVariationsSeedStore seed_store(
-      &prefs_, temp_dir_.GetPath(), /*signature_verification_needed=*/false,
-      /*initial_seed=*/nullptr, /*use_first_run_prefs=*/true,
-      /*channel=*/GetParam());
-  EXPECT_THAT(base::FieldTrialList::FindFullName(kSeedFileTrial), IsEmpty());
-}
 
 class StoreSeedDataGroupTest
     : public SeedStoreGroupTestBase,
