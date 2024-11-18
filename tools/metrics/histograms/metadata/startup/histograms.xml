@@ -535,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.IsLastBackgroundTimeLogged" enum="Boolean"
-    expires_after="2024-11-17">
+    expires_after="2025-05-17">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -632,17 +632,6 @@ chromium-metrics-reviews@google.com.
     is shown on the StartSurface. This histogram is only recorded when
     StartSurface is shown at launch due to &quot;return to tab switcher&quot;
     feature.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.StartSurfaceShownAtStartup" enum="Boolean"
-    expires_after="2024-11-17">
-  <owner>hanxi@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records whether the Start surface homepage is showing at a cold startup when
-    the Start surface is enabled. This histogram is recorded in a deferred
-    startup task after Chrome is launched.
   </summary>
 </histogram>
 
