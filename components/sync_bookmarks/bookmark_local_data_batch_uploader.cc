@@ -7,12 +7,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
+#include "components/sync_bookmarks/local_bookmark_model_merger.h"
 #include "components/sync_bookmarks/local_bookmark_to_account_merger.h"
+#include "components/sync_bookmarks/switches.h"
 #include "ui/base/models/tree_node_iterator.h"
 
 namespace sync_bookmarks {
@@ -52,7 +55,20 @@ void BookmarkLocalDataBatchUploader::TriggerLocalDataMigration() {
     return;
   }
 
-  LocalBookmarkToAccountMerger(bookmark_model_).MoveAndMerge();
+  if (base::FeatureList::IsEnabled(
+          switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
+    LocalBookmarkToAccountMerger(bookmark_model_).MoveAndMerge();
+  } else {
+    BookmarkModelViewUsingLocalOrSyncableNodes
+        local_or_syncable_bookmark_model_view(bookmark_model_);
+    BookmarkModelViewUsingAccountNodes account_bookmark_model_view(
+        bookmark_model_);
+
+    LocalBookmarkModelMerger(&local_or_syncable_bookmark_model_view,
+                             &account_bookmark_model_view)
+        .Merge();
+    local_or_syncable_bookmark_model_view.RemoveAllSyncableNodes();
+  }
 }
 
 bool BookmarkLocalDataBatchUploader::CanUpload() const {

@@ -18,4 +18,8 @@ BASE_FEATURE(kSyncMigrateBookmarksWithoutClientTagHash,
              "SyncMigrateBookmarksWithoutClientTagHash",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncMinimizeDeletionsDuringBookmarkBatchUpload,
+             "SyncMinimizeDeletionsDuringBookmarkBatchUpload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches

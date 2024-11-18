@@ -15,6 +15,8 @@ BASE_DECLARE_FEATURE(kSyncReuploadBookmarks);
 
 BASE_DECLARE_FEATURE(kSyncMigrateBookmarksWithoutClientTagHash);
 
+BASE_DECLARE_FEATURE(kSyncMinimizeDeletionsDuringBookmarkBatchUpload);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_BOOKMARKS_SWITCHES_H_
