@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] anchorNode snaps up to parent when removed (no asserts)
+  assert_equals: anchorNode snaps up to parent expected Element node <div id="parentDiv">\n    \n    <div id="childDiv">\n      <... but got Text node "Child paragraph one"
+Harness: the test ran to completion.
+
