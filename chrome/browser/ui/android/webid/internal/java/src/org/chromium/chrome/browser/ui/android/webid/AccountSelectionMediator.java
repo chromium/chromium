@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
@@ -524,6 +525,11 @@ class AccountSelectionMediator {
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Blink.FedCm.Button.AccountChooserResult", result, SheetType.NUM_ENTRIES);
+        if (mTab != null && mTab.getWebContents() != null) {
+            new UkmRecorder(mTab.getWebContents(), "Blink.FedCm")
+                    .addMetric("Button.AccountChooserResult", result)
+                    .record();
+        }
         mAccountChooserState = null;
     }
 

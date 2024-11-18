@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1024,6 +1025,14 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
   if (modal_account_chooser_state_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.AccountChooserResult",
                               *modal_account_chooser_state_);
+    if (tab_->GetContents()) {
+      ukm::SourceId source_id =
+          tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+      ukm::builders::Blink_FedCm(source_id)
+          .SetButton_AccountChooserResult(
+              static_cast<int>(*modal_account_chooser_state_))
+          .Record(ukm::UkmRecorder::Get());
+    }
   }
 
   MaybeResetAccountSelectionView();
