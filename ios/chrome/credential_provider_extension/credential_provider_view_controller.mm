@@ -107,7 +107,7 @@ UIColor* BackgroundColor() {
   ASPasskeyCredentialRequestParameters* _requestParameters
       API_AVAILABLE(ios(17.0));
 
-  // Stores whether or not user verficiation should be performed for passkey
+  // Stores whether or not user verification should be performed for passkey
   // creation or assertion.
   BOOL _userVerificationRequired;
 
@@ -1014,6 +1014,11 @@ UIColor* BackgroundColor() {
   } else {
     action = primaryButtonAction;
   }
+  // Now that the need to perform a device reauthentication has been evaluated
+  // and handled, set `_userVerificationRequired` to `NO` so that the user won't
+  // be asked to reauthenticate at a later time in the process of handling the
+  // passkey request.
+  _userVerificationRequired = NO;
 
   NSString* userEmail =
       purpose == PasskeyWelcomeScreenPurpose::kEnroll ? [self userEmail] : nil;
