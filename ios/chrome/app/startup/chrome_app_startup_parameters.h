@@ -44,14 +44,13 @@ enum MobileSessionCallerApp {
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                         completeURL:(const GURL&)completeURL
                     applicationMode:(ApplicationModeForTabOpening)mode
-               forceApplicationMode:(BOOL)forceApplicationMode NS_UNAVAILABLE;
+    NS_UNAVAILABLE;
 
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                   declaredSourceApp:(NSString*)declaredSourceApp
                     secureSourceApp:(NSString*)secureSourceApp
                         completeURL:(NSURL*)completeURL
                     applicationMode:(ApplicationModeForTabOpening)mode
-               forceApplicationMode:(BOOL)forceApplicationMode
     NS_DESIGNATED_INITIALIZER;
 
 // Returns a ChromeAppStartupParameters instance containing the URL to
@@ -98,8 +97,7 @@ enum MobileSessionCallerApp {
 // If the string for the parsed URL is malformed (according to RFC 2396),
 // returns nil.
 + (instancetype)startupParametersWithURL:(NSURL*)URL
-                       sourceApplication:(NSString*)appID
-                    forceApplicationMode:(BOOL)forceApplicationMode;
+                       sourceApplication:(NSString*)appID;
 
 // Returns the MobileSessionCallerApp for the given bundle ID.
 - (MobileSessionCallerApp)callerApp;
@@ -119,8 +117,7 @@ enum MobileSessionCallerApp {
                                       index:(NSNumber*)index
                                         URL:(NSURL*)URL
                           sourceApplication:(NSString*)appID
-                    secureSourceApplication:(NSString*)secureAppID
-                       forceApplicationMode:(BOOL)forceApplicationMode;
+                    secureSourceApplication:(NSString*)secureAppID;
 
 @end
 

@@ -149,10 +149,9 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
       webpage_url =
           [NSURL URLWithString:base::SysUTF8ToNSString(kChromeUINewTabURL)];
       AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-           initWithExternalURL:GURL(kChromeUINewTabURL)
-                   completeURL:GURL(kChromeUINewTabURL)
-               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
-          forceApplicationMode:NO];
+          initWithExternalURL:GURL(kChromeUINewTabURL)
+                  completeURL:GURL(kChromeUINewTabURL)
+              applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
       BOOL startup_params_set =
           spotlight::SetStartupParametersForSpotlightAction(item_id,
                                                             startup_params);
@@ -179,27 +178,14 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     base::UmaHistogramEnumeration("IOS.Spotlight.LaunchedIntentType",
                                   IntentType::kSearchInChrome);
 
-    AppStartupParameters* startup_params;
+    AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+                completeURL:GURL(kChromeUINewTabURL)
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
 
     if (IsIncognitoModeForced(profile_->GetPrefs())) {
       // Set incognito mode to yes if only incognito mode is available.
-      startup_params = [[AppStartupParameters alloc]
-           initWithExternalURL:GURL(kChromeUINewTabURL)
-                   completeURL:GURL(kChromeUINewTabURL)
-               applicationMode:ApplicationModeForTabOpening::INCOGNITO
-          forceApplicationMode:YES];
-    } else if (IsIncognitoModeDisabled(profile_->GetPrefs())) {
-      startup_params = [[AppStartupParameters alloc]
-           initWithExternalURL:GURL(kChromeUINewTabURL)
-                   completeURL:GURL(kChromeUINewTabURL)
-               applicationMode:ApplicationModeForTabOpening::NORMAL
-          forceApplicationMode:YES];
-    } else {
-      startup_params = [[AppStartupParameters alloc]
-           initWithExternalURL:GURL(kChromeUINewTabURL)
-                   completeURL:GURL(kChromeUINewTabURL)
-               applicationMode:ApplicationModeForTabOpening::NORMAL
-          forceApplicationMode:NO];
+      startup_params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
     }
 
     SearchInChromeIntent* intent =
@@ -328,10 +314,9 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
                                   AppLaunchSource::SIRI_SHORTCUT);
 
     AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-         initWithExternalURL:GURL()
-                 completeURL:GURL()
-             applicationMode:ApplicationModeForTabOpening::NORMAL
-        forceApplicationMode:NO];
+        initWithExternalURL:GURL()
+                completeURL:GURL()
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
 
     startup_params.postOpeningAction = OPEN_LATEST_TAB;
     [connection_information_ setStartupParameters:startup_params];
@@ -421,10 +406,9 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
                                   AppLaunchSource::SIRI_SHORTCUT);
 
     AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-         initWithExternalURL:GURL(kChromeUINewTabURL)
-                 completeURL:GURL(kChromeUINewTabURL)
-             applicationMode:ApplicationModeForTabOpening::INCOGNITO
-        forceApplicationMode:NO];
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+                completeURL:GURL(kChromeUINewTabURL)
+            applicationMode:ApplicationModeForTabOpening::INCOGNITO];
     [connection_information_ setStartupParameters:startup_params];
   } else if ([user_activity.activityType
                  isEqualToString:kSiriManagePaymentMethods]) {
@@ -626,10 +610,9 @@ UserActivityBrowserAgent::StartupParametersForOpeningNewTab(
     TabOpeningPostOpeningAction action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-       initWithExternalURL:GURL(kChromeUINewTabURL)
-               completeURL:GURL(kChromeUINewTabURL)
-           applicationMode:ApplicationModeForTabOpening::NORMAL
-      forceApplicationMode:NO];
+      initWithExternalURL:GURL(kChromeUINewTabURL)
+              completeURL:GURL(kChromeUINewTabURL)
+          applicationMode:ApplicationModeForTabOpening::NORMAL];
 
   startup_params.postOpeningAction = action;
   return startup_params;
@@ -652,10 +635,9 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
           : GURL(kChromeUINewTabURL);
 
   AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-       initWithExternalURL:startup_url
-               completeURL:startup_url
-           applicationMode:ApplicationModeForTabOpening::NORMAL
-      forceApplicationMode:NO];
+      initWithExternalURL:startup_url
+              completeURL:startup_url
+          applicationMode:ApplicationModeForTabOpening::NORMAL];
 
   if ([shortcut_item.type isEqualToString:kShortcutNewSearch]) {
     base::RecordAction(
@@ -716,18 +698,14 @@ void UserActivityBrowserAgent::OpenRequestedURLs(
     BOOL incognito) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ApplicationModeForTabOpening application_mode;
-  BOOL application_mode_forced = NO;
   if (incognito) {
     application_mode = ApplicationModeForTabOpening::INCOGNITO;
-    application_mode_forced = YES;
   } else {
     application_mode = ApplicationModeForTabOpening::NORMAL;
-    application_mode_forced = YES;
   }
   AppStartupParameters* startup_params =
       [[AppStartupParameters alloc] initWithURLs:webpage_urls
-                                 applicationMode:application_mode
-                            forceApplicationMode:application_mode_forced];
+                                 applicationMode:application_mode];
   [connection_information_ setStartupParameters:startup_params];
 
   if (application_is_active && IsProfileStateReady(browser_)) {
@@ -802,10 +780,9 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
 
   if (![connection_information_ startupParameters]) {
     AppStartupParameters* startup_params = [[AppStartupParameters alloc]
-         initWithExternalURL:webpage_GURL
-                 completeURL:webpage_GURL
-             applicationMode:ApplicationModeForTabOpening::NORMAL
-        forceApplicationMode:NO];
+        initWithExternalURL:webpage_GURL
+                completeURL:webpage_GURL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     startup_params.openExistingTab = open_existing_tab;
     [connection_information_ setStartupParameters:startup_params];
   }
