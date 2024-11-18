@@ -58,6 +58,17 @@ reviewer.
   <int value="2" label="Abandoned"/>
 </enum>
 
+<!-- LINT.IfChange(FacilitatedPayments.UiScreen) -->
+
+<enum name="FacilitatedPayments.UiScreen">
+  <int value="0" label="Hidden"/>
+  <int value="1" label="FOP selector"/>
+  <int value="2" label="Progress screen"/>
+  <int value="3" label="Error screen"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h:UiState) -->
+
 </enums>
 
 </histogram-configuration>

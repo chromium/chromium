@@ -322,6 +322,25 @@ reviewer.
   </token>
 </histogram>
 
+<histogram name="FacilitatedPayments.{FacilitatedPaymentsType}.UiShown"
+    enum="FacilitatedPayments.UiScreen" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for facilitated payments, this histogram logs
+    the UI screens being shown to the user. [Frequency] Each enum value is
+    logged at most once per {FacilitatedPaymentsType} payflow.
+    {FacilitatedPaymentsType} payflow is triggered at most once per page load.
+    [Trigger] The {FacilitatedPaymentsType} payflow could be triggered on pages
+    that have loaded, and the main frame contains a valid payment code for
+    {FacilitatedPaymentsType}. The screens are shown during the payflow based on
+    internal logic.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

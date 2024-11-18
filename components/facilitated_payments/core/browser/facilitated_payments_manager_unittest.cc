@@ -1133,11 +1133,17 @@ INSTANTIATE_TEST_SUITE_P(FacilitatedPaymentsManagerTest,
 // Test that when a new screen is shown, UI state reflects the current UI being
 // shown.
 TEST_P(FacilitatedPaymentsManagerTestForUiScreens, NewScreenShown) {
+  base::HistogramTester histogram_tester;
+
   // Simulate new screen was shown successfully.
   manager_->OnUiEvent(UiEvent::kNewScreenShown);
 
   // Verify feature has updated the UI state.
   EXPECT_EQ(manager_->ui_state_, ui_state());
+  // Verify that the histogram is logged.
+  histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.UiScreenShown",
+                                      /*sample=*/ui_state(),
+                                      /*expected_bucket_count=*/1);
 }
 
 // Test that when a new screen could not be shown, UI state is updated.

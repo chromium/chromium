@@ -9,6 +9,11 @@ namespace payments::facilitated {
 
 // This enum is used to denote the UI screen shown by the feature in the
 // Facilitated Payments bottom sheet.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(UiState)
 enum class UiState {
   // Represents no UI being shown.
   kHidden = 0,
@@ -21,6 +26,7 @@ enum class UiState {
   // Max value, needs to be updated every time a new enum is added.
   kMaxValue = kErrorScreen,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.UiScreen)
 
 // This enum is used to denote the UI events in the Facilitated Payments bottom
 // sheet.

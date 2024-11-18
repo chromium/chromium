@@ -322,7 +322,9 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
 void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
   switch (ui_event_type) {
     case UiEvent::kNewScreenShown: {
-      // TODO(crbug.com/375089558): Log metrics.
+      CHECK_NE(ui_state_, UiState::kHidden);
+      LogUiScreenShown(ui_state_);
+      // TODO: crbug.com/375089558 - Log latency metrics.
       break;
     }
     case UiEvent::kScreenClosedNotByUser: {
