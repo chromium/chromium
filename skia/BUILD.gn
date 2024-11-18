@@ -365,7 +365,7 @@ component("skia") {
   defines = []
   sources += skia_ports_sources
   sources += skia_sksl_core_sources
-  sources += skia_sksl_default_module_sources
+  sources += skia_sksl_core_module_sources
   sources += skia_codec_shared
   sources += skia_codec_png
   sources += skia_utils_private
@@ -916,7 +916,8 @@ if (skia_support_gpu) {
   # If a source set contains only sources and no public files, then dependents can
   # include any file from sources.
   skia_source_set("skia_graphite_private") {
-    sources = skia_graphite_sources + skia_graphite_precompile_sources
+    sources = skia_graphite_sources + skia_graphite_precompile_sources +
+              skia_sksl_graphite_modules_sources
     if (skia_use_dawn) {
       sources += skia_graphite_dawn_sources
     }
