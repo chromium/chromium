@@ -30,7 +30,7 @@ class MockTriggerManager : public TriggerManager {
            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
            history::HistoryService* history_service,
            ReferrerChainProvider* referrer_chain_provider,
-           const SBErrorOptions& error_display_options));
+           const DataCollectionPermissions& data_collection_permissions));
   MOCK_METHOD8(
       StartCollectingThreatDetailsWithReason,
       bool(TriggerType trigger_type,
@@ -39,7 +39,7 @@ class MockTriggerManager : public TriggerManager {
            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
            history::HistoryService* history_service,
            ReferrerChainProvider* referrer_chain_provider,
-           const SBErrorOptions& error_display_options,
+           const DataCollectionPermissions& data_collection_permissions,
            TriggerManagerReason* out_reason));
 
   MOCK_METHOD8(FinishCollectingThreatDetails,
@@ -49,7 +49,7 @@ class MockTriggerManager : public TriggerManager {
                    const base::TimeDelta& delay,
                    bool did_proceed,
                    int num_visits,
-                   const SBErrorOptions& error_display_options,
+                   const DataCollectionPermissions& data_collection_permissions,
                    std::optional<int64_t> warning_shown_ts,
                    bool is_hats_candidate));
 };

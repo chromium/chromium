@@ -48,12 +48,13 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
   // later opt-in changes or quota becomes available, the trigger won't be
   // running on old tabs, but that's acceptable. The trigger will be started for
   // new tabs.
-  SBErrorOptions options = TriggerManager::GetSBErrorDisplayOptions(
-      *profile->GetPrefs(), web_contents);
+  TriggerManager::DataCollectionPermissions permissions =
+      TriggerManager::GetDataCollectionPermissions(*profile->GetPrefs(),
+                                                   web_contents);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
-  if (trigger_manager->CanStartDataCollection(options,
+  if (trigger_manager->CanStartDataCollection(permissions,
                                               TriggerType::AD_SAMPLE)) {
     safe_browsing::AdSamplerTrigger::CreateForWebContents(
         web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
@@ -64,7 +65,7 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
   }
   TriggerManagerReason reason;
   if (trigger_manager->CanStartDataCollectionWithReason(
-          options, TriggerType::SUSPICIOUS_SITE, &reason) ||
+          permissions, TriggerType::SUSPICIOUS_SITE, &reason) ||
       reason == TriggerManagerReason::DAILY_QUOTA_EXCEEDED) {
     bool monitor_mode = reason == TriggerManagerReason::DAILY_QUOTA_EXCEEDED;
     safe_browsing::SuspiciousSiteTrigger::CreateForWebContents(

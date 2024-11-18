@@ -84,7 +84,8 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
                 unsafe_resources[0], url_loader_factory,
                 /*history_service*/ nullptr,
                 /*referrer_chain_provider*/ nullptr,
-                sb_error_ui()->get_error_display_options());
+                safe_browsing::TriggerManager::DataCollectionPermissions(
+                    sb_error_ui()->get_error_display_options()));
   }
   warning_shown_ts_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
 }
@@ -175,7 +176,9 @@ void AwSafeBrowsingBlockingPage::FinishThreatDetails(
               safe_browsing::TriggerType::SECURITY_INTERSTITIAL,
               safe_browsing::GetWebContentsKey(web_contents()), delay,
               did_proceed, num_visits,
-              sb_error_ui()->get_error_display_options(), warning_shown_ts_);
+              safe_browsing::TriggerManager::DataCollectionPermissions(
+                  sb_error_ui()->get_error_display_options()),
+              warning_shown_ts_);
   bool report_sent = result.IsReportSent();
 
   if (report_sent) {

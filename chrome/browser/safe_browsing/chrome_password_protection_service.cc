@@ -676,8 +676,8 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
       url_loader_factory, /*history_service=*/nullptr,
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile_),
-      TriggerManager::GetSBErrorDisplayOptions(*profile_->GetPrefs(),
-                                               web_contents));
+      TriggerManager::GetDataCollectionPermissions(*profile_->GetPrefs(),
+                                                   web_contents));
 }
 
 void ChromePasswordProtectionService::MaybeFinishCollectingThreatDetails(
@@ -694,8 +694,8 @@ void ChromePasswordProtectionService::MaybeFinishCollectingThreatDetails(
       safe_browsing::TriggerType::GAIA_PASSWORD_REUSE,
       GetWebContentsKey(web_contents), base::Milliseconds(0), did_proceed,
       /*num_visits=*/0,
-      TriggerManager::GetSBErrorDisplayOptions(*profile_->GetPrefs(),
-                                               web_contents));
+      TriggerManager::GetDataCollectionPermissions(*profile_->GetPrefs(),
+                                                   web_contents));
 }
 
 void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(

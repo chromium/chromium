@@ -131,8 +131,8 @@ void AdSamplerTrigger::DidFinishLoad(
 }
 
 void AdSamplerTrigger::CreateAdSampleReport() {
-  SBErrorOptions error_options =
-      TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
+  TriggerManager::DataCollectionPermissions permissions =
+      TriggerManager::GetDataCollectionPermissions(*prefs_, web_contents());
 
   auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
   const content::GlobalRenderFrameHostId primary_main_frame_id =
@@ -145,7 +145,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
 
   if (!trigger_manager_->StartCollectingThreatDetails(
           TriggerType::AD_SAMPLE, web_contents(), resource, url_loader_factory_,
-          history_service_, referrer_chain_provider_, error_options)) {
+          history_service_, referrer_chain_provider_, permissions)) {
     UMA_HISTOGRAM_ENUMERATION(kAdSamplerTriggerActionMetricName,
                               NO_SAMPLE_COULD_NOT_START_REPORT, MAX_ACTIONS);
     return;
@@ -161,7 +161,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
           IgnoreResult(&TriggerManager::FinishCollectingThreatDetails),
           base::Unretained(trigger_manager_), TriggerType::AD_SAMPLE,
           GetWebContentsKey(web_contents()), base::TimeDelta(),
-          /*did_proceed=*/false, /*num_visits=*/0, error_options,
+          /*did_proceed=*/false, /*num_visits=*/0, permissions,
           /*warning_shown_ts=*/std::nullopt,
           /*is_hats_candidate=*/false),
       base::Milliseconds(finish_report_delay_ms_));
