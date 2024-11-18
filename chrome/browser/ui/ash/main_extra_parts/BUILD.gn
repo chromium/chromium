@@ -88,6 +88,7 @@ static_library("main_extra_parts") {
     "//chromeos/ash/components/game_mode",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/heatmap",
+    "//chromeos/ash/components/login/readahead",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/services/bluetooth_config",

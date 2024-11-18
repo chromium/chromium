@@ -5735,6 +5735,19 @@ chromium-metrics-reviews@google.com.
   <token key="RestoreMode" variants="RestoreMode"/>
 </histogram>
 
+<histogram name="Ash.LoginReadahead.Result" enum="LoginReadaheadResult"
+    expires_after="2025-05-15">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Records the result of the readahead request for CrOS login. Failure means
+    readahead failed for some files. Succeeded means all expected files will be
+    prefetched. Canceled means readahead is canceled because the session is
+    started while readahead is ongoing.
+  </summary>
+</histogram>
+
 <histogram name="Ash.LoginSessionRestore.AllBrowserWindowsCreated" units="ms"
     expires_after="2025-02-23">
   <owner>xiyuan@chromium.org</owner>

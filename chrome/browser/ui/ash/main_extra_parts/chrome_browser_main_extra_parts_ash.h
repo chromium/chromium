@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/common/buildflags.h"
+#include "chromeos/ash/components/login/readahead/login_readahead_performer.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 
 namespace ash {
@@ -171,6 +172,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       mahi_media_app_events_proxy_;
   std::unique_ptr<chromeos::MahiMediaAppContentManager>
       mahi_media_app_content_manager_;
+  std::optional<ash::LoginReadaheadPerformer> login_readahead_performer_;
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;

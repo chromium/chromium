@@ -112,6 +112,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
     // Called after EmitLoginPromptVisible is called.
     virtual void EmitLoginPromptVisibleCalled() {}
 
+    // Called after StartSessionEx is called.
+    virtual void StartSessionExCalled() {}
+
     // Called when the ARC instance is stopped after it had already started.
     virtual void ArcInstanceStopped(
         login_manager::ArcContainerStopReason reason) {}

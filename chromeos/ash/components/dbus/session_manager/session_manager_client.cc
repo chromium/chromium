@@ -336,6 +336,10 @@ class SessionManagerClientImpl : public SessionManagerClient {
     session_manager_proxy_->CallMethod(&method_call,
                                        dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                                        base::DoNothing());
+
+    for (auto& observer : observers_) {
+      observer.StartSessionExCalled();
+    }
   }
 
   void EmitStartedUserSession(
