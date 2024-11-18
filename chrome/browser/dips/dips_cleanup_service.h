@@ -15,6 +15,9 @@ class BrowserContext;
 
 class DIPSCleanupService : public KeyedService {
  public:
+  // Use DIPSCleanupServiceFactory::BuildServiceInstanceForBrowserContext
+  // instead.
+  explicit DIPSCleanupService(content::BrowserContext* context);
   ~DIPSCleanupService() override;
 
   static DIPSCleanupService* Get(content::BrowserContext* context);
@@ -22,11 +25,6 @@ class DIPSCleanupService : public KeyedService {
   void WaitOnCleanupForTesting();
 
  private:
-  // So DIPSCleanupServiceFactory::BuildServiceInstanceFor can call the
-  // constructor.
-  friend class DIPSCleanupServiceFactory;
-  explicit DIPSCleanupService(content::BrowserContext* context);
-
   void OnCleanupFinished();
 
   base::RunLoop wait_for_cleanup_;

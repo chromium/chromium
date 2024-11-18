@@ -50,9 +50,10 @@ content::BrowserContext* DIPSCleanupServiceFactory::GetBrowserContextToUse(
   return context;
 }
 
-KeyedService* DIPSCleanupServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DIPSCleanupServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new DIPSCleanupService(context);
+  return std::make_unique<DIPSCleanupService>(context);
 }
 
 bool DIPSCleanupServiceFactory::ServiceIsCreatedWithBrowserContext() const {
