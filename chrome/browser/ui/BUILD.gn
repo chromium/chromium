@@ -5223,6 +5223,13 @@ static_library("ui") {
 
       deps += [ "//components/compose/core/browser" ]
     }
+
+    if (enable_glic) {
+      sources += [
+        "views/glic/glic_view.cc",
+        "views/glic/glic_view.h",
+      ]
+    }
   }
 
   # TODO(https://crbug.com/330808104): Delete this code.
