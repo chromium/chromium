@@ -547,13 +547,18 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
     }
   }
 
-  for (; element; element = element->ParentOrShadowHostElement()) {
+  while (element) {
     if (element->IsMouseFocusable() && element->IsFocusedElementInDocument()) {
       return WebInputEventResult::kNotHandled;
     }
     if (element->IsMouseFocusable() ||
         element->IsShadowHostWithDelegatesFocus()) {
       break;
+    }
+    if (RuntimeEnabledFeatures::MouseFocusFlatTreeParentEnabled()) {
+      element = FlatTreeTraversal::ParentElement(*element);
+    } else {
+      element = element->ParentOrShadowHostElement();
     }
   }
   DCHECK(!element || element->IsMouseFocusable() ||

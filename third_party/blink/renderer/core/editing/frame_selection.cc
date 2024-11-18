@@ -562,11 +562,21 @@ bool FrameSelection::SelectionHasFocus() const {
     return true;
 
   bool is_editable = IsEditable(*current);
+  const TreeScope* tree_scope = &current->GetTreeScope();
   do {
     // If the selection is within an editable sub tree and that sub tree
     // doesn't have focus, the selection doesn't have focus either.
-    if (is_editable && !IsEditable(*current))
-      return false;
+    if (is_editable && !IsEditable(*current)) {
+      // An element can be not editable because -webkit-user-modify is inherited
+      // on the DOM tree instead of the flat tree. This is done in
+      // ComputedStyleBuilder::ComputedStyleBuilder and
+      // StyleResolver::InitStyle. We should check editability only if we are in
+      // the same tree scope.
+      if (!RuntimeEnabledFeatures::MouseFocusFlatTreeParentEnabled() ||
+          tree_scope == &current->GetTreeScope()) {
+        return false;
+      }
+    }
 
     // Selection has focus if its sub tree has focus.
     if (current == focused_element)
@@ -581,7 +591,19 @@ bool FrameSelection::SelectionHasFocus() const {
         return true;
       }
     }
-    current = current->ParentOrShadowHostNode();
+    if (RuntimeEnabledFeatures::MouseFocusFlatTreeParentEnabled()) {
+      // If we are stepping out of a shadow tree, the tree scope should be
+      // updated to the tree we step into.
+      bool stepping_out_of_shadow_tree =
+          tree_scope == &current->GetTreeScope() &&
+          DynamicTo<ShadowRoot>(current->parentNode());
+      current = FlatTreeTraversal::Parent(*current);
+      if (stepping_out_of_shadow_tree && current) {
+        tree_scope = &current->GetTreeScope();
+      }
+    } else {
+      current = current->ParentOrShadowHostNode();
+    }
   } while (current);
 
   return false;
@@ -1058,7 +1080,11 @@ void FrameSelection::SetFocusedNodeIfNeeded() {
                                                                   frame_);
         return;
       }
-      target = target->ParentOrShadowHostElement();
+      if (RuntimeEnabledFeatures::MouseFocusFlatTreeParentEnabled()) {
+        target = FlatTreeTraversal::ParentElement(*target);
+      } else {
+        target = target->ParentOrShadowHostElement();
+      }
     }
     GetDocument().ClearFocusedElement();
   }

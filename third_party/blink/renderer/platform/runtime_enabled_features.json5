@@ -2821,6 +2821,13 @@
       base_feature: "none",
       is_protected_feature: true,
     },
+    {
+      // Fix HandleMouseFocus and FrameSelection to use FlatTree parent so
+      // correct fallback element receives focus.
+      // See https://crbug.com/41420461
+      name: "MouseFocusFlatTreeParent",
+      status: "experimental",
+    },
     // Move the selection to the last position in the list item. See
     // https://crbug.com/331841851
     {
