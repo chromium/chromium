@@ -15,9 +15,11 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -105,5 +107,15 @@ public final class SigninPromoCoordinator {
                         .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, false);
 
         return !isTypeManagedByPolicy && !isMaxImpressionCountReached && !isPromoDismissed;
+    }
+
+    static int getLayoutResId(@SigninAccessPoint int accessPoint) {
+        return switch (accessPoint) {
+            case SigninAccessPoint.BOOKMARK_MANAGER -> R.layout.sync_promo_view_bookmarks;
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO -> R.layout
+                    .sync_promo_view_content_suggestions;
+            case SigninAccessPoint.RECENT_TABS -> R.layout.sync_promo_view_recent_tabs;
+            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+        };
     }
 }

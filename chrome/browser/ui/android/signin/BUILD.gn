@@ -257,6 +257,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncHelperTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncTest.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoCoordinatorTest.java",
   ]
   deps = [
     ":java",

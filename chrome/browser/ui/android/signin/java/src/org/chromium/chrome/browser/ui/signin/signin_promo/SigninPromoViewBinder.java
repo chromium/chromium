@@ -43,9 +43,10 @@ final class SigninPromoViewBinder {
         } else if (key == SigninPromoProperties.DESCRIPTION_TEXT) {
             view.getDescription().setText(model.get(SigninPromoProperties.DESCRIPTION_TEXT));
         } else if (key == SigninPromoProperties.PRIMARY_BUTTON_TEXT) {
-            view.getPrimaryButton().setText(model.get(SigninPromoProperties.DESCRIPTION_TEXT));
+            view.getPrimaryButton().setText(model.get(SigninPromoProperties.PRIMARY_BUTTON_TEXT));
         } else if (key == SigninPromoProperties.SECONDARY_BUTTON_TEXT) {
-            view.getSecondaryButton().setText(model.get(SigninPromoProperties.DESCRIPTION_TEXT));
+            view.getSecondaryButton()
+                    .setText(model.get(SigninPromoProperties.SECONDARY_BUTTON_TEXT));
         } else if (key == SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON) {
             int visibility =
                     model.get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON)
