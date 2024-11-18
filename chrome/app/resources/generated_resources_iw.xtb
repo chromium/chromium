@@ -450,6 +450,7 @@
 <translation id="1296911687402551044">הצמדה של הכרטיסייה שנבחרה</translation>
 <translation id="1297175357211070620">יעד</translation>
 <translation id="129770436432446029">שליחת משוב לגבי <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">שינויים</translation>
 <translation id="130097046531636712">המצב הזה מאריך את חיי הסוללה על ידי הגבלת הפעילות ברקע ואפקטים חזותיים כמו גלילה חלקה</translation>
 <translation id="1301135395320604080">ל-<ph name="ORIGIN" /> יש הרשאה לערוך את הקבצים הבאים</translation>
 <translation id="130174306655812048">‏אפשר לנסות לומר "Ok Google, what song is this?‎"</translation>
@@ -1780,6 +1781,7 @@
 <translation id="2214018885812055163">תיקיות משותפות</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;שורה אחת לא מוצגת&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}two{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}}</translation>
 <translation id="2215070081105889450">כדי לשתף אודיו צריך לשתף כרטיסיה או מסך ולא חלון</translation>
+<translation id="2217208085547223783">מצב אמינות</translation>
 <translation id="2218019600945559112">עכבר ולוח מגע</translation>
 <translation id="2218515861914035131">הדבקה כטקסט רגיל</translation>
 <translation id="221872881068107022">גלילה לאחור</translation>
@@ -2514,6 +2516,7 @@
 <translation id="2722547199758472013">מזהה: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">פתיחת פרופיל אורח</translation>
 <translation id="2723819893410108315">אתרוג</translation>
+<translation id="2724822892847436256">מגבלות</translation>
 <translation id="2724841811573117416">‏יומני WebRTC</translation>
 <translation id="272488616838512378">המרת יחידות</translation>
 <translation id="2725200716980197196">קישוריות הרשת התחדשה</translation>
@@ -3474,6 +3477,7 @@
 <translation id="3421835120203732951">הוספת פרופיל חדש</translation>
 <translation id="3423111258700187173">תוצאות שנמצאו בתיקייה <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">‏מידע נוסף על התכונה מבוססת ה-AI הזו</translation>
+<translation id="3423275441470187644">ניתן לבטוח</translation>
 <translation id="3423463006624419153">ב-'<ph name="PHONE_NAME_1" />' וב-'<ph name="PHONE_NAME_2" />' שלך:</translation>
 <translation id="3423858849633684918">הפעלה מחדש של <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">תיאור הפעולות שלך לפני קריסת הכרטיסייה</translation>
@@ -4603,6 +4607,7 @@
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4195814663415092787">אני רוצה להמשיך מהמקום שבו הפסקתי</translation>
 <translation id="4198268995694216131">אתרים נוספים</translation>
+<translation id="4198420883535766848">הסרת הכרטיסייה מהרשימה</translation>
 <translation id="4200609364258658652">העתקת הפריים</translation>
 <translation id="4200689466366162458">מילים מותאמות אישית</translation>
 <translation id="4200983522494130825">&amp;כרטיסייה חדשה</translation>
@@ -5167,6 +5172,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{למחוק את קבוצת הכרטיסיות?}one{למחוק את קבוצות הכרטיסיות?}two{למחוק את קבוצות הכרטיסיות?}other{למחוק את קבוצות הכרטיסיות?}}</translation>
 <translation id="4608500690299898628">&amp;חיפוש...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> נתקל בשגיאה</translation>
+<translation id="4610493438923139095">לא מהימן</translation>
 <translation id="4610637590575890427">האם התכוונת לעבור אל <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">יש חיבורי נתונים זמינים</translation>
 <translation id="4611759022973144129">אפשר להזין את הסיסמה הזו כדי להיכנס אל <ph name="DEVICE_TYPE" />.</translation>
@@ -5192,6 +5198,7 @@
 <translation id="4627442949885028695">המשך במכשיר אחר</translation>
 <translation id="4628762811416793313">‏הגדרת מאגר Linux לא הושלמה. אפשר לנסות שוב.</translation>
 <translation id="4629521233550547305">פתיחת הפרופיל <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">מהימן</translation>
 <translation id="4631955550884380853">קול ממוקד</translation>
 <translation id="4632655012900268062">התאמה אישית של הכרטיסים</translation>
 <translation id="4633003931260532286">כדי להשתמש בתוסף יש צורך ב-"<ph name="IMPORT_NAME" />" בגרסה "<ph name="IMPORT_VERSION" />" לפחות, אך הגרסה המותקנת היא רק "<ph name="INSTALLED_VERSION" />"</translation>
@@ -6848,6 +6855,7 @@
 <translation id="5842497610951477805">‏הפעלה של Bluetooth</translation>
 <translation id="5844284118433003733">‏אחרי שנכנסת לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
 <translation id="5844574845205796324">קבלת הצעות לתוכן חדש ומעניין</translation>
+<translation id="5844685625984052392">רמז</translation>
 <translation id="5846200638699387931">שגיאה בתחביר המציין את הקשר: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">ללא צל</translation>
 <translation id="5846504156837627898">ניהול של הרשאות האתר</translation>

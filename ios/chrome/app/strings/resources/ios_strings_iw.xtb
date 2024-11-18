@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4647758699119474035">‏נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. שגיאה בחשבון Google. לפתיחת תפריט החשבון.</translation>
 <translation id="4650125387981512669">המשך בשם <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{הסתרה לאחר דקה אחת}one{הסתרה לאחר {count} דקות}two{הסתרה לאחר {count} דקות}other{הסתרה לאחר {count} דקות}}</translation>
 <translation id="4652817563047461855">חשוב לוודא שהסיסמאות מאובטחות, לבדוק אם הן נחשפו ולקבל עצות שיעזרו לך להגן על עצמך אונליין. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">שמירה</translation>
 <translation id="4668929960204016307">,</translation>
