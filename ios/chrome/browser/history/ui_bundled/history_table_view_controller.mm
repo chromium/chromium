@@ -273,12 +273,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   return [super tableView:tableView URLInfoAtIndexPath:indexPath];
 }
 
-- (void)fetchHistoryForQuery:(NSString*)query continuation:(BOOL)continuation {
-  self.loading = YES;
-
-  [super fetchHistoryForQuery:query continuation:continuation];
-}
-
 #pragma mark - Navigation Toolbar Configuration
 
 // Animates the view configuration after flipping the current status of `[self
