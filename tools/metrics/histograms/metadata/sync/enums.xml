@@ -1295,6 +1295,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultUserActionTriggerForUMA) -->
 
+<!-- LINT.IfChange(UserActionableError) -->
+
+<enum name="UserActionableError">
+  <int value="1" label="Sign in needs update"/>
+  <int value="2" label="Needs passphrase"/>
+  <int value="3" label="Needs trusted vault key for passwords"/>
+  <int value="4" label="Needs trusted vault key for everything"/>
+  <int value="5" label="Trusted vault recoverability degraded for passwords"/>
+  <int value="6" label="Trusted vault recoverability degraded for everything"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service.h:UserActionableError) -->
+
 </enums>
 
 </histogram-configuration>

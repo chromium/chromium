@@ -2143,6 +2143,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.UserActionableError" enum="UserActionableError"
+    expires_after="2025-11-14">
+  <owner>mmrashad@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded once for each new UserActionableError state the user encounter per
+    browser startup. Records which error state that prevent Sync from working
+    well or working at all.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
