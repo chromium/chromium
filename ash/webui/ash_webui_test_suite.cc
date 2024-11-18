@@ -9,6 +9,7 @@
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/platform/provide_ax_platform_for_tests.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/gl/test/gl_surface_test_support.h"
@@ -44,6 +45,9 @@ AshWebUITestSuite::~AshWebUITestSuite() = default;
 
 void AshWebUITestSuite::Initialize() {
   base::TestSuite::Initialize();
+
+  testing::UnitTest::GetInstance()->listeners().Append(
+      new ui::ProvideAXPlatformForTests());
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
