@@ -10,6 +10,8 @@
 #import "base/check.h"
 #import "base/command_line.h"
 #import "base/ios/block_types.h"
+#import "base/not_fatal_until.h"
+#import "base/notreached.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
@@ -972,6 +974,15 @@ UIColor* BackgroundColor() {
             (PasskeyWelcomeScreenPurpose)purpose
                                    primaryButtonAction:
                                        (ProceduralBlock)primaryButtonAction {
+  // Early return if the `passkeyNavigationController` is already visible. This
+  // early return shouldn't be triggered, but was added to monitor a crash fix.
+  // This check should be removed if no crash reports are observed. See
+  // crbug.com/377712051.
+  if (self.passkeyNavigationController.visibleViewController) {
+    NOTREACHED(base::NotFatalUntil::M135);
+    return;
+  }
+
   if (!self.presentingView.view.window) {
     // If the view of the presenting view controller doesn't have any window, it
     // means that it is currently not visible and that the CPE hasn't been
