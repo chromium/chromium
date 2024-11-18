@@ -291,8 +291,6 @@ try/linux-tsan-dbg
 try/linux-tsan-rel
 try/linux-ubsan-rel
 try/linux-ubsan-vptr-rel
-try/linux-updater-try-builder-dbg
-try/linux-updater-try-builder-rel
 try/linux-v4l2-codec-rel
 try/linux-viz-rel
 try/linux-wayland-rel
@@ -335,8 +333,6 @@ try/mac-rel-compilator
 try/mac-rust-x64-dbg
 try/mac-swangle-chromium-try-x64
 try/mac-ubsan-fyi-rel
-try/mac-updater-try-builder-dbg
-try/mac-updater-try-builder-rel
 try/mac11-arm64-rel
 try/mac11.0-blink-rel
 try/mac11.0.arm64-blink-rel
@@ -387,8 +383,6 @@ try/win-swangle-try-tot-swiftshader-x64
 try/win-swangle-try-tot-swiftshader-x86
 try/win-swangle-try-x64
 try/win-swangle-try-x86
-try/win-updater-try-builder-dbg
-try/win-updater-try-builder-rel
 try/win10-clang-tidy-rel
 try/win10-code-coverage
 try/win10-dbg
