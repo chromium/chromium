@@ -65,6 +65,13 @@ def parse_args(args):
         help="If present, output a (somewhat) human-readable text file "
         "cataloguing the warnings. Otherwise, output a json file "
         "with more detailed information about each instance.")
+    parser.add_argument(
+        "-k",
+        "--print_links",
+        action="store_true",
+        help="If present, attempt to provide direct links to codesearch for "
+        "the first warning in each file. Files which don't directly correspond "
+        "to anything, such as generated files, print the filename instead.")
 
     parsed_args = vars(parser.parse_args(args))
 
@@ -72,6 +79,18 @@ def parse_args(args):
 
 
 _TARGET_RE = re.compile('([^:(]+)(?:[:(])([0-9]+)(?::|, ?)([0-9]+)\)?:')
+
+
+def make_codesearch_link(file, line):
+    """
+    Construct a codesearch link to the specified position in the file, to
+    easily inspect the site of the warning.
+    """
+    if not file.startswith("../../"):
+        # Probably a generated file, can't construct a good link automatically
+        return file
+
+    return "https://crsrc.org/{};l={}".format(file.removeprefix('../../'), line)
 
 
 def extract_warning_location(line):
@@ -90,7 +109,8 @@ def extract_warning_location(line):
     return path, int(line), int(col)
 
 
-def collect_warning(summarize, log_name, log_file, collection, warning_info):
+def collect_warning(summarize, print_links, log_name, log_file, collection,
+                    warning_info):
     """
     Add information about a warning into our collection, avoiding
     duplicates and merging as necessary.
@@ -122,8 +142,12 @@ def collect_warning(summarize, log_name, log_file, collection, warning_info):
         next_line = next(log_file)
 
     log_name = os.path.basename(log_name)
-    logged_info = (line_num, col_num, next_line.split("|")[1].strip(),
-                   [log_name])
+    if print_links:
+        logged_info = (line_num, col_num, make_codesearch_link(path, line_num),
+                       next_line.split("|")[1].strip(), [log_name])
+    else:
+        logged_info = (line_num, col_num, next_line.split("|")[1].strip(),
+                       [log_name])
 
     # Should be either a singleton or empty
     existing_info = [
@@ -138,12 +162,13 @@ def collect_warning(summarize, log_name, log_file, collection, warning_info):
 
     # If the info's already in the list, then just note the name of the log file
     # It's possible for the same warning to appear multiple times in a file
-    if log_name not in existing_info[0][3]:
-        existing_info[0][3].append(log_name)
+    if log_name not in existing_info[0][-1]:
+        existing_info[0][-1].append(log_name)
     return
 
 
-def read_file(filename, warning_text, summarize, collection, failures):
+def read_file(filename, warning_text, summarize, print_links, collection,
+              failures):
     """
     Go through a single build log, collecting all the warnings that occurred and
     storing them in `collection`. Also keep track of any lines we tried to get
@@ -160,10 +185,11 @@ def read_file(filename, warning_text, summarize, collection, failures):
                 failures.append("{}: {}".format(builder_name, line))
                 continue
 
-            collect_warning(summarize, filename, file, collection, warning_info)
+            collect_warning(summarize, print_links, filename, file, collection,
+                            warning_info)
 
 
-def log_output(summarize, collection, output):
+def log_output(summarize, print_links, collection, output):
     """
     Write the results of the collection to the output.
     If a summary was requested, output a text summary.
@@ -187,8 +213,13 @@ def log_output(summarize, collection, output):
     for key in sorted(keys):
         values = collection[key]
         hits += len(values)
-        output_file.write("{} ({} hits): {}\n".format(key, str(len(values)),
-                                                      str(values)))
+        padding = " "
+        if print_links:
+            key = make_codesearch_link(key, values[0][0])
+            padding = "\n    "
+        output_file.write("{}{}({} hits): {}\n".format(key, padding,
+                                                       str(len(values)),
+                                                       str(values)))
 
     output_file.write("\nTotal Files: {}, Total Hits: {}".format(
         len(keys), hits))
@@ -208,13 +239,14 @@ def main(args):
     failures = []
     for file in log_files:
         read_file(file, parsed_args["warning"], parsed_args["summarize"],
-                  collection, failures)
+                  parsed_args["print_links"], collection, failures)
 
     items = collection.copy().items()
     for path, locs in items:
         collection[path] = sorted(locs)
 
-    log_output(parsed_args["summarize"], collection, parsed_args["output"])
+    log_output(parsed_args["summarize"], parsed_args["print_links"], collection,
+               parsed_args["output"])
 
     if failures:
         sys.stderr.write(
