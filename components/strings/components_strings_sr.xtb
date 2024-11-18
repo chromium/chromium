@@ -3130,7 +3130,7 @@
 <translation id="6671697161687535275">Желите ли да уклоните предлог из Chromium-а?</translation>
 <translation id="6677351035258626477">Брза храна</translation>
 <translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опцију}one{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опције}few{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опције}other{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опције}}</translation>
-<translation id="6679354743514146922">Chrome прегледач покушава да унесе лозинку на <ph name="APP_NAME" />.</translation>
+<translation id="6679354743514146922">Chrome прегледач покушава да унесе лозинку у <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC је сачуван</translation>
 <translation id="6683022854667115063">Слушалице</translation>
 <translation id="6687230248707087982">Коверта (обична)</translation>

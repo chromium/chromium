@@ -3403,6 +3403,7 @@ Del</translation>
 <translation id="7156870133441232244">‏יש לשדרג את השרת ל-TLS 1.2 ואילך.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{כדי לשלוח את הקובץ הזה באמצעות <ph name="FEATURE_NAME" />, צריך לפנות מקום (<ph name="DISK_SPACE_SIZE" />) במכשיר.}one{כדי לשלוח את הקבצים האלה באמצעות <ph name="FEATURE_NAME" />, צריך לפנות מקום (<ph name="DISK_SPACE_SIZE" />) במכשיר.}two{כדי לשלוח את הקבצים האלה באמצעות <ph name="FEATURE_NAME" />, צריך לפנות מקום (<ph name="DISK_SPACE_SIZE" />) במכשיר.}other{כדי לשלוח את הקבצים האלה באמצעות <ph name="FEATURE_NAME" />, צריך לפנות מקום (<ph name="DISK_SPACE_SIZE" />) במכשיר.}}</translation>
 <translation id="7160999678034985039">עליך לשמור את העבודה ולהתחיל את העדכון אחרי ששמרת הכול.</translation>
+<translation id="7162277662076933695">קורא כרטיסים חכמים</translation>
 <translation id="7163295244162773898">{0,plural, =1{להעתיק את הקובץ הסודי?}one{להעתיק את הקבצים הסודיים?}two{להעתיק את הקבצים הסודיים?}other{להעתיק את הקבצים הסודיים?}}</translation>
 <translation id="7168625890036931112">ההגבלה '<ph name="DATA_CONTROLS_RESTRICTION" />' לא נתמכת בפלטפורמה הזו</translation>
 <translation id="717330890047184534">‏מזהה GAIA:</translation>

@@ -342,6 +342,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2571711316400087311">Boshqa tildagi sahifalarni Google Tarjimonga yuborish taklif qilinsin</translation>
 <translation id="2571834852878229351">Oʻzim kiritaman</translation>
 <translation id="2574249610672786438">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>
+<translation id="2577981599306533385">“<ph name="GROUP_NAME" />” varaqlar guruhiga ruxsat darhol yopiladi va keyin <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) siz bilan Google xizmatlari orqali muloqot qila olmaydi.</translation>
 <translation id="2578337197553672982">Googledan yoshlar uchun kontent</translation>
 <translation id="2579297619530305344">Barcha qurilmalardagi parollar toʻliq hajmda ochildi</translation>
 <translation id="2581165646603367611">Chrome muhim emas deb hisoblaydigan cookie-fayllar, kesh va boshqa sayt ma’lumotlari o‘chiriladi.</translation>
@@ -566,6 +567,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3602290021589620013">Razm solish</translation>
 <translation id="3614126103057878858">Narxlarni bilish</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3619255692378312441">Ruxsatni boshqarish</translation>
 <translation id="3622349720008044802">Oynalarni boshqarish</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ta sayt}other{+ # ta sayt}}</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> qurilmasiga ulashilmoqda</translation>
@@ -585,6 +587,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3701515417135397388">Agar maʼlumotlar sizishida parol oshkor etilgan boʻlsa, ogohlantirilasiz</translation>
 <translation id="3703166520839776970">Muammo qayta takrorlansa, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> orqali batafsil axborot olish uchun "Batafsil" bandini tanlang.</translation>
 <translation id="3710501561113687889">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> maʼlumotlaringizni (<ph name="FIELDS_STRING" />) bu saytga ulashadi.</translation>
+<translation id="3710560693796335511">Birgalikda ishlash</translation>
 <translation id="3714981814255182093">Qidiruv panelini ochish</translation>
 <translation id="3716182511346448902">Bu sahifa juda ko‘p xotira ishlatishi sababli Chrome tomonidan to‘xtatildi.</translation>
 <translation id="3718765429352682176">Havolalarni Chrome orqali ochadigan boshqa ilovalar tarixini koʻrish mumkin.</translation>
@@ -956,6 +959,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) uchun “<ph name="GROUP_NAME" />” varaqlar guruhiga ruxsat darhol yopiladi</translation>
 <translation id="5423934151118863508">Siz eng ko‘p tashrif buyurgan sahifalar bu yerda ko‘rinadi</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB bo‘sh</translation>
+<translation id="543121643585717256">Havolaga ega har kim barcha varaqlarni tahrirlashi mumkin. Umumiy varaqlar guruhi haqida batafsil</translation>
 <translation id="543338862236136125">Parolni almashtirish</translation>
 <translation id="5433691172869980887">Foydalanuvchi nomi nusxalandi</translation>
 <translation id="5438292632479953702">Qayta yuklab olish</translation>
@@ -970,6 +974,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5468068603361015296"><ph name="FILE_NAME" /> fayli baribir yuklab olinsinmi?</translation>
 <translation id="548278423535722844">Xaritalar ilovasida ochish</translation>
 <translation id="5492637351392383067">Qurilmada shifrlash</translation>
+<translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> nomidan qoʻshilish</translation>
 <translation id="5503125329065007089">Barcha qurilmalardagi parollar yarim hajmda ochildi</translation>
 <translation id="5514904542973294328">Qurilma administratori o‘chirib qo‘ygan</translation>
 <translation id="5515439363601853141">Paolni ko‘rish uchun qulfni oching</translation>
@@ -1372,6 +1377,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7182051712900867547">Boshqa hisobdan foydalanish</translation>
 <translation id="7183517696921903380">Ilova asosida filtrlash oynasi ochildi.</translation>
 <translation id="7186568385131859684">Brauzer tarixi va boshqa maʼlumotlaringiz Google xizmatlarida qanday ishlatilishini boshqaring</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> bloklansinmi?</translation>
 <translation id="7191430249889272776">Ichki oyna orqa fonda ochildi.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Buni hoziroq oʻzgartiring}other{Bularni hoziroq oʻzgartiring}}</translation>
 <translation id="7196215469483532480">Maxfiylik qoʻllanmasi bildirgisi toʻliq hajmda ochildi</translation>
@@ -1570,6 +1576,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ta inkognito varaq}other{<ph name="TAB_COUNT_NORMAL" /> ta inkognito varaq}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB bo‘sh</translation>
 <translation id="8058746566562539958">Yangi Chrome oynasida ochish</translation>
+<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> ulashgan varaqlar guruhiga qoʻshilish}=1{<ph name="OWNER_FIRST_NAME" /> va yana # kishi ulashgan varaqlar guruhiga qoʻshilish}other{<ph name="OWNER_FIRST_NAME" /> va yana # kishi ulashgan varaqlar guruhiga qoʻshilish}}</translation>
 <translation id="8062594758852531064">Kengaytirilgan oldindan yuklash:</translation>
 <translation id="8063895661287329888">Xatcho‘pni qo‘shib bo‘lmadi.</translation>
 <translation id="8066816452984416180">Bu sahifani tez bukmarklash. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
