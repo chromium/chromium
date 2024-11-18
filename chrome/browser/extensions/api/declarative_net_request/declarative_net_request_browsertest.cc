@@ -204,7 +204,7 @@ class RulesetLoaderThrottle {
         RulesMonitorService::SetLoadRulesetThrottleCallbackForTesting(
             &throttle_callback_);
   }
-  ~RulesetLoaderThrottle() {}
+  ~RulesetLoaderThrottle() = default;
 
   // Waits until a ruleset load request is enqueued. Once the caller is
   // unblocked, it can do whatever it pleases before letting all the pending

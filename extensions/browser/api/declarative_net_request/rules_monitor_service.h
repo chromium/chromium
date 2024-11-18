@@ -91,6 +91,8 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   static std::unique_ptr<RulesMonitorService> CreateInstanceForTesting(
       content::BrowserContext* context);
 
+  // Sets a `throttle` which blocks ruleset loads from completing on the UI
+  // thread until released.
   static base::AutoReset<LoadRulesetThrottleCallback*>
   SetLoadRulesetThrottleCallbackForTesting(
       LoadRulesetThrottleCallback* throttle);
