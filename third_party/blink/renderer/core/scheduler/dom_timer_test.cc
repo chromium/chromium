@@ -55,6 +55,7 @@ class DOMTimerTest : public RenderingTest {
     auto now_ticks = platform()->NowTicks();
     window_performance->SetClocksForTesting(mock_clock, mock_tick_clock);
     window_performance->ResetTimeOriginForTesting(now_ticks);
+    window_performance->SetCrossOriginIsolatedCapabilityForTesting(true);
     GetDocument().GetSettings()->SetScriptEnabled(true);
     auto* loader = GetDocument().Loader();
     loader->GetTiming().SetNavigationStart(now_ticks);

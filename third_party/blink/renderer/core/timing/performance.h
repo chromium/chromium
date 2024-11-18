@@ -333,6 +333,10 @@ class CORE_EXPORT Performance : public EventTarget {
                            const base::TickClock* tick_clock);
   void ResetTimeOriginForTesting(base::TimeTicks time_origin);
 
+  void SetCrossOriginIsolatedCapabilityForTesting(bool is_isolated) {
+    cross_origin_isolated_capability_ = is_isolated;
+  }
+
   // TODO(https://crbug.com/1457049): remove this once visited links are
   // partitioned.
   bool softNavPaintMetricsSupported() const;
