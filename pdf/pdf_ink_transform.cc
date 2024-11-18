@@ -22,12 +22,11 @@ namespace chrome_pdf {
 
 namespace {
 
-// Performs what is mostly an inverse operation of
-// `EventPositionToCanonicalPosition()`, to convert from canonical coordinates
-// to screen coordinates.  This is not a strict inverse because it
-// intentionally does not adjust for `page_content_rect` offset from origin.
-// This is due to its usage for invalidation calculations, where clients account
-// for that offset separately.
+// Performs an inverse operation of `EventPositionToCanonicalPosition()`, to
+// convert from canonical coordinates to screen coordinates.
+// TODO(crbug.com/379003898): Change EventPositionToCanonicalPosition() to
+// return gfx::AxisTransform2d, so that callers can just use the inverse of
+// the transform instead of this helper.
 gfx::PointF CanonicalPositionToScreenPosition(
     const gfx::PointF& canonical_position,
     PageOrientation orientation,
@@ -57,6 +56,8 @@ gfx::PointF CanonicalPositionToScreenPosition(
           page_content_rect.height() - screen_position.x() - 1);
       break;
   }
+  // Account for scrolling, which is in the page content's origin.
+  screen_position += page_content_rect.origin().OffsetFromOrigin();
   return screen_position;
 }
 

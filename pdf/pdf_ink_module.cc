@@ -105,25 +105,6 @@ SkRect GetDrawPageClipRect(const gfx::Rect& content_rect,
   return gfx::RectFToSkRect(clip_rect);
 }
 
-gfx::Rect CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
-    const ink::Envelope& envelope,
-    PageOrientation orientation,
-    const gfx::Rect& page_content_rect,
-    float scale_factor) {
-  gfx::Rect rect = CanonicalInkEnvelopeToInvalidationScreenRect(
-      envelope, orientation, page_content_rect, scale_factor);
-
-  // TODO(crbug.com/376301209): The bounds for `ink::Envelope` are smaller
-  // than the resulting PDF paths, which can lead to a clipping artifact during
-  // invalidation.  This workaround extends the invalidation area to ensure all
-  // of the stroke object is covered by the invalidation area.  This workaround
-  // should be removed once the reason for the discrepancy has been determined
-  // and resolved.
-  constexpr float kInkBoundsExpansion = 5.0f;
-  rect.Outset(kInkBoundsExpansion * scale_factor);
-  return rect;
-}
-
 }  // namespace
 
 PdfInkModule::PdfInkModule(PdfInkModuleClient& client)
@@ -543,7 +524,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
       CHECK(undo_redo_success);
     }
 
-    client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
+    client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
         invalidate_envelope, client_->GetOrientation(),
         client_->GetPageContentsRect(state.page_index), client_->GetZoom()));
   }
@@ -693,7 +674,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   }
 
   // If `invalidate_envelope` isn't empty, then something got erased.
-  client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
+  client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
       invalidate_envelope, client_->GetOrientation(),
       client_->GetPageContentsRect(page_index), client_->GetZoom()));
   return true;
@@ -979,7 +960,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
       stroke_ids.erase(id);
     }
 
-    client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
+    client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
         invalidate_envelope, client_->GetOrientation(),
         client_->GetPageContentsRect(page_index), client_->GetZoom()));
     page_indices_with_thumbnail_updates.insert(page_index);
@@ -1021,7 +1002,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
       shape_ids.erase(id);
     }
 
-    client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
+    client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
         invalidate_envelope, client_->GetOrientation(),
         client_->GetPageContentsRect(page_index), client_->GetZoom()));
     page_indices_with_thumbnail_updates.insert(page_index);

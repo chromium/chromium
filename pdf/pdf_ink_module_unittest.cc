@@ -992,7 +992,7 @@ TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
                                        kCanonicalMouseUpPosition}})));
 }
 
-TEST_F(PdfInkModuleStrokeTest, InvalidationsFromStroke) {
+TEST_F(PdfInkModuleStrokeTest, BasicLayoutInvalidationsFromStroke) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
@@ -1003,7 +1003,36 @@ TEST_F(PdfInkModuleStrokeTest, InvalidationsFromStroke) {
                                              gfx::Size(14.0f, 14.0f));
   const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
                                            gfx::Size(14.0f, 12.0f));
-  const gfx::Rect kInvalidationAreaFinishedStroke(3.0f, 8.0f, 35.0f, 17.0f);
+  const gfx::Rect kInvalidationAreaFinishedStroke(8.0f, 13.0f, 25.0f, 7.0f);
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
+                  kInvalidationAreaMouseUp, kInvalidationAreaFinishedStroke));
+}
+
+TEST_F(PdfInkModuleStrokeTest, TransformedLayoutInvalidationsFromStroke) {
+  // Setup to support examining the invalidation areas from page stroke points
+  // for a layout that is more complicated than what is provide by
+  // `InitializeSimpleSinglePageBasicLayout()`.  Include viewport offset,
+  // scroll, rotation, and zoom.
+  constexpr gfx::SizeF kPageSize(100.0f, 120.0f);
+  constexpr gfx::PointF kPageOrigin(5.0f, -15.0f);
+  constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
+  client().set_page_layouts(base::span_from_ref(kPageLayout));
+  client().set_page_visibility(0, true);
+  client().set_orientation(PageOrientation::kClockwise180);
+  client().set_zoom(2.0f);
+
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // The default brush param size is 3.0.
+  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(4.0f, 4.0f));
+  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
+                                             gfx::Size(14.0f, 14.0f));
+  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
+                                           gfx::Size(14.0f, 12.0f));
+  const gfx::Rect kInvalidationAreaFinishedStroke(7.0f, 12.0f, 27.0f, 9.0f);
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -1493,8 +1522,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsBasic) {
   // This size is smaller than the area of the merged invalidation constants
   // above because InkStrokeModeler modeled the "V" shaped input into an input
   // with a much gentler line slope.
-  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(3.0f, 8.0f),
-                                                gfx::Size(35.0f, 17.0f));
+  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(8.0f, 13.0f),
+                                                gfx::Size(25.0f, 7.0f));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -1533,8 +1562,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsScaledRotated90) {
   // This size is smaller than the area of the merged invalidation constants
   // above because InkStrokeModeler modeled the "V" shaped input into an input
   // with a much gentler line slope.
-  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(-3.0f, 2.0f),
-                                                gfx::Size(47.0f, 29.0f));
+  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(7.0f, 12.0f),
+                                                gfx::Size(27.0f, 9.0f));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
