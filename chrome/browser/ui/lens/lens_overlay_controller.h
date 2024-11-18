@@ -933,6 +933,18 @@ class LensOverlayController : public LensSearchboxClient,
   void RecordEndOfSessionMetrics(
       lens::LensOverlayDismissalSource dismissal_source);
 
+  // Records the UMA for the size of the document where the contextual search
+  // box was shown. If this is a webpage, records the size of the innerHtml and
+  // the innerText. If this is a PDF, records the byte size of the PDF.
+  void RecordDocumentSizes();
+
+  // Callback to record the size of the innerText once it is fetched.
+  void RecordInnerTextSize(
+      std::unique_ptr<content_extraction::InnerTextResult> result);
+
+  // Callback to record the size of the innerHtml once it is fetched.
+  void RecordInnerHtmlSize(const std::optional<std::string>& result);
+
   // Launches the Lens overlay HaTS survey if eligible.
   void MaybeLaunchSurvey();
 

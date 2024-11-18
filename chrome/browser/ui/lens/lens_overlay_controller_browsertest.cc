@@ -4183,6 +4183,8 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
                        PdfBytesInFollowUpRequest) {
+  base::HistogramTester histogram_tester;
+
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
   LoadPdfGetExtensionHost(url);
 
@@ -4228,6 +4230,11 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   }));
   ASSERT_EQ(lens::PageContentMimeType::kPdf,
             fake_query_controller->last_sent_underlying_content_type());
+
+  // Verify the histogram recorded the new byte size.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByContentType.Pdf.DocumentSize",
+      /*expected_count=*/2);
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4304,6 +4311,9 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf.Shown",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByContentType.Pdf.DocumentSize",
+      /*expected_count=*/1);
 }
 
 // TODO(crbug.com/378810677): Flaky on all platforms.
@@ -4673,6 +4683,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        InnerTextBytesInFollowUpRequest) {
+  base::HistogramTester histogram_tester;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
   // State should start in off.
@@ -4716,6 +4727,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }));
   ASSERT_EQ(lens::PageContentMimeType::kPlainText,
             fake_query_controller->last_sent_underlying_content_type());
+
+  // Verify the size histograms recorded the new bytes.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByContentType.PlainText.DocumentSize",
+      /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByContentType.Html.DocumentSize",
+      /*expected_count=*/2);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -4744,6 +4763,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "Lens.Overlay.ContextualSearchBox.ByDocumentType.Web.Shown",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByContentType.PlainText.DocumentSize",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByContentType.Html.DocumentSize",
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

@@ -115,6 +115,11 @@ constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
 // taking a screenshot.
 constexpr base::TimeDelta kReflowWaitTimeout = base::Milliseconds(200);
 
+// The amount of change in bytes that is considered a significant change and
+// should trigger a page content update request. This provides tolerance in
+// case there is slight variation in the retrievied bytes in between calls.
+constexpr float kByteChangeTolerancePercent = 0.01;
+
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
 
@@ -1486,6 +1491,8 @@ void LensOverlayController::StorePageContentAndContinueInitialization(
   initialization_data->page_content_bytes_ = bytes;
   initialization_data->page_content_type_ = content_type;
   InitializeOverlay(std::move(initialization_data));
+
+  RecordDocumentSizes();
 }
 
 void LensOverlayController::GetPageContextualization(
@@ -1633,6 +1640,15 @@ void LensOverlayController::UpdatePageContextualization(
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
     return;
   }
+
+  // If the bytes have not changed more than our threshold, exit early.
+  const float old_size = initialization_data_->page_content_bytes_.size();
+  const float new_size = bytes.size();
+  const float percent_changed = abs((new_size - old_size) / old_size);
+  if (percent_changed < kByteChangeTolerancePercent) {
+    return;
+  }
+
   initialization_data_->page_content_bytes_ = bytes;
   initialization_data_->page_content_type_ = content_type;
 
@@ -1647,6 +1663,8 @@ void LensOverlayController::UpdatePageContextualization(
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
       initialization_data_->page_content_bytes_,
       initialization_data_->page_content_type_, GetPageURL());
+
+  RecordDocumentSizes();
 }
 
 void LensOverlayController::UpdateGhostLoaderState(bool suppress_ghost_loader,
@@ -2694,6 +2712,46 @@ void LensOverlayController::RecordEndOfSessionMetrics(
   lens::RecordUKMSessionEndMetrics(source_id, invocation_source_,
                                    search_performed_in_session_,
                                    session_duration);
+}
+
+void LensOverlayController::RecordDocumentSizes() {
+  auto content_type = initialization_data_->page_content_type_;
+  lens::RecordDocumentSizeBytes(
+      content_type, initialization_data_->page_content_bytes_.size());
+
+  // Fetch and record the other content type for representing the webpage.
+  auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
+  if (content_type == lens::PageContentMimeType::kHtml) {
+    // Fetch the innerText to log the size.
+    content_extraction::GetInnerText(
+        *render_frame_host, /*node_id=*/std::nullopt,
+        base::BindOnce(&LensOverlayController::RecordInnerTextSize,
+                       weak_factory_.GetWeakPtr()));
+  } else if (content_type == lens::PageContentMimeType::kPlainText) {
+    // Fetch the innerHtml bytes to log the size.
+    content_extraction::GetInnerHtml(
+        *render_frame_host,
+        base::BindOnce(&LensOverlayController::RecordInnerHtmlSize,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void LensOverlayController::RecordInnerTextSize(
+    std::unique_ptr<content_extraction::InnerTextResult> result) {
+  if (!result) {
+    return;
+  }
+  lens::RecordDocumentSizeBytes(lens::PageContentMimeType::kPlainText,
+                                result->inner_text.size());
+}
+
+void LensOverlayController::RecordInnerHtmlSize(
+    const std::optional<std::string>& result) {
+  if (!result) {
+    return;
+  }
+  lens::RecordDocumentSizeBytes(lens::PageContentMimeType::kHtml,
+                                result->size());
 }
 
 void LensOverlayController::MaybeLaunchSurvey() {
