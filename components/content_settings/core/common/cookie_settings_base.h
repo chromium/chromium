@@ -200,7 +200,7 @@ class CookieSettingsBase {
   };
 
   // Set of types relevant for CookieSettings.
-  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 11>;
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 12>;
 
   // ContentSettings listed in this set will be automatically synced to the
   // CookieSettings instance in the network service.

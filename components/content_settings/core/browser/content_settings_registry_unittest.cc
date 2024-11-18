@@ -151,6 +151,7 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
       ContentSettingsType::REQUEST_DESKTOP_SITE,
       ContentSettingsType::KEYBOARD_LOCK,
       ContentSettingsType::POINTER_LOCK,
+      ContentSettingsType::LEGACY_COOKIE_SCOPE,
   };
 
   for (const ContentSettingsInfo* info : *registry()) {
