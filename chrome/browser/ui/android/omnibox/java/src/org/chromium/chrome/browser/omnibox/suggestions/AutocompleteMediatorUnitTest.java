@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.util.SparseArray;
 import android.view.View;
@@ -146,7 +147,7 @@ public class AutocompleteMediatorUnitTest {
             mVisualStateObserver;
     private @Mock DeferredIMEWindowInsetApplicationCallback mDeferredImeCallback;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
-    private @Captor ArgumentCaptor<SuggestionsListAnimationDriver> mDriverCaptor;
+    private @Captor ArgumentCaptor<ImeSyncedSuggestionsListAnimationDriver> mDriverCaptor;
 
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
@@ -433,10 +434,12 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
+    @Config(sdk = VERSION_CODES.R)
     public void onOmniboxSessionStateChange_startsAnimationDriver() {
         mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
-        SuggestionsListAnimationDriver animationDriver =
-                mMediator.initializeAnimationDriver(mWindow);
+        ImeSyncedSuggestionsListAnimationDriver animationDriver =
+                (ImeSyncedSuggestionsListAnimationDriver)
+                        mMediator.initializeAnimationDriver(mWindow);
         mMediator.onNativeInitialized();
 
         // Animation shouldn't run if IME insets are not yet controllable.
@@ -714,6 +717,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onSuggestionClicked_deferLoadingUntilNativeLibrariesLoaded() {
+        clearInvocations(mAutocompleteDelegate);
         var url = new GURL("http://test");
         var match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)

@@ -36,14 +36,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/** Unit tests for {@link SuggestionsListAnimationDriver}. */
+/** Unit tests for {@link ImeSyncedSuggestionsListAnimationDriver}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class SuggestionsListAnimationDriverTest {
+public class ImeSyncedSuggestionsListAnimationDriverTest {
 
     private static final int VERTICAL_OFFSET = 20;
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private SuggestionsListAnimationDriver mDriver;
+    private ImeSyncedSuggestionsListAnimationDriver mDriver;
     private WindowInsetsAnimationCompat mImeAnimation;
     private WindowInsetsAnimationCompat mNonImeAnimation;
     private PropertyModel mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
@@ -66,7 +66,7 @@ public class SuggestionsListAnimationDriverTest {
         mWindowInsetsControllerCompat = new WindowInsetsControllerCompat(mWindow, mRootView);
         mHandler = new Handler(Looper.getMainLooper());
         mDriver =
-                new SuggestionsListAnimationDriver(
+                new ImeSyncedSuggestionsListAnimationDriver(
                         mInsetObserver,
                         mListModel,
                         () -> mTranslation,
@@ -218,7 +218,7 @@ public class SuggestionsListAnimationDriverTest {
     public void testRootViewStartsAttached() {
         doReturn(true).when(mRootView).isAttachedToWindow();
         mDriver =
-                new SuggestionsListAnimationDriver(
+                new ImeSyncedSuggestionsListAnimationDriver(
                         mInsetObserver,
                         mListModel,
                         () -> mTranslation,

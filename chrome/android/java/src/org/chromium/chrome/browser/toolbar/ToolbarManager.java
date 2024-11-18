@@ -945,7 +945,9 @@ public class ToolbarManager
                             baseChromeLayout,
                             bottomWindowPaddingSupplier,
                             onLongClickListener,
-                            mBrowserControlsSizer);
+                            mBrowserControlsSizer,
+                            ToolbarPositionController.isToolbarPositionCustomizationEnabled(
+                                    mActivity, mIsCustomTab));
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;

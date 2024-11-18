@@ -109,7 +109,7 @@ class AutocompleteMediator
     private final @NonNull Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private final @NonNull OmniboxActionDelegate mOmniboxActionDelegate;
     private final @NonNull ActivityLifecycleDispatcher mLifecycleDispatcher;
-    private @Nullable SuggestionsListAnimationDriver mAnimationDriver;
+    private @NonNull SuggestionsListAnimationDriver mAnimationDriver;
     private final @NonNull WindowAndroid mWindowAndroid;
     private final @NonNull DeferredIMEWindowInsetApplicationCallback
             mDeferredIMEWindowInsetApplicationCallback;
@@ -230,10 +230,7 @@ class AutocompleteMediator
         OmniboxActionFactoryImpl.get()
                 .setDialerAvailable(!pm.queryIntentActivities(dialIntent, 0).isEmpty());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && OmniboxFeatures.shouldAnimateSuggestionsListAppearance()) {
-            initializeAnimationDriver(mWindowAndroid.getWindow());
-        }
+        initializeAnimationDriver(mWindowAndroid.getWindow());
     }
 
     /**
@@ -415,7 +412,7 @@ class AutocompleteMediator
         // - before stopAutocomplete() (when current suggestions are erased).
         mDropdownViewInfoListBuilder.onOmniboxSessionStateChange(activated);
 
-        if (mAnimationDriver != null && mAnimationDriver.isImeAnimationEnabled()) {
+        if (mAnimationDriver.isAnimationEnabled()) {
             mAnimationDriver.onOmniboxSessionStateChange(activated);
             if (activated) {
                 mDelegate.setKeyboardVisibility(true, false);
@@ -476,7 +473,7 @@ class AutocompleteMediator
     void onUrlAnimationFinished(boolean hasFocus) {
         // mAnimationDriver has the responsibility of calling propagateOmniboxSessionStateChange if
         // it's present and currently active.
-        if (hasFocus && mAnimationDriver != null && mAnimationDriver.isImeAnimationEnabled()) {
+        if (hasFocus && mAnimationDriver.isAnimationEnabled()) {
             return;
         }
         propagateOmniboxSessionStateChange(hasFocus);
@@ -1396,22 +1393,50 @@ class AutocompleteMediator
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @NonNull
     SuggestionsListAnimationDriver initializeAnimationDriver(Window window) {
-        int addedVerticalOffset =
-                mContext.getResources()
-                        .getDimensionPixelOffset(
-                                R.dimen.omnibox_suggestion_list_animation_added_vertical_offset);
-        InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
-        assert insetObserver != null;
-        mAnimationDriver =
-                new SuggestionsListAnimationDriver(
-                        insetObserver,
-                        mListPropertyModel,
-                        mEmbedder::getVerticalTranslationForAnimation,
-                        () -> propagateOmniboxSessionStateChange(true),
-                        addedVerticalOffset,
-                        new Handler(),
-                        window);
+        if (mDelegate.isToolbarPositionCustomizationEnabled()) {
+            int addedVerticalOffset =
+                    mContext.getResources()
+                            .getDimensionPixelOffset(
+                                    R.dimen
+                                            .omnibox_suggestion_list_bottom_animation_starting_vertical_offset);
+            mAnimationDriver =
+                    new UnsyncedSuggestionsListAnimationDriver(
+                            mListPropertyModel,
+                            () -> propagateOmniboxSessionStateChange(true),
+                            mDelegate::isToolbarBottomAnchored,
+                            addedVerticalOffset);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && OmniboxFeatures.shouldAnimateSuggestionsListAppearance()) {
+            int addedVerticalOffset =
+                    mContext.getResources()
+                            .getDimensionPixelOffset(
+                                    R.dimen
+                                            .omnibox_suggestion_list_animation_added_vertical_offset);
+            InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
+            assert insetObserver != null;
+            mAnimationDriver =
+                    new ImeSyncedSuggestionsListAnimationDriver(
+                            insetObserver,
+                            mListPropertyModel,
+                            mEmbedder::getVerticalTranslationForAnimation,
+                            () -> propagateOmniboxSessionStateChange(true),
+                            addedVerticalOffset,
+                            new Handler(),
+                            window);
+        } else {
+            mAnimationDriver =
+                    new SuggestionsListAnimationDriver() {
+                        @Override
+                        public void onOmniboxSessionStateChange(boolean active) {}
+
+                        @Override
+                        public boolean isAnimationEnabled() {
+                            return false;
+                        }
+                    };
+        }
         return mAnimationDriver;
     }
 
