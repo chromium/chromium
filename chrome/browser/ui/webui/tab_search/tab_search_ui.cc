@@ -173,9 +173,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 
   source->AddLocalizedString("close", IDS_CLOSE);
 
-  source->AddInteger(
-      "recentlyClosedDefaultItemDisplayCount",
-      features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
+  source->AddInteger("recentlyClosedDefaultItemDisplayCount",
+                     TabSearchPageHandler::kMinRecentlyClosedItemDisplayCount);
 
   bool tab_organization_enabled = false;
   if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {

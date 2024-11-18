@@ -967,8 +967,6 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
                            profile_data->recently_closed_tab_groups,
                            tab_group_ids, profile_data->tab_groups,
                            tab_dedup_keys);
-  DCHECK(features::kTabSearchRecentlyClosedTabCountThreshold.Get() >= 0);
-
   profile_data->recently_closed_section_expanded =
       Profile::FromWebUI(web_ui_)->GetPrefs()->GetBoolean(
           tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
@@ -1046,13 +1044,10 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
   if (!tab_restore_service)
     return;
 
-  const int kRecentlyClosedTabCountThreshold = static_cast<size_t>(
-      features::kTabSearchRecentlyClosedTabCountThreshold.Get());
+  const int kRecentlyClosedTabCountThreshold = 100;
   int recently_closed_tab_count = 0;
   // The minimum number of desired recently closed items (tab or group) to be
   // shown in the 'Recently Closed' section of the UI.
-  const int kMinRecentlyClosedItemDisplayCount = static_cast<size_t>(
-      features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
   int recently_closed_item_count = 0;
 
   // Attempt to add as many recently closed items as necessary to support the

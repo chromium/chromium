@@ -174,6 +174,8 @@ class TabSearchPageHandler
   void SetTabDeclutterControllerForTesting(
       tabs::TabDeclutterController* tab_declutter_controller);
 
+  static constexpr int kMinRecentlyClosedItemDisplayCount = 8;
+
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
 

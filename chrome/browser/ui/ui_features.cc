@@ -331,18 +331,6 @@ const base::FeatureParam<double> kTabOrganizationTriggerSensitivityThreshold{
 const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode{
     &kTabOrganization, "trigger_demo_mode", false};
 
-// Controls feature parameters for Tab Search's `Recently Closed` entries.
-BASE_FEATURE(kTabSearchRecentlyClosed,
-             "TabSearchRecentlyClosed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kTabSearchRecentlyClosedDefaultItemDisplayCount{
-    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedDefaultItemDisplayCount",
-    8};
-
-const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold{
-    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedTabCountThreshold", 100};
-
 // Enables creating a web app window when tearing off a tab with a url
 // controlled by a web app.
 BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
