@@ -45,18 +45,10 @@ enum class PathStatus {
 // Creates `directory` including all intermediate directories and returns
 // whether the operation was a success. Safe to call if `directory` exists.
 [[nodiscard]] bool CreateDirectory(NSString* directory) {
-  NSError* error = nil;
-  if (![[NSFileManager defaultManager] createDirectoryAtPath:directory
-                                 withIntermediateDirectories:YES
-                                                  attributes:nil
-                                                       error:&error]) {
-    DLOG(WARNING) << "Error creating directory: "
-                  << base::SysNSStringToUTF8(directory) << ": "
-                  << base::SysNSStringToUTF8([error description]);
-    return false;
-  }
-
-  return true;
+  return [[NSFileManager defaultManager] createDirectoryAtPath:directory
+                                   withIntermediateDirectories:YES
+                                                    attributes:nil
+                                                         error:nil];
 }
 
 // Renames a file from `from` to `dest`.
@@ -65,17 +57,9 @@ enum class PathStatus {
     return false;
   }
 
-  NSError* error = nil;
-  if (![[NSFileManager defaultManager] moveItemAtPath:from
-                                               toPath:dest
-                                                error:&error]) {
-    DLOG(WARNING) << "Error moving file from: " << base::SysNSStringToUTF8(from)
-                  << " to: " << base::SysNSStringToUTF8(dest) << ": "
-                  << base::SysNSStringToUTF8([error description]);
-    return false;
-  }
-
-  return true;
+  return [[NSFileManager defaultManager] moveItemAtPath:from
+                                                 toPath:dest
+                                                  error:nil];
 }
 
 // Returns whether `directory` exists and is empty.
@@ -93,15 +77,7 @@ enum class PathStatus {
 // Deletes recursively file or directory at `path`. Returns whether the
 // operation was a success.
 [[nodiscard]] bool DeleteRecursively(NSString* path) {
-  NSError* error = nil;
-  if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
-    DLOG(WARNING) << "Error removing file/directory at: "
-                  << base::SysNSStringToUTF8(path) << ": "
-                  << base::SysNSStringToUTF8([error description]);
-    return false;
-  }
-
-  return true;
+  return [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
 // Copies content of `from_dir` to `dest_dir` recursively. It is an error
@@ -109,9 +85,6 @@ enum class PathStatus {
 // is not a directory.
 [[nodiscard]] bool CopyDirectory(NSString* from_dir, NSString* dest_dir) {
   if (!DirectoryExists(from_dir)) {
-    DLOG(WARNING) << "Error copying directory: "
-                  << base::SysNSStringToUTF8(from_dir) << " to "
-                  << base::SysNSStringToUTF8(dest_dir) << ": no such directory";
     return false;
   }
 
@@ -123,9 +96,6 @@ enum class PathStatus {
       break;
 
     case PathStatus::kFile:
-      DLOG(WARNING) << "Error copying directory: "
-                    << base::SysNSStringToUTF8(from_dir) << " to "
-                    << base::SysNSStringToUTF8(dest_dir) << ": file exists";
       return false;
 
     case PathStatus::kInexistent:
@@ -141,37 +111,20 @@ enum class PathStatus {
   // documentation of -linkItemAtPath:toPath:error: explicitly explain that
   // if source is a directory, the method create the destination directory
   // and hard-link the content recursively.
-
-  NSError* error = nil;
-  if (![[NSFileManager defaultManager] linkItemAtPath:from_dir
-                                               toPath:dest_dir
-                                                error:&error]) {
-    DLOG(WARNING) << "Error copying directory: "
-                  << base::SysNSStringToUTF8(from_dir) << " to "
-                  << base::SysNSStringToUTF8(dest_dir) << ": "
-                  << base::SysNSStringToUTF8([error description]);
-    return false;
-  }
-
-  return true;
+  return [[NSFileManager defaultManager] linkItemAtPath:from_dir
+                                                 toPath:dest_dir
+                                                  error:nil];
 }
 
 // Copies file at `from_path` to `dest_path`. It is an error if `from_path`
 // is not a file or if `dest_path` exists and is not a file.
 [[nodiscard]] bool CopyFile(NSString* from_path, NSString* dest_path) {
   if (!FileExists(from_path)) {
-    DLOG(WARNING) << "Error copying file: "
-                  << base::SysNSStringToUTF8(from_path) << " to "
-                  << base::SysNSStringToUTF8(dest_path) << ": no such file";
     return false;
   }
 
   switch (GetPathStatus(dest_path)) {
     case PathStatus::kDirectory:
-      DLOG(WARNING) << "Error copying file: "
-                    << base::SysNSStringToUTF8(from_path) << " to "
-                    << base::SysNSStringToUTF8(dest_path)
-                    << ": directory exists";
       break;
 
     case PathStatus::kFile:
@@ -190,19 +143,9 @@ enum class PathStatus {
   }
 
   // Use hardlink to perform the copy to reduce the impact on storage.
-
-  NSError* error = nil;
-  if (![[NSFileManager defaultManager] linkItemAtPath:from_path
-                                               toPath:dest_path
-                                                error:&error]) {
-    DLOG(WARNING) << "Error copying file: "
-                  << base::SysNSStringToUTF8(from_path) << " to "
-                  << base::SysNSStringToUTF8(dest_path) << ": "
-                  << base::SysNSStringToUTF8([error description]);
-    return false;
-  }
-
-  return true;
+  return [[NSFileManager defaultManager] linkItemAtPath:from_path
+                                                 toPath:dest_path
+                                                  error:nil];
 }
 
 // Writes `data` to `filename` and returns whether the operation was a success.
@@ -216,32 +159,12 @@ enum class PathStatus {
   constexpr NSDataWritingOptions options =
       NSDataWritingAtomic |
       NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
-
-  NSError* error = nil;
-  if (![data writeToFile:filename options:options error:&error]) {
-    DLOG(WARNING) << "Error writing to file: "
-                  << base::SysNSStringToUTF8(filename) << ": "
-                  << base::SysNSStringToUTF8([error description]);
-    return false;
-  }
-
-  return true;
+  return [data writeToFile:filename options:options error:nil];
 }
 
 // Reads content of `filename` and returns it as a `NSData*` or nil on error.
 [[nodiscard]] NSData* ReadFile(NSString* filename) {
-  NSError* error = nil;
-  NSData* data = [NSData dataWithContentsOfFile:filename
-                                        options:0
-                                          error:&error];
-  if (!data) {
-    DLOG(WARNING) << "Error loading from file: "
-                  << base::SysNSStringToUTF8(filename) << ": "
-                  << base::SysNSStringToUTF8([error description]);
-    return nil;
-  }
-
-  return data;
+  return [NSData dataWithContentsOfFile:filename options:0 error:nil];
 }
 
 }  // namespace internal
@@ -299,8 +222,6 @@ bool WriteProto(const base::FilePath& filename,
     NSMutableData* data = [NSMutableData dataWithLength:serialized_size];
 
     if (!proto.SerializeToArray(data.mutableBytes, data.length)) {
-      DLOG(WARNING) << "Error serializing proto to file: "
-                    << filename.AsUTF8Unsafe();
       return false;
     }
 
@@ -316,8 +237,6 @@ bool ParseProto(const base::FilePath& filename,
   }
 
   if (!proto.ParseFromArray(data.bytes, data.length)) {
-    DLOG(WARNING) << "Error parsing proto from file: "
-                  << filename.AsUTF8Unsafe();
     return false;
   }
 
@@ -325,18 +244,9 @@ bool ParseProto(const base::FilePath& filename,
 }
 
 NSData* ArchiveRootObject(NSObject<NSCoding>* object) {
-  NSError* error = nil;
-  NSData* archived = [NSKeyedArchiver archivedDataWithRootObject:object
-                                           requiringSecureCoding:NO
-                                                           error:&error];
-
-  if (error) {
-    DLOG(WARNING) << "Error serializing data: "
-                  << base::SysNSStringToUTF8([error description]);
-    return nil;
-  }
-
-  return archived;
+  return [NSKeyedArchiver archivedDataWithRootObject:object
+                               requiringSecureCoding:NO
+                                               error:nil];
 }
 
 NSObject<NSCoding>* DecodeRootObject(NSData* data) {
@@ -344,8 +254,6 @@ NSObject<NSCoding>* DecodeRootObject(NSData* data) {
   NSKeyedUnarchiver* unarchiver =
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
   if (error) {
-    DLOG(WARNING) << "Error deserializing data: "
-                  << base::SysNSStringToUTF8([error description]);
     return nil;
   }
 
@@ -356,8 +264,6 @@ NSObject<NSCoding>* DecodeRootObject(NSData* data) {
   @try {
     return [unarchiver decodeObjectForKey:@"root"];
   } @catch (NSException* exception) {
-    DLOG(WARNING) << "Error deserializing data: "
-                  << base::SysNSStringToUTF8([exception description]);
     return nil;
   }
 }
@@ -376,8 +282,6 @@ SessionWindowIOS* ReadSessionWindow(const base::FilePath& filename) {
   if ([root isKindOfClass:[SessionIOS class]]) {
     SessionIOS* session = base::apple::ObjCCastStrict<SessionIOS>(root);
     if (session.sessionWindows.count != 1) {
-      DLOG(WARNING) << "Error deserializing data: "
-                    << "not exactly one SessionWindowIOS.";
       return nil;
     }
 

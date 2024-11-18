@@ -19,6 +19,7 @@
 #import "base/memory/ref_counted.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
@@ -362,7 +363,7 @@ using SaveSessionCallback =
   NSArray<NSString*>* fileList =
       [fileManager contentsOfDirectoryAtPath:directory error:&error];
   if (error) {
-    CHECK(false) << "Unable to get session path list: "
+    NOTREACHED() << "Unable to get session path list: "
                  << base::SysNSStringToUTF8(directory) << ": "
                  << base::SysNSStringToUTF8([error description]);
   }
@@ -377,7 +378,7 @@ using SaveSessionCallback =
       continue;
     }
     if (![fileManager removeItemAtPath:filepath error:&error] || error) {
-      CHECK(false) << "Unable to delete path: "
+      NOTREACHED() << "Unable to delete path: "
                    << base::SysNSStringToUTF8(filepath) << ": "
                    << base::SysNSStringToUTF8([error description]);
     }
@@ -416,9 +417,6 @@ using SaveSessionCallback =
     base::UmaHistogramTimes(kSessionHistogramSavingTime, end_time - start_time);
 
     if (!sessionData || error) {
-      DLOG(WARNING) << "Error serializing session for path: "
-                    << base::SysNSStringToUTF8(sessionPath) << ": "
-                    << base::SysNSStringToUTF8([error description]);
       return;
     }
 
@@ -449,17 +447,13 @@ using SaveSessionCallback =
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* directory = [sessionPath stringByDeletingLastPathComponent];
 
-  NSError* error = nil;
   BOOL isDirectory = NO;
   if (![fileManager fileExistsAtPath:directory isDirectory:&isDirectory]) {
     isDirectory = YES;
     if (![fileManager createDirectoryAtPath:directory
                 withIntermediateDirectories:YES
                                  attributes:nil
-                                      error:&error]) {
-      DLOG(WARNING) << "Error creating destination directory: "
-                    << base::SysNSStringToUTF8(directory) << ": "
-                    << base::SysNSStringToUTF8([error description]);
+                                      error:nil]) {
       return;
     }
   }
@@ -475,10 +469,7 @@ using SaveSessionCallback =
       NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  if (![sessionData writeToFile:sessionPath options:options error:&error]) {
-    DLOG(WARNING) << "Error writing session file: "
-                  << base::SysNSStringToUTF8(sessionPath) << ": "
-                  << base::SysNSStringToUTF8([error description]);
+  if (![sessionData writeToFile:sessionPath options:options error:nil]) {
     return;
   }
   UmaHistogramTimes("Session.WebStates.WriteToFileTime",
