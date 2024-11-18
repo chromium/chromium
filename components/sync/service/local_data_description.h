@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_SERVICE_LOCAL_DATA_DESCRIPTION_H_
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "components/sync/base/data_type.h"
