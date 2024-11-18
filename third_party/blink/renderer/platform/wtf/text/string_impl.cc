@@ -904,9 +904,9 @@ ALWAYS_INLINE static wtf_size_t FindInternal(
   }
 
   wtf_size_t i = 0;
+  base::span<const MatchCharacterType> match(match_characters, match_length);
   // keep looping until we match
-  while (search_hash != match_hash ||
-         !Equal(search_characters + i, match_characters, match_length)) {
+  while (search_hash != match_hash || !Equal(search_characters + i, match)) {
     if (i == delta)
       return kNotFound;
     search_hash += search_characters[i + match_length];
@@ -1096,9 +1096,10 @@ ALWAYS_INLINE static wtf_size_t ReverseFindInternal(
     match_hash += match_characters[i];
   }
 
+  base::span<const MatchCharacterType> match(match_characters, match_length);
   // keep looping until we match
   while (search_hash != match_hash ||
-         !Equal(search_characters + delta, match_characters, match_length)) {
+         !Equal(search_characters + delta, match)) {
     if (!delta)
       return kNotFound;
     --delta;
@@ -1154,12 +1155,12 @@ bool StringImpl::StartsWith(const StringView& prefix) const {
     return false;
   if (Is8Bit()) {
     if (prefix.Is8Bit())
-      return Equal(Characters8(), prefix.Characters8(), prefix.length());
-    return Equal(Characters8(), prefix.Characters16(), prefix.length());
+      return Equal(Characters8(), prefix.Span8());
+    return Equal(Characters8(), prefix.Span16());
   }
   if (prefix.Is8Bit())
-    return Equal(Characters16(), prefix.Characters8(), prefix.length());
-  return Equal(Characters16(), prefix.Characters16(), prefix.length());
+    return Equal(Characters16(), prefix.Span8());
+  return Equal(Characters16(), prefix.Span16());
 }
 
 bool StringImpl::StartsWithIgnoringCase(const StringView& prefix) const {
@@ -1231,16 +1232,12 @@ bool StringImpl::EndsWith(const StringView& suffix) const {
   wtf_size_t start_offset = length() - suffix.length();
   if (Is8Bit()) {
     if (suffix.Is8Bit())
-      return Equal(Characters8() + start_offset, suffix.Characters8(),
-                   suffix.length());
-    return Equal(Characters8() + start_offset, suffix.Characters16(),
-                 suffix.length());
+      return Equal(Characters8() + start_offset, suffix.Span8());
+    return Equal(Characters8() + start_offset, suffix.Span16());
   }
   if (suffix.Is8Bit())
-    return Equal(Characters16() + start_offset, suffix.Characters8(),
-                 suffix.length());
-  return Equal(Characters16() + start_offset, suffix.Characters16(),
-               suffix.length());
+    return Equal(Characters16() + start_offset, suffix.Span8());
+  return Equal(Characters16() + start_offset, suffix.Span16());
 }
 
 bool StringImpl::EndsWithIgnoringCase(const StringView& suffix) const {
@@ -1691,15 +1688,15 @@ static inline bool StringImplContentEqual(const StringImpl* a,
 
   if (a->Is8Bit()) {
     if (b->Is8Bit())
-      return Equal(a->Characters8(), b->Characters8(), a_length);
+      return Equal(a->Characters8(), b->Span8());
 
-    return Equal(a->Characters8(), b->Characters16(), a_length);
+    return Equal(a->Characters8(), b->Span16());
   }
 
   if (b->Is8Bit())
-    return Equal(a->Characters16(), b->Characters8(), a_length);
+    return Equal(a->Characters16(), b->Span8());
 
-  return Equal(a->Characters16(), b->Characters16(), a_length);
+  return Equal(a->Characters16(), b->Span16());
 }
 
 bool Equal(const StringImpl* a, const StringImpl* b) {
@@ -1725,8 +1722,8 @@ inline bool EqualInternal(const StringImpl* a, base::span<const CharType> b) {
     return false;
   }
   if (a->Is8Bit())
-    return Equal(a->Characters8(), b.data(), b.size());
-  return Equal(a->Characters16(), b.data(), b.size());
+    return Equal(a->Characters8(), b);
+  return Equal(a->Characters16(), b);
 }
 
 bool Equal(const StringImpl* a, base::span<const LChar> b) {

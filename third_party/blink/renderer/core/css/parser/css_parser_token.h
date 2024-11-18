@@ -132,17 +132,7 @@ class CORE_EXPORT CSSParserToken {
     return static_cast<CSSParserTokenType>(type_);
   }
   StringView Value() const {
-    if (value_is_inline_) {
-      DCHECK(value_is_8bit_);
-      return StringView(reinterpret_cast<const LChar*>(value_data_char_inline_),
-                        value_length_);
-    }
-    if (value_is_8bit_) {
-      return StringView(reinterpret_cast<const LChar*>(value_data_char_raw_),
-                        value_length_);
-    }
-    return StringView(reinterpret_cast<const UChar*>(value_data_char_raw_),
-                      value_length_);
+    return value_is_8bit_ ? StringView(Span8()) : StringView(Span16());
   }
 
   bool IsEOF() const { return type_ == static_cast<unsigned>(kEOFToken); }
@@ -242,6 +232,19 @@ class CORE_EXPORT CSSParserToken {
     } else {
       return value_data_char_raw_;
     }
+  }
+  base::span<const LChar> Span8() const {
+    DCHECK(value_is_8bit_);
+    // SAFETY: InitValueFromStringView() ensures the expression is safe.
+    return UNSAFE_BUFFERS(
+        {static_cast<const LChar*>(ValueDataCharRaw()), value_length_});
+  }
+  base::span<const UChar> Span16() const {
+    DCHECK(!value_is_8bit_);
+    DCHECK(!value_is_inline_);
+    // SAFETY: InitValueFromStringView() ensures the expression is safe.
+    return UNSAFE_BUFFERS(
+        {static_cast<const UChar*>(value_data_char_raw_), value_length_});
   }
 
   // Bitfields are all declared as type `unsigned` based on observation that

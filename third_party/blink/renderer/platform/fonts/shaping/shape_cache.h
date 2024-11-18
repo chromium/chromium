@@ -72,8 +72,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
         characters_[i] = characters[i];
       }
 
-      hash_ = static_cast<unsigned>(base::FastHash(
-          base::as_bytes(base::make_span(characters_, length_))));
+      hash_ = static_cast<unsigned>(base::FastHash(base::as_byte_span(*this)));
     }
 
     SmallStringKey(base::span<const UChar> characters, TextDirection direction)
@@ -81,12 +80,13 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
           direction_(static_cast<unsigned>(direction)) {
       DCHECK(characters.size() <= kCapacity);
       memcpy(characters_, characters.data(), characters.size_bytes());
-      hash_ = static_cast<unsigned>(base::FastHash(
-          base::as_bytes(base::make_span(characters_, length_))));
+      hash_ = static_cast<unsigned>(base::FastHash(base::as_byte_span(*this)));
     }
 
     const UChar* Characters() const { return characters_; }
     uint16_t length() const { return length_; }
+    const UChar* begin() const { return characters_; }
+    const UChar* end() const { return characters_ + length_; }
     TextDirection Direction() const {
       return static_cast<TextDirection>(direction_);
     }
@@ -230,7 +230,7 @@ inline bool operator==(const ShapeCache::SmallStringKey& a,
                        const ShapeCache::SmallStringKey& b) {
   if (a.length() != b.length() || a.Direction() != b.Direction())
     return false;
-  return WTF::Equal(a.Characters(), b.Characters(), a.length());
+  return WTF::Equal(a.Characters(), base::span(b));
 }
 
 }  // namespace blink

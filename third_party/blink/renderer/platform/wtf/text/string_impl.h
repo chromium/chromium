@@ -687,23 +687,21 @@ ALWAYS_INLINE bool StringImpl::IsLowerASCII() const {
   return ComputeASCIIFlags() & kIsLowerAscii;
 }
 
+// Callers must ensure the region [a, a+b.size()) is safe to access.
 template <typename CharType>
-ALWAYS_INLINE bool Equal(const CharType* a,
-                         const CharType* b,
-                         wtf_size_t length) {
-  return std::equal(a, a + length, b);
+ALWAYS_INLINE bool Equal(const CharType* a, base::span<const CharType> b) {
+  return std::equal(a, a + b.size(), b.data());
 }
 
-ALWAYS_INLINE bool Equal(const LChar* a, const UChar* b, wtf_size_t length) {
-  for (wtf_size_t i = 0; i < length; ++i) {
-    if (a[i] != b[i])
-      return false;
-  }
-  return true;
+// Callers must ensure the region [a, a+b.size()) is safe to access.
+ALWAYS_INLINE bool Equal(const LChar* a, base::span<const UChar> b) {
+  // Passing pointers instead of iterators for performance.
+  return std::equal(a, a + b.size(), b.data());
 }
 
-ALWAYS_INLINE bool Equal(const UChar* a, const LChar* b, wtf_size_t length) {
-  return Equal(b, a, length);
+// Callers must ensure the region [a, a+b.size()) is safe to access.
+ALWAYS_INLINE bool Equal(const UChar* a, base::span<const LChar> b) {
+  return Equal(b.data(), base::span(a, b.size()));
 }
 
 // Unicode aware case insensitive string matching. Non-ASCII characters might

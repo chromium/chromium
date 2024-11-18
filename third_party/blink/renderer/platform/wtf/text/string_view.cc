@@ -264,12 +264,12 @@ bool EqualStringView(const StringView& a, const StringView& b) {
     return true;
   if (a.Is8Bit()) {
     if (b.Is8Bit())
-      return Equal(a.Characters8(), b.Characters8(), a.length());
-    return Equal(a.Characters8(), b.Characters16(), a.length());
+      return Equal(a.Characters8(), b.Span8());
+    return Equal(a.Characters8(), b.Span16());
   }
   if (b.Is8Bit())
-    return Equal(a.Characters16(), b.Characters8(), a.length());
-  return Equal(a.Characters16(), b.Characters16(), a.length());
+    return Equal(a.Characters16(), b.Span8());
+  return Equal(a.Characters16(), b.Span16());
 }
 
 bool DeprecatedEqualIgnoringCaseAndNullity(const StringView& a,
