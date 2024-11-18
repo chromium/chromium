@@ -5245,7 +5245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.InteractiveWindowResize.TimeToPresent" units="ms"
-    expires_after="2024-12-18">
+    expires_after="2025-11-18">
   <owner>xiyuan@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
   <summary>
@@ -5256,7 +5256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.InteractiveWindowResize.TimeToPresent.MaxLatency"
-    units="ms" expires_after="2024-12-18">
+    units="ms" expires_after="2025-11-18">
   <owner>xiyuan@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
   <summary>
