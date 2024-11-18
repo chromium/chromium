@@ -337,7 +337,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // for more information.
   // This is only exposed as an implementation detail to AXRelationCache, which
   // computes aria-owns differently for element reflection.
-  bool HasExplicitlySetAttrAssociatedElements(const QualifiedName& name);
+  bool HasExplicitlySetAttrAssociatedElements(const QualifiedName& name) const;
   HeapLinkedHashSet<WeakMember<Element>>* GetExplicitlySetElementsForAttr(
       const QualifiedName& name) const;
   Element* GetElementAttribute(const QualifiedName& name) const;

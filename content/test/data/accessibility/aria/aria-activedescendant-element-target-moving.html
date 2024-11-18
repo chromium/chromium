@@ -1,0 +1,27 @@
+<!--
+@BLINK-ALLOW:active*
+@EXECUTE-AND-WAIT-FOR:switchReferencedElementIDAway()
+@EXECUTE-AND-WAIT-FOR:switchReferencedElementIDToRadio()
+-->
+<html>
+<body>
+  <div id="parent" aria-label="parent node" role="menu" aria-activedescendant="active" tabindex="0" autofocus>
+    <div role="menuitem" id="inactive">Inactive descendant</div>
+    <div role="menuitemcheckbox" id="active">Active descendant</div>
+    <div role="menuitemradio" id="alsoinactive">Inactive descendant #2</div>
+  </div>
+  <script>
+    function switchReferencedElementIDAway() {
+      document.querySelector("div[role=menuitemcheckbox]").id = "not-active";
+      document.title = "switch-referenced-element-id-away";
+      return "switch-referenced-element-id-away";
+    }
+
+    function switchReferencedElementIDToRadio() {
+      document.querySelector("div[role=menuitemradio]").id = "active";
+      document.title = "switch-referenced-element-id-to-radio";
+      return "switch-referenced-element-id-to-radio";
+    }
+  </script>
+</body>
+</html>

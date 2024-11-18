@@ -1181,11 +1181,14 @@ void AXObject::ShowAXTreeForThis() const {
 #endif
 
 // static
-bool AXObject::HasAriaAttribute(Element& element,
+bool AXObject::HasAriaAttribute(const Element& element,
                                 const QualifiedName& attribute) {
-  return element.FastHasAttribute(attribute) ||
-         (element.DidAttachInternals() &&
-          element.EnsureElementInternals().HasAttribute(attribute));
+  if (element.FastHasAttribute(attribute)) {
+    return true;
+  }
+
+  const ElementInternals* internals = element.GetElementInternals();
+  return internals && internals->HasAttribute(attribute);
 }
 
 bool AXObject::HasAriaAttribute(const QualifiedName& attribute) const {
@@ -1197,7 +1200,7 @@ bool AXObject::HasAriaAttribute(const QualifiedName& attribute) const {
 }
 
 // static
-const AtomicString& AXObject::AriaAttribute(Element& element,
+const AtomicString& AXObject::AriaAttribute(const Element& element,
                                             const QualifiedName& attribute) {
   const AtomicString& value = element.FastGetAttribute(attribute);
   if (!value.IsNull()) {
@@ -1212,7 +1215,7 @@ const AtomicString& AXObject::AriaAttribute(
 }
 
 // static
-bool AXObject::IsAriaAttributeTrue(Element& element,
+bool AXObject::IsAriaAttributeTrue(const Element& element,
                                    const QualifiedName& attribute) {
   const AtomicString& value = AriaAttribute(element, attribute);
   return !value.empty() && !EqualIgnoringASCIICase(value, "undefined") &&
@@ -1314,12 +1317,13 @@ const AtomicString& AXObject::AriaTokenAttribute(
 
 // static
 const AtomicString& AXObject::GetInternalsAttribute(
-    Element& element,
+    const Element& element,
     const QualifiedName& attribute) {
-  if (!element.DidAttachInternals()) {
+  const ElementInternals* internals = element.GetElementInternals();
+  if (!internals) {
     return g_null_atom;
   }
-  return element.EnsureElementInternals().FastGetAttribute(attribute);
+  return internals->FastGetAttribute(attribute);
 }
 
 namespace {
@@ -1953,7 +1957,7 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const 
     }
 
     // Whether it has ARIA attributes at all.
-    if (HasAriaAttribute()) {
+    if (ElementHasAnyAriaAttribute()) {
       node_data->AddBoolAttribute(
           ax::mojom::blink::BoolAttribute::kHasAriaAttribute, true);
     }
@@ -5456,7 +5460,8 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
   return aria_global_properties.Contains(name);
 }
 
-bool AXObject::HasAriaAttribute(bool does_undo_role_presentation) const {
+bool AXObject::ElementHasAnyAriaAttribute(
+    bool does_undo_role_presentation) const {
   auto* element = GetElement();
   if (!element)
     return false;
@@ -5712,7 +5717,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
     if ((GetElement() && GetElement()->SupportsFocus(
                              Element::UpdateBehavior::kNoneForAccessibility) !=
                              FocusableState::kNotFocusable) ||
-        HasAriaAttribute(true /* does_undo_role_presentation */)) {
+        ElementHasAnyAriaAttribute(true /* does_undo_role_presentation */)) {
       // Must be exposed with a role if focusable or has a global ARIA property
       // that is allowed in this context. See
       // https://w3c.github.io/aria/#presentation for more information about the

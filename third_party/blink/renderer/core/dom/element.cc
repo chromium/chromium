@@ -841,7 +841,7 @@ void Element::SetBooleanAttribute(const QualifiedName& name, bool value) {
 }
 
 bool Element::HasExplicitlySetAttrAssociatedElements(
-    const QualifiedName& name) {
+    const QualifiedName& name) const {
   return GetExplicitlySetElementsForAttr(name);
 }
 

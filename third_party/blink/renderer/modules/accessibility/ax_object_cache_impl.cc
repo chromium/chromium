@@ -2441,7 +2441,7 @@ void AXObjectCacheImpl::NodeIsConnected(Node* node) {
   if (Element* element = DynamicTo<Element>(node)) {
     if (relation_cache_) {
       // Register relation ids so that reverse relations can be computed.
-      relation_cache_->CacheRelationIds(*element);
+      relation_cache_->CacheRelations(*element);
       ScheduleAXUpdate();
     }
     if (AXObject::HasARIAOwns(element)) {
@@ -2627,7 +2627,7 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
   CHECK(obj);
   CHECK(obj->ParentObject());
 
-  if (element && element->HasID()) {
+  if (element) {
     MaybeNewRelationTarget(*node, obj);
   }
 
@@ -4154,7 +4154,7 @@ void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
   CHECK(relation_cache_);
   relation_cache_->UpdateRelatedTree(&node, obj);
   if (Element* element = DynamicTo<Element>(node)) {
-    relation_cache_->UpdateRelatedTreeForIdChange(*element);
+    relation_cache_->UpdateRelatedTreeAfterChange(*element);
   }
 }
 

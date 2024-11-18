@@ -388,6 +388,7 @@ data/accessibility/aria/aria-actions-reference-target.html
 data/accessibility/aria/aria-actions-target-id-change-expected-blink.txt
 data/accessibility/aria/aria-actions-target-id-change.html
 data/accessibility/aria/aria-actions.html
+data/accessibility/aria/aria-activedescendant-element-target-moving.html
 data/accessibility/aria/aria-activedescendant-expected-auralinux.txt
 data/accessibility/aria/aria-activedescendant-expected-blink.txt
 data/accessibility/aria/aria-activedescendant-expected-mac.txt
@@ -571,6 +572,8 @@ data/accessibility/aria/aria-columnheader-expected-blink.txt
 data/accessibility/aria/aria-columnheader-expected-mac.txt
 data/accessibility/aria/aria-columnheader-expected-win.txt
 data/accessibility/aria/aria-columnheader.html
+data/accessibility/aria/aria-combobox-dynamic-element-references-expected-blink.txt
+data/accessibility/aria/aria-combobox-dynamic-element-references.html
 data/accessibility/aria/aria-combobox-dynamic-expected-blink.txt
 data/accessibility/aria/aria-combobox-dynamic.html
 data/accessibility/aria/aria-combobox-expected-android-assist-data.txt
@@ -2168,6 +2171,7 @@ data/accessibility/display-locking/viewport-activation-expected-blink.txt
 data/accessibility/display-locking/viewport-activation-expected-mac.txt
 data/accessibility/display-locking/viewport-activation-expected-win.txt
 data/accessibility/display-locking/viewport-activation.html
+data/accessibility/event/activedescendant-element-added-later.html
 data/accessibility/event/add-alert-content-expected-android.txt
 data/accessibility/event/add-alert-content-expected-auralinux.txt
 data/accessibility/event/add-alert-content-expected-mac.txt
@@ -2220,6 +2224,12 @@ data/accessibility/event/add-subtree-expected-win.txt
 data/accessibility/event/add-subtree.html
 data/accessibility/event/anonymous-block-children-changed-expected-auralinux.txt
 data/accessibility/event/anonymous-block-children-changed.html
+data/accessibility/event/aria-activedescendant-element-tree-changes-expected-auralinux.txt
+data/accessibility/event/aria-activedescendant-element-tree-changes-expected-mac.txt
+data/accessibility/event/aria-activedescendant-element-tree-changes-expected-win.txt
+data/accessibility/event/aria-activedescendant-element-tree-changes.html
+data/accessibility/event/aria-activedescendant-id-and-tree-changes-expected-auralinux.txt
+data/accessibility/event/aria-activedescendant-id-and-tree-changes.html
 data/accessibility/event/aria-atomic-changed-expected-uia-win.txt
 data/accessibility/event/aria-atomic-changed.html
 data/accessibility/event/aria-atomic-changed2-expected-uia-win.txt
@@ -2707,6 +2717,10 @@ data/accessibility/event/reparent-element-with-active-descendant-expected-aurali
 data/accessibility/event/reparent-element-with-active-descendant-expected-mac.txt
 data/accessibility/event/reparent-element-with-active-descendant-expected-win.txt
 data/accessibility/event/reparent-element-with-active-descendant.html
+data/accessibility/event/reparent-element-with-activedescendant-element-expected-auralinux.txt
+data/accessibility/event/reparent-element-with-activedescendant-element-expected-mac.txt
+data/accessibility/event/reparent-element-with-activedescendant-element-expected-win.txt
+data/accessibility/event/reparent-element-with-activedescendant-element.html
 data/accessibility/event/report-validity-invalid-field-expected-android.txt
 data/accessibility/event/report-validity-invalid-field-expected-mac.txt
 data/accessibility/event/report-validity-invalid-field-expected-uia-win.txt

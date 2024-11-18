@@ -936,7 +936,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // check if there's some kind of accessible name for the element)
   // to decide an element's visibility is not as definitive as
   // previous checks, so this should remain as one of the last.
-  if (HasAriaAttribute() ||
+  if (ElementHasAnyAriaAttribute() ||
       !GetElement()->FastGetAttribute(kTitleAttr).empty()) {
     return kIncludeObject;
   }

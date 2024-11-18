@@ -881,7 +881,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   const AtomicString& GetRoleStringForSerialization(ui::AXNodeData* node_data) const;
 
   // ARIA attributes.
-  bool HasAriaAttribute(bool does_undo_role_presentation = false) const;
+  bool ElementHasAnyAriaAttribute(
+      bool does_undo_role_presentation = false) const;
   virtual AXObject* ActiveDescendant() const { return nullptr; }
   virtual String AutoComplete() const { return String(); }
   virtual AXObjectVector ErrorMessage() const { return AXObjectVector(); }
@@ -1344,9 +1345,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // are also retrieved from elementInternals on custom elements.
   // For non-ARIA attributes, it's ok to just use Element methods.
   bool HasAriaAttribute(const QualifiedName&) const;
-  static bool HasAriaAttribute(Element& element, const QualifiedName&);
+  static bool HasAriaAttribute(const Element& element, const QualifiedName&);
   const AtomicString& AriaAttribute(const QualifiedName&) const;
-  static const AtomicString& AriaAttribute(Element& element,
+  static const AtomicString& AriaAttribute(const Element& element,
                                            const QualifiedName&);
 
   // The following HasAriaFooAttribute() methods return true if the attribute
@@ -1368,7 +1369,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Additional boolean ARIA convenience methods.
   bool IsAriaAttributeTrue(const QualifiedName&) const;
-  static bool IsAriaAttributeTrue(Element& element, const QualifiedName&);
+  static bool IsAriaAttributeTrue(const Element& element, const QualifiedName&);
 
   // Scrollable containers.
   bool IsScrollableContainer() const;
@@ -1594,7 +1595,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   String KeyboardShortcut() const;
   void UpdateStyleAndLayoutTreeForNode(Node& node);
   void OnInheritedCachedValuesChanged();
-  static const AtomicString& GetInternalsAttribute(Element&,
+  static const AtomicString& GetInternalsAttribute(const Element&,
                                                    const QualifiedName&);
 
   // Returns true if this node should use the aria role combobox menu button.
