@@ -1431,7 +1431,14 @@ void VolumeManager::RemoveSmbFsVolume(const base::FilePath& mount_point) {
 }
 
 void VolumeManager::OnMigrationSucceededForTesting() {
-  OnMigrationSucceeded();
+  read_only_local_folders_ = false;
+  // Don't call OnLocalUserFilesPolicyChanged() because it's no-op if there's no
+  // change, and we want to force mount/unmount.
+  if (local_user_files_allowed_) {
+    OnLocalUserFilesEnabled();
+  } else {
+    OnLocalUserFilesDisabled();
+  }
 }
 
 void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
@@ -1771,7 +1778,6 @@ void VolumeManager::OnLocalUserFilesDisabled() {
   UnmountDownloadsVolume();
   if (IsSkyVaultV2Enabled() && read_only_local_folders_) {
     // Keep the volume in GA version. It will be removed after migration.
-    // TODO(aidazolic): Do not mount if the local files migration succeeded.
     MountDownloadsVolume(/*read_only=*/true);
   }
 }

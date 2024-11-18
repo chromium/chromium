@@ -37,7 +37,7 @@ async function waitForEmptyFolderMessage(
  * Tests that when local files are disabled, we navigate to default set by the
  * policy, e.g. Drive after unmounting a USB.
  */
-export async function fileDisplayLocalFilesDisabledUnmountRemovable() {
+export async function skyVaultLocalFilesDisabledUnmountRemovable() {
   // Mount Drive and Downloads.
   await sendTestMessage({name: 'mountDrive'});
   await sendTestMessage({name: 'mountDownloads'});
@@ -45,9 +45,10 @@ export async function fileDisplayLocalFilesDisabledUnmountRemovable() {
   await remoteCall.waitForVolumesCount(2);
 
   // Enable SkyVault.
-  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
   await sendTestMessage(
-      {name: 'setDefaultLocation', defaultLocation: 'google_drive'});
+      {name: 'skyvault:setLocalFilesEnabled', enabled: false});
+  await sendTestMessage(
+      {name: 'skyvault:setDefaultLocation', defaultLocation: 'google_drive'});
 
   // Open Files app without specifying the initial directory/root.
   const appId = await remoteCall.openNewWindow(null, null);
@@ -75,10 +76,18 @@ export async function fileDisplayLocalFilesDisabledUnmountRemovable() {
  * Tests that disabling local storage while in a local folder navigates away to
  * the default set by the policy, e.g. Drive.
  */
-export async function fileDisplayLocalFilesDisableInMyFiles() {
+export async function skyVaultLocalFilesDisableInMyFiles() {
   // Mount Drive and Downloads.
   await sendTestMessage({name: 'mountDrive'});
   await sendTestMessage({name: 'mountDownloads'});
+
+  // Doesn't have effect while local files are enabled.
+  await sendTestMessage(
+      {name: 'skyvault:setDefaultLocation', defaultLocation: 'google_drive'});
+
+  // Once local files are disabled, prevent local volumes from being added as
+  // read-only.
+  await sendTestMessage({name: 'skyvault:skipMigration'});
 
   // Open Files app without specifying the initial directory/root.
   const appId = await remoteCall.openNewWindow(null, null);
@@ -87,26 +96,35 @@ export async function fileDisplayLocalFilesDisableInMyFiles() {
   // Confirm that the Files App opened in MyFiles.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
 
-  // Disable local storage and set Google Drive as the default.
-  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
+  // Disable local storage: should remove MyFiles and use GoogleDrive as
+  // default.
   await sendTestMessage(
-      {name: 'setDefaultLocation', defaultLocation: 'google_drive'});
+      {name: 'skyvault:setLocalFilesEnabled', enabled: false});
 
   // We should navigate to Drive.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
 }
 
 /**
- * Tests that disabling local storage while in a local folder navigates away to
- * the default set by the policy, e.g. Drive.
+ * Tests that disabling local storage removes all local volumes, adds a
+ * placeholder OneDrive volume since it's not mounted, and navigates to it as
+ * the new default.
  */
-export async function fileDisplayOneDrivePlaceholder() {
+export async function skyVaultOneDrivePlaceholder() {
   // Mount Downloads.
   await sendTestMessage({name: 'mountDownloads'});
+  await remoteCall.waitForVolumesCount(1);
 
-  // Set OneDrive as the default. Must be done before the dialog is opened.
-  await sendTestMessage(
-      {name: 'setDefaultLocation', defaultLocation: 'microsoft_onedrive'});
+  // Set OneDrive as the default. Must be done before the dialog is opened, but
+  // won't have effect while local files are enabled.
+  await sendTestMessage({
+    name: 'skyvault:setDefaultLocation',
+    defaultLocation: 'microsoft_onedrive',
+  });
+
+  // Once local files are disabled, prevent local volumes from being added as
+  // read-only.
+  await sendTestMessage({name: 'skyvault:skipMigration'});
 
   // Open Files app without specifying the initial directory/root.
   const appId = await remoteCall.openNewWindow(null, null);
@@ -121,13 +139,13 @@ export async function fileDisplayOneDrivePlaceholder() {
   directoryTree.waitForItemLostByLabel(oneDriveLabel);
 
   // Disable local storage.
-  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
-  await directoryTree.waitForItemLostByLabel('/My files');
+  await sendTestMessage(
+      {name: 'skyvault:setLocalFilesEnabled', enabled: false});
 
   // Check that the placeholder is added.
   await directoryTree.waitForItemByLabel(oneDriveLabel);
 
-  // Files App should open by default in the placeholder.
+  // Files App should switch to the placeholder as the default.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, `/${oneDriveLabel}`);
 
@@ -141,13 +159,14 @@ export async function fileDisplayOneDrivePlaceholder() {
  * misconfigured (no local storage, no cloud selected as alternative) shows an
  * error message.
  */
-export async function fileDisplayFileSystemDisabled() {
+export async function skyVaultFileSystemDisabled() {
   // Disable local storage.
-  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
+  await sendTestMessage(
+      {name: 'skyvault:setLocalFilesEnabled', enabled: false});
   // Disable drive.
   await sendTestMessage({name: 'setDriveEnabled', enabled: false});
   // Skip SkyVault migration to immediately remove My Files.
-  await sendTestMessage({name: 'skipSkyVaultMigration'});
+  await sendTestMessage({name: 'skyvault:skipMigration'});
 
   // Open Files app without specifying the initial directory/root.
   const appId = await remoteCall.openNewWindow(null, null);
@@ -163,27 +182,9 @@ export async function fileDisplayFileSystemDisabled() {
 
   // Check: the empty folder should hide.
   await remoteCall.waitForElement(appId, '#empty-folder[hidden]');
-}
 
-/**
- * Tests that MyFiles volume is removed after the migration.
- */
-export async function fileDisplaySkyVaultMigrationRemovesMyFiles() {
-  await remoteCall.setLocalFilesMigrationDestination('google_drive');
-  // Disable local storage.
-  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
-
-  // Open Files app without specifying the initial directory/root.
-  const appId = await remoteCall.openNewWindow(null, null);
-  chrome.test.assertTrue(!!appId, 'failed to open new window');
-
-  // Confirm that MyFiles is visible.
+  // Check: MyFiles shouldn't appear.
   const directoryTree = await DirectoryTreePageObject.create(appId);
-  await directoryTree.waitForItemByLabel('My files');
-
-  // Skip SkyVault migration to immediately remove My Files.
-  await sendTestMessage({name: 'skipSkyVaultMigration'});
-
   await directoryTree.waitForItemLostByLabel('My files');
 }
 
@@ -191,7 +192,7 @@ export async function fileDisplaySkyVaultMigrationRemovesMyFiles() {
  * Tests that the files migrating to cloud banner appears when MyFiles is opened
  * while SkyVault migration is enabled.
  */
-export async function fileDisplaySkyVaultMigrationToGoogleDrive() {
+export async function skyVaultMigrationToGoogleDrive() {
   await remoteCall.setLocalFilesMigrationDestination('google_drive');
   // Mount the local folder after setting the policies.
   await sendTestMessage({name: 'skyvault:mountMyFiles'});
@@ -223,7 +224,7 @@ export async function fileDisplaySkyVaultMigrationToGoogleDrive() {
  * Tests that the files migrating to cloud banner appears when MyFiles is opened
  * while SkyVault migration is enabled.
  */
-export async function fileDisplaySkyVaultMigrationToOneDrive() {
+export async function skyVaultMigrationToOneDrive() {
   await remoteCall.setLocalFilesMigrationDestination('microsoft_onedrive');
   // Mount the local folder after setting the policies.
   await sendTestMessage({name: 'skyvault:mountMyFiles'});
@@ -247,4 +248,46 @@ export async function fileDisplaySkyVaultMigrationToOneDrive() {
   // Check: the delete button should be visible if the file is selected.
   await remoteCall.waitUntilSelected(appId, ENTRIES.hello.targetPath);
   await remoteCall.waitForElement(appId, '#delete-button:not([hidden])');
+}
+
+/**
+ * Tests that MyFiles volume is removed after the migration if it completes
+ * while the Files App is opened.
+ */
+export async function skyVaultMigrationRemovesMyFiles() {
+  // Enable migration.
+  await remoteCall.setLocalFilesMigrationDestination('google_drive');
+
+  // Open Files app without specifying the initial directory/root.
+  const appId = await remoteCall.openNewWindow(null, null);
+  chrome.test.assertTrue(!!appId, 'failed to open new window');
+
+  // Confirm that MyFiles is visible.
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  const myFilesLabel = 'My files';
+  await directoryTree.waitForItemByLabel(myFilesLabel);
+
+  // Skip SkyVault migration to immediately remove My Files.
+  await sendTestMessage({name: 'skyvault:skipMigration'});
+  await directoryTree.waitForItemLostByLabel(myFilesLabel);
+}
+
+/**
+ * Tests that MyFiles volume is removed after the migration, even if MyFiles is
+ * opened afterwards.
+ */
+export async function skyVaultMigrationRemovesMyFilesOpenAfter() {
+  // Enable migration.
+  await remoteCall.setLocalFilesMigrationDestination('google_drive');
+  // Skip SkyVault migration to immediately remove My Files.
+  await sendTestMessage({name: 'skyvault:skipMigration'});
+
+  // Open Files app without specifying the initial directory/root.
+  const appId = await remoteCall.openNewWindow(null, null);
+  chrome.test.assertTrue(!!appId, 'failed to open new window');
+
+  // Confirm that MyFiles isn't visible.
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  const myFilesLabel = 'My files';
+  await directoryTree.waitForItemLostByLabel(myFilesLabel);
 }

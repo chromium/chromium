@@ -1437,10 +1437,11 @@ export class RemoteCallFilesApp extends RemoteCall {
    */
   async setLocalFilesMigrationDestination(provider: string) {
     // Disable local storage - migration destination is ignored otherwise.
-    await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
+    await sendTestMessage(
+        {name: 'skyvault:setLocalFilesEnabled', enabled: false});
     // Set the destination.
     await sendTestMessage({
-      name: 'setLocalFilesMigrationDestination',
+      name: 'skyvault:setMigrationDestination',
       provider: provider,
     });
   }

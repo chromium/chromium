@@ -20,11 +20,13 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
+#include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -33,13 +35,16 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/textarea/textarea.h"
 
@@ -1145,6 +1150,41 @@ class SkyVaultFilesAppBrowserTest
   bool HandleSkyVaultCommands(const std::string& name,
                               const base::Value::Dict& value,
                               std::string* output) override {
+    if (name == "skyvault:setLocalFilesEnabled") {
+      std::optional<bool> enabled = value.FindBool("enabled");
+      CHECK(enabled.has_value());
+      g_browser_process->local_state()->SetBoolean(
+          prefs::kLocalUserFilesAllowed, enabled.value());
+      return true;
+    }
+
+    if (name == "skyvault:setMigrationDestination") {
+      const std::string* provider = value.FindString("provider");
+      CHECK(provider);
+      CHECK(*provider == download_dir_util::kLocationGoogleDrive ||
+            *provider == download_dir_util::kLocationOneDrive);
+      g_browser_process->local_state()->SetString(
+          prefs::kLocalUserFilesMigrationDestination, *provider);
+      return true;
+    }
+
+    if (name == "skyvault:skipMigration") {
+      file_manager::VolumeManager* volume_manager =
+          VolumeManager::Get(profile());
+      volume_manager->OnMigrationSucceededForTesting();
+      return true;
+    }
+
+    if (name == "skyvault:setDefaultLocation") {
+      const std::string* defaultLocation = value.FindString("defaultLocation");
+      CHECK(defaultLocation &&
+            (*defaultLocation == download_dir_util::kLocationGoogleDrive ||
+             *defaultLocation == download_dir_util::kLocationOneDrive));
+      profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
+                                       *defaultLocation);
+      return true;
+    }
+
     if (name == "skyvault:mountMyFiles") {
       my_files_dir_ = profile()->GetPath().Append("MyFiles");
       {
@@ -1325,26 +1365,28 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     SkyVault, /* skyvault.ts */
     SkyVaultFilesAppBrowserTest,
-    ::testing::Values(TestCase("fileDisplayLocalFilesDisabledUnmountRemovable")
+    ::testing::Values(TestCase("skyVaultLocalFilesDisabledUnmountRemovable")
                           .DontMountVolumes()
                           .EnableSkyVault(),
-                      // TODO(b/347643334): Enable.
-                      // TestCase("fileDisplayLocalFilesDisableInMyFiles")
-                      //     .DontMountVolumes()
-                      //     .EnableSkyVault(),
-                      // TestCase("fileDisplayOneDrivePlaceholder")
-                      //     .DontMountVolumes()
-                      //     .EnableSkyVault(),
-                      TestCase("fileDisplayFileSystemDisabled")
+                      TestCase("skyVaultLocalFilesDisableInMyFiles")
                           .DontMountVolumes()
                           .EnableSkyVault(),
-                      TestCase("fileDisplaySkyVaultMigrationToGoogleDrive")
+                      TestCase("skyVaultOneDrivePlaceholder")
                           .DontMountVolumes()
                           .EnableSkyVault(),
-                      TestCase("fileDisplaySkyVaultMigrationToOneDrive")
+                      TestCase("skyVaultFileSystemDisabled")
                           .DontMountVolumes()
                           .EnableSkyVault(),
-                      TestCase("fileDisplaySkyVaultMigrationRemovesMyFiles")
+                      TestCase("skyVaultMigrationToGoogleDrive")
+                          .DontMountVolumes()
+                          .EnableSkyVault(),
+                      TestCase("skyVaultMigrationToOneDrive")
+                          .DontMountVolumes()
+                          .EnableSkyVault(),
+                      TestCase("skyVaultMigrationRemovesMyFiles")
+                          .DontMountVolumes()
+                          .EnableSkyVault(),
+                      TestCase("skyVaultMigrationRemovesMyFilesOpenAfter")
                           .DontMountVolumes()
                           .EnableSkyVault()));
 
