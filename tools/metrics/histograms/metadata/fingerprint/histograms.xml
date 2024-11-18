@@ -182,6 +182,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.Sensor.NumDeadPixels" units="count"
+    expires_after="2025-11-12">
+  <owner>fsammoura@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of dead pixels in the fingerprint sensor. This metric is
+    reported in biod when the sensor maintenance routine is fired daily.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.SensorError.BadHwid" enum="BooleanError"
     expires_after="2025-11-17">
   <owner>fsammoura@google.com</owner>
