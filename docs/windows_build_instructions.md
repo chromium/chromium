@@ -334,7 +334,6 @@ You might be able to use [sccache](https://github.com/mozilla/sccache) for the
 build process by enabling the following arguments:
 
 * `cc_wrapper = "sccache"` - assuming the `sccache` binary is in your `%PATH%`
-* `chrome_pgo_phase = 0`
 
 ### Why is my build slow?
 
