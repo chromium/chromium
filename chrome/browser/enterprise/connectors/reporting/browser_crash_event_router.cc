@@ -63,9 +63,10 @@ BrowserCrashEventRouterFactory::BrowserCrashEventRouterFactory()
 
 BrowserCrashEventRouterFactory::~BrowserCrashEventRouterFactory() = default;
 
-KeyedService* BrowserCrashEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BrowserCrashEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new BrowserCrashEventRouter(context);
+  return std::make_unique<BrowserCrashEventRouter>(context);
 }
 
 }  // namespace enterprise_connectors
