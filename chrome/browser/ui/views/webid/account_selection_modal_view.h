@@ -22,6 +22,10 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 class AccountSelectionModalView : public views::DialogDelegateView,
                                   public AccountSelectionViewBase {
   METADATA_HEADER(AccountSelectionModalView, views::DialogDelegateView)
