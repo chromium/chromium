@@ -106,9 +106,9 @@ CanvasResource* OffscreenCanvasPlaceholderTest::DispatchOneFrame() {
   scoped_refptr<CanvasResource> resource =
       resource_provider_->ProduceCanvasResource(FlushReason::kTesting);
   CanvasResource* resource_raw_ptr = resource.get();
-  dispatcher_->DispatchFrame(
-      std::move(resource), base::TimeTicks(), SkIRect::MakeEmpty(),
-      false /* needs_vertical_flip */, false /* is-opaque */);
+  dispatcher_->DispatchFrame(std::move(resource), base::TimeTicks(),
+                             SkIRect::MakeEmpty(),
+                             /*is_opaque=*/false);
   // We avoid holding a ref here to avoid interfering with
   // OffscreenCanvasPlaceholder's ref count logic.  This pointer should only
   // be used for validations.

@@ -687,10 +687,8 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
       const gfx::Rect int_dirty = dirty_rect_;
       const SkIRect damage_rect = SkIRect::MakeXYWH(
           int_dirty.x(), int_dirty.y(), int_dirty.width(), int_dirty.height());
-      const bool needs_vertical_flip = !canvas_resource->IsOriginTopLeft();
       frame_dispatcher_->DispatchFrame(std::move(canvas_resource), start_time,
-                                       damage_rect, needs_vertical_flip,
-                                       IsOpaque());
+                                       damage_rect, IsOpaque());
     }
     dirty_rect_ = gfx::Rect();
   }
