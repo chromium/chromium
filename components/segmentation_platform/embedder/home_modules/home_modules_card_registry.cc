@@ -220,6 +220,11 @@ void HomeModulesCardRegistry::NotifyCardShown(const char* card_name) {
         profile_prefs_->GetInteger(kLensEphemeralModuleImpressionCounterPref);
     profile_prefs_->SetInteger(kLensEphemeralModuleImpressionCounterPref,
                                freshness_impression_count + 1);
+  } else if (strcmp(card_name, kSendTabNotificationPromo) == 0) {
+    int impression_count =
+        profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
+    profile_prefs_->SetInteger(kSendTabPromoImpressionCounterPref,
+                               impression_count + 1);
   }
 #endif
 
@@ -258,11 +263,6 @@ void HomeModulesCardRegistry::NotifyCardInteracted(const char* card_name) {
   } else if (strcmp(card_name, kLensEphemeralModuleTranslateVariation) == 0) {
     profile_prefs_->SetBoolean(
         kLensEphemeralModuleTranslateVariationInteractedPref, true);
-  } else if (strcmp(card_name, kSendTabNotificationPromo) == 0) {
-    int freshness_impression_count =
-        profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
-    profile_prefs_->SetInteger(kSendTabPromoImpressionCounterPref,
-                               freshness_impression_count + 1);
   }
 #endif
 }
