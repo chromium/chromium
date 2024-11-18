@@ -181,9 +181,6 @@ TEST_F(ListFamilyMembersServiceTest,
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
             supervised_user::kDefaultEmptyFamilyMemberRole);
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kFamilyLinkUserState),
-      static_cast<int>(supervised_user::FamilyLinkUserState::kNotFamilyLink));
 
   test_list_family_members_service_->Shutdown();
 }
@@ -226,9 +223,6 @@ TEST_F(ListFamilyMembersServiceTest, FamilyRolePrefReflectsAccountCapability) {
 
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
             "family_manager");
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kFamilyLinkUserState),
-      static_cast<int>(supervised_user::FamilyLinkUserState::kHeadOfHousehold));
 
   test_list_family_members_service_->Shutdown();
 }
@@ -442,8 +436,6 @@ TEST_F(ListFamilyMembersServiceTest,
   SimulateErrorResponseForPendingRequest();
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole), "");
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kFamilyLinkUserState),
-            static_cast<int>(supervised_user::FamilyLinkUserState::kUnknown));
 
   test_list_family_members_service_->Shutdown();
 }
@@ -489,17 +481,11 @@ TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherClearsResponseOnSignout) {
   EXPECT_EQ(hoh_username, "username_hoh");
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
             "family_manager");
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kFamilyLinkUserState),
-      static_cast<int>(supervised_user::FamilyLinkUserState::kHeadOfHousehold));
 
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(hoh_username, "");
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
             supervised_user::kDefaultEmptyFamilyMemberRole);
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kFamilyLinkUserState),
-      static_cast<int>(supervised_user::FamilyLinkUserState::kNotFamilyLink));
 
   test_list_family_members_service_->Shutdown();
 }
@@ -543,17 +529,11 @@ TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherResetsPrefOnSignout) {
   EXPECT_EQ(hoh_username, "username_hoh");
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
             "family_manager");
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kFamilyLinkUserState),
-      static_cast<int>(supervised_user::FamilyLinkUserState::kHeadOfHousehold));
 
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(hoh_username, "");
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
             supervised_user::kDefaultEmptyFamilyMemberRole);
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kFamilyLinkUserState),
-      static_cast<int>(supervised_user::FamilyLinkUserState::kNotFamilyLink));
 
   test_list_family_members_service_->Shutdown();
 }

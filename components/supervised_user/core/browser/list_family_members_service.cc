@@ -37,25 +37,6 @@ base::TimeDelta NextUpdate(const ProtoFetcherStatus& status) {
   return kOnErrorUpdateInterval;
 }
 
-FamilyLinkUserState FamilyRoleToState(kidsmanagement::FamilyRole role) {
-  // Omitting the default case is safe since kidsmanagement::FamilyRole is a
-  // proto2 enum.
-  switch (role) {
-    case kidsmanagement::CHILD:
-      return FamilyLinkUserState::kChild;
-    case kidsmanagement::MEMBER:
-      return FamilyLinkUserState::kMember;
-    case kidsmanagement::PARENT:
-      return FamilyLinkUserState::kParent;
-    case kidsmanagement::HEAD_OF_HOUSEHOLD:
-      return FamilyLinkUserState::kHeadOfHousehold;
-    case kidsmanagement::UNCONFIRMED_MEMBER:
-      return FamilyLinkUserState::kUnconfirmedMember;
-    case kidsmanagement::UNKNOWN_FAMILY_ROLE:
-      return FamilyLinkUserState::kNotFamilyLink;
-  }
-}
-
 }  // namespace
 
 ListFamilyMembersService::ListFamilyMembersService(
@@ -109,9 +90,6 @@ void ListFamilyMembersService::StopFetch() {
   }
   user_prefs_->SetString(prefs::kFamilyLinkUserMemberRole,
                          empty_family_member_role);
-  user_prefs_->SetInteger(
-      prefs::kFamilyLinkUserState,
-      static_cast<int>(FamilyLinkUserState::kNotFamilyLink));
 
   if (!fetcher_) {
     return;
@@ -218,9 +196,6 @@ void ListFamilyMembersService::SetFamilyMemberPrefs(
   // If the user has signed out since the fetch started do not record the family
   // member role.
   if (account_info.IsEmpty()) {
-    user_prefs_->SetInteger(
-        prefs::kFamilyLinkUserState,
-        static_cast<int>(FamilyLinkUserState::kNotFamilyLink));
     return;
   }
 
@@ -230,9 +205,6 @@ void ListFamilyMembersService::SetFamilyMemberPrefs(
       user_prefs_->SetString(
           prefs::kFamilyLinkUserMemberRole,
           supervised_user::FamilyRoleToString(member.role()));
-      user_prefs_->SetInteger(
-          prefs::kFamilyLinkUserState,
-          static_cast<int>(FamilyRoleToState(member.role())));
       return;
     }
   }
@@ -240,9 +212,6 @@ void ListFamilyMembersService::SetFamilyMemberPrefs(
   // If there is no associated family member, set to default.
   user_prefs_->SetString(prefs::kFamilyLinkUserMemberRole,
                          supervised_user::kDefaultEmptyFamilyMemberRole);
-  user_prefs_->SetInteger(
-      prefs::kFamilyLinkUserState,
-      static_cast<int>(FamilyLinkUserState::kNotFamilyLink));
 }
 
 }  // namespace supervised_user
