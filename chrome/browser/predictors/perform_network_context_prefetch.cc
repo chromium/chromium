@@ -60,17 +60,6 @@ const std::string SerializeHeaderString(const T& value) {
       .value_or(std::string());
 }
 
-// Returns the correct referrer header for a request to `url` from `page` having
-// origin `page_origin`. `page_origin` is redundant but is included to save
-// recalculating it. Currently assumes the policy is
-// REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN.
-GURL CalculateReferrer(const GURL& page,
-                       const url::Origin& page_origin,
-                       const GURL& url) {
-  DCHECK(page.SchemeIsCryptographic() && url.SchemeIsCryptographic());
-  return page_origin.IsSameOriginWith(url) ? page : page_origin.GetURL();
-}
-
 // Heuristic to identify a favicon request.
 bool LooksLikeFavicon(const GURL& url) {
   const std::string& as_string = url.possibly_invalid_spec();
@@ -112,10 +101,9 @@ void PrefetchResource(
 
   // TODO(crbug.com/342445996): We need the predictor to predict the referrer
   // policy so that we can create the referrer fields correctly.
-  static constexpr net::ReferrerPolicy kExpectedReferrerPolicy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  request.referrer = CalculateReferrer(page, page_origin, url);
-  request.referrer_policy = kExpectedReferrerPolicy;
+  request.referrer = page;
+  request.referrer_policy =
+      net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN;
 
   auto& headers = request.headers;
   headers.SetHeader("Purpose", "prefetch");
@@ -250,15 +238,6 @@ void PerformNetworkContextPrefetch(Profile* profile,
     // incognito or not.
     return;
   }
-  // Only support secure connections.
-  // TODO(crbug.com/342445996): Maybe relax this restriction if this code is
-  // used by features that support insecure prefetches. See also
-  // CalculateReferrer().
-  if (!page.SchemeIsCryptographic()) {
-    DLOG(ERROR) << "PerformNetworkContextPrefetch() called for non-SSL page: "
-                << page << " (ignored)";
-    return;
-  }
   const auto page_origin = url::Origin::Create(page);
   content::StoragePartition* storage_partition =
       profile->GetStoragePartitionForUrl(page);
@@ -291,15 +270,6 @@ void PerformNetworkContextPrefetch(Profile* profile,
       // TODO(crbug.com/342445996): Support more resource types.
       continue;
     }
-    // Only support secure subresources.
-    // TODO(crbug.com/342445996): Relax this restriction in future if needed.
-    if (!url.SchemeIsCryptographic()) {
-      DLOG(ERROR)
-          << "PerformNetworkContextPrefetch() called for non-SSL subresource: "
-          << url << " (ignored)";
-      continue;
-    }
-
     // TODO(crbug.com/342445996): Usually requests will have the same origin, so
     // maybe cache (origin, accept_langage) to avoid wasteful recalculation?
     const std::string accept_language =
