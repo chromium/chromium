@@ -428,6 +428,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "enable_bookmark_provider": "true",
+                        "enable_history_provider": "true"
+                    },
                     "enable_features": [
                         "AndroidHubSearch"
                     ]
