@@ -553,6 +553,7 @@ class RenderViewContextMenuPrefsTest
 
   void TearDown() override {
     browser_.reset();
+    template_url_service_ = nullptr;
     registry_.reset();
 
     // Cleanup any spare render processes.
@@ -641,7 +642,7 @@ class RenderViewContextMenuPrefsTest
  private:
   std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
-  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<Browser> browser_;
   GURL last_preresolved_url_;
   base::OnceClosure preresolved_finished_closure_;
