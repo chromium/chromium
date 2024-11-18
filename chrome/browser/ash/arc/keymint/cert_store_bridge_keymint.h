@@ -42,6 +42,10 @@ class CertStoreBridgeKeyMint {
       std::vector<mojom::ChromeOsKeyPtr> keys,
       mojom::CertStoreInstance::UpdatePlaceholderKeysCallback callback);
 
+  // Sets the ARCVM Serial number from Chrome to arc-keymintd.
+  // If the proxy is not bound, an error would be logged on the ChromeOS side.
+  void SetSerialNumber(const std::string& serial_number);
+
  private:
   // Points to a proxy bound to the implementation in arc-keymintd.
   mojo::Remote<keymint::mojom::CertStoreInstance> cert_store_proxy_;
