@@ -8,11 +8,17 @@
 #include <iterator>
 
 #include "base/strings/to_string.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "components/device_reauth/device_authenticator.h"
+#endif
 
 namespace {
 
@@ -55,11 +61,15 @@ BatchUploadHandler::BatchUploadHandler(
     mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver,
     mojo::PendingRemote<batch_upload::mojom::Page> page,
     const AccountInfo& account_info,
+    Browser* browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
+    base::RepeatingCallback<void(bool)> allow_web_view_input_callback,
     BatchUploadSelectedDataTypeItemsCallback completion_callback)
-    : local_data_description_list_(std::move(local_data_description_list)),
+    : browser_(*browser),
+      local_data_description_list_(std::move(local_data_description_list)),
       update_view_height_callback_(update_view_height_callback),
+      allow_web_view_input_callback_(allow_web_view_input_callback),
       completion_callback_(std::move(completion_callback)),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
@@ -106,8 +116,61 @@ void BatchUploadHandler::SaveToAccount(
                                      section_ids);
   }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Only show reauth if passwords are selected to be saved. Passwords is the
+  // only data type that needs authentication.
+  auto it = ret_ids_to_move.find(syncer::PASSWORDS);
+  bool should_show_reauth = it != ret_ids_to_move.end() && !it->second.empty();
+#endif
+
+  base::OnceCallback<void(bool)> on_save_to_account_ready =
+      base::BindOnce(&BatchUploadHandler::OnSaveToAccountRequestReady,
+                     base::Unretained(this), std::move(ret_ids_to_move));
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (should_show_reauth) {
+    // Disable all inputs in the view during reauth.
+    allow_web_view_input_callback_.Run(false);
+
+    device_reauth::DeviceAuthParams params(
+        base::Seconds(0),
+        device_reauth::DeviceAuthSource::kSettingsBatchUpload);
+
+    device_authenticator_ = ChromeDeviceAuthenticatorFactory::GetForProfile(
+        browser_->profile(),
+        browser_->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetTopLevelNativeWindow(),
+        params);
+
+    // Show authentication before proceeding with the save to account.
+    device_authenticator_->AuthenticateWithMessage(
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX),
+        std::move(on_save_to_account_ready));
+    return;
+  }
+#endif
+
+  // Proceed directly without reauth and allowing data to be saved.
+  std::move(on_save_to_account_ready).Run(true);
+}
+
+void BatchUploadHandler::OnSaveToAccountRequestReady(
+    std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
+        ids_to_move,
+    bool allowed) {
+  // Reset the view inputs in all cases.
+  allow_web_view_input_callback_.Run(true);
+
+  // If not allowed do not proceed, but do not close the dialog as well to give
+  // another opportunity to the user without losing his choices.
+  if (!allowed) {
+    return;
+  }
+
   local_data_description_list_.clear();
-  std::move(completion_callback_).Run(ret_ids_to_move);
+  std::move(completion_callback_).Run(std::move(ids_to_move));
 }
 
 batch_upload::mojom::BatchUploadDataPtr

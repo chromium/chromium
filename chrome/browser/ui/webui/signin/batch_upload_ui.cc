@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/signin/batch_upload_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/signin/batch_upload_handler.h"
@@ -56,8 +57,10 @@ WEB_UI_CONTROLLER_TYPE_IMPL(BatchUploadUI)
 
 void BatchUploadUI::Initialize(
     const AccountInfo& account_info,
+    Browser* browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
+    base::RepeatingCallback<void(bool)> allow_web_view_input_callback,
     BatchUploadSelectedDataTypeItemsCallback completion_callback) {
   std::unique_ptr<PluralStringHandler> plural_string_handler =
       std::make_unique<PluralStringHandler>();
@@ -75,7 +78,8 @@ void BatchUploadUI::Initialize(
 
   initialize_handler_callback_ = base::BindOnce(
       &BatchUploadUI::OnMojoHandlersReady, base::Unretained(this), account_info,
-      std::move(local_data_description_list), update_view_height_callback,
+      browser, std::move(local_data_description_list),
+      update_view_height_callback, allow_web_view_input_callback,
       std::move(completion_callback));
 }
 
@@ -99,14 +103,16 @@ void BatchUploadUI::CreateBatchUploadHandler(
 
 void BatchUploadUI::OnMojoHandlersReady(
     const AccountInfo& account_info,
+    Browser* browser,
     std::vector<syncer::LocalDataDescription> local_data_description_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
+    base::RepeatingCallback<void(bool)> allow_web_view_input_callback,
     BatchUploadSelectedDataTypeItemsCallback completion_callback,
     mojo::PendingRemote<batch_upload::mojom::Page> page,
     mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver) {
   CHECK(!handler_);
   handler_ = std::make_unique<BatchUploadHandler>(
-      std::move(receiver), std::move(page), account_info,
+      std::move(receiver), std::move(page), account_info, browser,
       std::move(local_data_description_list), update_view_height_callback,
-      std::move(completion_callback));
+      allow_web_view_input_callback, std::move(completion_callback));
 }
