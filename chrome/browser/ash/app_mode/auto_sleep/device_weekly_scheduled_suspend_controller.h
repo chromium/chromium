@@ -15,7 +15,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -23,8 +23,7 @@ class PrefService;
 
 namespace ash {
 
-using RepeatingTimeIntervalTaskExecutors =
-    std::vector<std::unique_ptr<RepeatingTimeIntervalTaskExecutor>>;
+using WeeklyIntervalTimers = std::vector<std::unique_ptr<WeeklyIntervalTimer>>;
 
 // `DeviceWeeklyScheduledSuspendController` suspends the device during a kiosk
 // session based on weekly schedules defined in the DeviceWeeklyScheduledSuspend
@@ -45,11 +44,10 @@ class DeviceWeeklyScheduledSuspendController
   void SuspendDone(base::TimeDelta sleep_duration) override;
   void DarkSuspendImminent() override;
 
-  const RepeatingTimeIntervalTaskExecutors& GetIntervalExecutorsForTesting()
-      const;
+  const WeeklyIntervalTimers& GetWeeklyIntervalTimersForTesting() const;
 
-  void SetTaskExecutorFactoryForTesting(
-      std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory> factory);
+  void SetWeeklyIntervalTimerFactoryForTesting(
+      std::unique_ptr<WeeklyIntervalTimer::Factory> factory);
   void SetClockForTesting(base::Clock* clock);
 
  private:
@@ -57,22 +55,21 @@ class DeviceWeeklyScheduledSuspendController
   void OnDeviceWeeklyScheduledSuspendUpdate();
 
   // Called when a suspend interval starts with the remaining interval duration.
-  void OnTaskExecutorIntervalStart(base::TimeDelta interval_duration);
+  void OnWeeklyIntervalStart(base::TimeDelta interval_duration);
 
   // Monitors `kDeviceWeeklyScheduledSuspend` preference update.
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Interval executors used to schedule device suspension and wake-up.
-  RepeatingTimeIntervalTaskExecutors interval_executors_;
+  // Timers used to schedule device suspension and wake-up.
+  WeeklyIntervalTimers device_suspension_timers_;
 
-  // Marks the end of the current sleep interval. Null while not sleeping.
-  // See `OnTaskExecutorIntervalStart` definition for more info.
+  // Marks the end of the current sleep interval. Nullopt while not sleeping.
+  // See `OnWeeklyIntervalStart` definition for more info.
   std::optional<base::Time> resume_after_;
 
   bool power_manager_available_ = false;
 
-  std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory>
-      task_executor_factory_;
+  std::unique_ptr<WeeklyIntervalTimer::Factory> weekly_interval_timer_factory_;
 
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 

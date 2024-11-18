@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
 
 #include <cstddef>
 #include <functional>
@@ -26,16 +26,14 @@ namespace ash {
 
 using DayOfWeek = DeviceWeeklyScheduledSuspendTestPolicyBuilder::DayOfWeek;
 
-class RepeatingTimeIntervalTaskExecutorTest : public testing::Test {
+class WeeklyIntervalTimerTest : public testing::Test {
  public:
-  RepeatingTimeIntervalTaskExecutorTest() = default;
+  WeeklyIntervalTimerTest() = default;
 
-  RepeatingTimeIntervalTaskExecutorTest(
-      RepeatingTimeIntervalTaskExecutorTest&) = delete;
-  RepeatingTimeIntervalTaskExecutorTest& operator=(
-      RepeatingTimeIntervalTaskExecutorTest&) = delete;
+  WeeklyIntervalTimerTest(WeeklyIntervalTimerTest&) = delete;
+  WeeklyIntervalTimerTest& operator=(WeeklyIntervalTimerTest&) = delete;
 
-  ~RepeatingTimeIntervalTaskExecutorTest() override = default;
+  ~WeeklyIntervalTimerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -56,13 +54,12 @@ class RepeatingTimeIntervalTaskExecutorTest : public testing::Test {
     task_environment().FastForwardBy(duration + delta);
   }
 
-  std::unique_ptr<RepeatingTimeIntervalTaskExecutor> CreateTestTaskExecutor(
+  std::unique_ptr<WeeklyIntervalTimer> CreateWeeklyIntervalTimer(
       const policy::WeeklyTimeInterval& interval,
       base::RepeatingCallback<void(base::TimeDelta)>
           on_interval_start_callback) {
-    return RepeatingTimeIntervalTaskExecutor::Factory(
-               task_environment().GetMockClock(),
-               task_environment().GetMockTickClock())
+    return WeeklyIntervalTimer::Factory(task_environment().GetMockClock(),
+                                        task_environment().GetMockTickClock())
         .Create(interval, on_interval_start_callback);
   }
 
@@ -94,30 +91,28 @@ class RepeatingTimeIntervalTaskExecutorTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest,
-       TaskExecutorWorksWhenTimeFallsInCurrentInterval) {
+TEST_F(WeeklyIntervalTimerTest, TimerWorksWhenTimeFallsInCurrentInterval) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
 
   auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(21),
                                            DayOfWeek::SATURDAY, base::Hours(6));
-  auto task_executor = CreateTestTaskExecutor(
+  auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
 
   // Confirm that interval start callback is executed when the current time is
   // at the start of the interval.
   EXPECT_FALSE(interval_start_future.IsReady());
   FastForwardTimeTo(interval.start());
-  task_executor->ScheduleTimer();
+  timer->ScheduleTimer();
   EXPECT_EQ(interval_start_future.Take(), GetDuration(interval));
 }
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest,
-       TaskExecutorWorksWhenTimeFallsInsideInterval) {
+TEST_F(WeeklyIntervalTimerTest, TimerWorksWhenTimeFallsInsideInterval) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
 
   auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(21),
                                            DayOfWeek::SATURDAY, base::Hours(6));
-  auto task_executor = CreateTestTaskExecutor(
+  auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
   // Confirm that interval start callback is executed when the current time is
   // inside the interval.
@@ -126,24 +121,24 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
 
   FastForwardTimeTo(interval.start());
   task_environment().FastForwardBy(delta);
-  task_executor->ScheduleTimer();
+  timer->ScheduleTimer();
   const auto remaining_time_in_interval = GetDuration(interval) - delta;
   EXPECT_EQ(interval_start_future.Take(), remaining_time_in_interval);
 }
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsInTheFuture) {
+TEST_F(WeeklyIntervalTimerTest, TimerRunsInTheFuture) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
 
   auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(21),
                                            DayOfWeek::SATURDAY, base::Hours(6));
-  auto task_executor = CreateTestTaskExecutor(
+  auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
 
   // Confirm that when you're outside an interval and then start the
   // timer, it schedules the timer for the future.
   EXPECT_FALSE(interval_start_future.IsReady());
   FastForwardTimeTo(interval.start(), -base::Minutes(5));
-  task_executor->ScheduleTimer();
+  timer->ScheduleTimer();
   // Run until idle to make sure that any native timer tasks are scheduled.
   task_environment().RunUntilIdle();
 
@@ -153,36 +148,36 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsInTheFuture) {
   EXPECT_EQ(interval_start_future.Take(), GetDuration(interval));
 }
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest,
+TEST_F(WeeklyIntervalTimerTest,
        ShouldNotRunCallbackWhenCreatedAtIntervalEnd) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
   auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(21),
                                            DayOfWeek::SATURDAY, base::Hours(6));
-  auto task_executor = CreateTestTaskExecutor(
+  auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
 
   // Start the test exactly at the end of the interval.
   FastForwardTimeTo(interval.end());
 
-  task_executor->ScheduleTimer();
+  timer->ScheduleTimer();
   task_environment().RunUntilIdle();
 
   EXPECT_FALSE(interval_start_future.IsReady());
 }
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsEveryWeek) {
+TEST_F(WeeklyIntervalTimerTest, TimerRunsEveryWeek) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
   auto interval =
       CreateWeeklyTimeInterval(DayOfWeek::WEDNESDAY, base::Hours(7),
                                DayOfWeek::WEDNESDAY, base::Hours(21));
-  auto task_executor = CreateTestTaskExecutor(
+  auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
 
   // Move time to before interval start so that test expectations are met and we
   // do not get multiple values in a test future that expects only one.
   FastForwardTimeTo(interval.start(), -base::Minutes(5));
 
-  task_executor->ScheduleTimer();
+  timer->ScheduleTimer();
 
   for (size_t i = 0; i < 3; i++) {
     FastForwardTimeTo(interval.start());
@@ -190,26 +185,25 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsEveryWeek) {
   }
 }
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest,
-       TwoTaskExecutorsWorkConcurrently) {
+TEST_F(WeeklyIntervalTimerTest, TwoTimersWorkConcurrently) {
   base::test::TestFuture<base::TimeDelta> interval_1_start_future;
   auto interval_1 =
       CreateWeeklyTimeInterval(DayOfWeek::WEDNESDAY, base::Hours(7),
                                DayOfWeek::WEDNESDAY, base::Hours(21));
-  auto task_executor_1 = CreateTestTaskExecutor(
+  auto timer_1 = CreateWeeklyIntervalTimer(
       interval_1, interval_1_start_future.GetRepeatingCallback());
 
   base::test::TestFuture<base::TimeDelta> interval_2_start_future;
   auto interval_2 = CreateWeeklyTimeInterval(
       DayOfWeek::FRIDAY, base::Hours(7), DayOfWeek::FRIDAY, base::Hours(21));
-  auto task_executor_2 = CreateTestTaskExecutor(
+  auto timer_2 = CreateWeeklyIntervalTimer(
       interval_2, interval_2_start_future.GetRepeatingCallback());
 
   // The test starts before the first interval.
   FastForwardTimeTo(interval_1.start(), -base::Minutes(5));
 
-  task_executor_1->ScheduleTimer();
-  task_executor_2->ScheduleTimer();
+  timer_1->ScheduleTimer();
+  timer_2->ScheduleTimer();
 
   // Moving into the first interval should trigger the first callback.
   FastForwardTimeTo(interval_1.start());
@@ -222,7 +216,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
   EXPECT_EQ(interval_2_start_future.Take(), GetDuration(interval_2));
 }
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesReprogramTimer) {
+TEST_F(WeeklyIntervalTimerTest, TimezoneChangesReprogramTimer) {
   auto scoped_timezone_settings =
       std::make_unique<system::ScopedTimezoneSettings>(u"PST");
 
@@ -230,11 +224,11 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesReprogramTimer) {
 
   auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(12),
                                            DayOfWeek::SATURDAY, base::Hours(8));
-  auto task_executor = CreateTestTaskExecutor(
+  auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
 
   FastForwardTimeTo(interval.start(), -base::Hours(8));
-  task_executor->ScheduleTimer();
+  timer->ScheduleTimer();
   // Change the time zone to CET which is 8 hours ahead of PST and confirm that
   // interval should start immediately as the timer should have been
   // reprogrammed.
@@ -242,7 +236,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesReprogramTimer) {
   EXPECT_EQ(interval_start_future.Take(), GetDuration(interval));
 }
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesRestartTimer) {
+TEST_F(WeeklyIntervalTimerTest, TimezoneChangesRestartTimer) {
   auto scoped_timezone_settings =
       std::make_unique<system::ScopedTimezoneSettings>(u"GMT");
 
@@ -250,11 +244,11 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesRestartTimer) {
 
   auto interval = CreateWeeklyTimeInterval(DayOfWeek::MONDAY, base::Hours(21),
                                            DayOfWeek::TUESDAY, base::Hours(8));
-  auto task_executor = CreateTestTaskExecutor(
+  auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
 
   FastForwardTimeTo(interval.start());
-  task_executor->ScheduleTimer();
+  timer->ScheduleTimer();
 
   EXPECT_EQ(interval_start_future.Take(), GetDuration(interval));
   // Change the time zone to GMT+1 and confirm that
@@ -264,7 +258,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesRestartTimer) {
   EXPECT_EQ(interval_start_future.Take(), GetDuration(interval));
 }
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest,
+TEST_F(WeeklyIntervalTimerTest,
        TimezoneChangeToSameTimezoneDoesNotRestartTimer) {
   auto scoped_timezone_settings =
       std::make_unique<system::ScopedTimezoneSettings>(u"GMT");
@@ -278,12 +272,11 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
           },
           std::ref(interval_start_callback_count));
 
-  auto task_executor =
-      CreateTestTaskExecutor(interval, interval_start_callback);
+  auto timer = CreateWeeklyIntervalTimer(interval, interval_start_callback);
 
   FastForwardTimeTo(interval.start());
   EXPECT_EQ(interval_start_callback_count, 0);
-  task_executor->ScheduleTimer();
+  timer->ScheduleTimer();
   EXPECT_EQ(interval_start_callback_count, 1);
   scoped_timezone_settings->SetTimezoneFromID(u"GMT");
   task_environment().RunUntilIdle();
@@ -295,8 +288,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
   EXPECT_EQ(interval_start_callback_count, 1);
 }
 
-TEST_F(RepeatingTimeIntervalTaskExecutorTest,
-       ChangingTimeZoneWithoutStartingExecutorIsNoOp) {
+TEST_F(WeeklyIntervalTimerTest, ChangingTimeZoneWithoutStartingTimerIsNoOp) {
   auto scoped_timezone_settings =
       std::make_unique<system::ScopedTimezoneSettings>(u"PST");
 
@@ -304,7 +296,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
                                            DayOfWeek::TUESDAY, base::Hours(8));
 
   base::test::TestFuture<base::TimeDelta> interval_start_future;
-  auto task_executor = CreateTestTaskExecutor(
+  auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
 
   FastForwardTimeTo(interval.start(), -base::Hours(8));

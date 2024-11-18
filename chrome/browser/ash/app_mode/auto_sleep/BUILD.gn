@@ -12,8 +12,8 @@ static_library("auto_sleep") {
     "device_weekly_scheduled_suspend_controller.h",
     "device_weekly_scheduled_suspend_policy_handler.cc",
     "device_weekly_scheduled_suspend_policy_handler.h",
-    "repeating_time_interval_task_executor.cc",
-    "repeating_time_interval_task_executor.h",
+    "weekly_interval_timer.cc",
+    "weekly_interval_timer.h",
   ]
   public_deps = [
     "//base",
@@ -60,7 +60,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "device_weekly_scheduled_suspend_controller_unittest.cc",
-    "repeating_time_interval_task_executor_unittest.cc",
+    "weekly_interval_timer_unittest.cc",
   ]
   deps = [
     ":auto_sleep",

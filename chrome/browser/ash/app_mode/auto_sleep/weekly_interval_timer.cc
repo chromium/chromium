@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
 
 #include <memory>
 #include <string>
@@ -44,28 +44,26 @@ bool TimeFallsInInterval(const base::Time& time,
 
 }  // namespace
 
-RepeatingTimeIntervalTaskExecutor::Factory::Factory()
+WeeklyIntervalTimer::Factory::Factory()
     : Factory(base::DefaultClock::GetInstance(),
               base::DefaultTickClock::GetInstance()) {}
 
-RepeatingTimeIntervalTaskExecutor::Factory::Factory(
-    const base::Clock* clock,
-    const base::TickClock* tick_clock)
+WeeklyIntervalTimer::Factory::Factory(const base::Clock* clock,
+                                      const base::TickClock* tick_clock)
     : clock_(CHECK_DEREF(clock)), tick_clock_(CHECK_DEREF(tick_clock)) {}
 
-RepeatingTimeIntervalTaskExecutor::Factory::~Factory() = default;
+WeeklyIntervalTimer::Factory::~Factory() = default;
 
-std::unique_ptr<RepeatingTimeIntervalTaskExecutor>
-RepeatingTimeIntervalTaskExecutor::Factory::Create(
+std::unique_ptr<WeeklyIntervalTimer> WeeklyIntervalTimer::Factory::Create(
     const policy::WeeklyTimeInterval& time_interval,
     base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback) {
   // We can't use `make_unique` since the constructor is private.
-  return base::WrapUnique(new RepeatingTimeIntervalTaskExecutor(
-      time_interval, on_interval_start_callback, &clock_.get(),
-      &tick_clock_.get()));
+  return base::WrapUnique(
+      new WeeklyIntervalTimer(time_interval, on_interval_start_callback,
+                              &clock_.get(), &tick_clock_.get()));
 }
 
-RepeatingTimeIntervalTaskExecutor::RepeatingTimeIntervalTaskExecutor(
+WeeklyIntervalTimer::WeeklyIntervalTimer(
     const policy::WeeklyTimeInterval& time_interval,
     base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
     const base::Clock* clock,
@@ -83,10 +81,9 @@ RepeatingTimeIntervalTaskExecutor::RepeatingTimeIntervalTaskExecutor(
   last_known_time_zone_id_ = timezone_settings.GetCurrentTimezoneID();
 }
 
-RepeatingTimeIntervalTaskExecutor::~RepeatingTimeIntervalTaskExecutor() =
-    default;
+WeeklyIntervalTimer::~WeeklyIntervalTimer() = default;
 
-void RepeatingTimeIntervalTaskExecutor::ScheduleTimer() {
+void WeeklyIntervalTimer::ScheduleTimer() {
   timer_scheduled_ = true;
 
   if (TimeFallsInInterval(clock_->Now(), time_interval_)) {
@@ -95,8 +92,7 @@ void RepeatingTimeIntervalTaskExecutor::ScheduleTimer() {
   ScheduleTimerAtNextIntervalStart();
 }
 
-void RepeatingTimeIntervalTaskExecutor::TimezoneChanged(
-    const icu::TimeZone& timezone) {
+void WeeklyIntervalTimer::TimezoneChanged(const icu::TimeZone& timezone) {
   std::u16string updated_timezone_id =
       system::TimezoneSettings::GetTimezoneID(timezone);
   if (!timer_scheduled_ || updated_timezone_id == last_known_time_zone_id_) {
@@ -110,12 +106,12 @@ void RepeatingTimeIntervalTaskExecutor::TimezoneChanged(
   ScheduleTimer();
 }
 
-void RepeatingTimeIntervalTaskExecutor::InvokeOnStartCallback() {
+void WeeklyIntervalTimer::InvokeOnStartCallback() {
   on_interval_start_callback_.Run(
       GetDuration(clock_->Now(), time_interval_.end()));
 }
 
-void RepeatingTimeIntervalTaskExecutor::ScheduleTimerAtNextIntervalStart() {
+void WeeklyIntervalTimer::ScheduleTimerAtNextIntervalStart() {
   auto timer_duration = GetDuration(clock_->Now(), time_interval_.start());
   if (timer_duration.is_zero()) {
     // This will happen when the current time is exactly
@@ -124,7 +120,7 @@ void RepeatingTimeIntervalTaskExecutor::ScheduleTimerAtNextIntervalStart() {
   }
   timer_until_start_of_interval_->Start(
       FROM_HERE, clock_->Now() + timer_duration,
-      base::BindOnce(&RepeatingTimeIntervalTaskExecutor::ScheduleTimer,
+      base::BindOnce(&WeeklyIntervalTimer::ScheduleTimer,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 

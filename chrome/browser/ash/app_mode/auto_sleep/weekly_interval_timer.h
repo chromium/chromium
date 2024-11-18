@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_
-#define CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_
+#ifndef CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_WEEKLY_INTERVAL_TIMER_H_
+#define CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_WEEKLY_INTERVAL_TIMER_H_
 
 #include <memory>
 #include <string>
@@ -25,8 +25,7 @@ namespace ash {
 // class invokes the provided `on_interval_start_callback`. This class
 // schedules the time interval using the system timezone. Changes to the system
 // timezone will make it reprogram the time interval.
-class RepeatingTimeIntervalTaskExecutor
-    : public system::TimezoneSettings::Observer {
+class WeeklyIntervalTimer : public system::TimezoneSettings::Observer {
  public:
   class Factory {
    public:
@@ -36,7 +35,7 @@ class RepeatingTimeIntervalTaskExecutor
     const Factory& operator=(const Factory&) = delete;
     ~Factory();
 
-    std::unique_ptr<RepeatingTimeIntervalTaskExecutor> Create(
+    std::unique_ptr<WeeklyIntervalTimer> Create(
         const policy::WeeklyTimeInterval& time_interval,
         base::RepeatingCallback<void(base::TimeDelta)>
             on_interval_start_callback);
@@ -46,16 +45,15 @@ class RepeatingTimeIntervalTaskExecutor
     raw_ref<const base::TickClock> tick_clock_;
   };
 
-  RepeatingTimeIntervalTaskExecutor(const RepeatingTimeIntervalTaskExecutor&) =
-      delete;
-  RepeatingTimeIntervalTaskExecutor& operator=(
-      const RepeatingTimeIntervalTaskExecutor&) = delete;
+  WeeklyIntervalTimer(const WeeklyIntervalTimer&) = delete;
+  WeeklyIntervalTimer& operator=(const WeeklyIntervalTimer&) = delete;
 
-  ~RepeatingTimeIntervalTaskExecutor() override;
+  ~WeeklyIntervalTimer() override;
 
-  // Starts the executor and schedules the `timer_` to the start of the next
-  // `interval_`. Additionally invokes `on_interval_start_callback_` if
-  // currently inside the interval.
+  // Starts the timer so `on_interval_start_callback_` is invoked at the start
+  // of the next `time_interval_`.
+  // Additionally invokes `on_interval_start_callback_` if currently inside the
+  // interval.
   void ScheduleTimer();
 
   // `system::TimezoneSettings::Observer`
@@ -67,7 +65,7 @@ class RepeatingTimeIntervalTaskExecutor
 
  private:
   // TODO(crbug.com/328421429): Inline `ScheduleTimer()` method.
-  RepeatingTimeIntervalTaskExecutor(
+  WeeklyIntervalTimer(
       const policy::WeeklyTimeInterval& time_interval,
       base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
       const base::Clock* clock,
@@ -96,10 +94,9 @@ class RepeatingTimeIntervalTaskExecutor
                           system::TimezoneSettings::Observer>
       timezone_observer_{this};
 
-  base::WeakPtrFactory<RepeatingTimeIntervalTaskExecutor> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<WeeklyIntervalTimer> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_
+#endif  // CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_WEEKLY_INTERVAL_TIMER_H_
