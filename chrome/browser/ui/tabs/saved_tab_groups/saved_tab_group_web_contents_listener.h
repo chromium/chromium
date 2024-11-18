@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/types/pass_key.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,6 +25,7 @@ class TabInterface;
 
 namespace tab_groups {
 
+class LocalTabGroupListener;
 class TabGroupSyncService;
 
 // Class that maintains a relationship between the webcontents object of a tab
@@ -40,7 +42,10 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   // property `navigation_initiated_from_sync` on the navigation so that when
   // DidFinishNavigation is invoked we can correctly identify that the
   // navigation was from sync and prevent it from notifying sync back again.
-  void NavigateToUrl(const GURL& url);
+  void NavigateToUrl(base::PassKey<LocalTabGroupListener>, const GURL& url);
+
+  // For testing only.
+  void NavigateToUrlForTest(const GURL& url);
 
   // Accessors.
   LocalTabID local_tab_id() const;
@@ -56,7 +61,12 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
+  // Retrieves the SavedTabGroup that contains the tab |local_tab_|.
+  std::optional<SavedTabGroup> saved_group();
+
  private:
+  void NavigateToUrlInternal(const GURL& url);
+
   // Clear and then update the |tab_redirect_chain_| for the navigation_handle's
   // entire redirect chain (from GetRedirectChain()). only performed if the nav
   // is a MainFrame navigation.
@@ -67,10 +77,6 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
 
   // Functions that are called when the tab switches activation state.
   void OnTabEnteredForeground(tabs::TabInterface* tab_interface);
-
-  // Retrieves the SavedTabGroup that contains the tab with the id
-  // |local_tab_id_|.
-  const SavedTabGroup saved_group();
 
   // The service used to query and manage SavedTabGroups.
   const raw_ptr<TabGroupSyncService> service_ = nullptr;

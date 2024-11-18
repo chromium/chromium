@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -132,6 +134,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab.GetContents());
+
+    tab_groups::TabGroupSyncService* tab_group_sync_service =
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+    if (tab_group_sync_service) {
+      saved_tab_group_web_contents_listener_ =
+          std::make_unique<tab_groups::SavedTabGroupWebContentsListener>(
+              tab_group_sync_service, &tab);
+    }
   }
 
   customize_chrome_side_panel_controller_ =

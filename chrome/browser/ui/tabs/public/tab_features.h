@@ -55,6 +55,10 @@ namespace sync_sessions {
 class SyncSessionsRouterTabHelper;
 }  // namespace sync_sessions
 
+namespace tab_groups {
+class SavedTabGroupWebContentsListener;
+}  // namespace tab_groups
+
 namespace tabs {
 
 class TabInterface;
@@ -121,6 +125,11 @@ class TabFeatures {
 
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
     return extension_side_panel_manager_.get();
+  }
+
+  tab_groups::SavedTabGroupWebContentsListener*
+  saved_tab_group_web_contents_listener() {
+    return saved_tab_group_web_contents_listener_.get();
   }
 
   TabDialogManager* tab_dialog_manager() { return tab_dialog_manager_.get(); }
@@ -193,6 +202,11 @@ class TabFeatures {
   // Forwards tab-related events to sync.
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
+
+  // Responsible for keeping a tab within a tab group in sync with its remote
+  // tab counterpart from sync.
+  std::unique_ptr<tab_groups::SavedTabGroupWebContentsListener>
+      saved_tab_group_web_contents_listener_;
 
   // Manages various tab modal dialogs.
   std::unique_ptr<TabDialogManager> tab_dialog_manager_;
