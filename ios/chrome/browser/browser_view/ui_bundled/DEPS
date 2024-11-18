@@ -52,6 +52,7 @@ include_rules = [
   "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/presenters/ui_bundled/vertical_animation_container.h",
+  "+ios/chrome/browser/price_notifications/ui_bundled/price_notifications_view_coordinator.h",
   "+ios/chrome/browser/print/coordinator",
   "+ios/chrome/browser/promos_manager/model/features.h",
   "+ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h",
