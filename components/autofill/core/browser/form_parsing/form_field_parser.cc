@@ -567,7 +567,8 @@ void FormFieldParser::AddClassification(
   }
 
   FieldCandidates& candidates = field_candidates[match->field->global_id()];
-  candidates.AddFieldCandidate(type, parser_score);
+  candidates.AddFieldCandidate(type, match->match_info.matched_attribute,
+                               parser_score);
 }
 
 // static

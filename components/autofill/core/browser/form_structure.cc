@@ -56,6 +56,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/server_prediction_overrides.h"
@@ -732,6 +733,10 @@ void FormStructure::AssignBestFieldTypes(
 
     const FieldCandidates& candidates = iter->second;
     field->set_heuristic_type(heuristic_source, candidates.BestHeuristicType());
+    if (heuristic_source == GetActiveHeuristicSource()) {
+      autofill_metrics::LogLocalHeuristicMatchedAttribute(
+          candidates.BestHeuristicTypeReason());
+    }
 
     const size_t field_rank = ++field_rank_map.at(field->GetFieldSignature());
     // Log the field type predicted from local heuristics.

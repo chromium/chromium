@@ -2140,6 +2140,13 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Settings page."/>
 </enum>
 
+<enum name="AutofillMatchAttribute">
+  <int value="0" label="None"/>
+  <int value="1" label="Ambiguous"/>
+  <int value="2" label="Label"/>
+  <int value="3" label="Name"/>
+</enum>
+
 <enum name="AutofillOfferNotificationBubbleResult">
   <int value="0" label="User closed bubble via OK button"/>
   <int value="1" label="User closed bubble via corner X"/>

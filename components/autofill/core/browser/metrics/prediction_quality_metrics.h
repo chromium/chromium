@@ -6,7 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PREDICTION_QUALITY_METRICS_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill::autofill_metrics {
 
@@ -195,6 +197,10 @@ void LogOverallPredictionQualityMetrics(
     QualityMetricType metric_type);
 
 void LogEmailFieldPredictionMetrics(const AutofillField& field);
+
+// Emits the "Autofill.LocalHeuristics.MatchedAttribute" metric.
+void LogLocalHeuristicMatchedAttribute(
+    DenseSet<MatchAttribute> match_attributes);
 
 }  // namespace autofill::autofill_metrics
 

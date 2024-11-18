@@ -3687,6 +3687,22 @@ AutofillSaveCreditCardPromptDestination.
   </token>
 </histogram>
 
+<histogram name="Autofill.LocalHeuristics.MatchedAttribute"
+    enum="AutofillMatchAttribute" expires_after="2025-05-31">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Whenever local heuristics are computed, logs the MatchAttribute that was
+    used to determine the heuristic type for each field. &quot;None&quot; means
+    that no parser found a classification for the field, resulting in an
+    UNKNOWN_TYPE. &quot;Ambiguous&quot; means that multiple MatchAttributes
+    matched for different regexes. Since local heuristics attempt to match
+    regexes against the label first, this metric is skewed towards label
+    matches. A match in the label doesn't imply that the name wouldn't have
+    matched, but a match in name means that the label did't match.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.LogEvent.{LogEventTypes}" units="units"
     expires_after="2025-04-13">
   <owner>battre@chromium.org</owner>
