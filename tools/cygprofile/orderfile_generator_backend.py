@@ -277,6 +277,15 @@ class ClankCompiler:
     self._step_recorder.RunCommand(
         ['gn', 'gen',
          str(self._out_dir), '--args=' + ' '.join(gn_args)])
+    # At times there is a cyclic dependency, so if the initial ninja command
+    # fails, we can retry after cleaning the output directory.
+    process = self._step_recorder.RunCommand(self._ninja_command +
+                                             [str(self._out_dir), target],
+                                             raise_on_error=False)
+    if process.returncode == 0:
+      return
+    # The first ninja command failed, try cleaning and re-running.
+    self._step_recorder.RunCommand(['gn', 'clean', str(self._out_dir)])
     self._step_recorder.RunCommand(self._ninja_command +
                                    [str(self._out_dir), target])
 
