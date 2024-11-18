@@ -53,6 +53,10 @@ InstallIwaKeyDistributionComponent(
     const std::string& web_bundle_id,
     std::optional<base::span<const uint8_t>> expected_key);
 
+// Synchronously registers the preloaded component with the component updater.
+base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
+RegisterPreloadedIwaKeyDistributionComponent();
+
 }  // namespace web_app::test
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_KEY_DISTRIBUTION_TEST_UTILS_H_
