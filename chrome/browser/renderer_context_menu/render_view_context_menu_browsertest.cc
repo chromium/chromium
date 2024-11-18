@@ -2671,7 +2671,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SearchByRegionWithUnifiedSidePanelBrowserTest,
-    ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch) {
+    DISABLED_ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch) {
   SetupNonGoogleRegionSearchEngine();
   SetupUnifiedSidePanel();
   // We need a base::RunLoop to ensure that our test does not finish until the

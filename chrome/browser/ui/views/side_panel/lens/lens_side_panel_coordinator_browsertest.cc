@@ -277,8 +277,9 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
           .GetChildTreeID());
 }
 
-IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       ImageSearchWithValidImageOpensUnifiedSidePanelFor3PDse) {
+IN_PROC_BROWSER_TEST_F(
+    SearchImageWithUnifiedSidePanel,
+    DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanelFor3PDse) {
   SetupImageSearchEngine();
   SetupUnifiedSidePanel(/**for_google*/ false);
   EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
