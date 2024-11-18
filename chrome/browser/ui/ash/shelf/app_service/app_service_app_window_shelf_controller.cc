@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
@@ -631,9 +630,6 @@ void AppServiceAppWindowShelfController::OnItemDelegateDiscarded(
 
 ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
     aura::Window* window) const {
-  if (crosapi::browser_util::IsLacrosWindow(window))
-    return ash::ShelfID(app_constants::kLacrosAppId);
-
   std::string shelf_app_id;
   if (ash::borealis::IsBorealisWindow(window)) {
     for (Profile* profile : profile_list_) {

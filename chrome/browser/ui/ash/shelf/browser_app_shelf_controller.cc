@@ -32,12 +32,6 @@ void MaybeUpdateStringProperty(aura::Window* window,
   }
 }
 
-std::string BrowserAppIdForWindow(aura::Window* window) {
-  return crosapi::browser_util::IsLacrosWindow(window)
-             ? app_constants::kLacrosAppId
-             : app_constants::kChromeAppId;
-}
-
 }  // namespace
 
 BrowserAppShelfController::BrowserAppShelfController(
@@ -67,10 +61,7 @@ void BrowserAppShelfController::OnBrowserWindowAdded(
 
 void BrowserAppShelfController::OnBrowserWindowRemoved(
     const apps::BrowserWindowInstance& instance) {
-  bool is_running =
-      crosapi::browser_util::IsLacrosWindow(instance.window)
-          ? browser_app_instance_registry_->IsLacrosBrowserRunning()
-          : browser_app_instance_registry_->IsAshBrowserRunning();
+  bool is_running = browser_app_instance_registry_->IsAshBrowserRunning();
   if (!is_running) {
     ash::ShelfID id(instance.GetAppId());
     SetShelfItemClosed(id);
@@ -199,10 +190,10 @@ void BrowserAppShelfController::MaybeUpdateWindowProperties(
       shelf_id = item->id;
     }
   } else {
-    app_id = BrowserAppIdForWindow(window);
+    app_id = app_constants::kChromeAppId;
   }
   if (shelf_id.IsNull()) {
-    shelf_id = ash::ShelfID(BrowserAppIdForWindow(window));
+    shelf_id = ash::ShelfID(app_constants::kChromeAppId);
   }
   MaybeUpdateStringProperty(window, ash::kAppIDKey, app_id);
   MaybeUpdateStringProperty(window, ash::kShelfIDKey, shelf_id.Serialize());
