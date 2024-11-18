@@ -5402,16 +5402,6 @@ hooks = [
     'condition': 'generate_location_tags',
   },
 
-  {
-    # Clean up build dirs for crbug.com/1337238.
-    # After a libc++ roll and revert, .ninja_deps would get into a state
-    # that breaks Ninja on Windows.
-    # TODO(crbug.com/1409337): Remove this after updating Ninja 1.12 or newer.
-    'name': 'del_ninja_deps_cache',
-    'pattern': '.',
-    'condition': 'host_os == "win"',
-    'action': ['python3', 'src/build/del_ninja_deps_cache.py'],
-  },
   # Configure remote exec cfg files
   {
     # Use luci_auth if on windows and using chrome-untrusted project
